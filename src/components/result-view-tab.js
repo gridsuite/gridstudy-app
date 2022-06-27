@@ -25,8 +25,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * control results views
  * @param studyUuid : string uuid of study
- * @param workingNode : object working node
- * @param selectedNode : object selected node
+ * @param currentNode : object current node
  * @param loadFlowInfos : object result of load flow
  * @param network : object network
  * @param openVoltageLevelDiagram : function
@@ -35,8 +34,7 @@ const useStyles = makeStyles((theme) => ({
  */
 export const ResultViewTab = ({
     studyUuid,
-    workingNode,
-    selectedNode,
+    currentNode,
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
@@ -60,7 +58,7 @@ export const ResultViewTab = ({
             <Paper className={classes.table}>
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
-                    nodeUuid={workingNode?.id}
+                    nodeUuid={currentNode?.id}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
@@ -86,8 +84,9 @@ export const ResultViewTab = ({
                         })}
                     />
                 </Tabs>
-                {!isNodeValid(workingNode, selectedNode) &&
-                    selectedNode?.type !== 'ROOT' && <AlertInvalidNode />}
+                {!isNodeValid(currentNode) && currentNode?.type !== 'ROOT' && (
+                    <AlertInvalidNode />
+                )}
             </div>
             {tabIndex === 0 && renderLoadFlowResult()}
             {tabIndex === 1 && renderSecurityAnalysisResult()}
@@ -99,7 +98,6 @@ ResultViewTab.propTypes = {
     loadFlowInfos: PropTypes.object,
     network: PropTypes.object.isRequired,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
 };

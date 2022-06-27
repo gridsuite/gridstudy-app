@@ -59,8 +59,7 @@ function getValueOrNull(val) {
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
- * @param selectedNodeUuid : the currently selected tree node
- * @param workingNodeUuid : the node we are currently working on
+ * @param currentNodeUuid : the currently selected tree node
  * @param fetchedEquipmentOptions the data generator option
  * @param editData the data to edit
  */
@@ -69,8 +68,7 @@ const GeneratorModificationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
-    selectedNodeUuid,
-    workingNodeUuid,
+    currentNodeUuid,
     fetchedEquipmentOptions,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -255,7 +253,7 @@ const GeneratorModificationDialog = ({
         if (inputForm.validate()) {
             modifyGenerator(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 generatorInfos?.id,
                 generatorName,
                 energySource,
@@ -368,8 +366,7 @@ GeneratorModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
-    workingNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default GeneratorModificationDialog;

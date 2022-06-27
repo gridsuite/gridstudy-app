@@ -44,8 +44,7 @@ import {
  * @param {EventListener} onClose Event to close the dialog
  * @param equipmentOptions Promise handling list of loads that can be modified
  * @param voltageLevelOptions : the network voltageLevels available
- * @param selectedNodeUuid : the currently selected tree node
- * @param workingNodeUuid : the node we are currently working on
+ * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
 const LoadModificationDialog = ({
@@ -53,8 +52,7 @@ const LoadModificationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
-    selectedNodeUuid,
-    workingNodeUuid,
+    currentNodeUuid,
     fetchedEquipmentOptions,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -165,7 +163,7 @@ const LoadModificationDialog = ({
         if (inputForm.validate()) {
             modifyLoad(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 loadInfos?.id,
                 loadName,
                 loadType,
@@ -251,8 +249,7 @@ LoadModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
-    workingNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
     equipmentOptions: PropTypes.arrayOf(PropTypes.object),
 };
 

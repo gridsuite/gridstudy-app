@@ -380,7 +380,12 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     </Typography>
                 </Grid>
                 <Grid item container xs={4} className={classes.controlItem}>
-                    <Select labelId={label} value={prop} onChange={callback}>
+                    <Select
+                        labelId={label}
+                        value={prop}
+                        onChange={callback}
+                        size="small"
+                    >
                         {Object.keys(values).map((key) => (
                             <MenuItem key={key} value={key}>
                                 <FormattedMessage id={values[key]} />
@@ -404,6 +409,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 </Grid>
                 <Grid item container xs={6} className={classes.controlItem}>
                     <Autocomplete
+                        size="small"
                         value={value}
                         multiple="true"
                         onChange={(event, newValues) => callback(newValues)}
@@ -442,7 +448,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function MakeButton(callback, label) {
         return (
-            <Grid item>
+            <Grid item paddingTop={1}>
                 <Button
                     onClick={callback}
                     variant="contained"
@@ -502,7 +508,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function SingleLineDiagramParameters() {
         return (
-            <Grid container spacing={2} className={classes.grid}>
+            <Grid container spacing={1} className={classes.grid}>
                 {MakeSwitch(diagonalLabelLocal, 'diagonalLabel', () => {
                     handleChangeDiagonalLabel(!diagonalLabelLocal);
                 })}
@@ -520,6 +526,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 </Grid>
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
+                        size="small"
                         labelId="substation-layout-select-label"
                         value={substationLayoutLocal}
                         onChange={(event) => {
@@ -559,6 +566,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 </Grid>
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
+                        size="small"
                         labelId="component-library-select-label"
                         value={
                             componentLibraryLocal !== null
@@ -590,7 +598,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 className={classes.grid}
                 justifyContent="flex-end"
             >
-                <Grid container>
+                <Grid container spacing={1}>
                     <Grid item xs={8}>
                         <Typography component="span" variant="body1">
                             <Box fontWeight="fontWeightBold" m={1}>
@@ -600,6 +608,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     </Grid>
                     <Grid item container xs={4} className={classes.controlItem}>
                         <Select
+                            size="small"
                             labelId="flux-convention-select-label"
                             value={fluxConventionLocal}
                             onChange={(event) => {
@@ -623,7 +632,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const MapParameters = () => {
         return (
-            <Grid container spacing={2} className={classes.grid}>
+            <Grid container spacing={1} className={classes.grid}>
                 {MakeSwitch(lineFullPathLocal, 'lineFullPath', () => {
                     handleChangeLineFullPath(!lineFullPathLocal);
                 })}
@@ -641,6 +650,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 </Grid>
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
+                        size="small"
                         labelId="line-flow-mode-select-label"
                         value={lineFlowModeLocal}
                         onChange={(event) => {
@@ -668,6 +678,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 </Grid>
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
+                        size="small"
                         labelId="line-flow-color-mode-select-label"
                         value={lineFlowColorModeLocal}
                         onChange={(event) => {
@@ -737,7 +748,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function makeComponentsFor(defParams, params, setter) {
         return Object.keys(defParams).map((key) => (
-            <Grid container key={key}>
+            <Grid container spacing={1} paddingTop={1} key={key}>
                 {makeComponentFor(defParams[key], key, params, setter)}
                 <MakeLineSeparator />
             </Grid>
@@ -810,12 +821,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const LoadFlow = () => {
         return (
-            <Grid
-                container
-                spacing={2}
-                className={classes.grid}
-                justifyContent="flex-end"
-            >
+            <Grid container className={classes.grid} justifyContent="flex-end">
                 <Grid container key="lfProvider">
                     {MakeDropDown(
                         lfProvider,
@@ -823,10 +829,13 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         LF_PROVIDER_VALUES,
                         updateLfProviderCallback
                     )}
+
+                    <Grid container paddingTop={1}>
+                        <MakeLineSeparator />
+                    </Grid>
+                    <BasicLoadFlowParameters />
+                    <AdvancedLoadFlowParameters />
                 </Grid>
-                <MakeLineSeparator />
-                <BasicLoadFlowParameters />
-                <AdvancedLoadFlowParameters />
                 {MakeButton(resetLfParameters, 'resetToDefault')}
             </Grid>
         );

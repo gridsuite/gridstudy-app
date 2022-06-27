@@ -15,11 +15,7 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import {
     useAutocompleteField,
     useInputForm,
@@ -46,7 +42,7 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param lineOptions the available network lines
- * @param selectedNodeUuid the currently selected tree node
+ * @param currentNodeUuid the currently selected tree node
  * @param substationOptions available substations
  * @param editData the possible line split with voltage level creation record to edit
  */
@@ -55,7 +51,7 @@ const LineAttachToVoltageLevelDialog = ({
     onClose,
     lineOptions,
     voltageLevelOptions,
-    selectedNodeUuid,
+    currentNodeUuid,
     substationOptions,
     editData,
 }) => {
@@ -63,13 +59,11 @@ const LineAttachToVoltageLevelDialog = ({
 
     const bobbsCb = useMemo(
         () =>
-            makeRefreshBusOrBusbarSectionsCallback(studyUuid, selectedNodeUuid),
-        [studyUuid, selectedNodeUuid]
+            makeRefreshBusOrBusbarSectionsCallback(studyUuid, currentNodeUuid),
+        [studyUuid, currentNodeUuid]
     );
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -294,7 +288,7 @@ const LineAttachToVoltageLevelDialog = ({
         if (inputForm.validate()) {
             attachLine(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 editData ? editData.uuid : undefined,
                 lineToAttachTo.id || lineToAttachTo,
                 parseFloat(percentage),
@@ -310,21 +304,9 @@ const LineAttachToVoltageLevelDialog = ({
                 newLine1Name || null,
                 newLine2Id,
                 newLine2Name || null
-            )
-                .then(() => {
-                    // until whole treatment path is OK, we let close only on ... "Close"
-                    // handleCloseAndClear();
-                })
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LineAttachmentError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
+            ).catch((errorMessage) => {
+                snackError(errorMessage, 'LineAttachmentError');
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
@@ -348,7 +330,7 @@ const LineAttachToVoltageLevelDialog = ({
     const onVoltageLevelDo = useCallback(
         ({
             studyUuid,
-            selectedNodeUuid,
+            currentNodeUuid,
             voltageLevelId,
             voltageLevelName,
             nominalVoltage,
@@ -393,7 +375,7 @@ const LineAttachToVoltageLevelDialog = ({
     const onLineDo = useCallback(
         (
             studyUuid,
-            selectedNodeUuid,
+            currentNodeUuid,
             lineId,
             lineName,
             seriesResistance,
@@ -557,7 +539,7 @@ const LineAttachToVoltageLevelDialog = ({
                     <VoltageLevelCreationDialog
                         open={true}
                         onClose={onVoltageLevelDialogClose}
-                        selectedNodeUuid={selectedNodeUuid}
+                        currentNodeUuid={currentNodeUuid}
                         substationOptions={substationOptions}
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
@@ -567,7 +549,7 @@ const LineAttachToVoltageLevelDialog = ({
                     <LineCreationDialog
                         open={true}
                         onClose={onLineDialogClose}
-                        selectedNodeUuid={selectedNodeUuid}
+                        currentNodeUuid={currentNodeUuid}
                         substationOptions={substationOptions}
                         displayConnectivity={false}
                         onCreateLine={onLineDo}
@@ -583,7 +565,7 @@ LineAttachToVoltageLevelDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
     substationOptions: PropTypes.arrayOf(PropTypes.object),
     editData: PropTypes.object,
 };

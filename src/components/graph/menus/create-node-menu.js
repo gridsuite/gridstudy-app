@@ -14,6 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
+import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const CreateNodeMenu = ({
     position,
     handleClose,
+    handleBuildNode,
     handleNodeCreation,
     handleNodeRemoval,
     handleExportCaseOnNode,
@@ -37,6 +39,12 @@ const CreateNodeMenu = ({
 }) => {
     const classes = useStyles();
     const intl = useIntl();
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
+
+    function buildNode() {
+        handleBuildNode(activeNode);
+        handleClose();
+    }
 
     function createNetworkModificationNode(insertMode) {
         handleNodeCreation(activeNode, 'NETWORK_MODIFICATION', insertMode);
@@ -54,6 +62,14 @@ const CreateNodeMenu = ({
     }
 
     const NODE_MENU_ITEMS = {
+        BUILD_NODE: {
+            onRoot: false,
+            action: () => buildNode(),
+            id: 'buildNode',
+            disabled:
+                activeNode?.data?.buildStatus === 'BUILT' ||
+                activeNode?.data?.buildStatus === 'BUILDING',
+        },
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
             action: () => createNetworkModificationNode('CHILD'),
@@ -73,6 +89,7 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => removeNode(),
             id: 'removeNode',
+            disabled: isAnyNodeBuilding,
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,

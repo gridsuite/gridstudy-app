@@ -56,6 +56,7 @@ import { ViewState } from './utils';
 import clsx from 'clsx';
 import { isNodeValid } from '../../graph/util/model-functions';
 import AlertInvalidNode from '../../util/alert-invalid-node';
+import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -136,6 +137,11 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         cursor: 'pointer',
     },
+    paperBorders: {
+        borderLeft: '1px solid ' + theme.palette.action.disabled,
+        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
+        borderRight: '1px solid ' + theme.palette.action.hover,
+    },
 }));
 
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
@@ -183,6 +189,7 @@ fetch(ArrowHover)
         arrowHoverSvg = data;
     });
 
+let initialWidth, initialHeight;
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
 const mapRightOffset = 120;
@@ -251,8 +258,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         totalHeight,
         svgType,
         loadFlowStatus,
-        workingNode,
-        selectedNode,
+        currentNode,
         numberToDisplay,
         sldId,
         pinned,
@@ -266,6 +272,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [forceState, updateState] = useState(false);
 
     const [loadingState, updateLoadingState] = useState(false);
+
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const MenuLine = withLineMenu(BaseEquipmentMenu);
 
@@ -702,7 +710,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             addNavigationArrow(svg);
 
             // handling the right click on a feeder (menus)
-            if (!isComputationRunning) {
+            if (!isComputationRunning && !isAnyNodeBuilding) {
                 const feeders = svg.metadata.nodes.filter((element) => {
                     return (
                         element.vid !== '' &&
@@ -748,7 +756,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // handling the click on a switch
             if (
                 !isComputationRunning &&
-                isNodeValid(workingNode, selectedNode)
+                isNodeValid(currentNode) &&
+                !isAnyNodeBuilding
             ) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
@@ -785,11 +794,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, [
         network,
         svg,
-        workingNode,
-        selectedNode,
+        currentNode,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
+        isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
         showFeederSelection,
@@ -857,8 +866,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                 />
             )
         );
@@ -883,19 +891,27 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         );
     }
 
-    let sizeWidth, sizeHeight;
+    let sizeWidth,
+        sizeHeight = initialHeight;
     if (svg.error) {
-        sizeWidth = errorWidth; // height is not set so height is auto;
+        sizeWidth = errorWidth;
     } else if (
         typeof finalPaperWidth != 'undefined' &&
         typeof finalPaperHeight != 'undefined'
     ) {
         sizeWidth = finalPaperWidth;
         sizeHeight = finalPaperHeight;
-    } else if (loadingState) {
-        sizeWidth = loadingWidth; // height is not set so height is auto; used for the first load
+    } else if (initialWidth !== undefined || loadingState) {
+        sizeWidth = initialWidth;
     } else {
-        sizeWidth = totalWidth; // happens during initalization
+        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
+    }
+
+    if (sizeWidth !== undefined) {
+        initialWidth = sizeWidth; // setting initial width for the next SLD.
+    }
+    if (sizeHeight !== undefined) {
+        initialHeight = sizeHeight; // setting initial height for the next SLD.
     }
 
     const pinSld = useCallback(
@@ -910,8 +926,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     return !svg.error ? (
         <Paper
             ref={ref}
-            elevation={1}
+            elevation={4}
             square={true}
+            className={classes.paperBorders}
             style={{
                 pointerEvents: 'auto',
                 width: sizeWidth,
@@ -966,8 +983,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
-                    {!isNodeValid(workingNode, selectedNode) &&
-                        selectedNode?.type !== 'ROOT' && (
+                    {!isNodeValid(currentNode) &&
+                        currentNode?.type !== 'ROOT' && (
                             <AlertInvalidNode noMargin={true} />
                         )}
                 </Box>
@@ -1057,8 +1074,7 @@ SingleLineDiagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     pinned: PropTypes.bool,
     pin: PropTypes.func,
     minimize: PropTypes.func,

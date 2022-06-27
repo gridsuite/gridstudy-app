@@ -17,6 +17,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { validateField } from '../util/validation-functions';
 import {
     Autocomplete,
+    CircularProgress,
     FormHelperText,
     InputLabel,
     MenuItem,
@@ -24,6 +25,7 @@ import {
     TextField,
     Tooltip,
 } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import ConnectivityEdition, {
     makeRefreshBusOrBusbarSectionsCallback,
@@ -47,7 +49,13 @@ import { useParameterState } from '../parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSelector } from 'react-redux';
-
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import { useSnackbar } from 'notistack';
+import { isNodeExists } from '../../utils/rest-api';
+import { TOOLTIP_DELAY } from '../../utils/UIconstants';
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
@@ -170,16 +178,17 @@ export const useTextValue = ({
                     className: classes.helperText,
                 }}
                 InputProps={
-                    clearable &&
-                    value && {
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={handleClearValue}>
-                                    <ClearIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }
+                    clearable && value
+                        ? {
+                              endAdornment: (
+                                  <InputAdornment position="end">
+                                      <IconButton onClick={handleClearValue}>
+                                          <ClearIcon />
+                                      </IconButton>
+                                  </InputAdornment>
+                              ),
+                          }
+                        : {}
                 }
                 {...(clearable &&
                     adornment && { handleClearValue: handleClearValue })}
@@ -249,7 +258,7 @@ export const useConnectivityValue = ({
     disabled = false,
     inputForm,
     voltageLevelOptions,
-    workingNodeUuid,
+    currentNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
     voltageLevelPreviousValue,
@@ -349,7 +358,7 @@ export const useConnectivityValue = ({
                 direction={direction}
                 voltageLevelBusOrBBSCallback={makeRefreshBusOrBusbarSectionsCallback(
                     studyUuid,
-                    workingNodeUuid
+                    currentNodeUuid
                 )}
             />
         );
@@ -364,7 +373,7 @@ export const useConnectivityValue = ({
         setVoltageLevel,
         voltageLevelOptions,
         studyUuid,
-        workingNodeUuid,
+        currentNodeUuid,
         voltageLevelPreviousValue,
         busOrBusbarSectionPreviousValue,
     ]);
@@ -497,8 +506,6 @@ export const useAutocompleteField = ({
     return [value, field, setValue];
 };
 
-const DELAY = 1000;
-
 export const useButtonWithTooltip = ({ handleClick, label }) => {
     const classes = useStyles();
 
@@ -508,8 +515,8 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
                 title={<FormattedMessage id={label} />}
                 placement="top"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
             >
                 <IconButton style={{ padding: '2px' }} onClick={handleClick}>
@@ -766,4 +773,115 @@ export const useExpandableValues = ({
     ]);
 
     return [values, field];
+};
+
+export const useSimpleTextValue = ({
+    defaultValue,
+    adornment,
+    error,
+    triggerReset,
+}) => {
+    const [value, setValue] = useState(defaultValue);
+
+    const handleChangeValue = useCallback((event) => {
+        setValue(event.target.value);
+    }, []);
+
+    const field = useMemo(() => {
+        return (
+            <TextField
+                value={value}
+                onChange={handleChangeValue}
+                {...(adornment && { InputProps: adornment })}
+                error={error !== undefined}
+                autoFocus={true}
+                fullWidth={true}
+            />
+        );
+    }, [value, handleChangeValue, adornment, error]);
+
+    useEffect(() => setValue(defaultValue), [defaultValue, triggerReset]);
+
+    return [value, field];
+};
+
+const inputAdornment = (content) => {
+    return {
+        endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
+    };
+};
+
+export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
+    const intl = useIntl();
+    const intlRef = useIntlRef();
+    const { enqueueSnackbar } = useSnackbar();
+    const [isValidName, setIsValidName] = useState(false);
+    const [error, setError] = useState();
+    const timer = useRef();
+    const [checking, setChecking] = useState(undefined);
+    const [adornment, setAdornment] = useState();
+    const [name, field] = useSimpleTextValue({
+        defaultValue,
+        adornment,
+        error,
+        triggerReset,
+    });
+
+    const validName = useCallback(
+        (name) => {
+            if (name !== defaultValue) {
+                isNodeExists(studyUuid, name)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            setError(
+                                intl.formatMessage({
+                                    id: 'nodeNameAlreadyUsed',
+                                })
+                            );
+                            setIsValidName(false);
+                        } else {
+                            setIsValidName(true);
+                        }
+                        setChecking(false);
+                    })
+                    .catch((errorMessage) => {
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'NodeUpdateError',
+                                intlRef: intlRef,
+                            },
+                        });
+                    });
+            } else {
+                setChecking(undefined);
+            }
+        },
+        [studyUuid, intl, defaultValue, enqueueSnackbar, intlRef]
+    );
+
+    useEffect(() => {
+        if (checking === undefined) setAdornment(null);
+        if (checking)
+            setAdornment(inputAdornment(<CircularProgress size="1rem" />));
+        else if (!isValidName) setAdornment(undefined);
+        else
+            setAdornment(
+                inputAdornment(<CheckIcon style={{ color: 'green' }} />)
+            );
+    }, [checking, isValidName]);
+
+    useEffect(() => {
+        if (name === '' && !timer.current) return; // initial render
+
+        clearTimeout(timer.current);
+        setIsValidName(false);
+        setAdornment(undefined);
+        setChecking(true);
+        setError(undefined);
+        timer.current = setTimeout(() => validName(name), 700);
+    }, [studyUuid, name, validName, triggerReset]);
+
+    return [error, field, isValidName, name];
 };

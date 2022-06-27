@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -37,6 +37,7 @@ import {
 } from '../../utils/messages';
 import { equipments } from '../network/network-equipments';
 import { isNodeValid } from '../graph/util/model-functions';
+import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -52,14 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 const withLineMenu =
     (BaseMenu) =>
-    ({
-        id,
-        position,
-        handleClose,
-        handleViewInSpreadsheet,
-        workingNode,
-        selectedNode,
-    }) => {
+    ({ id, position, handleClose, handleViewInSpreadsheet, currentNode }) => {
         const classes = useStyles();
         const intl = useIntl();
         const intlRef = useIntlRef();
@@ -70,7 +64,16 @@ const withLineMenu =
         const [displayUseName] = useParameterState(PARAM_USE_NAME);
         const network = useSelector((state) => state.network);
 
+        const isAnyNodeBuilding = useIsAnyNodeBuilding();
+
         const line = network.getLine(id);
+
+        const isNodeEditable = useMemo(
+            function () {
+                return !isNodeValid(currentNode) || isAnyNodeBuilding;
+            },
+            [currentNode, isAnyNodeBuilding]
+        );
 
         const getLineDescriptor = useCallback(
             (voltageLevelId) => {
@@ -101,7 +104,7 @@ const withLineMenu =
         function handleLockout() {
             if (line.branchStatus === 'PLANNED_OUTAGE') return;
             handleClose();
-            lockoutLine(studyUuid, workingNode?.id, line.id).then(
+            lockoutLine(studyUuid, currentNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -116,7 +119,7 @@ const withLineMenu =
         function handleTrip() {
             if (line.branchStatus === 'FORCED_OUTAGE') return;
             handleClose();
-            tripLine(studyUuid, workingNode?.id, line.id).then((response) => {
+            tripLine(studyUuid, currentNode?.id, line.id).then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(response, 'UnableToTripLine');
                 }
@@ -134,7 +137,7 @@ const withLineMenu =
             )
                 return;
             handleClose();
-            energiseLineEnd(studyUuid, workingNode?.id, line.id, side).then(
+            energiseLineEnd(studyUuid, currentNode?.id, line.id, side).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -149,7 +152,7 @@ const withLineMenu =
         function handleSwitchOn() {
             if (line.terminal1Connected && line.terminal2Connected) return;
             handleClose();
-            switchOnLine(studyUuid, workingNode?.id, line.id).then(
+            switchOnLine(studyUuid, currentNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -184,7 +187,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
                     selected={line.branchStatus === 'PLANNED_OUTAGE'}
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -204,7 +207,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
                     selected={line.branchStatus === 'FORCED_OUTAGE'}
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -226,7 +229,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && !line.terminal2Connected
                     }
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -255,7 +258,7 @@ const withLineMenu =
                     selected={
                         line.terminal2Connected && !line.terminal1Connected
                     }
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -284,7 +287,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && line.terminal2Connected
                     }
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <PlayIcon />
@@ -308,8 +311,7 @@ withLineMenu.propTypes = {
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
 };
 
 export default withLineMenu;
