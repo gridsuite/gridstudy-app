@@ -33,7 +33,7 @@ import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
 import Arrow from '../../../images/arrow.svg';
 import ArrowHover from '../../../images/arrow_hover.svg';
-import { fullScreenSingleLineDiagram } from '../../../redux/actions';
+import { fullScreenSingleLineDiagramId } from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 
@@ -267,7 +267,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const network = useSelector((state) => state.network);
 
-    const fullScreen = useSelector((state) => state.fullScreen);
+    const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const [forceState, updateState] = useState(false);
 
@@ -336,7 +336,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
-            fullScreen,
+            fullScreenSldId,
             svgType,
             totalWidth,
             totalHeight,
@@ -352,7 +352,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             setFinalPaperHeight(sizes.paperHeight);
         }
     }, [
-        fullScreen,
+        fullScreenSldId,
         totalWidth,
         totalHeight,
         svgType,
@@ -842,17 +842,17 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
-            dispatch(fullScreenSingleLineDiagram(undefined));
+            dispatch(fullScreenSingleLineDiagramId(undefined));
             props.onClose(sldId);
         }
     };
 
     const showFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(sldId));
+        dispatch(fullScreenSingleLineDiagramId(sldId));
     };
 
     const hideFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(undefined));
+        dispatch(fullScreenSingleLineDiagramId(undefined));
     };
 
     function displayMenuLine() {
@@ -1029,18 +1029,18 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         'vsc-converter-station-menus'
                     )}
 
-                    {!loadingState &&
-                        (fullScreen ? (
-                            <FullscreenExitIcon
-                                onClick={hideFullScreen}
-                                className={classes.fullScreenIcon}
-                            />
-                        ) : (
-                            <FullscreenIcon
-                                onClick={showFullScreen}
-                                className={classes.fullScreenIcon}
-                            />
-                        ))}
+                {!loadingState &&
+                    (fullScreenSldId ? (
+                        <FullscreenExitIcon
+                            onClick={hideFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    ) : (
+                        <FullscreenIcon
+                            onClick={showFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    ))}
                 </Box>
             )}
         </Paper>
