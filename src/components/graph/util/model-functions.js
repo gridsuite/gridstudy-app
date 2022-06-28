@@ -32,11 +32,10 @@ export function getFirstNodeOfType(elements, nodeType, buildStatus) {
 
 export function isNodeReadOnly(node) {
     if (node?.type === 'ROOT') return true;
-    return node?.data?.readOnly ? true : false;
+    return node?.data?.readOnly ? true : false; // ternary operator because of potential undefined
 }
 
-export function isNodeDisabled(node) {
-    // only one node can be named like this... maybe it should be mark as built from backend
-    if (node?.type === 'ROOT') return false;
-    return !(node?.data?.buildStatus === 'BUILT');
+export function isNodeBuilt(node) {
+    if (node?.type === 'ROOT') return true;
+    return node?.data?.buildStatus === 'BUILT';
 }

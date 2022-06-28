@@ -40,7 +40,7 @@ import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
-import { isNodeDisabled } from './graph/util/model-functions';
+import { isNodeBuilt } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -243,7 +243,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 withElementsSearch={true}
-                searchDisabled={isNodeDisabled(currentNode)}
+                searchDisabled={!isNodeBuilt(currentNode)}
                 searchingLabel={intl.formatMessage({
                     id: 'equipment_search/label',
                 })}

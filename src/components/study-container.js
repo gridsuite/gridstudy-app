@@ -40,10 +40,7 @@ import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import {
-    getFirstNodeOfType,
-    isNodeDisabled,
-} from './graph/util/model-functions';
+import { getFirstNodeOfType, isNodeBuilt } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -205,7 +202,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetwork = useCallback(
         (isUpdate) => {
-            if (isNodeDisabled(currentNode)) {
+            if (!isNodeBuilt(currentNode)) {
                 return;
             }
             console.info(`Loading network of study '${studyUuid}'...`);
@@ -345,6 +342,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
+        if (!isNodeBuilt(currentNode)) return;
         loadNetwork(currentNode?.id === currentNodeIdRef.current);
     }, [loadNetwork, currentNode]);
 

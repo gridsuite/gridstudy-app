@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
-import { isNodeDisabled } from './graph/util/model-functions';
+import { isNodeBuilt } from './graph/util/model-functions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -79,7 +79,7 @@ export const NetworkMapTab = ({
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
-    const nodeDisabled = isNodeDisabled(currentNode);
+    const nodeDisabled = !isNodeBuilt(currentNode);
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({

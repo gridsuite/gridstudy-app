@@ -16,7 +16,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { addLoadflowNotif, addSANotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import {} from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
