@@ -354,5 +354,8 @@ function synchCurrentTreeNode(state) {
         (entry) => entry?.id === state.currentTreeNode?.id
     );
     // handle the case of currentTreeNode not in the TreeModel anymore.
-    if (currentNode !== undefined) state.currentTreeNode = { ...currentNode };
+    if (currentNode === undefined) state.currentTreeNode = null;
+    else {
+        state.currentTreeNode = { ...currentNode };
+    }
 }
