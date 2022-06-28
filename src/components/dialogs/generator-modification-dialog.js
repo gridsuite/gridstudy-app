@@ -263,6 +263,7 @@ const GeneratorModificationDialog = ({
         voltageLevelPreviousValue: generatorInfos?.voltageLevelId,
         busOrBusbarSectionIdDefaultValue:
             getValue(formValues?.busOrBusbarSectionId) || null,
+        currentNodeUuid: currentNodeUuid,
     });
 
     const handleSave = () => {

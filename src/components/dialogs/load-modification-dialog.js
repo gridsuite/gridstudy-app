@@ -168,6 +168,7 @@ const LoadModificationDialog = ({
         voltageLevelPreviousValue: loadInfos?.voltageLevelId,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId?.value || null,
+        currentNodeUuid: currentNodeUuid,
     });
 
     const handleSave = () => {

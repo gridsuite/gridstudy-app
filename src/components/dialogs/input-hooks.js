@@ -264,6 +264,7 @@ export const useConnectivityValue = ({
     voltageLevelPreviousValue,
     busOrBusbarSectionIdDefaultValue,
     busOrBusbarSectionPreviousValue,
+    currentNodeUuid,
 }) => {
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,
@@ -273,7 +274,6 @@ export const useConnectivityValue = ({
     const [errorBusBarSection, setErrorBusBarSection] = useState();
     const intl = useIntl();
     const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -362,7 +362,7 @@ export const useConnectivityValue = ({
                 direction={direction}
                 voltageLevelBusOrBBSCallback={makeRefreshBusOrBusbarSectionsCallback(
                     studyUuid,
-                    currentNode?.id
+                    currentNodeUuid
                 )}
             />
         );
@@ -377,7 +377,7 @@ export const useConnectivityValue = ({
         setVoltageLevel,
         voltageLevelOptions,
         studyUuid,
-        currentNode,
+        currentNodeUuid,
         voltageLevelPreviousValue,
         busOrBusbarSectionPreviousValue,
     ]);

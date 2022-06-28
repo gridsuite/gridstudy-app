@@ -205,6 +205,7 @@ const TwoWindingsTransformerCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId2 || null,
+        currentNodeUuid: currentNodeUuid,
     });
 
     const handleSave = () => {

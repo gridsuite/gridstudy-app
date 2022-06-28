@@ -156,9 +156,6 @@ export const reducer = createReducer(initialState, {
         state.networkModificationTreeModel =
             action.networkModificationTreeModel;
         state.networkModificationTreeModel.setBuildingStatus();
-        const firstBuiltNode = getFirstBuildNode(state);
-        state.currentTreeNode = { ...firstBuiltNode };
-        state.firstBuiltNode = { ...firstBuiltNode };
     },
 
     [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
@@ -352,35 +349,12 @@ export const reducer = createReducer(initialState, {
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
         state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;
     },
-    [FIRST_BUILT_NODE]: (state) => {
-        if (state.networkModificationTreeModel) {
-            state.firstBuiltNode = getFirstBuildNode(state);
-        }
-    },
 });
-
-function getFirstBuildNode(state) {
-    const firstBuiltNode =
-        state.networkModificationTreeModel?.treeElements.find((e) => {
-            return (
-                e?.type === 'NETWORK_MODIFICATION' &&
-                e?.data?.buildStatus === 'BUILT'
-            );
-        });
-    const root = state.networkModificationTreeModel?.treeElements.find((e) => {
-        return e?.type === 'ROOT';
-    });
-    return firstBuiltNode ? firstBuiltNode : root;
-}
 
 function synchCurrentTreeNode(state) {
     const currentNode = state.networkModificationTreeModel?.treeElements.find(
         (entry) => entry?.id === state.currentTreeNode?.id
     );
     // handle the case of currentTreeNode not in the TreeModel anymore.
-    if (currentNode === undefined)
-        state.currentTreeNode = { ...getFirstBuildNode(state) };
-    else {
-        state.currentTreeNode = { ...currentNode };
-    }
+    if (currentNode !== undefined) state.currentTreeNode = { ...currentNode };
 }
