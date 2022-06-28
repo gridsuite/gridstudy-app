@@ -126,7 +126,7 @@ const LoadModificationDialog = ({
         defaultValue: formValues?.loadType ? formValues.loadType.value : '',
         doTranslation: true,
         previousValue: loadInfos?.type
-            ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)
+            ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)?.label
             : undefined,
     });
 
