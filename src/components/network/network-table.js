@@ -279,18 +279,6 @@ const NetworkTable = (props) => {
         props.network.useEquipment(resource);
     }, [props.network, props.disabled, tabIndex]);
 
-    const filter = useCallback(
-        (cell) => {
-            if (!rowFilter) return true;
-            return (
-                [...selectedDataKey].find((key) =>
-                    rowFilter.test(cell[key])
-                ) !== undefined
-            );
-        },
-        [rowFilter, selectedDataKey]
-    );
-
     const formatCell = useCallback(
         (rowData, columnDefinition) => {
             let value = rowData[columnDefinition.dataKey];
@@ -309,6 +297,28 @@ const NetworkTable = (props) => {
         [fluxConvention, props.network]
     );
 
+    const filter = useCallback(
+        (rowData, tabIndex) => {
+            if (!rowFilter) return true;
+            const tableDef = TABLES_DEFINITION_INDEXES.get(tabIndex);
+
+            function filterMatch(colName) {
+                const columnDef = tableDef.columns.find(
+                    (c) => c.dataKey === colName
+                );
+                // we want to filter on formatted values
+                let value = formatCell(rowData, columnDef);
+                return value !== undefined && rowFilter.test(value);
+            }
+
+            return (
+                [...selectedDataKey].find((colName) => filterMatch(colName)) !==
+                undefined
+            );
+        },
+        [rowFilter, selectedDataKey, formatCell]
+    );
+
     const areRowsEmpty = (index) => {
         const tableDef = TABLES_DEFINITION_INDEXES.get(index);
         const datasourceRows = tableDef.getter
@@ -317,7 +327,7 @@ const NetworkTable = (props) => {
         if (!datasourceRows) return true;
         for (let i = 0; i < datasourceRows.length; i++) {
             const row = datasourceRows[i];
-            if (!rowFilter || filter(row)) {
+            if (!rowFilter || filter(row, index)) {
                 return false;
             }
         }
@@ -339,7 +349,7 @@ const NetworkTable = (props) => {
             let result = [];
             for (let i = 0; i < datasourceRows.length; i++) {
                 const row = datasourceRows[i];
-                if (!rowFilter || filter(row)) {
+                if (!rowFilter || filter(row, index)) {
                     result.push(row);
                 }
             }
