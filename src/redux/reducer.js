@@ -51,7 +51,6 @@ import {
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
-    FIRST_BUILT_NODE,
 } from './actions';
 import {
     getLocalStorageTheme,
