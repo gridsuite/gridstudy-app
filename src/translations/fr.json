@@ -123,7 +123,7 @@
     "RatioTap3": "Plot régleur 3",
     "PhaseTap3": "Plot déphaseur 3",
     "VoltageRegulatorOn": "Réglage tension",
-    "RegulatingTerminal": "Noeud réglé",
+    "RegulatingTerminal": "Nœud réglé",
 
     "displayOverloadTable": "Afficher la table des surcharges en cas de dépassement de seuil\u00a0:",
 
@@ -161,8 +161,8 @@
     "resetToDefault": "Valeur par défaut",
     "showAdvancedParameters": "Paramètres avancés",
     "save": "enregister",
-    "descLfReadSlackBus": "Utiliser le noeud bilan défini dans le réseau\u00a0:",
-    "descLfWriteSlackBus": "Ecrire le noeud bilan calculé automatiquement dans le réseau\u00a0:",
+    "descLfReadSlackBus": "Utiliser le nœud bilan défini dans le réseau\u00a0:",
+    "descLfWriteSlackBus": "Ecrire le nœud bilan calculé automatiquement dans le réseau\u00a0:",
     "descLfDC": "Lancer le calcul en actif seul\u00a0:",
     "descLfConnectedComponentMode": "Choix de la composante connexe de calcul\u00a0:",
     "descLfConnectedComponentModeMain": "Composante connexe principale",
@@ -265,7 +265,7 @@
     "NetworkModificationTree": "Arbre de modification de réseau",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
-    "CenterSelectedNode": "Centrer sur le noeud sélectionné",
+    "CenterSelectedNode": "Centrer sur le nœud sélectionné",
     "DisplayMinimap": "Afficher la mini-carte",
     "HideMinimap": "Masquer la mini-carte",
     "DisplayTheWholeTree": "Visualiser l'arbre en entier",
@@ -308,7 +308,7 @@
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
-    "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du noeud\u00a0:",
+    "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
     "SUBSTATION": "Site",
@@ -398,7 +398,7 @@
     "LineToAttachTo": "Liaison piquée",
     "LengthPercentage": "% long.",
     "OutOfBoundsPercentage": "Pourcentage en dehors des limites",
-    "BusbarOrNodeID": "ID SJB ou noeud",
+    "BusbarOrNodeID": "ID SJB ou nœud",
     "Line1": "Liaison origine",
     "Line2": "Liaison extrémité",
     "VoltageLevelToSplitAt": "Poste en coupure",
@@ -439,12 +439,12 @@
     "Update": "Mettre à jour",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
-    "InvalidNode": "Noeud invalide !!",
+    "InvalidNode": "Nœud non réalisé",
 
     "depth": "Profondeur",
 
     "root": "Racine",
-    "LogOnlySingleNode": "Log noeud seul",
+    "LogOnlySingleNode": "Log nœud seul",
 
     "RegulatingMode": "Mode de réglage déphaseur",
     "RegulatingPhase": "Déphaseur en réglage",
