@@ -68,9 +68,12 @@ const useStyles = makeStyles((theme) => ({
     title: {
         padding: theme.spacing(2),
     },
+
     grid: {
-        padding: theme.spacing(2),
+        paddingTop: '16px',
+        padding: theme.spacing(0),
     },
+
     minWidthMedium: {
         minWidth: theme.spacing(20),
     },
@@ -79,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         marginBottom: '30px',
+        marginLeft: '10px',
     },
     advancedParameterButton: {
         marginTop: theme.spacing(3),
@@ -311,7 +315,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
-
         return (
             <Typography
                 component="div"
@@ -321,7 +324,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 aria-labelledby={`simple-tab-${index}`}
                 {...other}
             >
-                {value === index && <Box p={3}>{children}</Box>}
+                {value === index && <Box p={1}>{children}</Box>}
             </Typography>
         );
     }
@@ -447,11 +450,9 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function MakeButton(callback, label) {
         return (
-            <Grid item paddingTop={1}>
-                <Button onClick={callback} className={classes.button}>
-                    <FormattedMessage id={label} />
-                </Button>
-            </Grid>
+            <Button onClick={callback} className={classes.button}>
+                <FormattedMessage id={label} />
+            </Button>
         );
     }
 
@@ -615,7 +616,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     </Grid>
                     <MakeLineSeparator />
                 </Grid>
-                {MakeButton(resetNetworkParameters, 'resetToDefault')}
             </Grid>
         );
     }
@@ -826,7 +826,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     <BasicLoadFlowParameters />
                     <AdvancedLoadFlowParameters />
                 </Grid>
-                {MakeButton(resetLfParameters, 'resetToDefault')}
             </Grid>
         );
     };
@@ -990,11 +989,17 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     <TabPanel value={tabIndex} index={3}>
                         <NetworkParameters />
                     </TabPanel>
-                    <Grid container justifyContent={'flex-end'}>
+                    <Grid container className={classes.controlItem}>
+                        {tabIndex === 2 ? (
+                            MakeButton(resetLfParameters, 'resetToDefault')
+                        ) : tabIndex === 3 ? (
+                            MakeButton(resetNetworkParameters, 'resetToDefault')
+                        ) : (
+                            <></>
+                        )}
                         <Button
                             onClick={hideParameters}
                             className={classes.button}
-                            justifyContent="flex-end"
                         >
                             <FormattedMessage id="close" />
                         </Button>
