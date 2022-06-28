@@ -1737,7 +1737,7 @@ export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
 }
 
 export function fetchNetworkModifications(groupUuid) {
-    console.info('Fetching network modification tree node');
+    console.info('Fetching network modifications for groupUuid : ', groupUuid);
     const url =
         PREFIX_NETWORK_MODIFICATION_QUERIES +
         '/v1/groups/' +
