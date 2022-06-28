@@ -211,6 +211,7 @@ const LineCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId1 || null,
+        currentNodeUuid: currentNodeUuid,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -223,6 +224,7 @@ const LineCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId2 || null,
+        currentNodeUuid: currentNodeUuid,
     });
 
     const [permanentCurrentLimit1, permanentCurrentLimit1Field] =

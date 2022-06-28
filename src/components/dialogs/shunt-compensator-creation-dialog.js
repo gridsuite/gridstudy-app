@@ -170,6 +170,7 @@ const ShuntCompensatorCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
+        currentNodeUuid: currentNodeUuid,
     });
 
     const handleSave = () => {

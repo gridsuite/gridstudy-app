@@ -194,6 +194,7 @@ const TwoWindingsTransformerCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId1 || null,
+        currentNodeUuid: currentNodeUuid,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
