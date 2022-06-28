@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import RootNode from './graph/nodes/root-node';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import makeStyles from '@mui/styles/makeStyles';
-import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
+import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';

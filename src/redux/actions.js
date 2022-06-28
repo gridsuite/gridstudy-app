@@ -281,19 +281,23 @@ export function selectComponentLibrary(componentLibrary) {
     };
 }
 
-export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
+export const FULLSCREEN_SINGLE_LINE_DIAGRAM_ID =
+    'FULLSCREEN_SINGLE_LINE_DIAGRAM_ID';
 
-export function fullScreenSingleLineDiagram(fullScreen) {
-    return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
+export function fullScreenSingleLineDiagramId(fullScreenSldId) {
+    return {
+        type: FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
+        fullScreenSldId: fullScreenSldId,
+    };
 }
 
-export const FULLSCREEN_NETWORK_AREA_DIAGRAM =
-    'FULLSCREEN_NETWORK_AREA_DIAGRAM';
+export const FULLSCREEN_NETWORK_AREA_DIAGRAM_ID =
+    'FULLSCREEN_NETWORK_AREA_DIAGRAM_ID';
 
-export function fullScreenNetworkAreaDiagram(fullScreenNad) {
+export function fullScreenNetworkAreaDiagramId(fullScreenNadId) {
     return {
-        type: FULLSCREEN_NETWORK_AREA_DIAGRAM,
-        fullScreenNad: fullScreenNad,
+        type: FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
+        fullScreenNadId: fullScreenNadId,
     };
 }
 
