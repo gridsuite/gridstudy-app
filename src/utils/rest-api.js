@@ -844,13 +844,13 @@ export function updateTreeNode(studyUuid, node) {
     );
 }
 
-export function deleteModifications(studyUuid, node, modificationUuid) {
+export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
-        encodeURIComponent(node.id) +
+        encodeURIComponent(nodeUuid) +
         '/network-modification?' +
         new URLSearchParams({ modificationsUuids: modificationUuid });
 
@@ -1737,7 +1737,7 @@ export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
 }
 
 export function fetchNetworkModifications(groupUuid) {
-    console.info('Fetching network modification tree node');
+    console.info('Fetching network modifications for groupUuid : ', groupUuid);
     const url =
         PREFIX_NETWORK_MODIFICATION_QUERIES +
         '/v1/groups/' +
