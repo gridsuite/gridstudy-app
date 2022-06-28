@@ -29,7 +29,6 @@ import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
-
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 const nodeTypes = {
     ROOT: RootNode,
@@ -208,31 +207,6 @@ const NetworkModificationTree = ({
                     showInteractive={false}
                     showFitView={false}
                 >
-                    <ControlButton onClick={fitView}>
-                        <Tooltip
-                            placement="left"
-                            title={intl.formatMessage({
-                                id: 'DisplayTHeWholeTree',
-                            })}
-                        >
-                            <CropFreeIcon />
-                        </Tooltip>
-                    </ControlButton>
-                    <CenterGraphButton selectedNode={selectedNode} />
-                    <ControlButton onClick={() => toggleMinimap()}>
-                        <Tooltip
-                            placement="left"
-                            title={
-                                isMinimapOpen
-                                    ? intl.formatMessage({ id: 'HideMinimap' })
-                                    : intl.formatMessage({
-                                          id: 'DisplayMinimap',
-                                      })
-                            }
-                        >
-                            <MapIcon />
-                        </Tooltip>
-                    </ControlButton>
                     <Tooltip
                         placement="left"
                         title={intl.formatMessage({
