@@ -184,7 +184,7 @@ const SizedNetworkAreaDiagram = (props) => {
         depth,
         setDepth,
         loadFlowStatus,
-        nodeDisabled,
+        disabled,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -237,7 +237,7 @@ const SizedNetworkAreaDiagram = (props) => {
     ]);
 
     useEffect(() => {
-        if (!nodeDisabled && svgUrl) {
+        if (!disabled && svgUrl) {
             updateLoadingState(true);
             setSvg(noSvg);
             svgRef.current.innerHTML = ''; // clear the previous svg before replacing
@@ -259,7 +259,7 @@ const SizedNetworkAreaDiagram = (props) => {
         } else {
             setSvg(noSvg);
         }
-    }, [svgUrl, forceState, snackError, nodeDisabled]);
+    }, [svgUrl, forceState, snackError, disabled]);
 
     const updateNad = useCallback(() => {
         if (svgRef.current) {
@@ -408,7 +408,7 @@ const SizedNetworkAreaDiagram = (props) => {
                     <LinearProgress />
                 </Box>
             )}
-            {nodeDisabled ? (
+            {disabled ? (
                 <Box position="relative" left={0} right={0} top={0}>
                     <AlertInvalidNode noMargin={true} />
                 </Box>
@@ -494,7 +494,7 @@ NetworkAreaDiagram.propTypes = {
     setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,
     studyUuid: PropTypes.string.isRequired,
-    nodeDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
 };
 
 export default NetworkAreaDiagram;

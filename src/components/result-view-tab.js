@@ -37,7 +37,7 @@ export const ResultViewTab = ({
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
-    nodeDisabled,
+    disabled,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -77,19 +77,19 @@ export const ResultViewTab = ({
                         label={intl.formatMessage({
                             id: 'loadFlowResults',
                         })}
-                        disabled={nodeDisabled}
+                        disabled={disabled}
                     />
                     <Tab
                         label={intl.formatMessage({
                             id: 'securityAnalysisResults',
                         })}
-                        disabled={nodeDisabled}
+                        disabled={disabled}
                     />
                 </Tabs>
-                {nodeDisabled && <AlertInvalidNode />}
+                {disabled && <AlertInvalidNode />}
             </div>
-            {tabIndex === 0 && !nodeDisabled && renderLoadFlowResult()}
-            {tabIndex === 1 && !nodeDisabled && renderSecurityAnalysisResult()}
+            {tabIndex === 0 && !disabled && renderLoadFlowResult()}
+            {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
         </Paper>
     );
 };
@@ -100,5 +100,5 @@ ResultViewTab.propTypes = {
     openVoltageLevelDiagram: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
-    nodeDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
 };

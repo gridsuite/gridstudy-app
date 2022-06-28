@@ -148,7 +148,7 @@ const StudyPane = ({
         (state) => state.voltageLevelsIdsForNad
     );
 
-    const nodeDisabled = !isNodeBuilt(currentNode);
+    const disabled = !isNodeBuilt(currentNode);
 
     useEffect(() => {
         if (
@@ -320,7 +320,7 @@ const StudyPane = ({
                                         loadFlowInfos?.loadFlowStatus
                                     )}
                                     currentNode={currentNode}
-                                    nodeDisabled={nodeDisabled}
+                                    disabled={disabled}
                                 />
                             )}
                             {props.view === StudyView.MAP &&
@@ -335,7 +335,7 @@ const StudyPane = ({
                                         onClose={() =>
                                             dispatch(openNetworkAreaDiagram([]))
                                         }
-                                        nodeDisabled={nodeDisabled}
+                                        disabled={disabled}
                                         align="left"
                                     />
                                 )}
@@ -359,7 +359,7 @@ const StudyPane = ({
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
-                    nodeDisabled={nodeDisabled}
+                    disabled={disabled}
                 />
             </Paper>
         );
@@ -397,7 +397,7 @@ const StudyPane = ({
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
-                    nodeDisabled={nodeDisabled}
+                    disabled={disabled}
                 />
             </div>
             <div
@@ -410,7 +410,7 @@ const StudyPane = ({
                     studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
                     currentNode={currentNode}
-                    nodeDisabled={nodeDisabled}
+                    disabled={disabled}
                 />
             </div>
         </>

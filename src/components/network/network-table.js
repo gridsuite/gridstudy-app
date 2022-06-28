@@ -309,7 +309,7 @@ const NetworkTable = (props) => {
 
     const getRows = useCallback(
         (index) => {
-            if (props.nodeDisabled) {
+            if (props.disabled) {
                 return [];
             }
             const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
@@ -356,7 +356,7 @@ const NetworkTable = (props) => {
             columnSort,
             filter,
             formatCell,
-            props.nodeDisabled,
+            props.disabled,
         ]
     );
 
@@ -802,7 +802,7 @@ const NetworkTable = (props) => {
 
         function isEditColumnVisible() {
             return (
-                !props.nodeDisabled &&
+                !props.disabled &&
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .modifiableEquipmentType &&
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
@@ -1076,7 +1076,7 @@ const NetworkTable = (props) => {
                                         id: table.name,
                                     })}
                                     disabled={
-                                        isModifyingRow() || props.nodeDisabled
+                                        isModifyingRow() || props.disabled
                                     }
                                 />
                             ))}
@@ -1085,9 +1085,7 @@ const NetworkTable = (props) => {
                     <Grid container>
                         <Grid item className={classes.containerInputSearch}>
                             <TextField
-                                disabled={
-                                    isModifyingRow() || props.nodeDisabled
-                                }
+                                disabled={isModifyingRow() || props.disabled}
                                 className={classes.textField}
                                 size="small"
                                 placeholder={
@@ -1104,7 +1102,7 @@ const NetworkTable = (props) => {
                                             <SearchIcon
                                                 color={
                                                     isModifyingRow() ||
-                                                    props.nodeDisabled
+                                                    props.disabled
                                                         ? 'disabled'
                                                         : 'inherit'
                                                 }
@@ -1118,15 +1116,13 @@ const NetworkTable = (props) => {
                             <span
                                 className={clsx({
                                     [classes.disabledLabel]:
-                                        isModifyingRow() || props.nodeDisabled,
+                                        isModifyingRow() || props.disabled,
                                 })}
                             >
                                 <FormattedMessage id="LabelSelectList" />
                             </span>
                             <IconButton
-                                disabled={
-                                    isModifyingRow() || props.nodeDisabled
-                                }
+                                disabled={isModifyingRow() || props.disabled}
                                 className={
                                     selectedColumnsNames.size === 0
                                         ? classes.blink
@@ -1147,12 +1143,12 @@ const NetworkTable = (props) => {
                                 child={checkListColumnsNames()}
                             />
                         </Grid>
-                        {props.nodeDisabled && <AlertInvalidNode />}
+                        {props.disabled && <AlertInvalidNode />}
                         <Grid item className={classes.exportCsv}>
                             <span
                                 className={clsx({
                                     [classes.disabledLabel]:
-                                        isModifyingRow() || props.nodeDisabled,
+                                        isModifyingRow() || props.disabled,
                                 })}
                             >
                                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
@@ -1163,13 +1159,12 @@ const NetworkTable = (props) => {
                                     columns={getCSVColumnNames()}
                                     filename={getCSVFilename()}
                                     disabled={
-                                        isModifyingRow() || props.nodeDisabled
+                                        isModifyingRow() || props.disabled
                                     }
                                 >
                                     <IconButton
                                         disabled={
-                                            isModifyingRow() ||
-                                            props.nodeDisabled
+                                            isModifyingRow() || props.disabled
                                         }
                                         aria-label="exportCSVButton"
                                     >
@@ -1197,7 +1192,7 @@ NetworkTable.defaultProps = {
     equipmentType: null,
     equipmentChanged: false,
     loadFlowStatus: RunningStatus.IDLE,
-    nodeDisabled: false,
+    disabled: false,
 };
 
 NetworkTable.propTypes = {
@@ -1208,7 +1203,7 @@ NetworkTable.propTypes = {
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
-    nodeDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
 };
 
 export default NetworkTable;

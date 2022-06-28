@@ -30,7 +30,7 @@ export function RunButtonContainer({
     securityAnalysisStatus,
     setIsComputationRunning,
     runnable,
-    nodeDisabled,
+    disabled,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -145,9 +145,9 @@ export function RunButtonContainer({
                 getText={getRunningText}
                 getStartIcon={getRunningIcon}
                 computationStopped={computationStopped}
-                disabled={nodeDisabled}
+                disabled={disabled}
             />
-            {!nodeDisabled && (
+            {!disabled && (
                 <ContingencyListSelector
                     open={showContingencyListSelector}
                     onClose={() => setShowContingencyListSelector(false)}
@@ -171,5 +171,5 @@ RunButtonContainer.propTypes = {
     text: PropTypes.func,
     startIcon: PropTypes.func,
     computationStopped: PropTypes.bool,
-    nodeDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
 };

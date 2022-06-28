@@ -262,7 +262,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         sldId,
         pinned,
         toggleState,
-        nodeDisabled,
+        disabled,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -364,7 +364,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     ]);
 
     useEffect(() => {
-        if (props.svgUrl && !nodeDisabled) {
+        if (props.svgUrl && !disabled) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -390,7 +390,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef, nodeDisabled]);
+    }, [props.svgUrl, forceState, snackError, intlRef, disabled]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -476,7 +476,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, []);
 
     useLayoutEffect(() => {
-        if (nodeDisabled) return;
+        if (disabled) return;
         function createSvgArrow(element, position, x, highestY, lowestY) {
             let svgInsert = document.getElementById(element.id).parentElement;
             let group = document.createElementNS(SVG_NS, 'g');
@@ -806,7 +806,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         ref,
         svgFinalHeight,
         svgFinalWidth,
-        nodeDisabled,
+        disabled,
     ]);
 
     useLayoutEffect(() => {
@@ -976,7 +976,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     <LinearProgress />
                 </Box>
             )}
-            {nodeDisabled ? (
+            {disabled ? (
                 <Box position="relative" left={0} right={0} top={0}>
                     <AlertInvalidNode noMargin={true} />
                 </Box>
@@ -1079,7 +1079,7 @@ SingleLineDiagram.propTypes = {
     pinned: PropTypes.bool,
     pin: PropTypes.func,
     minimize: PropTypes.func,
-    nodeDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
 };
 
 export default SingleLineDiagram;

@@ -79,7 +79,7 @@ export const NetworkMapTab = ({
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
-    const nodeDisabled = !isNodeBuilt(currentNode);
+    const disabled = !isNodeBuilt(currentNode);
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -170,7 +170,7 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
-        if (nodeDisabled) return;
+        if (disabled) return;
         const substationPositions = fetchSubstationPositions(
             studyUuid,
             currentNode?.id
@@ -200,7 +200,7 @@ export const NetworkMapTab = ({
             });
         // Note: studyUuid and dispatch don't change
     }, [
-        nodeDisabled,
+        disabled,
         studyUuid,
         currentNode,
         lineFullPath,
@@ -219,7 +219,7 @@ export const NetworkMapTab = ({
 
     const renderEquipmentMenu = () => {
         if (
-            nodeDisabled ||
+            disabled ||
             equipmentMenu.equipment === null ||
             !equipmentMenu.display
         )
@@ -294,7 +294,7 @@ export const NetworkMapTab = ({
                 showEquipmentMenu(equipment, x, y, equipments.substations)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
-            nodeDisabled={nodeDisabled}
+            disabled={disabled}
         />
     );
 
@@ -330,7 +330,7 @@ export const NetworkMapTab = ({
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
-                    nodeDisabled={nodeDisabled}
+                    disabled={disabled}
                 />
             </div>
         </>

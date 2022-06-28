@@ -205,7 +205,7 @@ export function SingleLineDiagramPane({
     showInSpreadsheet,
     loadFlowStatus,
     currentNode,
-    nodeDisabled,
+    disabled,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -274,14 +274,14 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        if (!nodeDisabled) {
+        if (!disabled) {
             setViews((oldVal) => oldVal.map(createView));
         }
-    }, [nodeDisabled, createView]);
+    }, [disabled, createView]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
-        if (nodeDisabled) return;
+        if (disabled) return;
         // parse query parameter
         const queryParams = parse(location.search, {
             parseArrays: true,
@@ -294,7 +294,7 @@ export function SingleLineDiagramPane({
         );
 
         setUpdateSwitchMsg('');
-    }, [createView, location, nodeDisabled]);
+    }, [createView, location, disabled]);
 
     const toggleState = useCallback(
         (id, type, state) => {
@@ -431,7 +431,7 @@ export function SingleLineDiagramPane({
                         numberToDisplay={displayedSLD.length}
                         toggleState={toggleState}
                         pinned={viewState.get(sld.id) === ViewState.PINNED}
-                        nodeDisabled={nodeDisabled}
+                        disabled={disabled}
                     />
                 </div>
             ))}
@@ -463,5 +463,5 @@ SingleLineDiagramPane.propTypes = {
     loadFlowStatus: PropTypes.any,
     onClose: PropTypes.func,
     onNextVoltageLevelClick: PropTypes.func,
-    nodeDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
 };

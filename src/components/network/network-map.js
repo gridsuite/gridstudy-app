@@ -287,7 +287,7 @@ const NetworkMap = (props) => {
         props.network !== null &&
         props.geoData !== null &&
         props.filteredNominalVoltages !== null &&
-        !props.nodeDisabled
+        !props.disabled
     ) {
         layers.push(
             new SubstationLayer({
@@ -416,7 +416,7 @@ NetworkMap.defaultProps = {
     lineFlowAlertThreshold: 100,
     loadFlowStatus: RunningStatus.IDLE,
     visible: true,
-    nodeDisabled: false,
+    disabled: false,
 };
 
 NetworkMap.propTypes = {
@@ -444,7 +444,7 @@ NetworkMap.propTypes = {
     loadFlowStatus: PropTypes.oneOf(Object.values(RunningStatus)),
     visible: PropTypes.bool,
     updatedLines: PropTypes.array,
-    nodeDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
 };
 
 export default React.memo(NetworkMap);

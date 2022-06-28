@@ -18,7 +18,7 @@ export function NetworkAreaDiagramPane({
     loadFlowStatus,
     onClose,
     align,
-    nodeDisabled,
+    disabled,
 }) {
     const [depth, setDepth] = useState(0);
 
@@ -82,7 +82,7 @@ export function NetworkAreaDiagramPane({
                         setDepth={setDepth}
                         studyUuid={studyUuid}
                         loadFlowStatus={loadFlowStatus}
-                        nodeDisabled={nodeDisabled}
+                        disabled={disabled}
                     />
                 </div>
             )}
@@ -97,5 +97,5 @@ NetworkAreaDiagramPane.propTypes = {
     currentNode: PropTypes.object,
     onClose: PropTypes.func,
     align: PropTypes.string,
-    nodeDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
 };

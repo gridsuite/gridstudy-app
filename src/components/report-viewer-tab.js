@@ -35,7 +35,7 @@ const NETWORK_MODIFICATION = 'NetworkModification';
  * @param studyId : string study id
  * @param visible : boolean window visible
  * @param currentNode : object visualized node
- * @param nodeDisabled : boolean node disabled
+ * @param disabled : boolean disabled
  * @returns {*} node
  * @constructor
  */
@@ -43,7 +43,7 @@ export const ReportViewerTab = ({
     studyId,
     visible,
     currentNode,
-    nodeDisabled,
+    disabled,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -79,7 +79,7 @@ export const ReportViewerTab = ({
     }
 
     useEffect(() => {
-        if (visible && !nodeDisabled) {
+        if (visible && !disabled) {
             setWaitingLoadReport(true);
             fetchReport(studyId, currentNode.id, nodeOnlyReport)
                 .then((fetchedReport) => {
@@ -114,7 +114,7 @@ export const ReportViewerTab = ({
         currentNode,
         nodeOnlyReport,
         enqueueSnackbar,
-        nodeDisabled,
+        disabled,
     ]);
 
     return (
@@ -130,18 +130,16 @@ export const ReportViewerTab = ({
                                     'aria-label': 'primary checkbox',
                                 }}
                                 onChange={(e) => handleChangeValue(e)}
-                                disabled={nodeDisabled}
+                                disabled={disabled}
                             />
                         }
                         label={intl.formatMessage({
                             id: 'LogOnlySingleNode',
                         })}
                     />
-                    {nodeDisabled && <AlertInvalidNode />}
+                    {disabled && <AlertInvalidNode />}
                 </div>
-                {!!report && !nodeDisabled && (
-                    <ReportViewer jsonReport={report} />
-                )}
+                {!!report && !disabled && <ReportViewer jsonReport={report} />}
             </Paper>
         </WaitingLoader>
     );
@@ -151,5 +149,5 @@ ReportViewerTab.propTypes = {
     studyId: PropTypes.string,
     visible: PropTypes.bool,
     currentNode: PropTypes.object,
-    nodeDisabled: PropTypes.bool,
+    disabled: PropTypes.bool,
 };
