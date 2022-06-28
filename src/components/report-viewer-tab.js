@@ -19,7 +19,7 @@ import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     div: {
         display: 'flex',
     },
@@ -119,30 +119,30 @@ export const ReportViewerTab = ({
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
-            {report && (
-                <Paper className={clsx('singlestretch-child')}>
-                    <div className={classes.div}>
-                        <FormControlLabel
-                            className={classes.reportOnlyNode}
-                            control={
-                                <Switch
-                                    checked={nodeOnlyReport}
-                                    inputProps={{
-                                        'aria-label': 'primary checkbox',
-                                    }}
-                                    onChange={(e) => handleChangeValue(e)}
-                                    disabled={nodeDisabled}
-                                />
-                            }
-                            label={intl.formatMessage({
-                                id: 'LogOnlySingleNode',
-                            })}
-                        />
-                        {nodeDisabled && <AlertInvalidNode />}
-                    </div>
-                    {!nodeDisabled && <ReportViewer jsonReport={report} />}
-                </Paper>
-            )}
+            <Paper className={clsx('singlestretch-child')}>
+                <div className={classes.div}>
+                    <FormControlLabel
+                        className={classes.reportOnlyNode}
+                        control={
+                            <Switch
+                                checked={nodeOnlyReport}
+                                inputProps={{
+                                    'aria-label': 'primary checkbox',
+                                }}
+                                onChange={(e) => handleChangeValue(e)}
+                                disabled={nodeDisabled}
+                            />
+                        }
+                        label={intl.formatMessage({
+                            id: 'LogOnlySingleNode',
+                        })}
+                    />
+                    {nodeDisabled && <AlertInvalidNode />}
+                </div>
+                {!!report && !nodeDisabled && (
+                    <ReportViewer jsonReport={report} />
+                )}
+            </Paper>
         </WaitingLoader>
     );
 };
