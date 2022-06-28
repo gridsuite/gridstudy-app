@@ -844,13 +844,13 @@ export function updateTreeNode(studyUuid, node) {
     );
 }
 
-export function deleteModifications(studyUuid, node, modificationUuid) {
+export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
-        encodeURIComponent(node.id) +
+        encodeURIComponent(nodeUuid) +
         '/network-modification?' +
         new URLSearchParams({ modificationsUuids: modificationUuid });
 
