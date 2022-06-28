@@ -25,7 +25,7 @@ import {
 import { gridItem, GridSection } from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
@@ -403,20 +403,18 @@ const LineSplitWithVoltageLevelDialog = ({
                     </Grid>
                     <GridSection title="VoltageLevelToSplitAt" />
                     <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField, 5)}
+                        {gridItem(voltageLevelIdField)}
+                        {gridItem(bbsOrNodeIdField)}
                         {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
                                 startIcon={<AddIcon />}
-                                variant="outlined"
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="NewVoltageLevel" />
                                 </Typography>
-                            </Button>,
-                            2
+                            </Button>
                         )}
-                        {gridItem(bbsOrNodeIdField, 5)}
                     </Grid>
                     <GridSection title="Line1" />
                     <Grid container spacing={2}>
