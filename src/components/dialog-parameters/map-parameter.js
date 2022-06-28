@@ -15,9 +15,9 @@ import {
     PARAM_LINE_PARALLEL_PATH,
 } from '../../utils/config-params';
 import { LabelledSwitch, useParameterState } from './parameters';
-import { LineSeparator } from './make-line-separator';
+import { LineSeparator } from './line-separator';
 import { useStyles } from './parameters';
-import { LabelledSilder } from './make-slider';
+import { LabelledSilder } from './slider';
 
 export const MapParameters = () => {
     const classes = useStyles();

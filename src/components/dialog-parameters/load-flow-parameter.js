@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import { LineSeparator } from './make-line-separator';
+import { LineSeparator } from './line-separator';
 import { useStyles } from './parameters';
 import {
     getDefaultLoadFlowProvider,

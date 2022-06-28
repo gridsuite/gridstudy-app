@@ -7,7 +7,7 @@ import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 import { fetchDefaultParametersValues } from '../../utils/rest-api';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { LabelledButton, useParameterState, useStyles } from './parameters';
-import { LineSeparator } from './make-line-separator';
+import { LineSeparator } from './line-separator';
 export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',

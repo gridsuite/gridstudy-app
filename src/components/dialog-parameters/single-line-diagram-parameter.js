@@ -19,7 +19,7 @@ import {
     PARAM_COMPONENT_LIBRARY,
 } from '../../utils/config-params';
 import { LabelledSwitch, useParameterState } from './parameters';
-import { LineSeparator } from './make-line-separator';
+import { LineSeparator } from './line-separator';
 import { useStyles } from './parameters';
 
 export const SingleLineDiagramParameters = ({ user }) => {
