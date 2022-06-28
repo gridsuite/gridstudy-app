@@ -77,6 +77,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
+        overflow: 'hidden',
     },
     toolbar: {
         padding: theme.spacing(0),
@@ -112,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(4),
         textAlign: 'center',
         color: theme.palette.primary.main,
+    },
+    icon: {
+        width: theme.spacing(3),
     },
 }));
 
@@ -515,38 +519,51 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
 
     const renderNetworkModificationsListTitleLoading = () => {
         return (
-            <Typography className={classes.modificationsTitle}>
-                <CircularProgress
-                    size={'1em'}
-                    className={classes.circularProgress}
-                />
-                <FormattedMessage id={messageId} />
-            </Typography>
+            <div className={classes.modificationsTitle}>
+                <div className={classes.icon}>
+                    <CircularProgress
+                        size={'1em'}
+                        className={classes.circularProgress}
+                    />
+                </div>
+                <Typography noWrap>
+                    <FormattedMessage id={messageId} />
+                </Typography>
+            </div>
         );
     };
 
     const renderNetworkModificationsListTitleUpdating = () => {
         return (
-            <Typography className={classes.modificationsTitle}>
-                <CircularProgress
-                    size={'1em'}
-                    className={classes.circularProgress}
-                />
-                <FormattedMessage id={'network_modifications/modifications'} />
-            </Typography>
+            <div className={classes.modificationsTitle}>
+                <div className={classes.icon}>
+                    <CircularProgress
+                        size={'1em'}
+                        className={classes.circularProgress}
+                    />
+                </div>
+                <Typography noWrap>
+                    <FormattedMessage
+                        id={'network_modifications/modifications'}
+                    />
+                </Typography>
+            </div>
         );
     };
 
     const renderNetworkModificationsListTitle = () => {
         return (
-            <Typography className={classes.modificationsTitle}>
-                <FormattedMessage
-                    id={'network_modification/modificationsCount'}
-                    values={{
-                        count: modifications ? modifications?.length : '',
-                    }}
-                />
-            </Typography>
+            <div className={classes.modificationsTitle}>
+                <div className={classes.icon}></div>
+                <Typography noWrap>
+                    <FormattedMessage
+                        id={'network_modification/modificationsCount'}
+                        values={{
+                            count: modifications ? modifications?.length : '',
+                        }}
+                    />
+                </Typography>
+            </div>
         );
     };
 
