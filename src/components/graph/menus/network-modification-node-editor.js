@@ -114,6 +114,9 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         color: theme.palette.primary.main,
     },
+    icon: {
+        width: theme.spacing(3),
+    },
 }));
 
 function isChecked(s1) {
@@ -517,7 +520,7 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
     const renderNetworkModificationsListTitleLoading = () => {
         return (
             <div className={classes.modificationsTitle}>
-                <div style={{ width: '5%' }}>
+                <div className={classes.icon}>
                     <CircularProgress
                         size={'1em'}
                         className={classes.circularProgress}
@@ -533,7 +536,7 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
     const renderNetworkModificationsListTitleUpdating = () => {
         return (
             <div className={classes.modificationsTitle}>
-                <div style={{ width: '5%' }}>
+                <div className={classes.icon}>
                     <CircularProgress
                         size={'1em'}
                         className={classes.circularProgress}
@@ -551,7 +554,7 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
     const renderNetworkModificationsListTitle = () => {
         return (
             <div className={classes.modificationsTitle}>
-                <div style={{ width: '5%' }}></div>
+                <div className={classes.icon}></div>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'network_modification/modificationsCount'}
