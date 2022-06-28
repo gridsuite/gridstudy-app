@@ -24,7 +24,7 @@ import {
 import { gridItem, GridSection, removeNullDataValues } from './dialogUtils';
 import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from './line-creation-dialog';
 import {
@@ -33,6 +33,7 @@ import {
 } from './line-split-or-attach-utils';
 import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
+import { Box } from '@mui/system';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -481,39 +482,36 @@ const LineAttachToVoltageLevelDialog = ({
                     </Grid>
                     <GridSection title="VoltageLevel" />
                     <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField, 5)}
+                        {gridItem(voltageLevelIdField)}
+                        {gridItem(bbsOrNodeIdField)}
                         {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
                                 startIcon={
                                     newVoltageLevel ? <EditIcon /> : <AddIcon />
                                 }
-                                variant="outlined"
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="NewVoltageLevel" />
                                 </Typography>
-                            </Button>,
-                            2
+                            </Button>
                         )}
-                        {gridItem(bbsOrNodeIdField, 5)}
                     </Grid>
                     <GridSection title="AttachedLine" />
                     <Grid container spacing={2}>
-                        {gridItem(lineToIdField, 4)}
+                        {gridItem(lineToIdField)}
+                        <Box width="100%" />
                         {gridItem(
                             <Button
                                 onClick={openLineDialog}
                                 startIcon={
                                     attachmentLine ? <EditIcon /> : <AddIcon />
                                 }
-                                variant="outlined"
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="AttachedLine" />
                                 </Typography>
-                            </Button>,
-                            4
+                            </Button>
                         )}
                     </Grid>
                     <GridSection title="Line1" />
