@@ -31,7 +31,7 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import { useStoreState } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
-import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
+import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
 
 const useStyles = makeStyles((theme) => ({

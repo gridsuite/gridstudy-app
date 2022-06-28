@@ -30,7 +30,6 @@ import {
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
-import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
@@ -302,8 +301,6 @@ const StudyPane = ({
                                     setErrorMessage={setErrorMessage}
                                 />
                             </div>
-
-                            <MapLateralDrawers />
 
                             {/*
                 Rendering single line diagram only in map view and if
