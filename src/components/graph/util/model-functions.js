@@ -5,25 +5,63 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+export function convertNodetoReactFlowModelNode(node, parentNodeUuid) {
+    if (!node) return undefined;
+    // This is the ReactFlow format (Cf documentation)
+    // {
+    //  id: '1',
+    //  type: 'input',
+    //  data: { label: 'Node 1' }, <- use data for customization
+    //  position: { x: 250, y: 5 }
+    // }
+    return {
+        id: node.id,
+        type: node.type,
+        data: {
+            parentNodeUuid: parentNodeUuid,
+            variantId: node.variantId,
+            reportUuid: node.reportUuid,
+            modificationGroupUuid: node.networkModification,
+            label: node.name,
+            description: node.description,
+            buildStatus: node.buildStatus,
+            readOnly: node.readOnly,
+        },
+    };
+}
+
+// Return the first node of type nodeType and specific buildStatus
+// in the tree model
 export function getFirstNodeOfType(elements, nodeType, buildStatus) {
+    return recursiveSearchFirstNodeOfType(
+        elements,
+        undefined, // first is Root node without parent node
+        nodeType,
+        buildStatus
+    );
+}
+
+// Recursive search of a node of type and buildStatus specified
+export function recursiveSearchFirstNodeOfType(
+    elements,
+    parentNodeUuid,
+    nodeType,
+    buildStatus
+) {
     if (
         elements.type === nodeType &&
         (buildStatus === undefined || elements.buildStatus === buildStatus)
     ) {
-        return {
-            id: elements.id,
-            type: elements.type,
-            data: {
-                label: elements.name,
-                description: elements.description,
-                buildStatus: elements.buildStatus,
-                readOnly: elements.readOnly,
-            },
-        };
+        return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
     }
 
     for (const child of elements.children) {
-        const found = getFirstNodeOfType(child, nodeType, buildStatus);
+        const found = recursiveSearchFirstNodeOfType(
+            child,
+            elements.id,
+            nodeType,
+            buildStatus
+        );
         if (found) {
             return found;
         }
