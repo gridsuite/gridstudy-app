@@ -577,19 +577,14 @@ export function fetchEquipmentInfos(
 export function fetchBusesForVoltageLevel(
     studyUuid,
     currentNodeUuid,
-    voltageLevelId,
-    inUpstreamBuiltParentNode
+    voltageLevelId
 ) {
     console.info(
         `Fetching buses of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
+    urlSearchParams.append('inUpstreamBuiltParentNode', true);
+
     const fetchBusesUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
@@ -604,19 +599,14 @@ export function fetchBusesForVoltageLevel(
 export function fetchBusbarSectionsForVoltageLevel(
     studyUuid,
     currentNodeUuid,
-    voltageLevelId,
-    inUpstreamBuiltParentNode
+    voltageLevelId
 ) {
     console.info(
         `Fetching busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
+    urlSearchParams.append('inUpstreamBuiltParentNode', true);
+
     const fetchBusbarSectionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +

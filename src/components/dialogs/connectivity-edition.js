@@ -51,8 +51,7 @@ export function makeRefreshBusOrBusbarSectionsCallback(
                 fetchBusbarSectionsForVoltageLevel(
                     studyUuid,
                     currentNodeUuid,
-                    voltageLevel.id,
-                    true
+                    voltageLevel.id
                 ).then((busbarSections) => {
                     putter(busbarSections);
                 });
@@ -62,8 +61,7 @@ export function makeRefreshBusOrBusbarSectionsCallback(
                 fetchBusesForVoltageLevel(
                     studyUuid,
                     currentNodeUuid,
-                    voltageLevel.id,
-                    true
+                    voltageLevel.id
                 ).then((buses) => putter(buses));
                 break;
 

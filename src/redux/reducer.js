@@ -168,7 +168,6 @@ export const reducer = createReducer(initialState, {
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
-            synchCurrentTreeNode(state);
         }
     },
 
