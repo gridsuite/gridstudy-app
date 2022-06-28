@@ -350,7 +350,7 @@ export const LoadFlow = () => {
                 (ev) => setter({ ...lfParams, [key]: ev.target.value })
             );
         } else if (defParam.type === TYPES.countries) {
-            return MakeCountrySelector(
+            return CountrySelector(
                 lfParams[key],
                 defParam.description,
                 (newValues) => {
@@ -360,7 +360,7 @@ export const LoadFlow = () => {
         }
     }
 
-    function MakeCountrySelector(value, label, callback) {
+    const CountrySelector = ({ value, label, callback }) => {
         return (
             <>
                 <Grid item xs={6}>
@@ -407,7 +407,7 @@ export const LoadFlow = () => {
                 </Grid>
             </>
         );
-    }
+    };
 
     function MakeDropDown(prop, label, values, callback) {
         return (
