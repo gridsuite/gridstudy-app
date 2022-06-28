@@ -6,3 +6,4 @@
  */
 
 export const TOOLTIP_DELAY = 1000;
+export const DRAWER_NODE_EDITOR_WIDTH = 400;
