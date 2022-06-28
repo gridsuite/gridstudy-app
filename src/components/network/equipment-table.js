@@ -103,7 +103,6 @@ export const EquipmentTable = (props) => {
                                         ? { overflowY: 'hidden' }
                                         : ''
                                 }
-                                //disableVerticalScroll* Property put in network-table.js to know if we are in edit mode in 2 Widings Transformers
                                 styleBottomRightGrid={
                                     props.disableVerticalScroll
                                         ? { overflowY: 'hidden' }
