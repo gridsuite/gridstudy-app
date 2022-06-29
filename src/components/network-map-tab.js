@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
-import { isNodeValid } from './graph/util/model-functions';
+import { isNodeBuilt } from './graph/util/model-functions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -79,7 +79,7 @@ export const NetworkMapTab = ({
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
-
+    const disabled = !isNodeBuilt(currentNode);
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -170,7 +170,7 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
-        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
+        if (disabled) return;
         const substationPositions = fetchSubstationPositions(
             studyUuid,
             currentNode?.id
@@ -200,6 +200,7 @@ export const NetworkMapTab = ({
             });
         // Note: studyUuid and dispatch don't change
     }, [
+        disabled,
         studyUuid,
         currentNode,
         lineFullPath,
@@ -217,9 +218,11 @@ export const NetworkMapTab = ({
     }
 
     const renderEquipmentMenu = () => {
-        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
-
-        if (equipmentMenu.equipment === null || !equipmentMenu.display)
+        if (
+            disabled ||
+            equipmentMenu.equipment === null ||
+            !equipmentMenu.display
+        )
             return <></>;
         return (
             <>
@@ -291,6 +294,7 @@ export const NetworkMapTab = ({
                 showEquipmentMenu(equipment, x, y, equipments.substations)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
+            disabled={disabled}
         />
     );
 
@@ -326,6 +330,7 @@ export const NetworkMapTab = ({
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
+                    disabled={disabled}
                 />
             </div>
         </>

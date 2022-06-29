@@ -44,7 +44,7 @@ import {
     useSnackMessage,
 } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, isNodeValid } from './graph/util/model-functions';
+import { getFirstNodeOfType, isNodeBuilt } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -219,6 +219,9 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetwork = useCallback(
         (isUpdate) => {
+            if (!isNodeBuilt(currentNode)) {
+                return;
+            }
             console.info(`Loading network of study '${studyUuid}'...`);
 
             if (
@@ -354,9 +357,10 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
+        if (!isNodeBuilt(currentNode)) return;
         loadNetwork(currentNode?.id === currentNodeIdRef.current);
     }, [loadNetwork, currentNode]);
+
     currentNodeIdRef.current = currentNode?.id;
 
     useEffect(() => {
