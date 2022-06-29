@@ -68,9 +68,12 @@ export function recursiveSearchFirstNodeOfType(
     }
 }
 
-export function isNodeValid(currentNode) {
-    const readOnlyNode = currentNode?.data?.readOnly;
-    const builtCurrentNode = currentNode?.data?.buildStatus === 'BUILT';
+export function isNodeReadOnly(node) {
+    if (node?.type === 'ROOT') return true;
+    return node?.data?.readOnly ? true : false; // ternary operator because of potential undefined
+}
 
-    return !readOnlyNode && builtCurrentNode;
+export function isNodeBuilt(node) {
+    if (node?.type === 'ROOT') return true;
+    return node?.data?.buildStatus === 'BUILT';
 }

@@ -43,7 +43,6 @@ import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
 import { NAD_INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
-import { isNodeValid } from '../../graph/util/model-functions';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 
 const loadingWidth = 150;
@@ -185,6 +184,7 @@ const SizedNetworkAreaDiagram = (props) => {
         depth,
         setDepth,
         loadFlowStatus,
+        disabled,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -237,7 +237,7 @@ const SizedNetworkAreaDiagram = (props) => {
     ]);
 
     useEffect(() => {
-        if (svgUrl) {
+        if (!disabled && svgUrl) {
             updateLoadingState(true);
             setSvg(noSvg);
             svgRef.current.innerHTML = ''; // clear the previous svg before replacing
@@ -270,7 +270,7 @@ const SizedNetworkAreaDiagram = (props) => {
         } else {
             setSvg(noSvg);
         }
-    }, [svgUrl, forceState, snackError]);
+    }, [svgUrl, forceState, snackError, disabled]);
 
     const updateNad = useCallback(() => {
         if (svgRef.current) {
@@ -419,61 +419,64 @@ const SizedNetworkAreaDiagram = (props) => {
                     <LinearProgress />
                 </Box>
             )}
-            <Box position="relative">
-                <Box position="absolute" left={0} right={0} top={0}>
-                    {loadingState && (
-                        <Box height={2}>
-                            <LinearProgress />
-                        </Box>
-                    )}
-                    {!isNodeValid(currentNode) &&
-                        currentNode?.type !== 'ROOT' && (
-                            <AlertInvalidNode noMargin={true} />
-                        )}
+            {disabled ? (
+                <Box position="relative" left={0} right={0} top={0}>
+                    <AlertInvalidNode noMargin={true} />
                 </Box>
-                {
-                    <div
-                        id="nad-svg"
-                        ref={svgRef}
-                        className={clsx(classes.divNad, {
-                            [classes.divInvalid]:
-                                loadFlowStatus !== RunningStatus.SUCCEED,
-                        })}
-                    />
-                }
-                {!loadingState && (
-                    <>
-                        <Typography className={classes.depth}>
-                            {intl.formatMessage({
-                                id: 'depth',
-                            }) +
-                                ' : ' +
-                                depth}
-                        </Typography>
-                        <AddCircleIcon
-                            onClick={() => setDepth(depth + 1)}
-                            className={classes.plusIcon}
-                        />
-                        <RemoveCircleIcon
-                            onClick={() =>
-                                setDepth(depth === 0 ? 0 : depth - 1)
-                            }
-                            className={classes.lessIcon}
-                        />
-                        {fullScreenNadId ? (
-                            <FullscreenExitIcon
-                                onClick={hideFullScreen}
-                                className={classes.fullScreenIcon}
-                            />
-                        ) : (
-                            <FullscreenIcon
-                                onClick={showFullScreen}
-                                className={classes.fullScreenIcon}
-                            />
+            ) : (
+                <Box position="relative">
+                    <Box position="relative" left={0} right={0} top={0}>
+                        {loadingState && (
+                            <Box height={2}>
+                                <LinearProgress />
+                            </Box>
                         )}
-                    </>
-                )}
-            </Box>
+                    </Box>
+                    {
+                        <div
+                            id="nad-svg"
+                            ref={svgRef}
+                            className={clsx(classes.divNad, {
+                                [classes.divInvalid]:
+                                    loadFlowStatus !== RunningStatus.SUCCEED,
+                            })}
+                        />
+                    }
+
+                    {!loadingState && (
+                        <div style={{ display: 'flex' }}>
+                            <Typography className={classes.depth}>
+                                {intl.formatMessage({
+                                    id: 'depth',
+                                }) +
+                                    ' : ' +
+                                    depth}
+                            </Typography>
+                            <AddCircleIcon
+                                onClick={() => setDepth(depth + 1)}
+                                className={classes.plusIcon}
+                            />
+                            <RemoveCircleIcon
+                                onClick={() =>
+                                    setDepth(depth === 0 ? 0 : depth - 1)
+                                }
+                                className={classes.lessIcon}
+                            />
+                            {fullScreenNadId ? (
+                                <FullscreenExitIcon
+                                    onClick={hideFullScreen}
+                                    className={classes.fullScreenIcon}
+                                />
+                            ) : (
+                                <FullscreenIcon
+                                    onClick={showFullScreen}
+                                    className={classes.fullScreenIcon}
+                                />
+                            )}
+                        </div>
+                    )}
+                </Box>
+            )}
         </Paper>
     );
 };
@@ -502,6 +505,7 @@ NetworkAreaDiagram.propTypes = {
     setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,
     studyUuid: PropTypes.string.isRequired,
+    disabled: PropTypes.bool,
 };
 
 export default NetworkAreaDiagram;

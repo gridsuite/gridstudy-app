@@ -59,13 +59,12 @@ export const NumericalField = ({
             const newVal = ev.target.value;
             if (newVal >= min && newVal <= max) {
                 setError(false);
-                setter(newVal);
             } else {
                 setError(true);
-                setter(defaultValue);
             }
+            setter(newVal);
         },
-        [setError, min, max, setter, defaultValue]
+        [setError, min, max, setter]
     );
 
     return (
