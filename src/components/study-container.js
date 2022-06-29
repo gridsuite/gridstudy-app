@@ -84,7 +84,7 @@ export function useNodeData(
     useEffect(() => {
         if (!studyUuid || !nodeUuid) return;
         const headers = studyUpdatedForce?.eventData?.headers;
-        const updateType = headers && headers['updateType'];
+        const updateType = headers && headers[UPDATE_TYPE_HEADER];
         const node = headers && headers['node'];
         const nodes = headers && headers['nodes'];
         const isUpdateForUs =
@@ -131,7 +131,11 @@ function useStudy(studyUuidRequest) {
 }
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
-const securityAnalysisStatusInvalidations = ['securityAnalysis_status'];
+const securityAnalysisStatusInvalidations = [
+    'securityAnalysis_status',
+    'securityAnalysis_failed',
+];
+const UPDATE_TYPE_HEADER = 'updateType';
 
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
@@ -183,10 +187,14 @@ export function StudyContainer({ view, onChangeTab }) {
     const intlRef = useIntlRef();
     const intl = useIntl();
 
-    const checkBuildFailedNotifications = useCallback(
+    const checkFailNotifications = useCallback(
         (eventData) => {
-            if (eventData.headers['updateType'] === 'buildFailed') {
+            const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            if (updateTypeHeader === 'buildFailed') {
                 snackError('', 'NodeBuildingError');
+            }
+            if (updateTypeHeader === 'securityAnalysis_failed') {
+                snackError('', 'securityAnalysisError');
             }
         },
         [snackError]
@@ -200,7 +208,7 @@ export function StudyContainer({ view, onChangeTab }) {
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
 
-                checkBuildFailedNotifications(eventData);
+                checkFailNotifications(eventData);
                 dispatch(studyUpdated(eventData));
             };
             ws.onclose = function (event) {
@@ -214,7 +222,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return ws;
         },
         // Note: dispatch doesn't change
-        [dispatch, checkBuildFailedNotifications]
+        [dispatch, checkFailNotifications]
     );
 
     const loadNetwork = useCallback(
@@ -465,12 +473,13 @@ export function StudyContainer({ view, onChangeTab }) {
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
+                'loadflow'
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(true);
             } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'deleteStudy'
             ) {
                 // closing window on study deletion
@@ -491,7 +500,10 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
+                'study'
+            ) {
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
                 const substationsIds =
