@@ -97,6 +97,16 @@ export const EquipmentTable = (props) => {
                                 enableFixedRowScroll={true}
                                 hideTopRightGridScrollbar={true}
                                 hideBottomLeftGridScrollbar={true}
+                                styleBottomLeftGrid={
+                                    props.disableVerticalScroll
+                                        ? { overflowY: 'hidden' }
+                                        : ''
+                                }
+                                styleBottomRightGrid={
+                                    props.disableVerticalScroll
+                                        ? { overflowY: 'hidden' }
+                                        : ''
+                                }
                             />
                         )}
                     </AutoSizer>
