@@ -419,7 +419,7 @@ const SizedNetworkAreaDiagram = (props) => {
                     <LinearProgress />
                 </Box>
             )}
-            <Box position="relative" /*minHeight={'10%'}*/>
+            <Box position="relative">
                 <Box position="absolute" left={0} right={0} top={0}>
                     {loadingState && (
                         <Box height={2}>
