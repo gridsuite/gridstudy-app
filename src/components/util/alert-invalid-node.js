@@ -13,8 +13,9 @@ import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     invalidNode: {
-        marginTop: theme.spacing(0.5),
-        marginLeft: theme.spacing(6.25),
+        position: 'absolute',
+        top: '30%',
+        left: '43%',
     },
 }));
 

@@ -36,7 +36,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { equipments } from '../network/network-equipments';
-import { isNodeValid } from '../graph/util/model-functions';
+import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
@@ -70,7 +70,11 @@ const withLineMenu =
 
         const isNodeEditable = useMemo(
             function () {
-                return !isNodeValid(currentNode) || isAnyNodeBuilding;
+                return (
+                    isNodeBuilt(currentNode) &&
+                    !isNodeReadOnly(currentNode) &&
+                    !isAnyNodeBuilding
+                );
             },
             [currentNode, isAnyNodeBuilding]
         );

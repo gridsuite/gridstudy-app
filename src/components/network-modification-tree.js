@@ -77,7 +77,9 @@ const NetworkModificationTree = ({
             if (node.id === currentNode?.id) {
                 return '#4287f5';
             }
-            switch (node.data.buildStatus) {
+            switch (
+                node.data.buildStatus // TODO replace the switch with a simpler if/else ?
+            ) {
                 case 'BUILT':
                     return '#70d136';
                 case 'NOT_BUILT':
