@@ -336,16 +336,26 @@ export function StudyContainer({ view, onChangeTab }) {
                     )
                 );
             })
-            .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NetworkModificationTreeLoadError',
-                        intlRef: intlRef,
-                    },
-                })
-            )
+            .catch((errorMessage) => {
+                if (errorMessage.status === 404)
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: '',
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'StudyUnrecoverableStateRecreate',
+                            intlRef: intlRef,
+                        },
+                    });
+                else
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'NetworkModificationTreeLoadError',
+                            intlRef: intlRef,
+                        },
+                    });
+            })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
             );

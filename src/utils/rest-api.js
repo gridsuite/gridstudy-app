@@ -785,11 +785,15 @@ export function fetchNetworkModificationTree(studyUuid) {
     console.info('Fetching network modification tree');
     const url = getStudyUrl(studyUuid) + '/tree';
     console.debug(url);
-    return backendFetch(url, { method: 'get' }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            return response.json().then((text) => {
+                return Promise.reject(text);
+            });
+        }
+    });
 }
 
 export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
