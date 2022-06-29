@@ -25,7 +25,6 @@ import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { fetchSvg } from '../../../utils/rest-api';
@@ -54,9 +53,9 @@ import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import { ViewState } from './utils';
 import clsx from 'clsx';
-import { isNodeValid } from '../../graph/util/model-functions';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
+import Alert from '@mui/material/Alert';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -263,6 +262,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         sldId,
         pinned,
         toggleState,
+        disabled,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -364,7 +364,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     ]);
 
     useEffect(() => {
-        if (props.svgUrl) {
+        if (props.svgUrl && !disabled) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -390,7 +390,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef]);
+    }, [props.svgUrl, forceState, snackError, intlRef, disabled]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -476,6 +476,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, []);
 
     useLayoutEffect(() => {
+        if (disabled) return;
         function createSvgArrow(element, position, x, highestY, lowestY) {
             let svgInsert = document.getElementById(element.id).parentElement;
             let group = document.createElementNS(SVG_NS, 'g');
@@ -754,11 +755,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
 
             // handling the click on a switch
-            if (
-                !isComputationRunning &&
-                isNodeValid(currentNode) &&
-                !isAnyNodeBuilding
-            ) {
+            if (!isComputationRunning && !isAnyNodeBuilding) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
                 );
@@ -809,6 +806,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         ref,
         svgFinalHeight,
         svgFinalWidth,
+        disabled,
     ]);
 
     useLayoutEffect(() => {
@@ -978,70 +976,73 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     <LinearProgress />
                 </Box>
             )}
-            <Box position="relative">
-                <Box position="absolute" left={0} right={0} top={0}>
+            {disabled ? (
+                <Box position="relative" left={0} right={0} top={0}>
+                    <AlertInvalidNode noMargin={true} />
+                </Box>
+            ) : (
+                <Box position="relative">
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
-                    {!isNodeValid(currentNode) &&
-                        currentNode?.type !== 'ROOT' && (
-                            <AlertInvalidNode noMargin={true} />
-                        )}
-                </Box>
-                {
-                    <div
-                        ref={svgRef}
-                        className={clsx(classes.divSld, {
-                            [classes.divInvalid]:
-                                loadFlowStatus !== RunningStatus.SUCCEED,
-                        })}
-                        dangerouslySetInnerHTML={{ __html: svg.svg }}
-                    />
-                }
-                {displayMenuLine()}
-                {displayMenu(equipments.loads, 'load-menus')}
-                {displayMenu(equipments.batteries, 'battery-menus')}
-                {displayMenu(equipments.danglingLines, 'dangling-line-menus')}
-                {displayMenu(equipments.generators, 'generator-menus')}
-                {displayMenu(
-                    equipments.staticVarCompensators,
-                    'static-var-compensator-menus'
-                )}
-                {displayMenu(
-                    equipments.shuntCompensators,
-                    'shunt-compensator-menus'
-                )}
-                {displayMenu(
-                    equipments.twoWindingsTransformers,
-                    'two-windings-transformer-menus'
-                )}
-                {displayMenu(
-                    equipments.threeWindingsTransformers,
-                    'three-windings-transformer-menus'
-                )}
-                {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
-                {displayMenu(
-                    equipments.lccConverterStations,
-                    'lcc-converter-station-menus'
-                )}
-                {displayMenu(
-                    equipments.vscConverterStations,
-                    'vsc-converter-station-menus'
-                )}
+                    {
+                        <div
+                            ref={svgRef}
+                            className={clsx(classes.divSld, {
+                                [classes.divInvalid]:
+                                    loadFlowStatus !== RunningStatus.SUCCEED,
+                            })}
+                            dangerouslySetInnerHTML={{ __html: svg.svg }}
+                        />
+                    }
+                    {displayMenuLine()}
+                    {displayMenu(equipments.loads, 'load-menus')}
+                    {displayMenu(equipments.batteries, 'battery-menus')}
+                    {displayMenu(
+                        equipments.danglingLines,
+                        'dangling-line-menus'
+                    )}
+                    {displayMenu(equipments.generators, 'generator-menus')}
+                    {displayMenu(
+                        equipments.staticVarCompensators,
+                        'static-var-compensator-menus'
+                    )}
+                    {displayMenu(
+                        equipments.shuntCompensators,
+                        'shunt-compensator-menus'
+                    )}
+                    {displayMenu(
+                        equipments.twoWindingsTransformers,
+                        'two-windings-transformer-menus'
+                    )}
+                    {displayMenu(
+                        equipments.threeWindingsTransformers,
+                        'three-windings-transformer-menus'
+                    )}
+                    {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
+                    {displayMenu(
+                        equipments.lccConverterStations,
+                        'lcc-converter-station-menus'
+                    )}
+                    {displayMenu(
+                        equipments.vscConverterStations,
+                        'vsc-converter-station-menus'
+                    )}
 
-                {!loadingState &&
-                    (fullScreenSldId ? (
-                        <FullscreenExitIcon
-                            onClick={hideFullScreen}
-                            className={classes.fullScreenIcon}
-                        />
-                    ) : (
-                        <FullscreenIcon
-                            onClick={showFullScreen}
-                            className={classes.fullScreenIcon}
-                        />
-                    ))}
-            </Box>
+                    {!loadingState &&
+                        (fullScreenSldId ? (
+                            <FullscreenExitIcon
+                                onClick={hideFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        ) : (
+                            <FullscreenIcon
+                                onClick={showFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        ))}
+                </Box>
+            )}
         </Paper>
     ) : (
         <></>
@@ -1078,6 +1079,7 @@ SingleLineDiagram.propTypes = {
     pinned: PropTypes.bool,
     pin: PropTypes.func,
     minimize: PropTypes.func,
+    disabled: PropTypes.bool,
 };
 
 export default SingleLineDiagram;
