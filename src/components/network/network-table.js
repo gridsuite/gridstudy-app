@@ -244,6 +244,7 @@ const NetworkTable = (props) => {
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
+    
     const isLineOnEditMode = useCallback(
         (rowData) => {
             return lineEdit && rowData.id === lineEdit.id;
