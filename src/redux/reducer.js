@@ -174,10 +174,26 @@ export const reducer = createReducer(initialState, {
         if (state.networkModificationTreeModel) {
             let newModel =
                 state.networkModificationTreeModel.newSharedForUpdate();
+
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
-            synchCurrentTreeNode(state);
+
+            // check if current node is not in the nodes deleted list
+            if (
+                action.networkModificationTreeNodes.includes(
+                    state.currentTreeNode?.id
+                )
+            ) {
+                //TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
+                // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
+                synchCurrentTreeNode(
+                    state,
+                    state.currentTreeNode?.data?.parentNodeUuid
+                );
+            } else {
+                synchCurrentTreeNode(state);
+            }
         }
     },
 
@@ -348,13 +364,14 @@ export const reducer = createReducer(initialState, {
     },
 });
 
-function synchCurrentTreeNode(state) {
+function synchCurrentTreeNode(state, parentNodeUuid = undefined) {
     const currentNode = state.networkModificationTreeModel?.treeElements.find(
-        (entry) => entry?.id === state.currentTreeNode?.id
+        (entry) =>
+            entry?.id ===
+            (parentNodeUuid === undefined
+                ? state.currentTreeNode?.id
+                : parentNodeUuid)
     );
-    // handle the case of currentTreeNode not in the TreeModel anymore.
-    if (currentNode === undefined) state.currentTreeNode = null;
-    else {
-        state.currentTreeNode = { ...currentNode };
-    }
+    //  we need to overwrite state.currentTreeNode to consider label change for example.
+    state.currentTreeNode = { ...currentNode };
 }
