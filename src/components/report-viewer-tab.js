@@ -18,9 +18,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
-import { isNodeValid } from './graph/util/model-functions';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     div: {
         display: 'flex',
     },
@@ -36,10 +35,16 @@ const NETWORK_MODIFICATION = 'NetworkModification';
  * @param studyId : string study id
  * @param visible : boolean window visible
  * @param currentNode : object visualized node
+ * @param disabled : boolean disabled
  * @returns {*} node
  * @constructor
  */
-export const ReportViewerTab = ({ studyId, visible, currentNode }) => {
+export const ReportViewerTab = ({
+    studyId,
+    visible,
+    currentNode,
+    disabled,
+}) => {
     const intl = useIntl();
     const classes = useStyles();
 
@@ -74,9 +79,7 @@ export const ReportViewerTab = ({ studyId, visible, currentNode }) => {
     }
 
     useEffect(() => {
-        if (visible) {
-            if (!isNodeValid(currentNode)) return;
-
+        if (visible && !disabled) {
             setWaitingLoadReport(true);
             fetchReport(studyId, currentNode.id, nodeOnlyReport)
                 .then((fetchedReport) => {
@@ -105,36 +108,39 @@ export const ReportViewerTab = ({ studyId, visible, currentNode }) => {
                     setWaitingLoadReport(false);
                 });
         }
-    }, [visible, studyId, currentNode, nodeOnlyReport, enqueueSnackbar]);
+    }, [
+        visible,
+        studyId,
+        currentNode,
+        nodeOnlyReport,
+        enqueueSnackbar,
+        disabled,
+    ]);
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
-            {report && (
-                <Paper className={clsx('singlestretch-child')}>
-                    <div className={classes.div}>
-                        <FormControlLabel
-                            className={classes.reportOnlyNode}
-                            control={
-                                <Switch
-                                    checked={nodeOnlyReport}
-                                    inputProps={{
-                                        'aria-label': 'primary checkbox',
-                                    }}
-                                    onChange={(e) => handleChangeValue(e)}
-                                />
-                            }
-                            label={intl.formatMessage({
-                                id: 'LogOnlySingleNode',
-                            })}
-                        />
-                        {!isNodeValid(currentNode) &&
-                            currentNode?.type !== 'ROOT' && (
-                                <AlertInvalidNode />
-                            )}
-                    </div>
-                    <ReportViewer jsonReport={report} />
-                </Paper>
-            )}
+            <Paper className={clsx('singlestretch-child')}>
+                <div className={classes.div}>
+                    <FormControlLabel
+                        className={classes.reportOnlyNode}
+                        control={
+                            <Switch
+                                checked={nodeOnlyReport}
+                                inputProps={{
+                                    'aria-label': 'primary checkbox',
+                                }}
+                                onChange={(e) => handleChangeValue(e)}
+                                disabled={disabled}
+                            />
+                        }
+                        label={intl.formatMessage({
+                            id: 'LogOnlySingleNode',
+                        })}
+                    />
+                    {disabled && <AlertInvalidNode />}
+                </div>
+                {!!report && !disabled && <ReportViewer jsonReport={report} />}
+            </Paper>
         </WaitingLoader>
     );
 };
@@ -143,4 +149,5 @@ ReportViewerTab.propTypes = {
     studyId: PropTypes.string,
     visible: PropTypes.bool,
     currentNode: PropTypes.object,
+    disabled: PropTypes.bool,
 };

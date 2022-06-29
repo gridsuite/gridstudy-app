@@ -5,15 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 import { lighten, darken } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
-import {
-    fetchNetworkModificationTreeNode,
-    updateTreeNode,
-} from '../../../utils/rest-api';
+import { updateTreeNode } from '../../../utils/rest-api';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
@@ -42,56 +39,17 @@ const NodeEditor = () => {
     const intlRef = useIntlRef();
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
-    const [currentNode, setCurrentNode] = useState();
-
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const currentNodeUuid = useSelector((state) => state.currentTreeNode)?.id;
-
-    const currentNodeUuidRef = useRef();
-
+    const currentTreeNode = useSelector((state) => state.currentTreeNode);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));
     };
 
-    useEffect(() => {
-        if (!currentNodeUuid) return;
-        const headers = studyUpdatedForce?.eventData?.headers;
-        const updateType = headers?.updateType;
-        if (
-            currentNodeUuidRef.current !== currentNodeUuid ||
-            (updateType === 'nodeUpdated' &&
-                headers.nodes.indexOf(currentNodeUuid) !== -1) ||
-            (updateType === 'study' && headers.node === currentNodeUuid)
-        ) {
-            currentNodeUuidRef.current = currentNodeUuid;
-            fetchNetworkModificationTreeNode(studyUuid, currentNodeUuid)
-                .then((res) => {
-                    if (currentNodeUuid === currentNodeUuidRef.current)
-                        setCurrentNode(res);
-                })
-                .catch((err) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: err.message,
-                        enqueueSnackbar,
-                    })
-                );
-        }
-    }, [
-        setCurrentNode,
-        enqueueSnackbar,
-        currentNodeUuid,
-        currentNodeUuidRef,
-        studyUpdatedForce,
-        studyUuid,
-    ]);
-
     const changeNodeName = (newName) => {
-        if (!currentNode) return;
         updateTreeNode(studyUuid, {
-            id: currentNode.id,
-            type: currentNode.type,
+            id: currentTreeNode?.id,
+            type: currentTreeNode?.type,
             name: newName,
         }).catch((errorMessage) => {
             displayErrorMessageWithSnackbar({
@@ -106,24 +64,14 @@ const NodeEditor = () => {
     };
 
     return (
-        <>
-            {currentNode !== undefined && (
-                <div className={classes.paper}>
-                    <EditableTitle
-                        name={currentNode.name}
-                        onClose={closeModificationsDrawer}
-                        onChange={changeNodeName}
-                    />
-                    <>
-                        {currentNode && (
-                            <NetworkModificationNodeEditor
-                                currentTreeNode={currentNode}
-                            />
-                        )}
-                    </>
-                </div>
-            )}
-        </>
+        <div className={classes.paper}>
+            <EditableTitle
+                name={currentTreeNode?.data?.label}
+                onClose={closeModificationsDrawer}
+                onChange={changeNodeName}
+            />
+            <NetworkModificationNodeEditor />
+        </div>
     );
 };
 

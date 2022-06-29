@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { getLayoutedElements } from './layout';
+import { convertNodetoReactFlowModelNode } from './util/model-functions';
 
 export default class NetworkModificationTreeModel {
     treeElements = [];
@@ -17,16 +18,9 @@ export default class NetworkModificationTreeModel {
 
     addChild(newElement, parentId, insertMode) {
         // Add node
-        this.treeElements.push({
-            id: newElement.id,
-            type: newElement.type, // input node
-            data: {
-                label: newElement.name,
-                description: newElement.description,
-                buildStatus: newElement.buildStatus,
-                readOnly: newElement.readOnly,
-            },
-        });
+        this.treeElements.push(
+            convertNodetoReactFlowModelNode(newElement, parentId)
+        );
         // Add edge between node and its parent
         this.treeElements.push({
             id: 'e' + parentId + '-' + newElement.id,
@@ -126,16 +120,9 @@ export default class NetworkModificationTreeModel {
 
     setTreeElements(elements) {
         // handle root node
-        this.treeElements.push({
-            id: elements.id,
-            type: elements.type, // input node
-            data: {
-                label: elements.name,
-                description: elements.description,
-                buildStatus: elements.buildStatus,
-                readOnly: elements.readOnly,
-            },
-        });
+        this.treeElements.push(
+            convertNodetoReactFlowModelNode(elements, undefined)
+        );
         // handle root children
         elements.children.forEach((child) => {
             this.addChild(child, elements.id);

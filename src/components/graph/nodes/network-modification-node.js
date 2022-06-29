@@ -89,6 +89,7 @@ const NetworkModificationNode = (props) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const isSelectedNode = () => {
+        // TODO This is a hack, when ReactFlow v10 is available, we should remove this.
         return props.id === currentNode?.id;
     };
 
