@@ -174,7 +174,10 @@ export const reducer = createReducer(initialState, {
         if (state.networkModificationTreeModel) {
             let newModel =
                 state.networkModificationTreeModel.newSharedForUpdate();
-            let parentNodeUuid;
+
+            newModel.removeNodes(action.networkModificationTreeNodes);
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
 
             // check if current node is not in the nodes deleted list
             if (
@@ -184,14 +187,13 @@ export const reducer = createReducer(initialState, {
             ) {
                 //TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
                 // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
-                parentNodeUuid = state.currentTreeNode?.data?.parentNodeUuid;
-                synchCurrentTreeNode(state, parentNodeUuid);
+                synchCurrentTreeNode(
+                    state,
+                    state.currentTreeNode?.data?.parentNodeUuid
+                );
             } else {
                 synchCurrentTreeNode(state);
             }
-            newModel.removeNodes(action.networkModificationTreeNodes);
-            newModel.updateLayout();
-            state.networkModificationTreeModel = newModel;
         }
     },
 
