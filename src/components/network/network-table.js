@@ -279,6 +279,26 @@ const NetworkTable = (props) => {
         props.network.useEquipment(resource);
     }, [props.network, props.disabled, tabIndex]);
 
+    useEffect(() => {
+        // Sort ID column by default, if selected
+        if (!selectedColumnsNames.has('ID')) {
+            setColumnSort(undefined);
+        } else {
+            const tableDef = TABLES_DEFINITION_INDEXES.get(tabIndex);
+            const columnDef = tableDef.columns.find((c) => c.id === 'ID');
+            if (!columnDef) {
+                setColumnSort(undefined);
+            } else {
+                setColumnSort({
+                    key: columnDef.dataKey,
+                    reverse: false,  // default sort
+                    numeric: columnDef.numeric,
+                    colDef: columnDef,
+                });
+            }
+        }
+    }, [selectedColumnsNames, tabIndex]);
+
     const formatCell = useCallback(
         (rowData, columnDefinition) => {
             let value = rowData[columnDefinition.dataKey];
