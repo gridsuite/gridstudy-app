@@ -190,11 +190,11 @@ const TwoWindingsTransformerCreationDialog = ({
         id: 'Connectivity1',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
+        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId1 || null,
-        currentNodeUuid: currentNodeUuid,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -202,11 +202,11 @@ const TwoWindingsTransformerCreationDialog = ({
         id: 'Connectivity2',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
+        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId2 || null,
-        currentNodeUuid: currentNodeUuid,
     });
 
     const handleSave = () => {

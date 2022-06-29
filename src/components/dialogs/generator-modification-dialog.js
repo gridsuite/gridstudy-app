@@ -18,7 +18,6 @@ import { useSnackMessage } from '../../utils/messages';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     useAutocompleteField,
-    useConnectivityValue,
     useDoubleValue,
     useEnumValue,
     useInputForm,
@@ -250,22 +249,6 @@ const GeneratorModificationDialog = ({
         clearable: true,
     });
 
-    const [connectivity, connectivityField] = useConnectivityValue({
-        label: 'Connectivity',
-        validation: {
-            isFieldRequired: false,
-        },
-        disabled: true,
-        inputForm: inputForm,
-        voltageLevelOptions: voltageLevelOptions,
-        voltageLevelIdDefaultValue:
-            getValue(formValues?.voltageLevelId) || null,
-        voltageLevelPreviousValue: generatorInfos?.voltageLevelId,
-        busOrBusbarSectionIdDefaultValue:
-            getValue(formValues?.busOrBusbarSectionId) || null,
-        currentNodeUuid: currentNodeUuid,
-    });
-
     const handleSave = () => {
         if (inputForm.validate()) {
             modifyGenerator(
@@ -281,8 +264,8 @@ const GeneratorModificationDialog = ({
                 reactivePowerSetpoint,
                 voltageRegulation,
                 voltageSetpoint,
-                connectivity?.voltageLevel?.id,
-                connectivity?.busOrBusbarSection?.id,
+                undefined,
+                undefined,
                 editData?.uuid
             ).catch((errorMessage) => {
                 snackError(errorMessage, 'GeneratorModificationError');
@@ -362,17 +345,6 @@ const GeneratorModificationDialog = ({
                                 4
                             )}
                             {gridItem(voltageSetpointField, 4)}
-                        </Grid>
-                        {/* Connectivity part */}
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Connectivity" />
-                                </h3>
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                            {gridItem(connectivityField, 8)}
                         </Grid>
                     </div>
                 </DialogContent>

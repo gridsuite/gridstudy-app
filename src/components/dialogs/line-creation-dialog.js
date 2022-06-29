@@ -207,11 +207,11 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
+        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId1 || null,
-        currentNodeUuid: currentNodeUuid,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -220,11 +220,11 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
+        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId2 || null,
-        currentNodeUuid: currentNodeUuid,
     });
 
     const [permanentCurrentLimit1, permanentCurrentLimit1Field] =

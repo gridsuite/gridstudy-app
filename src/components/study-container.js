@@ -315,6 +315,7 @@ export function StudyContainer({ view, onChangeTab }) {
                             },
                         });
                     });
+
                 let firstBuiltNode = getFirstNodeOfType(
                     tree,
                     'NETWORK_MODIFICATION',
@@ -328,6 +329,7 @@ export function StudyContainer({ view, onChangeTab }) {
                             : getFirstNodeOfType(tree, 'ROOT')
                     )
                 );
+
                 dispatch(
                     loadNetworkModificationTreeSuccess(
                         networkModificationTreeModel

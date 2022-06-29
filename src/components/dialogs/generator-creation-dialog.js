@@ -231,10 +231,10 @@ const GeneratorCreationDialog = ({
         label: 'Connectivity',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
+        currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
-        currentNodeUuid: currentNodeUuid,
     });
 
     const handleSave = () => {

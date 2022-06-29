@@ -23,7 +23,6 @@ import { modifyLoad } from '../../utils/rest-api';
 import { LOAD_TYPES } from '../network/constants';
 import {
     useAutocompleteField,
-    useConnectivityValue,
     useDoubleValue,
     useEnumValue,
     useInputForm,
@@ -125,7 +124,10 @@ const LoadModificationDialog = ({
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
         defaultValue: formValues?.loadType ? formValues.loadType.value : '',
-        previousValue: loadInfos?.type,
+        doTranslation: true,
+        previousValue: loadInfos?.type
+            ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)?.label
+            : undefined,
     });
 
     const [activePower, activePowerField] = useDoubleValue({
@@ -156,21 +158,6 @@ const LoadModificationDialog = ({
         clearable: true,
     });
 
-    const [connectivity, connectivityField] = useConnectivityValue({
-        label: 'Connectivity',
-        validation: {
-            isFieldRequired: false,
-        },
-        disabled: true,
-        inputForm: inputForm,
-        voltageLevelOptions: voltageLevelOptions,
-        voltageLevelIdDefaultValue: formValues?.voltageLevelId?.value || null,
-        voltageLevelPreviousValue: loadInfos?.voltageLevelId,
-        busOrBusbarSectionIdDefaultValue:
-            formValues?.busOrBusbarSectionId?.value || null,
-        currentNodeUuid: currentNodeUuid,
-    });
-
     const handleSave = () => {
         if (inputForm.validate()) {
             modifyLoad(
@@ -181,8 +168,8 @@ const LoadModificationDialog = ({
                 loadType,
                 activePower,
                 reactivePower,
-                connectivity?.voltageLevel?.id,
-                connectivity?.busOrBusbarSection?.id,
+                undefined,
+                undefined,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
@@ -241,10 +228,6 @@ const LoadModificationDialog = ({
                     <Grid container spacing={2}>
                         {gridItem(activePowerField, 4)}
                         {gridItem(reactivePowerField, 4)}
-                    </Grid>
-                    <GridSection title="Connectivity" />
-                    <Grid container spacing={2}>
-                        {gridItem(connectivityField, 8)}
                     </Grid>
                 </DialogContent>
                 <DialogActions>
