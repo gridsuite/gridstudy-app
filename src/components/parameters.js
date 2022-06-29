@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     grid: {
-        paddingTop: '16px',
+        paddingTop: theme.spacing(2),
         padding: theme.spacing(0),
     },
 
@@ -81,8 +81,8 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'flex-end',
     },
     button: {
-        marginBottom: '30px',
-        marginLeft: '10px',
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(1),
     },
     advancedParameterButton: {
         marginTop: theme.spacing(3),
@@ -990,13 +990,13 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         <NetworkParameters />
                     </TabPanel>
                     <Grid container className={classes.controlItem}>
-                        {tabIndex === 2 ? (
-                            MakeButton(resetLfParameters, 'resetToDefault')
-                        ) : tabIndex === 3 ? (
-                            MakeButton(resetNetworkParameters, 'resetToDefault')
-                        ) : (
-                            <></>
-                        )}
+                        {tabIndex === 2 &&
+                            MakeButton(resetLfParameters, 'resetToDefault')}
+                        {tabIndex === 3 &&
+                            MakeButton(
+                                resetNetworkParameters,
+                                'resetToDefault'
+                            )}
                         <Button
                             onClick={hideParameters}
                             className={classes.button}
