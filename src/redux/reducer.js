@@ -174,10 +174,18 @@ export const reducer = createReducer(initialState, {
         if (state.networkModificationTreeModel) {
             let newModel =
                 state.networkModificationTreeModel.newSharedForUpdate();
+            let parentNode;
+            if (
+                action.networkModificationTreeNodes.includes(
+                    state.currentTreeNode?.id
+                )
+            ) {
+                parentNode = state.currentTreeNode?.data?.parentNodeUuid;
+            }
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
-            synchCurrentTreeNode(state);
+            synchCurrentTreeNode(state, parentNode);
         }
     },
 
@@ -348,13 +356,18 @@ export const reducer = createReducer(initialState, {
     },
 });
 
-function synchCurrentTreeNode(state) {
+function synchCurrentTreeNode(state, parentNodeId = undefined) {
     const currentNode = state.networkModificationTreeModel?.treeElements.find(
         (entry) => entry?.id === state.currentTreeNode?.id
     );
-    // handle the case of currentTreeNode not in the TreeModel anymore.
-    if (currentNode === undefined) state.currentTreeNode = null;
-    else {
+    // handle the case of currentTreeNode is deleted
+    if (currentNode === undefined) {
+        const parentNode =
+            state.networkModificationTreeModel?.treeElements.find(
+                (treeElement) => treeElement?.id === parentNodeId
+            );
+        state.currentTreeNode = { ...parentNode };
+    } else {
         state.currentTreeNode = { ...currentNode };
     }
 }
