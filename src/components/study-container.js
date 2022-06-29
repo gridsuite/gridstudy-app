@@ -322,7 +322,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         errorMessage: '',
                         enqueueSnackbar: enqueueSnackbar,
                         headerMessage: {
-                            headerMessageId: 'StudyAwfulStateRecreate',
+                            headerMessageId: 'StudyUnrecoverableStateRecreate',
                             intlRef: intlRef,
                         },
                     });

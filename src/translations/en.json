@@ -287,7 +287,7 @@
     "exportCaseOnNode": "Export case",
     "nodeNameAlreadyUsed": "This name is already used",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
-    "StudyAwfulStateRecreate": "Your study has a unrecoverable problem. Please recreate it",
+    "StudyUnrecoverableStateRecreate": "Your study has a problem. Please recreate it",
     "NodeCreateError": "An error occured while creating node",
     "NodeDeleteError": "An error occured while deleting node",
     "NodeUpdateError": "An error occured while updating node",
