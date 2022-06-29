@@ -255,6 +255,17 @@ const SizedNetworkAreaDiagram = (props) => {
                     console.error(errorMessage);
                     snackError(errorMessage);
                     updateLoadingState(false);
+                    setSvg({
+                        svg:
+                            '<svg width="' +
+                            minWidth +
+                            '" height="' +
+                            minHeight +
+                            '" xmlns="http://www.w3.org/2000/svg"></svg>',
+                        metadata: null,
+                        error: null,
+                        svgUrl: svgUrl,
+                    });
                 });
         } else {
             setSvg(noSvg);
@@ -408,7 +419,7 @@ const SizedNetworkAreaDiagram = (props) => {
                     <LinearProgress />
                 </Box>
             )}
-            <Box position="relative">
+            <Box position="relative" /*minHeight={'10%'}*/>
                 <Box position="absolute" left={0} right={0} top={0}>
                     {loadingState && (
                         <Box height={2}>
