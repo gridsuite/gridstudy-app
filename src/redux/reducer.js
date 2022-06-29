@@ -120,7 +120,6 @@ const initialState = {
     voltageLevelsIdsForNad: [],
     centerOnSubstation: null,
     notificationIdList: [],
-    firstBuiltNode: null,
     ...paramsInitialState,
 };
 
