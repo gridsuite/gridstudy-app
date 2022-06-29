@@ -258,12 +258,12 @@ export const useConnectivityValue = ({
     disabled = false,
     inputForm,
     voltageLevelOptions,
+    currentNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
     voltageLevelPreviousValue,
     busOrBusbarSectionIdDefaultValue,
     busOrBusbarSectionPreviousValue,
-    currentNodeUuid,
 }) => {
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,

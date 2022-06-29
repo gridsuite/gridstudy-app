@@ -32,8 +32,8 @@ import {
     loadNetworkModificationTreeSuccess,
     networkCreated,
     openStudy,
-    setCurrentTreeNode,
     studyUpdated,
+    setCurrentTreeNode,
 } from '../redux/actions';
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
