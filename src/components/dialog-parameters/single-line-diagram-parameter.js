@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
 import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
@@ -18,7 +12,7 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../utils/config-params';
-import { LabelledSwitch, useParameterState } from './parameters';
+import { SwitchWithLabel, useParameterState } from './parameters';
 import { LineSeparator } from './line-separator';
 import { useStyles } from './parameters';
 
@@ -44,11 +38,15 @@ export const SingleLineDiagramParameters = ({ user }) => {
 
     return (
         <Grid container spacing={1} className={classes.grid}>
-            {LabelledSwitch(diagonalLabelLocal, 'diagonalLabel', () => {
-                handleChangeDiagonalLabel(!diagonalLabelLocal);
-            })}
+            <SwitchWithLabel
+                prop={diagonalLabelLocal}
+                label="diagonalLabel"
+                callback={() => {
+                    handleChangeDiagonalLabel(!diagonalLabelLocal);
+                }}
+            />
             <LineSeparator />
-            {LabelledSwitch(centerLabelLocal, 'centerLabel', () => {
+            {SwitchWithLabel(centerLabelLocal, 'centerLabel', () => {
                 handleChangeCenterLabel(!centerLabelLocal);
             })}
             <LineSeparator />

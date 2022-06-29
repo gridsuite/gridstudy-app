@@ -30,7 +30,7 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
-import { LabelledSwitch, LabelledButton } from './parameters';
+import { SwitchWithLabel, LabelledButton } from './parameters';
 const LF_PROVIDER_VALUES = {
     OpenLoadFlow: 'OpenLoadFlow',
     Hades2: 'Hades2',
@@ -339,7 +339,7 @@ export const LoadFlow = () => {
 
     function makeComponentFor(defParam, key, lfParams, setter) {
         if (defParam.type === TYPES.bool) {
-            return LabelledSwitch(lfParams[key], defParam.description, (ev) =>
+            return SwitchWithLabel(lfParams[key], defParam.description, (ev) =>
                 setter({ ...lfParams, [key]: ev.target.checked })
             );
         } else if (defParam.type === TYPES.enum) {
@@ -360,7 +360,7 @@ export const LoadFlow = () => {
         }
     }
 
-    const CountrySelector = ({ value, label, callback }) => {
+    const CountrySelector = (value, label, callback) => {
         return (
             <>
                 <Grid item xs={6}>

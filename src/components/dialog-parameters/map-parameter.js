@@ -14,7 +14,7 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
 } from '../../utils/config-params';
-import { LabelledSwitch, useParameterState } from './parameters';
+import { SwitchWithLabel, useParameterState } from './parameters';
 import { LineSeparator } from './line-separator';
 import { useStyles } from './parameters';
 import { LabelledSilder } from './slider';
@@ -66,11 +66,11 @@ export const MapParameters = () => {
 
     return (
         <Grid container spacing={1} className={classes.grid}>
-            {LabelledSwitch(lineFullPathLocal, 'lineFullPath', () => {
+            {SwitchWithLabel(lineFullPathLocal, 'lineFullPath', () => {
                 handleChangeLineFullPath(!lineFullPathLocal);
             })}
             <LineSeparator />
-            {LabelledSwitch(lineParallelPathLocal, 'lineParallelPath', () => {
+            {SwitchWithLabel(lineParallelPathLocal, 'lineParallelPath', () => {
                 handleChangeLineParallelPath(!lineParallelPathLocal);
             })}
             <LineSeparator />
@@ -127,17 +127,17 @@ export const MapParameters = () => {
                 </Select>
             </Grid>
             <LineSeparator />
-            {LabelledSilder(
-                Number(lineFlowAlertThresholdLocal),
-                'AlertThresholdLabel',
-                disabledFlowAlertThreshold,
-                (event, value) => {
+            <LabelledSilder
+                prop={Number(lineFlowAlertThresholdLocal)}
+                label="AlertThresholdLabel"
+                disabled={disabledFlowAlertThreshold}
+                onCommitCallback={(event, value) => {
                     handleChangeLineFlowAlertThreshold(value);
-                },
-                alertThresholdMarks
-            )}
+                }}
+                thresholdMarks={alertThresholdMarks}
+            />
             <LineSeparator />
-            {LabelledSwitch(
+            {SwitchWithLabel(
                 displayOverloadTableLocal,
                 'displayOverloadTable',
                 () => {

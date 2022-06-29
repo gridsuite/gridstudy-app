@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
@@ -92,7 +99,7 @@ export function useParameterState(paramName) {
     return [paramLocalState, handleChangeParamLocalState];
 }
 
-export const LabelledSwitch = ({ prop, label, callback }) => {
+export const SwitchWithLabel = (prop, label, callback) => {
     const classes = useStyles();
     return (
         <>
@@ -115,7 +122,7 @@ export const LabelledSwitch = ({ prop, label, callback }) => {
     );
 };
 
-export const LabelledButton = ({ callback, label }) => {
+export const LabelledButton = (callback, label) => {
     const classes = useStyles();
     return (
         <Grid item paddingTop={1}>
