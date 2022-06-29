@@ -381,7 +381,7 @@ const NetworkTable = (props) => {
                 else if (b === undefined) return -mult;
 
                 return isNumeric
-                    ? (Number(a) < Number(b) ? 1 : -1) * mult
+                    ? (Number(a) < Number(b) ? -1 : 1) * mult
                     : ('' + a).localeCompare(b) * mult;
             }
 
