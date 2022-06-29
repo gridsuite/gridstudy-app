@@ -8,7 +8,6 @@ import { useIntl } from 'react-intl';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
-import { isNodeValid } from './graph/util/model-functions';
 import AlertInvalidNode from './util/alert-invalid-node';
 
 const useStyles = makeStyles((theme) => ({
@@ -38,6 +37,7 @@ export const ResultViewTab = ({
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
+    disabled,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -77,19 +77,19 @@ export const ResultViewTab = ({
                         label={intl.formatMessage({
                             id: 'loadFlowResults',
                         })}
+                        disabled={disabled}
                     />
                     <Tab
                         label={intl.formatMessage({
                             id: 'securityAnalysisResults',
                         })}
+                        disabled={disabled}
                     />
                 </Tabs>
-                {!isNodeValid(currentNode) && currentNode?.type !== 'ROOT' && (
-                    <AlertInvalidNode />
-                )}
+                {disabled && <AlertInvalidNode />}
             </div>
-            {tabIndex === 0 && renderLoadFlowResult()}
-            {tabIndex === 1 && renderSecurityAnalysisResult()}
+            {tabIndex === 0 && !disabled && renderLoadFlowResult()}
+            {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
         </Paper>
     );
 };
@@ -100,4 +100,5 @@ ResultViewTab.propTypes = {
     openVoltageLevelDiagram: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
+    disabled: PropTypes.bool,
 };
