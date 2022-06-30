@@ -180,20 +180,18 @@ export const reducer = createReducer(initialState, {
             state.networkModificationTreeModel = newModel;
 
             // check if current node is in the nodes deleted list
-            let nextCurrentNodeUuid = state.currentTreeNode?.id;
-            let currentNode = action.networkModificationTreeNodes.find(
-                (node) => node.id === nextCurrentNodeUuid
-            );
-            while (currentNode) {
-                // it's in the deleted List
-                nextCurrentNodeUuid = currentNode.data?.parentNodeUuid;
-                const nodeId = nextCurrentNodeUuid; // see es-lint no-loop-func rule
-                currentNode = action.networkModificationTreeNodes.find(
-                    (node) => node.id === nodeId
+            if (
+                action.networkModificationTreeNodes.includes(
+                    state.currentTreeNode?.id
+                )
+            ) {
+                //TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
+                // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
+                synchCurrentTreeNode(
+                    state,
+                    state.currentTreeNode?.data?.parentNodeUuid
                 );
             }
-
-            synchCurrentTreeNode(state, nextCurrentNodeUuid);
         }
     },
 
