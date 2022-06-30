@@ -33,6 +33,7 @@ import { useStoreState } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
+import { UPDATE_TYPE } from './network/constants';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -90,6 +91,7 @@ export const NetworkModificationTreePane = ({
 
     const width = useStoreState((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
+    const [hypothesisInLoad, setHypothesisInLoad] = useState(false);
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -148,6 +150,38 @@ export const NetworkModificationTreePane = ({
             }
         }
     }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
+
+    function setHypothesisInLoadAfterDelay() {
+        setTimeout(() => {
+            setHypothesisInLoad(false);
+        }, 2000);
+    }
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                currentNodeRef.current?.id !==
+                studyUpdatedForce.eventData.headers['parentNode']
+            )
+                return;
+
+            if (
+                UPDATE_TYPE.includes(
+                    studyUpdatedForce.eventData.headers['updateType']
+                )
+            ) {
+                setHypothesisInLoad(true);
+            }
+            // notify  finished action on Hypothesis
+            // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'UPDATE_FINISHED'
+            ) {
+                setHypothesisInLoadAfterDelay();
+            }
+        }
+    }, [studyUpdatedForce]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
@@ -245,6 +279,10 @@ export const NetworkModificationTreePane = ({
         });
     }, []);
 
+    const hypothesisInLoadInCurrentNode = () => {
+        return hypothesisInLoad && activeNode.id === currentNodeRef.current?.id;
+    };
+
     return (
         <>
             <Box
@@ -275,17 +313,18 @@ export const NetworkModificationTreePane = ({
                     </StudyDrawer>
                 )}
             </Box>
-            {createNodeMenu.display && (
-                <CreateNodeMenu
-                    position={createNodeMenu.position}
-                    activeNode={activeNode}
-                    handleBuildNode={handleBuildNode}
-                    handleNodeCreation={handleCreateNode}
-                    handleNodeRemoval={handleRemoveNode}
-                    handleExportCaseOnNode={handleExportCaseOnNode}
-                    handleClose={closeCreateNodeMenu}
-                />
-            )}
+            {hypothesisInLoadInCurrentNode() ||
+                (createNodeMenu.display && (
+                    <CreateNodeMenu
+                        position={createNodeMenu.position}
+                        activeNode={activeNode}
+                        handleBuildNode={handleBuildNode}
+                        handleNodeCreation={handleCreateNode}
+                        handleNodeRemoval={handleRemoveNode}
+                        handleExportCaseOnNode={handleExportCaseOnNode}
+                        handleClose={closeCreateNodeMenu}
+                    />
+                ))}
             {openExportDialog && (
                 <ExportDialog
                     open={openExportDialog}

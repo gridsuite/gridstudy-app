@@ -132,11 +132,14 @@ const RunButton = (props) => {
 
     let buttonDisabled =
         props.disabled ||
+        props.hypothesisInLoad ||
         (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
         (selectedIndex === 1 && isRunning());
 
     let selectionDisabled =
-        props.disabled || (selectedIndex === 0 && isRunning());
+        props.disabled ||
+        props.hypothesisInLoad ||
+        (selectedIndex === 0 && isRunning());
 
     function handleActionOnRunnable() {
         props.actionOnRunnable.action(getRunnable());
@@ -177,6 +180,7 @@ RunButton.propTypes = {
     actionOnRunnable: PropTypes.object.isRequired,
     computationStopped: PropTypes.bool.isRequired,
     disabled: PropTypes.bool,
+    hypothesisInLoad: PropTypes.bool,
 };
 
 export default RunButton;

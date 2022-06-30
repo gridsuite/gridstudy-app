@@ -1,5 +1,5 @@
 import NetworkMap from './network/network-map';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchLinePositions,
@@ -20,6 +20,7 @@ import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
 import { isNodeBuilt } from './graph/util/model-functions';
+import { UPDATE_TYPE } from './network/constants';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -80,6 +81,8 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !isNodeBuilt(currentNode);
+    const [hypothesisInLoad, setHypothesisInLoad] = useState(false);
+
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -97,6 +100,11 @@ export const NetworkMapTab = ({
     const [position, setPosition] = useState([-1, -1]);
 
     const classes = useStyles();
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const currentTreeNode = useSelector((state) => state.currentTreeNode);
+
+    const currentNodeIdRef = useRef();
+    currentNodeIdRef.current = currentTreeNode?.id;
 
     function withEquipment(Menu, props) {
         return (
@@ -209,6 +217,38 @@ export const NetworkMapTab = ({
         setGeoData,
         intlRef,
     ]);
+
+    function setHypothesisInLoadAfterDelay() {
+        setTimeout(() => {
+            setHypothesisInLoad(false);
+        }, 2000);
+    }
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                currentNodeIdRef.current !==
+                studyUpdatedForce.eventData.headers['parentNode']
+            )
+                return;
+
+            if (
+                UPDATE_TYPE.includes(
+                    studyUpdatedForce.eventData.headers['updateType']
+                )
+            ) {
+                setHypothesisInLoad(true);
+            }
+            // notify  finished action on Hypothesis
+            // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'UPDATE_FINISHED'
+            ) {
+                setHypothesisInLoadAfterDelay();
+            }
+        }
+    }, [studyUpdatedForce]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
@@ -331,6 +371,7 @@ export const NetworkMapTab = ({
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
                     disabled={disabled}
+                    hypothesisInLoad={hypothesisInLoad}
                 />
             </div>
         </>
