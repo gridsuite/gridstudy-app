@@ -6,11 +6,18 @@ import {
     HEADER_ROW_HEIGHT,
     ROW_HEIGHT,
 } from './config-tables';
+import { useTheme } from '@mui/material/styles';
 
 export const EquipmentTable = (props) => {
     const gridRef = useRef();
 
     const [fixedColumnsCount, setFixedColumnsCount] = useState(0);
+    const theme = useTheme();
+    const [scrollTopIndex, setScrollTopIndex] = useState(
+        props.scrollTop !== -1
+    );
+    const [verticalScrollbarPresence, setVerticalScrollbarPresence] =
+        useState(false);
 
     useEffect(() => {
         const count = props.columns.filter((c) => c.locked).length;
@@ -19,6 +26,10 @@ export const EquipmentTable = (props) => {
             gridRef.current.recomputeGridSize();
         }
     }, [props.columns]);
+
+    useEffect(() => {
+        setScrollTopIndex(props.scrollTop !== -1);
+    }, [props.scrollTop]);
 
     function cellRenderer({ columnIndex, key, rowIndex, style }) {
         if (!props.columns || !props.columns[columnIndex]) {
@@ -35,6 +46,12 @@ export const EquipmentTable = (props) => {
         } else {
             let cell = props.rows[rowIndex - 1];
             if (columnDefinition.cellRenderer) {
+                if (props.rows[props.scrollTop]?.id === cell?.id) {
+                    style = {
+                        ...style,
+                        backgroundColor: theme.selectedRow.background,
+                    };
+                }
                 return columnDefinition.cellRenderer(
                     cell,
                     columnDefinition,
@@ -107,6 +124,18 @@ export const EquipmentTable = (props) => {
                                         ? { overflowY: 'hidden' }
                                         : {}
                                 }
+                                scrollTop={
+                                    verticalScrollbarPresence && scrollTopIndex
+                                        ? props.scrollTop *
+                                          getRowHeight(props.scrollTop)
+                                        : -1
+                                }
+                                onScrollbarPresenceChange={(scrollBars) => {
+                                    setVerticalScrollbarPresence(
+                                        scrollBars?.vertical
+                                    );
+                                }}
+                                onScroll={setScrollTopIndex(false)}
                             />
                         )}
                     </AutoSizer>
