@@ -48,7 +48,20 @@ export default class NetworkModificationTreeModel {
                     type: 'smoothstep',
                 });
             });
-            this.treeElements = filteredTreeElements;
+
+            // fix old children nodes parentUuid when inserting new nodes
+            const nextTreeElements = filteredTreeElements.map((element) => {
+                // skip edges
+                if (newElement.childrenIds.includes(element.id)) {
+                    element.data = {
+                        ...element.data,
+                        parentNodeUuid: newElement.id,
+                    };
+                }
+                return element;
+            });
+
+            this.treeElements = nextTreeElements;
         }
         if (newElement.children) {
             newElement.children.forEach((child) => {
@@ -97,7 +110,24 @@ export default class NetworkModificationTreeModel {
                     });
                 });
             });
-            this.treeElements = filteredTreeElements;
+
+            // fix parentNodeUuid of children
+            const willbeDeletedNode = this.treeElements.find(
+                (el) => el.id === nodeId
+            );
+
+            const nextTreeElements = filteredTreeElements.map((element) => {
+                // skip edges
+                if (element.data?.parentNodeUuid === nodeId) {
+                    element.data = {
+                        ...element.data,
+                        parentNodeUuid: willbeDeletedNode.data?.parentNodeUuid,
+                    };
+                }
+                return element;
+            });
+
+            this.treeElements = nextTreeElements;
         });
     }
 
