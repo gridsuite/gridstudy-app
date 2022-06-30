@@ -1,5 +1,5 @@
 {
-    "network_modification/modificationsCount": "{count, plural, =0 {aucune modification} =1 {# modification} other {# modifications}}",
+    "network_modification/modificationsCount": "{hide, select, false {{count, plural, =0 {aucune modification} =1 {# modification} other {# modifications}}} other {...}}",
     "network_modifications/EQUIPMENT_DELETION": "Suppression de {computedLabel}",
     "network_modifications/SUBSTATION_CREATION": "Création du site {computedLabel}",
     "network_modifications/VOLTAGE_LEVEL_CREATION": "Création du poste {computedLabel}",
