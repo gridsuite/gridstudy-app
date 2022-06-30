@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    useRef,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -74,6 +80,7 @@ const LineAttachToVoltageLevelDialog = ({
     };
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
+    const newVoltageLevelRef = useRef();
 
     const [attachmentLine, setAttachmentLine] = useState(null);
 
@@ -154,6 +161,7 @@ const LineAttachToVoltageLevelDialog = ({
                       )
                     : '',
         });
+    const voltageLevelOrIdRef = useRef();
 
     const [busbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
 
@@ -173,6 +181,17 @@ const LineAttachToVoltageLevelDialog = ({
                   )
                 : '',
         });
+
+    useEffect(() => {
+        if (
+            newVoltageLevelRef.current !== null &&
+            voltageLevelOrId !== voltageLevelOrIdRef.current
+        ) {
+            voltageLevelOrIdRef.current = voltageLevelOrId;
+            setNewVoltageLevel(null);
+            newVoltageLevelRef.current = newVoltageLevel;
+        }
+    }, [voltageLevelOrId, newVoltageLevel]);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
