@@ -566,6 +566,7 @@ const LineAttachToVoltageLevelDialog = ({
                     <LineCreationDialog
                         open={true}
                         onClose={onLineDialogClose}
+                        voltageLevelOptions={voltageLevelOptions}
                         currentNodeUuid={currentNodeUuid}
                         substationOptions={substationOptions}
                         displayConnectivity={false}
