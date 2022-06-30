@@ -260,10 +260,32 @@ const NetworkTable = (props) => {
 
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
-        setSelectedColumnsNames(
-            new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
+        const newSelectedColumns = new Set(
+            allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []
         );
+        setSelectedColumnsNames(newSelectedColumns);
         setLineEdit({});
+
+        // Sort ID column by default, if selected
+        if (!newSelectedColumns.has('ID')) {
+            setColumnSort(undefined);
+        } else {
+            const tableDef = TABLES_DEFINITION_INDEXES.get(tabIndex);
+            const columnDef = tableDef.columns.find((c) => c.id === 'ID');
+            if (!columnDef) {
+                console.error(
+                    'ID column selected, but no ID identifier in TABLES_DEFINITION'
+                );
+                setColumnSort(undefined);
+            } else {
+                setColumnSort({
+                    key: columnDef.dataKey,
+                    reverse: false, // default sort
+                    numeric: columnDef.numeric,
+                    colDef: columnDef,
+                });
+            }
+        }
     }, [tabIndex, allDisplayedColumnsNames]);
 
     useEffect(() => {
@@ -278,26 +300,6 @@ const NetworkTable = (props) => {
         if (!props.network || props.disabled) return;
         props.network.useEquipment(resource);
     }, [props.network, props.disabled, tabIndex]);
-
-    useEffect(() => {
-        // Sort ID column by default, if selected
-        if (!selectedColumnsNames.has('ID')) {
-            setColumnSort(undefined);
-        } else {
-            const tableDef = TABLES_DEFINITION_INDEXES.get(tabIndex);
-            const columnDef = tableDef.columns.find((c) => c.id === 'ID');
-            if (!columnDef) {
-                setColumnSort(undefined);
-            } else {
-                setColumnSort({
-                    key: columnDef.dataKey,
-                    reverse: false,  // default sort
-                    numeric: columnDef.numeric,
-                    colDef: columnDef,
-                });
-            }
-        }
-    }, [selectedColumnsNames, tabIndex]);
 
     const formatCell = useCallback(
         (rowData, columnDefinition) => {
@@ -1218,7 +1220,9 @@ const NetworkTable = (props) => {
                             <span
                                 className={clsx({
                                     [classes.disabledLabel]:
-                                        isModifyingRow() || props.disabled || areRowsEmpty(tabIndex),
+                                        isModifyingRow() ||
+                                        props.disabled ||
+                                        areRowsEmpty(tabIndex),
                                 })}
                             >
                                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
@@ -1229,12 +1233,16 @@ const NetworkTable = (props) => {
                                     columns={getCSVColumnNames()}
                                     filename={getCSVFilename()}
                                     disabled={
-                                        isModifyingRow() || props.disabled || areRowsEmpty(tabIndex)
+                                        isModifyingRow() ||
+                                        props.disabled ||
+                                        areRowsEmpty(tabIndex)
                                     }
                                 >
                                     <IconButton
                                         disabled={
-                                            isModifyingRow() || props.disabled || areRowsEmpty(tabIndex)
+                                            isModifyingRow() ||
+                                            props.disabled ||
+                                            areRowsEmpty(tabIndex)
                                         }
                                         aria-label="exportCSVButton"
                                     >
