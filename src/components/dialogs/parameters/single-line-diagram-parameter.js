@@ -4,14 +4,14 @@ import { FormattedMessage } from 'react-intl';
 
 import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 
-import { getAvailableComponentLibraries } from '../../utils/rest-api';
-import { SubstationLayout } from '../diagrams/singleLineDiagram/single-line-diagram';
+import { getAvailableComponentLibraries } from '../../../utils/rest-api';
+import { SubstationLayout } from '../../diagrams/singleLineDiagram/single-line-diagram';
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
-} from '../../utils/config-params';
+} from '../../../utils/config-params';
 import { SwitchWithLabel, useParameterState } from './parameters';
 import { LineSeparator } from './line-separator';
 import { useStyles } from './parameters';
@@ -39,16 +39,20 @@ export const SingleLineDiagramParameters = ({ user }) => {
     return (
         <Grid container spacing={1} className={classes.grid}>
             <SwitchWithLabel
-                prop={diagonalLabelLocal}
+                value={diagonalLabelLocal}
                 label="diagonalLabel"
                 callback={() => {
                     handleChangeDiagonalLabel(!diagonalLabelLocal);
                 }}
             />
             <LineSeparator />
-            {SwitchWithLabel(centerLabelLocal, 'centerLabel', () => {
-                handleChangeCenterLabel(!centerLabelLocal);
-            })}
+            <SwitchWithLabel
+                value={centerLabelLocal}
+                label="centerLabel"
+                callback={() => {
+                    handleChangeCenterLabel(!centerLabelLocal);
+                }}
+            />
             <LineSeparator />
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">

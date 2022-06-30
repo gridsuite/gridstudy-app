@@ -23,18 +23,19 @@ import {
     getLoadFlowProvider,
     setLoadFlowParameters,
     setLoadFlowProvider,
-} from '../../utils/rest-api';
+} from '../../../utils/rest-api';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
-} from '../../utils/messages';
+} from '../../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
-import { SwitchWithLabel, LabelledButton } from './parameters';
+import { SwitchWithLabel } from './parameters';
 const LF_PROVIDER_VALUES = {
     OpenLoadFlow: 'OpenLoadFlow',
     Hades2: 'Hades2',
 };
+
 export const LoadFlow = () => {
     const classes = useStyles();
 
@@ -62,6 +63,7 @@ export const LoadFlow = () => {
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
     const studyUuid = useSelector((state) => state.studyUuid);
+
     const updateLfProvider = useCallback(
         (newProvider) => {
             setLoadFlowProvider(studyUuid, newProvider)
@@ -79,6 +81,63 @@ export const LoadFlow = () => {
         },
         [studyUuid, enqueueSnackbar, intlRef]
     );
+
+    const setLoadFlowProviderToDefault = useCallback(() => {
+        getDefaultLoadFlowProvider()
+            .then((defaultLFProvider) => {
+                updateLfProvider(
+                    defaultLFProvider in LF_PROVIDER_VALUES
+                        ? defaultLFProvider
+                        : LF_PROVIDER_VALUES.OpenLoadFlow
+                );
+            })
+            .catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'defaultLoadflowRetrievingError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }, [updateLfProvider, enqueueSnackbar, intlRef]);
+
+    useEffect(() => {
+        if (studyUuid) {
+            getLoadFlowParameters(studyUuid)
+                .then((params) => setLfParams(params))
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'paramsRetrievingError',
+                            intlRef: intlRef,
+                        },
+                    })
+                );
+            getLoadFlowProvider(studyUuid)
+                .then((provider) => {
+                    // if provider is not defined or not among allowed values, it's set to default value
+                    if (!(provider in LF_PROVIDER_VALUES)) {
+                        setLoadFlowProviderToDefault();
+                    } else {
+                        setLfProvider(provider);
+                    }
+                })
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'getLoadFlowProviderError',
+                            intlRef: intlRef,
+                        },
+                    })
+                );
+        }
+    }, [studyUuid, enqueueSnackbar, intlRef, setLoadFlowProviderToDefault]);
 
     const updateLfProviderCallback = useCallback(
         (evt) => {
@@ -220,99 +279,11 @@ export const LoadFlow = () => {
         );
     };
 
-    const resetLfParameters = () => {
-        setLoadFlowParameters(studyUuid, null)
-            .then(() => {
-                return getLoadFlowParameters(studyUuid)
-                    .then((params) => setLfParams(params))
-                    .catch((errorMessage) =>
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'paramsRetrievingError',
-                                intlRef: intlRef,
-                            },
-                        })
-                    );
-            })
-            .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'paramsChangingError',
-                        intlRef: intlRef,
-                    },
-                })
-            );
-
-        setLoadFlowProviderToDefault();
-    };
-
-    const setLoadFlowProviderToDefault = useCallback(() => {
-        getDefaultLoadFlowProvider()
-            .then((defaultLFProvider) => {
-                updateLfProvider(
-                    defaultLFProvider in LF_PROVIDER_VALUES
-                        ? defaultLFProvider
-                        : LF_PROVIDER_VALUES.OpenLoadFlow
-                );
-            })
-            .catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'defaultLoadflowRetrievingError',
-                        intlRef: intlRef,
-                    },
-                });
-            });
-    }, [updateLfProvider, enqueueSnackbar, intlRef]);
-
-    useEffect(() => {
-        if (studyUuid) {
-            getLoadFlowParameters(studyUuid)
-                .then((params) => setLfParams(params))
-                .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'paramsRetrievingError',
-                            intlRef: intlRef,
-                        },
-                    })
-                );
-            getLoadFlowProvider(studyUuid)
-                .then((provider) => {
-                    // if provider is not defined or not among allowed values, it's set to default value
-                    if (!(provider in LF_PROVIDER_VALUES)) {
-                        setLoadFlowProviderToDefault();
-                    } else {
-                        setLfProvider(provider);
-                    }
-                })
-                .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'getLoadFlowProviderError',
-                            intlRef: intlRef,
-                        },
-                    })
-                );
-        }
-    }, [studyUuid, enqueueSnackbar, intlRef, setLoadFlowProviderToDefault]);
-
     function MakeAdvancedParameterButton(showOpenIcon, label, callback) {
         return (
             <>
                 <Grid item xs={12} className={classes.advancedParameterButton}>
                     <Button
-                        variant="outlined"
                         startIcon={<SettingsIcon />}
                         endIcon={
                             showOpenIcon ? (
@@ -339,28 +310,40 @@ export const LoadFlow = () => {
 
     function makeComponentFor(defParam, key, lfParams, setter) {
         if (defParam.type === TYPES.bool) {
-            return SwitchWithLabel(lfParams[key], defParam.description, (ev) =>
-                setter({ ...lfParams, [key]: ev.target.checked })
+            return (
+                <SwitchWithLabel
+                    value={lfParams[key]}
+                    label={defParam.description}
+                    callback={(ev) =>
+                        setter({ ...lfParams, [key]: ev.target.checked })
+                    }
+                />
             );
         } else if (defParam.type === TYPES.enum) {
-            return MakeDropDown(
-                lfParams[key],
-                defParam.description,
-                defParam.values,
-                (ev) => setter({ ...lfParams, [key]: ev.target.value })
+            return (
+                <DropDown
+                    value={lfParams[key]}
+                    label={defParam.description}
+                    values={defParam.values}
+                    callback={(ev) =>
+                        setter({ ...lfParams, [key]: ev.target.value })
+                    }
+                />
             );
         } else if (defParam.type === TYPES.countries) {
-            return CountrySelector(
-                lfParams[key],
-                defParam.description,
-                (newValues) => {
-                    setter({ ...lfParams, [key]: [...newValues] });
-                }
+            return (
+                <CountrySelector
+                    value={lfParams[key]}
+                    label={defParam.description}
+                    callback={(newValues) => {
+                        setter({ ...lfParams, [key]: [...newValues] });
+                    }}
+                />
             );
         }
     }
 
-    const CountrySelector = (value, label, callback) => {
+    const CountrySelector = ({ value, label, callback }) => {
         return (
             <>
                 <Grid item xs={6}>
@@ -409,7 +392,7 @@ export const LoadFlow = () => {
         );
     };
 
-    function MakeDropDown(prop, label, values, callback) {
+    const DropDown = ({ value, label, values, callback }) => {
         return (
             <>
                 <Grid item xs={8}>
@@ -422,7 +405,7 @@ export const LoadFlow = () => {
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId={label}
-                        value={prop}
+                        value={value}
                         onChange={callback}
                         size="small"
                     >
@@ -435,17 +418,17 @@ export const LoadFlow = () => {
                 </Grid>
             </>
         );
-    }
+    };
 
     return (
-        <Grid container className={classes.grid} justifyContent="flex-end">
+        <Grid container className={classes.grid}>
             <Grid container key="lfProvider">
-                {MakeDropDown(
-                    lfProvider,
-                    'Provider',
-                    LF_PROVIDER_VALUES,
-                    updateLfProviderCallback
-                )}
+                <DropDown
+                    value={lfProvider}
+                    label="Provider"
+                    values={LF_PROVIDER_VALUES}
+                    callback={updateLfProviderCallback}
+                />
 
                 <Grid container paddingTop={1}>
                     <LineSeparator />
@@ -453,7 +436,6 @@ export const LoadFlow = () => {
                 <BasicLoadFlowParameters />
                 <AdvancedLoadFlowParameters />
             </Grid>
-            {LabelledButton(resetLfParameters, 'resetToDefault')}
         </Grid>
     );
 };

@@ -1,9 +1,4 @@
-/**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
+//   /**
 
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -20,29 +15,60 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
-    Switch,
     Tab,
     Tabs,
     Typography,
+    Switch,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
-import { updateConfigParameter } from '../../utils/rest-api';
+import {
+    getLoadFlowParameters,
+    setLoadFlowParameters,
+    updateConfigParameter,
+    fetchDefaultParametersValues,
+} from '../../../utils/rest-api';
+
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
-} from '../../utils/messages';
+} from '../../../utils/messages';
+
 import { SingleLineDiagramParameters } from './single-line-diagram-parameter';
-import { MapParameters } from './map-parameter';
+
 import { LoadFlow } from './load-flow-parameter';
+import { MapParameters } from './map-parameter';
 import { NetworkParameters } from './network-parameter';
 
+export const SwitchWithLabel = ({ value, label, callback }) => {
+    const classes = useStyles();
+    return (
+        <>
+            <Grid item xs={8}>
+                <Typography component="span" variant="body1">
+                    <Box fontWeight="fontWeightBold" m={1}>
+                        <FormattedMessage id={label} />
+                    </Box>
+                </Typography>
+            </Grid>
+            <Grid item container xs={4} className={classes.controlItem}>
+                <Switch
+                    checked={value}
+                    onChange={callback}
+                    value={value}
+                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                />
+            </Grid>
+        </>
+    );
+};
 export const useStyles = makeStyles((theme) => ({
     title: {
         padding: theme.spacing(2),
     },
     grid: {
-        padding: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+        padding: theme.spacing(0),
     },
     minWidthMedium: {
         minWidth: theme.spacing(20),
@@ -51,7 +77,8 @@ export const useStyles = makeStyles((theme) => ({
         justifyContent: 'flex-end',
     },
     button: {
-        marginBottom: '30px',
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(1),
     },
     advancedParameterButton: {
         marginTop: theme.spacing(3),
@@ -59,6 +86,18 @@ export const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export const FluxConventions = {
+    IIDM: 'iidm',
+    TARGET: 'target',
+};
+export const LabelledButton = ({ callback, label }) => {
+    const classes = useStyles();
+    return (
+        <Button onClick={callback} className={classes.button}>
+            <FormattedMessage id={label} />
+        </Button>
+    );
+};
 export function useParameterState(paramName) {
     const intlRef = useIntlRef();
 
@@ -99,54 +138,19 @@ export function useParameterState(paramName) {
     return [paramLocalState, handleChangeParamLocalState];
 }
 
-export const SwitchWithLabel = (prop, label, callback) => {
-    const classes = useStyles();
-    return (
-        <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
-            </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
-                <Switch
-                    checked={prop}
-                    onChange={callback}
-                    value={prop}
-                    inputProps={{ 'aria-label': 'primary checkbox' }}
-                />
-            </Grid>
-        </>
-    );
-};
-
-export const LabelledButton = (callback, label) => {
-    const classes = useStyles();
-    return (
-        <Grid item paddingTop={1}>
-            <Button
-                onClick={callback}
-                variant="contained"
-                className={classes.button}
-            >
-                <FormattedMessage id={label} />
-            </Button>
-        </Grid>
-    );
-};
-
-const Parameters = ({ showParameters, hideParameters, user }) => {
+const Parameters = ({ showParameters, hideParameters }) => {
     const classes = useStyles();
 
-    const studyUuid = useSelector((state) => state.studyUuid);
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [tabIndex, setTabIndex] = useState(0);
 
+    const studyUuid = useSelector((state) => state.studyUuid);
+
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
-
         return (
             <Typography
                 component="div"
@@ -156,10 +160,53 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 aria-labelledby={`simple-tab-${index}`}
                 {...other}
             >
-                {value === index && <Box p={3}>{children}</Box>}
+                {value === index && <Box p={1}>{children}</Box>}
             </Typography>
         );
     }
+
+    const resetNetworkParameters = () => {
+        fetchDefaultParametersValues().then((defaultValues) => {
+            const defaultFluxConvention = defaultValues.fluxConvention;
+            if (
+                Object.values(FluxConventions).includes(defaultFluxConvention)
+            ) {
+                this.props.NetworkParameters.handleChangeFluxConvention(
+                    defaultFluxConvention
+                );
+            }
+        });
+    };
+
+    const resetLfParameters = () => {
+        setLoadFlowParameters(studyUuid, null)
+            .then(() => {
+                return getLoadFlowParameters(this.props.LoadFlow.studyUuid)
+                    .then((params) => this.props.LoadFlow.setLfParams(params))
+                    .catch((errorMessage) =>
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'paramsRetrievingError',
+                                intlRef: intlRef,
+                            },
+                        })
+                    );
+            })
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'paramsChangingError',
+                        intlRef: intlRef,
+                    },
+                })
+            );
+
+        this.props.LoadFlow.setLoadFlowProviderToDefault();
+    };
 
     return (
         <Dialog
@@ -209,10 +256,22 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     <TabPanel value={tabIndex} index={3}>
                         <NetworkParameters />
                     </TabPanel>
-                    <Grid item xs={12}>
+                    <Grid container className={classes.controlItem}>
+                        {tabIndex === 2 && (
+                            <LabelledButton
+                                callback={resetLfParameters}
+                                label="resetToDefault"
+                            />
+                        )}
+                        {tabIndex === 3 && (
+                            <LabelledButton
+                                callback={resetNetworkParameters}
+                                label="resetToDefault"
+                            />
+                        )}
+
                         <Button
                             onClick={hideParameters}
-                            variant="contained"
                             className={classes.button}
                         >
                             <FormattedMessage id="close" />

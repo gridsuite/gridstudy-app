@@ -4,10 +4,9 @@ import { FormattedMessage } from 'react-intl';
 
 import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 
-import { fetchDefaultParametersValues } from '../../utils/rest-api';
-import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
-import { LabelledButton, useParameterState, useStyles } from './parameters';
 import { LineSeparator } from './line-separator';
+import { PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
+import { useParameterState, useStyles } from './parameters';
 export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',
@@ -18,24 +17,10 @@ export const NetworkParameters = () => {
     const [fluxConventionLocal, handleChangeFluxConvention] = useParameterState(
         PARAM_FLUX_CONVENTION
     );
-    const resetNetworkParameters = () => {
-        fetchDefaultParametersValues().then((defaultValues) => {
-            const defaultFluxConvention = defaultValues.fluxConvention;
-            if (
-                Object.values(FluxConventions).includes(defaultFluxConvention)
-            ) {
-                handleChangeFluxConvention(defaultFluxConvention);
-            }
-        });
-    };
+
     return (
-        <Grid
-            container
-            spacing={2}
-            className={classes.grid}
-            justifyContent="flex-end"
-        >
-            <Grid container spacing={1}>
+        <Grid container spacing={1} className={classes.grid}>
+            <Grid item container spacing={1}>
                 <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
@@ -62,7 +47,6 @@ export const NetworkParameters = () => {
                 </Grid>
                 <LineSeparator />
             </Grid>
-            {LabelledButton(resetNetworkParameters, 'resetToDefault')}
         </Grid>
     );
 };

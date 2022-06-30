@@ -4,8 +4,8 @@ import { FormattedMessage } from 'react-intl';
 
 import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 
-import { LineFlowMode } from '../network/line-layer';
-import { LineFlowColorMode } from '../network/line-layer';
+import { LineFlowMode } from '../../network/line-layer';
+import { LineFlowColorMode } from '../../network/line-layer';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
@@ -13,7 +13,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
-} from '../../utils/config-params';
+} from '../../../utils/config-params';
 import { SwitchWithLabel, useParameterState } from './parameters';
 import { LineSeparator } from './line-separator';
 import { useStyles } from './parameters';
@@ -66,13 +66,21 @@ export const MapParameters = () => {
 
     return (
         <Grid container spacing={1} className={classes.grid}>
-            {SwitchWithLabel(lineFullPathLocal, 'lineFullPath', () => {
-                handleChangeLineFullPath(!lineFullPathLocal);
-            })}
+            <SwitchWithLabel
+                value={lineFullPathLocal}
+                label="lineFullPath"
+                callback={() => {
+                    handleChangeLineFullPath(!lineFullPathLocal);
+                }}
+            />
             <LineSeparator />
-            {SwitchWithLabel(lineParallelPathLocal, 'lineParallelPath', () => {
-                handleChangeLineParallelPath(!lineParallelPathLocal);
-            })}
+            <SwitchWithLabel
+                value={lineParallelPathLocal}
+                label="lineParallelPath"
+                callback={() => {
+                    handleChangeLineParallelPath(!lineParallelPathLocal);
+                }}
+            />
             <LineSeparator />
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
@@ -137,15 +145,15 @@ export const MapParameters = () => {
                 thresholdMarks={alertThresholdMarks}
             />
             <LineSeparator />
-            {SwitchWithLabel(
-                displayOverloadTableLocal,
-                'displayOverloadTable',
-                () => {
+            <SwitchWithLabel
+                value={displayOverloadTableLocal}
+                label="displayOverloadTable"
+                callback={() => {
                     handleChangeDisplayOverloadTable(
                         !displayOverloadTableLocal
                     );
-                }
-            )}
+                }}
+            />
         </Grid>
     );
 };

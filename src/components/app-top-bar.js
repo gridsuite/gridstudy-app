@@ -39,8 +39,8 @@ import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
-import Parameters, { useParameterState } from './dialog-parameters/parameters';
 import { isNodeBuilt } from './graph/util/model-functions';
+import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
