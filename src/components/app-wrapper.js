@@ -14,6 +14,7 @@ import {
 } from '@mui/material/styles';
 import {
     LIGHT_THEME,
+    CardErrorBoundary,
     login_en,
     login_fr,
     report_viewer_en,
@@ -29,6 +30,8 @@ import {
     equipment_search_en,
     treeview_finder_fr,
     treeview_finder_en,
+    card_error_boundary_en,
+    card_error_boundary_fr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -90,6 +93,7 @@ const messages = {
         ...table_en,
         ...element_search_en,
         ...equipment_search_en,
+        ...card_error_boundary_en,
     },
     fr: {
         ...treeview_finder_fr,
@@ -101,6 +105,7 @@ const messages = {
         ...table_fr,
         ...element_search_fr,
         ...equipment_search_fr,
+        ...card_error_boundary_fr,
     },
 };
 
@@ -121,7 +126,9 @@ const AppWrapperWithRedux = () => {
                     <ThemeProvider theme={getMuiTheme(theme)}>
                         <SnackbarProvider hideIconVariant={false}>
                             <CssBaseline />
-                            <App />
+                            <CardErrorBoundary>
+                                <App />
+                            </CardErrorBoundary>
                         </SnackbarProvider>
                     </ThemeProvider>
                 </StyledEngineProvider>
