@@ -16,9 +16,19 @@ import TableCell from '@mui/material/TableCell';
 import 'react-virtualized/styles.css';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
+import AlertInvalidNode from '../util/alert-invalid-node';
+import Box from '@mui/material/Box';
+
+export const ROW_HEIGHT = 30;
+export const HEADER_ROW_HEIGHT = 48;
+export const MAX_TABLE_HEIGHT = 400;
 
 const useStyles = makeStyles((theme) => ({
     div: {
+        opacity: '60%',
+        '&:hover': {
+            opacity: '100%',
+        },
         height: '100%',
         width: '100%',
     },
@@ -35,10 +45,6 @@ const useStyles = makeStyles((theme) => ({
         pointerEvents: 'auto',
     },
     table: {
-        opacity: '60%',
-        '&:hover': {
-            opacity: '100%',
-        },
         pointerEvents: 'auto',
     },
     flexContainer: {
@@ -54,8 +60,8 @@ const OverloadedLinesView = (props) => {
     const classes = useStyles();
 
     const intl = useIntl();
-    const rowHeight = 30;
     useEffect(() => {
+        if (props.disabled) return;
         const makeData = (line) => {
             let limits = [line.permanentLimit1, line.permanentLimit2];
             let intensities = [line.i1, line.i2];
@@ -117,7 +123,7 @@ const OverloadedLinesView = (props) => {
                 className={clsx(classes.tableCell, classes.flexContainer)}
                 variant="body"
                 style={{
-                    height: rowHeight,
+                    height: ROW_HEIGHT,
                     color: color,
                 }}
                 align={'right'}
@@ -141,12 +147,26 @@ const OverloadedLinesView = (props) => {
     function renderOverloadedLines() {
         return (
             <div className={classes.div}>
+                {props.disabled && (
+                    <Box
+                        position="absolute"
+                        left={0}
+                        right={0}
+                        top={HEADER_ROW_HEIGHT}
+                    >
+                        <AlertInvalidNode noMargin={true} />
+                    </Box>
+                )}
                 <VirtualizedTable
-                    height={Math.min(lines.length * rowHeight + 50, 400)}
+                    height={Math.min(
+                        (props.disabled ? 0 : lines.length) * ROW_HEIGHT +
+                            HEADER_ROW_HEIGHT,
+                        MAX_TABLE_HEIGHT
+                    )}
                     className={classes.table}
-                    rows={lines}
+                    rows={props.disabled ? [] : lines}
                     rowStyle={{ alignItems: 'stretch' }}
-                    rowHeight={rowHeight}
+                    rowHeight={ROW_HEIGHT}
                     classes={{ tableRow: classes.rowCell }}
                     filter={filter}
                     sortable={true}
