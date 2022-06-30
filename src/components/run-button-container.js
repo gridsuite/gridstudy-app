@@ -16,7 +16,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { addLoadflowNotif, addSANotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { isNodeValid } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -26,12 +25,12 @@ const useStyles = makeStyles((theme) => ({
 
 export function RunButtonContainer({
     studyUuid,
-    workingNode,
-    selectedNode,
+    currentNode,
     loadFlowStatus,
     securityAnalysisStatus,
     setIsComputationRunning,
     runnable,
+    disabled,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -68,7 +67,7 @@ export function RunButtonContainer({
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
             if (action === runnable.SECURITY_ANALYSIS) {
-                stopSecurityAnalysis(studyUuid, workingNode?.id);
+                stopSecurityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -81,12 +80,12 @@ export function RunButtonContainer({
         setComputationStopped(false);
 
         // start server side security analysis
-        startSecurityAnalysis(studyUuid, workingNode?.id, contingencyListNames);
+        startSecurityAnalysis(studyUuid, currentNode?.id, contingencyListNames);
     };
 
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
-            startLoadFlow(studyUuid, workingNode?.id);
+            startLoadFlow(studyUuid, currentNode?.id);
             setRanLoadflow(true);
         } else if (action === runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
@@ -146,14 +145,16 @@ export function RunButtonContainer({
                 getText={getRunningText}
                 getStartIcon={getRunningIcon}
                 computationStopped={computationStopped}
-                disabled={!isNodeValid(workingNode, selectedNode)}
+                disabled={disabled}
             />
-            <ContingencyListSelector
-                open={showContingencyListSelector}
-                onClose={() => setShowContingencyListSelector(false)}
-                onStart={handleStartSecurityAnalysis}
-                selectedNodeUuid={workingNode?.id}
-            />
+            {!disabled && (
+                <ContingencyListSelector
+                    open={showContingencyListSelector}
+                    onClose={() => setShowContingencyListSelector(false)}
+                    onStart={handleStartSecurityAnalysis}
+                    currentNodeUuid={currentNode?.id}
+                />
+            )}
         </>
     );
 }
@@ -164,11 +165,11 @@ RunButtonContainer.propTypes = {
         action: PropTypes.func,
         text: PropTypes.string,
     }),
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     status: PropTypes.func,
     onStartClick: PropTypes.func,
     text: PropTypes.func,
     startIcon: PropTypes.func,
     computationStopped: PropTypes.bool,
+    disabled: PropTypes.bool,
 };

@@ -622,7 +622,12 @@ export const TABLES_DEFINITIONS = {
                 id: 'TargetP',
                 dataKey: 'targetP',
                 numeric: true,
-                changeCmd: 'equipment.setTargetP({})',
+                changeCmd:
+                    'if (equipment.getMinP() <= {} && {} <= equipment.getMaxP() ) { \n' +
+                    '    equipment.setTargetP({})\n' +
+                    '} else {\n' +
+                    "    throw new Exception('incorrect value')\n" +
+                    ' }\n',
                 editor: ({ equipment, ...props }) =>
                     NumericalField({
                         min: equipment.minP,

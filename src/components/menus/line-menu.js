@@ -36,7 +36,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { equipments } from '../network/network-equipments';
-import { isNodeValid } from '../graph/util/model-functions';
+import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
@@ -53,14 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 const withLineMenu =
     (BaseMenu) =>
-    ({
-        id,
-        position,
-        handleClose,
-        handleViewInSpreadsheet,
-        workingNode,
-        selectedNode,
-    }) => {
+    ({ id, position, handleClose, handleViewInSpreadsheet, currentNode }) => {
         const classes = useStyles();
         const intl = useIntl();
         const intlRef = useIntlRef();
@@ -78,10 +71,12 @@ const withLineMenu =
         const isNodeEditable = useMemo(
             function () {
                 return (
-                    !isNodeValid(workingNode, selectedNode) || isAnyNodeBuilding
+                    isNodeBuilt(currentNode) &&
+                    !isNodeReadOnly(currentNode) &&
+                    !isAnyNodeBuilding
                 );
             },
-            [workingNode, selectedNode, isAnyNodeBuilding]
+            [currentNode, isAnyNodeBuilding]
         );
 
         const getLineDescriptor = useCallback(
@@ -113,7 +108,7 @@ const withLineMenu =
         function handleLockout() {
             if (line.branchStatus === 'PLANNED_OUTAGE') return;
             handleClose();
-            lockoutLine(studyUuid, workingNode?.id, line.id).then(
+            lockoutLine(studyUuid, currentNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -128,7 +123,7 @@ const withLineMenu =
         function handleTrip() {
             if (line.branchStatus === 'FORCED_OUTAGE') return;
             handleClose();
-            tripLine(studyUuid, workingNode?.id, line.id).then((response) => {
+            tripLine(studyUuid, currentNode?.id, line.id).then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(response, 'UnableToTripLine');
                 }
@@ -146,7 +141,7 @@ const withLineMenu =
             )
                 return;
             handleClose();
-            energiseLineEnd(studyUuid, workingNode?.id, line.id, side).then(
+            energiseLineEnd(studyUuid, currentNode?.id, line.id, side).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -161,7 +156,7 @@ const withLineMenu =
         function handleSwitchOn() {
             if (line.terminal1Connected && line.terminal2Connected) return;
             handleClose();
-            switchOnLine(studyUuid, workingNode?.id, line.id).then(
+            switchOnLine(studyUuid, currentNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -320,8 +315,7 @@ withLineMenu.propTypes = {
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
 };
 
 export default withLineMenu;

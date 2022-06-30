@@ -24,7 +24,7 @@ import {
 import { gridItem, GridSection, removeNullDataValues } from './dialogUtils';
 import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from './line-creation-dialog';
 import {
@@ -33,6 +33,7 @@ import {
 } from './line-split-or-attach-utils';
 import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
+import { Box } from '@mui/system';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -41,7 +42,7 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param lineOptions the available network lines
- * @param selectedNodeUuid the currently selected tree node
+ * @param currentNodeUuid the currently selected tree node
  * @param substationOptions available substations
  * @param editData the possible line split with voltage level creation record to edit
  */
@@ -50,7 +51,7 @@ const LineAttachToVoltageLevelDialog = ({
     onClose,
     lineOptions,
     voltageLevelOptions,
-    selectedNodeUuid,
+    currentNodeUuid,
     substationOptions,
     editData,
 }) => {
@@ -58,8 +59,8 @@ const LineAttachToVoltageLevelDialog = ({
 
     const bobbsCb = useMemo(
         () =>
-            makeRefreshBusOrBusbarSectionsCallback(studyUuid, selectedNodeUuid),
-        [studyUuid, selectedNodeUuid]
+            makeRefreshBusOrBusbarSectionsCallback(studyUuid, currentNodeUuid),
+        [studyUuid, currentNodeUuid]
     );
 
     const { snackError } = useSnackMessage();
@@ -287,7 +288,7 @@ const LineAttachToVoltageLevelDialog = ({
         if (inputForm.validate()) {
             attachLine(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 editData ? editData.uuid : undefined,
                 lineToAttachTo.id || lineToAttachTo,
                 parseFloat(percentage),
@@ -329,7 +330,7 @@ const LineAttachToVoltageLevelDialog = ({
     const onVoltageLevelDo = useCallback(
         ({
             studyUuid,
-            selectedNodeUuid,
+            currentNodeUuid,
             voltageLevelId,
             voltageLevelName,
             nominalVoltage,
@@ -374,7 +375,7 @@ const LineAttachToVoltageLevelDialog = ({
     const onLineDo = useCallback(
         (
             studyUuid,
-            selectedNodeUuid,
+            currentNodeUuid,
             lineId,
             lineName,
             seriesResistance,
@@ -481,39 +482,36 @@ const LineAttachToVoltageLevelDialog = ({
                     </Grid>
                     <GridSection title="VoltageLevel" />
                     <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField, 5)}
+                        {gridItem(voltageLevelIdField)}
+                        {gridItem(bbsOrNodeIdField)}
                         {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
                                 startIcon={
                                     newVoltageLevel ? <EditIcon /> : <AddIcon />
                                 }
-                                variant="outlined"
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="NewVoltageLevel" />
                                 </Typography>
-                            </Button>,
-                            2
+                            </Button>
                         )}
-                        {gridItem(bbsOrNodeIdField, 5)}
                     </Grid>
                     <GridSection title="AttachedLine" />
                     <Grid container spacing={2}>
-                        {gridItem(lineToIdField, 4)}
+                        {gridItem(lineToIdField)}
+                        <Box width="100%" />
                         {gridItem(
                             <Button
                                 onClick={openLineDialog}
                                 startIcon={
                                     attachmentLine ? <EditIcon /> : <AddIcon />
                                 }
-                                variant="outlined"
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="AttachedLine" />
                                 </Typography>
-                            </Button>,
-                            4
+                            </Button>
                         )}
                     </Grid>
                     <GridSection title="Line1" />
@@ -539,7 +537,7 @@ const LineAttachToVoltageLevelDialog = ({
                     <VoltageLevelCreationDialog
                         open={true}
                         onClose={onVoltageLevelDialogClose}
-                        selectedNodeUuid={selectedNodeUuid}
+                        currentNodeUuid={currentNodeUuid}
                         substationOptions={substationOptions}
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
@@ -549,7 +547,8 @@ const LineAttachToVoltageLevelDialog = ({
                     <LineCreationDialog
                         open={true}
                         onClose={onLineDialogClose}
-                        selectedNodeUuid={selectedNodeUuid}
+                        voltageLevelOptions={voltageLevelOptions}
+                        currentNodeUuid={currentNodeUuid}
                         substationOptions={substationOptions}
                         displayConnectivity={false}
                         onCreateLine={onLineDo}
@@ -565,7 +564,7 @@ LineAttachToVoltageLevelDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
     substationOptions: PropTypes.arrayOf(PropTypes.object),
     editData: PropTypes.object,
 };

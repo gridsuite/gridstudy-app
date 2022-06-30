@@ -286,7 +286,8 @@ const NetworkMap = (props) => {
     if (
         props.network !== null &&
         props.geoData !== null &&
-        props.filteredNominalVoltages !== null
+        props.filteredNominalVoltages !== null &&
+        !props.disabled
     ) {
         layers.push(
             new SubstationLayer({
@@ -365,7 +366,6 @@ const NetworkMap = (props) => {
 
     return (
         <>
-            {props.waitingLoadGeoData && renderOverlay()}
             <DeckGL
                 onViewStateChange={onViewStateChange}
                 ref={(ref) => {
@@ -383,6 +383,7 @@ const NetworkMap = (props) => {
                 getCursor={cursorHandler}
                 pickingRadius={5}
             >
+                {props.waitingLoadGeoData && renderOverlay()}
                 <StaticMap
                     mapStyle={theme.mapboxStyle}
                     preventStyleDiffing={true}
@@ -415,6 +416,7 @@ NetworkMap.defaultProps = {
     lineFlowAlertThreshold: 100,
     loadFlowStatus: RunningStatus.IDLE,
     visible: true,
+    disabled: false,
 };
 
 NetworkMap.propTypes = {
@@ -442,6 +444,7 @@ NetworkMap.propTypes = {
     loadFlowStatus: PropTypes.oneOf(Object.values(RunningStatus)),
     visible: PropTypes.bool,
     updatedLines: PropTypes.array,
+    disabled: PropTypes.bool,
 };
 
 export default React.memo(NetworkMap);

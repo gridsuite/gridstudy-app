@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
     fetchNetworkModifications,
     deleteModifications,
@@ -27,7 +26,6 @@ import {
     Checkbox,
     CircularProgress,
     Fab,
-    LinearProgress,
     Toolbar,
     Typography,
 } from '@mui/material';
@@ -55,9 +53,15 @@ import {
 import { UPDATE_TYPE } from '../../network/constants';
 
 const useStyles = makeStyles((theme) => ({
+    listContainer: {
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+    },
     list: {
         paddingTop: theme.spacing(0),
-        overflowY: 'auto',
+        flexGrow: 1,
     },
     addButton: {
         position: 'absolute',
@@ -65,11 +69,14 @@ const useStyles = makeStyles((theme) => ({
         right: 0,
         margin: theme.spacing(3),
     },
-    modificationCount: {
+    modificationsTitle: {
+        display: 'flex',
+        alignItems: 'center',
         margin: theme.spacing(0),
         padding: theme.spacing(1),
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
+        overflow: 'hidden',
     },
     toolbar: {
         padding: theme.spacing(0),
@@ -93,12 +100,7 @@ const useStyles = makeStyles((theme) => ({
     },
     circularProgress: {
         marginRight: theme.spacing(2),
-        color: theme.palette.primary.main,
-    },
-    linearProgress: {
-        marginTop: theme.spacing(2),
-        marginRight: theme.spacing(2),
-        color: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
     },
     formattedMessageProgress: {
         marginTop: theme.spacing(2),
@@ -111,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         color: theme.palette.primary.main,
     },
+    icon: {
+        width: theme.spacing(3),
+    },
 }));
 
 function isChecked(s1) {
@@ -122,14 +127,16 @@ function isPartial(s1, s2) {
     return s1 !== s2;
 }
 
-const NetworkModificationNodeEditor = ({ selectedNode }) => {
+const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
-    const workingNode = useSelector((state) => state.workingTreeNode);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
-    const selectedNodeRef = useRef(); // initial empty to get first update
+    const currentTreeNode = useSelector((state) => state.currentTreeNode);
+
+    const currentNodeIdRef = useRef(); // initial empty to get first update
+    const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
@@ -152,8 +159,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             <Dialog
                 open={true}
                 onClose={closeDialog}
-                selectedNodeUuid={selectedNode.id}
-                workingNodeUuid={workingNode.id}
+                currentNodeUuid={currentTreeNode.id}
                 editData={editData}
                 {...props}
             />
@@ -194,7 +200,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     ) {
         const fetchedEquipmentOptions = fetchEquipments(
             studyUuid,
-            selectedNode?.id,
+            currentTreeNode?.id,
             [],
             resourceType,
             resource,
@@ -296,39 +302,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         },
     };
 
-    useEffect(() => {
-        setEditDialogOpen(editData?.type);
-    }, [editData]);
-
-    useEffect(() => {
-        var discardResult = false;
-        if (selectedNode !== selectedNodeRef.current) {
-            // loader when opening a modification panel (current user only)
-            setLaunchLoader(true);
-            selectedNodeRef.current = selectedNode;
-            if (!selectedNode.networkModification) {
-                setModifications([]);
-                setLaunchLoader(false);
-            } else {
-                fetchNetworkModifications(selectedNode.networkModification)
-                    .then((res) => {
-                        if (
-                            selectedNodeRef.current === selectedNode &&
-                            !discardResult
-                        )
-                            setModifications(res.status ? [] : res);
-                    })
-                    .catch((err) => snackError(err.message))
-                    .finally(() => {
-                        setLaunchLoader(false);
-                    });
-            }
-        }
-        return () => {
-            discardResult = true;
-        };
-    }, [selectedNode, setModifications, snackError, dispatch]);
-
     const fillNotification = useCallback(
         (study, messageId) => {
             // (work for all users)
@@ -360,10 +333,48 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         [fillNotification]
     );
 
+    const dofetchNetworkModifications = useCallback(() => {
+        // In most cases here this condition manage that current Node is the root node
+        if (!currentTreeNode?.data?.modificationGroupUuid) return;
+
+        setLaunchLoader(true);
+        fetchNetworkModifications(currentTreeNode?.data?.modificationGroupUuid)
+            .then((res) => {
+                // Check if during asynchronous request currentNode has already changed
+                // otherwise accept fetch results
+                if (currentTreeNode.id === currentNodeIdRef.current) {
+                    setModifications(res);
+                }
+            })
+            .catch((errorMessage) => snackError(errorMessage))
+            .finally(() => {
+                setPendingState(false);
+                setLaunchLoader(false);
+            });
+    }, [currentTreeNode, snackError]);
+
+    useEffect(() => {
+        setEditDialogOpen(editData?.type);
+    }, [editData]);
+
+    useEffect(() => {
+        // first time then fetch modifications
+        // OR next time if currentNodeId changed then fetch modifications
+        if (
+            !currentNodeIdRef.current ||
+            currentNodeIdRef.current !== currentTreeNode.id
+        ) {
+            currentNodeIdRef.current = currentTreeNode.id;
+            // Current node has changed then clear the modifications list
+            setModifications([]);
+            dofetchNetworkModifications();
+        }
+    }, [currentTreeNode, dofetchNetworkModifications]);
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                selectedNodeRef.current?.id !==
+                currentNodeIdRef.current !==
                 studyUpdatedForce.eventData.headers['parentNode']
             )
                 return;
@@ -373,6 +384,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     studyUpdatedForce.eventData.headers['updateType']
                 )
             ) {
+                setPendingState(true);
                 manageNotification(studyUpdatedForce);
             }
             // notify  finished action (success or error => we remove the loader)
@@ -381,6 +393,10 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'UPDATE_FINISHED'
             ) {
+                // fetch modifications because it must have changed
+                // Do not clear the modifications list, because currentNode is the concerned one
+                // this allow to append new modifications to the existing list.
+                dofetchNetworkModifications();
                 dispatch(
                     removeNotificationByNode(
                         studyUpdatedForce.eventData.headers['parentNode']
@@ -388,7 +404,12 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 );
             }
         }
-    }, [dispatch, manageNotification, studyUpdatedForce]);
+    }, [
+        dispatch,
+        dofetchNetworkModifications,
+        manageNotification,
+        studyUpdatedForce,
+    ]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
@@ -409,24 +430,26 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const doDeleteModification = () => {
         deleteModifications(
             studyUuid,
-            selectedNode,
+            currentTreeNode?.id,
             [...selectedItems.values()].map((item) => item.uuid)
         ).then();
     };
 
     const doEditModification = (modificationUuid) => {
         const modification = fetchNetworkModification(modificationUuid);
-        modification.then((res) => {
-            res.json().then((data) => {
-                //remove all null values to avoid showing a "null" in the forms
-                Object.keys(data[0]).forEach((key) => {
-                    if (data[0][key] === null) {
-                        delete data[0][key];
-                    }
+        modification
+            .then((res) => {
+                res.json().then((data) => {
+                    //remove all null values to avoid showing a "null" in the forms
+                    Object.keys(data[0]).forEach((key) => {
+                        if (data[0][key] === null) {
+                            delete data[0][key];
+                        }
+                    });
+                    setEditData(data[0]);
                 });
-                setEditData(data[0]);
-            });
-        });
+            })
+            .catch((errorMessage) => snackError(errorMessage));
     };
 
     const renderDialog = () => {
@@ -451,7 +474,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             setModifications(res);
             changeNetworkModificationOrder(
                 studyUuid,
-                selectedNode.id,
+                currentTreeNode?.id,
                 item.uuid,
                 before
             ).catch((errorMessage) => {
@@ -459,17 +482,120 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 setModifications(modifications); // rollback
             });
         },
-        [modifications, studyUuid, selectedNode.id, snackError]
+        [modifications, studyUuid, currentTreeNode?.id, snackError]
     );
 
     const isLoading = () => {
-        if (notificationIdList.length === 0) return false;
-
         return (
             notificationIdList.filter(
-                (notification) => notification === selectedNode?.id
+                (notification) => notification === currentTreeNode?.id
             ).length > 0
         );
+    };
+
+    const renderNetworkModificationsList = () => {
+        return (
+            <DragDropContext
+                onDragEnd={commit}
+                onDragStart={() => setIsDragging(true)}
+            >
+                <Droppable
+                    droppableId="network-modification-list"
+                    isDropDisabled={isLoading() || isAnyNodeBuilding}
+                >
+                    {(provided) => (
+                        <div
+                            className={classes.listContainer}
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                        >
+                            <CheckboxList
+                                className={classes.list}
+                                onChecked={setSelectedItems}
+                                values={modifications}
+                                itemRenderer={(props) => (
+                                    <ModificationListItem
+                                        key={props.item.uuid}
+                                        onEdit={doEditModification}
+                                        isDragging={isDragging}
+                                        network={network}
+                                        isOneNodeBuilding={isAnyNodeBuilding}
+                                        {...props}
+                                        disabled={isLoading()}
+                                    />
+                                )}
+                                toggleSelectAll={toggleSelectAll}
+                            />
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
+        );
+    };
+
+    const renderNetworkModificationsListTitleLoading = () => {
+        return (
+            <div className={classes.modificationsTitle}>
+                <div className={classes.icon}>
+                    <CircularProgress
+                        size={'1em'}
+                        className={classes.circularProgress}
+                    />
+                </div>
+                <Typography noWrap>
+                    <FormattedMessage id={messageId} />
+                </Typography>
+            </div>
+        );
+    };
+
+    const renderNetworkModificationsListTitleUpdating = () => {
+        return (
+            <div className={classes.modificationsTitle}>
+                <div className={classes.icon}>
+                    <CircularProgress
+                        size={'1em'}
+                        className={classes.circularProgress}
+                    />
+                </div>
+                <Typography noWrap>
+                    <FormattedMessage
+                        id={'network_modifications/modifications'}
+                    />
+                </Typography>
+            </div>
+        );
+    };
+
+    const renderNetworkModificationsListTitle = () => {
+        return (
+            <div className={classes.modificationsTitle}>
+                <div className={classes.icon}>
+                    {pendingState && (
+                        <CircularProgress
+                            size={'1em'}
+                            className={classes.circularProgress}
+                        />
+                    )}
+                </div>
+                <Typography noWrap>
+                    <FormattedMessage
+                        id={'network_modification/modificationsCount'}
+                        values={{
+                            count: modifications ? modifications?.length : '',
+                            hide: pendingState,
+                        }}
+                    />
+                </Typography>
+            </div>
+        );
+    };
+
+    const renderPaneSubtitle = () => {
+        if (isLoading()) return renderNetworkModificationsListTitleLoading();
+        if (launchLoader) return renderNetworkModificationsListTitleUpdating();
+        return renderNetworkModificationsListTitle();
     };
 
     return (
@@ -497,72 +623,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     <DeleteIcon />
                 </IconButton>
             </Toolbar>
-            <Typography className={classes.modificationCount}>
-                <FormattedMessage
-                    id={'network_modification/modificationsCount'}
-                    values={{
-                        count: modifications ? modifications?.length : '',
-                    }}
-                />
-            </Typography>
-            <DragDropContext
-                onDragEnd={commit}
-                onDragStart={() => setIsDragging(true)}
-            >
-                <Droppable
-                    droppableId="network-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding}
-                >
-                    {(provided) => (
-                        <div
-                            className={classes.list}
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
-                            <CheckboxList
-                                className={classes.list}
-                                onChecked={setSelectedItems}
-                                values={modifications}
-                                itemRenderer={(props) => (
-                                    <ModificationListItem
-                                        key={props.item.uuid}
-                                        onEdit={doEditModification}
-                                        isDragging={isDragging}
-                                        network={network}
-                                        isOneNodeBuilding={isAnyNodeBuilding}
-                                        {...props}
-                                        disabled={isLoading()}
-                                    />
-                                )}
-                                toggleSelectAll={toggleSelectAll}
-                            />
+            {renderPaneSubtitle()}
 
-                            {isLoading() && (
-                                <div className={classes.notification}>
-                                    <CircularProgress
-                                        className={classes.circularProgress}
-                                    />
-                                    <FormattedMessage id={messageId} />
-                                </div>
-                            )}
-                            {provided.placeholder}
-                            {launchLoader && (
-                                <div className={classes.notification}>
-                                    <LinearProgress
-                                        className={classes.linearProgress}
-                                    />
-                                    <FormattedMessage
-                                        id={
-                                            'network_modifications/modifications'
-                                        }
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
-
+            {renderNetworkModificationsList()}
             <Fab
                 className={classes.addButton}
                 color="primary"
@@ -576,18 +639,13 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
                 network={network}
-                selectedNodeUuid={selectedNode.id}
-                workingNodeUuid={workingNode?.id}
+                currentNodeUuid={currentTreeNode?.id}
                 onOpenDialog={setEditDialogOpen}
                 dialogs={dialogs}
             />
             {editDialogOpen && renderDialog()}
         </>
     );
-};
-
-NetworkModificationNodeEditor.propTypes = {
-    selectedNode: PropTypes.object.isRequired,
 };
 
 export default NetworkModificationNodeEditor;

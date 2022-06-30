@@ -59,7 +59,6 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
-import { isNodeValid } from '../graph/util/model-functions';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 
@@ -310,6 +309,9 @@ const NetworkTable = (props) => {
 
     const getRows = useCallback(
         (index) => {
+            if (props.disabled) {
+                return [];
+            }
             const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
             const datasourceRows = tableDefinition.getter
                 ? tableDefinition.getter(props.network)
@@ -348,7 +350,14 @@ const NetworkTable = (props) => {
             }
             return result;
         },
-        [props.network, rowFilter, columnSort, filter, formatCell]
+        [
+            props.network,
+            rowFilter,
+            columnSort,
+            filter,
+            formatCell,
+            props.disabled,
+        ]
     );
 
     function getTabIndexFromEquipementType(equipmentType) {
@@ -540,7 +549,7 @@ const NetworkTable = (props) => {
                 });
                 requestNetworkChange(
                     props.studyUuid,
-                    props.workingNode?.id,
+                    props.currentNode?.id,
                     groovyCr
                 ).then((response) => {
                     if (response.ok) {
@@ -626,7 +635,7 @@ const NetworkTable = (props) => {
             lineEdit,
             tabIndex,
             props.studyUuid,
-            props.workingNode?.id,
+            props.currentNode?.id,
             intl,
             enqueueSnackbar,
             intlRef,
@@ -793,9 +802,9 @@ const NetworkTable = (props) => {
 
         function isEditColumnVisible() {
             return (
+                !props.disabled &&
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .modifiableEquipmentType &&
-                isNodeValid(props.workingNode, props.selectedNode) &&
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .columns.filter((c) => c.editor)
                     .filter((c) => selectedColumnsNames.has(c.id)).length > 0
@@ -827,12 +836,12 @@ const NetworkTable = (props) => {
         const columns = generateTableColumns(tabIndex);
         return (
             <EquipmentTable
-                workingNode={props.workingNode}
-                selectedNode={props.selectedNode}
+                currentNode={props.currentNode}
                 rows={rows}
                 columns={columns}
                 fetched={props.network.isResourceFetched(resource)}
                 scrollToIndex={scrollToIndex} // TODO This is not implemented yet
+                disableVerticalScroll={isModifyingRow()}
             />
         );
     }
@@ -1067,7 +1076,9 @@ const NetworkTable = (props) => {
                                     label={intl.formatMessage({
                                         id: table.name,
                                     })}
-                                    disabled={isModifyingRow()}
+                                    disabled={
+                                        isModifyingRow() || props.disabled
+                                    }
                                 />
                             ))}
                         </Tabs>
@@ -1075,7 +1086,7 @@ const NetworkTable = (props) => {
                     <Grid container>
                         <Grid item className={classes.containerInputSearch}>
                             <TextField
-                                disabled={isModifyingRow()}
+                                disabled={isModifyingRow() || props.disabled}
                                 className={classes.textField}
                                 size="small"
                                 placeholder={
@@ -1091,7 +1102,8 @@ const NetworkTable = (props) => {
                                         <InputAdornment position="start">
                                             <SearchIcon
                                                 color={
-                                                    isModifyingRow()
+                                                    isModifyingRow() ||
+                                                    props.disabled
                                                         ? 'disabled'
                                                         : 'inherit'
                                                 }
@@ -1104,13 +1116,14 @@ const NetworkTable = (props) => {
                         <Grid item className={classes.selectColumns}>
                             <span
                                 className={clsx({
-                                    [classes.disabledLabel]: isModifyingRow(),
+                                    [classes.disabledLabel]:
+                                        isModifyingRow() || props.disabled,
                                 })}
                             >
                                 <FormattedMessage id="LabelSelectList" />
                             </span>
                             <IconButton
-                                disabled={isModifyingRow()}
+                                disabled={isModifyingRow() || props.disabled}
                                 className={
                                     selectedColumnsNames.size === 0
                                         ? classes.blink
@@ -1131,14 +1144,12 @@ const NetworkTable = (props) => {
                                 child={checkListColumnsNames()}
                             />
                         </Grid>
-                        {!isNodeValid(props.workingNode, props.selectedNode) &&
-                            props.selectedNode?.type !== 'ROOT' && (
-                                <AlertInvalidNode />
-                            )}
+                        {props.disabled && <AlertInvalidNode />}
                         <Grid item className={classes.exportCsv}>
                             <span
                                 className={clsx({
-                                    [classes.disabledLabel]: isModifyingRow(),
+                                    [classes.disabledLabel]:
+                                        isModifyingRow() || props.disabled,
                                 })}
                             >
                                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
@@ -1148,10 +1159,14 @@ const NetworkTable = (props) => {
                                     datas={getCSVData}
                                     columns={getCSVColumnNames()}
                                     filename={getCSVFilename()}
-                                    disabled={isModifyingRow()}
+                                    disabled={
+                                        isModifyingRow() || props.disabled
+                                    }
                                 >
                                     <IconButton
-                                        disabled={isModifyingRow()}
+                                        disabled={
+                                            isModifyingRow() || props.disabled
+                                        }
                                         aria-label="exportCSVButton"
                                     >
                                         <GetAppIcon />
@@ -1173,23 +1188,23 @@ const NetworkTable = (props) => {
 NetworkTable.defaultProps = {
     network: null,
     studyUuid: '',
-    workingNode: null,
-    selectedNode: null,
+    currentNode: null,
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
     loadFlowStatus: RunningStatus.IDLE,
+    disabled: false,
 };
 
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
+    disabled: PropTypes.bool,
 };
 
 export default NetworkTable;

@@ -30,7 +30,6 @@ import {
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
-import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
@@ -39,6 +38,7 @@ import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
+import { isNodeBuilt } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -94,8 +94,7 @@ export const StudyDisplayMode = {
 const StudyPane = ({
     studyUuid,
     network,
-    workingNode,
-    selectedNode,
+    currentNode,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -148,6 +147,8 @@ const StudyPane = ({
     const voltageLevelsIdsForNad = useSelector(
         (state) => state.voltageLevelsIdsForNad
     );
+
+    const disabled = !isNodeBuilt(currentNode);
 
     useEffect(() => {
         if (
@@ -286,8 +287,7 @@ const StudyPane = ({
                                     }
                                     openVoltageLevel={openVoltageLevel}
                                     /* TODO verif tableEquipment*/
-                                    workingNode={workingNode}
-                                    selectedNode={selectedNode}
+                                    currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -304,8 +304,6 @@ const StudyPane = ({
                                 />
                             </div>
 
-                            <MapLateralDrawers />
-
                             {/*
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
@@ -321,8 +319,8 @@ const StudyPane = ({
                                     loadFlowStatus={getLoadFlowRunningStatus(
                                         loadFlowInfos?.loadFlowStatus
                                     )}
-                                    workingNode={workingNode}
-                                    selectedNode={selectedNode}
+                                    currentNode={currentNode}
+                                    disabled={disabled}
                                 />
                             )}
                             {props.view === StudyView.MAP &&
@@ -330,15 +328,15 @@ const StudyPane = ({
                                     <NetworkAreaDiagramPane
                                         studyUuid={studyUuid}
                                         network={network}
-                                        workingNode={workingNode}
-                                        selectedNode={selectedNode}
+                                        currentNode={currentNode}
                                         loadFlowStatus={getLoadFlowRunningStatus(
                                             loadFlowInfos?.loadFlowStatus
                                         )}
                                         onClose={() =>
                                             dispatch(openNetworkAreaDiagram([]))
                                         }
-                                        align="right"
+                                        disabled={disabled}
+                                        align="left"
                                     />
                                 )}
                         </div>
@@ -354,14 +352,14 @@ const StudyPane = ({
                 <NetworkTable
                     network={network}
                     studyUuid={studyUuid}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
+                    disabled={disabled}
                 />
             </Paper>
         );
@@ -395,11 +393,11 @@ const StudyPane = ({
             >
                 <ResultViewTab
                     studyUuid={studyUuid}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
+                    disabled={disabled}
                 />
             </div>
             <div
@@ -411,8 +409,8 @@ const StudyPane = ({
                 <ReportViewerTab
                     studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
+                    disabled={disabled}
                 />
             </div>
         </>

@@ -25,7 +25,7 @@ import {
 import { gridItem, GridSection } from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
@@ -42,7 +42,7 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param lineOptions the available network lines
- * @param selectedNodeUuid the currently selected tree node
+ * @param currentNodeUuid the currently selected tree node
  * @param substationOptions available substations
  * @param editData the possible line split with voltage level creation record to edit
  */
@@ -51,7 +51,7 @@ const LineSplitWithVoltageLevelDialog = ({
     onClose,
     lineOptions,
     voltageLevelOptions,
-    selectedNodeUuid,
+    currentNodeUuid,
     substationOptions,
     editData,
 }) => {
@@ -59,8 +59,8 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const bobbsCb = useMemo(
         () =>
-            makeRefreshBusOrBusbarSectionsCallback(studyUuid, selectedNodeUuid),
-        [studyUuid, selectedNodeUuid]
+            makeRefreshBusOrBusbarSectionsCallback(studyUuid, currentNodeUuid),
+        [studyUuid, currentNodeUuid]
     );
 
     const { snackError } = useSnackMessage();
@@ -84,7 +84,7 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
-        selectedNodeUuid,
+        currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
@@ -268,7 +268,7 @@ const LineSplitWithVoltageLevelDialog = ({
         if (inputForm.validate()) {
             divideLine(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 editData ? editData.uuid : undefined,
                 lineToDivide.id || lineToDivide,
                 parseFloat(percentage),
@@ -307,7 +307,7 @@ const LineSplitWithVoltageLevelDialog = ({
     const onVoltageLevelDo = useCallback(
         ({
             studyUuid,
-            selectedNodeUuid,
+            currentNodeUuid,
             voltageLevelId,
             voltageLevelName,
             nominalVoltage,
@@ -403,20 +403,18 @@ const LineSplitWithVoltageLevelDialog = ({
                     </Grid>
                     <GridSection title="VoltageLevelToSplitAt" />
                     <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField, 5)}
+                        {gridItem(voltageLevelIdField)}
+                        {gridItem(bbsOrNodeIdField)}
                         {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
                                 startIcon={<AddIcon />}
-                                variant="outlined"
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="NewVoltageLevel" />
                                 </Typography>
-                            </Button>,
-                            2
+                            </Button>
                         )}
-                        {gridItem(bbsOrNodeIdField, 5)}
                     </Grid>
                     <GridSection title="Line1" />
                     <Grid container spacing={2}>
@@ -441,7 +439,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     <VoltageLevelCreationDialog
                         open={true}
                         onClose={onVoltageLevelDialogClose}
-                        selectedNodeUuid={selectedNodeUuid}
+                        currentNodeUuid={currentNodeUuid}
                         substationOptions={substationOptions}
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
@@ -452,7 +450,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     onClose={searchCopy.handleCloseSearchDialog}
                     equipmentType={'VOLTAGE_LEVEL'}
                     onSelectionChange={searchCopy.handleSelectionChange}
-                    selectedNodeUuid={selectedNodeUuid}
+                    currentNodeUuid={currentNodeUuid}
                 />
             </Dialog>
         </>
@@ -463,7 +461,7 @@ LineSplitWithVoltageLevelDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
     substationOptions: PropTypes.arrayOf(PropTypes.object),
     editData: PropTypes.object,
 };

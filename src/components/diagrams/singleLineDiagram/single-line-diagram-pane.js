@@ -76,7 +76,7 @@ const mergeDisplayed = (oldValue, sldToDisplay, createSLD) => {
     return newValue.filter((n) => n);
 };
 
-const useDisplayView = (network, studyUuid, workingNode) => {
+const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
     const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
@@ -92,7 +92,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
         (voltageLevelId) =>
             getVoltageLevelSingleLineDiagram(
                 studyUuid,
-                workingNode?.id,
+                currentNode?.id,
                 voltageLevelId,
                 useName,
                 centerName,
@@ -105,7 +105,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
             diagonalName,
             studyUuid,
             useName,
-            workingNode?.id,
+            currentNode?.id,
         ]
     );
 
@@ -113,7 +113,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
         (voltageLevelId) =>
             getSubstationSingleLineDiagram(
                 studyUuid,
-                workingNode?.id,
+                currentNode?.id,
                 voltageLevelId,
                 useName,
                 centerName,
@@ -128,7 +128,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
             studyUuid,
             substationLayout,
             useName,
-            workingNode?.id,
+            currentNode?.id,
         ]
     );
 
@@ -204,21 +204,21 @@ export function SingleLineDiagramPane({
     isComputationRunning,
     showInSpreadsheet,
     loadFlowStatus,
-    workingNode,
-    selectedNode,
+    currentNode,
+    disabled,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const [views, setViews] = useState([]);
-    const fullScreen = useSelector((state) => state.fullScreen);
+    const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const [viewState, setViewState] = useState(new Map());
 
     const [displayedSLD, setDisplayedSld] = useState([]);
 
-    const createView = useDisplayView(network, studyUuid, workingNode);
+    const createView = useDisplayView(network, studyUuid, currentNode);
 
     const dispatch = useDispatch();
 
@@ -247,7 +247,7 @@ export function SingleLineDiagramPane({
                 switchElement.classList.replace('sld-open', 'sld-closed');
             }
 
-            updateSwitchState(studyUuid, workingNode?.id, breakerId, open).then(
+            updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
                 (response) => {
                     if (!response.ok) {
                         console.error(response);
@@ -270,15 +270,18 @@ export function SingleLineDiagramPane({
                 }
             );
         },
-        [studyUuid, workingNode]
+        [studyUuid, currentNode]
     );
 
     useEffect(() => {
-        setViews((oldVal) => oldVal.map(createView));
-    }, [createView]);
+        if (!disabled) {
+            setViews((oldVal) => oldVal.map(createView));
+        }
+    }, [disabled, createView]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
+        if (disabled) return;
         // parse query parameter
         const queryParams = parse(location.search, {
             parseArrays: true,
@@ -291,7 +294,7 @@ export function SingleLineDiagramPane({
         );
 
         setUpdateSwitchMsg('');
-    }, [createView, location]);
+    }, [createView, location, disabled]);
 
     const toggleState = useCallback(
         (id, type, state) => {
@@ -373,11 +376,13 @@ export function SingleLineDiagramPane({
         setDisplayedSld((oldSld) => {
             const configuredViewsIds = new Set(views.map((view) => view.id));
             // remove view no longer present, keep order
-            let newDisplayed = oldSld.filter(
-                (view) =>
-                    configuredViewsIds.has(view.id) &&
-                    viewState.get(view.id) === ViewState.PINNED
-            );
+            let newDisplayed = oldSld
+                .filter(
+                    (view) =>
+                        configuredViewsIds.has(view.id) &&
+                        viewState.get(view.id) === ViewState.PINNED
+                )
+                .map((old) => views.find((v) => v.id === old.id));
             // there is place for one more
             let more = views.find(
                 ({ id, lastOpen }) =>
@@ -399,10 +404,9 @@ export function SingleLineDiagramPane({
                     style={{
                         flexGrow: 1,
                         flexShrink: 1,
-                        width: 100 / displayedSLD + '%',
                         position: 'relative',
                         display:
-                            !fullScreen || sld.id === fullScreen
+                            !fullScreenSldId || sld.id === fullScreenSldId
                                 ? 'inline-flex'
                                 : 'none',
                         pointerEvents: 'none',
@@ -423,11 +427,11 @@ export function SingleLineDiagramPane({
                         isComputationRunning={isComputationRunning}
                         showInSpreadsheet={showInSpreadsheet}
                         loadFlowStatus={loadFlowStatus}
-                        workingNode={workingNode}
-                        selectedNode={selectedNode}
+                        currentNode={currentNode}
                         numberToDisplay={displayedSLD.length}
                         toggleState={toggleState}
                         pinned={viewState.get(sld.id) === ViewState.PINNED}
+                        disabled={disabled}
                     />
                 </div>
             ))}
@@ -452,13 +456,12 @@ export function SingleLineDiagramPane({
 
 SingleLineDiagramPane.propTypes = {
     studyUuid: PropTypes.string,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     network: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
-
     onClose: PropTypes.func,
     onNextVoltageLevelClick: PropTypes.func,
+    disabled: PropTypes.bool,
 };

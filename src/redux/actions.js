@@ -281,19 +281,23 @@ export function selectComponentLibrary(componentLibrary) {
     };
 }
 
-export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
+export const FULLSCREEN_SINGLE_LINE_DIAGRAM_ID =
+    'FULLSCREEN_SINGLE_LINE_DIAGRAM_ID';
 
-export function fullScreenSingleLineDiagram(fullScreen) {
-    return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
+export function fullScreenSingleLineDiagramId(fullScreenSldId) {
+    return {
+        type: FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
+        fullScreenSldId: fullScreenSldId,
+    };
 }
 
-export const FULLSCREEN_NETWORK_AREA_DIAGRAM =
-    'FULLSCREEN_NETWORK_AREA_DIAGRAM';
+export const FULLSCREEN_NETWORK_AREA_DIAGRAM_ID =
+    'FULLSCREEN_NETWORK_AREA_DIAGRAM_ID';
 
-export function fullScreenNetworkAreaDiagram(fullScreenNad) {
+export function fullScreenNetworkAreaDiagramId(fullScreenNadId) {
     return {
-        type: FULLSCREEN_NETWORK_AREA_DIAGRAM,
-        fullScreenNad: fullScreenNad,
+        type: FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
+        fullScreenNadId: fullScreenNadId,
     };
 }
 
@@ -324,26 +328,12 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists) {
     };
 }
 
-export const SELECTED_TREE_NODE = 'SELECTED_TREE_NODE';
+export const CURRENT_TREE_NODE = 'CURRENT_NODE';
 
-export function selectTreeNode(selectedTreeNode) {
+export function setCurrentTreeNode(currentTreeNode) {
     return {
-        type: SELECTED_TREE_NODE,
-        selectedTreeNode: selectedTreeNode,
-    };
-}
-
-export const WORKING_TREE_NODE = 'WORKING_TREE_NODE';
-
-export function workingTreeNode(workingTreeNode) {
-    return {
-        type: WORKING_TREE_NODE,
-        workingTreeNode: {
-            id: workingTreeNode?.id,
-            readOnly: workingTreeNode?.data?.readOnly,
-            buildStatus: workingTreeNode?.data?.buildStatus,
-            name: workingTreeNode?.data?.label,
-        },
+        type: CURRENT_TREE_NODE,
+        currentTreeNode: currentTreeNode,
     };
 }
 

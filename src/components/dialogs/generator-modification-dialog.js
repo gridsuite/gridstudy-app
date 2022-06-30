@@ -18,7 +18,6 @@ import { useSnackMessage } from '../../utils/messages';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     useAutocompleteField,
-    useConnectivityValue,
     useDoubleValue,
     useEnumValue,
     useInputForm,
@@ -60,8 +59,7 @@ function getValueOrNull(val) {
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
- * @param selectedNodeUuid : the currently selected tree node
- * @param workingNodeUuid : the node we are currently working on
+ * @param currentNodeUuid : the currently selected tree node
  * @param fetchedEquipmentOptions the data generator option
  * @param editData the data to edit
  */
@@ -70,8 +68,7 @@ const GeneratorModificationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
-    selectedNodeUuid,
-    workingNodeUuid,
+    currentNodeUuid,
     fetchedEquipmentOptions,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -252,27 +249,11 @@ const GeneratorModificationDialog = ({
         clearable: true,
     });
 
-    const [connectivity, connectivityField] = useConnectivityValue({
-        label: 'Connectivity',
-        validation: {
-            isFieldRequired: false,
-        },
-        disabled: true,
-        inputForm: inputForm,
-        voltageLevelOptions: voltageLevelOptions,
-        workingNodeUuid: workingNodeUuid,
-        voltageLevelIdDefaultValue:
-            getValue(formValues?.voltageLevelId) || null,
-        voltageLevelPreviousValue: generatorInfos?.voltageLevelId,
-        busOrBusbarSectionIdDefaultValue:
-            getValue(formValues?.busOrBusbarSectionId) || null,
-    });
-
     const handleSave = () => {
         if (inputForm.validate()) {
             modifyGenerator(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 generatorInfos?.id,
                 generatorName,
                 energySource,
@@ -283,8 +264,8 @@ const GeneratorModificationDialog = ({
                 reactivePowerSetpoint,
                 voltageRegulation,
                 voltageSetpoint,
-                connectivity?.voltageLevel?.id,
-                connectivity?.busOrBusbarSection?.id,
+                undefined,
+                undefined,
                 editData?.uuid
             ).catch((errorMessage) => {
                 snackError(errorMessage, 'GeneratorModificationError');
@@ -365,17 +346,6 @@ const GeneratorModificationDialog = ({
                             )}
                             {gridItem(voltageSetpointField, 4)}
                         </Grid>
-                        {/* Connectivity part */}
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Connectivity" />
-                                </h3>
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                            {gridItem(connectivityField, 8)}
-                        </Grid>
                     </div>
                 </DialogContent>
                 <DialogActions>
@@ -396,8 +366,7 @@ GeneratorModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
-    workingNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default GeneratorModificationDialog;

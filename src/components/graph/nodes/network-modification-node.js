@@ -10,8 +10,6 @@ import { Handle } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -19,23 +17,30 @@ const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
 
 const useStyles = makeStyles((theme) => ({
-    networkModificationVisualized: {
+    networkModificationSelected: {
         position: 'relative',
         variant: 'contained',
-        background: theme.palette.primary.main,
+        background: theme.node.background,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
         '&:hover': {
-            background: theme.palette.primary.main,
+            background: theme.node.background,
         },
         overflow: 'hidden',
+        boxShadow:
+            theme.node.border +
+            ' 0px 0px 3px 3px,' +
+            theme.node.border +
+            ' 0px 0px 25px,' +
+            theme.node.border +
+            ' 0px 0px 5px 1px',
     },
     networkModification: {
         background: theme.palette.text.secondary,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
         '&:hover': {
-            background: theme.palette.primary.main,
+            background: theme.node.hover,
         },
         overflow: 'hidden',
     },
@@ -81,7 +86,12 @@ const useStyles = makeStyles((theme) => ({
 const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
-    const workingNode = useSelector((state) => state.workingTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+
+    const isSelectedNode = () => {
+        // TODO This is a hack, when ReactFlow v10 is available, we should remove this.
+        return props.id === currentNode?.id;
+    };
 
     return (
         <>
@@ -100,8 +110,8 @@ const NetworkModificationNode = (props) => {
             <Tooltip title={props.data.label} placement="top">
                 <Button
                     className={
-                        props.selected
-                            ? classes.networkModificationVisualized
+                        isSelectedNode()
+                            ? classes.networkModificationSelected
                             : classes.networkModification
                     }
                 >
@@ -112,16 +122,13 @@ const NetworkModificationNode = (props) => {
                                 : classes.buildBannerInvalid
                         }
                     >
-                        {(props.data.buildStatus === 'BUILDING' && (
+                        {props.data.buildStatus === 'BUILDING' && (
                             <CircularProgress
                                 size={20}
                                 color="primary"
                                 style={{ margin: 'auto' }}
                             />
-                        )) ||
-                            (props.data.buildStatus === 'NOT_BUILT' && (
-                                <VisibilityOffIcon style={{ margin: 'auto' }} />
-                            ))}
+                        )}
                     </div>
 
                     <div className={classes.labelWrapper}>
@@ -142,7 +149,6 @@ const NetworkModificationNode = (props) => {
 
             <div className={classes.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}
-                {props.id === workingNode?.id && <VisibilityIcon />}
             </div>
         </>
     );

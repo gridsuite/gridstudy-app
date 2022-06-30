@@ -23,7 +23,6 @@ import { modifyLoad } from '../../utils/rest-api';
 import { LOAD_TYPES } from '../network/constants';
 import {
     useAutocompleteField,
-    useConnectivityValue,
     useDoubleValue,
     useEnumValue,
     useInputForm,
@@ -45,8 +44,7 @@ import {
  * @param {EventListener} onClose Event to close the dialog
  * @param equipmentOptions Promise handling list of loads that can be modified
  * @param voltageLevelOptions : the network voltageLevels available
- * @param selectedNodeUuid : the currently selected tree node
- * @param workingNodeUuid : the node we are currently working on
+ * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
 const LoadModificationDialog = ({
@@ -54,8 +52,7 @@ const LoadModificationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
-    selectedNodeUuid,
-    workingNodeUuid,
+    currentNodeUuid,
     fetchedEquipmentOptions,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -127,7 +124,10 @@ const LoadModificationDialog = ({
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
         defaultValue: formValues?.loadType ? formValues.loadType.value : '',
-        previousValue: loadInfos?.type,
+        doTranslation: true,
+        previousValue: loadInfos?.type
+            ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)?.label
+            : undefined,
     });
 
     const [activePower, activePowerField] = useDoubleValue({
@@ -158,33 +158,18 @@ const LoadModificationDialog = ({
         clearable: true,
     });
 
-    const [connectivity, connectivityField] = useConnectivityValue({
-        label: 'Connectivity',
-        validation: {
-            isFieldRequired: false,
-        },
-        disabled: true,
-        inputForm: inputForm,
-        voltageLevelOptions: voltageLevelOptions,
-        workingNodeUuid: workingNodeUuid,
-        voltageLevelIdDefaultValue: formValues?.voltageLevelId?.value || null,
-        voltageLevelPreviousValue: loadInfos?.voltageLevelId,
-        busOrBusbarSectionIdDefaultValue:
-            formValues?.busOrBusbarSectionId?.value || null,
-    });
-
     const handleSave = () => {
         if (inputForm.validate()) {
             modifyLoad(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 loadInfos?.id,
                 loadName,
                 loadType,
                 activePower,
                 reactivePower,
-                connectivity?.voltageLevel?.id,
-                connectivity?.busOrBusbarSection?.id,
+                undefined,
+                undefined,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
@@ -244,10 +229,6 @@ const LoadModificationDialog = ({
                         {gridItem(activePowerField, 4)}
                         {gridItem(reactivePowerField, 4)}
                     </Grid>
-                    <GridSection title="Connectivity" />
-                    <Grid container spacing={2}>
-                        {gridItem(connectivityField, 8)}
-                    </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear} variant="text">
@@ -267,8 +248,7 @@ LoadModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
-    workingNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
     equipmentOptions: PropTypes.arrayOf(PropTypes.object),
 };
 

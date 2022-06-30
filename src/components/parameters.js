@@ -69,7 +69,8 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
     },
     grid: {
-        padding: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+        padding: theme.spacing(0),
     },
     minWidthMedium: {
         minWidth: theme.spacing(20),
@@ -78,7 +79,8 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'flex-end',
     },
     button: {
-        marginBottom: '30px',
+        marginBottom: theme.spacing(2),
+        marginLeft: theme.spacing(1),
     },
     advancedParameterButton: {
         marginTop: theme.spacing(3),
@@ -311,7 +313,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
-
         return (
             <Typography
                 component="div"
@@ -321,7 +322,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 aria-labelledby={`simple-tab-${index}`}
                 {...other}
             >
-                {value === index && <Box p={3}>{children}</Box>}
+                {value === index && <Box p={1}>{children}</Box>}
             </Typography>
         );
     }
@@ -353,7 +354,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
             <>
                 <Grid item xs={12} className={classes.advancedParameterButton}>
                     <Button
-                        variant="outlined"
                         startIcon={<SettingsIcon />}
                         endIcon={
                             showOpenIcon ? (
@@ -448,15 +448,9 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function MakeButton(callback, label) {
         return (
-            <Grid item>
-                <Button
-                    onClick={callback}
-                    variant="contained"
-                    className={classes.button}
-                >
-                    <FormattedMessage id={label} />
-                </Button>
-            </Grid>
+            <Button onClick={callback} className={classes.button}>
+                <FormattedMessage id={label} />
+            </Button>
         );
     }
 
@@ -592,13 +586,8 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function NetworkParameters() {
         return (
-            <Grid
-                container
-                spacing={2}
-                className={classes.grid}
-                justifyContent="flex-end"
-            >
-                <Grid container spacing={1}>
+            <Grid container spacing={1} className={classes.grid}>
+                <Grid item container spacing={1}>
                     <Grid item xs={8}>
                         <Typography component="span" variant="body1">
                             <Box fontWeight="fontWeightBold" m={1}>
@@ -625,7 +614,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     </Grid>
                     <MakeLineSeparator />
                 </Grid>
-                {MakeButton(resetNetworkParameters, 'resetToDefault')}
             </Grid>
         );
     }
@@ -821,7 +809,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const LoadFlow = () => {
         return (
-            <Grid container className={classes.grid} justifyContent="flex-end">
+            <Grid container className={classes.grid}>
                 <Grid container key="lfProvider">
                     {MakeDropDown(
                         lfProvider,
@@ -836,7 +824,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     <BasicLoadFlowParameters />
                     <AdvancedLoadFlowParameters />
                 </Grid>
-                {MakeButton(resetLfParameters, 'resetToDefault')}
             </Grid>
         );
     };
@@ -1000,10 +987,16 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     <TabPanel value={tabIndex} index={3}>
                         <NetworkParameters />
                     </TabPanel>
-                    <Grid item xs={12}>
+                    <Grid container className={classes.controlItem}>
+                        {tabIndex === 2 &&
+                            MakeButton(resetLfParameters, 'resetToDefault')}
+                        {tabIndex === 3 &&
+                            MakeButton(
+                                resetNetworkParameters,
+                                'resetToDefault'
+                            )}
                         <Button
                             onClick={hideParameters}
-                            variant="contained"
                             className={classes.button}
                         >
                             <FormattedMessage id="close" />

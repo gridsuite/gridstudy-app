@@ -14,17 +14,21 @@ import PropTypes from 'prop-types';
 export function NetworkAreaDiagramPane({
     studyUuid,
     network,
-    workingNode,
-    selectedNode,
+    currentNode,
     loadFlowStatus,
     onClose,
     align,
+    disabled,
 }) {
     const [depth, setDepth] = useState(0);
 
     const voltageLevelsIds = useSelector(
         (state) => state.voltageLevelsIdsForNad
     );
+
+    const fullScreenNadId = useSelector((state) => state.fullScreenNadId);
+
+    const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const displayedVoltageLevelIdRef = useRef();
     displayedVoltageLevelIdRef.current = voltageLevelsIds[0];
@@ -48,7 +52,7 @@ export function NetworkAreaDiagramPane({
 
         svgUrl = getNetworkAreaDiagramUrl(
             studyUuid,
-            workingNode?.id,
+            currentNode?.id,
             voltageLevelsIds,
             depth
         );
@@ -61,10 +65,11 @@ export function NetworkAreaDiagramPane({
                     style={{
                         flexGrow: 1,
                         position: 'relative',
-                        display: 'flex',
+                        display: fullScreenSldId ? 'none' : 'flex',
                         pointerEvents: 'none',
                         flexDirection: 'column',
                         direction: align === 'right' ? 'rtl' : undefined,
+                        width: fullScreenNadId ? '100%' : '',
                     }}
                 >
                     <NetworkAreaDiagram
@@ -72,12 +77,12 @@ export function NetworkAreaDiagramPane({
                         diagramTitle={nadTitle}
                         svgUrl={svgUrl}
                         nadId={voltageLevelsIds[0]}
-                        workingNode={workingNode}
-                        selectedNode={selectedNode}
+                        currentNode={currentNode}
                         depth={depth}
                         setDepth={setDepth}
                         studyUuid={studyUuid}
                         loadFlowStatus={loadFlowStatus}
+                        disabled={disabled}
                     />
                 </div>
             )}
@@ -89,8 +94,8 @@ NetworkAreaDiagramPane.propTypes = {
     studyUuid: PropTypes.string,
     loadFlowStatus: PropTypes.any,
     network: PropTypes.object,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     onClose: PropTypes.func,
     align: PropTypes.string,
+    disabled: PropTypes.bool,
 };
