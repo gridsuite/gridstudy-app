@@ -308,21 +308,21 @@ const StudyPane = ({
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
                 */}
-                            {props.view === StudyView.MAP && (
-                                <SingleLineDiagramPane
-                                    studyUuid={studyUuid}
-                                    network={network}
-                                    onClose={closeVoltageLevelDiagram}
-                                    openVoltageLevel={openVoltageLevel}
-                                    isComputationRunning={isComputationRunning}
-                                    showInSpreadsheet={showInSpreadsheet}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
-                                    currentNode={currentNode}
-                                    disabled={disabled}
-                                />
-                            )}
+                            <SingleLineDiagramPane
+                                studyUuid={studyUuid}
+                                network={network}
+                                onClose={closeVoltageLevelDiagram}
+                                openVoltageLevel={openVoltageLevel}
+                                isComputationRunning={isComputationRunning}
+                                showInSpreadsheet={showInSpreadsheet}
+                                loadFlowStatus={getLoadFlowRunningStatus(
+                                    loadFlowInfos?.loadFlowStatus
+                                )}
+                                currentNode={currentNode}
+                                disabled={disabled}
+                                visible={props.view === StudyView.MAP}
+                            />
+
                             {props.view === StudyView.MAP &&
                                 voltageLevelsIdsForNad?.length && (
                                     <NetworkAreaDiagramPane
