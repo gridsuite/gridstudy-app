@@ -100,12 +100,12 @@ export const EquipmentTable = (props) => {
                                 styleBottomLeftGrid={
                                     props.disableVerticalScroll
                                         ? { overflowY: 'hidden' }
-                                        : ''
+                                        : {}
                                 }
                                 styleBottomRightGrid={
                                     props.disableVerticalScroll
                                         ? { overflowY: 'hidden' }
-                                        : ''
+                                        : {}
                                 }
                             />
                         )}
