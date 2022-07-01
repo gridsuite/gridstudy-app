@@ -656,7 +656,11 @@ export function startLoadFlow(studyUuid, currentNodeUuid) {
     const startLoadFlowUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
-    return backendFetch(startLoadFlowUrl, { method: 'put' });
+    return backendFetch(startLoadFlowUrl, { method: 'put' }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
 
 export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
