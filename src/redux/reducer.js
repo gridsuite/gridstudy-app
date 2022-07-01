@@ -191,6 +191,14 @@ export const reducer = createReducer(initialState, {
                     state,
                     state.currentTreeNode?.data?.parentNodeUuid
                 );
+            } // check if parent node of the current node is in the nodes deleted list
+            else if (
+                action.networkModificationTreeNodes.includes(
+                    state.currentTreeNode?.data?.parentNodeUuid
+                )
+            ) {
+                // Then must overwrite currentTreeNode to get new parentNodeUuid
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
     },
