@@ -793,9 +793,7 @@ export function fetchNetworkModificationTree(studyUuid) {
         if (response.ok) {
             return response.json();
         } else {
-            return response.json().then((text) => {
-                return Promise.reject(text);
-            });
+            return Promise.reject(response);
         }
     });
 }
