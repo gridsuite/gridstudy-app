@@ -167,6 +167,15 @@ export const reducer = createReducer(initialState, {
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
+            // check if added node is the new parent of the current Node
+            if (
+                action.networkModificationTreeNode?.childrenIds.includes(
+                    state.currentTreeNode?.id
+                )
+            ) {
+                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
+            }
         }
     },
 
