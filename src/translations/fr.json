@@ -181,6 +181,7 @@
 
     "securityAnalysisResults": "Résultats de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
+    "startLoadFlowError": "Une erreur est survenue lors du lancement du load flow",
 
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",
