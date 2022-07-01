@@ -444,12 +444,15 @@ const App = () => {
                             </Route>
                             <Route exact path="/logout-callback">
                                 <h1>
-                                    Error: logout failed; you are still logged in.
+                                    Error: logout failed; you are still logged
+                                    in.
                                 </h1>
                             </Route>
                             <Route>
                                 <PageNotFound
-                                    message={<FormattedMessage id="PageNotFound" />}
+                                    message={
+                                        <FormattedMessage id="PageNotFound" />
+                                    }
                                 />
                             </Route>
                         </Switch>
