@@ -219,17 +219,10 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetwork = useCallback(
         (isUpdate) => {
-            if (!isNodeBuilt(currentNode)) {
+            if (!isNodeBuilt(currentNode) || !studyUuid) {
                 return;
             }
             console.info(`Loading network of study '${studyUuid}'...`);
-
-            if (
-                !currentNode ||
-                !studyUuid ||
-                currentNode.buildStatus === 'BUILDING'
-            )
-                return;
 
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
