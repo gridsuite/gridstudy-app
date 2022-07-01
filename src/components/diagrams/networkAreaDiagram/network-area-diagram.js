@@ -257,7 +257,6 @@ const SizedNetworkAreaDiagram = (props) => {
                     updateLoadingState(false);
                     setSvg({
                         svg:
-                            '<?xml version="1.0" encoding="UTF-8"?>' +
                             '<svg width="' +
                             minWidth +
                             '" height="' +
