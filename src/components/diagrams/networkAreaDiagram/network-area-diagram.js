@@ -256,14 +256,16 @@ const SizedNetworkAreaDiagram = (props) => {
                     snackError(errorMessage);
                     updateLoadingState(false);
                     setSvg({
-                        //It's kind of a hack here. The <svg> is not closed but it's working because the powsybl-diagram-viewer adds the </svg>. We should do cleaner after the SLD NAD refactor
+                        //It's kind of a hack. It's neccessary to have a line break for to powsybl-diagram-viewer to parse the svg. It has to be fixed.
                         svg:
                             '<svg width="' +
                             minWidth +
                             '" height="' +
                             minHeight +
                             '" xmlns="http://www.w3.org/2000/svg" ' +
-                            'viewBox="0 0 0 0">',
+                            'viewBox="0 0 0 0">' +
+                            '\n' +
+                            '</svg>',
                         metadata: null,
                         error: null,
                         svgUrl: svgUrl,
