@@ -13,8 +13,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
-import { IconButton, TextField } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { IconButton, TextField, Tooltip, Grid } from '@mui/material';
 import {
     requestNetworkChange,
     updateConfigParameter,
@@ -304,17 +303,21 @@ const NetworkTable = (props) => {
     const formatCell = useCallback(
         (rowData, columnDefinition) => {
             let value = rowData[columnDefinition.dataKey];
+            let tooltipValue = undefined;
             if (columnDefinition.cellDataGetter) {
                 value = columnDefinition.cellDataGetter(rowData, props.network);
             }
             if (columnDefinition.normed) {
                 value = columnDefinition.normed(fluxConvention, value);
             }
-            return value &&
-                columnDefinition.numeric &&
-                columnDefinition.fractionDigits
-                ? parseFloat(value).toFixed(columnDefinition.fractionDigits)
-                : value;
+            if (value && columnDefinition.numeric && columnDefinition.fractionDigits) {
+                // only numeric rounded cells have a tooltip (their raw numeric value)
+                tooltipValue = value;
+                value = parseFloat(value).toFixed(
+                    columnDefinition.fractionDigits
+                );
+            }
+            return { value: value, tooltip: tooltipValue };
         },
         [fluxConvention, props.network]
     );
@@ -329,7 +332,7 @@ const NetworkTable = (props) => {
                     (c) => c.dataKey === colName
                 );
                 // we want to filter on formatted values
-                let value = formatCell(rowData, columnDef);
+                let value = formatCell(rowData, columnDef).value;
                 return value !== undefined && rowFilter.test(value);
             }
 
@@ -390,8 +393,8 @@ const NetworkTable = (props) => {
             if (columnSort) {
                 return result.sort((a, b) => {
                     return compareValue(
-                        formatCell(a, columnSort.colDef),
-                        formatCell(b, columnSort.colDef),
+                        formatCell(a, columnSort.colDef).value,
+                        formatCell(b, columnSort.colDef).value,
                         columnSort.numeric,
                         columnSort.reverse
                     );
@@ -711,7 +714,7 @@ const NetworkTable = (props) => {
 
     const defaultCellRender = useCallback(
         (rowData, columnDefinition, key, style) => {
-            const text = formatCell(rowData, columnDefinition);
+            const cellValue = formatCell(rowData, columnDefinition);
             return (
                 <div
                     key={key}
@@ -719,15 +722,33 @@ const NetworkTable = (props) => {
                     align={columnDefinition.numeric ? 'right' : 'left'}
                 >
                     <div className={classes.tableCell}>
-                        <OverflowableText
-                            className={clsx({
-                                [classes.valueInvalid]:
-                                    columnDefinition.canBeInvalidated &&
-                                    props.loadFlowStatus !==
-                                        RunningStatus.SUCCEED,
-                            })}
-                            text={text}
-                        />
+                        {cellValue.tooltip !== undefined ? (
+                            <Tooltip
+                                disableFocusListener
+                                disableTouchListener
+                                title={cellValue.tooltip}
+                            >
+                                <div
+                                    children={cellValue.value}
+                                    className={clsx({
+                                        [classes.valueInvalid]:
+                                            columnDefinition.canBeInvalidated &&
+                                            props.loadFlowStatus !==
+                                                RunningStatus.SUCCEED,
+                                    })}
+                                />
+                            </Tooltip>
+                        ) : (
+                            <OverflowableText
+                                className={clsx({
+                                    [classes.valueInvalid]:
+                                        columnDefinition.canBeInvalidated &&
+                                        props.loadFlowStatus !==
+                                            RunningStatus.SUCCEED,
+                                })}
+                                text={cellValue.value}
+                            />
+                        )}
                     </div>
                 </div>
             );
@@ -750,7 +771,7 @@ const NetworkTable = (props) => {
      */
     const booleanCellRender = useCallback(
         (rowData, columnDefinition, key, style) => {
-            const isChecked = formatCell(rowData, columnDefinition);
+            const isChecked = formatCell(rowData, columnDefinition).value;
             return (
                 <div key={key} style={style}>
                     <div
@@ -803,7 +824,7 @@ const NetworkTable = (props) => {
                 isLineOnEditMode(rowData) &&
                 rowData[columnDefinition.dataKey] !== undefined
             ) {
-                const text = formatCell(rowData, columnDefinition);
+                const text = formatCell(rowData, columnDefinition).value;
                 const changeRequest = (value) =>
                     registerChangeRequest(
                         rowData,
@@ -1117,7 +1138,7 @@ const NetworkTable = (props) => {
         rows.forEach((row) => {
             let rowData = {};
             columns.forEach((col) => {
-                rowData[col.dataKey] = formatCell(row, col);
+                rowData[col.dataKey] = formatCell(row, col).value;
             });
             csvData.push(rowData);
         });
