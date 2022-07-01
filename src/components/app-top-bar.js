@@ -175,11 +175,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 searchTerm,
                 useNameLocal
             )
-                .then((infos) =>
+                .then((infos) => {
+                    setEquipmentsFound([]);
                     setEquipmentsFound(
                         getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                    )
-                )
+                    );
+                })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,
