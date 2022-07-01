@@ -256,7 +256,7 @@ const SizedNetworkAreaDiagram = (props) => {
                     snackError(errorMessage);
                     updateLoadingState(false);
                     setSvg({
-                        //It's kind of a hack. It's neccessary to have a line break for to powsybl-diagram-viewer to parse the svg. It has to be fixed.
+                        //It's kind of a hack. It's necessary to have a line break for to powsybl-diagram-viewer to parse the svg. It has to be fixed.
                         svg:
                             '<svg width="' +
                             minWidth +
