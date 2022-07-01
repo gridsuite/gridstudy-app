@@ -40,6 +40,18 @@ import { LoadFlow } from './load-flow-parameter';
 import { MapParameters } from './map-parameter';
 import { NetworkParameters } from './network-parameter';
 
+export const CloseButton = ({ hideParameters, classeStyleName }) => {
+    console.info(hideParameters);
+    return (
+        <Button
+            onClick={hideParameters}
+            className={classeStyleName}
+        >
+            <FormattedMessage id="close" />
+        </Button>
+    );
+};
+
 export const SwitchWithLabel = ({ value, label, callback }) => {
     const classes = useStyles();
     return (
@@ -90,15 +102,15 @@ export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',
 };
-export const LabelledButton = ({ callback, label }) => {
-    const classes = useStyles();
+export const LabelledButton = ({ callback, label, name }) => {
     return (
-        <Button onClick={callback} className={classes.button}>
+        <Button onClick={callback} className={name}>
             <FormattedMessage id={label} />
         </Button>
     );
 };
 export function useParameterState(paramName) {
+    const classes = useStyles();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -178,36 +190,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
         });
     };
 
-    const resetLfParameters = () => {
-        setLoadFlowParameters(studyUuid, null)
-            .then(() => {
-                return getLoadFlowParameters(this.props.LoadFlow.studyUuid)
-                    .then((params) => this.props.LoadFlow.setLfParams(params))
-                    .catch((errorMessage) =>
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'paramsRetrievingError',
-                                intlRef: intlRef,
-                            },
-                        })
-                    );
-            })
-            .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'paramsChangingError',
-                        intlRef: intlRef,
-                    },
-                })
-            );
-
-        this.props.LoadFlow.setLoadFlowProviderToDefault();
-    };
-
     return (
         <Dialog
             open={showParameters}
@@ -251,31 +233,21 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         <MapParameters />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={2}>
-                        {studyUuid && <LoadFlow />}
+                        {studyUuid && (
+                            <LoadFlow hideParameters={hideParameters} />
+                        )}
                     </TabPanel>
                     <TabPanel value={tabIndex} index={3}>
                         <NetworkParameters />
                     </TabPanel>
                     <Grid container className={classes.controlItem}>
-                        {tabIndex === 2 && (
-                            <LabelledButton
-                                callback={resetLfParameters}
-                                label="resetToDefault"
-                            />
-                        )}
                         {tabIndex === 3 && (
                             <LabelledButton
                                 callback={resetNetworkParameters}
                                 label="resetToDefault"
+                                name={classes.button}
                             />
                         )}
-
-                        <Button
-                            onClick={hideParameters}
-                            className={classes.button}
-                        >
-                            <FormattedMessage id="close" />
-                        </Button>
                     </Grid>
                 </Container>
             </DialogContent>

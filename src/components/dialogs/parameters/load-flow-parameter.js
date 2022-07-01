@@ -16,7 +16,7 @@ import {
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import { LineSeparator } from './line-separator';
-import { useStyles } from './parameters';
+import { CloseButton, LabelledButton, useStyles } from './parameters';
 import {
     getDefaultLoadFlowProvider,
     getLoadFlowParameters,
@@ -36,7 +36,7 @@ const LF_PROVIDER_VALUES = {
     Hades2: 'Hades2',
 };
 
-export const LoadFlow = () => {
+export const LoadFlow = (hideParameters) => {
     const classes = useStyles();
 
     let countriesList;
@@ -392,6 +392,35 @@ export const LoadFlow = () => {
         );
     };
 
+    const resetLfParameters = () => {
+        setLoadFlowParameters(studyUuid, null)
+            .then(() => {
+                return getLoadFlowParameters(studyUuid)
+                    .then((params) => setLfParams(params))
+                    .catch((errorMessage) =>
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'paramsRetrievingError',
+                                intlRef: intlRef,
+                            },
+                        })
+                    );
+            })
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'paramsChangingError',
+                        intlRef: intlRef,
+                    },
+                })
+            );
+
+        setLoadFlowProviderToDefault();
+    };
     const DropDown = ({ value, label, values, callback }) => {
         return (
             <>
@@ -435,6 +464,16 @@ export const LoadFlow = () => {
                 </Grid>
                 <BasicLoadFlowParameters />
                 <AdvancedLoadFlowParameters />
+                <Grid container className={classes.controlItem}>
+                    <LabelledButton
+                        callback={resetLfParameters}
+                        label="resetToDefault"
+                    />
+                    <CloseButton
+                        hideParameters={hideParameters}
+                        classeStyleName={classes.button}
+                    ></CloseButton>
+                </Grid>
             </Grid>
         </Grid>
     );
