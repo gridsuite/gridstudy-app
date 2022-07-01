@@ -280,7 +280,9 @@ export const NetworkModificationTreePane = ({
     }, []);
 
     const hypothesisInLoadInCurrentNode = () => {
-        return hypothesisInLoad && activeNode.id === currentNodeRef.current?.id;
+        return (
+            hypothesisInLoad && activeNode?.id === currentNodeRef.current?.id
+        );
     };
 
     return (
