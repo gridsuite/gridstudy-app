@@ -112,7 +112,7 @@ export default class NetworkModificationTreeModel {
             });
 
             // fix parentNodeUuid of children
-            const willbeDeletedNode = this.treeElements.find(
+            const nodeToDelete = this.treeElements.find(
                 (el) => el.id === nodeId
             );
 
@@ -121,7 +121,7 @@ export default class NetworkModificationTreeModel {
                 if (element.data?.parentNodeUuid === nodeId) {
                     element.data = {
                         ...element.data,
-                        parentNodeUuid: willbeDeletedNode.data?.parentNodeUuid,
+                        parentNodeUuid: nodeToDelete.data?.parentNodeUuid,
                     };
                 }
                 return element;
