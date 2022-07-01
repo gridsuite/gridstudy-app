@@ -167,6 +167,15 @@ export const reducer = createReducer(initialState, {
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
+            // check if added node is the new parent of the current Node
+            if (
+                action.networkModificationTreeNode?.childrenIds.includes(
+                    state.currentTreeNode?.id
+                )
+            ) {
+                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
+            }
         }
     },
 
@@ -191,6 +200,14 @@ export const reducer = createReducer(initialState, {
                     state,
                     state.currentTreeNode?.data?.parentNodeUuid
                 );
+            } // check if parent node of the current node is in the nodes deleted list
+            else if (
+                action.networkModificationTreeNodes.includes(
+                    state.currentTreeNode?.data?.parentNodeUuid
+                )
+            ) {
+                // Then must overwrite currentTreeNode to get new parentNodeUuid
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
     },
