@@ -285,7 +285,6 @@ export function SingleLineDiagramPane({
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
-        if (disabled || !visible) return;
         // parse query parameter
         const queryParams = parse(location.search, {
             parseArrays: true,
