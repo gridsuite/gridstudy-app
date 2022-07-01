@@ -29,8 +29,7 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             opacity: '100%',
         },
-        height: '100%',
-        width: '100%',
+        height: 'inherit',
     },
     rowCell: {
         backgroundColor: theme.palette.background.paper,
@@ -46,6 +45,11 @@ const useStyles = makeStyles((theme) => ({
     },
     table: {
         pointerEvents: 'auto',
+        maxHeight: MAX_TABLE_HEIGHT + 'px',
+        '& .ReactVirtualized__Table__Grid': {
+            height: 'fit-content !important',
+            maxHeight: MAX_TABLE_HEIGHT + 'px',
+        },
     },
     flexContainer: {
         display: 'flex',
@@ -163,11 +167,6 @@ const OverloadedLinesView = (props) => {
                     </Box>
                 )}
                 <VirtualizedTable
-                    height={Math.min(
-                        (props.disabled ? 0 : lines.length) * ROW_HEIGHT +
-                            HEADER_ROW_HEIGHT,
-                        MAX_TABLE_HEIGHT
-                    )}
                     className={classes.table}
                     rows={props.disabled ? [] : lines}
                     rowStyle={{ alignItems: 'stretch' }}
