@@ -167,6 +167,15 @@ export const reducer = createReducer(initialState, {
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
+            // check if added node is the new parent of the current Node
+            if (
+                action.networkModificationTreeNode?.childrenIds.includes(
+                    state.currentTreeNode?.id
+                )
+            ) {
+                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
+            }
         }
     },
 
@@ -179,7 +188,7 @@ export const reducer = createReducer(initialState, {
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
 
-            // check if current node is not in the nodes deleted list
+            // check if current node is in the nodes deleted list
             if (
                 action.networkModificationTreeNodes.includes(
                     state.currentTreeNode?.id
@@ -191,8 +200,14 @@ export const reducer = createReducer(initialState, {
                     state,
                     state.currentTreeNode?.data?.parentNodeUuid
                 );
-            } else {
-                synchCurrentTreeNode(state);
+            } // check if parent node of the current node is in the nodes deleted list
+            else if (
+                action.networkModificationTreeNodes.includes(
+                    state.currentTreeNode?.data?.parentNodeUuid
+                )
+            ) {
+                // Then must overwrite currentTreeNode to get new parentNodeUuid
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
     },
@@ -204,7 +219,14 @@ export const reducer = createReducer(initialState, {
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
             state.networkModificationTreeModel.setBuildingStatus();
-            synchCurrentTreeNode(state);
+            // check if current node is in the nodes updated list
+            if (
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.currentTreeNode?.id
+                )
+            ) {
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
+            }
         }
     },
 
@@ -364,14 +386,11 @@ export const reducer = createReducer(initialState, {
     },
 });
 
-function synchCurrentTreeNode(state, parentNodeUuid = undefined) {
-    const currentNode = state.networkModificationTreeModel?.treeElements.find(
-        (entry) =>
-            entry?.id ===
-            (parentNodeUuid === undefined
-                ? state.currentTreeNode?.id
-                : parentNodeUuid)
-    );
+function synchCurrentTreeNode(state, nextCurrentNodeUuid) {
+    const nextCurrentNode =
+        state.networkModificationTreeModel?.treeElements.find(
+            (entry) => entry?.id === nextCurrentNodeUuid
+        );
     //  we need to overwrite state.currentTreeNode to consider label change for example.
-    state.currentTreeNode = { ...currentNode };
+    state.currentTreeNode = { ...nextCurrentNode };
 }

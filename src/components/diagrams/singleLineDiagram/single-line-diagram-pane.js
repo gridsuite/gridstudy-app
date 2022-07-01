@@ -230,6 +230,9 @@ export function SingleLineDiagramPane({
     const viewsRef = useRef();
     viewsRef.current = views;
 
+    const currentNodeRef = useRef();
+    currentNodeRef.current = currentNode;
+
     const updateSld = useCallback((id) => {
         if (id)
             viewsRef.current
@@ -367,7 +370,12 @@ export function SingleLineDiagramPane({
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'buildCompleted'
             ) {
-                updateSld();
+                if (
+                    studyUpdatedForce.eventData.headers['node'] ===
+                    currentNodeRef.current?.id
+                ) {
+                    updateSld();
+                }
             }
         }
         // Note: studyUuid, and loadNetwork don't change
