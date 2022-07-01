@@ -209,6 +209,9 @@ const useStyles = makeStyles((theme) => ({
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
     },
+    numericValue: {
+        marginLeft: 'inherit', // use 'auto' to align right (if display is flex)
+    },
     checkbox: {
         margin: '-10%',
         cursor: 'initial',
@@ -310,7 +313,11 @@ const NetworkTable = (props) => {
             if (columnDefinition.normed) {
                 value = columnDefinition.normed(fluxConvention, value);
             }
-            if (value && columnDefinition.numeric && columnDefinition.fractionDigits) {
+            if (
+                value &&
+                columnDefinition.numeric &&
+                columnDefinition.fractionDigits
+            ) {
                 // only numeric rounded cells have a tooltip (their raw numeric value)
                 tooltipValue = value;
                 value = parseFloat(value).toFixed(
@@ -558,7 +565,7 @@ const NetworkTable = (props) => {
                 <div
                     key={key}
                     style={style}
-                    align={columnDefinition.numeric ? 'right' : 'left'}
+                    align="left"
                     onClick={() => setSort(columnDefinition)}
                     className={sortIconClassStyle(
                         columnSort,
@@ -716,11 +723,7 @@ const NetworkTable = (props) => {
         (rowData, columnDefinition, key, style) => {
             const cellValue = formatCell(rowData, columnDefinition);
             return (
-                <div
-                    key={key}
-                    style={style}
-                    align={columnDefinition.numeric ? 'right' : 'left'}
-                >
+                <div key={key} style={style}>
                     <div className={classes.tableCell}>
                         {cellValue.tooltip !== undefined ? (
                             <Tooltip
@@ -735,6 +738,8 @@ const NetworkTable = (props) => {
                                             columnDefinition.canBeInvalidated &&
                                             props.loadFlowStatus !==
                                                 RunningStatus.SUCCEED,
+                                        [classes.numericValue]:
+                                            columnDefinition.numeric,
                                     })}
                                 />
                             </Tooltip>
@@ -745,6 +750,8 @@ const NetworkTable = (props) => {
                                         columnDefinition.canBeInvalidated &&
                                         props.loadFlowStatus !==
                                             RunningStatus.SUCCEED,
+                                    [classes.numericValue]:
+                                        columnDefinition.numeric,
                                 })}
                                 text={cellValue.value}
                             />
@@ -756,6 +763,7 @@ const NetworkTable = (props) => {
         [
             classes.tableCell,
             classes.valueInvalid,
+            classes.numericValue,
             props.loadFlowStatus,
             formatCell,
         ]
