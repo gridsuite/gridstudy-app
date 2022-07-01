@@ -174,10 +174,24 @@ export const reducer = createReducer(initialState, {
         if (state.networkModificationTreeModel) {
             let newModel =
                 state.networkModificationTreeModel.newSharedForUpdate();
+
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
-            synchCurrentTreeNode(state);
+
+            // check if current node is in the nodes deleted list
+            if (
+                action.networkModificationTreeNodes.includes(
+                    state.currentTreeNode?.id
+                )
+            ) {
+                //TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
+                // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
+                synchCurrentTreeNode(
+                    state,
+                    state.currentTreeNode?.data?.parentNodeUuid
+                );
+            }
         }
     },
 
@@ -188,7 +202,14 @@ export const reducer = createReducer(initialState, {
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
             state.networkModificationTreeModel.setBuildingStatus();
-            synchCurrentTreeNode(state);
+            // check if current node is in the nodes updated list
+            if (
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.currentTreeNode?.id
+                )
+            ) {
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
+            }
         }
     },
 
@@ -348,13 +369,11 @@ export const reducer = createReducer(initialState, {
     },
 });
 
-function synchCurrentTreeNode(state) {
-    const currentNode = state.networkModificationTreeModel?.treeElements.find(
-        (entry) => entry?.id === state.currentTreeNode?.id
-    );
-    // handle the case of currentTreeNode not in the TreeModel anymore.
-    if (currentNode === undefined) state.currentTreeNode = null;
-    else {
-        state.currentTreeNode = { ...currentNode };
-    }
+function synchCurrentTreeNode(state, nextCurrentNodeUuid) {
+    const nextCurrentNode =
+        state.networkModificationTreeModel?.treeElements.find(
+            (entry) => entry?.id === nextCurrentNodeUuid
+        );
+    //  we need to overwrite state.currentTreeNode to consider label change for example.
+    state.currentTreeNode = { ...nextCurrentNode };
 }

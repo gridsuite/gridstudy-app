@@ -76,9 +76,8 @@ export const EquipmentTable = (props) => {
                 />
             )}
             {props.fetched &&
-                props.rows &&
-                props.columns &&
-                props.columns.length > 0 && (
+                props.rows?.length > 0 &&
+                props.columns?.length > 0 && (
                     <AutoSizer>
                         {({ width, height }) => (
                             <MultiGrid
@@ -98,6 +97,16 @@ export const EquipmentTable = (props) => {
                                 enableFixedRowScroll={true}
                                 hideTopRightGridScrollbar={true}
                                 hideBottomLeftGridScrollbar={true}
+                                styleBottomLeftGrid={
+                                    props.disableVerticalScroll
+                                        ? { overflowY: 'hidden' }
+                                        : ''
+                                }
+                                styleBottomRightGrid={
+                                    props.disableVerticalScroll
+                                        ? { overflowY: 'hidden' }
+                                        : ''
+                                }
                             />
                         )}
                     </AutoSizer>

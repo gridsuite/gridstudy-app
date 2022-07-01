@@ -38,6 +38,7 @@ import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
+import { isNodeBuilt } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -146,6 +147,8 @@ const StudyPane = ({
     const voltageLevelsIdsForNad = useSelector(
         (state) => state.voltageLevelsIdsForNad
     );
+
+    const disabled = !isNodeBuilt(currentNode);
 
     useEffect(() => {
         if (
@@ -284,7 +287,6 @@ const StudyPane = ({
                                     }
                                     openVoltageLevel={openVoltageLevel}
                                     /* TODO verif tableEquipment*/
-
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
@@ -306,20 +308,21 @@ const StudyPane = ({
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
                 */}
-                            {props.view === StudyView.MAP && (
-                                <SingleLineDiagramPane
-                                    studyUuid={studyUuid}
-                                    network={network}
-                                    onClose={closeVoltageLevelDiagram}
-                                    openVoltageLevel={openVoltageLevel}
-                                    isComputationRunning={isComputationRunning}
-                                    showInSpreadsheet={showInSpreadsheet}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
-                                    currentNode={currentNode}
-                                />
-                            )}
+                            <SingleLineDiagramPane
+                                studyUuid={studyUuid}
+                                network={network}
+                                onClose={closeVoltageLevelDiagram}
+                                openVoltageLevel={openVoltageLevel}
+                                isComputationRunning={isComputationRunning}
+                                showInSpreadsheet={showInSpreadsheet}
+                                loadFlowStatus={getLoadFlowRunningStatus(
+                                    loadFlowInfos?.loadFlowStatus
+                                )}
+                                currentNode={currentNode}
+                                disabled={disabled}
+                                visible={props.view === StudyView.MAP}
+                            />
+
                             {props.view === StudyView.MAP &&
                                 voltageLevelsIdsForNad?.length && (
                                     <NetworkAreaDiagramPane
@@ -332,6 +335,7 @@ const StudyPane = ({
                                         onClose={() =>
                                             dispatch(openNetworkAreaDiagram([]))
                                         }
+                                        disabled={disabled}
                                         align="left"
                                     />
                                 )}
@@ -355,6 +359,7 @@ const StudyPane = ({
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
+                    disabled={disabled}
                 />
             </Paper>
         );
@@ -392,6 +397,7 @@ const StudyPane = ({
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
+                    disabled={disabled}
                 />
             </div>
             <div
@@ -404,6 +410,7 @@ const StudyPane = ({
                     studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
                     currentNode={currentNode}
+                    disabled={disabled}
                 />
             </div>
         </>

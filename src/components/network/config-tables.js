@@ -622,7 +622,12 @@ export const TABLES_DEFINITIONS = {
                 id: 'TargetP',
                 dataKey: 'targetP',
                 numeric: true,
-                changeCmd: 'equipment.setTargetP({})',
+                changeCmd:
+                    'if (equipment.getMinP() <= {} && {} <= equipment.getMaxP() ) { \n' +
+                    '    equipment.setTargetP({})\n' +
+                    '} else {\n' +
+                    "    throw new Exception('incorrect value')\n" +
+                    ' }\n',
                 editor: ({ equipment, ...props }) =>
                     NumericalField({
                         min: equipment.minP,
@@ -1182,7 +1187,7 @@ function generateTapRequest(type, leg) {
         '.get' +
         type +
         'TapChanger()\n' +
-        'if (tap.getLowTapPosition() <= {} && {} < tap.getHighTapPosition() ) { \n' +
+        'if (tap.getLowTapPosition() <= {} && {} <= tap.getHighTapPosition() ) { \n' +
         '    tap.setTapPosition({})\n' +
         // to force update of transformer as sub elements changes like tapChanger are not detected
         '    equipment.setFictitious(equipment.isFictitious())\n' +
