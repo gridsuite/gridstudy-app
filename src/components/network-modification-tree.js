@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import RootNode from './graph/nodes/root-node';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import makeStyles from '@mui/styles/makeStyles';
-import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
+import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -77,7 +77,9 @@ const NetworkModificationTree = ({
             if (node.id === currentNode?.id) {
                 return '#4287f5';
             }
-            switch (node.data.buildStatus) {
+            switch (
+                node.data.buildStatus // TODO replace the switch with a simpler if/else ?
+            ) {
                 case 'BUILT':
                     return '#70d136';
                 case 'NOT_BUILT':

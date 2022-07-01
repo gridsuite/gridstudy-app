@@ -205,6 +205,8 @@ export function SingleLineDiagramPane({
     showInSpreadsheet,
     loadFlowStatus,
     currentNode,
+    disabled,
+    visible,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -227,6 +229,9 @@ export function SingleLineDiagramPane({
     const location = useLocation();
     const viewsRef = useRef();
     viewsRef.current = views;
+
+    const currentNodeRef = useRef();
+    currentNodeRef.current = currentNode;
 
     const updateSld = useCallback((id) => {
         if (id)
@@ -273,11 +278,14 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        setViews((oldVal) => oldVal.map(createView));
-    }, [createView]);
+        if (!disabled && visible) {
+            setViews((oldVal) => oldVal.map(createView));
+        }
+    }, [disabled, visible, createView]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
+        if (disabled || !visible) return;
         // parse query parameter
         const queryParams = parse(location.search, {
             parseArrays: true,
@@ -290,7 +298,7 @@ export function SingleLineDiagramPane({
         );
 
         setUpdateSwitchMsg('');
-    }, [createView, location]);
+    }, [createView, location, disabled, visible]);
 
     const toggleState = useCallback(
         (id, type, state) => {
@@ -362,7 +370,12 @@ export function SingleLineDiagramPane({
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'buildCompleted'
             ) {
-                updateSld();
+                if (
+                    studyUpdatedForce.eventData.headers['node'] ===
+                    currentNodeRef.current?.id
+                ) {
+                    updateSld();
+                }
             }
         }
         // Note: studyUuid, and loadNetwork don't change
@@ -427,6 +440,7 @@ export function SingleLineDiagramPane({
                         numberToDisplay={displayedSLD.length}
                         toggleState={toggleState}
                         pinned={viewState.get(sld.id) === ViewState.PINNED}
+                        disabled={disabled}
                     />
                 </div>
             ))}
@@ -456,7 +470,8 @@ SingleLineDiagramPane.propTypes = {
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
-
     onClose: PropTypes.func,
     onNextVoltageLevelClick: PropTypes.func,
+    disabled: PropTypes.bool,
+    visible: PropTypes.bool,
 };

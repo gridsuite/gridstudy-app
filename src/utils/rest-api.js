@@ -582,11 +582,16 @@ export function fetchBusesForVoltageLevel(
     console.info(
         `Fetching buses of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', true);
+
     const fetchBusesUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
         voltageLevelId +
-        '/buses';
+        '/buses' +
+        '?' +
+        urlSearchParams.toString();
     console.debug(fetchBusesUrl);
     return backendFetch(fetchBusesUrl).then((response) => response.json());
 }
@@ -599,11 +604,17 @@ export function fetchBusbarSectionsForVoltageLevel(
     console.info(
         `Fetching busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', true);
+
     const fetchBusbarSectionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
         voltageLevelId +
-        '/busbar-sections';
+        '/busbar-sections' +
+        '?' +
+        urlSearchParams.toString();
+
     console.debug(fetchBusbarSectionsUrl);
     return backendFetch(fetchBusbarSectionsUrl).then((response) =>
         response.json()
@@ -778,11 +789,15 @@ export function fetchNetworkModificationTree(studyUuid) {
     console.info('Fetching network modification tree');
     const url = getStudyUrl(studyUuid) + '/tree';
     console.debug(url);
-    return backendFetch(url, { method: 'get' }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            return response.json().then((text) => {
+                return Promise.reject(text);
+            });
+        }
+    });
 }
 
 export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
@@ -848,13 +863,13 @@ export function updateTreeNode(studyUuid, node) {
     );
 }
 
-export function deleteModifications(studyUuid, node, modificationUuid) {
+export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
-        encodeURIComponent(node.id) +
+        encodeURIComponent(nodeUuid) +
         '/network-modification?' +
         new URLSearchParams({ modificationsUuids: modificationUuid });
 
@@ -1741,7 +1756,7 @@ export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
 }
 
 export function fetchNetworkModifications(groupUuid) {
-    console.info('Fetching network modification tree node');
+    console.info('Fetching network modifications for groupUuid : ', groupUuid);
     const url =
         PREFIX_NETWORK_MODIFICATION_QUERIES +
         '/v1/groups/' +

@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    useRef,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -24,7 +30,7 @@ import {
 import { gridItem, GridSection, removeNullDataValues } from './dialogUtils';
 import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from './line-creation-dialog';
 import {
@@ -33,6 +39,7 @@ import {
 } from './line-split-or-attach-utils';
 import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
+import { Box } from '@mui/system';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -73,6 +80,7 @@ const LineAttachToVoltageLevelDialog = ({
     };
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
+    const newVoltageLevelRef = useRef();
 
     const [attachmentLine, setAttachmentLine] = useState(null);
 
@@ -153,6 +161,7 @@ const LineAttachToVoltageLevelDialog = ({
                       )
                     : '',
         });
+    const voltageLevelOrIdRef = useRef();
 
     const [busbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
 
@@ -172,6 +181,17 @@ const LineAttachToVoltageLevelDialog = ({
                   )
                 : '',
         });
+
+    useEffect(() => {
+        if (
+            newVoltageLevelRef.current !== null &&
+            voltageLevelOrId !== voltageLevelOrIdRef.current
+        ) {
+            voltageLevelOrIdRef.current = voltageLevelOrId;
+            setNewVoltageLevel(null);
+            newVoltageLevelRef.current = newVoltageLevel;
+        }
+    }, [voltageLevelOrId, newVoltageLevel]);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
@@ -481,39 +501,36 @@ const LineAttachToVoltageLevelDialog = ({
                     </Grid>
                     <GridSection title="VoltageLevel" />
                     <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField, 5)}
+                        {gridItem(voltageLevelIdField)}
+                        {gridItem(bbsOrNodeIdField)}
                         {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
                                 startIcon={
                                     newVoltageLevel ? <EditIcon /> : <AddIcon />
                                 }
-                                variant="outlined"
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="NewVoltageLevel" />
                                 </Typography>
-                            </Button>,
-                            2
+                            </Button>
                         )}
-                        {gridItem(bbsOrNodeIdField, 5)}
                     </Grid>
                     <GridSection title="AttachedLine" />
                     <Grid container spacing={2}>
-                        {gridItem(lineToIdField, 4)}
+                        {gridItem(lineToIdField)}
+                        <Box width="100%" />
                         {gridItem(
                             <Button
                                 onClick={openLineDialog}
                                 startIcon={
                                     attachmentLine ? <EditIcon /> : <AddIcon />
                                 }
-                                variant="outlined"
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="AttachedLine" />
                                 </Typography>
-                            </Button>,
-                            4
+                            </Button>
                         )}
                     </Grid>
                     <GridSection title="Line1" />
@@ -549,6 +566,7 @@ const LineAttachToVoltageLevelDialog = ({
                     <LineCreationDialog
                         open={true}
                         onClose={onLineDialogClose}
+                        voltageLevelOptions={voltageLevelOptions}
                         currentNodeUuid={currentNodeUuid}
                         substationOptions={substationOptions}
                         displayConnectivity={false}

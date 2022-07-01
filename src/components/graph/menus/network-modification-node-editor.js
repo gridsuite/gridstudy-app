@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
     fetchNetworkModifications,
     deleteModifications,
@@ -77,6 +76,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
+        overflow: 'hidden',
     },
     toolbar: {
         padding: theme.spacing(0),
@@ -113,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         color: theme.palette.primary.main,
     },
+    icon: {
+        width: theme.spacing(3),
+    },
 }));
 
 function isChecked(s1) {
@@ -124,13 +127,16 @@ function isPartial(s1, s2) {
     return s1 !== s2;
 }
 
-const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
+const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
-    const currentNodeRef = useRef(); // initial empty to get first update
+    const currentTreeNode = useSelector((state) => state.currentTreeNode);
+
+    const currentNodeIdRef = useRef(); // initial empty to get first update
+    const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
@@ -296,39 +302,6 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
         },
     };
 
-    useEffect(() => {
-        setEditDialogOpen(editData?.type);
-    }, [editData]);
-
-    useEffect(() => {
-        var discardResult = false;
-        if (currentTreeNode !== currentNodeRef.current) {
-            // loader when opening a modification panel (current user only)
-            setLaunchLoader(true);
-            currentNodeRef.current = currentTreeNode;
-            if (!currentTreeNode.networkModification) {
-                setModifications([]);
-                setLaunchLoader(false);
-            } else {
-                fetchNetworkModifications(currentTreeNode.networkModification)
-                    .then((res) => {
-                        if (
-                            currentTreeNode === currentNodeRef.current &&
-                            !discardResult
-                        )
-                            setModifications(res);
-                    })
-                    .catch((errorMessage) => snackError(errorMessage))
-                    .finally(() => {
-                        setLaunchLoader(false);
-                    });
-            }
-        }
-        return () => {
-            discardResult = true;
-        };
-    }, [currentTreeNode, setModifications, snackError]);
-
     const fillNotification = useCallback(
         (study, messageId) => {
             // (work for all users)
@@ -360,10 +333,48 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
         [fillNotification]
     );
 
+    const dofetchNetworkModifications = useCallback(() => {
+        // In most cases here this condition manage that current Node is the root node
+        if (!currentTreeNode?.data?.modificationGroupUuid) return;
+
+        setLaunchLoader(true);
+        fetchNetworkModifications(currentTreeNode?.data?.modificationGroupUuid)
+            .then((res) => {
+                // Check if during asynchronous request currentNode has already changed
+                // otherwise accept fetch results
+                if (currentTreeNode.id === currentNodeIdRef.current) {
+                    setModifications(res);
+                }
+            })
+            .catch((errorMessage) => snackError(errorMessage))
+            .finally(() => {
+                setPendingState(false);
+                setLaunchLoader(false);
+            });
+    }, [currentTreeNode, snackError]);
+
+    useEffect(() => {
+        setEditDialogOpen(editData?.type);
+    }, [editData]);
+
+    useEffect(() => {
+        // first time then fetch modifications
+        // OR next time if currentNodeId changed then fetch modifications
+        if (
+            !currentNodeIdRef.current ||
+            currentNodeIdRef.current !== currentTreeNode.id
+        ) {
+            currentNodeIdRef.current = currentTreeNode.id;
+            // Current node has changed then clear the modifications list
+            setModifications([]);
+            dofetchNetworkModifications();
+        }
+    }, [currentTreeNode, dofetchNetworkModifications]);
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                currentNodeRef.current?.id !==
+                currentNodeIdRef.current !==
                 studyUpdatedForce.eventData.headers['parentNode']
             )
                 return;
@@ -373,6 +384,7 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
                     studyUpdatedForce.eventData.headers['updateType']
                 )
             ) {
+                setPendingState(true);
                 manageNotification(studyUpdatedForce);
             }
             // notify  finished action (success or error => we remove the loader)
@@ -381,6 +393,10 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'UPDATE_FINISHED'
             ) {
+                // fetch modifications because it must have changed
+                // Do not clear the modifications list, because currentNode is the concerned one
+                // this allow to append new modifications to the existing list.
+                dofetchNetworkModifications();
                 dispatch(
                     removeNotificationByNode(
                         studyUpdatedForce.eventData.headers['parentNode']
@@ -388,7 +404,12 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
                 );
             }
         }
-    }, [dispatch, manageNotification, studyUpdatedForce]);
+    }, [
+        dispatch,
+        dofetchNetworkModifications,
+        manageNotification,
+        studyUpdatedForce,
+    ]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
@@ -409,7 +430,7 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
     const doDeleteModification = () => {
         deleteModifications(
             studyUuid,
-            currentTreeNode,
+            currentTreeNode?.id,
             [...selectedItems.values()].map((item) => item.uuid)
         ).then();
     };
@@ -515,38 +536,59 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
 
     const renderNetworkModificationsListTitleLoading = () => {
         return (
-            <Typography className={classes.modificationsTitle}>
-                <CircularProgress
-                    size={'1em'}
-                    className={classes.circularProgress}
-                />
-                <FormattedMessage id={messageId} />
-            </Typography>
+            <div className={classes.modificationsTitle}>
+                <div className={classes.icon}>
+                    <CircularProgress
+                        size={'1em'}
+                        className={classes.circularProgress}
+                    />
+                </div>
+                <Typography noWrap>
+                    <FormattedMessage id={messageId} />
+                </Typography>
+            </div>
         );
     };
 
     const renderNetworkModificationsListTitleUpdating = () => {
         return (
-            <Typography className={classes.modificationsTitle}>
-                <CircularProgress
-                    size={'1em'}
-                    className={classes.circularProgress}
-                />
-                <FormattedMessage id={'network_modifications/modifications'} />
-            </Typography>
+            <div className={classes.modificationsTitle}>
+                <div className={classes.icon}>
+                    <CircularProgress
+                        size={'1em'}
+                        className={classes.circularProgress}
+                    />
+                </div>
+                <Typography noWrap>
+                    <FormattedMessage
+                        id={'network_modifications/modifications'}
+                    />
+                </Typography>
+            </div>
         );
     };
 
     const renderNetworkModificationsListTitle = () => {
         return (
-            <Typography className={classes.modificationsTitle}>
-                <FormattedMessage
-                    id={'network_modification/modificationsCount'}
-                    values={{
-                        count: modifications ? modifications?.length : '',
-                    }}
-                />
-            </Typography>
+            <div className={classes.modificationsTitle}>
+                <div className={classes.icon}>
+                    {pendingState && (
+                        <CircularProgress
+                            size={'1em'}
+                            className={classes.circularProgress}
+                        />
+                    )}
+                </div>
+                <Typography noWrap>
+                    <FormattedMessage
+                        id={'network_modification/modificationsCount'}
+                        values={{
+                            count: modifications ? modifications?.length : '',
+                            hide: pendingState,
+                        }}
+                    />
+                </Typography>
+            </div>
         );
     };
 
@@ -604,10 +646,6 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
             {editDialogOpen && renderDialog()}
         </>
     );
-};
-
-NetworkModificationNodeEditor.propTypes = {
-    currentTreeNode: PropTypes.object.isRequired,
 };
 
 export default NetworkModificationNodeEditor;

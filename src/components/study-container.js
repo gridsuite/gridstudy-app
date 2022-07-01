@@ -38,9 +38,13 @@ import {
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+    useSnackMessage,
+} from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, isNodeValid } from './graph/util/model-functions';
+import { getFirstNodeOfType, isNodeBuilt } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -174,9 +178,19 @@ export function StudyContainer({ view, onChangeTab }) {
     const loadNetworkRef = useRef();
 
     const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const intlRef = useIntlRef();
     const intl = useIntl();
+
+    const checkBuildFailedNotifications = useCallback(
+        (eventData) => {
+            if (eventData.headers['updateType'] === 'buildFailed') {
+                snackError('', 'NodeBuildingError');
+            }
+        },
+        [snackError]
+    );
 
     const connectNotifications = useCallback(
         (studyUuid) => {
@@ -184,7 +198,10 @@ export function StudyContainer({ view, onChangeTab }) {
 
             const ws = connectNotificationsWebsocket(studyUuid);
             ws.onmessage = function (event) {
-                dispatch(studyUpdated(JSON.parse(event.data)));
+                const eventData = JSON.parse(event.data);
+
+                checkBuildFailedNotifications(eventData);
+                dispatch(studyUpdated(eventData));
             };
             ws.onclose = function (event) {
                 if (!websocketExpectedCloseRef.current) {
@@ -197,19 +214,15 @@ export function StudyContainer({ view, onChangeTab }) {
             return ws;
         },
         // Note: dispatch doesn't change
-        [dispatch]
+        [dispatch, checkBuildFailedNotifications]
     );
 
     const loadNetwork = useCallback(
         (isUpdate) => {
-            console.info(`Loading network of study '${studyUuid}'...`);
-
-            if (
-                !currentNode ||
-                !studyUuid ||
-                currentNode.buildStatus === 'BUILDING'
-            )
+            if (!isNodeBuilt(currentNode) || !studyUuid) {
                 return;
+            }
+            console.info(`Loading network of study '${studyUuid}'...`);
 
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
@@ -316,16 +329,26 @@ export function StudyContainer({ view, onChangeTab }) {
                     )
                 );
             })
-            .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NetworkModificationTreeLoadError',
-                        intlRef: intlRef,
-                    },
-                })
-            )
+            .catch((errorMessage) => {
+                if (errorMessage.status === 404)
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: '',
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'StudyUnrecoverableStateRecreate',
+                            intlRef: intlRef,
+                        },
+                    });
+                else
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'NetworkModificationTreeLoadError',
+                            intlRef: intlRef,
+                        },
+                    });
+            })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
             );
@@ -339,9 +362,10 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
+        if (!isNodeBuilt(currentNode)) return;
         loadNetwork(currentNode?.id === currentNodeIdRef.current);
     }, [loadNetwork, currentNode]);
+
     currentNodeIdRef.current = currentNode?.id;
 
     useEffect(() => {

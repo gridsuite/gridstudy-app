@@ -324,7 +324,6 @@ ConnectivityEdition.propTypes = {
     helperTextVoltageLevel: PropTypes.string,
     errorBusOrBusBarSection: PropTypes.bool,
     helperTextBusOrBusBarSection: PropTypes.string,
-    currentNodeUuid: PropTypes.string,
 };
 
 export default ConnectivityEdition;
