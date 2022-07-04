@@ -681,14 +681,14 @@ export const useExpandableValues = ({
     fieldProps,
     validateItem,
 }) => {
-    const useCustomStyle = makeStyles((theme) => ({
+    const useCostumStyle = makeStyles((theme) => ({
         errorItem: {
             color: theme.palette.error.main,
             textDecorationLine: 'overline',
             margin: theme.spacing(1),
         },
     }));
-    const customClasses = useCustomStyle();
+    const costumClasses = useCostumStyle();
     const classes = useStyles();
     const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
@@ -771,7 +771,7 @@ export const useExpandableValues = ({
                             <FormattedMessage id={labelAddValue} />
                         </Button>
                         {errorItem && (
-                            <div className={customClasses.errorItem}>
+                            <div className={costumClasses.errorItem}>
                                 <FormattedMessage
                                     id={'EmptyBusBarSectionList'}
                                 />
@@ -788,7 +788,7 @@ export const useExpandableValues = ({
         handleAddValue,
         labelAddValue,
         errorItem,
-        customClasses.errorItem,
+        costumClasses.errorItem,
         id,
         fieldProps,
         handleSetValue,
