@@ -313,8 +313,10 @@ const NetworkTable = (props) => {
             if (columnDefinition.normed) {
                 value = columnDefinition.normed(fluxConvention, value);
             }
+            // Note: a data may be missing in the server response (ex: p1 from 2W-Transfo).
+            // In this case, its value is undefined and nothing is displayed in the cell.
             if (
-                value &&
+                value !== undefined &&
                 columnDefinition.numeric &&
                 columnDefinition.fractionDigits
             ) {
@@ -559,7 +561,7 @@ const NetworkTable = (props) => {
     const headerCellRender = useCallback(
         (columnDefinition, key, style) => {
             if (columnDefinition.editColumn) {
-                return <div key={key} style={style}></div>;
+                return <div key={key} style={style} />;
             }
             return (
                 <div
