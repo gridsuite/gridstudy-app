@@ -12,10 +12,10 @@ import {
     TextField,
     Chip,
     Button,
+    Divider,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import { LineSeparator } from './line-separator';
 import { CloseButton, LabelledButton, useStyles } from './parameters';
 import {
     getDefaultLoadFlowProvider,
@@ -36,7 +36,7 @@ const LF_PROVIDER_VALUES = {
     Hades2: 'Hades2',
 };
 
-export const LoadFlow = (hideParameters) => {
+export const LoadFlowParameters = ({ hideParameters }) => {
     const classes = useStyles();
 
     let countriesList;
@@ -303,7 +303,9 @@ export const LoadFlow = (hideParameters) => {
         return Object.keys(defParams).map((key) => (
             <Grid container spacing={1} paddingTop={1} key={key}>
                 {makeComponentFor(defParams[key], key, params, setter)}
-                <LineSeparator />
+                <Grid item xs={12}>
+                    <Divider />
+                </Grid>
             </Grid>
         ));
     }
@@ -460,19 +462,21 @@ export const LoadFlow = (hideParameters) => {
                 />
 
                 <Grid container paddingTop={1}>
-                    <LineSeparator />
+                    <Grid item xs={12}>
+                        <Divider />
+                    </Grid>
                 </Grid>
                 <BasicLoadFlowParameters />
                 <AdvancedLoadFlowParameters />
-                <Grid container className={classes.controlItem}>
+                <Grid container className={classes.controlItem} maxWidth="md">
                     <LabelledButton
                         callback={resetLfParameters}
                         label="resetToDefault"
                     />
                     <CloseButton
                         hideParameters={hideParameters}
-                        classeStyleName={classes.button}
-                    ></CloseButton>
+                        className={classes.button}
+                    />
                 </Grid>
             </Grid>
         </Grid>

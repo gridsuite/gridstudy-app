@@ -162,7 +162,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const [showParameters, setShowParameters] = useState(false);
+    const [isParametersOpen, setParametersOpen] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
@@ -214,12 +214,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         }
     }, [user]);
 
-    function showParametersClicked() {
-        setShowParameters(true);
+    function showParameters() {
+        setParametersOpen(true);
     }
 
     function hideParameters() {
-        setShowParameters(false);
+        console.info('hideParameters');
+        setParametersOpen(false);
     }
     return (
         <>
@@ -233,7 +234,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         <GridStudyLogoDark />
                     )
                 }
-                onParametersClick={() => showParametersClicked()}
+                onParametersClick={showParameters}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
                 user={user}
                 appsAndUrls={appsAndUrls}
@@ -315,7 +316,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 )}
             </TopBar>
             <Parameters
-                showParameters={showParameters}
+                isParametersOpen={isParametersOpen}
                 hideParameters={hideParameters}
                 user={user}
             />

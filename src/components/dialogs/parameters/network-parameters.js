@@ -2,21 +2,44 @@ import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
+import {
+    Grid,
+    MenuItem,
+    Box,
+    Select,
+    Typography,
+    Divider,
+} from '@mui/material';
 
-import { LineSeparator } from './line-separator';
 import { PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
-import { useParameterState, useStyles } from './parameters';
+import {
+    CloseButton,
+    LabelledButton,
+    useParameterState,
+    useStyles,
+} from './parameters';
+import { fetchDefaultParametersValues } from '../../../utils/rest-api';
 export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',
 };
 
-export const NetworkParameters = () => {
+export const NetworkParameters = ({ hideParameters }) => {
     const classes = useStyles();
     const [fluxConventionLocal, handleChangeFluxConvention] = useParameterState(
         PARAM_FLUX_CONVENTION
     );
+
+    const resetNetworkParameters = () => {
+        fetchDefaultParametersValues().then((defaultValues) => {
+            const defaultFluxConvention = defaultValues.fluxConvention;
+            if (
+                Object.values(FluxConventions).includes(defaultFluxConvention)
+            ) {
+                handleChangeFluxConvention(defaultFluxConvention);
+            }
+        });
+    };
 
     return (
         <Grid container spacing={1} className={classes.grid}>
@@ -44,8 +67,24 @@ export const NetworkParameters = () => {
                             <FormattedMessage id="FluxConvention.target" />
                         </MenuItem>
                     </Select>
+                    <Grid
+                        container
+                        className={classes.controlItem}
+                        maxWidth="md"
+                    >
+                        <LabelledButton
+                            callback={resetNetworkParameters}
+                            label="resetToDefault"
+                        />
+                        <CloseButton
+                            hideParameters={hideParameters}
+                            className={classes.button}
+                        />
+                    </Grid>
                 </Grid>
-                <LineSeparator />
+                <Grid item xs={12}>
+                    <Divider />
+                </Grid>{' '}
             </Grid>
         </Grid>
     );

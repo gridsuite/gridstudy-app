@@ -2,7 +2,14 @@ import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
+import {
+    Grid,
+    MenuItem,
+    Box,
+    Select,
+    Typography,
+    Divider,
+} from '@mui/material';
 
 import { getAvailableComponentLibraries } from '../../../utils/rest-api';
 import { SubstationLayout } from '../../diagrams/singleLineDiagram/single-line-diagram';
@@ -12,11 +19,10 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../../utils/config-params';
-import { SwitchWithLabel, useParameterState } from './parameters';
-import { LineSeparator } from './line-separator';
+import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
 
-export const SingleLineDiagramParameters = ({ user }) => {
+export const SingleLineDiagramParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
 
     const [diagonalLabelLocal, handleChangeDiagonalLabel] =
@@ -45,7 +51,9 @@ export const SingleLineDiagramParameters = ({ user }) => {
                     handleChangeDiagonalLabel(!diagonalLabelLocal);
                 }}
             />
-            <LineSeparator />
+            <Grid item xs={12}>
+                <Divider />
+            </Grid>{' '}
             <SwitchWithLabel
                 value={centerLabelLocal}
                 label="centerLabel"
@@ -53,7 +61,9 @@ export const SingleLineDiagramParameters = ({ user }) => {
                     handleChangeCenterLabel(!centerLabelLocal);
                 }}
             />
-            <LineSeparator />
+            <Grid item xs={12}>
+                <Divider />
+            </Grid>{' '}
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -89,9 +99,9 @@ export const SingleLineDiagramParameters = ({ user }) => {
                     </MenuItem>
                 </Select>
             </Grid>
-
-            <LineSeparator />
-
+            <Grid item xs={12}>
+                <Divider />
+            </Grid>{' '}
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -120,6 +130,12 @@ export const SingleLineDiagramParameters = ({ user }) => {
                         );
                     })}
                 </Select>
+                <Grid container className={classes.controlItem} maxWidth="md">
+                    <CloseButton
+                        hideParameters={hideParameters}
+                        className={classes.button}
+                    />
+                </Grid>
             </Grid>
         </Grid>
     );

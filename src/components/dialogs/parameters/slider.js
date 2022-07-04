@@ -3,13 +3,13 @@ import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useStyles } from './parameters';
 
-export const LabelledSilder = (
+export const LabelledSilder = ({
     threshold,
     label,
     disabled,
     onCommitCallback,
-    thresholdMarks
-) => {
+    thresholdMarks,
+}) => {
     const [sliderValue, setSliderValue] = useState(threshold);
 
     const handleValueChanged = (event, newValue) => {

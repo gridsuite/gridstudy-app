@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
+import {
+    Grid,
+    MenuItem,
+    Box,
+    Select,
+    Typography,
+    Divider,
+} from '@mui/material';
 
 import { LineFlowMode } from '../../network/line-layer';
 import { LineFlowColorMode } from '../../network/line-layer';
@@ -14,12 +21,11 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
 } from '../../../utils/config-params';
-import { SwitchWithLabel, useParameterState } from './parameters';
-import { LineSeparator } from './line-separator';
+import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
 import { LabelledSilder } from './slider';
 
-export const MapParameters = () => {
+export const MapParameters = ({ hideParameters }) => {
     const classes = useStyles();
 
     const [lineFullPathLocal, handleChangeLineFullPath] =
@@ -73,7 +79,9 @@ export const MapParameters = () => {
                     handleChangeLineFullPath(!lineFullPathLocal);
                 }}
             />
-            <LineSeparator />
+            <Grid item xs={12}>
+                <Divider />
+            </Grid>{' '}
             <SwitchWithLabel
                 value={lineParallelPathLocal}
                 label="lineParallelPath"
@@ -81,7 +89,9 @@ export const MapParameters = () => {
                     handleChangeLineParallelPath(!lineParallelPathLocal);
                 }}
             />
-            <LineSeparator />
+            <Grid item xs={12}>
+                <Divider />
+            </Grid>{' '}
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -109,7 +119,9 @@ export const MapParameters = () => {
                     </MenuItem>
                 </Select>
             </Grid>
-            <LineSeparator />
+            <Grid item xs={12}>
+                <Divider />
+            </Grid>{' '}
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -134,7 +146,9 @@ export const MapParameters = () => {
                     </MenuItem>
                 </Select>
             </Grid>
-            <LineSeparator />
+            <Grid item xs={12}>
+                <Divider />
+            </Grid>{' '}
             <LabelledSilder
                 prop={Number(lineFlowAlertThresholdLocal)}
                 label="AlertThresholdLabel"
@@ -144,7 +158,9 @@ export const MapParameters = () => {
                 }}
                 thresholdMarks={alertThresholdMarks}
             />
-            <LineSeparator />
+            <Grid item xs={12}>
+                <Divider />
+            </Grid>{' '}
             <SwitchWithLabel
                 value={displayOverloadTableLocal}
                 label="displayOverloadTable"
@@ -154,6 +170,12 @@ export const MapParameters = () => {
                     );
                 }}
             />
+            <Grid container className={classes.controlItem} maxWidth="md">
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
         </Grid>
     );
 };

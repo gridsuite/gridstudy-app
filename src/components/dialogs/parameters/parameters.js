@@ -1,5 +1,3 @@
-//   /**
-
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
@@ -22,31 +20,23 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
-import {
-    getLoadFlowParameters,
-    setLoadFlowParameters,
-    updateConfigParameter,
-    fetchDefaultParametersValues,
-} from '../../../utils/rest-api';
+import { updateConfigParameter } from '../../../utils/rest-api';
 
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../../utils/messages';
 
-import { SingleLineDiagramParameters } from './single-line-diagram-parameter';
+import { SingleLineDiagramParameters } from './single-line-diagram-parameters';
 
-import { LoadFlow } from './load-flow-parameter';
-import { MapParameters } from './map-parameter';
-import { NetworkParameters } from './network-parameter';
+import { LoadFlowParameters } from './load-flow-parameters';
+import { MapParameters } from './map-parameters';
+import { NetworkParameters } from './network-parameters';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     console.info(hideParameters);
     return (
-        <Button
-            onClick={hideParameters}
-            className={classeStyleName}
-        >
+        <Button onClick={hideParameters} className={classeStyleName}>
             <FormattedMessage id="close" />
         </Button>
     );
@@ -110,7 +100,6 @@ export const LabelledButton = ({ callback, label, name }) => {
     );
 };
 export function useParameterState(paramName) {
-    const classes = useStyles();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -150,12 +139,8 @@ export function useParameterState(paramName) {
     return [paramLocalState, handleChangeParamLocalState];
 }
 
-const Parameters = ({ showParameters, hideParameters }) => {
+const Parameters = ({ isParametersOpen, hideParameters }) => {
     const classes = useStyles();
-
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
 
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -177,22 +162,9 @@ const Parameters = ({ showParameters, hideParameters }) => {
         );
     }
 
-    const resetNetworkParameters = () => {
-        fetchDefaultParametersValues().then((defaultValues) => {
-            const defaultFluxConvention = defaultValues.fluxConvention;
-            if (
-                Object.values(FluxConventions).includes(defaultFluxConvention)
-            ) {
-                this.props.NetworkParameters.handleChangeFluxConvention(
-                    defaultFluxConvention
-                );
-            }
-        });
-    };
-
     return (
         <Dialog
-            open={showParameters}
+            open={isParametersOpen}
             onClose={hideParameters}
             aria-labelledby="form-dialog-title"
             maxWidth={'md'}
@@ -227,28 +199,23 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
-                        <SingleLineDiagramParameters />
+                        <SingleLineDiagramParameters
+                            hideParameters={hideParameters}
+                        />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={1}>
-                        <MapParameters />
+                        <MapParameters hideParameters={hideParameters} />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={2}>
                         {studyUuid && (
-                            <LoadFlow hideParameters={hideParameters} />
+                            <LoadFlowParameters
+                                hideParameters={hideParameters}
+                            />
                         )}
                     </TabPanel>
                     <TabPanel value={tabIndex} index={3}>
-                        <NetworkParameters />
+                        <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
-                    <Grid container className={classes.controlItem}>
-                        {tabIndex === 3 && (
-                            <LabelledButton
-                                callback={resetNetworkParameters}
-                                label="resetToDefault"
-                                name={classes.button}
-                            />
-                        )}
-                    </Grid>
                 </Container>
             </DialogContent>
         </Dialog>
