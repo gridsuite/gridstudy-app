@@ -14,14 +14,9 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
 } from '../../../utils/config-params';
-import {
-    CloseButton,
-    LineSeparator,
-    SwitchWithLabel,
-    useParameterState,
-} from './parameters';
+import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
-import { LabelledSilder } from './slider';
+import { LabelledSilder, LineSeparator } from '../dialogUtils';
 
 export const MapParameters = ({ hideParameters }) => {
     const classes = useStyles();

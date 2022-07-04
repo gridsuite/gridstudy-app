@@ -8,11 +8,11 @@ import { PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
 import {
     CloseButton,
     LabelledButton,
-    LineSeparator,
     useParameterState,
     useStyles,
 } from './parameters';
 import { fetchDefaultParametersValues } from '../../../utils/rest-api';
+import { LineSeparator } from '../dialogUtils';
 export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',

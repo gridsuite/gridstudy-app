@@ -12,13 +12,9 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../../utils/config-params';
-import {
-    CloseButton,
-    LineSeparator,
-    SwitchWithLabel,
-    useParameterState,
-} from './parameters';
+import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
+import { LineSeparator } from '../dialogUtils';
 
 export const SingleLineDiagramParameters = ({ user, hideParameters }) => {
     const classes = useStyles();

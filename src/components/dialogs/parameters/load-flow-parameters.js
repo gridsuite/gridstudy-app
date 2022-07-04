@@ -15,12 +15,7 @@ import {
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import {
-    CloseButton,
-    LabelledButton,
-    LineSeparator,
-    useStyles,
-} from './parameters';
+import { CloseButton, LabelledButton, useStyles } from './parameters';
 import {
     getDefaultLoadFlowProvider,
     getLoadFlowParameters,
@@ -35,6 +30,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
 import { SwitchWithLabel } from './parameters';
+import { LineSeparator } from '../dialogUtils';
 const LF_PROVIDER_VALUES = {
     OpenLoadFlow: 'OpenLoadFlow',
     Hades2: 'Hades2',
