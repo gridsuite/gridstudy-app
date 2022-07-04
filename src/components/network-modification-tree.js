@@ -28,7 +28,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
-import { nodeTypes } from './graph/util/model-contants';
+import { nodeTypes } from './graph/util/model-constants';
 
 // snapGrid value set to [15, 15] which is the default value for ReactFlow
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false

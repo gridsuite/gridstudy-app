@@ -7,7 +7,7 @@
 
 import dagre from 'dagre';
 import { isNode } from 'react-flow-renderer';
-import { nodeWidth, nodeHeight, rootNodeWidth } from './util/model-contants';
+import { nodeWidth, nodeHeight, rootNodeWidth } from './util/model-constants';
 
 export function getLayoutedElements(elements) {
     const dagreGraph = new dagre.graphlib.Graph();
