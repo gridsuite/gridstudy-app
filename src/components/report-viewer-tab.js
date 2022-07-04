@@ -68,9 +68,8 @@ export const ReportViewerTab = ({
         report.subReporters.forEach((subReport1) => {
             if (subReport1.taskKey === NETWORK_MODIFICATION) {
                 // we group all network modifications together
-                subReport1.subReporters.forEach((subReport2) =>
-                    newReport.subReporters.push(subReport2)
-                );
+                newReport.subReporters.push(...subReport1.subReporters);
+                newReport.reports.push(...subReport1.reports);
             } else {
                 newReport.subReporters.push(subReport1);
             }
