@@ -17,6 +17,7 @@ import {
     Tabs,
     Typography,
     Switch,
+    Divider,
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
@@ -33,8 +34,14 @@ import { LoadFlowParameters } from './load-flow-parameters';
 import { MapParameters } from './map-parameters';
 import { NetworkParameters } from './network-parameters';
 
+export function LineSeparator() {
+    return (
+        <Grid item xs={12}>
+            <Divider />
+        </Grid>
+    );
+}
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
-    console.info(hideParameters);
     return (
         <Button onClick={hideParameters} className={classeStyleName}>
             <FormattedMessage id="close" />

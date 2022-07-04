@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import {
-    Grid,
-    MenuItem,
-    Box,
-    Select,
-    Typography,
-    Divider,
-} from '@mui/material';
+import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 
 import { getAvailableComponentLibraries } from '../../../utils/rest-api';
 import { SubstationLayout } from '../../diagrams/singleLineDiagram/single-line-diagram';
@@ -19,7 +12,12 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../../utils/config-params';
-import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
+import {
+    CloseButton,
+    LineSeparator,
+    SwitchWithLabel,
+    useParameterState,
+} from './parameters';
 import { useStyles } from './parameters';
 
 export const SingleLineDiagramParameters = ({ user, hideParameters }) => {
@@ -51,9 +49,7 @@ export const SingleLineDiagramParameters = ({ user, hideParameters }) => {
                     handleChangeDiagonalLabel(!diagonalLabelLocal);
                 }}
             />
-            <Grid item xs={12}>
-                <Divider />
-            </Grid>{' '}
+            <LineSeparator />{' '}
             <SwitchWithLabel
                 value={centerLabelLocal}
                 label="centerLabel"
@@ -61,9 +57,7 @@ export const SingleLineDiagramParameters = ({ user, hideParameters }) => {
                     handleChangeCenterLabel(!centerLabelLocal);
                 }}
             />
-            <Grid item xs={12}>
-                <Divider />
-            </Grid>{' '}
+            <LineSeparator />{' '}
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -99,9 +93,7 @@ export const SingleLineDiagramParameters = ({ user, hideParameters }) => {
                     </MenuItem>
                 </Select>
             </Grid>
-            <Grid item xs={12}>
-                <Divider />
-            </Grid>{' '}
+            <LineSeparator />{' '}
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>

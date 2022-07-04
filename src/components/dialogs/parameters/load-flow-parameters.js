@@ -12,11 +12,15 @@ import {
     TextField,
     Chip,
     Button,
-    Divider,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import { CloseButton, LabelledButton, useStyles } from './parameters';
+import {
+    CloseButton,
+    LabelledButton,
+    LineSeparator,
+    useStyles,
+} from './parameters';
 import {
     getDefaultLoadFlowProvider,
     getLoadFlowParameters,
@@ -303,9 +307,7 @@ export const LoadFlowParameters = ({ hideParameters }) => {
         return Object.keys(defParams).map((key) => (
             <Grid container spacing={1} paddingTop={1} key={key}>
                 {makeComponentFor(defParams[key], key, params, setter)}
-                <Grid item xs={12}>
-                    <Divider />
-                </Grid>
+                <LineSeparator />
             </Grid>
         ));
     }
@@ -462,9 +464,7 @@ export const LoadFlowParameters = ({ hideParameters }) => {
                 />
 
                 <Grid container paddingTop={1}>
-                    <Grid item xs={12}>
-                        <Divider />
-                    </Grid>
+                    <LineSeparator />
                 </Grid>
                 <BasicLoadFlowParameters />
                 <AdvancedLoadFlowParameters />

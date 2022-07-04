@@ -2,19 +2,13 @@ import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import {
-    Grid,
-    MenuItem,
-    Box,
-    Select,
-    Typography,
-    Divider,
-} from '@mui/material';
+import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 
 import { PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
 import {
     CloseButton,
     LabelledButton,
+    LineSeparator,
     useParameterState,
     useStyles,
 } from './parameters';
@@ -82,9 +76,7 @@ export const NetworkParameters = ({ hideParameters }) => {
                         />
                     </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                    <Divider />
-                </Grid>{' '}
+                <LineSeparator />{' '}
             </Grid>
         </Grid>
     );
