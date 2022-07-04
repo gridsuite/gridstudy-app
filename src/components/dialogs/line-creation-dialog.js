@@ -351,13 +351,19 @@ const LineCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item container xs={6} spacing={2}>
-                            {gridItem(shuntConductance1Field, 12)}
-                            {gridItem(shuntSusceptance1Field, 12)}
+                        <Grid item container spacing={2}>
+                            {gridItem(shuntConductance1Field)}
+                            {gridItem(shuntConductance2Field)}
                         </Grid>
-                        <Grid item container xs={6} spacing={2}>
-                            {gridItem(shuntConductance2Field, 12)}
-                            {gridItem(shuntSusceptance2Field, 12)}
+                    </Grid>
+                    <Grid
+                        container
+                        spacing={2}
+                        style={{ marginTop: 'inherit' }}
+                    >
+                        <Grid item container spacing={2}>
+                            {gridItem(shuntSusceptance1Field)}
+                            {gridItem(shuntSusceptance2Field)}
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
