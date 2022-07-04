@@ -47,6 +47,7 @@ import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import SearchIcon from '@mui/icons-material/Search';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import ViewColumnTwoToneIcon from '@mui/icons-material/ViewColumnTwoTone';
 import LockIcon from '@mui/icons-material/Lock';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
@@ -1234,7 +1235,13 @@ const NetworkTable = (props) => {
                                 aria-label="dialog"
                                 onClick={handleOpenPopupSelectColumnNames}
                             >
-                                <ViewColumnIcon />
+                                {selectedColumnsNames.size > 0 &&
+                                selectedColumnsNames.size <
+                                    TABLES_COLUMNS_NAMES[tabIndex].size ? (
+                                    <ViewColumnTwoToneIcon />
+                                ) : (
+                                    <ViewColumnIcon />
+                                )}
                             </IconButton>
                             <SelectOptionsDialog
                                 open={popupSelectColumnNames}
