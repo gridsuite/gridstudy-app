@@ -27,6 +27,7 @@ import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
 import { getArray, useSingleLineDiagram, ViewState } from './utils';
+import { isNodeBuilt } from '../../graph/util/model-functions';
 
 function removeFromMap(oldMap, ids) {
     let removed = false;
@@ -278,10 +279,12 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        if (!disabled && visible) {
+        // We use isNodeBuilt here instead of the "disabled" props to avoid
+        // triggering this effect when changing current node
+        if (isNodeBuilt(currentNodeRef.current) && visible) {
             setViews((oldVal) => oldVal.map(createView));
         }
-    }, [disabled, visible, createView]);
+    }, [visible, createView]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
