@@ -10,6 +10,7 @@ import { isNode } from 'react-flow-renderer';
 
 const nodeWidth = 200;
 const nodeHeight = 50;
+const rootNodeWidth = 60;
 
 export function getLayoutedElements(elements) {
     const dagreGraph = new dagre.graphlib.Graph();
@@ -31,9 +32,11 @@ export function getLayoutedElements(elements) {
             const nodeWithPosition = dagreGraph.node(el.id);
             el.targetPosition = 'top';
             el.sourcePosition = 'bottom';
+            const width =
+                el?.data?.label === 'Root' ? rootNodeWidth : nodeWidth;
 
             el.position = {
-                x: nodeWithPosition.x - nodeWidth / 2,
+                x: nodeWithPosition.x - width / 2,
                 y: nodeWithPosition.y - nodeHeight / 2,
             };
         }
