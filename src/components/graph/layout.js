@@ -32,8 +32,7 @@ export function getLayoutedElements(elements) {
             const nodeWithPosition = dagreGraph.node(el.id);
             el.targetPosition = 'top';
             el.sourcePosition = 'bottom';
-            const width =
-                el?.data?.label === 'Root' ? rootNodeWidth : nodeWidth;
+            const width = el?.type === 'ROOT' ? rootNodeWidth : nodeWidth;
 
             el.position = {
                 x: nodeWithPosition.x - width / 2,
