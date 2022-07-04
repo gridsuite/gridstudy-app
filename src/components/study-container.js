@@ -157,7 +157,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const currentNodeIdRef = useRef();
+    const currentNodeRef = useRef();
 
     const [loadFlowInfos] = useNodeData(
         studyUuid,
@@ -371,10 +371,15 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (!isNodeBuilt(currentNode)) return;
-        loadNetwork(currentNode?.id === currentNodeIdRef.current);
+        let isUpdate = currentNode?.id === currentNodeRef.current?.id;
+        let isRenamed =
+            isUpdate &&
+            currentNode.data?.label !== currentNodeRef.current?.data?.label;
+        currentNodeRef.current = currentNode;
+        // if only renaming, do not reload network
+        if (isRenamed) return;
+        loadNetwork(isUpdate);
     }, [loadNetwork, currentNode]);
-
-    currentNodeIdRef.current = currentNode?.id;
 
     useEffect(() => {
         if (!studyUuid) {

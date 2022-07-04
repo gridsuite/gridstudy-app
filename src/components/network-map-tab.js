@@ -1,5 +1,5 @@
 import NetworkMap from './network/network-map';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchLinePositions,
@@ -97,6 +97,7 @@ export const NetworkMapTab = ({
     const [position, setPosition] = useState([-1, -1]);
 
     const classes = useStyles();
+    const currentNodeRef = useRef(null);
 
     function withEquipment(Menu, props) {
         return (
@@ -169,6 +170,14 @@ export const NetworkMapTab = ({
     );
 
     useEffect(() => {
+        let isUpdate = currentNode?.id === currentNodeRef.current?.id;
+        let isRenamed =
+            isUpdate &&
+            currentNode.data?.label !== currentNodeRef.current?.data?.label;
+        currentNodeRef.current = currentNode;
+        // if only renaming, do not reload geo data
+        if (isRenamed) return;
+
         console.info(`Loading geo data of study '${studyUuid}'...`);
         if (disabled) return;
         const substationPositions = fetchSubstationPositions(
