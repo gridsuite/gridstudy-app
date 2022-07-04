@@ -32,7 +32,6 @@ export function RunButtonContainer({
     setIsComputationRunning,
     runnable,
     disabled,
-    hypothesisInLoad,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -153,7 +152,6 @@ export function RunButtonContainer({
                 getStartIcon={getRunningIcon}
                 computationStopped={computationStopped}
                 disabled={disabled}
-                hypothesisInLoad={hypothesisInLoad}
             />
             {!disabled && (
                 <ContingencyListSelector

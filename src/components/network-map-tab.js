@@ -80,8 +80,8 @@ export const NetworkMapTab = ({
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
-    const disabled = !isNodeBuilt(currentNode);
     const [hypothesisInLoad, setHypothesisInLoad] = useState(false);
+    const disabled = !isNodeBuilt(currentNode);
 
     const [geoData, setGeoData] = useState();
 
@@ -371,8 +371,7 @@ export const NetworkMapTab = ({
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
-                    disabled={disabled}
-                    hypothesisInLoad={hypothesisInLoad}
+                    disabled={hypothesisInLoad || disabled}
                 />
             </div>
         </>
