@@ -681,18 +681,18 @@ export const useExpandableValues = ({
     fieldProps,
     validateItem,
 }) => {
-    const useCostumStyle = makeStyles((theme) => ({
-        errorItem: {
+    const useCustomStyle = makeStyles((theme) => ({
+        emptyListError: {
             color: theme.palette.error.main,
             textDecorationLine: 'overline',
             margin: theme.spacing(1),
         },
     }));
-    const costumClasses = useCostumStyle();
+    const customClasses = useCustomStyle();
     const classes = useStyles();
     const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
-    const [errorItem, setErrorItem] = useState(false);
+    const [emptyListError, setEmptyListError] = useState(false);
 
     useEffect(() => {
         if (defaultValues) {
@@ -726,11 +726,11 @@ export const useExpandableValues = ({
         function validation() {
             const res = validateItem(values);
             if (res.get('NO_BBS')) {
-                setErrorItem(true);
+                setEmptyListError(true);
                 return;
             }
             setErrors(res);
-            setErrorItem(false);
+            setEmptyListError(false);
             return res?.size === 0;
         }
         inputForm.addValidation(id, validation);
@@ -770,8 +770,8 @@ export const useExpandableValues = ({
                         >
                             <FormattedMessage id={labelAddValue} />
                         </Button>
-                        {errorItem && (
-                            <div className={costumClasses.errorItem}>
+                        {emptyListError && (
+                            <div className={customClasses.emptyListError}>
                                 <FormattedMessage
                                     id={'EmptyBusBarSectionList'}
                                 />
@@ -787,8 +787,8 @@ export const useExpandableValues = ({
         classes.icon,
         handleAddValue,
         labelAddValue,
-        errorItem,
-        costumClasses.errorItem,
+        emptyListError,
+        customClasses.emptyListError,
         id,
         fieldProps,
         handleSetValue,

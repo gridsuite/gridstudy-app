@@ -476,5 +476,5 @@
     "TargetVPoint3": "Consigne tension (KV) 3",
     "VoltageSetpointKV": "Consigne tension (KV)",
     "ReactivePowerSetpointMVAR": "Consigne de reactif (MVAR)",
-    "EmptyBusBarSectionList": "Jeu de barre liste est vide"
+    "EmptyBusBarSectionList": "La liste de jeux de barres est vide"
 }
