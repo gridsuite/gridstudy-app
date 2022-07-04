@@ -188,9 +188,7 @@ const BusBarConnexion = ({
 function validateBusBarSection(values) {
     const res = new Map();
     if (values.length === 0) {
-        return res.set('NO_BBS', {
-            error: true,
-        });
+        return res;
     }
     const idMap = values.reduce(
         (m, v) => m.set(v.id, (m.get(v.id) || 0) + 1),
@@ -354,6 +352,7 @@ const VoltageLevelCreationDialog = ({
         inputForm: inputForm,
         Field: BusBarSection,
         defaultValues: formValues?.busbarSections,
+        isRequired: true,
     });
 
     const [connections, connectionsField] = useExpandableValues({
@@ -364,6 +363,7 @@ const VoltageLevelCreationDialog = ({
         Field: BusBarConnexion,
         fieldProps: busBarSections,
         defaultValues: formValues?.busbarConnections,
+        isRequired: false,
     });
 
     const handleSave = () => {

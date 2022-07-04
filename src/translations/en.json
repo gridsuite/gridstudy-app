@@ -475,5 +475,6 @@
     "TargetVPoint3": "Voltage set point (KV) 3",
     "VoltageSetpointKV": "Voltage set point (KV)",
     "ReactivePowerSetpointMVAR": "Reactive power set point (MVAR)",
-    "EmptyBusBarSectionList": "Bus Bar list is empty"
+    "EmptyList/bbs": "Bus Bar list is empty",
+    "EmptyList/connections": "Connections list is empty"
 }

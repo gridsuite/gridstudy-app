@@ -56,7 +56,6 @@ import {
 import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../utils/UIconstants';
-import { makeStyles } from '@mui/styles';
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
@@ -680,15 +679,8 @@ export const useExpandableValues = ({
     defaultValues,
     fieldProps,
     validateItem,
+    isRequired,
 }) => {
-    const useCustomStyle = makeStyles((theme) => ({
-        emptyListError: {
-            color: theme.palette.error.main,
-            textDecorationLine: 'overline',
-            margin: theme.spacing(1),
-        },
-    }));
-    const customClasses = useCustomStyle();
     const classes = useStyles();
     const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
@@ -702,7 +694,7 @@ export const useExpandableValues = ({
         }
     }, [defaultValues]);
 
-    const handleDeleteBusBarSection = useCallback((index) => {
+    const handleDeleteItem = useCallback((index) => {
         setValues((oldValues) => {
             let newValues = [...oldValues];
             newValues.splice(index, 1);
@@ -725,7 +717,7 @@ export const useExpandableValues = ({
     useEffect(() => {
         function validation() {
             const res = validateItem(values);
-            if (res.get('NO_BBS')) {
+            if (isRequired && res.size === 0) {
                 setEmptyListError(true);
                 return;
             }
@@ -734,7 +726,7 @@ export const useExpandableValues = ({
             return res?.size === 0;
         }
         inputForm.addValidation(id, validation);
-    }, [inputForm, values, id, validateItem]);
+    }, [inputForm, values, id, validateItem, isRequired]);
 
     const field = useMemo(() => {
         return (
@@ -753,7 +745,7 @@ export const useExpandableValues = ({
                             <IconButton
                                 className={classes.icon}
                                 key={id + idx}
-                                onClick={() => handleDeleteBusBarSection(idx)}
+                                onClick={() => handleDeleteItem(idx)}
                             >
                                 <DeleteIcon />
                             </IconButton>
@@ -771,10 +763,8 @@ export const useExpandableValues = ({
                             <FormattedMessage id={labelAddValue} />
                         </Button>
                         {emptyListError && (
-                            <div className={customClasses.emptyListError}>
-                                <FormattedMessage
-                                    id={'EmptyBusBarSectionList'}
-                                />
+                            <div className={classes.emptyListError}>
+                                <FormattedMessage id={'EmptyList/' + id} />
                             </div>
                         )}
                     </Grid>
@@ -784,17 +774,17 @@ export const useExpandableValues = ({
     }, [
         values,
         classes.button,
+        classes.emptyListError,
         classes.icon,
         handleAddValue,
         labelAddValue,
         emptyListError,
-        customClasses.emptyListError,
         id,
         fieldProps,
         handleSetValue,
         inputForm,
         errors,
-        handleDeleteBusBarSection,
+        handleDeleteItem,
     ]);
 
     return [values, field];

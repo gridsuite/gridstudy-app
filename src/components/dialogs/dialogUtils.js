@@ -33,6 +33,11 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 'small',
         marginTop: theme.spacing(1),
     },
+    emptyListError: {
+        color: theme.palette.error.main,
+        textDecorationLine: 'overline',
+        margin: theme.spacing(1),
+    },
 }));
 
 export const SusceptanceAdornment = {
