@@ -319,6 +319,7 @@ export const NetworkMapTab = ({
                         lines={network.lines}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
                         network={network}
+                        disabled={disabled}
                     />
                 </div>
             )}
