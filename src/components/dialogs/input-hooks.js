@@ -56,6 +56,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../utils/UIconstants';
+import { makeStyles } from '@mui/styles';
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
@@ -680,9 +681,18 @@ export const useExpandableValues = ({
     fieldProps,
     validateItem,
 }) => {
+    const useCustomStyle = makeStyles((theme) => ({
+        errorItem: {
+            color: theme.palette.error.main,
+            textDecorationLine: 'overline',
+            margin: theme.spacing(1),
+        },
+    }));
+    const customClasses = useCustomStyle();
     const classes = useStyles();
     const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
+    const [errorItem, setErrorItem] = useState(false);
 
     useEffect(() => {
         if (defaultValues) {
@@ -715,7 +725,12 @@ export const useExpandableValues = ({
     useEffect(() => {
         function validation() {
             const res = validateItem(values);
+            if (res.get('NO_BBS')) {
+                setErrorItem(true);
+                return;
+            }
             setErrors(res);
+            setErrorItem(false);
             return res?.size === 0;
         }
         inputForm.addValidation(id, validation);
@@ -755,15 +770,25 @@ export const useExpandableValues = ({
                         >
                             <FormattedMessage id={labelAddValue} />
                         </Button>
+                        {errorItem && (
+                            <div className={customClasses.errorItem}>
+                                <FormattedMessage
+                                    id={'EmptyBusBarSectionList'}
+                                />
+                            </div>
+                        )}
                     </Grid>
                 </Grid>
             </Grid>
         );
     }, [
         values,
-        classes,
+        classes.button,
+        classes.icon,
         handleAddValue,
         labelAddValue,
+        errorItem,
+        customClasses.errorItem,
         id,
         fieldProps,
         handleSetValue,

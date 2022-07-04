@@ -475,5 +475,6 @@
     "RegulatingRatio3": "Régleur en réglage 3",
     "TargetVPoint3": "Consigne tension (KV) 3",
     "VoltageSetpointKV": "Consigne tension (KV)",
-    "ReactivePowerSetpointMVAR": "Consigne de reactif (MVAR)"
+    "ReactivePowerSetpointMVAR": "Consigne de reactif (MVAR)",
+    "EmptyBusBarSectionList": "Jeu de barre liste est vide"
 }
