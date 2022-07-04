@@ -136,6 +136,7 @@ const NetworkModificationNodeEditor = () => {
     const currentTreeNode = useSelector((state) => state.currentTreeNode);
 
     const currentNodeIdRef = useRef(); // initial empty to get first update
+    const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
@@ -333,26 +334,23 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const dofetchNetworkModifications = useCallback(() => {
-        setLaunchLoader(true);
-        setModifications([]);
-        currentNodeIdRef.current = currentTreeNode.id;
+        // In most cases here this condition manage that current Node is the root node
+        if (!currentTreeNode?.data?.modificationGroupUuid) return;
 
-        if (!currentTreeNode?.data?.modificationGroupUuid) {
-            setLaunchLoader(false);
-        } else {
-            fetchNetworkModifications(
-                currentTreeNode?.data?.modificationGroupUuid
-            )
-                .then((res) => {
-                    if (currentTreeNode.id === currentNodeIdRef.current) {
-                        setModifications(res);
-                    }
-                })
-                .catch((errorMessage) => snackError(errorMessage))
-                .finally(() => {
-                    setLaunchLoader(false);
-                });
-        }
+        setLaunchLoader(true);
+        fetchNetworkModifications(currentTreeNode?.data?.modificationGroupUuid)
+            .then((res) => {
+                // Check if during asynchronous request currentNode has already changed
+                // otherwise accept fetch results
+                if (currentTreeNode.id === currentNodeIdRef.current) {
+                    setModifications(res);
+                }
+            })
+            .catch((errorMessage) => snackError(errorMessage))
+            .finally(() => {
+                setPendingState(false);
+                setLaunchLoader(false);
+            });
     }, [currentTreeNode, snackError]);
 
     useEffect(() => {
@@ -361,12 +359,14 @@ const NetworkModificationNodeEditor = () => {
 
     useEffect(() => {
         // first time then fetch modifications
-        // OR   next time if currentNodeId changed then fetch modifications
+        // OR next time if currentNodeId changed then fetch modifications
         if (
             !currentNodeIdRef.current ||
             currentNodeIdRef.current !== currentTreeNode.id
         ) {
             currentNodeIdRef.current = currentTreeNode.id;
+            // Current node has changed then clear the modifications list
+            setModifications([]);
             dofetchNetworkModifications();
         }
     }, [currentTreeNode, dofetchNetworkModifications]);
@@ -384,6 +384,7 @@ const NetworkModificationNodeEditor = () => {
                     studyUpdatedForce.eventData.headers['updateType']
                 )
             ) {
+                setPendingState(true);
                 manageNotification(studyUpdatedForce);
             }
             // notify  finished action (success or error => we remove the loader)
@@ -393,6 +394,8 @@ const NetworkModificationNodeEditor = () => {
                 'UPDATE_FINISHED'
             ) {
                 // fetch modifications because it must have changed
+                // Do not clear the modifications list, because currentNode is the concerned one
+                // this allow to append new modifications to the existing list.
                 dofetchNetworkModifications();
                 dispatch(
                     removeNotificationByNode(
@@ -568,12 +571,20 @@ const NetworkModificationNodeEditor = () => {
     const renderNetworkModificationsListTitle = () => {
         return (
             <div className={classes.modificationsTitle}>
-                <div className={classes.icon}></div>
+                <div className={classes.icon}>
+                    {pendingState && (
+                        <CircularProgress
+                            size={'1em'}
+                            className={classes.circularProgress}
+                        />
+                    )}
+                </div>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'network_modification/modificationsCount'}
                         values={{
                             count: modifications ? modifications?.length : '',
+                            hide: pendingState,
                         }}
                     />
                 </Typography>

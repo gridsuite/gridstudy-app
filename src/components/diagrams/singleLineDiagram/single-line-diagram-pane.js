@@ -27,6 +27,7 @@ import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
 import { getArray, useSingleLineDiagram, ViewState } from './utils';
+import { isNodeBuilt } from '../../graph/util/model-functions';
 
 function removeFromMap(oldMap, ids) {
     let removed = false;
@@ -206,6 +207,7 @@ export function SingleLineDiagramPane({
     loadFlowStatus,
     currentNode,
     disabled,
+    visible,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -228,6 +230,9 @@ export function SingleLineDiagramPane({
     const location = useLocation();
     const viewsRef = useRef();
     viewsRef.current = views;
+
+    const currentNodeRef = useRef();
+    currentNodeRef.current = currentNode;
 
     const updateSld = useCallback((id) => {
         if (id)
@@ -274,14 +279,15 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        if (!disabled) {
+        // We use isNodeBuilt here instead of the "disabled" props to avoid
+        // triggering this effect when changing current node
+        if (isNodeBuilt(currentNodeRef.current) && visible) {
             setViews((oldVal) => oldVal.map(createView));
         }
-    }, [disabled, createView]);
+    }, [visible, createView]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
-        if (disabled) return;
         // parse query parameter
         const queryParams = parse(location.search, {
             parseArrays: true,
@@ -294,7 +300,7 @@ export function SingleLineDiagramPane({
         );
 
         setUpdateSwitchMsg('');
-    }, [createView, location, disabled]);
+    }, [createView, location, disabled, visible]);
 
     const toggleState = useCallback(
         (id, type, state) => {
@@ -366,7 +372,12 @@ export function SingleLineDiagramPane({
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'buildCompleted'
             ) {
-                updateSld();
+                if (
+                    studyUpdatedForce.eventData.headers['node'] ===
+                    currentNodeRef.current?.id
+                ) {
+                    updateSld();
+                }
             }
         }
         // Note: studyUuid, and loadNetwork don't change
@@ -464,4 +475,5 @@ SingleLineDiagramPane.propTypes = {
     onClose: PropTypes.func,
     onNextVoltageLevelClick: PropTypes.func,
     disabled: PropTypes.bool,
+    visible: PropTypes.bool,
 };
