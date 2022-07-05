@@ -159,7 +159,9 @@ const ConnectivityEdition = ({
                 ? busOrBusbarSectionOptions.find(
                       (value) => value.id === busOrBusbarSection.id
                   )
-                : ''
+                : busOrBusbarSection === null
+                ? ''
+                : busOrBusbarSection
         );
     }, [busOrBusbarSectionOptions, busOrBusbarSection]);
 
