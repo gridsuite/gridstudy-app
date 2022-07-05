@@ -219,7 +219,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     }
 
     function hideParameters() {
-        console.info('hideParameters');
         setParametersOpen(false);
     }
     return (

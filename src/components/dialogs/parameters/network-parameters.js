@@ -61,22 +61,18 @@ export const NetworkParameters = ({ hideParameters }) => {
                             <FormattedMessage id="FluxConvention.target" />
                         </MenuItem>
                     </Select>
-                    <Grid
-                        container
-                        className={classes.controlItem}
-                        maxWidth="md"
-                    >
-                        <LabelledButton
-                            callback={resetNetworkParameters}
-                            label="resetToDefault"
-                        />
-                        <CloseButton
-                            hideParameters={hideParameters}
-                            className={classes.button}
-                        />
-                    </Grid>
                 </Grid>
                 <LineSeparator />{' '}
+                <Grid container className={classes.controlItem} maxWidth="md">
+                    <LabelledButton
+                        callback={resetNetworkParameters}
+                        label="resetToDefault"
+                    />
+                    <CloseButton
+                        hideParameters={hideParameters}
+                        className={classes.button}
+                    />
+                </Grid>
             </Grid>
         </Grid>
     );

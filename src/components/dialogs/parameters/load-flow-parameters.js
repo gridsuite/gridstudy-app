@@ -357,7 +357,7 @@ export const LoadFlowParameters = ({ hideParameters }) => {
                     <Autocomplete
                         size="small"
                         value={value}
-                        multiple="true"
+                        multiple={true}
                         onChange={(event, newValues) => callback(newValues)}
                         options={Object.keys(countriesList.object())}
                         getOptionLabel={(code) => countriesList.get(code)}
