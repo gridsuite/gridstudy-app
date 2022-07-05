@@ -178,5 +178,4 @@ RunButtonContainer.propTypes = {
     startIcon: PropTypes.func,
     computationStopped: PropTypes.bool,
     disabled: PropTypes.bool,
-    hypothesisInLoad: PropTypes.bool,
 };

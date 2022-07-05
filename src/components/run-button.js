@@ -180,7 +180,6 @@ RunButton.propTypes = {
     actionOnRunnable: PropTypes.object.isRequired,
     computationStopped: PropTypes.bool.isRequired,
     disabled: PropTypes.bool,
-    hypothesisInLoad: PropTypes.bool,
 };
 
 export default RunButton;
