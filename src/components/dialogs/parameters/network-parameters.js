@@ -12,7 +12,6 @@ import {
     useStyles,
 } from './parameters';
 import { fetchDefaultParametersValues } from '../../../utils/rest-api';
-import { LineSeparator } from '../dialogUtils';
 export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',
@@ -62,7 +61,6 @@ export const NetworkParameters = ({ hideParameters }) => {
                         </MenuItem>
                     </Select>
                 </Grid>
-                <LineSeparator />{' '}
                 <Grid container className={classes.controlItem} maxWidth="md">
                     <LabelledButton
                         callback={resetNetworkParameters}
