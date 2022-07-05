@@ -354,21 +354,6 @@ const NetworkTable = (props) => {
         [rowFilter, selectedDataKey, formatCell]
     );
 
-    const areRowsEmpty = (index) => {
-        const tableDef = TABLES_DEFINITION_INDEXES.get(index);
-        const datasourceRows = tableDef.getter
-            ? tableDef.getter(props.network)
-            : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
-        if (!datasourceRows) return true;
-        for (let i = 0; i < datasourceRows.length; i++) {
-            const row = datasourceRows[i];
-            if (!rowFilter || filter(row, index)) {
-                return false;
-            }
-        }
-        return true;
-    };
-
     const getRows = useCallback(
         (index) => {
             if (props.disabled) {
@@ -926,9 +911,8 @@ const NetworkTable = (props) => {
         return generatedTableColumns;
     }
 
-    function renderTable() {
+    function renderTable(rows) {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        const rows = getRows(tabIndex);
         const columns = generateTableColumns(tabIndex);
         return (
             <EquipmentTable
@@ -1156,147 +1140,160 @@ const NetworkTable = (props) => {
         return Promise.resolve(csvData);
     };
 
-    return (
-        props.network && (
-            <>
-                <Grid container justifyContent={'space-between'}>
-                    <Grid container justifyContent={'space-between'} item>
-                        <Tabs
-                            value={tabIndex}
-                            variant="scrollable"
-                            onChange={(event, newValue) => {
-                                setTabIndex(newValue);
-                                setManualTabSwitch(true);
-                                onTabChange(newValue);
-                            }}
-                            aria-label="tables"
-                        >
-                            {Object.values(TABLES_DEFINITIONS).map((table) => (
-                                <Tab
-                                    key={table.name}
-                                    label={intl.formatMessage({
-                                        id: table.name,
-                                    })}
+    function renderAll() {
+        const rows = getRows(tabIndex);
+        return (
+            props.network && (
+                <>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid container justifyContent={'space-between'} item>
+                            <Tabs
+                                value={tabIndex}
+                                variant="scrollable"
+                                onChange={(event, newValue) => {
+                                    setTabIndex(newValue);
+                                    setManualTabSwitch(true);
+                                    onTabChange(newValue);
+                                }}
+                                aria-label="tables"
+                            >
+                                {Object.values(TABLES_DEFINITIONS).map(
+                                    (table) => (
+                                        <Tab
+                                            key={table.name}
+                                            label={intl.formatMessage({
+                                                id: table.name,
+                                            })}
+                                            disabled={
+                                                isModifyingRow() ||
+                                                props.disabled
+                                            }
+                                        />
+                                    )
+                                )}
+                            </Tabs>
+                        </Grid>
+                        <Grid container>
+                            <Grid item className={classes.containerInputSearch}>
+                                <TextField
                                     disabled={
                                         isModifyingRow() || props.disabled
                                     }
-                                />
-                            ))}
-                        </Tabs>
-                    </Grid>
-                    <Grid container>
-                        <Grid item className={classes.containerInputSearch}>
-                            <TextField
-                                disabled={isModifyingRow() || props.disabled}
-                                className={classes.textField}
-                                size="small"
-                                placeholder={
-                                    intl.formatMessage({ id: 'filter' }) + '...'
-                                }
-                                onChange={setFilter}
-                                inputRef={searchTextInput}
-                                fullWidth
-                                InputProps={{
-                                    classes: {
-                                        input: classes.searchSection,
-                                    },
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon
-                                                color={
-                                                    isModifyingRow() ||
-                                                    props.disabled
-                                                        ? 'disabled'
-                                                        : 'inherit'
-                                                }
-                                            />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                        <Grid item className={classes.selectColumns}>
-                            <span
-                                className={clsx({
-                                    [classes.disabledLabel]:
-                                        isModifyingRow() || props.disabled,
-                                })}
-                            >
-                                <FormattedMessage id="LabelSelectList" />
-                            </span>
-                            <IconButton
-                                disabled={isModifyingRow() || props.disabled}
-                                className={
-                                    selectedColumnsNames.size === 0
-                                        ? classes.blink
-                                        : ''
-                                }
-                                aria-label="dialog"
-                                onClick={handleOpenPopupSelectColumnNames}
-                            >
-                                {selectedColumnsNames.size > 0 &&
-                                selectedColumnsNames.size <
-                                    TABLES_COLUMNS_NAMES[tabIndex].size ? (
-                                    <ViewColumnTwoToneIcon />
-                                ) : (
-                                    <ViewColumnIcon />
-                                )}
-                            </IconButton>
-                            <SelectOptionsDialog
-                                open={popupSelectColumnNames}
-                                onClose={handleCancelPopupSelectColumnNames}
-                                onClick={handleSaveSelectedColumnNames}
-                                title={intl.formatMessage({
-                                    id: 'ColumnsList',
-                                })}
-                                child={checkListColumnsNames()}
-                            />
-                        </Grid>
-                        {props.disabled && <AlertInvalidNode />}
-                        <Grid item className={classes.exportCsv}>
-                            <span
-                                className={clsx({
-                                    [classes.disabledLabel]:
-                                        isModifyingRow() ||
-                                        props.disabled ||
-                                        areRowsEmpty(tabIndex),
-                                })}
-                            >
-                                <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-                            </span>
-                            <span>
-                                <CsvDownloader
-                                    datas={getCSVData}
-                                    columns={getCSVColumnNames()}
-                                    filename={getCSVFilename()}
-                                    disabled={
-                                        isModifyingRow() ||
-                                        props.disabled ||
-                                        areRowsEmpty(tabIndex)
+                                    className={classes.textField}
+                                    size="small"
+                                    placeholder={
+                                        intl.formatMessage({ id: 'filter' }) +
+                                        '...'
                                     }
+                                    onChange={setFilter}
+                                    inputRef={searchTextInput}
+                                    fullWidth
+                                    InputProps={{
+                                        classes: {
+                                            input: classes.searchSection,
+                                        },
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon
+                                                    color={
+                                                        isModifyingRow() ||
+                                                        props.disabled
+                                                            ? 'disabled'
+                                                            : 'inherit'
+                                                    }
+                                                />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item className={classes.selectColumns}>
+                                <span
+                                    className={clsx({
+                                        [classes.disabledLabel]:
+                                            isModifyingRow() || props.disabled,
+                                    })}
                                 >
-                                    <IconButton
+                                    <FormattedMessage id="LabelSelectList" />
+                                </span>
+                                <IconButton
+                                    disabled={
+                                        isModifyingRow() || props.disabled
+                                    }
+                                    className={
+                                        selectedColumnsNames.size === 0
+                                            ? classes.blink
+                                            : ''
+                                    }
+                                    aria-label="dialog"
+                                    onClick={handleOpenPopupSelectColumnNames}
+                                >
+                                    {selectedColumnsNames.size > 0 &&
+                                    selectedColumnsNames.size <
+                                        TABLES_COLUMNS_NAMES[tabIndex].size ? (
+                                        <ViewColumnTwoToneIcon />
+                                    ) : (
+                                        <ViewColumnIcon />
+                                    )}
+                                </IconButton>
+                                <SelectOptionsDialog
+                                    open={popupSelectColumnNames}
+                                    onClose={handleCancelPopupSelectColumnNames}
+                                    onClick={handleSaveSelectedColumnNames}
+                                    title={intl.formatMessage({
+                                        id: 'ColumnsList',
+                                    })}
+                                    child={checkListColumnsNames()}
+                                />
+                            </Grid>
+                            {props.disabled && <AlertInvalidNode />}
+                            <Grid item className={classes.exportCsv}>
+                                <span
+                                    className={clsx({
+                                        [classes.disabledLabel]:
+                                            isModifyingRow() ||
+                                            props.disabled ||
+                                            rows.length === 0,
+                                    })}
+                                >
+                                    <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
+                                </span>
+                                <span>
+                                    <CsvDownloader
+                                        datas={getCSVData}
+                                        columns={getCSVColumnNames()}
+                                        filename={getCSVFilename()}
                                         disabled={
                                             isModifyingRow() ||
                                             props.disabled ||
-                                            areRowsEmpty(tabIndex)
+                                            rows.length === 0
                                         }
-                                        aria-label="exportCSVButton"
                                     >
-                                        <GetAppIcon />
-                                    </IconButton>
-                                </CsvDownloader>
-                            </span>
+                                        <IconButton
+                                            disabled={
+                                                isModifyingRow() ||
+                                                props.disabled ||
+                                                rows.length === 0
+                                            }
+                                            aria-label="exportCSVButton"
+                                        >
+                                            <GetAppIcon />
+                                        </IconButton>
+                                    </CsvDownloader>
+                                </span>
+                            </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
-                <div className={classes.table} style={{ flexGrow: 1 }}>
-                    {/*This render is fast, rerender full dom everytime*/}
-                    {renderTable()}
-                </div>
-            </>
-        )
-    );
+                    <div className={classes.table} style={{ flexGrow: 1 }}>
+                        {/*This render is fast, rerender full dom everytime*/}
+                        {renderTable(rows)}
+                    </div>
+                </>
+            )
+        );
+    }
+
+    return renderAll();
 };
 
 NetworkTable.defaultProps = {
