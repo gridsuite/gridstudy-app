@@ -324,7 +324,7 @@ const StudyPane = ({
                             />
 
                             {props.view === StudyView.MAP &&
-                                voltageLevelsIdsForNad?.length && (
+                                voltageLevelsIdsForNad?.length > 0 && (
                                     <NetworkAreaDiagramPane
                                         studyUuid={studyUuid}
                                         network={network}
