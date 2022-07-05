@@ -283,7 +283,7 @@ const NetworkTable = (props) => {
             } else {
                 setColumnSort({
                     key: columnDef.dataKey,
-                    reverse: false, // default sort
+                    reverse: false, // default sort = ASC
                     numeric: columnDef.numeric,
                     colDef: columnDef,
                 });
@@ -390,7 +390,7 @@ const NetworkTable = (props) => {
             }
 
             function compareValue(a, b, isNumeric, reverse) {
-                const mult = reverse ? 1 : -1;
+                const mult = reverse ? -1 : 1;
                 if (a === b) return 0;
                 else if (a === undefined) return mult;
                 else if (b === undefined) return -mult;
@@ -509,9 +509,9 @@ const NetworkTable = (props) => {
                 columnSort.key === dataKey &&
                 columnSort.reverse
             ) {
-                return <ArrowUpwardIcon className={'arrow'} />;
+                return <ArrowDownwardIcon className={'arrow'} />;
             }
-            return <ArrowDownwardIcon className={'arrow'} />;
+            return <ArrowUpwardIcon className={'arrow'} />;
         },
         [isModifyingRow]
     );
@@ -1167,7 +1167,6 @@ const NetworkTable = (props) => {
                             onChange={(event, newValue) => {
                                 setTabIndex(newValue);
                                 setManualTabSwitch(true);
-                                setColumnSort(undefined);
                                 onTabChange(newValue);
                             }}
                             aria-label="tables"
