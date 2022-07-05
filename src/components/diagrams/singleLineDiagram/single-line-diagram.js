@@ -650,8 +650,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             const bbox = svgEl.getBBox();
             const xOrigin = bbox.x - 20;
             const yOrigin = bbox.y - 20;
-            const svgWidth = bbox.width + 40;
-            const svgHeight = bbox.height + 40;
+            const svgWidth = Math.ceil(bbox.width + 40);
+            const svgHeight = Math.ceil(bbox.height + 40);
 
             setSvgPreferredWidth(svgWidth);
             setSvgPreferredHeight(svgHeight);
