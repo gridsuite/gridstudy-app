@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, {
+    useState,
+    useCallback,
+    useEffect,
+    useRef,
+    useMemo,
+} from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -26,11 +32,13 @@ import {
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
+    useSnackMessage,
 } from '../../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
 import { SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
+import WaitingLoader from '../../util/waiting-loader';
 const LF_PROVIDER_VALUES = {
     OpenLoadFlow: 'OpenLoadFlow',
     Hades2: 'Hades2',
@@ -41,26 +49,17 @@ export const useGetLfParamsAndProvider = () => {
 
     const [lfParams, setLfParams] = useState(null);
 
-    const { enqueueSnackbar } = useSnackbar();
     const studyUuid = useSelector((state) => state.studyUuid);
-    const intlRef = useIntlRef();
-
+    const { snackError } = useSnackMessage();
     const updateLfProvider = useCallback(
         (newProvider) => {
             setLoadFlowProvider(studyUuid, newProvider)
                 .then(() => setLfProvider(newProvider))
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'setLoadFlowProviderError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
+                .catch((errorMessage) =>
+                    snackError(errorMessage, 'setLoadFlowProviderError')
+                );
         },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [studyUuid, snackError]
     );
 
     const commitLFParameter = useCallback(
@@ -70,18 +69,11 @@ export const useGetLfParamsAndProvider = () => {
             setLoadFlowParameters(studyUuid, newParams).catch(
                 (errorMessage) => {
                     setLfParams(oldParams);
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'paramsChangingError',
-                            intlRef: intlRef,
-                        },
-                    });
+                    snackError(errorMessage, 'paramsChangingError');
                 }
             );
         },
-        [lfParams, studyUuid, enqueueSnackbar, intlRef]
+        [lfParams, snackError, studyUuid]
     );
 
     const setLoadFlowProviderToDefault = useCallback(() => {
@@ -94,16 +86,9 @@ export const useGetLfParamsAndProvider = () => {
                 );
             })
             .catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'defaultLoadflowRetrievingError',
-                        intlRef: intlRef,
-                    },
-                });
+                snackError(errorMessage, 'defaultLoadflowRetrievingError');
             });
-    }, [updateLfProvider, enqueueSnackbar, intlRef]);
+    }, [updateLfProvider, snackError]);
 
     const resetLfParameters = useCallback(() => {
         setLoadFlowParameters(studyUuid, null)
@@ -111,43 +96,22 @@ export const useGetLfParamsAndProvider = () => {
                 return getLoadFlowParameters(studyUuid)
                     .then((params) => setLfParams(params))
                     .catch((errorMessage) =>
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'paramsRetrievingError',
-                                intlRef: intlRef,
-                            },
-                        })
+                        snackError(errorMessage, 'paramsRetrievingError')
                     );
             })
             .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'paramsChangingError',
-                        intlRef: intlRef,
-                    },
-                })
+                snackError(errorMessage, 'paramsChangingError')
             );
 
         setLoadFlowProviderToDefault();
-    }, [studyUuid, setLoadFlowProviderToDefault, enqueueSnackbar, intlRef]);
+    }, [studyUuid, setLoadFlowProviderToDefault, snackError]);
 
     useEffect(() => {
         if (studyUuid) {
             getLoadFlowParameters(studyUuid)
                 .then((params) => setLfParams(params))
                 .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'paramsRetrievingError',
-                            intlRef: intlRef,
-                        },
-                    })
+                    snackError(errorMessage, 'paramsRetrievingError')
                 );
             getLoadFlowProvider(studyUuid)
                 .then((provider) => {
@@ -159,17 +123,10 @@ export const useGetLfParamsAndProvider = () => {
                     }
                 })
                 .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'getLoadFlowProviderError',
-                            intlRef: intlRef,
-                        },
-                    })
+                    snackError(errorMessage, 'getLoadFlowProviderError')
                 );
         }
-    }, [studyUuid, enqueueSnackbar, intlRef, setLoadFlowProviderToDefault]);
+    }, [studyUuid, snackError, setLoadFlowProviderToDefault]);
     return [
         lfParams,
         lfProvider,
@@ -181,8 +138,6 @@ export const useGetLfParamsAndProvider = () => {
 
 export const usePreviousValues = (props) => {
     const previousValue = useRef({});
-
- 
 
     Object.keys(props).forEach((key) => {
         if (previousValue.current[key] !== props[key]) {
@@ -197,160 +152,200 @@ export const usePreviousValues = (props) => {
     previousValue.current = props;
 };
 
-export const LoadFlowParameters = ({
-    hideParameters,
-    lfParams,
-    lfProvider,
-    updateLfProvider,
-    commitLFParameter,
-    resetLfParameters,
-}) => {
+const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
+    const countriesList = useMemo(() => {
+        let countriesList;
+        try {
+            countriesList = require('localized-countries')(
+                require('localized-countries/data/' +
+                    navigator.language.substr(0, 2))
+            );
+        } catch (error) {
+            // fallback to english if no localised list found
+            countriesList = require('localized-countries')(
+                require('localized-countries/data/en')
+            );
+        }
+        return countriesList;
+    }, []);
 
-    let countriesList;
+    return (
+        <>
+            <Grid item xs={6}>
+                <Typography component="span" variant="body1">
+                    <Box fontWeight="fontWeightBold" m={1}>
+                        <FormattedMessage id={label} />
+                    </Box>
+                </Typography>
+            </Grid>
+            <Grid item container xs={6} className={classes.controlItem}>
+                <Autocomplete
+                    size="small"
+                    value={value}
+                    multiple={true}
+                    onChange={(event, newValues) => callback(newValues)}
+                    options={Object.keys(countriesList.object())}
+                    getOptionLabel={(code) => countriesList.get(code)}
+                    renderInput={(props) => (
+                        <TextField
+                            label={
+                                <FormattedMessage
+                                    id={
+                                        value?.length === 0
+                                            ? 'descLfAllCountries'
+                                            : 'descLfCountries'
+                                    }
+                                />
+                            }
+                            className={classes.minWidthMedium}
+                            {...props}
+                        />
+                    )}
+                    renderTags={(val, getTagsProps) =>
+                        val.map((code, index) => (
+                            <Chip
+                                id={'chip_' + code}
+                                size={'small'}
+                                label={countriesList.get(code)}
+                                {...getTagsProps({ index })}
+                            />
+                        ))
+                    }
+                />
+            </Grid>
+        </>
+    );
+};
 
-    
-    try {
-        countriesList = require('localized-countries')(
-            require('localized-countries/data/' +
-                navigator.language.substr(0, 2))
+const DropDown = ({ value, label, values, callback }) => {
+    const classes = useStyles();
+    return (
+        <>
+            <Grid item xs={8}>
+                <Typography component="span" variant="body1">
+                    <Box fontWeight="fontWeightBold" m={1}>
+                        <FormattedMessage id={label} />
+                    </Box>
+                </Typography>
+            </Grid>
+            <Grid item container xs={4} className={classes.controlItem}>
+                <Select
+                    labelId={label}
+                    value={value}
+                    onChange={callback}
+                    size="small"
+                >
+                    {Object.keys(values).map((key) => (
+                        <MenuItem key={key} value={key}>
+                            <FormattedMessage id={values[key]} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </Grid>
+        </>
+    );
+};
+
+function makeComponentsFor(defParams, params, setter) {
+    return Object.keys(defParams).map((key) => (
+        <Grid container spacing={1} paddingTop={1} key={key}>
+            {makeComponentFor(defParams[key], key, params, setter)}
+            <LineSeparator />
+        </Grid>
+    ));
+}
+
+function makeComponentFor(defParam, key, lfParams, setter) {
+    if (defParam.type === TYPES.bool) {
+        return (
+            <SwitchWithLabel
+                value={lfParams[key]}
+                label={defParam.description}
+                callback={(ev) =>
+                    setter({ ...lfParams, [key]: ev.target.checked })
+                }
+            />
         );
-    } catch (error) {
-        // fallback to english if no localised list found
-        countriesList = require('localized-countries')(
-            require('localized-countries/data/en')
+    } else if (defParam.type === TYPES.enum) {
+        return (
+            <DropDown
+                value={lfParams[key]}
+                label={defParam.description}
+                values={defParam.values}
+                callback={(ev) =>
+                    setter({ ...lfParams, [key]: ev.target.value })
+                }
+            />
+        );
+    } else if (defParam.type === TYPES.countries) {
+        return (
+            <CountrySelector
+                value={lfParams[key]}
+                label={defParam.description}
+                callback={(newValues) => {
+                    setter({ ...lfParams, [key]: [...newValues] });
+                }}
+            />
         );
     }
+}
 
-    
+const TYPES = {
+    enum: 'Enum',
+    bool: 'Bool',
+    countries: 'Countries',
+};
 
+const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
+    const defParams = {
+        transformerVoltageControlOn: {
+            type: TYPES.bool,
+            description: 'descLfTransformerVoltageControlOn',
+        },
+        phaseShifterRegulationOn: {
+            type: TYPES.bool,
+            description: 'descLfPhaseShifterRegulationOn',
+        },
+        dc: {
+            type: TYPES.bool,
+            description: 'descLfDC',
+        },
+        balanceType: {
+            type: TYPES.enum,
+            description: 'descLfBalanceType',
+            values: {
+                PROPORTIONAL_TO_GENERATION_P: 'descLfBalanceTypeGenP',
+                PROPORTIONAL_TO_GENERATION_P_MAX: 'descLfBalanceTypeGenPMax',
+                PROPORTIONAL_TO_LOAD: 'descLfBalanceTypeLoad',
+                PROPORTIONAL_TO_CONFORM_LOAD: 'descLfBalanceTypeConformLoad',
+            },
+        },
+        countriesToBalance: {
+            type: TYPES.countries,
+            description: 'descLfCountriesToBalance',
+        },
+        connectedComponentMode: {
+            type: TYPES.enum,
+            description: 'descLfConnectedComponentMode',
+            values: {
+                MAIN: 'descLfConnectedComponentModeMain',
+                ALL: 'descLfConnectedComponentModeAll',
+            },
+        },
+        hvdcAcEmulation: {
+            type: TYPES.bool,
+            description: 'descLfHvdcAcEmulation',
+        },
+    };
+
+    return makeComponentsFor(defParams, lfParams, commitLFParameter);
+};
+
+const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
-    const updateLfProviderCallback = useCallback(
-        (evt) => {
-            updateLfProvider(evt.target.value);
-        },
-        [updateLfProvider]
-    );
-
-    const TYPES = {
-        enum: 'Enum',
-        bool: 'Bool',
-        countries: 'Countries',
-    };
-
-    const BasicLoadFlowParameters = () => {
-        const defParams = {
-            transformerVoltageControlOn: {
-                type: TYPES.bool,
-                description: 'descLfTransformerVoltageControlOn',
-            },
-            phaseShifterRegulationOn: {
-                type: TYPES.bool,
-                description: 'descLfPhaseShifterRegulationOn',
-            },
-            dc: {
-                type: TYPES.bool,
-                description: 'descLfDC',
-            },
-            balanceType: {
-                type: TYPES.enum,
-                description: 'descLfBalanceType',
-                values: {
-                    PROPORTIONAL_TO_GENERATION_P: 'descLfBalanceTypeGenP',
-                    PROPORTIONAL_TO_GENERATION_P_MAX:
-                        'descLfBalanceTypeGenPMax',
-                    PROPORTIONAL_TO_LOAD: 'descLfBalanceTypeLoad',
-                    PROPORTIONAL_TO_CONFORM_LOAD:
-                        'descLfBalanceTypeConformLoad',
-                },
-            },
-            countriesToBalance: {
-                type: TYPES.countries,
-                description: 'descLfCountriesToBalance',
-            },
-            connectedComponentMode: {
-                type: TYPES.enum,
-                description: 'descLfConnectedComponentMode',
-                values: {
-                    MAIN: 'descLfConnectedComponentModeMain',
-                    ALL: 'descLfConnectedComponentModeAll',
-                },
-            },
-            hvdcAcEmulation: {
-                type: TYPES.bool,
-                description: 'descLfHvdcAcEmulation',
-            },
-        };
-
-        return (
-            lfParams && (
-                <>{makeComponentsFor(defParams, lfParams, commitLFParameter)}</>
-            )
-        );
-    };
-
-    const AdvancedLoadFlowParameters = () => {
-        const defParams = {
-            voltageInitMode: {
-                type: TYPES.enum,
-                description: 'descLfVoltageInitMode',
-                values: {
-                    UNIFORM_VALUES: 'descLfUniformValues',
-                    PREVIOUS_VALUES: 'descLfPreviousValues',
-                    DC_VALUES: 'descLfDcValues',
-                },
-            },
-            noGeneratorReactiveLimits: {
-                type: TYPES.bool,
-                description: 'descLfNoGeneratorReactiveLimits',
-            },
-            twtSplitShuntAdmittance: {
-                type: TYPES.bool,
-                description: 'descLfTwtSplitShuntAdmittance',
-            },
-            readSlackBus: {
-                type: TYPES.bool,
-                description: 'descLfReadSlackBus',
-            },
-            writeSlackBus: {
-                type: TYPES.bool,
-                description: 'descLfWriteSlackBus',
-            },
-            distributedSlack: {
-                type: TYPES.bool,
-                description: 'descLfDistributedSlack',
-            },
-            shuntCompensatorVoltageControlOn: {
-                type: TYPES.bool,
-                description: 'descLfShuntCompensatorVoltageControlOn',
-            },
-            dcUseTransformerRatio: {
-                type: TYPES.bool,
-                description: 'descLfDcUseTransformerRatio',
-            },
-        };
-        console.info('showAdvancedLfParams', showAdvancedLfParams);
-
-        return (
-            lfParams && (
-                <>
-                    {MakeAdvancedParameterButton(
-                        showAdvancedLfParams,
-                        'showAdvancedParameters',
-                        () => setShowAdvancedLfParams(!showAdvancedLfParams)
-                    )}
-                    {showAdvancedLfParams &&
-                        makeComponentsFor(
-                            defParams,
-                            lfParams,
-                            commitLFParameter
-                        )}
-                </>
-            )
-        );
-    };
-
+    const classes = useStyles();
     function MakeAdvancedParameterButton(showOpenIcon, label, callback) {
         return (
             <>
@@ -371,128 +366,82 @@ export const LoadFlowParameters = ({
         );
     }
 
-    function makeComponentsFor(defParams, params, setter) {
-        return Object.keys(defParams).map((key) => (
-            <Grid container spacing={1} paddingTop={1} key={key}>
-                {makeComponentFor(defParams[key], key, params, setter)}
-                <LineSeparator />
-            </Grid>
-        ));
-    }
-
-    function makeComponentFor(defParam, key, lfParams, setter) {
-        if (defParam.type === TYPES.bool) {
-            return (
-                <SwitchWithLabel
-                    value={lfParams[key]}
-                    label={defParam.description}
-                    callback={(ev) =>
-                        setter({ ...lfParams, [key]: ev.target.checked })
-                    }
-                />
-            );
-        } else if (defParam.type === TYPES.enum) {
-            return (
-                <DropDown
-                    value={lfParams[key]}
-                    label={defParam.description}
-                    values={defParam.values}
-                    callback={(ev) =>
-                        setter({ ...lfParams, [key]: ev.target.value })
-                    }
-                />
-            );
-        } else if (defParam.type === TYPES.countries) {
-            return (
-                <CountrySelector
-                    value={lfParams[key]}
-                    label={defParam.description}
-                    callback={(newValues) => {
-                        setter({ ...lfParams, [key]: [...newValues] });
-                    }}
-                />
-            );
-        }
-    }
-
-    const CountrySelector = ({ value, label, callback }) => {
-        return (
-            <>
-                <Grid item xs={6}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
-                    <Autocomplete
-                        size="small"
-                        value={value}
-                        multiple={true}
-                        onChange={(event, newValues) => callback(newValues)}
-                        options={Object.keys(countriesList.object())}
-                        getOptionLabel={(code) => countriesList.get(code)}
-                        renderInput={(props) => (
-                            <TextField
-                                label={
-                                    <FormattedMessage
-                                        id={
-                                            value?.length === 0
-                                                ? 'descLfAllCountries'
-                                                : 'descLfCountries'
-                                        }
-                                    />
-                                }
-                                className={classes.minWidthMedium}
-                                {...props}
-                            />
-                        )}
-                        renderTags={(val, getTagsProps) =>
-                            val.map((code, index) => (
-                                <Chip
-                                    id={'chip_' + code}
-                                    size={'small'}
-                                    label={countriesList.get(code)}
-                                    {...getTagsProps({ index })}
-                                />
-                            ))
-                        }
-                    />
-                </Grid>
-            </>
-        );
+    const defParams = {
+        voltageInitMode: {
+            type: TYPES.enum,
+            description: 'descLfVoltageInitMode',
+            values: {
+                UNIFORM_VALUES: 'descLfUniformValues',
+                PREVIOUS_VALUES: 'descLfPreviousValues',
+                DC_VALUES: 'descLfDcValues',
+            },
+        },
+        noGeneratorReactiveLimits: {
+            type: TYPES.bool,
+            description: 'descLfNoGeneratorReactiveLimits',
+        },
+        twtSplitShuntAdmittance: {
+            type: TYPES.bool,
+            description: 'descLfTwtSplitShuntAdmittance',
+        },
+        readSlackBus: {
+            type: TYPES.bool,
+            description: 'descLfReadSlackBus',
+        },
+        writeSlackBus: {
+            type: TYPES.bool,
+            description: 'descLfWriteSlackBus',
+        },
+        distributedSlack: {
+            type: TYPES.bool,
+            description: 'descLfDistributedSlack',
+        },
+        shuntCompensatorVoltageControlOn: {
+            type: TYPES.bool,
+            description: 'descLfShuntCompensatorVoltageControlOn',
+        },
+        dcUseTransformerRatio: {
+            type: TYPES.bool,
+            description: 'descLfDcUseTransformerRatio',
+        },
     };
+    console.info('showAdvancedLfParams', showAdvancedLfParams);
 
-    const DropDown = ({ value, label, values, callback }) => {
-        return (
-            <>
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Select
-                        labelId={label}
-                        value={value}
-                        onChange={callback}
-                        size="small"
-                    >
-                        {Object.keys(values).map((key) => (
-                            <MenuItem key={key} value={key}>
-                                <FormattedMessage id={values[key]} />
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </Grid>
-            </>
-        );
-    };
+    return (
+        <>
+            {MakeAdvancedParameterButton(
+                showAdvancedLfParams,
+                'showAdvancedParameters',
+                () => setShowAdvancedLfParams(!showAdvancedLfParams)
+            )}
+            {showAdvancedLfParams &&
+                makeComponentsFor(defParams, lfParams, commitLFParameter)}
+        </>
+    );
+};
 
-    usePreviousValues({ AdvancedLoadFlowParameters, showAdvancedLfParams, BasicLoadFlowParameters });
+export const LoadFlowParameters = ({ hideParameters }) => {
+    const [
+        lfParams,
+        lfProvider,
+        updateLfProvider,
+        commitLFParameter,
+        resetLfParameters,
+    ] = useGetLfParamsAndProvider();
+
+    const classes = useStyles();
+
+    const updateLfProviderCallback = useCallback(
+        (evt) => {
+            if (updateLfProvider) updateLfProvider(evt.target.value);
+        },
+        [updateLfProvider]
+    );
+
+    usePreviousValues({
+        AdvancedLoadFlowParameters,
+        BasicLoadFlowParameters,
+    });
 
     return (
         <Grid container className={classes.grid}>
@@ -507,8 +456,15 @@ export const LoadFlowParameters = ({
                 <Grid container paddingTop={1}>
                     <LineSeparator />
                 </Grid>
-                <BasicLoadFlowParameters />
-                <AdvancedLoadFlowParameters />
+                <BasicLoadFlowParameters
+                    lfParams={lfParams || {}}
+                    commitLFParameter={commitLFParameter}
+                />
+                <AdvancedLoadFlowParameters
+                    lfParams={lfParams || {}}
+                    commitLFParameter={commitLFParameter}
+                />
+
                 <Grid container className={classes.controlItem} maxWidth="md">
                     <LabelledButton
                         callback={resetLfParameters}

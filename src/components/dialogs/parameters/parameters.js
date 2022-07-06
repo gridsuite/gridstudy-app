@@ -29,11 +29,7 @@ import {
 
 import { SingleLineDiagramParameters } from './single-line-diagram-parameters';
 
-import {
-    LoadFlowParameters,
-    useGetLfParamsAndProvider,
-    usePreviousValues,
-} from './load-flow-parameters';
+import { LoadFlowParameters } from './load-flow-parameters';
 import { MapParameters } from './map-parameters';
 import { NetworkParameters } from './network-parameters';
 
@@ -74,6 +70,7 @@ export const useStyles = makeStyles((theme) => ({
     grid: {
         paddingTop: theme.spacing(2),
         padding: theme.spacing(0),
+        flexGrow: 1,
     },
     minWidthMedium: {
         minWidth: theme.spacing(20),
@@ -149,14 +146,6 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const [
-        lfParams,
-        lfProvider,
-        updateLfProvider,
-        commitLFParameter,
-        resetLfParameters,
-    ] = useGetLfParamsAndProvider();
-
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
         return (
@@ -172,8 +161,6 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
             </Typography>
         );
     }
-
-    usePreviousValues({ studyUuid, lfParams, lfProvider, updateLfProvider,commitLFParameter ,resetLfParameters });
 
     return (
         <Dialog
@@ -220,16 +207,7 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
                         <MapParameters hideParameters={hideParameters} />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={2}>
-                        {studyUuid && (
-                            <LoadFlowParameters
-                                hideParameters={hideParameters}
-                                lfParams={lfParams}
-                                lfProvider={lfProvider}
-                                updateLfProvider={updateLfProvider}
-                                commitLFParameter={commitLFParameter}
-                                resetLfParameters={resetLfParameters}
-                            />
-                        )}
+                        <LoadFlowParameters hideParameters={hideParameters} />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={3}>
                         <NetworkParameters hideParameters={hideParameters} />
