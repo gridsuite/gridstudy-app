@@ -29,7 +29,11 @@ import {
 
 import { SingleLineDiagramParameters } from './single-line-diagram-parameters';
 
-import { LoadFlowParameters } from './load-flow-parameters';
+import {
+    LoadFlowParameters,
+    useGetLfParamsAndProvider,
+    usePreviousValues,
+} from './load-flow-parameters';
 import { MapParameters } from './map-parameters';
 import { NetworkParameters } from './network-parameters';
 
@@ -145,6 +149,14 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
+    const [
+        lfParams,
+        lfProvider,
+        updateLfProvider,
+        commitLFParameter,
+        resetLfParameters,
+    ] = useGetLfParamsAndProvider();
+
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
         return (
@@ -160,6 +172,8 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
             </Typography>
         );
     }
+
+    usePreviousValues({ studyUuid, lfParams, lfProvider, updateLfProvider,commitLFParameter ,resetLfParameters });
 
     return (
         <Dialog
@@ -209,6 +223,11 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
                         {studyUuid && (
                             <LoadFlowParameters
                                 hideParameters={hideParameters}
+                                lfParams={lfParams}
+                                lfProvider={lfProvider}
+                                updateLfProvider={updateLfProvider}
+                                commitLFParameter={commitLFParameter}
+                                resetLfParameters={resetLfParameters}
                             />
                         )}
                     </TabPanel>

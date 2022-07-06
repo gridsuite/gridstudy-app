@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -36,33 +36,14 @@ const LF_PROVIDER_VALUES = {
     Hades2: 'Hades2',
 };
 
-export const LoadFlowParameters = ({ hideParameters }) => {
-    const classes = useStyles();
-
-    let countriesList;
-    try {
-        countriesList = require('localized-countries')(
-            require('localized-countries/data/' +
-                navigator.language.substr(0, 2))
-        );
-    } catch (error) {
-        // fallback to english if no localised list found
-        countriesList = require('localized-countries')(
-            require('localized-countries/data/en')
-        );
-    }
-
+export const useGetLfParamsAndProvider = () => {
     const [lfProvider, setLfProvider] = useState(null);
 
     const [lfParams, setLfParams] = useState(null);
 
     const { enqueueSnackbar } = useSnackbar();
-
-    const intlRef = useIntlRef();
-
-    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
-
     const studyUuid = useSelector((state) => state.studyUuid);
+    const intlRef = useIntlRef();
 
     const updateLfProvider = useCallback(
         (newProvider) => {
@@ -80,6 +61,27 @@ export const LoadFlowParameters = ({ hideParameters }) => {
                 });
         },
         [studyUuid, enqueueSnackbar, intlRef]
+    );
+
+    const commitLFParameter = useCallback(
+        (newParams) => {
+            let oldParams = { ...lfParams };
+            setLfParams(newParams);
+            setLoadFlowParameters(studyUuid, newParams).catch(
+                (errorMessage) => {
+                    setLfParams(oldParams);
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'paramsChangingError',
+                            intlRef: intlRef,
+                        },
+                    });
+                }
+            );
+        },
+        [lfParams, studyUuid, enqueueSnackbar, intlRef]
     );
 
     const setLoadFlowProviderToDefault = useCallback(() => {
@@ -102,6 +104,36 @@ export const LoadFlowParameters = ({ hideParameters }) => {
                 });
             });
     }, [updateLfProvider, enqueueSnackbar, intlRef]);
+
+    const resetLfParameters = useCallback(() => {
+        setLoadFlowParameters(studyUuid, null)
+            .then(() => {
+                return getLoadFlowParameters(studyUuid)
+                    .then((params) => setLfParams(params))
+                    .catch((errorMessage) =>
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'paramsRetrievingError',
+                                intlRef: intlRef,
+                            },
+                        })
+                    );
+            })
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'paramsChangingError',
+                        intlRef: intlRef,
+                    },
+                })
+            );
+
+        setLoadFlowProviderToDefault();
+    }, [studyUuid, setLoadFlowProviderToDefault, enqueueSnackbar, intlRef]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -138,6 +170,61 @@ export const LoadFlowParameters = ({ hideParameters }) => {
                 );
         }
     }, [studyUuid, enqueueSnackbar, intlRef, setLoadFlowProviderToDefault]);
+    return [
+        lfParams,
+        lfProvider,
+        updateLfProvider,
+        commitLFParameter,
+        resetLfParameters,
+    ];
+};
+
+export const usePreviousValues = (props) => {
+    const previousValue = useRef({});
+
+ 
+
+    Object.keys(props).forEach((key) => {
+        if (previousValue.current[key] !== props[key]) {
+            console.log(
+                'JBO Previous',
+                key,
+                previousValue.current[key],
+                props[key]
+            );
+        }
+    });
+    previousValue.current = props;
+};
+
+export const LoadFlowParameters = ({
+    hideParameters,
+    lfParams,
+    lfProvider,
+    updateLfProvider,
+    commitLFParameter,
+    resetLfParameters,
+}) => {
+    const classes = useStyles();
+
+    let countriesList;
+
+    
+    try {
+        countriesList = require('localized-countries')(
+            require('localized-countries/data/' +
+                navigator.language.substr(0, 2))
+        );
+    } catch (error) {
+        // fallback to english if no localised list found
+        countriesList = require('localized-countries')(
+            require('localized-countries/data/en')
+        );
+    }
+
+    
+
+    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
     const updateLfProviderCallback = useCallback(
         (evt) => {
@@ -145,22 +232,6 @@ export const LoadFlowParameters = ({ hideParameters }) => {
         },
         [updateLfProvider]
     );
-
-    const commitLFParameter = (newParams) => {
-        let oldParams = { ...lfParams };
-        setLfParams(newParams);
-        setLoadFlowParameters(studyUuid, newParams).catch((errorMessage) => {
-            setLfParams(oldParams);
-            displayErrorMessageWithSnackbar({
-                errorMessage: errorMessage,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'paramsChangingError',
-                    intlRef: intlRef,
-                },
-            });
-        });
-    };
 
     const TYPES = {
         enum: 'Enum',
@@ -259,6 +330,7 @@ export const LoadFlowParameters = ({ hideParameters }) => {
                 description: 'descLfDcUseTransformerRatio',
             },
         };
+        console.info('showAdvancedLfParams', showAdvancedLfParams);
 
         return (
             lfParams && (
@@ -392,35 +464,6 @@ export const LoadFlowParameters = ({ hideParameters }) => {
         );
     };
 
-    const resetLfParameters = () => {
-        setLoadFlowParameters(studyUuid, null)
-            .then(() => {
-                return getLoadFlowParameters(studyUuid)
-                    .then((params) => setLfParams(params))
-                    .catch((errorMessage) =>
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'paramsRetrievingError',
-                                intlRef: intlRef,
-                            },
-                        })
-                    );
-            })
-            .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'paramsChangingError',
-                        intlRef: intlRef,
-                    },
-                })
-            );
-
-        setLoadFlowProviderToDefault();
-    };
     const DropDown = ({ value, label, values, callback }) => {
         return (
             <>
@@ -448,6 +491,8 @@ export const LoadFlowParameters = ({ hideParameters }) => {
             </>
         );
     };
+
+    usePreviousValues({ AdvancedLoadFlowParameters, showAdvancedLfParams, BasicLoadFlowParameters });
 
     return (
         <Grid container className={classes.grid}>
