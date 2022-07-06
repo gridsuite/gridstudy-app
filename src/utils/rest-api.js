@@ -899,10 +899,8 @@ export function connectNotificationsWebsocket(studyUuid) {
         PREFIX_NOTIFICATION_WS +
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
-    let wsaddressWithToken;
-    wsaddressWithToken = getUrlWithToken(wsadress);
 
-    const rws = new ReconnectingWebSocket(wsaddressWithToken);
+    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
     // don't log the token, it's private
     rws.onopen = function (event) {
         console.info('Connected Websocket ' + wsadress + ' ...');
@@ -920,11 +918,8 @@ export function connectNotificationsWsUpdateConfig() {
         '/notify?appName=' +
         APP_NAME;
 
-    let webSocketUrlWithToken;
-    webSocketUrlWithToken = getUrlWithToken(webSocketUrl);
-
-    const reconnectingWebSocket = new ReconnectingWebSocket(
-        webSocketUrlWithToken
+    const reconnectingWebSocket = new ReconnectingWebSocket(() =>
+        getUrlWithToken(webSocketUrl)
     );
     reconnectingWebSocket.onopen = function (event) {
         console.info(
