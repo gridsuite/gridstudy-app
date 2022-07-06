@@ -43,6 +43,7 @@ import {
 
 import {
     AuthenticationRouter,
+    CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
 } from '@gridsuite/commons-ui';
@@ -413,54 +414,59 @@ const App = () => {
                 onChangeTab={onChangeTab}
                 userManager={userManager}
             />
-            <div
-                className="singlestretch-parent"
-                style={{
-                    flexGrow: 1,
-                    //Study pane needs 'hidden' when displaying a
-                    //fullscreen sld or when displaying the results or
-                    //elements tables for certain screen sizes because
-                    //width/heights are computed programmaticaly and
-                    //resizing the page trigger render loops due to
-                    //appearing and disappearing scrollbars.
-                    //For all other cases, auto is better because it will
-                    //be easier to see that we have a layout problem when
-                    //scrollbars appear when they should not.
-                    overflow: isStudyPane ? 'hidden' : 'auto',
-                }}
-            >
-                {user !== null ? (
-                    <Switch>
-                        <Route exact path="/studies/:studyUuid">
-                            <StudyContainer
-                                view={STUDY_VIEWS[tabIndex]}
-                                onChangeTab={onChangeTab}
-                            />
-                        </Route>
-                        <Route exact path="/sign-in-callback">
-                            <Redirect to={getPreLoginPath() || '/'} />
-                        </Route>
-                        <Route exact path="/logout-callback">
-                            <h1>
-                                Error: logout failed; you are still logged in.
-                            </h1>
-                        </Route>
-                        <Route>
-                            <PageNotFound
-                                message={<FormattedMessage id="PageNotFound" />}
-                            />
-                        </Route>
-                    </Switch>
-                ) : (
-                    <AuthenticationRouter
-                        userManager={userManager}
-                        signInCallbackError={signInCallbackError}
-                        dispatch={dispatch}
-                        history={history}
-                        location={location}
-                    />
-                )}
-            </div>
+            <CardErrorBoundary>
+                <div
+                    className="singlestretch-parent"
+                    style={{
+                        flexGrow: 1,
+                        //Study pane needs 'hidden' when displaying a
+                        //fullscreen sld or when displaying the results or
+                        //elements tables for certain screen sizes because
+                        //width/heights are computed programmaticaly and
+                        //resizing the page trigger render loops due to
+                        //appearing and disappearing scrollbars.
+                        //For all other cases, auto is better because it will
+                        //be easier to see that we have a layout problem when
+                        //scrollbars appear when they should not.
+                        overflow: isStudyPane ? 'hidden' : 'auto',
+                    }}
+                >
+                    {user !== null ? (
+                        <Switch>
+                            <Route exact path="/studies/:studyUuid">
+                                <StudyContainer
+                                    view={STUDY_VIEWS[tabIndex]}
+                                    onChangeTab={onChangeTab}
+                                />
+                            </Route>
+                            <Route exact path="/sign-in-callback">
+                                <Redirect to={getPreLoginPath() || '/'} />
+                            </Route>
+                            <Route exact path="/logout-callback">
+                                <h1>
+                                    Error: logout failed; you are still logged
+                                    in.
+                                </h1>
+                            </Route>
+                            <Route>
+                                <PageNotFound
+                                    message={
+                                        <FormattedMessage id="PageNotFound" />
+                                    }
+                                />
+                            </Route>
+                        </Switch>
+                    ) : (
+                        <AuthenticationRouter
+                            userManager={userManager}
+                            signInCallbackError={signInCallbackError}
+                            dispatch={dispatch}
+                            history={history}
+                            location={location}
+                        />
+                    )}
+                </div>
+            </CardErrorBoundary>
         </div>
     );
 };

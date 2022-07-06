@@ -656,7 +656,11 @@ export function startLoadFlow(studyUuid, currentNodeUuid) {
     const startLoadFlowUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
-    return backendFetch(startLoadFlowUrl, { method: 'put' });
+    return backendFetch(startLoadFlowUrl, { method: 'put' }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
 
 export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
@@ -789,9 +793,7 @@ export function fetchNetworkModificationTree(studyUuid) {
         if (response.ok) {
             return response.json();
         } else {
-            return response.json().then((text) => {
-                return Promise.reject(text);
-            });
+            return Promise.reject(response);
         }
     });
 }
@@ -897,10 +899,8 @@ export function connectNotificationsWebsocket(studyUuid) {
         PREFIX_NOTIFICATION_WS +
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
-    let wsaddressWithToken;
-    wsaddressWithToken = getUrlWithToken(wsadress);
 
-    const rws = new ReconnectingWebSocket(wsaddressWithToken);
+    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
     // don't log the token, it's private
     rws.onopen = function (event) {
         console.info('Connected Websocket ' + wsadress + ' ...');
@@ -918,11 +918,8 @@ export function connectNotificationsWsUpdateConfig() {
         '/notify?appName=' +
         APP_NAME;
 
-    let webSocketUrlWithToken;
-    webSocketUrlWithToken = getUrlWithToken(webSocketUrl);
-
-    const reconnectingWebSocket = new ReconnectingWebSocket(
-        webSocketUrlWithToken
+    const reconnectingWebSocket = new ReconnectingWebSocket(() =>
+        getUrlWithToken(webSocketUrl)
     );
     reconnectingWebSocket.onopen = function (event) {
         console.info(
