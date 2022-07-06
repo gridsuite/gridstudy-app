@@ -250,11 +250,16 @@ function makeComponentsFor(defParams, params, setter) {
     ));
 }
 
+function getValue(param, key) {
+    if (!param || param[key] === undefined) return null;
+    return param[key];
+}
 function makeComponentFor(defParam, key, lfParams, setter) {
+    const value = getValue(lfParams, key);
     if (defParam.type === TYPES.bool) {
         return (
             <SwitchWithLabel
-                value={lfParams[key]}
+                value={value}
                 label={defParam.description}
                 callback={(ev) =>
                     setter({ ...lfParams, [key]: ev.target.checked })
@@ -264,7 +269,7 @@ function makeComponentFor(defParam, key, lfParams, setter) {
     } else if (defParam.type === TYPES.enum) {
         return (
             <DropDown
-                value={lfParams[key]}
+                value={value}
                 label={defParam.description}
                 values={defParam.values}
                 callback={(ev) =>
@@ -275,7 +280,7 @@ function makeComponentFor(defParam, key, lfParams, setter) {
     } else if (defParam.type === TYPES.countries) {
         return (
             <CountrySelector
-                value={lfParams[key]}
+                value={value || []}
                 label={defParam.description}
                 callback={(newValues) => {
                     setter({ ...lfParams, [key]: [...newValues] });
