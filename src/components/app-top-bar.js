@@ -253,8 +253,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 renderElement={(props) => (
                     <EquipmentItem
                         classes={equipmentClasses}
-                        key={'ei' + props.element.key}
                         {...props}
+                        key={'ei' + props.element.key}
                         suffixRenderer={CustomSuffixRenderer}
                     />
                 )}
