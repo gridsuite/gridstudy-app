@@ -1,10 +1,4 @@
-import React, {
-    useState,
-    useCallback,
-    useEffect,
-    useRef,
-    useMemo,
-} from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -43,8 +37,11 @@ export const useGetLfParamsAndProvider = () => {
 
     const [lfParams, setLfParams] = useState(null);
 
+    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
+
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
+
     const updateLfProvider = useCallback(
         (newProvider) => {
             setLoadFlowProvider(studyUuid, newProvider)
@@ -127,23 +124,9 @@ export const useGetLfParamsAndProvider = () => {
         updateLfProvider,
         commitLFParameter,
         resetLfParameters,
+        showAdvancedLfParams,
+        setShowAdvancedLfParams,
     ];
-};
-
-export const usePreviousValues = (props) => {
-    const previousValue = useRef({});
-
-    Object.keys(props).forEach((key) => {
-        if (previousValue.current[key] !== props[key]) {
-            console.log(
-                'JBO Previous',
-                key,
-                previousValue.current[key],
-                props[key]
-            );
-        }
-    });
-    previousValue.current = props;
 };
 
 const CountrySelector = ({ value, label, callback }) => {
@@ -362,9 +345,12 @@ const AdvancedParameterButton = ({ showOpenIcon, label, callback }) => {
     );
 };
 
-const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
-    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
-
+const AdvancedLoadFlowParameters = ({
+    lfParams,
+    commitLFParameter,
+    showAdvancedLfParams,
+    setShowAdvancedLfParams,
+}) => {
     const defParams = {
         voltageInitMode: {
             type: TYPES.enum,
@@ -404,7 +390,6 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
             description: 'descLfDcUseTransformerRatio',
         },
     };
-    console.info('showAdvancedLfParams', showAdvancedLfParams);
 
     return (
         <>
@@ -419,15 +404,16 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     );
 };
 
-export const LoadFlowParameters = ({ hideParameters }) => {
-    const [
-        lfParams,
-        lfProvider,
-        updateLfProvider,
-        commitLFParameter,
-        resetLfParameters,
-    ] = useGetLfParamsAndProvider();
-
+export const LoadFlowParameters = ({
+    hideParameters,
+    lfParams,
+    lfProvider,
+    updateLfProvider,
+    commitLFParameter,
+    resetLfParameters,
+    showAdvancedLfParams,
+    setShowAdvancedLfParams,
+}) => {
     const classes = useStyles();
 
     const updateLfProviderCallback = useCallback(
@@ -436,11 +422,6 @@ export const LoadFlowParameters = ({ hideParameters }) => {
         },
         [updateLfProvider]
     );
-
-    usePreviousValues({
-        AdvancedLoadFlowParameters,
-        BasicLoadFlowParameters,
-    });
 
     return (
         <Grid container className={classes.grid}>
@@ -462,6 +443,8 @@ export const LoadFlowParameters = ({ hideParameters }) => {
                 <AdvancedLoadFlowParameters
                     lfParams={lfParams || {}}
                     commitLFParameter={commitLFParameter}
+                    showAdvancedLfParams={showAdvancedLfParams}
+                    setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />
 
                 <Grid container className={classes.controlItem} maxWidth="md">
