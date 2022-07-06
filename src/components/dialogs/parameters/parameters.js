@@ -207,7 +207,11 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
                         <MapParameters hideParameters={hideParameters} />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={2}>
-                        <LoadFlowParameters hideParameters={hideParameters} />
+                        {studyUuid && (
+                            <LoadFlowParameters
+                                hideParameters={hideParameters}
+                            />
+                        )}
                     </TabPanel>
                     <TabPanel value={tabIndex} index={3}>
                         <NetworkParameters hideParameters={hideParameters} />
