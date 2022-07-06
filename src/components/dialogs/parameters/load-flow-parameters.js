@@ -29,16 +29,10 @@ import {
     setLoadFlowParameters,
     setLoadFlowProvider,
 } from '../../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-    useSnackMessage,
-} from '../../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import { SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import WaitingLoader from '../../util/waiting-loader';
 const LF_PROVIDER_VALUES = {
     OpenLoadFlow: 'OpenLoadFlow',
     Hades2: 'Hades2',
