@@ -432,7 +432,7 @@ export const LoadFlowParameters = ({ hideParameters }) => {
 
     const updateLfProviderCallback = useCallback(
         (evt) => {
-            if (updateLfProvider) updateLfProvider(evt.target.value);
+            updateLfProvider(evt.target.value);
         },
         [updateLfProvider]
     );
