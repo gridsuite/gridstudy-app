@@ -19,6 +19,7 @@ export function NetworkAreaDiagramPane({
     onClose,
     align,
     disabled,
+    visible,
 }) {
     const [depth, setDepth] = useState(0);
 
@@ -60,7 +61,7 @@ export function NetworkAreaDiagramPane({
 
     return (
         <>
-            {voltageLevelsIds?.length && (
+            {visible && voltageLevelsIds?.length > 0 && (
                 <div
                     style={{
                         flexGrow: 1,
@@ -98,4 +99,5 @@ NetworkAreaDiagramPane.propTypes = {
     onClose: PropTypes.func,
     align: PropTypes.string,
     disabled: PropTypes.bool,
+    visible: PropTypes.bool,
 };

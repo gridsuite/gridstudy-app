@@ -346,8 +346,7 @@ const SizedNetworkAreaDiagram = (props) => {
 
     const onCloseHandler = () => {
         if (onClose !== null) {
-            dispatch(fullScreenNetworkAreaDiagramId(null));
-            onClose(nadId);
+            onClose();
             setDepth(0);
         }
     };
