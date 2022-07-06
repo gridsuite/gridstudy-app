@@ -35,8 +35,9 @@ export const useStyles = makeStyles((theme) => ({
     },
     emptyListError: {
         color: theme.palette.error.main,
-        textDecorationLine: 'overline',
-        margin: theme.spacing(1),
+        fontSize: 'small',
+        textAlign: 'center',
+        margin: theme.spacing(0.5),
     },
 }));
 

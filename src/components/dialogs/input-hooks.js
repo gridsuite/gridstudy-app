@@ -689,10 +689,16 @@ export const useExpandableValues = ({
     useEffect(() => {
         if (defaultValues) {
             setValues([...defaultValues]);
+            if (isRequired) {
+                setEmptyListError(false);
+            }
         } else {
+            if (isRequired) {
+                setEmptyListError(true);
+            }
             setValues([]);
         }
-    }, [defaultValues]);
+    }, [defaultValues, isRequired]);
 
     const handleDeleteItem = useCallback((index) => {
         setValues((oldValues) => {
@@ -712,17 +718,16 @@ export const useExpandableValues = ({
 
     const handleAddValue = useCallback(() => {
         setValues((oldValues) => [...oldValues, {}]);
+        setEmptyListError(false);
     }, []);
 
     useEffect(() => {
         function validation() {
             const res = validateItem(values);
-            if (isRequired && res.size === 0) {
-                setEmptyListError(true);
-                return;
-            }
             setErrors(res);
-            setEmptyListError(false);
+            if (isRequired) {
+                setEmptyListError(res?.size === 0);
+            }
             return res?.size === 0;
         }
         inputForm.addValidation(id, validation);
