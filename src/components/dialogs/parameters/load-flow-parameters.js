@@ -336,29 +336,29 @@ const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     return makeComponentsFor(defParams, lfParams, commitLFParameter);
 };
 
+const AdvancedParameterButton = ({ showOpenIcon, label, callback }) => {
+    const classes = useStyles();
+    return (
+        <>
+            <Grid item xs={12} className={classes.advancedParameterButton}>
+                <Button
+                    startIcon={<SettingsIcon />}
+                    endIcon={
+                        showOpenIcon ? (
+                            <CheckIcon style={{ color: 'green' }} />
+                        ) : undefined
+                    }
+                    onClick={callback}
+                >
+                    <FormattedMessage id={label} />
+                </Button>
+            </Grid>
+        </>
+    );
+};
+
 const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
-
-    const classes = useStyles();
-    function MakeAdvancedParameterButton(showOpenIcon, label, callback) {
-        return (
-            <>
-                <Grid item xs={12} className={classes.advancedParameterButton}>
-                    <Button
-                        startIcon={<SettingsIcon />}
-                        endIcon={
-                            showOpenIcon ? (
-                                <CheckIcon style={{ color: 'green' }} />
-                            ) : undefined
-                        }
-                        onClick={callback}
-                    >
-                        <FormattedMessage id={label} />
-                    </Button>
-                </Grid>
-            </>
-        );
-    }
 
     const defParams = {
         voltageInitMode: {
@@ -403,11 +403,11 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
 
     return (
         <>
-            {MakeAdvancedParameterButton(
-                showAdvancedLfParams,
-                'showAdvancedParameters',
-                () => setShowAdvancedLfParams(!showAdvancedLfParams)
-            )}
+            <AdvancedParameterButton
+                showOpenIcon={showAdvancedLfParams}
+                label={'showAdvancedParameters'}
+                callback={() => setShowAdvancedLfParams(!showAdvancedLfParams)}
+            />
             {showAdvancedLfParams &&
                 makeComponentsFor(defParams, lfParams, commitLFParameter)}
         </>
