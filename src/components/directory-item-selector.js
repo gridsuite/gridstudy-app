@@ -28,7 +28,6 @@ const DirectoryItemSelector = (props) => {
             const newNode = {
                 id: newData.elementUuid,
                 name: newData.elementName,
-                type: newData.type,
                 icon: getFileIcon(newData.type, classes.icon),
                 children:
                     newData.type === elementType.DIRECTORY ? [] : undefined,
@@ -66,9 +65,10 @@ const DirectoryItemSelector = (props) => {
     };
 
     function sortHandlingDirectories(a, b) {
-        if (a.type === elementType.DIRECTORY && a.type !== b.type) {
+        //If children property is set it means it's a directory, they are handled differently in order to keep them at the top of the list
+        if (a.children && !b.children) {
             return -1;
-        } else if (b.type === elementType.DIRECTORY && b.type !== a.type) {
+        } else if (b.children && !a.children) {
             return 1;
         }
         return a.name.localeCompare(b.name);
