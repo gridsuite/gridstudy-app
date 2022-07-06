@@ -13,7 +13,7 @@ import {
     getEquipmentsInfosForSearchBar,
     EquipmentItem,
 } from '@gridsuite/commons-ui';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import {
     displayErrorMessageWithSnackbar,
@@ -50,9 +50,11 @@ const EquipmentSearchDialog = ({
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
     const [equipmentsFound, setEquipmentsFound] = useState([]);
+    const lastSearchTermRef = useRef('');
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
+            lastSearchTermRef.current = searchTerm;
             fetchEquipmentsInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -61,11 +63,13 @@ const EquipmentSearchDialog = ({
                 true,
                 equipmentType
             )
-                .then((infos) =>
-                    setEquipmentsFound(
-                        getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                    )
-                )
+                .then((infos) => {
+                    if (searchTerm === lastSearchTermRef.current) {
+                        setEquipmentsFound(
+                            getEquipmentsInfosForSearchBar(infos, useNameLocal)
+                        );
+                    } // else ignore results of outdated fetch
+                })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,
