@@ -322,12 +322,12 @@ export function StudyContainer({ view, onChangeTab }) {
                         });
                     });
 
-                let firstSelectedNode =
+                const firstSelectedNode =
                     getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', 'BUILT') ||
                     getFirstNodeOfType(tree, 'ROOT');
 
                 // To get positions we must get the node from the model class
-                let ModelFirstSelectedNode = {
+                const ModelFirstSelectedNode = {
                     ...networkModificationTreeModel.treeElements.find(
                         (el) => el.id === firstSelectedNode.id
                     ),
