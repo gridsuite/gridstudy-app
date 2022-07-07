@@ -684,12 +684,18 @@ export const useExpandableValues = ({
     const classes = useStyles();
     const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
-    const [emptyListError, setEmptyListError] = useState(false);
+    const [itemListError, setItemListError] = useState({
+        show: false,
+        type: '',
+    });
 
     useEffect(() => {
         if (defaultValues) {
             setValues([...defaultValues]);
-            setEmptyListError(false);
+            setItemListError({
+                show: false,
+                type: '',
+            });
         } else {
             setValues([]);
         }
@@ -713,26 +719,38 @@ export const useExpandableValues = ({
 
     const handleAddValue = useCallback(() => {
         setValues((oldValues) => [...oldValues, {}]);
-        setEmptyListError(false);
+        setItemListError({
+            show: false,
+            type: '',
+        });
     }, []);
 
     useEffect(() => {
         function validation() {
-            if (isRequired && values?.length === 0) {
-                setEmptyListError(true);
-                return;
-            }
             const res = validateItem(values);
-            if (isRequired && res?.size !== 0) {
-                setEmptyListError(true);
-                return;
-            }
-            setEmptyListError(false);
             setErrors(res);
-            return res?.size === 0;
+            if (res?.size !== 0) {
+                return false;
+            } else if (isRequired && values?.length === 0) {
+                setItemListError({
+                    show: true,
+                    type: 'empty',
+                });
+                return false;
+            }
+            setItemListError({
+                show: false,
+                type: '',
+            });
+
+            return true;
         }
+
         inputForm.addValidation(id, validation);
-    }, [inputForm, values, id, validateItem, isRequired]);
+    }, [inputForm, values, id, validateItem, isRequired, itemListError.show]);
+
+    const isEmptyListError =
+        itemListError.show && itemListError.type === 'empty';
 
     const field = useMemo(() => {
         return (
@@ -768,7 +786,7 @@ export const useExpandableValues = ({
                         >
                             <FormattedMessage id={labelAddValue} />
                         </Button>
-                        {emptyListError && (
+                        {isEmptyListError && (
                             <div className={classes.emptyListError}>
                                 <FormattedMessage id={'EmptyList/' + id} />
                             </div>
@@ -784,7 +802,7 @@ export const useExpandableValues = ({
         classes.icon,
         handleAddValue,
         labelAddValue,
-        emptyListError,
+        isEmptyListError,
         id,
         fieldProps,
         handleSetValue,
