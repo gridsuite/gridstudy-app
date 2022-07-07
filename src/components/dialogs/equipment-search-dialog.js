@@ -54,6 +54,7 @@ const EquipmentSearchDialog = ({
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
+            if (lastSearchTermRef.current === searchTerm) return;
             lastSearchTermRef.current = searchTerm;
             fetchEquipmentsInfos(
                 studyUuid,
