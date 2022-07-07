@@ -275,7 +275,7 @@ const NetworkTable = (props) => {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
         if (!props.network || props.disabled) return;
         props.network.useEquipment(resource);
-    }, [props.network, tabIndex]);
+    }, [props.network, props.disabled, tabIndex]);
 
     const filter = useCallback(
         (cell) => {
