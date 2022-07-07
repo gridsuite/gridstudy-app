@@ -481,6 +481,34 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         }
     }, []);
 
+    // shouldResetPreferredSizes doesn't need to be a ref, but it makes the static checks happy
+    const shouldResetPreferredSizes = useRef();
+    shouldResetPreferredSizes.current = false;
+    useLayoutEffect(() => {
+        shouldResetPreferredSizes.current = true;
+        // Note: these deps must be kept in sync with the ones of the useLayoutEffect where setSvgPreferredWidth and setSvgPreferredHeight
+        // are called. Because we want to reset them in all cases, except when only svgFinalWidth and svgFinalHeight have changed
+        // so we use the same deps but without svgFinalWidth and svgFinalHeight
+        // TODO is there a better way to do this??
+    }, [
+        network,
+        svg,
+        currentNode,
+        onNextVoltageLevelClick,
+        onBreakerClick,
+        isComputationRunning,
+        isAnyNodeBuilding,
+        equipmentMenu,
+        showEquipmentMenu,
+        showFeederSelection,
+        hideFeederSelection,
+        svgType,
+        theme,
+        sldId,
+        ref,
+        disabled,
+    ]);
+
     useLayoutEffect(() => {
         if (disabled) return;
         function createSvgArrow(element, position, x, highestY, lowestY) {
@@ -652,8 +680,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             const svgWidth = Math.ceil(bbox.width + 40);
             const svgHeight = Math.ceil(bbox.height + 40);
 
-            setSvgPreferredWidth(svgWidth);
-            setSvgPreferredHeight(svgHeight);
+            if (shouldResetPreferredSizes.current) {
+                setSvgPreferredWidth(svgWidth);
+                setSvgPreferredHeight(svgHeight);
+            }
 
             let viewboxMaxWidth =
                 svgType === SvgType.VOLTAGE_LEVEL
@@ -794,6 +824,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
+        // Note: these deps must be kept in sync with the ones of the useLayoutEffect shouldResetPreferredSizes
+        // is set to true. Because we want to reset svgPreferredWidth and svgPreferredHeight in all cases, except when only svgFinalWidth and svgFinalHeight have changed
+        // so we use the same deps but without svgFinalWidth and svgFinalHeight
+        // TODO is there a better way to do this??
     }, [
         network,
         svg,
