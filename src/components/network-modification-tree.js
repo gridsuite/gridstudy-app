@@ -21,8 +21,6 @@ import {
     setCurrentTreeNode,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import RootNode from './graph/nodes/root-node';
-import NetworkModificationNode from './graph/nodes/network-modification-node';
 import { isSameNode } from './graph/util/model-functions';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
@@ -31,10 +29,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
-const nodeTypes = {
-    ROOT: RootNode,
-    NETWORK_MODIFICATION: NetworkModificationNode,
-};
+import { nodeTypes } from './graph/util/model-constants';
 
 // snapGrid value set to [15, 15] which is the default value for ReactFlow
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false

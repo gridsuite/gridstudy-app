@@ -474,7 +474,7 @@ code {
 /* Network modification tree */
 
 .react-flow__node-ROOT {
-    width: 180px;
+    width: auto;
     height: auto;
     display: flex;
     align-content: center;

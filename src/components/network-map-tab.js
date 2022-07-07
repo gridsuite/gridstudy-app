@@ -20,6 +20,7 @@ import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
 import { isNodeBuilt, isNodeRenamed } from './graph/util/model-functions';
+import { RunningStatus } from './util/running-status';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -268,6 +269,10 @@ export const NetworkMapTab = ({
         return false;
     }, [network, lineFlowAlertThreshold]);
 
+    const isLoadFlowValid = () => {
+        return loadFlowStatus === RunningStatus.SUCCEED;
+    };
+
     const renderMap = () => (
         <NetworkMap
             network={network}
@@ -319,7 +324,7 @@ export const NetworkMapTab = ({
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {network?.substations?.length > 0 && renderNominalVoltageFilter()}
 
-            {displayOverloadTable && linesNearOverload() && (
+            {displayOverloadTable && isLoadFlowValid() && linesNearOverload() && (
                 <div className={classes.divOverloadedLineView}>
                     <OverloadedLinesView
                         lines={network.lines}
