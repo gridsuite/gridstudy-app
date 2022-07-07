@@ -282,29 +282,18 @@ export const useConnectivityValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
-        let newConnectivityValue = {};
-        if (voltageLevelIdDefaultValue) {
-            const found_vl = voltageLevelOptions.find(
-                (value) => value.id === voltageLevelIdDefaultValue
-            );
-            if (found_vl !== undefined) {
-                newConnectivityValue.voltageLevel = found_vl;
-            } else {
-                newConnectivityValue.voltageLevel = {
-                    id: voltageLevelIdDefaultValue,
-                };
-            }
-        } else {
-            newConnectivityValue.voltageLevel = null;
-        }
-        newConnectivityValue.busOrBusbarSection =
-            busOrBusbarSectionIdDefaultValue
+        setConnectivity({
+            voltageLevel: voltageLevelIdDefaultValue
+                ? voltageLevelOptions.find(
+                      (value) => value.id === voltageLevelIdDefaultValue
+                  )
+                : null,
+            busOrBusbarSection: busOrBusbarSectionIdDefaultValue
                 ? {
                       id: busOrBusbarSectionIdDefaultValue,
                   }
-                : null;
-
-        setConnectivity(newConnectivityValue);
+                : null,
+        });
     }, [
         voltageLevelOptions,
         busOrBusbarSectionIdDefaultValue,
@@ -700,16 +689,11 @@ export const useExpandableValues = ({
     useEffect(() => {
         if (defaultValues) {
             setValues([...defaultValues]);
-            if (isRequired) {
-                setEmptyListError(false);
-            }
+            setEmptyListError(false);
         } else {
-            if (isRequired) {
-                setEmptyListError(true);
-            }
             setValues([]);
         }
-    }, [defaultValues, isRequired]);
+    }, [defaultValues]);
 
     const handleDeleteItem = useCallback((index) => {
         setValues((oldValues) => {
@@ -735,10 +719,12 @@ export const useExpandableValues = ({
     useEffect(() => {
         function validation() {
             const res = validateItem(values);
-            setErrors(res);
             if (isRequired) {
-                setEmptyListError(res?.size === 0);
+                setEmptyListError(true);
+                return;
             }
+            setEmptyListError(false);
+            setErrors(res);
             return res?.size === 0;
         }
         inputForm.addValidation(id, validation);
