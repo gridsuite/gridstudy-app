@@ -718,8 +718,12 @@ export const useExpandableValues = ({
 
     useEffect(() => {
         function validation() {
+            if (isRequired && values?.length === 0) {
+                setEmptyListError(true);
+                return;
+            }
             const res = validateItem(values);
-            if (isRequired) {
+            if (isRequired && res?.size !== 0) {
                 setEmptyListError(true);
                 return;
             }
