@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
-import { isNodeBuilt } from './graph/util/model-functions';
+import { isNodeBuilt, isNodeRenamed } from './graph/util/model-functions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -170,16 +170,13 @@ export const NetworkMapTab = ({
     );
 
     useEffect(() => {
-        let isUpdate = currentNode?.id === currentNodeRef.current?.id;
-        let isRenamed =
-            isUpdate &&
-            currentNode.data?.label !== currentNodeRef.current?.data?.label;
+        let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only renaming, do not reload geo data
-        if (isRenamed) return;
+        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
+        if (disabled) return;
 
         console.info(`Loading geo data of study '${studyUuid}'...`);
-        if (disabled) return;
         const substationPositions = fetchSubstationPositions(
             studyUuid,
             currentNode?.id

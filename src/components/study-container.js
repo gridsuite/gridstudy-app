@@ -44,7 +44,12 @@ import {
     useSnackMessage,
 } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, isNodeBuilt } from './graph/util/model-functions';
+import {
+    getFirstNodeOfType,
+    isNodeBuilt,
+    isSameNode,
+    isNodeRenamed,
+} from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -370,15 +375,12 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-        if (!isNodeBuilt(currentNode)) return;
-        let isUpdate = currentNode?.id === currentNodeRef.current?.id;
-        let isRenamed =
-            isUpdate &&
-            currentNode.data?.label !== currentNodeRef.current?.data?.label;
+        let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
-        // if only renaming, do not reload network
-        if (isRenamed) return;
-        loadNetwork(isUpdate);
+        // if only node renaming, do not reload network
+        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
+        if (!isNodeBuilt(currentNode)) return;
+        loadNetwork(isSameNode(previousCurrentNode, currentNode));
     }, [loadNetwork, currentNode]);
 
     useEffect(() => {

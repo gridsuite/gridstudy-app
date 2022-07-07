@@ -77,3 +77,14 @@ export function isNodeBuilt(node) {
     if (node?.type === 'ROOT') return true;
     return node?.data?.buildStatus === 'BUILT';
 }
+
+export function isSameNode(node1, node2) {
+    return node1?.id === node2?.id;
+}
+
+export function isNodeRenamed(node1, node2) {
+    if (!node1 || !node2) return false;
+    return (
+        isSameNode(node1, node2) && node1?.data?.label !== node2?.data?.label
+    );
+}
