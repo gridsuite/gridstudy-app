@@ -23,6 +23,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import RootNode from './graph/nodes/root-node';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
+import { isSameNode } from './graph/util/model-functions';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import { StudyDisplayMode } from './study-pane';
@@ -97,9 +98,10 @@ const NetworkModificationTree = ({
                     element.type === 'NETWORK_MODIFICATION'
                 )
             );
-            dispatch(setCurrentTreeNode(element));
+            if (isSameNode(currentNode, element))
+                dispatch(setCurrentTreeNode(element));
         },
-        [dispatch]
+        [dispatch, currentNode]
     );
 
     const toggleMinimap = useCallback(() => {
