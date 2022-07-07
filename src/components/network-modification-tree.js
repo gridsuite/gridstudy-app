@@ -98,7 +98,7 @@ const NetworkModificationTree = ({
                     element.type === 'NETWORK_MODIFICATION'
                 )
             );
-            if (isSameNode(currentNode, element))
+            if (!isSameNode(currentNode, element))
                 dispatch(setCurrentTreeNode(element));
         },
         [dispatch, currentNode]
