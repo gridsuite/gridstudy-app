@@ -295,6 +295,21 @@ export function SingleLineDiagramPane({
             arrayFormat: 'indices',
         });
         let newVoltageLevelIds = getArray(queryParams['views']);
+
+        // if trying to open a sld, checking if present in viewstate with MINIMIZED state
+        // if so, removing it from the map
+        setViewState((oldViewState) => {
+            const openingSld = newVoltageLevelIds?.find(
+                (element) => element.lastOpen
+            )?.id;
+            if (oldViewState.get(openingSld) !== ViewState.MINIMIZED) {
+                return oldViewState;
+            }
+
+            oldViewState.delete(openingSld);
+            return new Map(oldViewState);
+        });
+
         setViews((oldValue) =>
             mergeDisplayed(oldValue, newVoltageLevelIds, createView)
         );
