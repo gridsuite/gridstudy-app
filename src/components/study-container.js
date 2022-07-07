@@ -322,20 +322,18 @@ export function StudyContainer({ view, onChangeTab }) {
                         });
                     });
 
-                let firstBuiltNode = getFirstNodeOfType(
-                    tree,
-                    'NETWORK_MODIFICATION',
-                    'BUILT'
-                );
+                let firstSelectedNode =
+                    getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', 'BUILT') ||
+                    getFirstNodeOfType(tree, 'ROOT');
 
-                dispatch(
-                    setCurrentTreeNode(
-                        firstBuiltNode
-                            ? firstBuiltNode
-                            : getFirstNodeOfType(tree, 'ROOT')
-                    )
-                );
-
+                // To get positions we must get the node from the model class
+                let ModelFirstSelectedNode = {
+                    ...networkModificationTreeModel.treeElements.find(
+                        (el) => el.id === firstSelectedNode.id
+                    ),
+                };
+                currentNodeRef.current = ModelFirstSelectedNode;
+                dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
                 dispatch(
                     loadNetworkModificationTreeSuccess(
                         networkModificationTreeModel
