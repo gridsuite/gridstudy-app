@@ -167,34 +167,42 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const lastSearchTermRef = useRef('');
+    const timer = useRef();
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
-            if (lastSearchTermRef.current === searchTerm) return;
-            lastSearchTermRef.current = searchTerm;
-            fetchEquipmentsInfos(
-                studyUuid,
-                currentNode?.id,
-                searchTerm,
-                useNameLocal
-            )
-                .then((infos) => {
-                    if (searchTerm === lastSearchTermRef.current) {
-                        setEquipmentsFound(
-                            getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                        );
-                    } // else ignore results of outdated fetch
-                })
-                .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'equipmentsSearchingError',
-                            intlRef: intlRef,
-                        },
+            clearTimeout(timer.current);
+
+            timer.current = setTimeout(() => {
+                if (lastSearchTermRef.current === searchTerm) return;
+                lastSearchTermRef.current = searchTerm;
+                fetchEquipmentsInfos(
+                    studyUuid,
+                    currentNode?.id,
+                    searchTerm,
+                    useNameLocal
+                )
+                    .then((infos) => {
+                        if (searchTerm === lastSearchTermRef.current) {
+                            setEquipmentsFound(
+                                getEquipmentsInfosForSearchBar(
+                                    infos,
+                                    useNameLocal
+                                )
+                            );
+                        } // else ignore results of outdated fetch
                     })
-                );
+                    .catch((errorMessage) =>
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'equipmentsSearchingError',
+                                intlRef: intlRef,
+                            },
+                        })
+                    );
+            }, 1500);
         },
         [studyUuid, currentNode, useNameLocal, enqueueSnackbar, intlRef]
     );
