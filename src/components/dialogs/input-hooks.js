@@ -692,10 +692,6 @@ export const useExpandableValues = ({
     useEffect(() => {
         if (defaultValues) {
             setValues([...defaultValues]);
-            setItemListError({
-                show: false,
-                type: '',
-            });
         } else {
             setValues([]);
         }
@@ -747,7 +743,7 @@ export const useExpandableValues = ({
         }
 
         inputForm.addValidation(id, validation);
-    }, [inputForm, values, id, validateItem, isRequired, itemListError.show]);
+    }, [inputForm, values, id, validateItem, isRequired]);
 
     const isEmptyListError =
         itemListError.show && itemListError.type === 'empty';
