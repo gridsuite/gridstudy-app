@@ -47,7 +47,8 @@ export function NetworkAreaDiagramPane({
     if (displayedVoltageLevels) {
         displayedVoltageLevels.forEach(
             (vl) =>
-                (nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + vl.name)
+                (nadTitle =
+                    nadTitle + (nadTitle !== '' ? ' + ' : '') + vl?.name)
         );
 
         svgUrl = getNetworkAreaDiagramUrl(
@@ -74,7 +75,7 @@ export function NetworkAreaDiagramPane({
                 >
                     <NetworkAreaDiagram
                         onClose={onClose}
-                        diagramTitle={nadTitle}
+                        diagramTitle={nadTitle !== 'undefined' ? nadTitle : ''}
                         svgUrl={svgUrl}
                         nadId={voltageLevelsIds[0]}
                         currentNode={currentNode}
