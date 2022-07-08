@@ -187,7 +187,6 @@ const BusBarConnexion = ({
 
 function validateBusBarSection(values) {
     const res = new Map();
-
     const idMap = values.reduce(
         (m, v) => m.set(v.id, (m.get(v.id) || 0) + 1),
         new Map()
