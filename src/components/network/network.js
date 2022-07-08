@@ -175,7 +175,8 @@ export default class Network {
     }
 
     completeLinesInfos() {
-        this.linesById = this.lines.reduce(elementIdIndexer, new Map());
+        if (this.lines)
+            this.linesById = this.lines.reduce(elementIdIndexer, new Map());
     }
 
     updateLines(lines) {
@@ -186,10 +187,12 @@ export default class Network {
     }
 
     completeTwoWindingsTransformersInfos() {
-        this.twoWindingsTransformersById = this.twoWindingsTransformers.reduce(
-            elementIdIndexer,
-            new Map()
-        );
+        if (this.twoWindingsTransformers)
+            this.twoWindingsTransformersById =
+                this.twoWindingsTransformers.reduce(
+                    elementIdIndexer,
+                    new Map()
+                );
     }
 
     updateTwoWindingsTransformers(twoWindingsTransformers) {
@@ -204,8 +207,12 @@ export default class Network {
     }
 
     completeThreeWindingsTransformersInfos() {
-        this.threeWindingsTransformersById =
-            this.threeWindingsTransformers.reduce(elementIdIndexer, new Map());
+        if (this.threeWindingsTransformers)
+            this.threeWindingsTransformersById =
+                this.threeWindingsTransformers.reduce(
+                    elementIdIndexer,
+                    new Map()
+                );
     }
 
     updateThreeWindingsTransformers(threeWindingsTransformers) {
@@ -220,10 +227,11 @@ export default class Network {
     }
 
     completeGeneratorsInfos() {
-        this.generatorsById = this.generators.reduce(
-            elementIdIndexer,
-            new Map()
-        );
+        if (this.generators)
+            this.generatorsById = this.generators.reduce(
+                elementIdIndexer,
+                new Map()
+            );
     }
 
     updateGenerators(generators) {
