@@ -68,6 +68,7 @@ export const useInputForm = () => {
     const addValidation = useCallback((id, validate) => {
         validationMap.current.set(id, validate);
     }, []);
+
     const clear = useCallback(() => {
         setToggleClear((oldValue) => !oldValue);
     }, []);
@@ -697,13 +698,17 @@ export const useExpandableValues = ({
         }
     }, [defaultValues]);
 
-    const handleDeleteItem = useCallback((index) => {
-        setValues((oldValues) => {
-            let newValues = [...oldValues];
-            newValues.splice(index, 1);
-            return newValues;
-        });
-    }, []);
+    const handleDeleteItem = useCallback(
+        (index) => {
+            setValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues.splice(index, 1);
+                return newValues;
+            });
+            inputForm.reset();
+        },
+        [inputForm]
+    );
 
     const handleSetValue = useCallback((index, newValue) => {
         setValues((oldValues) => {
