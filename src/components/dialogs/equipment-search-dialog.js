@@ -58,7 +58,6 @@ const EquipmentSearchDialog = ({
             clearTimeout(timer.current);
 
             timer.current = setTimeout(() => {
-                if (lastSearchTermRef.current === searchTerm) return;
                 lastSearchTermRef.current = searchTerm;
                 fetchEquipmentsInfos(
                     studyUuid,

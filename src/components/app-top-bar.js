@@ -174,7 +174,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             clearTimeout(timer.current);
 
             timer.current = setTimeout(() => {
-                if (lastSearchTermRef.current === searchTerm) return;
                 lastSearchTermRef.current = searchTerm;
                 fetchEquipmentsInfos(
                     studyUuid,
