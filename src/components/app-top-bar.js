@@ -170,7 +170,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
-            if (lastSearchTermRef.current === searchTerm) return;
             lastSearchTermRef.current = searchTerm;
             fetchEquipmentsInfos(
                 studyUuid,
