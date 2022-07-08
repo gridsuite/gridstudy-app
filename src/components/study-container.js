@@ -47,7 +47,6 @@ import NetworkModificationTreeModel from './graph/network-modification-tree-mode
 import {
     getFirstNodeOfType,
     isNodeBuilt,
-    isSameNode,
     isNodeRenamed,
 } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
@@ -378,7 +377,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        loadNetwork(isSameNode(previousCurrentNode, currentNode));
+        loadNetwork(true);
     }, [loadNetwork, currentNode]);
 
     useEffect(() => {
