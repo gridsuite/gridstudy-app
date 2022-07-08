@@ -45,11 +45,12 @@ export function NetworkAreaDiagramPane({
     let nadTitle = '';
     let svgUrl = '';
     if (displayedVoltageLevels) {
-        displayedVoltageLevels.forEach(
-            (vl) =>
-                (nadTitle =
-                    nadTitle + (nadTitle !== '' ? ' + ' : '') + vl?.name)
-        );
+        displayedVoltageLevels.forEach((vl) => {
+            const name = vl?.name;
+            if (name !== undefined) {
+                nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
+            }
+        });
 
         svgUrl = getNetworkAreaDiagramUrl(
             studyUuid,
@@ -75,7 +76,7 @@ export function NetworkAreaDiagramPane({
                 >
                     <NetworkAreaDiagram
                         onClose={onClose}
-                        diagramTitle={nadTitle !== 'undefined' ? nadTitle : ''}
+                        diagramTitle={nadTitle}
                         svgUrl={svgUrl}
                         nadId={voltageLevelsIds[0]}
                         currentNode={currentNode}
