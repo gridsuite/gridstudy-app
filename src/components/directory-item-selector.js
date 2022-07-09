@@ -64,12 +64,23 @@ const DirectoryItemSelector = (props) => {
         });
     };
 
+    function sortHandlingDirectories(a, b) {
+        //If children property is set it means it's a directory, they are handled differently in order to keep them at the top of the list
+        if (a.children && !b.children) {
+            return -1;
+        } else if (b.children && !a.children) {
+            return 1;
+        }
+        return a.name.localeCompare(b.name);
+    }
+
     return (
         <TreeViewFinder
             multiselect={true}
             onTreeBrowse={fetchDirectory}
             data={data}
             onlyLeaves={true}
+            sortMethod={sortHandlingDirectories}
             {...props}
         />
     );
