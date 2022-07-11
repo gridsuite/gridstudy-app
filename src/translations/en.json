@@ -472,5 +472,7 @@
     "RegulatingRatio3": "Ratio regulating 3",
     "TargetVPoint3": "Voltage set point (KV) 3",
     "VoltageSetpointKV": "Voltage set point (KV)",
-    "ReactivePowerSetpointMVAR": "Reactive power set point (MVAR)"
+    "ReactivePowerSetpointMVAR": "Reactive power set point (MVAR)",
+    "EmptyList/bbs": "Bus Bar list is empty",
+    "EmptyList/connections": "Connections list is empty"
 }

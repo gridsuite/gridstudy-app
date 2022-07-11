@@ -349,6 +349,7 @@ const VoltageLevelCreationDialog = ({
         inputForm: inputForm,
         Field: BusBarSection,
         defaultValues: formValues?.busbarSections,
+        isRequired: true,
     });
 
     const [connections, connectionsField] = useExpandableValues({
@@ -359,6 +360,7 @@ const VoltageLevelCreationDialog = ({
         Field: BusBarConnexion,
         fieldProps: busBarSections,
         defaultValues: formValues?.busbarConnections,
+        isRequired: false,
     });
 
     const handleSave = () => {
