@@ -183,6 +183,7 @@ const SizedNetworkAreaDiagram = (props) => {
         onClose,
         depth,
         setDepth,
+        setInitialDepth,
         loadFlowStatus,
         disabled,
     } = props;
@@ -348,7 +349,7 @@ const SizedNetworkAreaDiagram = (props) => {
         if (onClose !== null) {
             dispatch(fullScreenNetworkAreaDiagramId(null));
             onClose(nadId);
-            setDepth(0);
+            setInitialDepth(0);
         }
     };
 
