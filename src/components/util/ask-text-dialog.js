@@ -62,15 +62,15 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
-                    {intl.formatMessage({ id: 'cancel' })}
-                </Button>
                 <Button
                     variant={'outlined'}
                     onClick={handleValidate}
                     disabled={!isNameOK}
                 >
                     {intl.formatMessage({ id: 'validate' })}
+                </Button>
+                <Button onClick={handleClose}>
+                    {intl.formatMessage({ id: 'cancel' })}
                 </Button>
             </DialogActions>
         </Dialog>

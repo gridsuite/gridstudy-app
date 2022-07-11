@@ -350,10 +350,10 @@ const GeneratorModificationDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave}>
-                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>
