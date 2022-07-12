@@ -62,8 +62,8 @@ const BusBarSection = ({
         errorMsg: errors?.BusBarSectionID,
     });
     const [name, nameField] = useTextValue({
-        id: 'NameOptional' + index,
-        label: 'NameOptional',
+        id: 'BusBarSectionName' + index,
+        label: 'BusBarSectionName',
         defaultValue: defaultValue?.name || '',
         inputForm: inputForm,
     });

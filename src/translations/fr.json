@@ -382,6 +382,7 @@
     "Substation": "Site",
     "BusBarSections": "Sections de jeu de barre",
     "BusBarSectionID": "ID",
+    "BusBarSectionName": "Nom (optionnel)",
     "BusBarHorizPos": "Position horizontale",
     "BusBarVertPos": "Position verticale",
     "CreateBusBarSection": "Ajouter SJB",
