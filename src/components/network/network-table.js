@@ -406,20 +406,16 @@ const NetworkTable = (props) => {
         ]
     );
 
-    const onTabChange = useCallback(
-        (index) => {
-            console.debug('onTabChange from ' + tabIndex + ' to ' + index);
-            // when we change Tab, we dont want to keep/apply the search criteria
-            if (
-                !searchTextInput.current.value ||
-                searchTextInput.current.value !== ''
-            ) {
-                searchTextInput.current.value = '';
-                setFilterValue('');
-            }
-        },
-        [tabIndex]
-    );
+    const onTabChange = useCallback(() => {
+        // when we change Tab, we dont want to keep/apply the search criteria
+        if (
+            !searchTextInput.current.value ||
+            searchTextInput.current.value !== ''
+        ) {
+            searchTextInput.current.value = '';
+            setFilterValue('');
+        }
+    }, []);
 
     function getTabIndexFromEquipementType(equipmentType) {
         const definition = Object.values(TABLES_DEFINITIONS).find(
