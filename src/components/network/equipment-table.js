@@ -13,9 +13,7 @@ export const EquipmentTable = (props) => {
 
     const [fixedColumnsCount, setFixedColumnsCount] = useState(0);
     const theme = useTheme();
-    const [scrollTopIndex, setScrollTopIndex] = useState(
-        props.scrollTop !== -1
-    );
+    const [scrollTopLock, setScrollTopLock] = useState(true);
     const [verticalScrollbarPresence, setVerticalScrollbarPresence] =
         useState(false);
 
@@ -26,10 +24,6 @@ export const EquipmentTable = (props) => {
             gridRef.current.recomputeGridSize();
         }
     }, [props.columns]);
-
-    useEffect(() => {
-        setScrollTopIndex(props.scrollTop !== -1);
-    }, [props.scrollTop]);
 
     function cellRenderer({ columnIndex, key, rowIndex, style }) {
         if (!props.columns || !props.columns[columnIndex]) {
@@ -83,6 +77,15 @@ export const EquipmentTable = (props) => {
         return ROW_HEIGHT;
     }
 
+    useEffect(() => {
+        setScrollTopLock(props.scrollTop !== -1);
+    }, [props.scrollTop]);
+
+    const getScrollTop = () => {
+        if (!scrollTopLock) return -1;
+        if (!verticalScrollbarPresence) return -1;
+        return props.scrollTop * getRowHeight(props.scrollTop);
+    };
     return (
         <>
             {!props.fetched && (
@@ -124,18 +127,17 @@ export const EquipmentTable = (props) => {
                                         ? { overflowY: 'hidden' }
                                         : {}
                                 }
-                                scrollTop={
-                                    verticalScrollbarPresence && scrollTopIndex
-                                        ? props.scrollTop *
-                                          getRowHeight(props.scrollTop)
-                                        : -1
-                                }
                                 onScrollbarPresenceChange={(scrollBars) => {
                                     setVerticalScrollbarPresence(
                                         scrollBars?.vertical
                                     );
                                 }}
-                                onScroll={setScrollTopIndex(false)}
+                                scrollTop={getScrollTop()}
+                                onScroll={() => {
+                                    if (getScrollTop() !== -1) {
+                                        setScrollTopLock(false);
+                                    }
+                                }}
                             />
                         )}
                     </AutoSizer>
