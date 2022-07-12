@@ -258,7 +258,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         totalHeight,
         svgType,
         loadFlowStatus,
-        currentNode,
         numberToDisplay,
         sldId,
         pinned,
@@ -267,6 +266,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     } = props;
 
     const network = useSelector((state) => state.network);
+
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
@@ -279,9 +280,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const MenuLine = withLineMenu(BaseEquipmentMenu);
 
     const theme = useTheme();
-
-    const currentNodeRef = useRef();
-    currentNodeRef.current = currentNode;
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
@@ -370,7 +368,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (props.svgUrl && isNodeBuilt(currentNodeRef.current)) {
+        if (props.svgUrl && isNodeBuilt(currentNode)) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -396,7 +394,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef]);
+    }, [props.svgUrl, forceState, snackError, intlRef, currentNode]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -1115,7 +1113,6 @@ SingleLineDiagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
-    currentNode: PropTypes.object,
     pinned: PropTypes.bool,
     pin: PropTypes.func,
     minimize: PropTypes.func,

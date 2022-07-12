@@ -182,7 +182,10 @@ export default class NetworkModificationTreeModel {
             this.treeElements[0].data &&
             newCaseName
         ) {
-            this.treeElements[0].data.caseName = newCaseName;
+            this.treeElements[0].data = {
+                ...this.treeElements[0].data,
+                caseName: newCaseName,
+            };
         }
     }
 }

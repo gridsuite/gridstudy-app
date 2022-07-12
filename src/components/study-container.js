@@ -44,7 +44,11 @@ import {
     useSnackMessage,
 } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, isNodeBuilt } from './graph/util/model-functions';
+import {
+    getFirstNodeOfType,
+    isNodeBuilt,
+    isNodeRenamed,
+} from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -157,7 +161,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const currentNodeIdRef = useRef();
+    const currentNodeRef = useRef();
 
     const [loadFlowInfos] = useNodeData(
         studyUuid,
@@ -317,20 +321,18 @@ export function StudyContainer({ view, onChangeTab }) {
                         });
                     });
 
-                let firstBuiltNode = getFirstNodeOfType(
-                    tree,
-                    'NETWORK_MODIFICATION',
-                    'BUILT'
-                );
+                const firstSelectedNode =
+                    getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', 'BUILT') ||
+                    getFirstNodeOfType(tree, 'ROOT');
 
-                dispatch(
-                    setCurrentTreeNode(
-                        firstBuiltNode
-                            ? firstBuiltNode
-                            : getFirstNodeOfType(tree, 'ROOT')
-                    )
-                );
-
+                // To get positions we must get the node from the model class
+                const ModelFirstSelectedNode = {
+                    ...networkModificationTreeModel.treeElements.find(
+                        (el) => el.id === firstSelectedNode.id
+                    ),
+                };
+                currentNodeRef.current = ModelFirstSelectedNode;
+                dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
                 dispatch(
                     loadNetworkModificationTreeSuccess(
                         networkModificationTreeModel
@@ -370,11 +372,13 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
+        let previousCurrentNode = currentNodeRef.current;
+        currentNodeRef.current = currentNode;
+        // if only node renaming, do not reload network
+        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        loadNetwork(currentNode?.id === currentNodeIdRef.current);
+        loadNetwork(true);
     }, [loadNetwork, currentNode]);
-
-    currentNodeIdRef.current = currentNode?.id;
 
     useEffect(() => {
         if (!studyUuid) {

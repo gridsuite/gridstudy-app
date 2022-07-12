@@ -12,25 +12,25 @@ import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
 import Divider from '@mui/material/Divider';
 import PropTypes from 'prop-types';
-import EditIcon from '@mui/icons-material/Edit';
 import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-const editableModificationTypes = new Set([
-    'GENERATOR_CREATION',
-    'LINE_CREATION',
-    'LOAD_MODIFICATION',
-    'LOAD_CREATION',
-    'SHUNT_COMPENSATOR_CREATION',
-    'SUBSTATION_CREATION',
-    'TWO_WINDINGS_TRANSFORMER_CREATION',
-    'VOLTAGE_LEVEL_CREATION',
-    'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
-    'LINE_ATTACH_TO_VOLTAGE_LEVEL',
-    'GENERATOR_MODIFICATION',
-]);
+//to be reused when enabling edition on hypothesis
+// const editableModificationTypes = new Set([
+//     'GENERATOR_CREATION',
+//     'LINE_CREATION',
+//     'LOAD_MODIFICATION',
+//     'LOAD_CREATION',
+//     'SHUNT_COMPENSATOR_CREATION',
+//     'SUBSTATION_CREATION',
+//     'TWO_WINDINGS_TRANSFORMER_CREATION',
+//     'VOLTAGE_LEVEL_CREATION',
+//     'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
+//     'LINE_ATTACH_TO_VOLTAGE_LEVEL',
+//     'GENERATOR_MODIFICATION',
+// ]);
 
 const equipmentModificationModificationsType = new Set([
     'LOAD_MODIFICATION',
@@ -175,7 +175,10 @@ export const ModificationListItem = ({
                             className={classes.label}
                             text={getLabel()}
                         />
-                        {editableModificationTypes.has(modif.type) &&
+                        {/** hide temporarily edition for hypothesis
+                         *   TODO: FIX bugs around hypothesis then uncomment the code below to enable edition
+                         */}
+                        {/* {editableModificationTypes.has(modif.type) &&
                             !isOneNodeBuilding &&
                             hover &&
                             !isDragging && (
@@ -186,7 +189,7 @@ export const ModificationListItem = ({
                                 >
                                     <EditIcon />
                                 </IconButton>
-                            )}
+                            )} */}
                     </ListItem>
                     <Divider />
                 </div>
