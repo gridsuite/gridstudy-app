@@ -28,7 +28,7 @@ import {
     useInputForm,
     useTextValue,
 } from './input-hooks';
-import { gridItem, GridSection } from './dialogUtils';
+import { gridItem, GridSection, compareById } from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -47,18 +47,18 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param lineOptions the available network lines
+ * @param fetchedLineOptions Promise handling list of network lines
  * @param currentNodeUuid the currently selected tree node
- * @param substationOptions available substations
+ * @param fetchedSubstationOptions Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
  */
 const LineSplitWithVoltageLevelDialog = ({
     open,
     onClose,
-    lineOptions,
+    fetchedLineOptions,
     voltageLevelOptions,
     currentNodeUuid,
-    substationOptions,
+    fetchedSubstationOptions,
     editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -74,6 +74,10 @@ const LineSplitWithVoltageLevelDialog = ({
     const inputForm = useInputForm();
 
     const [formValues, setFormValues] = useState(undefined);
+
+    const [lineOptions, setLineOptions] = useState([]);
+
+    const [loadingLineOptions, setLoadingLineOptions] = useState(true);
 
     const clearValues = () => {
         setFormValues(null);
@@ -125,6 +129,13 @@ const LineSplitWithVoltageLevelDialog = ({
         }
     }, [editData]);
 
+    useEffect(() => {
+        fetchedLineOptions.then((values) => {
+            setLineOptions(values);
+            setLoadingLineOptions(false);
+        });
+    }, [fetchedLineOptions]);
+
     const extractDefaultVoltageLevelId = (fv) => {
         if (fv) {
             if (fv.existingVoltageLevelId) return fv.existingVoltageLevelId;
@@ -135,18 +146,25 @@ const LineSplitWithVoltageLevelDialog = ({
     };
     const defaultVoltageLevelId = extractDefaultVoltageLevelId(formValues);
 
+    const formValueLineToSplitId = useMemo(() => {
+        return formValues?.lineToSplitId
+            ? { id: formValues?.lineToSplitId }
+            : { id: '' };
+    }, [formValues]);
+
     const [lineToDivide, lineToDivideField] = useAutocompleteField({
         id: 'lineToDivide',
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        values: lineOptions,
+        values: lineOptions?.sort(compareById),
         allowNewValue: true,
         getLabel: getId,
-        defaultValue: formValues?.lineToSplitId || '',
-        selectedValue: formValues
-            ? lineOptions.find((value) => value.id === formValues.lineToSplitId)
-            : '',
+        defaultValue:
+            lineOptions.find(
+                (value) => value.id === formValues?.lineToSplitId
+            ) || formValueLineToSplitId,
+        loading: loadingLineOptions,
     });
 
     const [percentage, percentageArea] = useComplementaryPercentage({
@@ -459,7 +477,7 @@ const LineSplitWithVoltageLevelDialog = ({
                         open={true}
                         onClose={onVoltageLevelDialogClose}
                         currentNodeUuid={currentNodeUuid}
-                        substationOptions={substationOptions}
+                        fetchedSubstationOptions={fetchedSubstationOptions}
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
                     />
@@ -479,9 +497,17 @@ const LineSplitWithVoltageLevelDialog = ({
 LineSplitWithVoltageLevelDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    lineOptions: PropTypes.arrayOf(PropTypes.object),
+    // Promise
+    fetchedSubstationOptions: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
+    // Promise
+    fetchedLineOptions: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
     currentNodeUuid: PropTypes.string,
-    substationOptions: PropTypes.arrayOf(PropTypes.object),
     editData: PropTypes.object,
 };
 

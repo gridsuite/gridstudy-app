@@ -12,6 +12,8 @@ import {
     fetchNetworkModification,
     changeNetworkModificationOrder,
     fetchEquipments,
+    fetchSubstations,
+    fetchLines,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
@@ -179,25 +181,30 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withLines(p) {
+        const fetchedLineOptions = fetchLines(
+            studyUuid,
+            currentTreeNode?.id,
+            []
+        );
         return {
             ...p,
-            lineOptions: network?.lines,
+            fetchedLineOptions: fetchedLineOptions,
         };
     }
 
     function withSubstations(p) {
+        const fetchedSubstationsOptions = fetchSubstations(
+            studyUuid,
+            currentTreeNode?.id,
+            []
+        );
         return {
             ...p,
-            substationOptions: network?.substations,
+            fetchedSubstationOptions: fetchedSubstationsOptions,
         };
     }
 
-    function withEquipmentModificationOptions(
-        Dialog,
-        resourceType,
-        resource,
-        props
-    ) {
+    function withEquipmentModificationOptions(Dialog, resourceType, resource) {
         const fetchedEquipmentOptions = fetchEquipments(
             studyUuid,
             currentTreeNode?.id,
