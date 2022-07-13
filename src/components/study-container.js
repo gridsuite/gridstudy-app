@@ -309,13 +309,12 @@ export function StudyContainer({ view, onChangeTab }) {
                         }
                     })
                     .catch((err) => {
-                        console.error(err.message);
+                        console.error(err);
                         displayErrorMessageWithSnackbar({
-                            errorMessage: err.message,
+                            errorMessage: err,
                             enqueueSnackbar: enqueueSnackbar,
                             headerMessage: {
-                                headerMessageId:
-                                    'NetworkModificationTreeLoadError',
+                                headerMessageId: 'CaseNameLoadError',
                                 intlRef: intlRef,
                             },
                         });

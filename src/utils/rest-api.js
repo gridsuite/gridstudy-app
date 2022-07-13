@@ -1830,7 +1830,11 @@ export function fetchCaseInfos(studyUuid) {
     return backendFetch(url, { method: 'get' }).then((response) => {
         return response.ok
             ? response.json()
-            : response.text().then((text) => Promise.reject(text));
+            : response
+                  .text()
+                  .then((text) =>
+                      Promise.reject(text ? text : response.statusText)
+                  );
     });
 }
 
