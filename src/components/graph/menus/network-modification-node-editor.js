@@ -12,6 +12,7 @@ import {
     fetchNetworkModification,
     changeNetworkModificationOrder,
     fetchEquipments,
+    fetchVoltageLevels,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
@@ -149,6 +150,8 @@ const NetworkModificationNodeEditor = () => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
     const closeDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
@@ -174,7 +177,7 @@ const NetworkModificationNodeEditor = () => {
     function withVLs(p) {
         return {
             ...p,
-            voltageLevelOptions: network?.voltageLevels,
+            voltageLevelOptions: voltageLevelOptions,
         };
     }
 
@@ -352,6 +355,18 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
             });
     }, [currentTreeNode, snackError]);
+
+    useEffect(() => {
+        if (currentTreeNode !== undefined) {
+            fetchVoltageLevels(studyUuid, currentTreeNode.id).then((array) => {
+                setVoltageLevelOptions(
+                    array.sort((a, b) => a.id.localeCompare(b.id))
+                );
+            });
+        } else {
+            setVoltageLevelOptions([]);
+        }
+    }, [studyUuid, currentTreeNode]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
