@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
     EQUIPMENT_TYPE,
     equipmentStyles,
@@ -166,20 +166,24 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
+    const lastSearchTermRef = useRef('');
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
+            lastSearchTermRef.current = searchTerm;
             fetchEquipmentsInfos(
                 studyUuid,
                 currentNode?.id,
                 searchTerm,
                 useNameLocal
             )
-                .then((infos) =>
-                    setEquipmentsFound(
-                        getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                    )
-                )
+                .then((infos) => {
+                    if (searchTerm === lastSearchTermRef.current) {
+                        setEquipmentsFound(
+                            getEquipmentsInfosForSearchBar(infos, useNameLocal)
+                        );
+                    } // else ignore results of outdated fetch
+                })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,
@@ -253,8 +257,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 renderElement={(props) => (
                     <EquipmentItem
                         classes={equipmentClasses}
-                        key={'ei' + props.element.key}
                         {...props}
+                        key={'ei' + props.element.key}
                         suffixRenderer={CustomSuffixRenderer}
                     />
                 )}

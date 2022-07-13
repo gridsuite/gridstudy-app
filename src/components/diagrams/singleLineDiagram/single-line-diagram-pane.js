@@ -438,7 +438,6 @@ export function SingleLineDiagramPane({
                         isComputationRunning={isComputationRunning}
                         showInSpreadsheet={showInSpreadsheet}
                         loadFlowStatus={loadFlowStatus}
-                        currentNode={currentNode}
                         numberToDisplay={displayedSLD.length}
                         toggleState={toggleState}
                         pinned={viewState.get(sld.id) === ViewState.PINNED}

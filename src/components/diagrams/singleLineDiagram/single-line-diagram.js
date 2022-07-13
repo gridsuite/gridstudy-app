@@ -258,7 +258,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         totalHeight,
         svgType,
         loadFlowStatus,
-        currentNode,
         numberToDisplay,
         sldId,
         pinned,
@@ -267,6 +266,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     } = props;
 
     const network = useSelector((state) => state.network);
+
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
@@ -279,9 +280,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const MenuLine = withLineMenu(BaseEquipmentMenu);
 
     const theme = useTheme();
-
-    const currentNodeRef = useRef();
-    currentNodeRef.current = currentNode;
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
@@ -370,7 +368,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (props.svgUrl && isNodeBuilt(currentNodeRef.current)) {
+        if (props.svgUrl && isNodeBuilt(currentNode)) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -396,7 +394,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef]);
+    }, [props.svgUrl, forceState, snackError, intlRef, currentNode]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -480,6 +478,34 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             svgText.parentNode.removeChild(selectionRect[0]);
         }
     }, []);
+
+    // shouldResetPreferredSizes doesn't need to be a ref, but it makes the static checks happy
+    const shouldResetPreferredSizes = useRef();
+    shouldResetPreferredSizes.current = false;
+    useLayoutEffect(() => {
+        shouldResetPreferredSizes.current = true;
+        // Note: these deps must be kept in sync with the ones of the useLayoutEffect where setSvgPreferredWidth and setSvgPreferredHeight
+        // are called. Because we want to reset them in all cases, except when only svgFinalWidth and svgFinalHeight have changed
+        // so we use the same deps but without svgFinalWidth and svgFinalHeight
+        // TODO is there a better way to do this??
+    }, [
+        network,
+        svg,
+        currentNode,
+        onNextVoltageLevelClick,
+        onBreakerClick,
+        isComputationRunning,
+        isAnyNodeBuilding,
+        equipmentMenu,
+        showEquipmentMenu,
+        showFeederSelection,
+        hideFeederSelection,
+        svgType,
+        theme,
+        sldId,
+        ref,
+        disabled,
+    ]);
 
     useLayoutEffect(() => {
         if (disabled) return;
@@ -652,8 +678,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             const svgWidth = Math.ceil(bbox.width + 40);
             const svgHeight = Math.ceil(bbox.height + 40);
 
-            setSvgPreferredWidth(svgWidth);
-            setSvgPreferredHeight(svgHeight);
+            if (shouldResetPreferredSizes.current) {
+                setSvgPreferredWidth(svgWidth);
+                setSvgPreferredHeight(svgHeight);
+            }
 
             let viewboxMaxWidth =
                 svgType === SvgType.VOLTAGE_LEVEL
@@ -794,6 +822,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
+        // Note: these deps must be kept in sync with the ones of the useLayoutEffect shouldResetPreferredSizes
+        // is set to true. Because we want to reset svgPreferredWidth and svgPreferredHeight in all cases, except when only svgFinalWidth and svgFinalHeight have changed
+        // so we use the same deps but without svgFinalWidth and svgFinalHeight
+        // TODO is there a better way to do this??
     }, [
         network,
         svg,
@@ -1081,7 +1113,6 @@ SingleLineDiagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
-    currentNode: PropTypes.object,
     pinned: PropTypes.bool,
     pin: PropTypes.func,
     minimize: PropTypes.func,
