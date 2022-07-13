@@ -150,7 +150,6 @@ const NetworkModificationNodeEditor = () => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const closeDialog = () => {
         setEditDialogOpen(undefined);
@@ -175,9 +174,13 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withVLs(p) {
+        const fetchedVoltageLevelOptions = fetchVoltageLevels(
+            studyUuid,
+            currentTreeNode?.id
+        );
         return {
             ...p,
-            voltageLevelOptions: voltageLevelOptions,
+            fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
         };
     }
 
@@ -195,12 +198,7 @@ const NetworkModificationNodeEditor = () => {
         };
     }
 
-    function withEquipmentModificationOptions(
-        Dialog,
-        resourceType,
-        resource,
-        props
-    ) {
+    function withEquipmentModificationOptions(Dialog, resourceType, resource) {
         const fetchedEquipmentOptions = fetchEquipments(
             studyUuid,
             currentTreeNode?.id,
@@ -355,18 +353,6 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
             });
     }, [currentTreeNode, snackError]);
-
-    useEffect(() => {
-        if (currentTreeNode !== undefined) {
-            fetchVoltageLevels(studyUuid, currentTreeNode.id).then((array) => {
-                setVoltageLevelOptions(
-                    array.sort((a, b) => a.id.localeCompare(b.id))
-                );
-            });
-        } else {
-            setVoltageLevelOptions([]);
-        }
-    }, [studyUuid, currentTreeNode]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
