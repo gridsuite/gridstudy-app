@@ -206,7 +206,7 @@ const LineSplitWithVoltageLevelDialog = ({
         const vlId =
             typeof voltageLevelOrId === 'string'
                 ? voltageLevelOrId
-                : voltageLevelOrId.id;
+                : voltageLevelOrId?.id;
         if (
             newVoltageLevelRef.current &&
             voltageLevelOrIdRef.current &&
