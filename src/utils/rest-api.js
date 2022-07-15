@@ -1748,15 +1748,20 @@ export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
     );
 }
 
-export function fetchNetworkModifications(groupUuid) {
-    console.info('Fetching network modifications for groupUuid : ', groupUuid);
-    const url =
-        PREFIX_NETWORK_MODIFICATION_QUERIES +
-        '/v1/groups/' +
-        encodeURIComponent(groupUuid) +
-        '/modifications?errorOnGroupNotFound=false';
-    console.debug(url);
-    return backendFetch(url, { method: 'get' }).then((response) =>
+export function fetchNetworkModifications(studyUuid, nodeUuid) {
+    console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
+    const modificationsGetUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modification/modifications';
+
+    console.debug(modificationsGetUrl);
+    return backendFetch(modificationsGetUrl, {
+        method: 'get',
+    }).then((response) =>
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
