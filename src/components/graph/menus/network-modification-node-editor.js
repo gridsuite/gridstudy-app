@@ -193,14 +193,14 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withSubstations(p) {
-        const fetchedSubstationsOptions = fetchSubstations(
+        const fetchedSubstationOptions = fetchSubstations(
             studyUuid,
             currentTreeNode?.id,
             []
         );
         return {
             ...p,
-            fetchedSubstationOptions: fetchedSubstationsOptions,
+            fetchedSubstationOptions: fetchedSubstationOptions,
         };
     }
 

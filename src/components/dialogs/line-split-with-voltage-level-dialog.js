@@ -130,6 +130,7 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [editData]);
 
     useEffect(() => {
+        if (!fetchedLineOptions) return;
         fetchedLineOptions.then((values) => {
             setLineOptions(values);
             setLoadingLineOptions(false);

@@ -75,6 +75,7 @@ const LoadModificationDialog = ({
     };
 
     useEffect(() => {
+        if (!fetchedEquipmentOptions) return;
         fetchedEquipmentOptions.then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);

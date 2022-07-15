@@ -308,6 +308,7 @@ const VoltageLevelCreationDialog = ({
     }, [editData]);
 
     useEffect(() => {
+        if (!fetchedSubstationOptions) return;
         fetchedSubstationOptions.then((values) => {
             setSubstationOptions(values);
             setLoadingSubstationOptions(false);
