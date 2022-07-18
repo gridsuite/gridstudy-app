@@ -17,6 +17,7 @@ import { IconButton, TextField, Tooltip, Grid } from '@mui/material';
 import {
     requestNetworkChange,
     updateConfigParameter,
+    modifyLoad,
 } from '../../utils/rest-api';
 import { SelectOptionsDialog } from '../../utils/dialogs';
 import List from '@mui/material/List';
@@ -595,6 +596,14 @@ const NetworkTable = (props) => {
                 function capitaliseFirst(str) {
                     return str.charAt(0).toUpperCase() + str.slice(1);
                 }
+
+                if (Object.values(lineEdit.newValues).length === 0) {
+                    // nothing to commit => abort
+                    resetChanges();
+                    return;
+                }
+                // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
+                // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
                 let groovyCr =
                     'equipment = network.get' +
                     capitaliseFirst(
@@ -607,12 +616,29 @@ const NetworkTable = (props) => {
                 Object.values(lineEdit.newValues).forEach((cr) => {
                     groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
                 });
-                requestNetworkChange(
-                    props.studyUuid,
-                    props.currentNode?.id,
-                    groovyCr
-                ).then((response) => {
-                    if (response.ok) {
+
+                Promise.resolve(
+                    lineEdit.equipmentType === 'load'
+                        ? modifyLoad(
+                              props.studyUuid,
+                              props.currentNode?.id,
+                              lineEdit.id,
+                              lineEdit.newValues.name?.value,
+                              lineEdit.newValues.type?.value,
+                              lineEdit.newValues.p0?.value,
+                              lineEdit.newValues.q0?.value,
+                              undefined,
+                              undefined,
+                              false,
+                              undefined
+                          )
+                        : requestNetworkChange(
+                              props.studyUuid,
+                              props.currentNode?.id,
+                              groovyCr
+                          )
+                )
+                    .then((response) => {
                         Object.entries(lineEdit.newValues).forEach(
                             ([key, cr]) => {
                                 rowData[key] = cr.value;
@@ -620,13 +646,14 @@ const NetworkTable = (props) => {
                         );
                         // TODO When the data is saved, we should force an update of the table's data. As is, it takes too long to update.
                         // And maybe add a visual clue that the save was successful ?
-                    } else {
+                    })
+                    .catch((promiseErrorMsg) => {
+                        console.error(promiseErrorMsg);
                         Object.entries(lineEdit.oldValues).forEach(
                             ([key, oldValue]) => {
                                 rowData[key] = oldValue;
                             }
                         );
-
                         let message = intl.formatMessage({
                             id: 'paramsChangingDenied',
                         });
@@ -638,9 +665,8 @@ const NetworkTable = (props) => {
                                 intlRef: intlRef,
                             },
                         });
-                    }
-                    setLineEdit({});
-                });
+                    });
+                setLineEdit({});
             }
 
             if (isLineOnEditMode(rowData)) {
@@ -805,7 +831,7 @@ const NetworkTable = (props) => {
     const registerChangeRequest = useCallback(
         (data, dataKey, changeCmd, value) => {
             // save original value, dont erase if exists
-            if (!lineEdit.oldValues[dataKey]) {
+            if (!lineEdit.oldValues.hasOwnProperty(dataKey)) {
                 lineEdit.oldValues[dataKey] = data[dataKey];
             }
             lineEdit.newValues[dataKey] = {
@@ -835,7 +861,7 @@ const NetworkTable = (props) => {
                 if (Editor) {
                     return (
                         <Editor
-                            key={rowData.dataKey + rowData.id}
+                            key={columnDefinition.dataKey + key}
                             className={clsx(
                                 classes.tableCell,
                                 classes.inlineEditionCell

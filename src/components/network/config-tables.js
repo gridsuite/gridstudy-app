@@ -6,8 +6,14 @@
  */
 
 import { equipments } from './network-equipments';
-import { NumericalField, TapChangerSelector } from './equipment-table-editors';
+import {
+    NumericalField,
+    NameField,
+    EnumField,
+    TapChangerSelector,
+} from './equipment-table-editors';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
+import { LOAD_TYPES } from './constants';
 
 const nominalVoltage = (network, voltageLevelId) => {
     return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
@@ -664,6 +670,7 @@ export const TABLES_DEFINITIONS = {
         index: 6,
         name: 'Loads',
         resource: equipments.loads,
+        modifiableEquipmentType: 'load',
         columns: [
             {
                 id: 'ID',
@@ -674,10 +681,21 @@ export const TABLES_DEFINITIONS = {
                 id: 'Name',
                 dataKey: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                changeCmd: "equipment.setName('{}')\n",
+                editor: ({ equipment, ...props }) =>
+                    NameField({
+                        ...props,
+                    }),
             },
             {
                 id: 'LoadType',
                 dataKey: 'type',
+                changeCmd: 'equipment.setLoadType(LoadType.{})\n',
+                editor: ({ equipment, ...props }) =>
+                    EnumField({
+                        enumList: LOAD_TYPES.slice(1), // dont use/display the first empty entry
+                        ...props,
+                    }),
             },
             {
                 id: 'VoltageLevelId',
@@ -711,12 +729,26 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'p0',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setP0({})\n',
+                editor: ({ equipment, ...props }) =>
+                    NumericalField({
+                        min: undefined,
+                        max: undefined,
+                        ...props,
+                    }),
             },
             {
                 id: 'ConstantReactivePower',
                 dataKey: 'q0',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setQ0({})\n',
+                editor: ({ equipment, ...props }) =>
+                    NumericalField({
+                        min: undefined,
+                        max: undefined,
+                        ...props,
+                    }),
             },
         ],
     },

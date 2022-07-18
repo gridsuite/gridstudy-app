@@ -64,7 +64,10 @@ export const NumericalField = ({
     const validateChange = useCallback(
         (ev) => {
             const newVal = ev.target.value;
-            if (newVal >= min && newVal <= max) {
+            if (
+                (min === undefined || newVal >= min) &&
+                (max === undefined || newVal <= max)
+            ) {
                 setError(false);
             } else {
                 setError(true);
@@ -74,8 +77,8 @@ export const NumericalField = ({
         [setError, min, max, setter]
     );
 
-    return (
-        <Tooltip title={intl.formatMessage({ id: 'MinMax' }, { min, max })}>
+    function renderNumericText() {
+        return (
             <TextField
                 defaultValue={defaultValue}
                 onChange={validateChange}
@@ -93,8 +96,69 @@ export const NumericalField = ({
                     },
                     min: { min },
                     max: { max },
+                    step: 'any',
                 }}
             />
-        </Tooltip>
+        );
+    }
+
+    return (
+        <div>
+            {min !== undefined || max !== undefined ? (
+                <Tooltip
+                    title={intl.formatMessage({ id: 'MinMax' }, { min, max })}
+                >
+                    {renderNumericText()}
+                </Tooltip>
+            ) : (
+                renderNumericText()
+            )}
+        </div>
+    );
+};
+
+export const NameField = ({ defaultValue, setter, style, ...props }) => {
+    return (
+        <TextField
+            defaultValue={defaultValue}
+            onChange={(ev) => setter(ev.target.value)}
+            {...props}
+            size={'small'}
+            margin={'none'}
+            style={{ ...style, padding: 0 }}
+            inputProps={{
+                style: {
+                    textAlign: 'center',
+                    fontSize: 'small',
+                    flexGrow: 1,
+                },
+            }}
+        />
+    );
+};
+
+export const EnumField = ({ enumList, setter, defaultValue, ...props }) => {
+    return (
+        <Select
+            defaultValue={defaultValue || ''}
+            onChange={(ev) => setter(ev.target.value)}
+            size={'medium'}
+            margin={'none'}
+            MenuProps={{
+                PaperProps: {
+                    sx: {
+                        maxHeight: ITEM_HEIGHT * ITEMS_NUMBER + ITEMS_PADDING,
+                    },
+                },
+            }}
+            {...props}
+        >
+            {enumList.map((e, index) => (
+                // 'id' is displayed in the select as is
+                <MenuItem value={e.id} key={e.id + '_' + index}>
+                    <em>{e.id}</em>
+                </MenuItem>
+            ))}
+        </Select>
     );
 };

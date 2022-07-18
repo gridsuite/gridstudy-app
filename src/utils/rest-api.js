@@ -979,7 +979,9 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
         },
         body: groovyScript,
     }).then((response) => {
-        return response;
+        return response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
@@ -1188,7 +1190,7 @@ export function modifyGenerator(
     busOrBusbarSectionId,
     modificationId
 ) {
-    console.info('Modifying load ');
+    console.info('Modifying generator ');
     const idUrl =
         modificationId === undefined
             ? ''
