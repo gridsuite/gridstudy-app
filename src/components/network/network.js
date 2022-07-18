@@ -80,26 +80,33 @@ export default class Network {
         const nominalVoltagesSet = new Set();
         this.substationsById = new Map();
         this.voltageLevelsById = new Map();
-        this.substations.forEach((substation) => {
-            // sort voltage levels inside substations by nominal voltage
-            substation.voltageLevels = substation.voltageLevels.sort(
-                (voltageLevel1, voltageLevel2) =>
-                    voltageLevel1.nominalVoltage - voltageLevel2.nominalVoltage
-            );
+        if (this.substations) {
+            this.substations.forEach((substation) => {
+                if (substation.voltageLevels) {
+                    // sort voltage levels inside substations by nominal voltage
+                    substation.voltageLevels = substation.voltageLevels.sort(
+                        (voltageLevel1, voltageLevel2) =>
+                            voltageLevel1.nominalVoltage -
+                            voltageLevel2.nominalVoltage
+                    );
 
-            this.substationsById.set(substation.id, substation);
+                    substation.voltageLevels.forEach((voltageLevel, index) => {
+                        // add substation id and name
+                        voltageLevel.substationId = substation.id;
+                        voltageLevel.substationName = substation.name;
 
-            substation.voltageLevels.forEach((voltageLevel, index) => {
-                // add substation id and name
-                voltageLevel.substationId = substation.id;
-                voltageLevel.substationName = substation.name;
+                        // add the current item into the VL map by id
+                        this.voltageLevelsById.set(
+                            voltageLevel.id,
+                            voltageLevel
+                        );
 
-                // add the current item into the VL map by id
-                this.voltageLevelsById.set(voltageLevel.id, voltageLevel);
-
-                nominalVoltagesSet.add(voltageLevel.nominalVoltage);
+                        nominalVoltagesSet.add(voltageLevel.nominalVoltage);
+                    });
+                }
+                this.substationsById.set(substation.id, substation);
             });
-        });
+        }
 
         this.voltageLevels = Array.from(this.voltageLevelsById.values());
 
