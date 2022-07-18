@@ -195,10 +195,15 @@ const LineAttachToVoltageLevelDialog = ({
             vlId !== newVoltageLevelRef.current.equipmentId
         ) {
             voltageLevelOrIdRef.current = voltageLevelOrId;
-            setNewVoltageLevel(null);
-            newVoltageLevelRef.current = newVoltageLevel;
+            newVoltageLevelRef.current = null;
         }
-    }, [voltageLevelOrId, newVoltageLevel]);
+    }, [voltageLevelOrId]);
+
+    useEffect(() => {
+        if (newVoltageLevelRef.current === null) {
+            setNewVoltageLevel(null);
+        }
+    }, [newVoltageLevelRef]);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
