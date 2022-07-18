@@ -5,15 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSelector } from 'react-redux';
-import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useRef } from 'react';
 import { getNetworkAreaDiagramUrl } from '../../../utils/rest-api';
 import NetworkAreaDiagram from './network-area-diagram';
 import PropTypes from 'prop-types';
+import { setNadDepth } from '../../../redux/actions';
 
-//TODO we using initialDepth as variable because we support only one network area diagram at the moment.
-// When we add support for multiple diagrams, we have to store the depth of each NAD.
-let initialDepth = 0;
 export function NetworkAreaDiagramPane({
     studyUuid,
     network,
@@ -23,7 +21,8 @@ export function NetworkAreaDiagramPane({
     align,
     disabled,
 }) {
-    const [depth, setDepth] = useState(initialDepth);
+    const dispatch = useDispatch();
+    const depth = useSelector((state) => state.nadDepth);
 
     const voltageLevelsIds = useSelector(
         (state) => state.voltageLevelsIdsForNad
@@ -45,13 +44,10 @@ export function NetworkAreaDiagramPane({
         }
     }
 
-    function setInitialDepth(newDepth) {
-        initialDepth = newDepth;
-    }
-
     useEffect(() => {
-        setInitialDepth(depth);
-    }, [depth]);
+        console.log('TEST : ', depth);
+        dispatch(setNadDepth(depth));
+    }, [depth, dispatch]);
 
     let nadTitle = '';
     let svgUrl = '';
@@ -92,8 +88,6 @@ export function NetworkAreaDiagramPane({
                         nadId={voltageLevelsIds[0]}
                         currentNode={currentNode}
                         depth={depth}
-                        setDepth={setDepth}
-                        setInitialDepth={setInitialDepth}
                         studyUuid={studyUuid}
                         loadFlowStatus={loadFlowStatus}
                         disabled={disabled}

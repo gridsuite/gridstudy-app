@@ -27,7 +27,10 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { fetchNADSvg } from '../../../utils/rest-api';
 
-import { fullScreenNetworkAreaDiagramId } from '../../../redux/actions';
+import {
+    fullScreenNetworkAreaDiagramId,
+    setNadDepth,
+} from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -182,8 +185,6 @@ const SizedNetworkAreaDiagram = (props) => {
         svgUrl,
         onClose,
         depth,
-        setDepth,
-        setInitialDepth,
         loadFlowStatus,
         disabled,
     } = props;
@@ -349,7 +350,7 @@ const SizedNetworkAreaDiagram = (props) => {
         if (onClose !== null) {
             dispatch(fullScreenNetworkAreaDiagramId(null));
             onClose(nadId);
-            setInitialDepth(0);
+            dispatch(setNadDepth(0));
         }
     };
 
@@ -458,12 +459,14 @@ const SizedNetworkAreaDiagram = (props) => {
                                     depth}
                             </Typography>
                             <AddCircleIcon
-                                onClick={() => setDepth(depth + 1)}
+                                onClick={() => dispatch(setNadDepth(depth + 1))}
                                 className={classes.plusIcon}
                             />
                             <RemoveCircleIcon
                                 onClick={() =>
-                                    setDepth(depth === 0 ? 0 : depth - 1)
+                                    dispatch(
+                                        setNadDepth(depth === 0 ? 0 : depth - 1)
+                                    )
                                 }
                                 className={classes.lessIcon}
                             />
@@ -507,7 +510,6 @@ NetworkAreaDiagram.propTypes = {
     nadId: PropTypes.string,
     currentNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
-    setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,
     studyUuid: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
