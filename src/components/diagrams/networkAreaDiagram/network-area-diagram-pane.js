@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useDispatch, useSelector } from 'react-redux';
-import React, { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import React, { useRef } from 'react';
 import { getNetworkAreaDiagramUrl } from '../../../utils/rest-api';
 import NetworkAreaDiagram from './network-area-diagram';
 import PropTypes from 'prop-types';
-import { setNadDepth } from '../../../redux/actions';
 
 export function NetworkAreaDiagramPane({
     studyUuid,
@@ -21,7 +20,6 @@ export function NetworkAreaDiagramPane({
     align,
     disabled,
 }) {
-    const dispatch = useDispatch();
     const depth = useSelector((state) => state.nadDepth);
 
     const voltageLevelsIds = useSelector(
@@ -43,10 +41,6 @@ export function NetworkAreaDiagramPane({
             );
         }
     }
-
-    useEffect(() => {
-        dispatch(setNadDepth(depth));
-    }, [depth, dispatch]);
 
     let nadTitle = '';
     let svgUrl = '';
