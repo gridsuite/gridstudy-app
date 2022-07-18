@@ -81,6 +81,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
     const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
+
     const substationLayout = useSelector(
         (state) => state[PARAM_SUBSTATION_LAYOUT]
     );
@@ -91,22 +92,24 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            getVoltageLevelSingleLineDiagram(
-                studyUuid,
-                currentNode?.id,
-                voltageLevelId,
-                useName,
-                centerName,
-                diagonalName,
-                componentLibrary
-            ),
+            isNodeBuilt(currentNode)
+                ? getVoltageLevelSingleLineDiagram(
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelId,
+                      useName,
+                      centerName,
+                      diagonalName,
+                      componentLibrary
+                  )
+                : undefined,
         [
-            centerName,
-            componentLibrary,
-            diagonalName,
+            currentNode,
             studyUuid,
             useName,
-            currentNode?.id,
+            centerName,
+            diagonalName,
+            componentLibrary,
         ]
     );
 
@@ -220,7 +223,15 @@ export function SingleLineDiagramPane({
 
     const [displayedSLD, setDisplayedSld] = useState([]);
 
-    const createView = useDisplayView(network, studyUuid, currentNode);
+    const currentNodeRef = useRef();
+
+    currentNodeRef.current = currentNode;
+
+    const createView = useDisplayView(
+        network,
+        studyUuid,
+        currentNodeRef.current
+    );
 
     const dispatch = useDispatch();
 
@@ -230,9 +241,6 @@ export function SingleLineDiagramPane({
     const location = useLocation();
     const viewsRef = useRef();
     viewsRef.current = views;
-
-    const currentNodeRef = useRef();
-    currentNodeRef.current = currentNode;
 
     const updateSld = useCallback((id) => {
         if (id)
