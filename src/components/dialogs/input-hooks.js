@@ -284,30 +284,30 @@ export const useConnectivityValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
-        if (fetchedVoltageLevelOptions) {
-            fetchedVoltageLevelOptions.then((values) =>
-                setVoltageLevelOptions(
-                    values.sort((a, b) => a.id.localeCompare(b.id))
-                )
-            );
-        }
+        if (!fetchedVoltageLevelOptions) return;
+
+        fetchedVoltageLevelOptions.then((values) =>
+            setVoltageLevelOptions(
+                values.sort((a, b) => a.id.localeCompare(b.id))
+            )
+        );
     }, [fetchedVoltageLevelOptions]);
 
     useEffect(() => {
-        if (voltageLevelOptions) {
-            setConnectivity({
-                voltageLevel: voltageLevelIdDefaultValue
-                    ? voltageLevelOptions.find(
-                          (value) => value.id === voltageLevelIdDefaultValue
-                      )
-                    : null,
-                busOrBusbarSection: busOrBusbarSectionIdDefaultValue
-                    ? {
-                          id: busOrBusbarSectionIdDefaultValue,
-                      }
-                    : null,
-            });
-        }
+        if (!voltageLevelOptions) return;
+
+        setConnectivity({
+            voltageLevel: voltageLevelIdDefaultValue
+                ? voltageLevelOptions.find(
+                      (value) => value.id === voltageLevelIdDefaultValue
+                  )
+                : null,
+            busOrBusbarSection: busOrBusbarSectionIdDefaultValue
+                ? {
+                      id: busOrBusbarSectionIdDefaultValue,
+                  }
+                : null,
+        });
     }, [
         voltageLevelOptions,
         busOrBusbarSectionIdDefaultValue,
