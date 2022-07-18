@@ -368,10 +368,13 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
 
+        const NODE_URL_PREFIX = '/nodes/';
+        const NETWORK_URL_PREFIX = '/network/';
         let nodeIdFromSvgUrl = props.svgUrl.substring(
-            props.svgUrl.indexOf('/nodes/') + 7,
-            props.svgUrl.indexOf('/network/')
+            props.svgUrl.indexOf(NODE_URL_PREFIX) + NODE_URL_PREFIX.length,
+            props.svgUrl.indexOf(NETWORK_URL_PREFIX)
         );
+        console.log('nodeIdFromSvgUrl', nodeIdFromSvgUrl);
         if (
             props.svgUrl &&
             nodeIdFromSvgUrl === currentNode.id &&
