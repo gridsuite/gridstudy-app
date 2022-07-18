@@ -72,8 +72,7 @@ export const SvgType = {
 };
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const NODE_URL_PREFIX = '/nodes/';
-const NETWORK_URL_PREFIX = '/network/';
+
 const loadingWidth = 150;
 const maxWidthVoltageLevel = 800;
 const maxHeightVoltageLevel = 700;
@@ -370,13 +369,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
 
-        let nodeIdFromSvgUrl = props.svgUrl.substring(
-            props.svgUrl.indexOf(NODE_URL_PREFIX) + NODE_URL_PREFIX.length,
-            props.svgUrl.indexOf(NETWORK_URL_PREFIX)
-        );
         if (
             props.svgUrl &&
-            nodeIdFromSvgUrl === currentNode.id &&
+            props.svgUrl.indexOf(currentNode?.id) !== -1 &&
             isNodeBuilt(currentNode)
         ) {
             updateLoadingState(true);
