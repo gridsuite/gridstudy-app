@@ -46,7 +46,7 @@ import { equipments } from '../../network/network-equipments';
 import { RunningStatus } from '../../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 
-import { useSnackMessage } from '../../../utils/messages';
+import { useIntlRef, useSnackMessage } from '../../../utils/messages';
 
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
@@ -72,7 +72,8 @@ export const SvgType = {
 };
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
-
+const NODE_URL_PREFIX = '/nodes/';
+const NETWORK_URL_PREFIX = '/network/';
 const loadingWidth = 150;
 const maxWidthVoltageLevel = 800;
 const maxHeightVoltageLevel = 700;
@@ -251,6 +252,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const svgDraw = useRef();
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
+    const intlRef = useIntlRef();
     const svgRef = useRef();
     const {
         totalWidth,
@@ -368,8 +370,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
 
-        const NODE_URL_PREFIX = '/nodes/';
-        const NETWORK_URL_PREFIX = '/network/';
         let nodeIdFromSvgUrl = props.svgUrl.substring(
             props.svgUrl.indexOf(NODE_URL_PREFIX) + NODE_URL_PREFIX.length,
             props.svgUrl.indexOf(NETWORK_URL_PREFIX)
@@ -404,7 +404,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, currentNode]);
+    }, [props.svgUrl, forceState, snackError, intlRef, currentNode]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
