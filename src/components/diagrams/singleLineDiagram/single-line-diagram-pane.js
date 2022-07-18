@@ -91,24 +91,22 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode)
-                ? getVoltageLevelSingleLineDiagram(
-                      studyUuid,
-                      currentNode?.id,
-                      voltageLevelId,
-                      useName,
-                      centerName,
-                      diagonalName,
-                      componentLibrary
-                  )
-                : null,
+            getVoltageLevelSingleLineDiagram(
+                studyUuid,
+                currentNode?.id,
+                voltageLevelId,
+                useName,
+                centerName,
+                diagonalName,
+                componentLibrary
+            ),
         [
-            currentNode,
+            centerName,
+            componentLibrary,
+            diagonalName,
             studyUuid,
             useName,
-            centerName,
-            diagonalName,
-            componentLibrary,
+            currentNode?.id,
         ]
     );
 

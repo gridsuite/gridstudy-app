@@ -46,7 +46,7 @@ import { equipments } from '../../network/network-equipments';
 import { RunningStatus } from '../../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 
-import { useIntlRef, useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '../../../utils/messages';
 
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
@@ -56,6 +56,7 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
+import { isNodeBuilt } from '../../graph/util/model-functions';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -250,7 +251,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const svgDraw = useRef();
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
-    const intlRef = useIntlRef();
     const svgRef = useRef();
     const {
         totalWidth,
@@ -367,7 +367,16 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (props.svgUrl) {
+
+        let nodeIdFromSvgUrl = props.svgUrl.substring(
+            props.svgUrl.indexOf('/nodes/') + 7,
+            props.svgUrl.indexOf('/network/')
+        );
+        if (
+            props.svgUrl &&
+            nodeIdFromSvgUrl === currentNode.id &&
+            isNodeBuilt(currentNode)
+        ) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -393,7 +402,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError]);
+    }, [props.svgUrl, forceState, snackError, currentNode]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
