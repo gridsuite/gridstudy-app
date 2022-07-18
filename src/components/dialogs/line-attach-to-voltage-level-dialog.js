@@ -80,8 +80,7 @@ const LineAttachToVoltageLevelDialog = ({
     };
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
-    const newVoltageLevelRef = useRef();
-    newVoltageLevelRef.current = newVoltageLevel;
+    const newVoltageLevelRef = useRef(newVoltageLevel);
 
     const [attachmentLine, setAttachmentLine] = useState(null);
 
@@ -162,8 +161,7 @@ const LineAttachToVoltageLevelDialog = ({
                       )
                     : '',
         });
-    const voltageLevelOrIdRef = useRef();
-    voltageLevelOrIdRef.current = voltageLevelOrId;
+    const voltageLevelOrIdRef = useRef(voltageLevelOrId);
 
     const [busbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
 

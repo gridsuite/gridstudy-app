@@ -103,8 +103,7 @@ const LineSplitWithVoltageLevelDialog = ({
     });
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
-    const newVoltageLevelRef = useRef();
-    newVoltageLevelRef.current = newVoltageLevel;
+    const newVoltageLevelRef = useRef(newVoltageLevel);
 
     const allVoltageLevelOptions = useMemo(() => {
         if (!newVoltageLevel)
@@ -180,8 +179,7 @@ const LineSplitWithVoltageLevelDialog = ({
                       )
                     : '',
         });
-    const voltageLevelOrIdRef = useRef();
-    voltageLevelOrIdRef.current = voltageLevelOrId;
+    const voltageLevelOrIdRef = useRef(voltageLevelOrId);
 
     const [busbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
 
