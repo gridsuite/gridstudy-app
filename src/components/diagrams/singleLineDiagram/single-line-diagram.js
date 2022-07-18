@@ -368,7 +368,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-
         if (
             props.svgUrl &&
             props.svgUrl.indexOf(currentNode?.id) !== -1 &&
