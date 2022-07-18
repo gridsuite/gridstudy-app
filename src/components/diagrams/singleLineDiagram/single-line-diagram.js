@@ -374,7 +374,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             props.svgUrl.indexOf(NODE_URL_PREFIX) + NODE_URL_PREFIX.length,
             props.svgUrl.indexOf(NETWORK_URL_PREFIX)
         );
-        console.log('nodeIdFromSvgUrl', nodeIdFromSvgUrl);
         if (
             props.svgUrl &&
             nodeIdFromSvgUrl === currentNode.id &&
