@@ -45,7 +45,6 @@ export function NetworkAreaDiagramPane({
     }
 
     useEffect(() => {
-        console.log('TEST : ', depth);
         dispatch(setNadDepth(depth));
     }, [depth, dispatch]);
 
