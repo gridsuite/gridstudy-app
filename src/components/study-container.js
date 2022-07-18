@@ -443,33 +443,55 @@ export function StudyContainer({ view, onChangeTab }) {
             console.info('network update');
             Promise.all([updatedEquipments])
                 .then((values) => {
-                    network.updateSubstations(values[0].substations);
-                    network.updateLines(values[0].lines);
+                    network.updateSubstations(
+                        values[0].substations ? values[0].substations : []
+                    );
+                    network.updateLines(values[0].lines ? values[0].lines : []);
                     network.updateTwoWindingsTransformers(
                         values[0].twoWindingsTransformers
+                            ? values[0].twoWindingsTransformers
+                            : []
                     );
                     network.updateThreeWindingsTransformers(
                         values[0].threeWindingsTransformers
+                            ? values[0].threeWindingsTransformers
+                            : []
                     );
-                    network.updateGenerators(values[0].generators);
-                    network.updateLoads(values[0].loads);
-                    network.updateBatteries(values[0].batteries);
-                    network.updateDanglingLines(values[0].danglingLines);
+                    network.updateGenerators(
+                        values[0].generators ? values[0].generators : []
+                    );
+                    network.updateLoads(values[0].loads ? values[0].loads : []);
+                    network.updateBatteries(
+                        values[0].batteries ? values[0].batteries : []
+                    );
+                    network.updateDanglingLines(
+                        values[0].danglingLines ? values[0].danglingLines : []
+                    );
                     network.updateLccConverterStations(
                         values[0].lccConverterStations
+                            ? values[0].lccConverterStations
+                            : []
                     );
                     network.updateVscConverterStations(
                         values[0].vscConverterStations
+                            ? values[0].vscConverterStations
+                            : []
                     );
-                    network.updateHvdcLines(values[0].hvdcLines);
+                    network.updateHvdcLines(
+                        values[0].hvdcLines ? values[0].hvdcLines : []
+                    );
                     network.updateShuntCompensators(
                         values[0].shuntCompensators
+                            ? values[0].shuntCompensators
+                            : []
                     );
                     network.updateStaticVarCompensators(
                         values[0].staticVarCompensators
+                            ? values[0].staticVarCompensators
+                            : []
                     );
 
-                    setUpdatedLines(values[0].lines);
+                    setUpdatedLines(values[0].lines ? values[0].lines : []);
                 })
                 .catch(function (error) {
                     console.error(error.message);
