@@ -31,11 +31,11 @@ import {
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
+import { SEARCH_FETCH_TIMEOUT } from '../utils/UIconstants';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackMessage } from '../utils/messages';
 import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
-import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -138,9 +138,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const intl = useIntl();
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
@@ -167,35 +165,36 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const lastSearchTermRef = useRef('');
+    const timer = useRef();
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
-            lastSearchTermRef.current = searchTerm;
-            fetchEquipmentsInfos(
-                studyUuid,
-                currentNode?.id,
-                searchTerm,
-                useNameLocal
-            )
-                .then((infos) => {
-                    if (searchTerm === lastSearchTermRef.current) {
-                        setEquipmentsFound(
-                            getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                        );
-                    } // else ignore results of outdated fetch
-                })
-                .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'equipmentsSearchingError',
-                            intlRef: intlRef,
-                        },
+            clearTimeout(timer.current);
+
+            timer.current = setTimeout(() => {
+                lastSearchTermRef.current = searchTerm;
+                fetchEquipmentsInfos(
+                    studyUuid,
+                    currentNode?.id,
+                    searchTerm,
+                    useNameLocal
+                )
+                    .then((infos) => {
+                        if (searchTerm === lastSearchTermRef.current) {
+                            setEquipmentsFound(
+                                getEquipmentsInfosForSearchBar(
+                                    infos,
+                                    useNameLocal
+                                )
+                            );
+                        } // else ignore results of outdated fetch
                     })
-                );
+                    .catch((errorMessage) =>
+                        snackError(errorMessage, 'equipmentsSearchingError')
+                    );
+            }, SEARCH_FETCH_TIMEOUT);
         },
-        [studyUuid, currentNode, useNameLocal, enqueueSnackbar, intlRef]
+        [studyUuid, currentNode, useNameLocal, snackError]
     );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
