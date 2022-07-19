@@ -15,14 +15,11 @@ import {
 } from '@gridsuite/commons-ui';
 import React, { useCallback, useState, useRef } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { SEARCH_FETCH_TIMEOUT } from '../../utils/UIconstants';
+import { useSnackMessage } from '../../utils/messages';
 import { useParams } from 'react-router-dom';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
@@ -45,50 +42,43 @@ const EquipmentSearchDialog = ({
     const equipmentClasses = useEquipmentStyles();
 
     const intl = useIntl();
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const lastSearchTermRef = useRef('');
+    const timer = useRef();
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
-            lastSearchTermRef.current = searchTerm;
-            fetchEquipmentsInfos(
-                studyUuid,
-                currentNodeUuid,
-                searchTerm,
-                useNameLocal,
-                true,
-                equipmentType
-            )
-                .then((infos) => {
-                    if (searchTerm === lastSearchTermRef.current) {
-                        setEquipmentsFound(
-                            getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                        );
-                    } // else ignore results of outdated fetch
-                })
-                .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'equipmentsSearchingError',
-                            intlRef: intlRef,
-                        },
+            clearTimeout(timer.current);
+
+            timer.current = setTimeout(() => {
+                lastSearchTermRef.current = searchTerm;
+                fetchEquipmentsInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    searchTerm,
+                    useNameLocal,
+                    true,
+                    equipmentType
+                )
+                    .then((infos) => {
+                        if (searchTerm === lastSearchTermRef.current) {
+                            setEquipmentsFound(
+                                getEquipmentsInfosForSearchBar(
+                                    infos,
+                                    useNameLocal
+                                )
+                            );
+                        } // else ignore results of outdated fetch
                     })
-                );
+                    .catch((errorMessage) =>
+                        snackError(errorMessage, 'equipmentsSearchingError')
+                    );
+            }, SEARCH_FETCH_TIMEOUT);
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            useNameLocal,
-            enqueueSnackbar,
-            intlRef,
-            equipmentType,
-        ]
+        [studyUuid, currentNodeUuid, useNameLocal, snackError, equipmentType]
     );
 
     return (
