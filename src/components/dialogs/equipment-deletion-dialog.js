@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -13,17 +13,25 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import { InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import {
+    Autocomplete,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+} from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import makeStyles from '@mui/styles/makeStyles';
 import { useParams } from 'react-router-dom';
-import { deleteEquipment } from '../../utils/rest-api';
+import { deleteEquipment, fetchEquipmentsInfos } from '../../utils/rest-api';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
+import { EquipmentItem } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { PARAM_USE_NAME } from '../../utils/config-params';
 
 const equipmentTypes = [
     'LINE',
@@ -42,12 +50,20 @@ const equipmentTypes = [
     'VOLTAGE_LEVEL',
 ];
 
-const useStyles = makeStyles(() => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-}));
+const makeItems = (eqpts, usesNames) => {
+    let autoItems = eqpts
+        .map((e) => {
+            let label = usesNames ? e.name : e.id;
+            return {
+                label: label,
+                id: e.id,
+                key: e.id,
+                type: e.type,
+            };
+        })
+        .sort((a, b) => a.label.localeCompare(b.label));
+    return autoItems;
+};
 
 /**
  * Dialog to delete an equipment in the network
@@ -59,7 +75,6 @@ const useStyles = makeStyles(() => ({
 const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const classes = useStyles();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
 
@@ -71,8 +86,71 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
 
     const [errors, setErrors] = useState(new Map());
 
-    const handleChangeEquipmentId = (event) => {
-        setEquipmentId(event.target.value);
+    const [equipmentsFound, setEquipmentsFound] = useState([]);
+    const [expanded, setExpanded] = useState(false);
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        setLoading(false);
+    }, [equipmentsFound]);
+
+    const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
+    const lastSearchTermRef = useRef('');
+    const timer = useRef();
+
+    const searchMatchingEquipments = useCallback(
+        (searchTerm) => {
+            clearTimeout(timer.current);
+
+            timer.current = setTimeout(() => {
+                lastSearchTermRef.current = searchTerm;
+                fetchEquipmentsInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    searchTerm,
+                    useNameLocal,
+                    true,
+                    equipmentType
+                )
+                    .then((infos) => {
+                        if (searchTerm === lastSearchTermRef.current) {
+                            let autoItems = makeItems(infos, useNameLocal);
+                            setEquipmentsFound(autoItems);
+                        } // else ignore results of outdated fetch
+                    })
+                    .catch((errorMessage) =>
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'equipmentsSearchingError',
+                                intlRef: intlRef,
+                            },
+                        })
+                    );
+            }, 1500);
+        },
+        [
+            studyUuid,
+            currentNodeUuid,
+            useNameLocal,
+            enqueueSnackbar,
+            intlRef,
+            equipmentType,
+        ]
+    );
+
+    const handleSearchTermChange = (term) => {
+        if (term.length >= 1) {
+            setLoading(true);
+            searchMatchingEquipments(term);
+            setExpanded(true);
+        } else {
+            setExpanded(false);
+        }
+    };
+
+    const handleChangeEquipmentId = (event, newValue) => {
+        setEquipmentId(newValue.id);
     };
 
     const handleChangeEquipmentType = (event) => {
@@ -165,7 +243,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                         <FormControl fullWidth size="small">
                             <InputLabel
                                 id="equipment-type-label"
-                                margin={'dense'}
+                                // margin={'dense'}
                                 variant={'filled'}
                             >
                                 {intl.formatMessage({ id: 'Type' })}
@@ -190,25 +268,40 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} align="start">
-                        <TextField
+                        <Autocomplete
+                            forcePopupIcon={false}
                             size="small"
+                            open={expanded}
                             fullWidth
-                            id="equipment-id"
-                            label={intl.formatMessage({ id: 'ID' })}
-                            variant="filled"
-                            value={equipmentId}
-                            onChange={handleChangeEquipmentId}
-                            /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-                                which is not the case when no variant is used) */
-                            FormHelperTextProps={{
-                                className: classes.helperText,
+                            onInputChange={(_event, value) =>
+                                handleSearchTermChange(value)
+                            }
+                            onChange={(_event, newValue) =>
+                                handleChangeEquipmentId(_event, newValue)
+                            }
+                            onClose={() => {
+                                setExpanded(false);
                             }}
-                            {...(errors.get('equipment-id')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('equipment-id')?.errorMsgId,
-                                }),
-                            })}
+                            getOptionLabel={(option) => option.label}
+                            isOptionEqualToValue={(option, value) =>
+                                option.id === value.id
+                            }
+                            options={loading ? [] : equipmentsFound}
+                            loading={loading}
+                            autoHighlight={true}
+                            renderElement={(props) => (
+                                <EquipmentItem
+                                    {...props}
+                                    key={props.element.key}
+                                />
+                            )}
+                            renderInput={(params) => (
+                                <TextField
+                                    autoFocus={true}
+                                    variant={'filled'}
+                                    {...params}
+                                />
+                            )}
                         />
                     </Grid>
                 </Grid>
