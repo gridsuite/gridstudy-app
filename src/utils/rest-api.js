@@ -306,7 +306,8 @@ export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
         currentNodeUuid,
         substationsIds,
         'Substations',
-        'substations'
+        'substations',
+        true
     );
 }
 
@@ -329,7 +330,8 @@ export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
         currentNodeUuid,
         substationsIds,
         'Lines',
-        'lines'
+        'lines',
+        true
     );
 }
 
