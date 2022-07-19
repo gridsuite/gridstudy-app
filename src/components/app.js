@@ -122,7 +122,9 @@ const App = () => {
         (params) => {
             console.debug('received UI parameters : ', params);
             let displayedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
+            let dispatchDisplayedColumns = false;
             let lockedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
+            let dispatchLockedColumns = false;
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAM_THEME:
@@ -206,6 +208,7 @@ const App = () => {
                                 index: index,
                                 value: param.value,
                             };
+                            dispatchDisplayedColumns = true;
                         }
                         if (
                             param.name.startsWith(
@@ -221,11 +224,16 @@ const App = () => {
                                 index: index,
                                 value: param.value,
                             };
+                            dispatchLockedColumns = true;
                         }
                 }
             });
-            dispatch(changeDisplayedColumns(displayedColumnsParams));
-            dispatch(changeLockedColumns(lockedColumnsParams));
+            if (dispatchDisplayedColumns) {
+                dispatch(changeDisplayedColumns(displayedColumnsParams));
+            }
+            if (dispatchLockedColumns) {
+                dispatch(changeLockedColumns(lockedColumnsParams));
+            }
         },
         [dispatch]
     );

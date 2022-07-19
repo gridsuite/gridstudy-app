@@ -159,7 +159,7 @@
     "descLfDcValues": "DC Values",
     "resetToDefault": "default values",
     "showAdvancedParameters": "Advanced settings",
-    "save": "save",
+
     "descLfReadSlackBus": "Read slack bus in the network: ",
     "descLfWriteSlackBus": "Write slack bus in the network: ",
     "descLfDC": "Run a DC power flow: ",
@@ -437,8 +437,6 @@
 
     "insertNetworkModificationNodeAbove": "Insert a node above in the current branch",
     "insertNetworkModificationNodeBelow": "Insert a node below in the current branch",
-
-    "Update": "Update",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
