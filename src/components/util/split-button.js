@@ -61,12 +61,6 @@ const SplitButton = (props) => {
 
     const anchorRef = React.useRef(null);
 
-    const [expanded, setExpanded] = React.useState(false);
-
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-    };
-
     const handleClick = () => {
         if (props.onClick) {
             props.onClick();
@@ -119,9 +113,8 @@ const SplitButton = (props) => {
                     disabled={props.selectionDisabled}
                 >
                     <ArrowDropDownIcon
-                        onClick={handleExpandClick}
                         className={clsx(classes.expand, {
-                            [classes.expandOpen]: expanded,
+                            [classes.expandOpen]: open,
                         })}
                     />
                 </Button>
