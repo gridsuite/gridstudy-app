@@ -568,10 +568,10 @@ const LineAttachToVoltageLevelDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear} variant="text">
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave} variant="text">
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
                 {voltageLevelDialogOpen && (
