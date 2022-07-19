@@ -258,7 +258,7 @@ export const useConnectivityValue = ({
     },
     disabled = false,
     inputForm,
-    voltageLevelOptions,
+    fetchedVoltageLevelOptions,
     currentNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
@@ -274,6 +274,7 @@ export const useConnectivityValue = ({
     const [errorBusBarSection, setErrorBusBarSection] = useState();
     const intl = useIntl();
     const studyUuid = useSelector((state) => state.studyUuid);
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
         setConnectivity({
@@ -283,6 +284,18 @@ export const useConnectivityValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
+        if (!fetchedVoltageLevelOptions) return;
+
+        fetchedVoltageLevelOptions.then((values) =>
+            setVoltageLevelOptions(
+                values.sort((a, b) => a.id.localeCompare(b.id))
+            )
+        );
+    }, [fetchedVoltageLevelOptions]);
+
+    useEffect(() => {
+        if (!voltageLevelOptions) return;
+
         setConnectivity({
             voltageLevel: voltageLevelIdDefaultValue
                 ? voltageLevelOptions.find(
