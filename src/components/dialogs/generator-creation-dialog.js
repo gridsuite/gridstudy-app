@@ -54,14 +54,14 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param voltageLevelOptions : the network voltageLevels available
+ * @param fetchedVoltageLevelOptions Promise handling list of voltage level options
  * @param currentNodeUuid : the currently selected tree node
  * @param editData the data to edit
  */
 const GeneratorCreationDialog = ({
     open,
     onClose,
-    voltageLevelOptions,
+    fetchedVoltageLevelOptions,
     currentNodeUuid,
     editData,
 }) => {
@@ -230,7 +230,7 @@ const GeneratorCreationDialog = ({
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
         inputForm: inputForm,
-        voltageLevelOptions: voltageLevelOptions,
+        fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
         currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
@@ -373,7 +373,11 @@ GeneratorCreationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    //promise
+    fetchedVoltageLevelOptions: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
     currentNodeUuid: PropTypes.string,
 };
 
