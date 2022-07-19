@@ -439,7 +439,9 @@ const NetworkTable = (props) => {
             // calculate row index to scroll to
             const rows = getRows(newIndex);
             let index = rows.findIndex((r) => r.id === props.equipmentId);
-            setScrollToIndex(index !== undefined ? index : 0);
+            setScrollToIndex(index !== undefined ? index : -1);
+        } else if (manualTabSwitch) {
+            setScrollToIndex(-1);
         }
     }, [
         props.network,
@@ -915,7 +917,7 @@ const NetworkTable = (props) => {
                 rows={rows}
                 columns={columns}
                 fetched={props.network.isResourceFetched(resource)}
-                scrollToIndex={scrollToIndex} // TODO This is not implemented yet
+                scrollTop={scrollToIndex}
                 disableVerticalScroll={isModifyingRow()}
             />
         );
