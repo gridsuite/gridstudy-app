@@ -12,6 +12,8 @@ import {
     fetchNetworkModification,
     changeNetworkModificationOrder,
     fetchEquipments,
+    fetchSubstations,
+    fetchLines,
     fetchVoltageLevels,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
@@ -185,16 +187,26 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withLines(p) {
+        const fetchedLineOptions = fetchLines(
+            studyUuid,
+            currentTreeNode?.id,
+            []
+        );
         return {
             ...p,
-            lineOptions: network?.lines,
+            fetchedLineOptions: fetchedLineOptions,
         };
     }
 
     function withSubstations(p) {
+        const fetchedSubstationOptions = fetchSubstations(
+            studyUuid,
+            currentTreeNode?.id,
+            []
+        );
         return {
             ...p,
-            substationOptions: network?.substations,
+            fetchedSubstationOptions: fetchedSubstationOptions,
         };
     }
 

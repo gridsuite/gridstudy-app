@@ -93,6 +93,7 @@ const GeneratorModificationDialog = ({
     };
 
     useEffect(() => {
+        if (!fetchedEquipmentOptions) return;
         fetchedEquipmentOptions.then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
@@ -350,10 +351,10 @@ const GeneratorModificationDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave}>
-                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -367,6 +368,11 @@ GeneratorModificationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
+    // Promise
+    fetchedEquipmentOptions: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
 };
 
 export default GeneratorModificationDialog;
