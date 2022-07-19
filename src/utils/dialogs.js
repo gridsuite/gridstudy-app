@@ -30,7 +30,7 @@ const SelectOptionsDialog = ({ open, onClose, onClick, title, child }) => {
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button onClick={onClick} variant="outlined">
-                    <FormattedMessage id="save" />
+                    <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
         </Dialog>
