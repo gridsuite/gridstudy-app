@@ -81,7 +81,6 @@ const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
     const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
-
     const substationLayout = useSelector(
         (state) => state[PARAM_SUBSTATION_LAYOUT]
     );
@@ -92,49 +91,45 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode)
-                ? getVoltageLevelSingleLineDiagram(
-                      studyUuid,
-                      currentNode?.id,
-                      voltageLevelId,
-                      useName,
-                      centerName,
-                      diagonalName,
-                      componentLibrary
-                  )
-                : null,
+            getVoltageLevelSingleLineDiagram(
+                studyUuid,
+                currentNode?.id,
+                voltageLevelId,
+                useName,
+                centerName,
+                diagonalName,
+                componentLibrary
+            ),
         [
-            currentNode,
+            centerName,
+            componentLibrary,
+            diagonalName,
             studyUuid,
             useName,
-            centerName,
-            diagonalName,
-            componentLibrary,
+            currentNode?.id,
         ]
     );
 
     const getSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode)
-                ? getSubstationSingleLineDiagram(
-                      studyUuid,
-                      currentNode?.id,
-                      voltageLevelId,
-                      useName,
-                      centerName,
-                      diagonalName,
-                      substationLayout,
-                      componentLibrary
-                  )
-                : null,
+            getSubstationSingleLineDiagram(
+                studyUuid,
+                currentNode?.id,
+                voltageLevelId,
+                useName,
+                centerName,
+                diagonalName,
+                substationLayout,
+                componentLibrary
+            ),
         [
-            currentNode,
-            studyUuid,
-            useName,
             centerName,
-            diagonalName,
-            substationLayout,
             componentLibrary,
+            diagonalName,
+            studyUuid,
+            substationLayout,
+            useName,
+            currentNode?.id,
         ]
     );
 
@@ -147,7 +142,6 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 if (countryName) {
                     name += ' \u002D ' + countryName;
                 }
-
                 const svgUrl = getSubstationSingleLineDiagramUrl(substationId);
 
                 return {
@@ -220,16 +214,11 @@ export function SingleLineDiagramPane({
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const [views, setViews] = useState([]);
-
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const [viewState, setViewState] = useState(new Map());
 
     const [displayedSLD, setDisplayedSld] = useState([]);
-
-    const currentNodeRef = useRef();
-
-    currentNodeRef.current = currentNode;
 
     const createView = useDisplayView(network, studyUuid, currentNode);
 
@@ -241,6 +230,9 @@ export function SingleLineDiagramPane({
     const location = useLocation();
     const viewsRef = useRef();
     viewsRef.current = views;
+
+    const currentNodeRef = useRef();
+    currentNodeRef.current = currentNode;
 
     const updateSld = useCallback((id) => {
         if (id)
