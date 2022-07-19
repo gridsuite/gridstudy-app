@@ -333,6 +333,17 @@ export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
+export function fetchVoltageLevels(studyUuid, currentNodeUuid, substationsIds) {
+    return fetchEquipments(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'Voltage-levels',
+        'voltage-levels',
+        true
+    );
+}
+
 export function fetchTwoWindingsTransformers(
     studyUuid,
     currentNodeUuid,
