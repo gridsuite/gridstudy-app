@@ -14,6 +14,7 @@ import {
     fetchEquipments,
     fetchSubstations,
     fetchLines,
+    fetchVoltageLevels,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
@@ -151,6 +152,7 @@ const NetworkModificationNodeEditor = () => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
+
     const closeDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
@@ -174,9 +176,13 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withVLs(p) {
+        const fetchedVoltageLevelOptions = fetchVoltageLevels(
+            studyUuid,
+            currentTreeNode?.id
+        );
         return {
             ...p,
-            voltageLevelOptions: network?.voltageLevels,
+            fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
         };
     }
 
