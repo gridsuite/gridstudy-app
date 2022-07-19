@@ -102,7 +102,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       diagonalName,
                       componentLibrary
                   )
-                : undefined,
+                : null,
         [
             currentNode,
             studyUuid,
@@ -115,24 +115,26 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
     const getSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            getSubstationSingleLineDiagram(
-                studyUuid,
-                currentNode?.id,
-                voltageLevelId,
-                useName,
-                centerName,
-                diagonalName,
-                substationLayout,
-                componentLibrary
-            ),
+            isNodeBuilt(currentNode)
+                ? getSubstationSingleLineDiagram(
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelId,
+                      useName,
+                      centerName,
+                      diagonalName,
+                      substationLayout,
+                      componentLibrary
+                  )
+                : null,
         [
-            centerName,
-            componentLibrary,
-            diagonalName,
+            currentNode,
             studyUuid,
-            substationLayout,
             useName,
-            currentNode?.id,
+            centerName,
+            diagonalName,
+            substationLayout,
+            componentLibrary,
         ]
     );
 
@@ -145,6 +147,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 if (countryName) {
                     name += ' \u002D ' + countryName;
                 }
+
                 const svgUrl = getSubstationSingleLineDiagramUrl(substationId);
 
                 return {
@@ -217,6 +220,7 @@ export function SingleLineDiagramPane({
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const [views, setViews] = useState([]);
+
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const [viewState, setViewState] = useState(new Map());
@@ -227,11 +231,7 @@ export function SingleLineDiagramPane({
 
     currentNodeRef.current = currentNode;
 
-    const createView = useDisplayView(
-        network,
-        studyUuid,
-        currentNodeRef.current
-    );
+    const createView = useDisplayView(network, studyUuid, currentNode);
 
     const dispatch = useDispatch();
 

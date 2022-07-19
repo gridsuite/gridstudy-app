@@ -56,6 +56,8 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
+import { isNodeBuilt } from '../../graph/util/model-functions';
+
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
     VERTICAL: 'vertical',
@@ -366,7 +368,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (props.svgUrl) {
+        if (
+            props.svgUrl &&
+            props.svgUrl.indexOf(currentNode?.id) !== -1 &&
+            isNodeBuilt(currentNode)
+        ) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -392,7 +398,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef]);
+    }, [props.svgUrl, forceState, snackError, intlRef, currentNode]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
