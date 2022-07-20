@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -13,13 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import {
-    Autocomplete,
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField,
-} from '@mui/material';
+import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useParams } from 'react-router-dom';
 import { deleteEquipment, fetchEquipmentsInfos } from '../../utils/rest-api';
@@ -29,9 +23,10 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
-import { EquipmentItem } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
+import { useAutocompleteField, useInputForm } from './input-hooks';
+import { filledTextField, getId } from './dialogUtils';
 
 const equipmentTypes = [
     'LINE',
@@ -79,82 +74,68 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     const { enqueueSnackbar } = useSnackbar();
 
     const intl = useIntl();
-
-    const [equipmentId, setEquipmentId] = useState('');
+    const inputForm = useInputForm();
 
     const [equipmentType, setEquipmentType] = useState('LINE');
 
     const [errors, setErrors] = useState(new Map());
 
     const [equipmentsFound, setEquipmentsFound] = useState([]);
-    const [expanded, setExpanded] = useState(false);
     const [loading, setLoading] = useState(false);
     useEffect(() => {
         setLoading(false);
     }, [equipmentsFound]);
 
     const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
-    const lastSearchTermRef = useRef('');
-    const timer = useRef();
 
-    const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
-            clearTimeout(timer.current);
-
-            timer.current = setTimeout(() => {
-                lastSearchTermRef.current = searchTerm;
-                fetchEquipmentsInfos(
-                    studyUuid,
-                    currentNodeUuid,
-                    searchTerm,
-                    useNameLocal,
-                    true,
-                    equipmentType
-                )
-                    .then((infos) => {
-                        if (searchTerm === lastSearchTermRef.current) {
-                            let autoItems = makeItems(infos, useNameLocal);
-                            setEquipmentsFound(autoItems);
-                        } // else ignore results of outdated fetch
-                    })
-                    .catch((errorMessage) =>
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'equipmentsSearchingError',
-                                intlRef: intlRef,
-                            },
-                        })
-                    );
-            }, 1500);
-        },
-        [
+    useEffect(() => {
+        fetchEquipmentsInfos(
             studyUuid,
             currentNodeUuid,
-            useNameLocal,
-            enqueueSnackbar,
-            intlRef,
-            equipmentType,
-        ]
-    );
+            '',
+            false,
+            true,
+            equipmentType
+        )
+            .then((infos) => {
+                let autoItems = makeItems(infos, useNameLocal);
+                setEquipmentsFound(autoItems);
+            })
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'equipmentsSearchingError',
+                        intlRef: intlRef,
+                    },
+                })
+            );
+    }, [
+        equipmentType,
+        studyUuid,
+        currentNodeUuid,
+        enqueueSnackbar,
+        intlRef,
+        useNameLocal,
+    ]);
 
-    const handleSearchTermChange = (term) => {
-        if (term.length >= 1) {
-            setLoading(true);
-            searchMatchingEquipments(term);
-            setExpanded(true);
-        } else {
-            setExpanded(false);
-        }
-    };
-
-    const handleChangeEquipmentId = (event, newValue) => {
-        setEquipmentId(newValue.id);
-    };
+    const [equipment, idField] = useAutocompleteField({
+        label: 'ID',
+        validation: { isFieldRequired: true },
+        inputForm,
+        // errorMsg: 'FieldIsRequired',
+        formProps: filledTextField,
+        values: equipmentsFound,
+        getLabel: getId,
+        defaultValue: null,
+        // equipmentsFound.find((e) => e.id === equipmentId) || equipmentId,
+        loading: loading,
+    });
 
     const handleChangeEquipmentType = (event) => {
-        setEquipmentType(event.target.value);
+        const nextEquipmentType = event.target.value;
+        setEquipmentType(nextEquipmentType);
     };
 
     function handleDeleteEquipmentError(response, messsageId) {
@@ -175,27 +156,31 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     }
 
     const handleSave = () => {
-        let tmpErrors = new Map(errors);
-
-        tmpErrors.set(
-            'equipment-id',
-            validateField(equipmentId, {
-                isFieldRequired: true,
-            })
-        );
-
-        setErrors(tmpErrors);
-
         // Check if error list contains an error
-        let isValid =
-            Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
+        let isValid;
+        if (inputForm) {
+            isValid = inputForm.validate();
+        } else {
+            let errMap = new Map(errors);
+
+            errMap.set(
+                'equipment-id',
+                validateField(equipment, {
+                    isFieldRequired: true,
+                })
+            );
+            setErrors(errMap);
+            isValid = Array.from(errMap.values())
+                .map((p) => p.error)
+                .every((e) => e);
+        }
 
         if (isValid) {
             deleteEquipment(
                 studyUuid,
                 currentNodeUuid,
                 equipmentType,
-                equipmentId
+                equipment.id
             ).then((response) => {
                 if (response.status !== 200) {
                     handleDeleteEquipmentError(
@@ -210,7 +195,6 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     };
 
     const clearValues = () => {
-        setEquipmentId('');
         setEquipmentType('LINE');
     };
 
@@ -268,41 +252,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} align="start">
-                        <Autocomplete
-                            forcePopupIcon={false}
-                            size="small"
-                            open={expanded}
-                            fullWidth
-                            onInputChange={(_event, value) =>
-                                handleSearchTermChange(value)
-                            }
-                            onChange={(_event, newValue) =>
-                                handleChangeEquipmentId(_event, newValue)
-                            }
-                            onClose={() => {
-                                setExpanded(false);
-                            }}
-                            getOptionLabel={(option) => option.label}
-                            isOptionEqualToValue={(option, value) =>
-                                option.id === value.id
-                            }
-                            options={loading ? [] : equipmentsFound}
-                            loading={loading}
-                            autoHighlight={true}
-                            renderElement={(props) => (
-                                <EquipmentItem
-                                    {...props}
-                                    key={props.element.key}
-                                />
-                            )}
-                            renderInput={(params) => (
-                                <TextField
-                                    autoFocus={true}
-                                    variant={'filled'}
-                                    {...params}
-                                />
-                            )}
-                        />
+                        {idField}
                     </Grid>
                 </Grid>
             </DialogContent>

@@ -56,6 +56,7 @@ import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../utils/UIconstants';
 import { useParameterState } from './parameters/parameters';
+
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
@@ -411,16 +412,16 @@ export const useAutocompleteField = ({
     previousValue,
     loading = false,
 }) => {
+    const [presentedOptions, setPresentedOptions] = useState([]);
+    const [isLoading, setIsLoading] = useState(loading);
     const [value, setValue] = useState(defaultValue);
-    const [error, setError] = useState('');
+    const [error, setError] = useState();
     const validationRef = useRef();
     validationRef.current = validation;
 
     useEffect(() => {
-        if (defaultValue) {
             setValue(defaultValue);
-        }
-    }, [defaultValue]);
+    }, [defaultValue, values]);
 
     useEffect(() => {
         function validate() {
@@ -428,8 +429,10 @@ export const useAutocompleteField = ({
             setError(res?.errorMsgId);
             return !res.error;
         }
+        if (inputForm) {
         inputForm.addValidation(id ? id : label, validate);
-    }, [label, validation, inputForm, value, id]);
+        }
+    }, [label, validation, inputForm, value, id, error, errorMsg]);
 
     const handleChangeValue = useCallback((value) => {
         setValue(value);
@@ -441,7 +444,35 @@ export const useAutocompleteField = ({
         }
     }, [selectedValue]);
 
+    useEffect(() => {
+        if (!values || typeof values === 'function') return;
+        if (typeof values?.then === 'function') {
+            setIsLoading(true);
+        }
+        const valuePromise = Promise.resolve(values);
+        valuePromise.then((vals) => {
+            setPresentedOptions(vals);
+            setIsLoading(false);
+        });
+    }, [values]);
+
     const field = useMemo(() => {
+        const optionEqualsToValue = (option, input) =>
+            option === input || option.id === input || option.id === input?.id;
+        const filterOptionsFunc = (options, params) => {
+            const filtered = filter(options, params);
+            if (
+                params.inputValue !== '' &&
+                !options.find((opt) => opt.id === params.inputValue)
+            ) {
+                filtered.push({
+                    inputValue: params.inputValue,
+                    id: params.inputValue,
+                });
+            }
+            return filtered;
+        };
+
         return (
             <Autocomplete
                 id={label}
@@ -450,32 +481,17 @@ export const useAutocompleteField = ({
                 }}
                 size={'small'}
                 forcePopupIcon
-                options={values}
+                options={presentedOptions}
                 getOptionLabel={getLabel}
                 defaultValue={defaultValue}
                 value={value}
-                loading={loading}
+                loading={isLoading}
                 loadingText={<FormattedMessage id="loadingOptions" />}
                 freeSolo={allowNewValue}
                 {...(allowNewValue && {
                     freeSolo: true,
-                    isOptionEqualToValue: (option, input) =>
-                        option === input ||
-                        option.id === input ||
-                        option.id === input?.id,
-                    filterOptions: (options, params) => {
-                        const filtered = filter(options, params);
-                        if (
-                            params.inputValue !== '' &&
-                            !options.find((opt) => opt.id === params.inputValue)
-                        ) {
-                            filtered.push({
-                                inputValue: params.inputValue,
-                                id: params.inputValue,
-                            });
-                        }
-                        return filtered;
-                    },
+                    isOptionEqualToValue: optionEqualsToValue,
+                    filterOptions: filterOptionsFunc,
                     autoSelect: true,
                     autoComplete: true,
                     autoHighlight: true,
@@ -502,7 +518,7 @@ export const useAutocompleteField = ({
         );
     }, [
         label,
-        values,
+        presentedOptions,
         getLabel,
         allowNewValue,
         handleChangeValue,
@@ -513,7 +529,7 @@ export const useAutocompleteField = ({
         error,
         errorMsg,
         formProps,
-        loading,
+        isLoading,
     ]);
 
     return [value, field, setValue];
