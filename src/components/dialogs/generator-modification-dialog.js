@@ -58,7 +58,6 @@ function getValueOrNull(val) {
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param voltageLevelOptions : the network voltageLevels available
  * @param currentNodeUuid : the currently selected tree node
  * @param fetchedEquipmentOptions the data generator option
  * @param editData the data to edit
@@ -67,7 +66,6 @@ const GeneratorModificationDialog = ({
     editData,
     open,
     onClose,
-    voltageLevelOptions,
     currentNodeUuid,
     fetchedEquipmentOptions,
 }) => {
@@ -93,6 +91,7 @@ const GeneratorModificationDialog = ({
     };
 
     useEffect(() => {
+        if (!fetchedEquipmentOptions) return;
         fetchedEquipmentOptions.then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
@@ -350,10 +349,10 @@ const GeneratorModificationDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave}>
-                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -365,8 +364,12 @@ GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
+    // Promise
+    fetchedEquipmentOptions: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
 };
 
 export default GeneratorModificationDialog;

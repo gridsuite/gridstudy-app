@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '../../utils/messages';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
+import { SEARCH_FETCH_TIMEOUT } from '../../utils/UIconstants';
 
 export const useSearchMatchingEquipments = (
     studyUuid,
@@ -22,28 +23,36 @@ export const useSearchMatchingEquipments = (
     const { snackError } = useSnackMessage();
     const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
     const [equipmentsFound, setEquipmentsFound] = useState([]);
+    const timer = useRef();
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
-            lastSearchTermRef.current = searchTerm;
-            fetchEquipmentsInfos(
-                studyUuid,
-                nodeUuid,
-                searchTerm,
-                useNameLocal,
-                inUpstreamBuiltParentNode,
-                equipmentType
-            )
-                .then((infos) => {
-                    if (searchTerm === lastSearchTermRef.current) {
-                        setEquipmentsFound(
-                            getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                        );
-                    } // else ignore results of outdated fetch
-                })
-                .catch((errorMessage) =>
-                    snackError(errorMessage, 'equipmentsSearchingError')
-                );
+            clearTimeout(timer.current);
+
+            timer.current = setTimeout(() => {
+                lastSearchTermRef.current = searchTerm;
+                fetchEquipmentsInfos(
+                    studyUuid,
+                    nodeUuid,
+                    searchTerm,
+                    useNameLocal,
+                    inUpstreamBuiltParentNode,
+                    equipmentType
+                )
+                    .then((infos) => {
+                        if (searchTerm === lastSearchTermRef.current) {
+                            setEquipmentsFound(
+                                getEquipmentsInfosForSearchBar(
+                                    infos,
+                                    useNameLocal
+                                )
+                            );
+                        } // else ignore results of outdated fetch
+                    })
+                    .catch((errorMessage) =>
+                        snackError(errorMessage, 'equipmentsSearchingError')
+                    );
+            }, SEARCH_FETCH_TIMEOUT);
         },
         [
             studyUuid,

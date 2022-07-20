@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     menu: {
         minWidth: 300,
         maxHeight: 800,
-        overflowY: 'auto',
+        overflowY: 'visible',
     },
 }));
 
