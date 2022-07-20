@@ -48,6 +48,7 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param fetchedLineOptions Promise handling list of network lines
+ * @param fetchedVoltageLevelOptions Promise handling list of network voltage levels
  * @param currentNodeUuid the currently selected tree node
  * @param fetchedSubstationOptions Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
@@ -56,7 +57,7 @@ const LineSplitWithVoltageLevelDialog = ({
     open,
     onClose,
     fetchedLineOptions,
-    voltageLevelOptions,
+    fetchedVoltageLevelOptions,
     currentNodeUuid,
     fetchedSubstationOptions,
     editData,
@@ -78,6 +79,11 @@ const LineSplitWithVoltageLevelDialog = ({
     const [lineOptions, setLineOptions] = useState([]);
 
     const [loadingLineOptions, setLoadingLineOptions] = useState(true);
+
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    const [loadingVoltageLevelOptions, setLoadingVoltageLevelOptions] =
+        useState(true);
 
     const clearValues = () => {
         setFormValues(null);
@@ -107,7 +113,7 @@ const LineSplitWithVoltageLevelDialog = ({
     });
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
-    const newVoltageLevelRef = useRef();
+    const newVoltageLevelRef = useRef(newVoltageLevel);
 
     const allVoltageLevelOptions = useMemo(() => {
         if (!newVoltageLevel)
@@ -128,6 +134,14 @@ const LineSplitWithVoltageLevelDialog = ({
             setNewVoltageLevel(editData.mayNewVoltageLevelInfos);
         }
     }, [editData]);
+
+    useEffect(() => {
+        if (!fetchedVoltageLevelOptions) return;
+        fetchedVoltageLevelOptions.then((values) => {
+            setVoltageLevelOptions(values);
+            setLoadingVoltageLevelOptions(false);
+        });
+    }, [fetchedVoltageLevelOptions]);
 
     useEffect(() => {
         if (!fetchedLineOptions) return;
@@ -197,8 +211,9 @@ const LineSplitWithVoltageLevelDialog = ({
                           (value) => value.id === defaultVoltageLevelId
                       )
                     : '',
+            loading: loadingVoltageLevelOptions,
         });
-    const voltageLevelOrIdRef = useRef();
+    const voltageLevelOrIdRef = useRef(voltageLevelOrId);
 
     const [busbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
 
@@ -220,15 +235,25 @@ const LineSplitWithVoltageLevelDialog = ({
         });
 
     useEffect(() => {
+        const vlId =
+            typeof voltageLevelOrId === 'string'
+                ? voltageLevelOrId
+                : voltageLevelOrId?.id;
         if (
-            newVoltageLevelRef.current !== null &&
-            voltageLevelOrId !== voltageLevelOrIdRef.current
+            newVoltageLevelRef.current &&
+            voltageLevelOrIdRef.current &&
+            vlId !== newVoltageLevelRef.current.equipmentId
         ) {
             voltageLevelOrIdRef.current = voltageLevelOrId;
-            setNewVoltageLevel(null);
-            newVoltageLevelRef.current = newVoltageLevel;
+            newVoltageLevelRef.current = null;
         }
-    }, [voltageLevelOrId, newVoltageLevel]);
+    }, [voltageLevelOrId]);
+
+    useEffect(() => {
+        if (newVoltageLevelRef.current === null) {
+            setNewVoltageLevel(null);
+        }
+    }, [newVoltageLevelRef]);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
@@ -498,6 +523,11 @@ const LineSplitWithVoltageLevelDialog = ({
 LineSplitWithVoltageLevelDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    // Promise
+    fetchedVoltageLevelOptions: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
     // Promise
     fetchedSubstationOptions: PropTypes.shape({
         then: PropTypes.func.isRequired,
