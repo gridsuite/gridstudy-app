@@ -10,11 +10,12 @@ import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '../../utils/messages';
 import { SEARCH_FETCH_TIMEOUT } from '../../utils/UIconstants';
+import { useParameterState } from '../parameters';
+import { PARAM_USE_NAME } from '../../utils/config-params';
 
 export const useSearchMatchingEquipments = (
     studyUuid,
     nodeUuid,
-    useNameLocal,
     inUpstreamBuiltParentNode,
     equipmentType
 ) => {
@@ -22,6 +23,7 @@ export const useSearchMatchingEquipments = (
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const timer = useRef();
     const lastSearchTermRef = useRef('');
+    const [useNameLocal] = useParameterState(PARAM_USE_NAME);
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
