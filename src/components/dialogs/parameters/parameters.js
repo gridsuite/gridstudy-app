@@ -149,15 +149,9 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const [
-        lfParams,
-        lfProvider,
-        updateLfProvider,
-        commitLFParameter,
-        resetLfParameters,
-        showAdvancedLfParams,
-        setShowAdvancedLfParams,
-    ] = useGetLfParamsAndProvider();
+    const lfParamsAndLfProvider = useGetLfParamsAndProvider();
+
+    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -223,11 +217,7 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
                         {studyUuid && (
                             <LoadFlowParameters
                                 hideParameters={hideParameters}
-                                lfParams={lfParams}
-                                lfProvider={lfProvider}
-                                updateLfProvider={updateLfProvider}
-                                commitLFParameter={commitLFParameter}
-                                resetLfParameters={resetLfParameters}
+                                lfParamsAndLfProvider={lfParamsAndLfProvider}
                                 showAdvancedLfParams={showAdvancedLfParams}
                                 setShowAdvancedLfParams={
                                     setShowAdvancedLfParams
