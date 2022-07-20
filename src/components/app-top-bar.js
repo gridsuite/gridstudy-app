@@ -158,9 +158,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [showParameters, setShowParameters] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
+
     // Equipments search bar
     const lastSearchTermRef = useRef('');
-
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(
             studyUuid,
