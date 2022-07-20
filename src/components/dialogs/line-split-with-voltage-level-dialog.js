@@ -113,7 +113,7 @@ const LineSplitWithVoltageLevelDialog = ({
     });
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
-    const newVoltageLevelRef = useRef();
+    const newVoltageLevelRef = useRef(newVoltageLevel);
 
     const allVoltageLevelOptions = useMemo(() => {
         if (!newVoltageLevel)
@@ -213,7 +213,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     : '',
             loading: loadingVoltageLevelOptions,
         });
-    const voltageLevelOrIdRef = useRef();
+    const voltageLevelOrIdRef = useRef(voltageLevelOrId);
 
     const [busbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
 
@@ -235,15 +235,25 @@ const LineSplitWithVoltageLevelDialog = ({
         });
 
     useEffect(() => {
+        const vlId =
+            typeof voltageLevelOrId === 'string'
+                ? voltageLevelOrId
+                : voltageLevelOrId?.id;
         if (
-            newVoltageLevelRef.current !== null &&
-            voltageLevelOrId !== voltageLevelOrIdRef.current
+            newVoltageLevelRef.current &&
+            voltageLevelOrIdRef.current &&
+            vlId !== newVoltageLevelRef.current.equipmentId
         ) {
             voltageLevelOrIdRef.current = voltageLevelOrId;
-            setNewVoltageLevel(null);
-            newVoltageLevelRef.current = newVoltageLevel;
+            newVoltageLevelRef.current = null;
         }
-    }, [voltageLevelOrId, newVoltageLevel]);
+    }, [voltageLevelOrId]);
+
+    useEffect(() => {
+        if (newVoltageLevelRef.current === null) {
+            setNewVoltageLevel(null);
+        }
+    }, [newVoltageLevelRef]);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
