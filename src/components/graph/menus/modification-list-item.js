@@ -18,19 +18,18 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-//to be modified when enabling edition on all hypothesis
 const editableModificationTypes = new Set([
-    //     'GENERATOR_CREATION',
-    //     'LINE_CREATION',
-    //     'LOAD_MODIFICATION',
-    //     'LOAD_CREATION',
-    //     'SHUNT_COMPENSATOR_CREATION',
-    //     'SUBSTATION_CREATION',
-    //     'TWO_WINDINGS_TRANSFORMER_CREATION',
-    //     'VOLTAGE_LEVEL_CREATION',
+    'GENERATOR_CREATION',
+    'LINE_CREATION',
+    'LOAD_MODIFICATION',
+    'LOAD_CREATION',
+    'SHUNT_COMPENSATOR_CREATION',
+    'SUBSTATION_CREATION',
+    'TWO_WINDINGS_TRANSFORMER_CREATION',
+    'VOLTAGE_LEVEL_CREATION',
     'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
     'LINE_ATTACH_TO_VOLTAGE_LEVEL',
-    //     'GENERATOR_MODIFICATION',
+    'GENERATOR_MODIFICATION',
 ]);
 
 const equipmentModificationModificationsType = new Set([
