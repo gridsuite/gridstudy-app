@@ -35,7 +35,6 @@ import {
     fetchEquipmentsInfos,
     fetchLoadFlowInfos,
     fetchSecurityAnalysisResult,
-    fetchSecurityAnalysisStatus,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
@@ -323,6 +322,18 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     >
                         {STUDY_VIEWS.map((tabName) => {
                             let label;
+                            console.log(
+                                'Load Flow Infos Result :',
+                                loadFlowInfosNode?.loadFlowResult
+                            );
+                            console.log(
+                                'SECURITY Flow Infos Analysis 1:',
+                                securityAnalysisStatusNode?.postContingencyResults
+                            );
+                            console.log(
+                                'SECURITY Flow Infos Analysis 2:',
+                                securityAnalysisStatusNode?.preContingencyResult
+                            );
                             if (
                                 tabName === StudyView.RESULTS &&
                                 isNodeBuilt(currentNode) &&
@@ -336,7 +347,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                     (saNotif &&
                                         securityAnalysisStatusNode?.postContingencyResults !==
                                             null &&
-                                        securityAnalysisStatusNode?.preContingencyResult !=
+                                        securityAnalysisStatusNode?.preContingencyResult !==
                                             null))
                             ) {
                                 label = (
