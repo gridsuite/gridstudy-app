@@ -58,7 +58,6 @@ function getValueOrNull(val) {
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param voltageLevelOptions : the network voltageLevels available
  * @param currentNodeUuid : the currently selected tree node
  * @param equipmentOptionsPromise Promise handling list of generator options
  * @param editData the data to edit
@@ -67,7 +66,6 @@ const GeneratorModificationDialog = ({
     editData,
     open,
     onClose,
-    voltageLevelOptions,
     currentNodeUuid,
     equipmentOptionsPromise,
 }) => {
@@ -366,7 +364,6 @@ GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
     equipmentOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,

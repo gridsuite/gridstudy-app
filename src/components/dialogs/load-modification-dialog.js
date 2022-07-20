@@ -43,7 +43,6 @@ import {
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param equipmentOptionsPromise Promise handling list of loads that can be modified
- * @param voltageLevelOptions : the network voltageLevels available
  * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
@@ -51,7 +50,6 @@ const LoadModificationDialog = ({
     editData,
     open,
     onClose,
-    voltageLevelOptions,
     currentNodeUuid,
     equipmentOptionsPromise,
 }) => {
@@ -248,7 +246,6 @@ LoadModificationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
     equipmentOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,

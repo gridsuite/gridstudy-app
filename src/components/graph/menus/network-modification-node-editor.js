@@ -227,7 +227,7 @@ const NetworkModificationNodeEditor = () => {
             };
         }
 
-        return adapt(Dialog, withVLs, withFetchedOptions);
+        return adapt(Dialog, withFetchedOptions);
     }
 
     const dialogs = {
