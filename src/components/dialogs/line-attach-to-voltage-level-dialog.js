@@ -52,18 +52,18 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * Dialog to attach a line to a (possibly new) voltage level.
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param fetchedLineOptions Promise handling list of network lines
+ * @param lineOptionsPromise Promise handling list of network lines
  * @param currentNodeUuid the currently selected tree node
- * @param fetchedSubstationOptions Promise handling list of network substations
+ * @param substationOptionsPromise Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
  */
 const LineAttachToVoltageLevelDialog = ({
     open,
     onClose,
-    fetchedLineOptions,
+    lineOptionsPromise,
     voltageLevelOptions,
     currentNodeUuid,
-    fetchedSubstationOptions,
+    substationOptionsPromise,
     editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -115,12 +115,12 @@ const LineAttachToVoltageLevelDialog = ({
     }, [editData]);
 
     useEffect(() => {
-        if (!fetchedLineOptions) return;
-        fetchedLineOptions.then((values) => {
+        if (!lineOptionsPromise) return;
+        lineOptionsPromise.then((values) => {
             setLineOptions(values);
             setLoadingLineOptions(false);
         });
-    }, [fetchedLineOptions]);
+    }, [lineOptionsPromise]);
 
     const extractDefaultVoltageLevelId = (fv) => {
         if (fv) {
@@ -579,7 +579,7 @@ const LineAttachToVoltageLevelDialog = ({
                         open={true}
                         onClose={onVoltageLevelDialogClose}
                         currentNodeUuid={currentNodeUuid}
-                        fetchedSubstationOptions={fetchedSubstationOptions}
+                        substationOptionsPromise={substationOptionsPromise}
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
                     />
@@ -590,7 +590,7 @@ const LineAttachToVoltageLevelDialog = ({
                         onClose={onLineDialogClose}
                         voltageLevelOptions={voltageLevelOptions}
                         currentNodeUuid={currentNodeUuid}
-                        fetchedSubstationOptions={fetchedSubstationOptions}
+                        substationOptionsPromise={substationOptionsPromise}
                         displayConnectivity={false}
                         onCreateLine={onLineDo}
                         editData={lineToEdit}
@@ -606,13 +606,11 @@ LineAttachToVoltageLevelDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
-    // Promise
-    fetchedSubstationOptions: PropTypes.shape({
+    substationOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
-    // Promise
-    fetchedLineOptions: PropTypes.shape({
+    lineOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

@@ -47,18 +47,18 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param fetchedLineOptions Promise handling list of network lines
+ * @param lineOptionsPromise Promise handling list of network lines
  * @param currentNodeUuid the currently selected tree node
- * @param fetchedSubstationOptions Promise handling list of network substations
+ * @param substationOptionsPromise Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
  */
 const LineSplitWithVoltageLevelDialog = ({
     open,
     onClose,
-    fetchedLineOptions,
+    lineOptionsPromise,
     voltageLevelOptions,
     currentNodeUuid,
-    fetchedSubstationOptions,
+    substationOptionsPromise,
     editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -130,12 +130,12 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [editData]);
 
     useEffect(() => {
-        if (!fetchedLineOptions) return;
-        fetchedLineOptions.then((values) => {
+        if (!lineOptionsPromise) return;
+        lineOptionsPromise.then((values) => {
             setLineOptions(values);
             setLoadingLineOptions(false);
         });
-    }, [fetchedLineOptions]);
+    }, [lineOptionsPromise]);
 
     const extractDefaultVoltageLevelId = (fv) => {
         if (fv) {
@@ -478,7 +478,7 @@ const LineSplitWithVoltageLevelDialog = ({
                         open={true}
                         onClose={onVoltageLevelDialogClose}
                         currentNodeUuid={currentNodeUuid}
-                        fetchedSubstationOptions={fetchedSubstationOptions}
+                        substationOptionsPromise={substationOptionsPromise}
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
                     />
@@ -498,13 +498,11 @@ const LineSplitWithVoltageLevelDialog = ({
 LineSplitWithVoltageLevelDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    // Promise
-    fetchedSubstationOptions: PropTypes.shape({
+    substationOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
-    // Promise
-    fetchedLineOptions: PropTypes.shape({
+    lineOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

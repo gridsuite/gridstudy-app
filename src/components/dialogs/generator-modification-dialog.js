@@ -60,7 +60,7 @@ function getValueOrNull(val) {
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
  * @param currentNodeUuid : the currently selected tree node
- * @param fetchedEquipmentOptions the data generator option
+ * @param equipmentOptionsPromise Promise handling list of generator options
  * @param editData the data to edit
  */
 const GeneratorModificationDialog = ({
@@ -69,7 +69,7 @@ const GeneratorModificationDialog = ({
     onClose,
     voltageLevelOptions,
     currentNodeUuid,
-    fetchedEquipmentOptions,
+    equipmentOptionsPromise,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -93,12 +93,12 @@ const GeneratorModificationDialog = ({
     };
 
     useEffect(() => {
-        if (!fetchedEquipmentOptions) return;
-        fetchedEquipmentOptions.then((values) => {
+        if (!equipmentOptionsPromise) return;
+        equipmentOptionsPromise.then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
         });
-    }, [fetchedEquipmentOptions]);
+    }, [equipmentOptionsPromise]);
 
     useEffect(() => {
         if (editData) {
@@ -368,8 +368,7 @@ GeneratorModificationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
-    // Promise
-    fetchedEquipmentOptions: PropTypes.shape({
+    equipmentOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

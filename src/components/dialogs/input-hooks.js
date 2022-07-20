@@ -258,7 +258,7 @@ export const useConnectivityValue = ({
     },
     disabled = false,
     inputForm,
-    fetchedVoltageLevelOptions,
+    voltageLevelOptionsPromise,
     currentNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
@@ -284,14 +284,14 @@ export const useConnectivityValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
-        if (!fetchedVoltageLevelOptions) return;
+        if (!voltageLevelOptionsPromise) return;
 
-        fetchedVoltageLevelOptions.then((values) =>
+        voltageLevelOptionsPromise.then((values) =>
             setVoltageLevelOptions(
                 values.sort((a, b) => a.id.localeCompare(b.id))
             )
         );
-    }, [fetchedVoltageLevelOptions]);
+    }, [voltageLevelOptionsPromise]);
 
     useEffect(() => {
         if (!voltageLevelOptions) return;
