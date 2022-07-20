@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     EQUIPMENT_TYPE,
     equipmentStyles,
@@ -159,15 +159,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [showParameters, setShowParameters] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
 
-    // Equipments search bar
-    const lastSearchTermRef = useRef('');
     const [searchMatchingEquipments, equipmentsFound] =
-        useSearchMatchingEquipments(
-            studyUuid,
-            currentNode?.id,
-            lastSearchTermRef,
-            useNameLocal
-        );
+        useSearchMatchingEquipments(studyUuid, currentNode?.id, useNameLocal);
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook

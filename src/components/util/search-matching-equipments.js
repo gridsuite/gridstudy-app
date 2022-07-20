@@ -14,7 +14,6 @@ import { SEARCH_FETCH_TIMEOUT } from '../../utils/UIconstants';
 export const useSearchMatchingEquipments = (
     studyUuid,
     nodeUuid,
-    lastSearchTermRef,
     useNameLocal,
     inUpstreamBuiltParentNode,
     equipmentType
@@ -22,6 +21,7 @@ export const useSearchMatchingEquipments = (
     const { snackError } = useSnackMessage();
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const timer = useRef();
+    const lastSearchTermRef = useRef('');
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
@@ -58,7 +58,6 @@ export const useSearchMatchingEquipments = (
             useNameLocal,
             equipmentType,
             inUpstreamBuiltParentNode,
-            lastSearchTermRef,
             snackError,
         ]
     );
