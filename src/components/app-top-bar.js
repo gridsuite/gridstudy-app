@@ -30,7 +30,13 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
+import {
+    fetchAppsAndUrls,
+    fetchEquipmentsInfos,
+    fetchLoadFlowInfos,
+    fetchSecurityAnalysisResult,
+    fetchSecurityAnalysisStatus,
+} from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
@@ -41,6 +47,7 @@ import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { isNodeBuilt } from './graph/util/model-functions';
+import { useNodeData } from './study-container';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -167,6 +174,24 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const lastSearchTermRef = useRef('');
+    const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
+    const securityAnalysisStatusInvalidations = [
+        'securityAnalysis_status',
+        'securityAnalysis_failed',
+    ];
+    const [loadFlowInfosNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchLoadFlowInfos,
+        loadFlowStatusInvalidations
+    );
+
+    const [securityAnalysisStatusNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchSecurityAnalysisResult,
+        securityAnalysisStatusInvalidations
+    );
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
@@ -300,7 +325,19 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             let label;
                             if (
                                 tabName === StudyView.RESULTS &&
-                                (loadflowNotif || saNotif)
+                                isNodeBuilt(currentNode) &&
+                                ((loadflowNotif &&
+                                    (loadFlowInfosNode?.loadFlowStatus !==
+                                        null ||
+                                        loadFlowInfosNode?.loadFlowStatus !==
+                                            'NOT_DONE') &&
+                                    loadFlowInfosNode?.loadFlowResult !=
+                                        null) ||
+                                    (saNotif &&
+                                        securityAnalysisStatusNode?.postContingencyResults !==
+                                            null &&
+                                        securityAnalysisStatusNode?.preContingencyResult !=
+                                            null))
                             ) {
                                 label = (
                                     <Badge
