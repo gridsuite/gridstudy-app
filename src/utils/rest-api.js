@@ -306,7 +306,8 @@ export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
         currentNodeUuid,
         substationsIds,
         'Substations',
-        'substations'
+        'substations',
+        true
     );
 }
 
@@ -329,7 +330,19 @@ export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
         currentNodeUuid,
         substationsIds,
         'Lines',
-        'lines'
+        'lines',
+        true
+    );
+}
+
+export function fetchVoltageLevels(studyUuid, currentNodeUuid, substationsIds) {
+    return fetchEquipments(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'Voltage-levels',
+        'voltage-levels',
+        true
     );
 }
 
@@ -1830,7 +1843,11 @@ export function fetchCaseInfos(studyUuid) {
     return backendFetch(url, { method: 'get' }).then((response) => {
         return response.ok
             ? response.json()
-            : response.text().then((text) => Promise.reject(text));
+            : response
+                  .text()
+                  .then((text) =>
+                      Promise.reject(text ? text : response.statusText)
+                  );
     });
 }
 

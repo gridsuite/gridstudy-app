@@ -160,7 +160,7 @@
     "descLfDcValues": "DC",
     "resetToDefault": "Valeurs par défaut",
     "showAdvancedParameters": "Paramètres avancés",
-    "save": "enregister",
+
     "descLfReadSlackBus": "Utiliser le nœud bilan défini dans le réseau\u00a0:",
     "descLfWriteSlackBus": "Ecrire le nœud bilan calculé automatiquement dans le réseau\u00a0:",
     "descLfDC": "Lancer le calcul en actif seul\u00a0:",
@@ -290,6 +290,7 @@
     "exportCaseOnNode": "Exporter la situation",
     "nodeNameAlreadyUsed": "Ce nom est déjà utilisé",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
+    "CaseNameLoadError": "Une erreur est survenue lors de la récupération du nom de la situation",
     "StudyUnrecoverableStateRecreate": "Votre étude a un problème. Veuillez la recréer",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
@@ -437,8 +438,6 @@
 
     "insertNetworkModificationNodeAbove": "Insérer un nœud au dessus dans la branche courante",
     "insertNetworkModificationNodeBelow": "Insérer un nœud en dessous dans la branche courante",
-
-    "Update": "Mettre à jour",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",

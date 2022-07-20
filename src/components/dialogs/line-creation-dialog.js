@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a line in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param voltageLevelOptions : the network voltageLevels available
+ * @param fetchedVoltageLevelOptions Promise handling list of voltage level options
  * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
@@ -67,7 +67,7 @@ const LineCreationDialog = ({
     editData,
     open,
     onClose,
-    voltageLevelOptions,
+    fetchedVoltageLevelOptions,
     currentNodeUuid,
     onCreateLine = createLine,
     displayConnectivity = true,
@@ -206,7 +206,7 @@ const LineCreationDialog = ({
         id: 'Connectivity1',
         validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
-        voltageLevelOptions: voltageLevelOptions,
+        fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
         currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
@@ -219,7 +219,7 @@ const LineCreationDialog = ({
         id: 'Connectivity2',
         validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
-        voltageLevelOptions: voltageLevelOptions,
+        fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
         currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
@@ -434,10 +434,10 @@ const LineCreationDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave}>
-                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -456,7 +456,11 @@ LineCreationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    //promise
+    fetchedVoltageLevelOptions: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
     currentNodeUuid: PropTypes.string,
 };
 
