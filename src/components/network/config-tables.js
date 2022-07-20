@@ -822,6 +822,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'reactivePowerSetpoint',
                 numeric: true,
                 fractionDigits: 1,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
         ],
     },

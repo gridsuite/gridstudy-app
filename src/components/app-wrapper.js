@@ -56,6 +56,9 @@ const lightTheme = createTheme({
         hover: '#84adce',
         border: '#0f3d68',
     },
+    selectedRow: {
+        background: '#8E9C9B',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
 
@@ -70,6 +73,9 @@ const darkTheme = createTheme({
         background: '#1976d2',
         hover: '#90caf9',
         border: '#cce3f9',
+    },
+    selectedRow: {
+        background: '#545C5B',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });
