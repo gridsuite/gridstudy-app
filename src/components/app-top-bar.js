@@ -241,6 +241,22 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         }
     }, [user]);
 
+    function isBadgeActive() {
+        if (
+            (loadflowNotif &&
+                (loadFlowInfosNode?.loadFlowStatus !== null ||
+                    loadFlowInfosNode?.loadFlowStatus !== 'NOT_DONE') &&
+                loadFlowInfosNode?.loadFlowResult != null) ||
+            (saNotif &&
+                securityAnalysisStatusNode?.postContingencyResults !== null &&
+                securityAnalysisStatusNode?.preContingencyResult !== null)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function showParametersClicked() {
         setShowParameters(true);
     }
@@ -321,33 +337,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     >
                         {STUDY_VIEWS.map((tabName) => {
                             let label;
-                            console.log(
-                                'Load Flow Infos Result :',
-                                loadFlowInfosNode?.loadFlowResult
-                            );
-                            console.log(
-                                'SECURITY Flow Infos Analysis 1:',
-                                securityAnalysisStatusNode?.postContingencyResults
-                            );
-                            console.log(
-                                'SECURITY Flow Infos Analysis 2:',
-                                securityAnalysisStatusNode?.preContingencyResult
-                            );
                             if (
                                 tabName === StudyView.RESULTS &&
                                 isNodeBuilt(currentNode) &&
-                                ((loadflowNotif &&
-                                    (loadFlowInfosNode?.loadFlowStatus !==
-                                        null ||
-                                        loadFlowInfosNode?.loadFlowStatus !==
-                                            'NOT_DONE') &&
-                                    loadFlowInfosNode?.loadFlowResult !=
-                                        null) ||
-                                    (saNotif &&
-                                        securityAnalysisStatusNode?.postContingencyResults !==
-                                            null &&
-                                        securityAnalysisStatusNode?.preContingencyResult !==
-                                            null))
+                                isBadgeActive()
                             ) {
                                 label = (
                                     <Badge
