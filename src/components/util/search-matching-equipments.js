@@ -8,13 +8,9 @@
 import { useCallback, useState } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackMessage } from '../../utils/messages';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
-import { useSnackbar } from 'notistack';
 
 export const useSearchMatchingEquipments = (
     studyUuid,
@@ -23,8 +19,7 @@ export const useSearchMatchingEquipments = (
     inUpstreamBuiltParentNode,
     equipmentType
 ) => {
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
     const [equipmentsFound, setEquipmentsFound] = useState([]);
 
@@ -47,25 +42,17 @@ export const useSearchMatchingEquipments = (
                     } // else ignore results of outdated fetch
                 })
                 .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'equipmentsSearchingError',
-                            intlRef: intlRef,
-                        },
-                    })
+                    snackError(errorMessage, 'equipmentsSearchingError')
                 );
         },
         [
             studyUuid,
             nodeUuid,
             useNameLocal,
-            intlRef,
             equipmentType,
-            enqueueSnackbar,
             inUpstreamBuiltParentNode,
             lastSearchTermRef,
+            snackError,
         ]
     );
 
