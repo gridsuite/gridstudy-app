@@ -9,19 +9,17 @@ import { useCallback, useRef, useState } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '../../utils/messages';
-import { useSelector } from 'react-redux';
-import { PARAM_USE_NAME } from '../../utils/config-params';
 import { SEARCH_FETCH_TIMEOUT } from '../../utils/UIconstants';
 
 export const useSearchMatchingEquipments = (
     studyUuid,
     nodeUuid,
     lastSearchTermRef,
+    useNameLocal,
     inUpstreamBuiltParentNode,
     equipmentType
 ) => {
     const { snackError } = useSnackMessage();
-    const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const timer = useRef();
 

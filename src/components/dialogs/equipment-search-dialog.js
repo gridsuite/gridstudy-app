@@ -16,6 +16,8 @@ import React, { useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
+import { useParameterState } from '../parameters';
+import { PARAM_USE_NAME } from '../../utils/config-params';
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
 
@@ -39,11 +41,14 @@ const EquipmentSearchDialog = ({
     const intl = useIntl();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const lastSearchTermRef = useRef('');
+    const [useNameLocal] =
+        useParameterState(PARAM_USE_NAME);
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(
             studyUuid,
             currentNodeUuid,
             lastSearchTermRef,
+            useNameLocal,
             true,
             equipmentType
         );
