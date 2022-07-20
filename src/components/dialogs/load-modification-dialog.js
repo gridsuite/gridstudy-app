@@ -42,7 +42,7 @@ import {
  * Dialog to modify a load in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param equipmentOptions Promise handling list of loads that can be modified
+ * @param fetchedEquipmentOptions Promise handling list of loads that can be modified
  * @param voltageLevelOptions : the network voltageLevels available
  * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
@@ -75,6 +75,7 @@ const LoadModificationDialog = ({
     };
 
     useEffect(() => {
+        if (!fetchedEquipmentOptions) return;
         fetchedEquipmentOptions.then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
@@ -232,10 +233,10 @@ const LoadModificationDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear} variant="text">
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave} variant="text">
-                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -249,7 +250,11 @@ LoadModificationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
-    equipmentOptions: PropTypes.arrayOf(PropTypes.object),
+    // Promise
+    fetchedEquipmentOptions: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
 };
 
 export default LoadModificationDialog;
