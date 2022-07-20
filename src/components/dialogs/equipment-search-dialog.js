@@ -41,8 +41,7 @@ const EquipmentSearchDialog = ({
     const intl = useIntl();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const lastSearchTermRef = useRef('');
-    const [useNameLocal] =
-        useParameterState(PARAM_USE_NAME);
+    const [useNameLocal] = useParameterState(PARAM_USE_NAME);
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(
             studyUuid,

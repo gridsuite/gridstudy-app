@@ -166,8 +166,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             studyUuid,
             currentNode?.id,
             lastSearchTermRef,
-            useNameLocal,
-            true
+            useNameLocal
         );
 
     const showVoltageLevelDiagram = useCallback(
