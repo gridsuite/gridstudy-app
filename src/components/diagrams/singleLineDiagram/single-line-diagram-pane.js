@@ -372,17 +372,6 @@ export function SingleLineDiagramPane({
                 } else {
                     updateSld();
                 }
-            } // for what is used this else bloc ?
-            else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'buildCompleted'
-            ) {
-                if (
-                    studyUpdatedForce.eventData.headers['node'] ===
-                    currentNodeRef.current?.id
-                ) {
-                    //updateSld(); this instruction produce the error of voltage level message
-                }
             }
         }
         // Note: studyUuid, and loadNetwork don't change
