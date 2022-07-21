@@ -33,6 +33,7 @@ import {
     FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
+    CHANGE_REORDERED_COLUMNS,
     ADD_LOADFLOW_NOTIF,
     RESET_LOADFLOW_NOTIF,
     ADD_SA_NOTIF,
@@ -116,6 +117,7 @@ const initialState = {
     fullScreenNadId: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
+    allReorderedTableDefinitionIndexes: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     voltageLevelsIdsForNad: [],
@@ -357,6 +359,15 @@ export const reducer = createReducer(initialState, {
         });
         state.allLockedColumnsNames = newLockedColumnsNames;
     },
+    /*[CHANGE_REORDERED_COLUMNS]: (state, action) => {
+        let newReorderedColumns = [...state.allReorderedTableDefinitionIndexes];
+        action.reorderedColumnsParams.forEach((param) => {
+            if (param) {
+                newReorderedColumns[param.index] = param.value;
+            }
+        });
+        state.allReorderedTableDefinitionIndexes = newReorderedColumns;
+    },*/
     [FAVORITE_CONTINGENCY_LISTS]: (state, action) => {
         state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
             action[PARAM_FAVORITE_CONTINGENCY_LISTS];
