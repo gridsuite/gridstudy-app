@@ -27,7 +27,10 @@ import {
     useIntlRef,
 } from '../../../utils/messages';
 
-import { SingleLineDiagramParameters } from './single-line-diagram-parameters';
+import {
+    SingleLineDiagramParameters,
+    useGetAvailableComponentLibraries,
+} from './single-line-diagram-parameters';
 
 import {
     LoadFlowParameters,
@@ -142,7 +145,7 @@ export function useParameterState(paramName) {
     return [paramLocalState, handleChangeParamLocalState];
 }
 
-const Parameters = ({ isParametersOpen, hideParameters }) => {
+const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -150,6 +153,8 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const lfParamsAndLfProvider = useGetLfParamsAndProvider();
+
+    const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
@@ -208,6 +213,7 @@ const Parameters = ({ isParametersOpen, hideParameters }) => {
                     <TabPanel value={tabIndex} index={0}>
                         <SingleLineDiagramParameters
                             hideParameters={hideParameters}
+                            componentLibraries={componentLibraries}
                         />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={1}>

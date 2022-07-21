@@ -4,7 +4,6 @@ import { FormattedMessage } from 'react-intl';
 
 import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 
-import { getAvailableComponentLibraries } from '../../../utils/rest-api';
 import { SubstationLayout } from '../../diagrams/singleLineDiagram/single-line-diagram';
 import {
     PARAM_CENTER_LABEL,
@@ -15,8 +14,26 @@ import {
 import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
+import { getAvailableComponentLibraries } from '../../../utils/rest-api';
 
-export const SingleLineDiagramParameters = ({ user, hideParameters }) => {
+export const useGetAvailableComponentLibraries = (user) => {
+    const [componentLibraries, setComponentLibraries] = useState([]);
+
+    useEffect(() => {
+        if (user !== null) {
+            getAvailableComponentLibraries().then((libraries) => {
+                setComponentLibraries(libraries);
+            });
+        }
+    }, [user]);
+
+    return componentLibraries;
+};
+
+export const SingleLineDiagramParameters = ({
+    hideParameters,
+    componentLibraries,
+}) => {
     const classes = useStyles();
 
     const [diagonalLabelLocal, handleChangeDiagonalLabel] =
@@ -27,14 +44,6 @@ export const SingleLineDiagramParameters = ({ user, hideParameters }) => {
         useParameterState(PARAM_SUBSTATION_LAYOUT);
     const [componentLibraryLocal, handleChangeComponentLibrary] =
         useParameterState(PARAM_COMPONENT_LIBRARY);
-    const [componentLibraries, setComponentLibraries] = useState([]);
-    useEffect(() => {
-        if (user !== null) {
-            getAvailableComponentLibraries().then((libraries) => {
-                setComponentLibraries(libraries);
-            });
-        }
-    }, [user]);
 
     return (
         <Grid container spacing={1} className={classes.grid}>
