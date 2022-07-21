@@ -682,10 +682,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 changeCmd: "equipment.setName('{}')\n",
-                editor: ({ equipment, ...props }) =>
-                    NameField({
-                        ...props,
-                    }),
+                editor: NameField,
             },
             {
                 id: 'LoadType',
@@ -730,12 +727,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 fractionDigits: 1,
                 changeCmd: 'equipment.setP0({})\n',
-                editor: ({ equipment, ...props }) =>
-                    NumericalField({
-                        min: undefined,
-                        max: undefined,
-                        ...props,
-                    }),
+                editor: NumericalField,
             },
             {
                 id: 'ConstantReactivePower',
@@ -743,12 +735,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 fractionDigits: 1,
                 changeCmd: 'equipment.setQ0({})\n',
-                editor: ({ equipment, ...props }) =>
-                    NumericalField({
-                        min: undefined,
-                        max: undefined,
-                        ...props,
-                    }),
+                editor: NumericalField,
             },
         ],
     },

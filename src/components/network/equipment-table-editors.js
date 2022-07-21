@@ -97,7 +97,6 @@ export const NumericalField = ({
                     style: {
                         textAlign: 'center',
                         fontSize: 'small',
-                        flexGrow: 1,
                     },
                     min: { min },
                     max: { max },
@@ -147,7 +146,6 @@ export const NameField = ({ defaultValue, setter, style, ...props }) => {
                 style: {
                     textAlign: 'center',
                     fontSize: 'small',
-                    flexGrow: 1,
                 },
             }}
         />
@@ -161,13 +159,6 @@ export const EnumField = ({ enumList, setter, defaultValue, ...props }) => {
             onChange={(ev) => setter(ev.target.value)}
             size={'medium'}
             margin={'none'}
-            MenuProps={{
-                PaperProps: {
-                    sx: {
-                        maxHeight: ITEM_HEIGHT * ITEMS_NUMBER + ITEMS_PADDING,
-                    },
-                },
-            }}
             {...props}
         >
             {enumList.map((e, index) => (
