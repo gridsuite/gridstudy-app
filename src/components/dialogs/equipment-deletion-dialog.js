@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useParams } from 'react-router-dom';
-import { deleteEquipment, fetchEquipmentsInfos } from '../../utils/rest-api';
+import { deleteEquipment, fetchEquipments } from '../../utils/rest-api';
 import { useSnackMessage } from '../../utils/messages';
 import { validateField } from '../util/validation-functions';
 import { useSelector } from 'react-redux';
@@ -49,10 +49,34 @@ const makeItems = (eqpts, usesNames) => {
                 label: label,
                 id: e.id,
                 key: e.id,
-                type: e.type,
+                // type: e.type,
             };
         })
         .sort((a, b) => a.label.localeCompare(b.label));
+};
+
+const getEqptTypePathElem = (eqptTypeStr) => {
+    switch (eqptTypeStr) {
+        case 'TWO_WINDINGS_TRANSFORMER':
+            return '2-windings-transformers';
+        case 'THREE_WINDINGS_TRANSFORMER':
+            return '3-windings-transformers';
+        case 'BATTERY':
+            return 'batteries';
+        default:
+            let n = eqptTypeStr;
+
+            return n.toLowerCase().replaceAll('_', '-') + 's';
+    }
+};
+
+const getEqptTypeLabel = (eqptTypeStr) => {
+    if (eqptTypeStr === 'BATTERY') {
+        return 'Batteries';
+    }
+    let n = eqptTypeStr.toLowerCase().replaceAll('_', ' ');
+
+    return n.charAt(0).toUpperCase() + n.slice(1) + 's';
 };
 
 /**
@@ -75,24 +99,20 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     const [errors, setErrors] = useState(new Map());
 
     const [equipmentsFound, setEquipmentsFound] = useState([]);
-    const [loading, setLoading] = useState(false);
-    useEffect(() => {
-        setLoading(false);
-    }, [equipmentsFound]);
 
     const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
 
     useEffect(() => {
-        fetchEquipmentsInfos(
+        fetchEquipments(
             studyUuid,
             currentNodeUuid,
-            '',
-            false,
-            true,
-            equipmentType
+            [],
+            getEqptTypeLabel(equipmentType),
+            getEqptTypePathElem(equipmentType),
+            true
         )
-            .then((infos) => {
-                let autoItems = makeItems(infos, useNameLocal);
+            .then((fetched) => {
+                let autoItems = makeItems(fetched, useNameLocal);
                 setEquipmentsFound(autoItems);
             })
             .catch((errorMessage) =>
@@ -108,7 +128,6 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
         values: equipmentsFound,
         getLabel: getId,
         defaultValue: null,
-        loading: loading,
     });
 
     const handleChangeEquipmentType = (event) => {
@@ -150,7 +169,9 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
             deleteEquipment(
                 studyUuid,
                 currentNodeUuid,
-                equipmentType,
+                equipmentType.endsWith('CONVERTER_STATION')
+                    ? 'HVDC_CONVERTER_STATION'
+                    : equipmentType,
                 equipment.id
             ).then((response) => {
                 if (response.status !== 200) {
