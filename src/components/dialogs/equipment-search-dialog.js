@@ -10,17 +10,12 @@ import { useIntl } from 'react-intl';
 import {
     ElementSearchDialog,
     equipmentStyles,
-    getEquipmentsInfosForSearchBar,
     EquipmentItem,
 } from '@gridsuite/commons-ui';
-import React, { useCallback, useState, useRef } from 'react';
-import { fetchEquipmentsInfos } from '../../utils/rest-api';
-import { SEARCH_FETCH_TIMEOUT } from '../../utils/UIconstants';
-import { useSnackMessage } from '../../utils/messages';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { PARAM_USE_NAME } from '../../utils/config-params';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSelector } from 'react-redux';
+import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
 
@@ -42,44 +37,14 @@ const EquipmentSearchDialog = ({
     const equipmentClasses = useEquipmentStyles();
 
     const intl = useIntl();
-    const { snackError } = useSnackMessage();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
-    const [equipmentsFound, setEquipmentsFound] = useState([]);
-    const lastSearchTermRef = useRef('');
-    const timer = useRef();
-
-    const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
-            clearTimeout(timer.current);
-
-            timer.current = setTimeout(() => {
-                lastSearchTermRef.current = searchTerm;
-                fetchEquipmentsInfos(
-                    studyUuid,
-                    currentNodeUuid,
-                    searchTerm,
-                    useNameLocal,
-                    true,
-                    equipmentType
-                )
-                    .then((infos) => {
-                        if (searchTerm === lastSearchTermRef.current) {
-                            setEquipmentsFound(
-                                getEquipmentsInfosForSearchBar(
-                                    infos,
-                                    useNameLocal
-                                )
-                            );
-                        } // else ignore results of outdated fetch
-                    })
-                    .catch((errorMessage) =>
-                        snackError(errorMessage, 'equipmentsSearchingError')
-                    );
-            }, SEARCH_FETCH_TIMEOUT);
-        },
-        [studyUuid, currentNodeUuid, useNameLocal, snackError, equipmentType]
-    );
+    const [searchMatchingEquipments, equipmentsFound] =
+        useSearchMatchingEquipments(
+            studyUuid,
+            currentNodeUuid,
+            true,
+            equipmentType
+        );
 
     return (
         <ElementSearchDialog

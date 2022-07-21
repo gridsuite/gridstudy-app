@@ -44,7 +44,7 @@ import { useFormSearchCopy } from './form-search-copy-hook';
  * Dialog to create a load in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param fetchedVoltageLevelOptions Promise handling list of voltage level options
+ * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
@@ -52,7 +52,7 @@ const LoadCreationDialog = ({
     editData,
     open,
     onClose,
-    fetchedVoltageLevelOptions,
+    voltageLevelOptionsPromise,
     currentNodeUuid,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -153,7 +153,7 @@ const LoadCreationDialog = ({
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
         inputForm: inputForm,
-        fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
+        voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
@@ -261,8 +261,7 @@ LoadCreationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    //promise
-    fetchedVoltageLevelOptions: PropTypes.shape({
+    voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

@@ -176,42 +176,42 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withVLs(p) {
-        const fetchedVoltageLevelOptions = fetchVoltageLevels(
+        const voltageLevelOptionsPromise = fetchVoltageLevels(
             studyUuid,
             currentTreeNode?.id
         );
         return {
             ...p,
-            fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
+            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         };
     }
 
     function withLines(p) {
-        const fetchedLineOptions = fetchLines(
+        const lineOptionsPromise = fetchLines(
             studyUuid,
             currentTreeNode?.id,
             []
         );
         return {
             ...p,
-            fetchedLineOptions: fetchedLineOptions,
+            lineOptionsPromise: lineOptionsPromise,
         };
     }
 
     function withSubstations(p) {
-        const fetchedSubstationOptions = fetchSubstations(
+        const substationOptionsPromise = fetchSubstations(
             studyUuid,
             currentTreeNode?.id,
             []
         );
         return {
             ...p,
-            fetchedSubstationOptions: fetchedSubstationOptions,
+            substationOptionsPromise: substationOptionsPromise,
         };
     }
 
     function withEquipmentModificationOptions(Dialog, resourceType, resource) {
-        const fetchedEquipmentOptions = fetchEquipments(
+        const equipmentOptionsPromise = fetchEquipments(
             studyUuid,
             currentTreeNode?.id,
             [],
@@ -223,11 +223,11 @@ const NetworkModificationNodeEditor = () => {
         function withFetchedOptions(p) {
             return {
                 ...p,
-                fetchedEquipmentOptions: fetchedEquipmentOptions,
+                equipmentOptionsPromise: equipmentOptionsPromise,
             };
         }
 
-        return adapt(Dialog, withVLs, withFetchedOptions);
+        return adapt(Dialog, withFetchedOptions);
     }
 
     const dialogs = {

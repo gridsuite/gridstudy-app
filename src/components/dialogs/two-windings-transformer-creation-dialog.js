@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a two windings transformer in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param fetchedVoltageLevelOptions Promise handling list of voltage level options
+ * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
@@ -57,7 +57,7 @@ const TwoWindingsTransformerCreationDialog = ({
     editData,
     open,
     onClose,
-    fetchedVoltageLevelOptions,
+    voltageLevelOptionsPromise,
     currentNodeUuid,
 }) => {
     const classes = useStyles();
@@ -189,7 +189,7 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'Connectivity',
         id: 'Connectivity1',
         inputForm: inputForm,
-        fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
+        voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
@@ -201,7 +201,7 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'Connectivity',
         id: 'Connectivity2',
         inputForm: inputForm,
-        fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
+        voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
@@ -373,8 +373,7 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    //promise
-    fetchedVoltageLevelOptions: PropTypes.shape({
+    voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
