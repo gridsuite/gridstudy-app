@@ -4,11 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     EQUIPMENT_TYPE,
     equipmentStyles,
-    getEquipmentsInfosForSearchBar,
     LIGHT_THEME,
     logout,
     EquipmentItem,
@@ -30,17 +29,16 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
-import { SEARCH_FETCH_TIMEOUT } from '../utils/UIconstants';
+import { fetchAppsAndUrls } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import { useSnackMessage } from '../utils/messages';
 import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { isNodeBuilt } from './graph/util/model-functions';
+import { useSearchMatchingEquipments } from './util/search-matching-equipments';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -138,8 +136,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const intl = useIntl();
 
-    const { snackError } = useSnackMessage();
-
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
     const loadflowNotif = useSelector((state) => state.loadflowNotif);
@@ -162,40 +158,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [showParameters, setShowParameters] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
-    // Equipments search bar
-    const [equipmentsFound, setEquipmentsFound] = useState([]);
-    const lastSearchTermRef = useRef('');
-    const timer = useRef();
 
-    const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
-            clearTimeout(timer.current);
+    const [searchMatchingEquipments, equipmentsFound] =
+        useSearchMatchingEquipments(studyUuid, currentNode?.id);
 
-            timer.current = setTimeout(() => {
-                lastSearchTermRef.current = searchTerm;
-                fetchEquipmentsInfos(
-                    studyUuid,
-                    currentNode?.id,
-                    searchTerm,
-                    useNameLocal
-                )
-                    .then((infos) => {
-                        if (searchTerm === lastSearchTermRef.current) {
-                            setEquipmentsFound(
-                                getEquipmentsInfosForSearchBar(
-                                    infos,
-                                    useNameLocal
-                                )
-                            );
-                        } // else ignore results of outdated fetch
-                    })
-                    .catch((errorMessage) =>
-                        snackError(errorMessage, 'equipmentsSearchingError')
-                    );
-            }, SEARCH_FETCH_TIMEOUT);
-        },
-        [studyUuid, currentNode, useNameLocal, snackError]
-    );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
