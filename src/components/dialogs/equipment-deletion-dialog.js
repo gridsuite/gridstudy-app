@@ -17,11 +17,7 @@ import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useParams } from 'react-router-dom';
 import { deleteEquipment, fetchEquipmentsInfos } from '../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import { validateField } from '../util/validation-functions';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
@@ -70,8 +66,7 @@ const makeItems = (eqpts, usesNames) => {
 const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const intl = useIntl();
     const inputForm = useInputForm();
@@ -102,23 +97,9 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                 setEquipmentsFound(autoItems);
             })
             .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'equipmentsSearchingError',
-                        intlRef: intlRef,
-                    },
-                })
+                snackError(errorMessage, 'equipmentsSearchingError')
             );
-    }, [
-        equipmentType,
-        studyUuid,
-        currentNodeUuid,
-        enqueueSnackbar,
-        intlRef,
-        useNameLocal,
-    ]);
+    }, [equipmentType, studyUuid, currentNodeUuid, snackError, useNameLocal]);
 
     const [equipment, idField] = useAutocompleteField({
         label: 'ID',
@@ -129,7 +110,6 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
         values: equipmentsFound,
         getLabel: getId,
         defaultValue: null,
-        // equipmentsFound.find((e) => e.id === equipmentId) || equipmentId,
         loading: loading,
     });
 
@@ -144,14 +124,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
             .getReader()
             .read()
             .then((value) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: utf8Decoder.decode(value.value),
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: messsageId,
-                        intlRef: intlRef,
-                    },
-                });
+                snackError(utf8Decoder.decode(value.value), messsageId);
             });
     }
 

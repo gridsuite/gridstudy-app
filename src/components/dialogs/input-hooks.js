@@ -420,8 +420,8 @@ export const useAutocompleteField = ({
     validationRef.current = validation;
 
     useEffect(() => {
-            setValue(defaultValue);
-    }, [defaultValue, values]);
+        setValue(defaultValue);
+    }, [defaultValue, values]); // to reset when alternatives have changed
 
     useEffect(() => {
         function validate() {
@@ -430,9 +430,9 @@ export const useAutocompleteField = ({
             return !res.error;
         }
         if (inputForm) {
-        inputForm.addValidation(id ? id : label, validate);
+            inputForm.addValidation(id ? id : label, validate);
         }
-    }, [label, validation, inputForm, value, id, error, errorMsg]);
+    }, [label, validation, inputForm, value, id]);
 
     const handleChangeValue = useCallback((value) => {
         setValue(value);
