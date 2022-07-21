@@ -60,6 +60,7 @@ import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
+import { isNodeReadOnly } from '../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -668,7 +669,9 @@ const NetworkTable = (props) => {
                             <IconButton
                                 size={'small'}
                                 disabled={
-                                    isModifyingRow() && !isAnyNodeBuilding
+                                    isModifyingRow() &&
+                                    !isAnyNodeBuilding &&
+                                    !isNodeReadOnly(props.currentNode)
                                 }
                                 onClick={() => {
                                     setLineEdit({
@@ -682,7 +685,10 @@ const NetworkTable = (props) => {
                                     });
                                 }}
                             >
-                                {!isAnyNodeBuilding && <EditIcon />}
+                                {!isAnyNodeBuilding &&
+                                    !isNodeReadOnly(props.currentNode) && (
+                                        <EditIcon />
+                                    )}
                             </IconButton>
                         </div>
                     </div>
@@ -694,13 +700,13 @@ const NetworkTable = (props) => {
             lineEdit,
             tabIndex,
             props.studyUuid,
-            props.currentNode?.id,
             intl,
             enqueueSnackbar,
             intlRef,
             isAnyNodeBuilding,
             classes.editCell,
             isModifyingRow,
+            props.currentNode,
         ]
     );
 
