@@ -8,7 +8,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
     EQUIPMENT_TYPE,
     equipmentStyles,
-    getEquipmentsInfosForSearchBar,
     LIGHT_THEME,
     logout,
     EquipmentItem,
@@ -29,18 +28,17 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
+import { fetchAppsAndUrls } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
-import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { isNodeBuilt } from './graph/util/model-functions';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
+import { useSearchMatchingEquipments } from './util/search-matching-equipments';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -138,10 +136,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const intl = useIntl();
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
-
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
     const loadflowNotif = useSelector((state) => state.loadflowNotif);
@@ -164,35 +158,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [isParametersOpen, setParametersOpen] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
-    // Equipments search bar
-    const [equipmentsFound, setEquipmentsFound] = useState([]);
 
-    const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
-            fetchEquipmentsInfos(
-                studyUuid,
-                currentNode?.id,
-                searchTerm,
-                useNameLocal
-            )
-                .then((infos) =>
-                    setEquipmentsFound(
-                        getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                    )
-                )
-                .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'equipmentsSearchingError',
-                            intlRef: intlRef,
-                        },
-                    })
-                );
-        },
-        [studyUuid, currentNode, useNameLocal, enqueueSnackbar, intlRef]
-    );
+    const [searchMatchingEquipments, equipmentsFound] =
+        useSearchMatchingEquipments(studyUuid, currentNode?.id);
+
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
@@ -253,8 +222,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 renderElement={(props) => (
                     <EquipmentItem
                         classes={equipmentClasses}
-                        key={'ei' + props.element.key}
                         {...props}
+                        key={'ei' + props.element.key}
                         suffixRenderer={CustomSuffixRenderer}
                     />
                 )}

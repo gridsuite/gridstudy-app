@@ -12,6 +12,9 @@ import {
     fetchNetworkModification,
     changeNetworkModificationOrder,
     fetchEquipments,
+    fetchSubstations,
+    fetchLines,
+    fetchVoltageLevels,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
@@ -149,6 +152,7 @@ const NetworkModificationNodeEditor = () => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
+
     const closeDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
@@ -172,33 +176,42 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withVLs(p) {
+        const voltageLevelOptionsPromise = fetchVoltageLevels(
+            studyUuid,
+            currentTreeNode?.id
+        );
         return {
             ...p,
-            voltageLevelOptions: network?.voltageLevels,
+            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         };
     }
 
     function withLines(p) {
+        const lineOptionsPromise = fetchLines(
+            studyUuid,
+            currentTreeNode?.id,
+            []
+        );
         return {
             ...p,
-            lineOptions: network?.lines,
+            lineOptionsPromise: lineOptionsPromise,
         };
     }
 
     function withSubstations(p) {
+        const substationOptionsPromise = fetchSubstations(
+            studyUuid,
+            currentTreeNode?.id,
+            []
+        );
         return {
             ...p,
-            substationOptions: network?.substations,
+            substationOptionsPromise: substationOptionsPromise,
         };
     }
 
-    function withEquipmentModificationOptions(
-        Dialog,
-        resourceType,
-        resource,
-        props
-    ) {
-        const fetchedEquipmentOptions = fetchEquipments(
+    function withEquipmentModificationOptions(Dialog, resourceType, resource) {
+        const equipmentOptionsPromise = fetchEquipments(
             studyUuid,
             currentTreeNode?.id,
             [],
@@ -210,11 +223,11 @@ const NetworkModificationNodeEditor = () => {
         function withFetchedOptions(p) {
             return {
                 ...p,
-                fetchedEquipmentOptions: fetchedEquipmentOptions,
+                equipmentOptionsPromise: equipmentOptionsPromise,
             };
         }
 
-        return adapt(Dialog, withVLs, withFetchedOptions);
+        return adapt(Dialog, withFetchedOptions);
     }
 
     const dialogs = {

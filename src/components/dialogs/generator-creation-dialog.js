@@ -54,14 +54,14 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param voltageLevelOptions : the network voltageLevels available
+ * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param currentNodeUuid : the currently selected tree node
  * @param editData the data to edit
  */
 const GeneratorCreationDialog = ({
     open,
     onClose,
-    voltageLevelOptions,
+    voltageLevelOptionsPromise,
     currentNodeUuid,
     editData,
 }) => {
@@ -230,7 +230,7 @@ const GeneratorCreationDialog = ({
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
         inputForm: inputForm,
-        voltageLevelOptions: voltageLevelOptions,
+        voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
@@ -351,10 +351,10 @@ const GeneratorCreationDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave}>
-                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -373,7 +373,10 @@ GeneratorCreationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    voltageLevelOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
     currentNodeUuid: PropTypes.string,
 };
 

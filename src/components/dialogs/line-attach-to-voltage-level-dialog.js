@@ -27,7 +27,12 @@ import {
     useInputForm,
     useTextValue,
 } from './input-hooks';
-import { gridItem, GridSection, removeNullDataValues } from './dialogUtils';
+import {
+    gridItem,
+    GridSection,
+    removeNullDataValues,
+    compareById,
+} from './dialogUtils';
 import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -47,18 +52,19 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * Dialog to attach a line to a (possibly new) voltage level.
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param lineOptions the available network lines
+ * @param lineOptionsPromise Promise handling list of network lines
+ * @param voltageLevelOptionsPromise Promise handling list of network voltage levels
  * @param currentNodeUuid the currently selected tree node
- * @param substationOptions available substations
+ * @param substationOptionsPromise Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
  */
 const LineAttachToVoltageLevelDialog = ({
     open,
     onClose,
-    lineOptions,
-    voltageLevelOptions,
+    lineOptionsPromise,
+    voltageLevelOptionsPromise,
     currentNodeUuid,
-    substationOptions,
+    substationOptionsPromise,
     editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -75,12 +81,21 @@ const LineAttachToVoltageLevelDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
+    const [lineOptions, setLineOptions] = useState([]);
+
+    const [loadingLineOptions, setLoadingLineOptions] = useState(true);
+
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    const [loadingVoltageLevelOptions, setLoadingVoltageLevelOptions] =
+        useState(true);
+
     const clearValues = () => {
         setFormValues(null);
     };
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
-    const newVoltageLevelRef = useRef();
+    const newVoltageLevelRef = useRef(newVoltageLevel);
 
     const [attachmentLine, setAttachmentLine] = useState(null);
 
@@ -105,6 +120,22 @@ const LineAttachToVoltageLevelDialog = ({
         }
     }, [editData]);
 
+    useEffect(() => {
+        if (!voltageLevelOptionsPromise) return;
+        voltageLevelOptionsPromise.then((values) => {
+            setVoltageLevelOptions(values);
+            setLoadingVoltageLevelOptions(false);
+        });
+    }, [voltageLevelOptionsPromise]);
+
+    useEffect(() => {
+        if (!lineOptionsPromise) return;
+        lineOptionsPromise.then((values) => {
+            setLineOptions(values);
+            setLoadingLineOptions(false);
+        });
+    }, [lineOptionsPromise]);
+
     const extractDefaultVoltageLevelId = (fv) => {
         if (fv) {
             if (fv.existingVoltageLevelId) return fv.existingVoltageLevelId;
@@ -115,20 +146,25 @@ const LineAttachToVoltageLevelDialog = ({
     };
     const defaultVoltageLevelId = extractDefaultVoltageLevelId(formValues);
 
+    const formValueLineToAttachId = useMemo(() => {
+        return formValues?.lineToAttachToId
+            ? { id: formValues?.lineToAttachToId }
+            : { id: '' };
+    }, [formValues]);
+
     const [lineToAttachTo, lineToAttachToField] = useAutocompleteField({
         id: 'lineToAttachTo',
         label: 'LineToAttachTo',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        values: lineOptions,
+        values: lineOptions?.sort(compareById),
         allowNewValue: true,
         getLabel: getId,
-        defaultValue: formValues?.lineToAttachToId || '',
-        selectedValue: formValues
-            ? lineOptions.find(
-                  (value) => value.id === formValues.lineToAttachToId
-              )
-            : '',
+        defaultValue:
+            lineOptions.find(
+                (value) => value.id === formValues?.lineToAttachToId
+            ) || formValueLineToAttachId,
+        loading: loadingLineOptions,
     });
 
     const [percentage, percentageArea] = useComplementaryPercentage({
@@ -160,8 +196,9 @@ const LineAttachToVoltageLevelDialog = ({
                           (value) => value.id === defaultVoltageLevelId
                       )
                     : '',
+            loading: loadingVoltageLevelOptions,
         });
-    const voltageLevelOrIdRef = useRef();
+    const voltageLevelOrIdRef = useRef(voltageLevelOrId);
 
     const [busbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
 
@@ -183,15 +220,25 @@ const LineAttachToVoltageLevelDialog = ({
         });
 
     useEffect(() => {
+        const vlId =
+            typeof voltageLevelOrId === 'string'
+                ? voltageLevelOrId
+                : voltageLevelOrId?.id;
         if (
-            newVoltageLevelRef.current !== null &&
-            voltageLevelOrId !== voltageLevelOrIdRef.current
+            newVoltageLevelRef.current &&
+            voltageLevelOrIdRef.current &&
+            vlId !== newVoltageLevelRef.current.equipmentId
         ) {
             voltageLevelOrIdRef.current = voltageLevelOrId;
-            setNewVoltageLevel(null);
-            newVoltageLevelRef.current = newVoltageLevel;
+            newVoltageLevelRef.current = null;
         }
-    }, [voltageLevelOrId, newVoltageLevel]);
+    }, [voltageLevelOrId]);
+
+    useEffect(() => {
+        if (newVoltageLevelRef.current === null) {
+            setNewVoltageLevel(null);
+        }
+    }, [newVoltageLevelRef]);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
@@ -546,10 +593,10 @@ const LineAttachToVoltageLevelDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear} variant="text">
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave} variant="text">
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
                 {voltageLevelDialogOpen && (
@@ -557,7 +604,7 @@ const LineAttachToVoltageLevelDialog = ({
                         open={true}
                         onClose={onVoltageLevelDialogClose}
                         currentNodeUuid={currentNodeUuid}
-                        substationOptions={substationOptions}
+                        substationOptionsPromise={substationOptionsPromise}
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
                     />
@@ -568,7 +615,7 @@ const LineAttachToVoltageLevelDialog = ({
                         onClose={onLineDialogClose}
                         voltageLevelOptions={voltageLevelOptions}
                         currentNodeUuid={currentNodeUuid}
-                        substationOptions={substationOptions}
+                        substationOptionsPromise={substationOptionsPromise}
                         displayConnectivity={false}
                         onCreateLine={onLineDo}
                         editData={lineToEdit}
@@ -584,7 +631,18 @@ LineAttachToVoltageLevelDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
-    substationOptions: PropTypes.arrayOf(PropTypes.object),
+    voltageLevelOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
+    substationOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
+    lineOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
     editData: PropTypes.object,
 };
 

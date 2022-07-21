@@ -10,20 +10,12 @@ import { useIntl } from 'react-intl';
 import {
     ElementSearchDialog,
     equipmentStyles,
-    getEquipmentsInfosForSearchBar,
     EquipmentItem,
 } from '@gridsuite/commons-ui';
-import React, { useCallback, useState } from 'react';
-import { fetchEquipmentsInfos } from '../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { PARAM_USE_NAME } from '../../utils/config-params';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSnackbar } from 'notistack';
-import { useSelector } from 'react-redux';
+import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
 
@@ -45,47 +37,14 @@ const EquipmentSearchDialog = ({
     const equipmentClasses = useEquipmentStyles();
 
     const intl = useIntl();
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
-    const [equipmentsFound, setEquipmentsFound] = useState([]);
-
-    const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
-            fetchEquipmentsInfos(
-                studyUuid,
-                currentNodeUuid,
-                searchTerm,
-                useNameLocal,
-                true,
-                equipmentType
-            )
-                .then((infos) =>
-                    setEquipmentsFound(
-                        getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                    )
-                )
-                .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'equipmentsSearchingError',
-                            intlRef: intlRef,
-                        },
-                    })
-                );
-        },
-        [
+    const [searchMatchingEquipments, equipmentsFound] =
+        useSearchMatchingEquipments(
             studyUuid,
             currentNodeUuid,
-            useNameLocal,
-            enqueueSnackbar,
-            intlRef,
-            equipmentType,
-        ]
-    );
+            true,
+            equipmentType
+        );
 
     return (
         <ElementSearchDialog

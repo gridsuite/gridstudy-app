@@ -68,6 +68,7 @@ export const useInputForm = () => {
     const addValidation = useCallback((id, validate) => {
         validationMap.current.set(id, validate);
     }, []);
+
     const clear = useCallback(() => {
         setToggleClear((oldValue) => !oldValue);
     }, []);
@@ -257,7 +258,7 @@ export const useConnectivityValue = ({
     },
     disabled = false,
     inputForm,
-    voltageLevelOptions,
+    voltageLevelOptionsPromise,
     currentNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
@@ -273,6 +274,7 @@ export const useConnectivityValue = ({
     const [errorBusBarSection, setErrorBusBarSection] = useState();
     const intl = useIntl();
     const studyUuid = useSelector((state) => state.studyUuid);
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
         setConnectivity({
@@ -282,29 +284,30 @@ export const useConnectivityValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
-        let newConnectivityValue = {};
-        if (voltageLevelIdDefaultValue) {
-            const found_vl = voltageLevelOptions.find(
-                (value) => value.id === voltageLevelIdDefaultValue
-            );
-            if (found_vl !== undefined) {
-                newConnectivityValue.voltageLevel = found_vl;
-            } else {
-                newConnectivityValue.voltageLevel = {
-                    id: voltageLevelIdDefaultValue,
-                };
-            }
-        } else {
-            newConnectivityValue.voltageLevel = null;
-        }
-        newConnectivityValue.busOrBusbarSection =
-            busOrBusbarSectionIdDefaultValue
+        if (!voltageLevelOptionsPromise) return;
+
+        voltageLevelOptionsPromise.then((values) =>
+            setVoltageLevelOptions(
+                values.sort((a, b) => a.id.localeCompare(b.id))
+            )
+        );
+    }, [voltageLevelOptionsPromise]);
+
+    useEffect(() => {
+        if (!voltageLevelOptions) return;
+
+        setConnectivity({
+            voltageLevel: voltageLevelIdDefaultValue
+                ? voltageLevelOptions.find(
+                      (value) => value.id === voltageLevelIdDefaultValue
+                  )
+                : null,
+            busOrBusbarSection: busOrBusbarSectionIdDefaultValue
                 ? {
                       id: busOrBusbarSectionIdDefaultValue,
                   }
-                : null;
-
-        setConnectivity(newConnectivityValue);
+                : null,
+        });
     }, [
         voltageLevelOptions,
         busOrBusbarSectionIdDefaultValue,
@@ -690,10 +693,15 @@ export const useExpandableValues = ({
     defaultValues,
     fieldProps,
     validateItem,
+    isRequired,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
+    const [itemListError, setItemListError] = useState({
+        show: false,
+        type: '',
+    });
 
     useEffect(() => {
         if (defaultValues) {
@@ -703,13 +711,17 @@ export const useExpandableValues = ({
         }
     }, [defaultValues]);
 
-    const handleDeleteBusBarSection = useCallback((index) => {
-        setValues((oldValues) => {
-            let newValues = [...oldValues];
-            newValues.splice(index, 1);
-            return newValues;
-        });
-    }, []);
+    const handleDeleteItem = useCallback(
+        (index) => {
+            setValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues.splice(index, 1);
+                return newValues;
+            });
+            inputForm.reset();
+        },
+        [inputForm]
+    );
 
     const handleSetValue = useCallback((index, newValue) => {
         setValues((oldValues) => {
@@ -721,16 +733,38 @@ export const useExpandableValues = ({
 
     const handleAddValue = useCallback(() => {
         setValues((oldValues) => [...oldValues, {}]);
+        setItemListError({
+            show: false,
+            type: '',
+        });
     }, []);
 
     useEffect(() => {
         function validation() {
             const res = validateItem(values);
             setErrors(res);
-            return res?.size === 0;
+            if (res?.size !== 0) {
+                return false;
+            } else if (isRequired && values?.length === 0) {
+                setItemListError({
+                    show: true,
+                    type: 'empty',
+                });
+                return false;
+            }
+            setItemListError({
+                show: false,
+                type: '',
+            });
+
+            return true;
         }
+
         inputForm.addValidation(id, validation);
-    }, [inputForm, values, id, validateItem]);
+    }, [inputForm, values, id, validateItem, isRequired]);
+
+    const isEmptyListError =
+        itemListError.show && itemListError.type === 'empty';
 
     const field = useMemo(() => {
         return (
@@ -749,7 +783,7 @@ export const useExpandableValues = ({
                             <IconButton
                                 className={classes.icon}
                                 key={id + idx}
-                                onClick={() => handleDeleteBusBarSection(idx)}
+                                onClick={() => handleDeleteItem(idx)}
                             >
                                 <DeleteIcon />
                             </IconButton>
@@ -766,21 +800,29 @@ export const useExpandableValues = ({
                         >
                             <FormattedMessage id={labelAddValue} />
                         </Button>
+                        {isEmptyListError && (
+                            <div className={classes.emptyListError}>
+                                <FormattedMessage id={'EmptyList/' + id} />
+                            </div>
+                        )}
                     </Grid>
                 </Grid>
             </Grid>
         );
     }, [
         values,
-        classes,
+        classes.button,
+        classes.emptyListError,
+        classes.icon,
         handleAddValue,
         labelAddValue,
+        isEmptyListError,
         id,
         fieldProps,
         handleSetValue,
         inputForm,
         errors,
-        handleDeleteBusBarSection,
+        handleDeleteItem,
     ]);
 
     return [values, field];

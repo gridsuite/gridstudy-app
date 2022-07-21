@@ -6,11 +6,16 @@ import {
     HEADER_ROW_HEIGHT,
     ROW_HEIGHT,
 } from './config-tables';
+import { useTheme } from '@mui/material/styles';
 
 export const EquipmentTable = (props) => {
     const gridRef = useRef();
 
     const [fixedColumnsCount, setFixedColumnsCount] = useState(0);
+    const theme = useTheme();
+    const [scrollTopLock, setScrollTopLock] = useState(true);
+    const [verticalScrollbarPresence, setVerticalScrollbarPresence] =
+        useState(false);
 
     useEffect(() => {
         const count = props.columns.filter((c) => c.locked).length;
@@ -35,6 +40,12 @@ export const EquipmentTable = (props) => {
         } else {
             let cell = props.rows[rowIndex - 1];
             if (columnDefinition.cellRenderer) {
+                if (props.rows[props.scrollTop]?.id === cell?.id) {
+                    style = {
+                        ...style,
+                        backgroundColor: theme.selectedRow.background,
+                    };
+                }
                 return columnDefinition.cellRenderer(
                     cell,
                     columnDefinition,
@@ -66,6 +77,15 @@ export const EquipmentTable = (props) => {
         return ROW_HEIGHT;
     }
 
+    useEffect(() => {
+        setScrollTopLock(props.scrollTop !== -1);
+    }, [props.scrollTop]);
+
+    const getScrollTop = () => {
+        if (!scrollTopLock) return -1;
+        if (!verticalScrollbarPresence) return -1;
+        return props.scrollTop * getRowHeight(props.scrollTop);
+    };
     return (
         <>
             {!props.fetched && (
@@ -107,6 +127,17 @@ export const EquipmentTable = (props) => {
                                         ? { overflowY: 'hidden' }
                                         : {}
                                 }
+                                onScrollbarPresenceChange={(scrollBars) => {
+                                    setVerticalScrollbarPresence(
+                                        scrollBars?.vertical
+                                    );
+                                }}
+                                scrollTop={getScrollTop()}
+                                onScroll={() => {
+                                    if (getScrollTop() !== -1) {
+                                        setScrollTopLock(false);
+                                    }
+                                }}
                             />
                         )}
                     </AutoSizer>

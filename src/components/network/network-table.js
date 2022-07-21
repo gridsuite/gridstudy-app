@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from './network';
@@ -13,8 +13,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
-import { IconButton, TextField } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { IconButton, TextField, Tooltip, Grid } from '@mui/material';
 import {
     requestNetworkChange,
     updateConfigParameter,
@@ -210,6 +209,9 @@ const useStyles = makeStyles((theme) => ({
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
     },
+    numericValue: {
+        marginLeft: 'inherit', // use 'auto' to align right (if display is flex)
+    },
     checkbox: {
         margin: '-10%',
         cursor: 'initial',
@@ -243,6 +245,8 @@ const NetworkTable = (props) => {
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
 
+    const searchTextInput = useRef(null);
+
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const isLineOnEditMode = useCallback(
@@ -258,10 +262,32 @@ const NetworkTable = (props) => {
 
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
-        setSelectedColumnsNames(
-            new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
+        const newSelectedColumns = new Set(
+            allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []
         );
+        setSelectedColumnsNames(newSelectedColumns);
         setLineEdit({});
+
+        // Sort ID column by default, if selected
+        if (!newSelectedColumns.has('ID')) {
+            setColumnSort(undefined);
+        } else {
+            const tableDef = TABLES_DEFINITION_INDEXES.get(tabIndex);
+            const columnDef = tableDef.columns.find((c) => c.id === 'ID');
+            if (!columnDef) {
+                console.error(
+                    'ID column selected, but no ID identifier in TABLES_DEFINITION'
+                );
+                setColumnSort(undefined);
+            } else {
+                setColumnSort({
+                    key: columnDef.dataKey,
+                    reverse: false, // default sort = ASC
+                    numeric: columnDef.numeric,
+                    colDef: columnDef,
+                });
+            }
+        }
     }, [tabIndex, allDisplayedColumnsNames]);
 
     useEffect(() => {
@@ -273,38 +299,58 @@ const NetworkTable = (props) => {
 
     useEffect(() => {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        if (!props.network) return;
+        if (!props.network || props.disabled) return;
         props.network.useEquipment(resource);
-    }, [props.network, tabIndex]);
-
-    const filter = useCallback(
-        (cell) => {
-            if (!rowFilter) return true;
-            return (
-                [...selectedDataKey].find((key) =>
-                    rowFilter.test(cell[key])
-                ) !== undefined
-            );
-        },
-        [rowFilter, selectedDataKey]
-    );
+    }, [props.network, props.disabled, tabIndex]);
 
     const formatCell = useCallback(
         (rowData, columnDefinition) => {
             let value = rowData[columnDefinition.dataKey];
+            let tooltipValue = undefined;
             if (columnDefinition.cellDataGetter) {
                 value = columnDefinition.cellDataGetter(rowData, props.network);
             }
             if (columnDefinition.normed) {
                 value = columnDefinition.normed(fluxConvention, value);
             }
-            return value &&
+            // Note: a data may be missing in the server response (ex: p1 from 2W-Transfo).
+            // In this case, its value is undefined and nothing is displayed in the cell.
+            if (
+                value !== undefined &&
                 columnDefinition.numeric &&
                 columnDefinition.fractionDigits
-                ? parseFloat(value).toFixed(columnDefinition.fractionDigits)
-                : value;
+            ) {
+                // only numeric rounded cells have a tooltip (their raw numeric value)
+                tooltipValue = value;
+                value = parseFloat(value).toFixed(
+                    columnDefinition.fractionDigits
+                );
+            }
+            return { value: value, tooltip: tooltipValue };
         },
         [fluxConvention, props.network]
+    );
+
+    const filter = useCallback(
+        (rowData, tabIndex) => {
+            if (!rowFilter) return true;
+            const tableDef = TABLES_DEFINITION_INDEXES.get(tabIndex);
+
+            function filterMatch(colName) {
+                const columnDef = tableDef.columns.find(
+                    (c) => c.dataKey === colName
+                );
+                // we want to filter on formatted values
+                let value = formatCell(rowData, columnDef).value;
+                return value !== undefined && rowFilter.test(value);
+            }
+
+            return (
+                [...selectedDataKey].find((colName) => filterMatch(colName)) !==
+                undefined
+            );
+        },
+        [rowFilter, selectedDataKey, formatCell]
     );
 
     const getRows = useCallback(
@@ -322,27 +368,27 @@ const NetworkTable = (props) => {
             let result = [];
             for (let i = 0; i < datasourceRows.length; i++) {
                 const row = datasourceRows[i];
-                if (!rowFilter || filter(row)) {
+                if (!rowFilter || filter(row, index)) {
                     result.push(row);
                 }
             }
 
             function compareValue(a, b, isNumeric, reverse) {
-                const mult = reverse ? 1 : -1;
+                const mult = reverse ? -1 : 1;
                 if (a === b) return 0;
                 else if (a === undefined) return mult;
                 else if (b === undefined) return -mult;
 
                 return isNumeric
-                    ? (Number(a) < Number(b) ? 1 : -1) * mult
+                    ? (Number(a) < Number(b) ? -1 : 1) * mult
                     : ('' + a).localeCompare(b) * mult;
             }
 
             if (columnSort) {
                 return result.sort((a, b) => {
                     return compareValue(
-                        formatCell(a, columnSort.colDef),
-                        formatCell(b, columnSort.colDef),
+                        formatCell(a, columnSort.colDef).value,
+                        formatCell(b, columnSort.colDef).value,
                         columnSort.numeric,
                         columnSort.reverse
                     );
@@ -359,6 +405,17 @@ const NetworkTable = (props) => {
             props.disabled,
         ]
     );
+
+    const onTabChange = useCallback(() => {
+        // when we change Tab, we dont want to keep/apply the search criteria
+        if (
+            !searchTextInput.current.value ||
+            searchTextInput.current.value !== ''
+        ) {
+            searchTextInput.current.value = '';
+            setFilterValue('');
+        }
+    }, []);
 
     function getTabIndexFromEquipementType(equipmentType) {
         const definition = Object.values(TABLES_DEFINITIONS).find(
@@ -382,7 +439,9 @@ const NetworkTable = (props) => {
             // calculate row index to scroll to
             const rows = getRows(newIndex);
             let index = rows.findIndex((r) => r.id === props.equipmentId);
-            setScrollToIndex(index !== undefined ? index : 0);
+            setScrollToIndex(index !== undefined ? index : -1);
+        } else if (manualTabSwitch) {
+            setScrollToIndex(-1);
         }
     }, [
         props.network,
@@ -432,9 +491,9 @@ const NetworkTable = (props) => {
                 columnSort.key === dataKey &&
                 columnSort.reverse
             ) {
-                return <ArrowUpwardIcon className={'arrow'} />;
+                return <ArrowDownwardIcon className={'arrow'} />;
             }
-            return <ArrowDownwardIcon className={'arrow'} />;
+            return <ArrowUpwardIcon className={'arrow'} />;
         },
         [isModifyingRow]
     );
@@ -485,13 +544,13 @@ const NetworkTable = (props) => {
     const headerCellRender = useCallback(
         (columnDefinition, key, style) => {
             if (columnDefinition.editColumn) {
-                return <div key={key} style={style}></div>;
+                return <div key={key} style={style} />;
             }
             return (
                 <div
                     key={key}
                     style={style}
-                    align={columnDefinition.numeric ? 'right' : 'left'}
+                    align="left"
                     onClick={() => setSort(columnDefinition)}
                     className={sortIconClassStyle(
                         columnSort,
@@ -647,23 +706,41 @@ const NetworkTable = (props) => {
 
     const defaultCellRender = useCallback(
         (rowData, columnDefinition, key, style) => {
-            const text = formatCell(rowData, columnDefinition);
+            const cellValue = formatCell(rowData, columnDefinition);
             return (
-                <div
-                    key={key}
-                    style={style}
-                    align={columnDefinition.numeric ? 'right' : 'left'}
-                >
+                <div key={key} style={style}>
                     <div className={classes.tableCell}>
-                        <OverflowableText
-                            className={clsx({
-                                [classes.valueInvalid]:
-                                    columnDefinition.canBeInvalidated &&
-                                    props.loadFlowStatus !==
-                                        RunningStatus.SUCCEED,
-                            })}
-                            text={text}
-                        />
+                        {cellValue.tooltip !== undefined ? (
+                            <Tooltip
+                                disableFocusListener
+                                disableTouchListener
+                                title={cellValue.tooltip}
+                            >
+                                <div
+                                    children={cellValue.value}
+                                    className={clsx({
+                                        [classes.valueInvalid]:
+                                            columnDefinition.canBeInvalidated &&
+                                            props.loadFlowStatus !==
+                                                RunningStatus.SUCCEED,
+                                        [classes.numericValue]:
+                                            columnDefinition.numeric,
+                                    })}
+                                />
+                            </Tooltip>
+                        ) : (
+                            <OverflowableText
+                                className={clsx({
+                                    [classes.valueInvalid]:
+                                        columnDefinition.canBeInvalidated &&
+                                        props.loadFlowStatus !==
+                                            RunningStatus.SUCCEED,
+                                    [classes.numericValue]:
+                                        columnDefinition.numeric,
+                                })}
+                                text={cellValue.value}
+                            />
+                        )}
                     </div>
                 </div>
             );
@@ -671,6 +748,7 @@ const NetworkTable = (props) => {
         [
             classes.tableCell,
             classes.valueInvalid,
+            classes.numericValue,
             props.loadFlowStatus,
             formatCell,
         ]
@@ -686,7 +764,7 @@ const NetworkTable = (props) => {
      */
     const booleanCellRender = useCallback(
         (rowData, columnDefinition, key, style) => {
-            const isChecked = formatCell(rowData, columnDefinition);
+            const isChecked = formatCell(rowData, columnDefinition).value;
             return (
                 <div key={key} style={style}>
                     <div
@@ -739,7 +817,7 @@ const NetworkTable = (props) => {
                 isLineOnEditMode(rowData) &&
                 rowData[columnDefinition.dataKey] !== undefined
             ) {
-                const text = formatCell(rowData, columnDefinition);
+                const text = formatCell(rowData, columnDefinition).value;
                 const changeRequest = (value) =>
                     registerChangeRequest(
                         rowData,
@@ -830,9 +908,8 @@ const NetworkTable = (props) => {
         return generatedTableColumns;
     }
 
-    function renderTable() {
+    function renderTable(rows) {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        const rows = getRows(tabIndex);
         const columns = generateTableColumns(tabIndex);
         return (
             <EquipmentTable
@@ -840,22 +917,27 @@ const NetworkTable = (props) => {
                 rows={rows}
                 columns={columns}
                 fetched={props.network.isResourceFetched(resource)}
-                scrollToIndex={scrollToIndex} // TODO This is not implemented yet
+                scrollTop={scrollToIndex}
                 disableVerticalScroll={isModifyingRow()}
             />
         );
     }
 
     function setFilter(event) {
-        const value = event.target.value; // Value from the user's input
-        const sanitizedValue = value
-            .trim()
-            .replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'); // No more Regexp sensible characters
-        const everyWords = sanitizedValue.split(' ').filter((n) => n); // We split the user input by words
-        const regExp = '(' + everyWords.join('|') + ')'; // For each word, we do a "OR" research
-        setRowFilter(
-            !value || value === '' ? undefined : new RegExp(regExp, 'i')
-        );
+        setFilterValue(event.target.value); // Value from the user's input
+    }
+
+    function setFilterValue(userInputValue) {
+        if (!userInputValue || userInputValue === '') {
+            setRowFilter(undefined);
+        } else {
+            const sanitizedValue = userInputValue
+                .trim()
+                .replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'); // No more Regexp sensible characters
+            const everyWords = sanitizedValue.split(' ').filter((n) => n); // We split the user input by words
+            const regExp = '(' + everyWords.join('|') + ')'; // For each word, we do a "OR" research
+            setRowFilter(new RegExp(regExp, 'i'));
+        }
     }
 
     useEffect(() => {
@@ -1048,141 +1130,161 @@ const NetworkTable = (props) => {
         rows.forEach((row) => {
             let rowData = {};
             columns.forEach((col) => {
-                rowData[col.dataKey] = formatCell(row, col);
+                rowData[col.dataKey] = formatCell(row, col).value;
             });
             csvData.push(rowData);
         });
         return Promise.resolve(csvData);
     };
 
-    return (
-        props.network && (
-            <>
-                <Grid container justifyContent={'space-between'}>
-                    <Grid container justifyContent={'space-between'} item>
-                        <Tabs
-                            value={tabIndex}
-                            variant="scrollable"
-                            onChange={(event, newValue) => {
-                                setTabIndex(newValue);
-                                setManualTabSwitch(true);
-                                setColumnSort(undefined);
-                            }}
-                            aria-label="tables"
-                        >
-                            {Object.values(TABLES_DEFINITIONS).map((table) => (
-                                <Tab
-                                    key={table.name}
-                                    label={intl.formatMessage({
-                                        id: table.name,
-                                    })}
-                                    disabled={
-                                        isModifyingRow() || props.disabled
-                                    }
-                                />
-                            ))}
-                        </Tabs>
-                    </Grid>
-                    <Grid container>
-                        <Grid item className={classes.containerInputSearch}>
-                            <TextField
-                                disabled={isModifyingRow() || props.disabled}
-                                className={classes.textField}
-                                size="small"
-                                placeholder={
-                                    intl.formatMessage({ id: 'filter' }) + '...'
-                                }
-                                onChange={setFilter}
-                                fullWidth
-                                InputProps={{
-                                    classes: {
-                                        input: classes.searchSection,
-                                    },
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon
-                                                color={
-                                                    isModifyingRow() ||
-                                                    props.disabled
-                                                        ? 'disabled'
-                                                        : 'inherit'
-                                                }
-                                            />
-                                        </InputAdornment>
-                                    ),
+    function renderAll() {
+        const rows = getRows(tabIndex);
+        return (
+            props.network && (
+                <>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid container justifyContent={'space-between'} item>
+                            <Tabs
+                                value={tabIndex}
+                                variant="scrollable"
+                                onChange={(event, newValue) => {
+                                    setTabIndex(newValue);
+                                    setManualTabSwitch(true);
+                                    onTabChange(newValue);
                                 }}
-                            />
+                                aria-label="tables"
+                            >
+                                {Object.values(TABLES_DEFINITIONS).map(
+                                    (table) => (
+                                        <Tab
+                                            key={table.name}
+                                            label={intl.formatMessage({
+                                                id: table.name,
+                                            })}
+                                            disabled={
+                                                isModifyingRow() ||
+                                                props.disabled
+                                            }
+                                        />
+                                    )
+                                )}
+                            </Tabs>
                         </Grid>
-                        <Grid item className={classes.selectColumns}>
-                            <span
-                                className={clsx({
-                                    [classes.disabledLabel]:
-                                        isModifyingRow() || props.disabled,
-                                })}
-                            >
-                                <FormattedMessage id="LabelSelectList" />
-                            </span>
-                            <IconButton
-                                disabled={isModifyingRow() || props.disabled}
-                                className={
-                                    selectedColumnsNames.size === 0
-                                        ? classes.blink
-                                        : ''
-                                }
-                                aria-label="dialog"
-                                onClick={handleOpenPopupSelectColumnNames}
-                            >
-                                <ViewColumnIcon />
-                            </IconButton>
-                            <SelectOptionsDialog
-                                open={popupSelectColumnNames}
-                                onClose={handleCancelPopupSelectColumnNames}
-                                onClick={handleSaveSelectedColumnNames}
-                                title={intl.formatMessage({
-                                    id: 'ColumnsList',
-                                })}
-                                child={checkListColumnsNames()}
-                            />
-                        </Grid>
-                        {props.disabled && <AlertInvalidNode />}
-                        <Grid item className={classes.exportCsv}>
-                            <span
-                                className={clsx({
-                                    [classes.disabledLabel]:
-                                        isModifyingRow() || props.disabled,
-                                })}
-                            >
-                                <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-                            </span>
-                            <span>
-                                <CsvDownloader
-                                    datas={getCSVData}
-                                    columns={getCSVColumnNames()}
-                                    filename={getCSVFilename()}
+                        <Grid container>
+                            <Grid item className={classes.containerInputSearch}>
+                                <TextField
                                     disabled={
                                         isModifyingRow() || props.disabled
                                     }
+                                    className={classes.textField}
+                                    size="small"
+                                    placeholder={
+                                        intl.formatMessage({ id: 'filter' }) +
+                                        '...'
+                                    }
+                                    onChange={setFilter}
+                                    inputRef={searchTextInput}
+                                    fullWidth
+                                    InputProps={{
+                                        classes: {
+                                            input: classes.searchSection,
+                                        },
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon
+                                                    color={
+                                                        isModifyingRow() ||
+                                                        props.disabled
+                                                            ? 'disabled'
+                                                            : 'inherit'
+                                                    }
+                                                />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item className={classes.selectColumns}>
+                                <span
+                                    className={clsx({
+                                        [classes.disabledLabel]:
+                                            isModifyingRow() || props.disabled,
+                                    })}
                                 >
-                                    <IconButton
+                                    <FormattedMessage id="LabelSelectList" />
+                                </span>
+                                <IconButton
+                                    disabled={
+                                        isModifyingRow() || props.disabled
+                                    }
+                                    className={
+                                        selectedColumnsNames.size === 0
+                                            ? classes.blink
+                                            : ''
+                                    }
+                                    aria-label="dialog"
+                                    onClick={handleOpenPopupSelectColumnNames}
+                                >
+                                    <ViewColumnIcon />
+                                </IconButton>
+                                <SelectOptionsDialog
+                                    open={popupSelectColumnNames}
+                                    onClose={handleCancelPopupSelectColumnNames}
+                                    onClick={handleSaveSelectedColumnNames}
+                                    title={intl.formatMessage({
+                                        id: 'ColumnsList',
+                                    })}
+                                    child={checkListColumnsNames()}
+                                />
+                            </Grid>
+                            {props.disabled && <AlertInvalidNode />}
+                            <Grid item className={classes.exportCsv}>
+                                <span
+                                    className={clsx({
+                                        [classes.disabledLabel]:
+                                            isModifyingRow() ||
+                                            props.disabled ||
+                                            rows.length === 0,
+                                    })}
+                                >
+                                    <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
+                                </span>
+                                <span>
+                                    <CsvDownloader
+                                        datas={getCSVData}
+                                        columns={getCSVColumnNames()}
+                                        filename={getCSVFilename()}
                                         disabled={
-                                            isModifyingRow() || props.disabled
+                                            isModifyingRow() ||
+                                            props.disabled ||
+                                            rows.length === 0
                                         }
-                                        aria-label="exportCSVButton"
                                     >
-                                        <GetAppIcon />
-                                    </IconButton>
-                                </CsvDownloader>
-                            </span>
+                                        <IconButton
+                                            disabled={
+                                                isModifyingRow() ||
+                                                props.disabled ||
+                                                rows.length === 0
+                                            }
+                                            aria-label="exportCSVButton"
+                                        >
+                                            <GetAppIcon />
+                                        </IconButton>
+                                    </CsvDownloader>
+                                </span>
+                            </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
-                <div className={classes.table} style={{ flexGrow: 1 }}>
-                    {/*This render is fast, rerender full dom everytime*/}
-                    {renderTable()}
-                </div>
-            </>
-        )
-    );
+                    <div className={classes.table} style={{ flexGrow: 1 }}>
+                        {/*This render is fast, rerender full dom everytime*/}
+                        {renderTable(rows)}
+                    </div>
+                </>
+            )
+        );
+    }
+
+    return renderAll();
 };
 
 NetworkTable.defaultProps = {
