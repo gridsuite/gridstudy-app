@@ -638,7 +638,7 @@ const NetworkTable = (props) => {
                               groovyCr
                           )
                 )
-                    .then((response) => {
+                    .then(() => {
                         Object.entries(lineEdit.newValues).forEach(
                             ([key, cr]) => {
                                 rowData[key] = cr.value;
@@ -673,12 +673,14 @@ const NetworkTable = (props) => {
                 return (
                     <div key={key} style={style}>
                         <div className={classes.editCell}>
-                            <IconButton
-                                size={'small'}
-                                onClick={() => commitChanges(rowData)}
-                            >
-                                <CheckIcon />
-                            </IconButton>
+                            {lineEdit.errors.size === 0 && (
+                                <IconButton
+                                    size={'small'}
+                                    onClick={() => commitChanges(rowData)}
+                                >
+                                    <CheckIcon />
+                                </IconButton>
+                            )}
                             <IconButton
                                 size={'small'}
                                 onClick={() => resetChanges(rowData)}
@@ -704,6 +706,7 @@ const NetworkTable = (props) => {
                                         oldValues: {},
                                         newValues: {},
                                         id: rowData.id,
+                                        errors: new Map(),
                                         equipmentType:
                                             TABLES_DEFINITION_INDEXES.get(
                                                 tabIndex
@@ -829,16 +832,38 @@ const NetworkTable = (props) => {
     );
 
     const registerChangeRequest = useCallback(
-        (data, dataKey, changeCmd, value) => {
-            // save original value, dont erase if exists
-            if (!lineEdit.oldValues.hasOwnProperty(dataKey)) {
-                lineEdit.oldValues[dataKey] = data[dataKey];
+        (data, columnDefinition, value) => {
+            function setColumnInError(dataKey) {
+                let newLineEdit = { ...lineEdit };
+                newLineEdit.errors.set(dataKey, true);
+                setLineEdit(newLineEdit);
             }
-            lineEdit.newValues[dataKey] = {
-                changeCmd: changeCmd,
-                value: value,
-            };
-            data[dataKey] = value;
+            function resetColumnInError(dataKey) {
+                if (lineEdit.errors.has(dataKey)) {
+                    let newLineEdit = { ...lineEdit };
+                    newLineEdit.errors.delete(dataKey);
+                    setLineEdit(newLineEdit);
+                }
+            }
+
+            const dataKey = columnDefinition.dataKey;
+            const changeCmd = columnDefinition.changeCmd;
+
+            if (value === undefined || value.length === 0) {
+                // empty values are now allowed
+                setColumnInError(dataKey);
+            } else {
+                resetColumnInError(dataKey);
+                // save original value, dont erase if exists
+                if (!lineEdit.oldValues.hasOwnProperty(dataKey)) {
+                    lineEdit.oldValues[dataKey] = data[dataKey];
+                }
+                lineEdit.newValues[dataKey] = {
+                    changeCmd: changeCmd,
+                    value: value,
+                };
+                data[dataKey] = value;
+            }
         },
         [lineEdit]
     );
@@ -851,12 +876,7 @@ const NetworkTable = (props) => {
             ) {
                 const text = formatCell(rowData, columnDefinition).value;
                 const changeRequest = (value) =>
-                    registerChangeRequest(
-                        rowData,
-                        columnDefinition.dataKey,
-                        columnDefinition.changeCmd,
-                        value
-                    );
+                    registerChangeRequest(rowData, columnDefinition, value);
                 const Editor = columnDefinition.editor;
                 if (Editor) {
                     return (

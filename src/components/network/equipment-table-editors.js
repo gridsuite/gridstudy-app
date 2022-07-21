@@ -61,10 +61,15 @@ export const NumericalField = ({
     const [error, setError] = useState(false);
     const intl = useIntl();
 
+    function isNumeric(str) {
+        return !isNaN(str) && !isNaN(parseFloat(str));
+    }
+
     const validateChange = useCallback(
         (ev) => {
             const newVal = ev.target.value;
             if (
+                isNumeric(newVal) &&
                 (min === undefined || newVal >= min) &&
                 (max === undefined || newVal <= max)
             ) {
@@ -118,11 +123,23 @@ export const NumericalField = ({
 };
 
 export const NameField = ({ defaultValue, setter, style, ...props }) => {
+    const [error, setError] = useState(false);
+
+    const validateChange = useCallback(
+        (ev) => {
+            const newVal = ev.target.value;
+            setError(newVal.length === 0);
+            setter(newVal);
+        },
+        [setter]
+    );
+
     return (
         <TextField
             defaultValue={defaultValue}
-            onChange={(ev) => setter(ev.target.value)}
+            onChange={validateChange}
             {...props}
+            error={error}
             size={'small'}
             margin={'none'}
             style={{ ...style, padding: 0 }}
