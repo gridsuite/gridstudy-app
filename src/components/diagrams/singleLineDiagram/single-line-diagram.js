@@ -368,11 +368,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (
-            props.svgUrl &&
-            props.svgUrl.indexOf(currentNode?.id) !== -1 &&
-            isNodeBuilt(currentNode)
-        ) {
+        if (props.svgUrl) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -398,7 +394,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef, currentNode]);
+    }, [props.svgUrl, forceState, snackError, intlRef]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;

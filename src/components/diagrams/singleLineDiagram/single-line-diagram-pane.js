@@ -91,37 +91,41 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            getVoltageLevelSingleLineDiagram(
-                studyUuid,
-                currentNode?.id,
-                voltageLevelId,
-                useName,
-                centerName,
-                diagonalName,
-                componentLibrary
-            ),
+            isNodeBuilt(currentNode)
+                ? getVoltageLevelSingleLineDiagram(
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelId,
+                      useName,
+                      centerName,
+                      diagonalName,
+                      componentLibrary
+                  )
+                : null,
         [
-            centerName,
-            componentLibrary,
-            diagonalName,
+            currentNode,
             studyUuid,
             useName,
-            currentNode?.id,
+            centerName,
+            diagonalName,
+            componentLibrary,
         ]
     );
 
     const getSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            getSubstationSingleLineDiagram(
-                studyUuid,
-                currentNode?.id,
-                voltageLevelId,
-                useName,
-                centerName,
-                diagonalName,
-                substationLayout,
-                componentLibrary
-            ),
+            isNodeBuilt(currentNode)
+                ? getSubstationSingleLineDiagram(
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelId,
+                      useName,
+                      centerName,
+                      diagonalName,
+                      substationLayout,
+                      componentLibrary
+                  )
+                : null,
         [
             centerName,
             componentLibrary,
@@ -129,7 +133,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             studyUuid,
             substationLayout,
             useName,
-            currentNode?.id,
+            currentNode,
         ]
     );
 
@@ -368,7 +372,8 @@ export function SingleLineDiagramPane({
                 } else {
                     updateSld();
                 }
-            } else if (
+            } // for what is used this else bloc ?
+            else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'buildCompleted'
             ) {
@@ -376,7 +381,7 @@ export function SingleLineDiagramPane({
                     studyUpdatedForce.eventData.headers['node'] ===
                     currentNodeRef.current?.id
                 ) {
-                    updateSld();
+                    //updateSld(); this instruction produce the error of voltage level message
                 }
             }
         }
