@@ -42,7 +42,7 @@ const equipmentTypes = [
 ];
 
 const makeItems = (eqpts, usesNames) => {
-    let autoItems = eqpts
+    return eqpts
         .map((e) => {
             let label = usesNames ? e.name : e.id;
             return {
@@ -53,7 +53,6 @@ const makeItems = (eqpts, usesNames) => {
             };
         })
         .sort((a, b) => a.label.localeCompare(b.label));
-    return autoItems;
 };
 
 /**
@@ -105,7 +104,6 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm,
-        // errorMsg: 'FieldIsRequired',
         formProps: filledTextField,
         values: equipmentsFound,
         getLabel: getId,
@@ -200,7 +198,6 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                         <FormControl fullWidth size="small">
                             <InputLabel
                                 id="equipment-type-label"
-                                // margin={'dense'}
                                 variant={'filled'}
                             >
                                 {intl.formatMessage({ id: 'Type' })}
