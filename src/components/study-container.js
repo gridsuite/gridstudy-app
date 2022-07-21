@@ -38,18 +38,13 @@ import {
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-    useSnackMessage,
-} from '../utils/messages';
+import { useIntlRef, useSnackMessage } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
     getFirstNodeOfType,
     isNodeBuilt,
     isNodeRenamed,
 } from './graph/util/model-functions';
-import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
     RunningStatus,
@@ -185,10 +180,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
-    const { enqueueSnackbar } = useSnackbar();
     const { snackError } = useSnackMessage();
 
-    const intlRef = useIntlRef();
     const intl = useIntl();
 
     const checkFailNotifications = useCallback(
@@ -309,16 +302,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         }
                     })
                     .catch((err) => {
-                        console.error(err.message);
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: err.message,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId:
-                                    'NetworkModificationTreeLoadError',
-                                intlRef: intlRef,
-                            },
-                        });
+                        snackError(err, 'CaseNameLoadError');
                     });
 
                 const firstSelectedNode =
@@ -341,29 +325,18 @@ export function StudyContainer({ view, onChangeTab }) {
             })
             .catch((errorMessage) => {
                 if (errorMessage.status === 404)
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: '',
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'StudyUnrecoverableStateRecreate',
-                            intlRef: intlRef,
-                        },
-                    });
+                    snackError('', 'StudyUnrecoverableStateRecreate');
                 else
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NetworkModificationTreeLoadError',
-                            intlRef: intlRef,
-                        },
-                    });
+                    snackError(
+                        errorMessage,
+                        'NetworkModificationTreeLoadError'
+                    );
             })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
             );
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, enqueueSnackbar, intlRef, dispatch]);
+    }, [studyUuid, dispatch, snackError]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -401,16 +374,9 @@ export function StudyContainer({ view, onChangeTab }) {
             })
             .catch((errorMessage) => {
                 document.title = initialTitle;
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'LoadStudyAndParentsInfoError',
-                        intlRef: intlRef,
-                    },
-                });
+                snackError(errorMessage, 'LoadStudyAndParentsInfoError');
             });
-    }, [studyUuid, initialTitle, enqueueSnackbar, intlRef]);
+    }, [studyUuid, initialTitle, snackError]);
 
     useEffect(() => {
         if (studyUuid) {
