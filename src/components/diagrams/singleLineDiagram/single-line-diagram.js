@@ -56,7 +56,6 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeBuilt } from '../../graph/util/model-functions';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
