@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-        paddingBottom: theme.spacing(6),
+        paddingBottom: theme.spacing(8),
     },
     list: {
         paddingTop: theme.spacing(0),
@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     },
     addButton: {
         position: 'absolute',
-        bottom: theme.spacing(-2.5),
+        bottom: theme.spacing(-1.5),
         right: 0,
         margin: theme.spacing(3),
     },
