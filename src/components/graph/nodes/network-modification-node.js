@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
 import Tooltip from '@mui/material/Tooltip';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
@@ -81,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
     margin: {
         marginLeft: theme.spacing(1.25),
     },
+    tooltip: {
+        maxWidth: '1000px',
+    },
 }));
 
 const NetworkModificationNode = (props) => {
@@ -141,7 +145,11 @@ const NetworkModificationNode = (props) => {
                                 WebkitBoxOrient: 'vertical',
                             }}
                         >
-                            {props.data.label}
+                            <OverflowableText
+                                text={props.data.label}
+                                style={{ width: '100%' }}
+                                tooltipStyle={classes.tooltip}
+                            />
                         </span>
                     </div>
                 </Button>
