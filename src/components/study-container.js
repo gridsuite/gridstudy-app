@@ -379,7 +379,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return;
         }
         fetchStudyPath();
-    }, [studyUuid, initialTitle, fetchStudyPath, snackError]);
+    }, [studyUuid, initialTitle, fetchStudyPath]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -391,7 +391,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 fetchStudyPath();
             }
         }
-    }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackError]);
+    }, [studyUuid, studyUpdatedForce, fetchStudyPath]);
 
     useEffect(() => {
         if (studyUuid) {
