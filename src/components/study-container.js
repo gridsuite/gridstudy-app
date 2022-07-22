@@ -353,12 +353,7 @@ export function StudyContainer({ view, onChangeTab }) {
         loadNetwork(true);
     }, [loadNetwork, currentNode]);
 
-    useEffect(() => {
-        if (!studyUuid) {
-            document.title = initialTitle;
-            return;
-        }
-
+    const fetchStudyPath = useCallback(() => {
         fetchPath(studyUuid)
             .then((response) => {
                 const study = response[0];
@@ -377,6 +372,26 @@ export function StudyContainer({ view, onChangeTab }) {
                 snackError(errorMessage, 'LoadStudyAndParentsInfoError');
             });
     }, [studyUuid, initialTitle, snackError]);
+
+    useEffect(() => {
+        if (!studyUuid) {
+            document.title = initialTitle;
+            return;
+        }
+        fetchStudyPath();
+    }, [studyUuid, initialTitle, fetchStudyPath, snackError]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
+                    'metadata_updated'
+            ) {
+                fetchStudyPath();
+            }
+        }
+    }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackError]);
 
     useEffect(() => {
         if (studyUuid) {
