@@ -4,25 +4,32 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import { InputLabel, MenuItem, Select } from '@mui/material';
+import {
+    Autocomplete,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+} from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useParams } from 'react-router-dom';
-import { deleteEquipment, fetchEquipments } from '../../utils/rest-api';
+import { deleteEquipment } from '../../utils/rest-api';
 import { useSnackMessage } from '../../utils/messages';
 import { validateField } from '../util/validation-functions';
-import { useSelector } from 'react-redux';
-import { PARAM_USE_NAME } from '../../utils/config-params';
-import { useAutocompleteField, useInputForm } from './input-hooks';
-import { filledTextField, getId } from './dialogUtils';
+import { useInputForm } from './input-hooks';
+import { EquipmentItem, equipmentStyles } from '@gridsuite/commons-ui';
+import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
+import makeStyles from '@mui/styles/makeStyles';
 
 const equipmentTypes = [
     'LINE',
@@ -33,15 +40,122 @@ const equipmentTypes = [
     'BATTERY',
     'DANGLING_LINE',
     'HVDC_LINE',
-    'LCC_CONVERTER_STATION',
-    'VSC_CONVERTER_STATION',
+    'HVDC_CONVERTER_STATION',
     'SHUNT_COMPENSATOR',
     'STATIC_VAR_COMPENSATOR',
     'SUBSTATION',
     'VOLTAGE_LEVEL',
 ];
 
+const AutoPartial = (props) => {
+    const {
+        onClose,
+        searchingLabel,
+        onSearchTermChange,
+        onSelectionChange,
+        elementsFound, // [{ label: aLabel, id: anId }, ...]
+        renderElement,
+        minCharsBeforeSearch = 3,
+    } = props;
+
+    const intl = useIntl();
+
+    const [expanded, setExpanded] = useState(false);
+
+    const [loading, setLoading] = useState(false);
+
+    const [userStr, setUserStr] = useState('');
+
+    useEffect(() => {
+        setLoading(false);
+    }, [elementsFound]);
+
+    const handleKeyDown = (e) => {
+        if (e.ctrlKey && e.code === 'Space') {
+            handleForcedSearch(userStr);
+        }
+    };
+
+    const handleForcedSearch = useCallback(
+        (term) => {
+            setLoading(true);
+            onSearchTermChange(term);
+            setExpanded(true);
+        },
+        [onSearchTermChange]
+    );
+
+    const handleSearchTermChange = (term) => {
+        setUserStr(term);
+        if (term.length >= minCharsBeforeSearch) {
+            setLoading(true);
+            onSearchTermChange(term);
+            setExpanded(true);
+        } else {
+            setExpanded(false);
+        }
+    };
+
+    const handleClose = useCallback(() => {
+        setExpanded(false);
+        onClose();
+    }, [onClose]);
+
+    return (
+        <Autocomplete
+            id="element-search"
+            forcePopupIcon={false}
+            open={expanded}
+            onClose={() => {
+                setExpanded(false);
+            }}
+            fullWidth
+            onInputChange={(_event, value) => handleSearchTermChange(value)}
+            onChange={(_event, newValue) => onSelectionChange(newValue)}
+            getOptionLabel={(option) => option.label}
+            isOptionEqualToValue={(option, value) => option.id === value.id}
+            options={loading ? [] : elementsFound}
+            loading={loading}
+            autoHighlight={true}
+            noOptionsText={intl.formatMessage({
+                id: 'element_search/noResult',
+            })}
+            renderOption={(optionProps, element, { inputValue }) =>
+                renderElement({
+                    ...optionProps,
+                    element,
+                    inputValue,
+                    onClose: handleClose,
+                })
+            }
+            renderInput={(params) => (
+                <TextField
+                    autoFocus={true}
+                    {...params}
+                    onKeyDown={handleKeyDown}
+                    label={
+                        searchingLabel ||
+                        intl.formatMessage({
+                            id: 'element_search/label',
+                        })
+                    }
+                    InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                            <React.Fragment>
+                                <SearchIcon color="disabled" />
+                                {params.InputProps.startAdornment}
+                            </React.Fragment>
+                        ),
+                    }}
+                />
+            )}
+        />
+    );
+};
+
 const makeItems = (eqpts, usesNames) => {
+    if (!eqpts) return [];
     return eqpts
         .map((e) => {
             let label = usesNames ? e.name : e.id;
@@ -55,29 +169,7 @@ const makeItems = (eqpts, usesNames) => {
         .sort((a, b) => a.label.localeCompare(b.label));
 };
 
-const getEqptTypePathElem = (eqptTypeStr) => {
-    switch (eqptTypeStr) {
-        case 'TWO_WINDINGS_TRANSFORMER':
-            return '2-windings-transformers';
-        case 'THREE_WINDINGS_TRANSFORMER':
-            return '3-windings-transformers';
-        case 'BATTERY':
-            return 'batteries';
-        default:
-            let n = eqptTypeStr;
-
-            return n.toLowerCase().replaceAll('_', '-') + 's';
-    }
-};
-
-const getEqptTypeLabel = (eqptTypeStr) => {
-    if (eqptTypeStr === 'BATTERY') {
-        return 'Batteries';
-    }
-    let n = eqptTypeStr.toLowerCase().replaceAll('_', ' ');
-
-    return n.charAt(0).toUpperCase() + n.slice(1) + 's';
-};
+const useEquipmentStyles = makeStyles(equipmentStyles);
 
 /**
  * Dialog to delete an equipment in the network
@@ -94,46 +186,26 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     const intl = useIntl();
     const inputForm = useInputForm();
 
+    const equipmentClasses = useEquipmentStyles();
+
     const [equipmentType, setEquipmentType] = useState('LINE');
+    const [equipment, setEquipment] = useState(null);
 
     const [errors, setErrors] = useState(new Map());
-
-    const [equipmentsFound, setEquipmentsFound] = useState([]);
-
-    const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
-
-    useEffect(() => {
-        fetchEquipments(
-            studyUuid,
-            currentNodeUuid,
-            [],
-            getEqptTypeLabel(equipmentType),
-            getEqptTypePathElem(equipmentType),
-            true
-        )
-            .then((fetched) => {
-                let autoItems = makeItems(fetched, useNameLocal);
-                setEquipmentsFound(autoItems);
-            })
-            .catch((errorMessage) =>
-                snackError(errorMessage, 'equipmentsSearchingError')
-            );
-    }, [equipmentType, studyUuid, currentNodeUuid, snackError, useNameLocal]);
-
-    const [equipment, idField] = useAutocompleteField({
-        label: 'ID',
-        validation: { isFieldRequired: true },
-        inputForm,
-        formProps: filledTextField,
-        values: equipmentsFound,
-        getLabel: getId,
-        defaultValue: null,
-    });
 
     const handleChangeEquipmentType = (event) => {
         const nextEquipmentType = event.target.value;
         setEquipmentType(nextEquipmentType);
     };
+
+    const [searchMatchingEquipments, equipmentsFound] =
+        useSearchMatchingEquipments(
+            studyUuid,
+            currentNodeUuid,
+            true,
+            equipmentType,
+            makeItems
+        );
 
     function handleDeleteEquipmentError(response, messsageId) {
         const utf8Decoder = new TextDecoder('utf-8');
@@ -243,7 +315,27 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} align="start">
-                        {idField}
+                        <AutoPartial
+                            onClose={onClose}
+                            searchingLabel={intl.formatMessage({
+                                id: 'equipment_search/label',
+                            })}
+                            onSearchTermChange={searchMatchingEquipments}
+                            onSelectionChange={(element) => {
+                                setEquipment(element);
+                                // onSelectionChange(element);
+                            }}
+                            elementsFound={equipmentsFound}
+                            renderElement={(props) => (
+                                <EquipmentItem
+                                    classes={equipmentClasses}
+                                    {...props}
+                                    key={props.element.key}
+                                    showsJustText={true}
+                                />
+                            )}
+                        />
+                        {/*{idField}*/}
                     </Grid>
                 </Grid>
             </DialogContent>

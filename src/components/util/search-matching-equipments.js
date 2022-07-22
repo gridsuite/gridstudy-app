@@ -17,7 +17,8 @@ export const useSearchMatchingEquipments = (
     studyUuid,
     nodeUuid,
     inUpstreamBuiltParentNode,
-    equipmentType
+    equipmentType,
+    makeItems = getEquipmentsInfosForSearchBar
 ) => {
     const { snackError } = useSnackMessage();
     const [equipmentsFound, setEquipmentsFound] = useState([]);
@@ -41,12 +42,7 @@ export const useSearchMatchingEquipments = (
                 )
                     .then((infos) => {
                         if (searchTerm === lastSearchTermRef.current) {
-                            setEquipmentsFound(
-                                getEquipmentsInfosForSearchBar(
-                                    infos,
-                                    useNameLocal
-                                )
-                            );
+                            setEquipmentsFound(makeItems(infos, useNameLocal));
                         } // else ignore results of outdated fetch
                     })
                     .catch((errorMessage) =>
@@ -60,6 +56,7 @@ export const useSearchMatchingEquipments = (
             useNameLocal,
             equipmentType,
             inUpstreamBuiltParentNode,
+            makeItems,
             snackError,
         ]
     );
