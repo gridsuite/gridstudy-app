@@ -61,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
+        paddingBottom: theme.spacing(8),
     },
     list: {
         paddingTop: theme.spacing(0),
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     },
     addButton: {
         position: 'absolute',
-        bottom: 0,
+        bottom: theme.spacing(-1.5),
         right: 0,
         margin: theme.spacing(3),
     },
@@ -642,6 +643,7 @@ const NetworkModificationNodeEditor = () => {
             <Fab
                 className={classes.addButton}
                 color="primary"
+                size="medium"
                 onClick={openNetworkModificationConfiguration}
                 disabled={isAnyNodeBuilding}
             >
