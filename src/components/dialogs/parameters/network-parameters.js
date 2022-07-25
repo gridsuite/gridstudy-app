@@ -61,7 +61,13 @@ export const NetworkParameters = ({ hideParameters }) => {
                         </MenuItem>
                     </Select>
                 </Grid>
-                <Grid container className={classes.controlItem} maxWidth="md">
+                <Grid
+                    container
+                    className={
+                        classes.controlItem + ' ' + classes.marginTopButton
+                    }
+                    maxWidth="md"
+                >
                     <LabelledButton
                         callback={resetNetworkParameters}
                         label="resetToDefault"

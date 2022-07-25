@@ -144,13 +144,13 @@ export function LineSeparator() {
 }
 
 export const LabelledSilder = ({
-    threshold,
+    value,
     label,
     disabled,
     onCommitCallback,
-    thresholdMarks,
+    marks,
 }) => {
-    const [sliderValue, setSliderValue] = useState(threshold);
+    const [sliderValue, setSliderValue] = useState(value);
 
     const handleValueChanged = (event, newValue) => {
         setSliderValue(newValue);
@@ -175,7 +175,7 @@ export const LabelledSilder = ({
                     onChangeCommitted={onCommitCallback}
                     value={sliderValue}
                     disabled={disabled}
-                    marks={thresholdMarks}
+                    marks={marks}
                 />
             </Grid>
         </>

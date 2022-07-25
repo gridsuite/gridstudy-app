@@ -54,7 +54,7 @@ export const SingleLineDiagramParameters = ({
                     handleChangeDiagonalLabel(!diagonalLabelLocal);
                 }}
             />
-            <LineSeparator />{' '}
+            <LineSeparator />
             <SwitchWithLabel
                 value={centerLabelLocal}
                 label="centerLabel"
@@ -62,7 +62,7 @@ export const SingleLineDiagramParameters = ({
                     handleChangeCenterLabel(!centerLabelLocal);
                 }}
             />
-            <LineSeparator />{' '}
+            <LineSeparator />
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -98,7 +98,7 @@ export const SingleLineDiagramParameters = ({
                     </MenuItem>
                 </Select>
             </Grid>
-            <LineSeparator />{' '}
+            <LineSeparator />
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -127,7 +127,13 @@ export const SingleLineDiagramParameters = ({
                         );
                     })}
                 </Select>
-                <Grid container className={classes.controlItem} maxWidth="md">
+                <Grid
+                    container
+                    className={
+                        classes.controlItem + ' ' + classes.marginTopButton
+                    }
+                    maxWidth="md"
+                >
                     <CloseButton
                         hideParameters={hideParameters}
                         className={classes.button}

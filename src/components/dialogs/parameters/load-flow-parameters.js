@@ -452,7 +452,13 @@ export const LoadFlowParameters = ({
                     setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />
 
-                <Grid container className={classes.controlItem} maxWidth="md">
+                <Grid
+                    container
+                    className={
+                        classes.controlItem + ' ' + classes.marginTopButton
+                    }
+                    maxWidth="md"
+                >
                     <LabelledButton
                         callback={resetLfParameters}
                         label="resetToDefault"

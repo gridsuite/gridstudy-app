@@ -92,6 +92,9 @@ export const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(1),
     },
+    marginTopButton: {
+        marginTop: 10,
+    },
 }));
 
 export const FluxConventions = {
@@ -231,7 +234,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={3}>
+                    <TabPanel value={tabIndex} index={4}>
                         <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
                 </Container>

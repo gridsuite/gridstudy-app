@@ -72,7 +72,7 @@ export const MapParameters = ({ hideParameters }) => {
                     handleChangeLineFullPath(!lineFullPathLocal);
                 }}
             />
-            <LineSeparator />{' '}
+            <LineSeparator />
             <SwitchWithLabel
                 value={lineParallelPathLocal}
                 label="lineParallelPath"
@@ -80,7 +80,7 @@ export const MapParameters = ({ hideParameters }) => {
                     handleChangeLineParallelPath(!lineParallelPathLocal);
                 }}
             />
-            <LineSeparator />{' '}
+            <LineSeparator />
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -108,7 +108,7 @@ export const MapParameters = ({ hideParameters }) => {
                     </MenuItem>
                 </Select>
             </Grid>
-            <LineSeparator />{' '}
+            <LineSeparator />
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -133,17 +133,17 @@ export const MapParameters = ({ hideParameters }) => {
                     </MenuItem>
                 </Select>
             </Grid>
-            <LineSeparator />{' '}
+            <LineSeparator />
             <LabelledSilder
-                prop={Number(lineFlowAlertThresholdLocal)}
+                value={Number(lineFlowAlertThresholdLocal)}
                 label="AlertThresholdLabel"
                 disabled={disabledFlowAlertThreshold}
                 onCommitCallback={(event, value) => {
                     handleChangeLineFlowAlertThreshold(value);
                 }}
-                thresholdMarks={alertThresholdMarks}
+                marks={alertThresholdMarks}
             />
-            <LineSeparator />{' '}
+            <LineSeparator />
             <SwitchWithLabel
                 value={displayOverloadTableLocal}
                 label="displayOverloadTable"
@@ -153,7 +153,11 @@ export const MapParameters = ({ hideParameters }) => {
                     );
                 }}
             />
-            <Grid container className={classes.controlItem} maxWidth="md">
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
                 <CloseButton
                     hideParameters={hideParameters}
                     className={classes.button}
