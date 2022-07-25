@@ -10,8 +10,8 @@ import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '../../utils/messages';
 import { SEARCH_FETCH_TIMEOUT } from '../../utils/UIconstants';
-import { useParameterState } from '../parameters';
 import { PARAM_USE_NAME } from '../../utils/config-params';
+import { useParameterState } from '../dialogs/parameters/parameters';
 
 export const useSearchMatchingEquipments = (
     studyUuid,

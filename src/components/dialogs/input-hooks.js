@@ -45,7 +45,6 @@ import {
     useStyles,
 } from './dialogUtils';
 import { getComputedLanguage } from '../../utils/language';
-import { useParameterState } from '../parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSelector } from 'react-redux';
@@ -56,6 +55,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../utils/UIconstants';
+import { useParameterState } from './parameters/parameters';
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
