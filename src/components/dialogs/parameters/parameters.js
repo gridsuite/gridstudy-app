@@ -234,7 +234,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={4}>
+                    <TabPanel value={tabIndex} index={3}>
                         <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
                 </Container>
