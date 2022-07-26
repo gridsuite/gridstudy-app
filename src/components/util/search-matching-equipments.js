@@ -9,7 +9,7 @@ import { useCallback, useRef, useState } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '../../utils/messages';
-import { SEARCH_FETCH_TIMEOUT } from '../../utils/UIconstants';
+import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useParameterState } from '../dialogs/parameters/parameters';
 
@@ -27,10 +27,11 @@ export const useSearchMatchingEquipments = (
     const [useNameLocal] = useParameterState(PARAM_USE_NAME);
 
     const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
+        (searchTerm, sooner = false) => {
             clearTimeout(timer.current);
 
-            timer.current = setTimeout(() => {
+            timer.current = setTimeout(
+                () => {
                 lastSearchTermRef.current = searchTerm;
                 fetchEquipmentsInfos(
                     studyUuid,
@@ -42,13 +43,18 @@ export const useSearchMatchingEquipments = (
                 )
                     .then((infos) => {
                         if (searchTerm === lastSearchTermRef.current) {
-                            setEquipmentsFound(makeItems(infos, useNameLocal));
+                                setEquipmentsFound(
+                                    makeItems(infos, useNameLocal)
+                                );
                         } // else ignore results of outdated fetch
+                            timer.current = undefined;
                     })
                     .catch((errorMessage) =>
                         snackError(errorMessage, 'equipmentsSearchingError')
                     );
-            }, SEARCH_FETCH_TIMEOUT);
+                },
+                sooner ? 10 : SEARCH_FETCH_TIMEOUT_MILLIS
+            );
         },
         [
             studyUuid,

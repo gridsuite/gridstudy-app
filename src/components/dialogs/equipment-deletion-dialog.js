@@ -10,7 +10,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
@@ -47,27 +46,59 @@ const equipmentTypes = [
     'VOLTAGE_LEVEL',
 ];
 
-const AutoPartial = (props) => {
+const QUESTIONABLE_SIZE = 1000;
+
+const isWorthLoading = (term, elements, old, minLen) => {
+    console.debug('worth?', term, elements, old, minLen);
+    const idx = elements.findIndex((e) => e.label === term);
+    if (idx >= 0) {
+        console.debug('already matched');
+        return false;
+    }
+    if (term.length < minLen) {
+        console.debug('not long enough');
+        return false;
+    }
+    if (!term.startsWith(old)) {
+        console.debug('not incr');
+        return true;
+    }
+    if (old.length < minLen || minLen === 0) {
+        console.debug('empty, has to be filled');
+        return true;
+    }
+    if (elements.length === QUESTIONABLE_SIZE) {
+        console.debug('suspicious length');
+        return true;
+    }
+
+    return false;
+};
+
+const useAutoPartial = (props) => {
     const {
         onClose,
         searchingLabel,
         onSearchTermChange,
-        onSelectionChange,
         elementsFound, // [{ label: aLabel, id: anId }, ...]
         renderElement,
         minCharsBeforeSearch = 3,
+        allowsUnknown = false,
     } = props;
 
     const intl = useIntl();
 
     const [expanded, setExpanded] = useState(false);
 
-    const [loading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [userStr, setUserStr] = useState('');
 
+    const [selectedValue, setSelectedValue] = useState(null);
+
     useEffect(() => {
-        setLoading(false);
+        setIsLoading(false);
+        if (elementsFound?.length === 0) setExpanded(false);
     }, [elementsFound]);
 
     const handleKeyDown = (e) => {
@@ -78,45 +109,94 @@ const AutoPartial = (props) => {
 
     const handleForcedSearch = useCallback(
         (term) => {
-            setLoading(true);
-            onSearchTermChange(term);
+            if (!onSearchTermChange) return;
+            console.debug('search asked term=', term);
+            setIsLoading(true);
             setExpanded(true);
+            onSearchTermChange(term, true);
         },
         [onSearchTermChange]
     );
 
-    const handleSearchTermChange = (term) => {
-        setUserStr(term);
-        if (term.length >= minCharsBeforeSearch) {
-            setLoading(true);
-            onSearchTermChange(term);
-            setExpanded(true);
-        } else {
-            setExpanded(false);
+    const myOnOpen = useCallback(() => {
+        console.debug('my open=', isLoading, elementsFound);
+        setExpanded(true);
+
+        if (!onSearchTermChange) return;
+        if (isWorthLoading(userStr, elementsFound, userStr, 0)) {
+            setIsLoading(true);
+            onSearchTermChange(userStr, false);
         }
-    };
+    }, [userStr, elementsFound, isLoading, onSearchTermChange]);
+
+    const handleSearchTermChange = useCallback(
+        (term) => {
+            console.debug('handleSearchTermChange', term);
+            const min = minCharsBeforeSearch;
+
+            setUserStr((old) => {
+                if (isWorthLoading(term, elementsFound, old, min)) {
+                    setIsLoading(true);
+                    setExpanded(true);
+                    onSearchTermChange(term, false);
+                    // } else {
+                    //     setExpanded(false);
+                }
+                return term;
+            });
+        },
+        [elementsFound, minCharsBeforeSearch, onSearchTermChange]
+    );
 
     const handleClose = useCallback(() => {
         setExpanded(false);
         onClose();
     }, [onClose]);
 
-    return (
+    const optionEqualsToValue = (option, input) => {
+        if (!allowsUnknown) return option.id === input.id;
+        return (
+            option === input || option.id === input || option.id === input?.id
+        );
+    };
+
+    const onSelectionChange = useCallback(
+        (newValue) => {
+            console.debug('to select', newValue);
+            setSelectedValue(newValue);
+        },
+        [setSelectedValue]
+    );
+
+    console.debug('expanded', expanded);
+
+    const field = (
         <Autocomplete
             id="element-search"
-            forcePopupIcon={false}
+            onChange={(_event, newValue) => {
+                onSelectionChange(newValue);
+            }}
             open={expanded}
+            onOpen={myOnOpen}
             onClose={() => {
                 setExpanded(false);
             }}
-            fullWidth
+            forcePopupIcon
+            options={isLoading ? [] : elementsFound}
+            getOptionLabel={(option) => option?.label || option?.id || option}
+            loading={isLoading}
+            loadingText={<FormattedMessage id="loadingOptions" />}
+            // fullWidth
+            {...(allowsUnknown && {
+                freeSolo: true,
+                autoSelect: true,
+                autoComplete: true,
+                blurOnSelect: true,
+                clearOnBlur: true,
+            })}
             onInputChange={(_event, value) => handleSearchTermChange(value)}
-            onChange={(_event, newValue) => onSelectionChange(newValue)}
-            getOptionLabel={(option) => option.label}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
-            options={loading ? [] : elementsFound}
-            loading={loading}
-            autoHighlight={true}
+            isOptionEqualToValue={optionEqualsToValue}
+            // autoHighlight={true}
             noOptionsText={intl.formatMessage({
                 id: 'element_search/noResult',
             })}
@@ -132,7 +212,9 @@ const AutoPartial = (props) => {
                 <TextField
                     autoFocus={true}
                     {...params}
+                    variant={'filled'}
                     onKeyDown={handleKeyDown}
+                    size="small"
                     label={
                         searchingLabel ||
                         intl.formatMessage({
@@ -141,20 +223,17 @@ const AutoPartial = (props) => {
                     }
                     InputProps={{
                         ...params.InputProps,
-                        startAdornment: (
-                            <React.Fragment>
-                                <SearchIcon color="disabled" />
-                                {params.InputProps.startAdornment}
-                            </React.Fragment>
-                        ),
                     }}
                 />
             )}
         />
     );
+
+    return [selectedValue, field];
 };
 
 const makeItems = (eqpts, usesNames) => {
+    console.debug('got eqpts', eqpts);
     if (!eqpts) return [];
     return eqpts
         .map((e) => {
@@ -189,7 +268,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     const equipmentClasses = useEquipmentStyles();
 
     const [equipmentType, setEquipmentType] = useState('LINE');
-    const [equipment, setEquipment] = useState(null);
+    // const [equipmentOrId, setEquipmentOrId] = useState(null);
 
     const [errors, setErrors] = useState(new Map());
 
@@ -207,6 +286,24 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
             makeItems
         );
 
+    const [equipmentOrId, equipmentField] = useAutoPartial({
+        // onClose: onClose,
+        allowsUnknown: true,
+        searchingLabel: intl.formatMessage({
+            id: 'ID',
+        }),
+        onSearchTermChange: searchMatchingEquipments,
+        elementsFound: equipmentsFound,
+        renderElement: (props) => (
+            <EquipmentItem
+                classes={equipmentClasses}
+                {...props}
+                key={props.element.key}
+                showsJustText={true}
+            />
+        ),
+    });
+
     function handleDeleteEquipmentError(response, messsageId) {
         const utf8Decoder = new TextDecoder('utf-8');
         response.body
@@ -218,6 +315,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     }
 
     const handleSave = () => {
+        console.debug('to save', equipmentOrId, inputForm);
         // Check if error list contains an error
         let isValid;
         if (inputForm) {
@@ -227,7 +325,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
 
             errMap.set(
                 'equipment-id',
-                validateField(equipment, {
+                validateField(equipmentOrId, {
                     isFieldRequired: true,
                 })
             );
@@ -244,7 +342,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                 equipmentType.endsWith('CONVERTER_STATION')
                     ? 'HVDC_CONVERTER_STATION'
                     : equipmentType,
-                equipment.id
+                equipmentOrId?.id || equipmentOrId
             ).then((response) => {
                 if (response.status !== 200) {
                     handleDeleteEquipmentError(
@@ -315,26 +413,28 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} align="start">
-                        <AutoPartial
-                            onClose={onClose}
-                            searchingLabel={intl.formatMessage({
-                                id: 'equipment_search/label',
-                            })}
-                            onSearchTermChange={searchMatchingEquipments}
-                            onSelectionChange={(element) => {
-                                setEquipment(element);
-                                // onSelectionChange(element);
-                            }}
-                            elementsFound={equipmentsFound}
-                            renderElement={(props) => (
-                                <EquipmentItem
-                                    classes={equipmentClasses}
-                                    {...props}
-                                    key={props.element.key}
-                                    showsJustText={true}
-                                />
-                            )}
-                        />
+                        {equipmentField}
+                        {/*<AutoPartial*/}
+                        {/*    onClose={onClose}*/}
+                        {/*    allowsUnknown={true}*/}
+                        {/*    searchingLabel={intl.formatMessage({*/}
+                        {/*        id: 'ID',*/}
+                        {/*    })}*/}
+                        {/*    onSearchTermChange={searchMatchingEquipments}*/}
+                        {/*    onSelectionChange={(element) => {*/}
+                        {/*        console.debug('sel changed to', element);*/}
+                        {/*        setEquipmentOrId(element);*/}
+                        {/*    }}*/}
+                        {/*    elementsFound={equipmentsFound}*/}
+                        {/*    renderElement={(props) => (*/}
+                        {/*        <EquipmentItem*/}
+                        {/*            classes={equipmentClasses}*/}
+                        {/*            {...props}*/}
+                        {/*            key={props.element.key}*/}
+                        {/*            showsJustText={true}*/}
+                        {/*        />*/}
+                        {/*    )}*/}
+                        {/*/>*/}
                         {/*{idField}*/}
                     </Grid>
                 </Grid>
