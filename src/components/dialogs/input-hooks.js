@@ -45,7 +45,6 @@ import {
     useStyles,
 } from './dialogUtils';
 import { getComputedLanguage } from '../../utils/language';
-import { useParameterState } from '../parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSelector } from 'react-redux';
@@ -56,6 +55,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../utils/UIconstants';
+import { useParameterState } from './parameters/parameters';
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
@@ -258,7 +258,7 @@ export const useConnectivityValue = ({
     },
     disabled = false,
     inputForm,
-    fetchedVoltageLevelOptions,
+    voltageLevelOptionsPromise,
     currentNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
@@ -284,14 +284,14 @@ export const useConnectivityValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
-        if (!fetchedVoltageLevelOptions) return;
+        if (!voltageLevelOptionsPromise) return;
 
-        fetchedVoltageLevelOptions.then((values) =>
+        voltageLevelOptionsPromise.then((values) =>
             setVoltageLevelOptions(
                 values.sort((a, b) => a.id.localeCompare(b.id))
             )
         );
-    }, [fetchedVoltageLevelOptions]);
+    }, [voltageLevelOptionsPromise]);
 
     useEffect(() => {
         if (!voltageLevelOptions) return;

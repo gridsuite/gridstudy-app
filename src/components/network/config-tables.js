@@ -7,7 +7,7 @@
 
 import { equipments } from './network-equipments';
 import { NumericalField, TapChangerSelector } from './equipment-table-editors';
-import { FluxConventions } from '../parameters';
+import { FluxConventions } from '../dialogs/parameters/network-parameters';
 
 const nominalVoltage = (network, voltageLevelId) => {
     return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;

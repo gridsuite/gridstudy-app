@@ -61,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
+        paddingBottom: theme.spacing(8),
     },
     list: {
         paddingTop: theme.spacing(0),
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     },
     addButton: {
         position: 'absolute',
-        bottom: 0,
+        bottom: theme.spacing(-1.5),
         right: 0,
         margin: theme.spacing(3),
     },
@@ -176,42 +177,42 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withVLs(p) {
-        const fetchedVoltageLevelOptions = fetchVoltageLevels(
+        const voltageLevelOptionsPromise = fetchVoltageLevels(
             studyUuid,
             currentTreeNode?.id
         );
         return {
             ...p,
-            fetchedVoltageLevelOptions: fetchedVoltageLevelOptions,
+            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         };
     }
 
     function withLines(p) {
-        const fetchedLineOptions = fetchLines(
+        const lineOptionsPromise = fetchLines(
             studyUuid,
             currentTreeNode?.id,
             []
         );
         return {
             ...p,
-            fetchedLineOptions: fetchedLineOptions,
+            lineOptionsPromise: lineOptionsPromise,
         };
     }
 
     function withSubstations(p) {
-        const fetchedSubstationOptions = fetchSubstations(
+        const substationOptionsPromise = fetchSubstations(
             studyUuid,
             currentTreeNode?.id,
             []
         );
         return {
             ...p,
-            fetchedSubstationOptions: fetchedSubstationOptions,
+            substationOptionsPromise: substationOptionsPromise,
         };
     }
 
     function withEquipmentModificationOptions(Dialog, resourceType, resource) {
-        const fetchedEquipmentOptions = fetchEquipments(
+        const equipmentOptionsPromise = fetchEquipments(
             studyUuid,
             currentTreeNode?.id,
             [],
@@ -223,7 +224,7 @@ const NetworkModificationNodeEditor = () => {
         function withFetchedOptions(p) {
             return {
                 ...p,
-                fetchedEquipmentOptions: fetchedEquipmentOptions,
+                equipmentOptionsPromise: equipmentOptionsPromise,
             };
         }
 
@@ -642,6 +643,7 @@ const NetworkModificationNodeEditor = () => {
             <Fab
                 className={classes.addButton}
                 color="primary"
+                size="medium"
                 onClick={openNetworkModificationConfiguration}
                 disabled={isAnyNodeBuilding}
             >

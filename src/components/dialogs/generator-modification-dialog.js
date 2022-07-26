@@ -59,7 +59,7 @@ function getValueOrNull(val) {
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param currentNodeUuid : the currently selected tree node
- * @param fetchedEquipmentOptions the data generator option
+ * @param equipmentOptionsPromise Promise handling list of generator options
  * @param editData the data to edit
  */
 const GeneratorModificationDialog = ({
@@ -67,7 +67,7 @@ const GeneratorModificationDialog = ({
     open,
     onClose,
     currentNodeUuid,
-    fetchedEquipmentOptions,
+    equipmentOptionsPromise,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -91,12 +91,12 @@ const GeneratorModificationDialog = ({
     };
 
     useEffect(() => {
-        if (!fetchedEquipmentOptions) return;
-        fetchedEquipmentOptions.then((values) => {
+        if (!equipmentOptionsPromise) return;
+        equipmentOptionsPromise.then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
         });
-    }, [fetchedEquipmentOptions]);
+    }, [equipmentOptionsPromise]);
 
     useEffect(() => {
         if (editData) {
@@ -365,8 +365,7 @@ GeneratorModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     currentNodeUuid: PropTypes.string,
-    // Promise
-    fetchedEquipmentOptions: PropTypes.shape({
+    equipmentOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
