@@ -159,7 +159,7 @@
     "descLfDcValues": "DC Values",
     "resetToDefault": "default values",
     "showAdvancedParameters": "Advanced settings",
-    "save": "save",
+
     "descLfReadSlackBus": "Read slack bus in the network: ",
     "descLfWriteSlackBus": "Write slack bus in the network: ",
     "descLfDC": "Run a DC power flow: ",
@@ -289,6 +289,7 @@
     "exportCaseOnNode": "Export case",
     "nodeNameAlreadyUsed": "This name is already used",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
+    "CaseNameLoadError": "An error occured while loading case name",
     "StudyUnrecoverableStateRecreate": "Your study has a problem. Please recreate it",
     "NodeCreateError": "An error occured while creating node",
     "NodeDeleteError": "An error occured while deleting node",
@@ -381,7 +382,6 @@
     "Substation": "Substation",
     "BusBarSections": "Bus bar sections",
     "BusBarSectionID": "ID",
-    "BusBarSectionName": "Name",
     "BusBarHorizPos": "Horizontal position",
     "BusBarVertPos": "Vertical position",
     "CreateBusBarSection": "Add bus bar section",
@@ -437,8 +437,6 @@
 
     "insertNetworkModificationNodeAbove": "Insert a node above in the current branch",
     "insertNetworkModificationNodeBelow": "Insert a node below in the current branch",
-
-    "Update": "Update",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",

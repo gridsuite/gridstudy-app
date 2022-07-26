@@ -7,7 +7,7 @@
 
 import { equipments } from './network-equipments';
 import { NumericalField, TapChangerSelector } from './equipment-table-editors';
-import { FluxConventions } from '../parameters';
+import { FluxConventions } from '../dialogs/parameters/network-parameters';
 
 const nominalVoltage = (network, voltageLevelId) => {
     return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
@@ -822,6 +822,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'reactivePowerSetpoint',
                 numeric: true,
                 fractionDigits: 1,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
         ],
     },

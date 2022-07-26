@@ -12,6 +12,9 @@ import {
     fetchNetworkModification,
     changeNetworkModificationOrder,
     fetchEquipments,
+    fetchSubstations,
+    fetchLines,
+    fetchVoltageLevels,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
@@ -58,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
+        paddingBottom: theme.spacing(8),
     },
     list: {
         paddingTop: theme.spacing(0),
@@ -65,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     },
     addButton: {
         position: 'absolute',
-        bottom: 0,
+        bottom: theme.spacing(-1.5),
         right: 0,
         margin: theme.spacing(3),
     },
@@ -149,6 +153,7 @@ const NetworkModificationNodeEditor = () => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
+
     const closeDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
@@ -172,33 +177,42 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withVLs(p) {
+        const voltageLevelOptionsPromise = fetchVoltageLevels(
+            studyUuid,
+            currentTreeNode?.id
+        );
         return {
             ...p,
-            voltageLevelOptions: network?.voltageLevels,
+            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         };
     }
 
     function withLines(p) {
+        const lineOptionsPromise = fetchLines(
+            studyUuid,
+            currentTreeNode?.id,
+            []
+        );
         return {
             ...p,
-            lineOptions: network?.lines,
+            lineOptionsPromise: lineOptionsPromise,
         };
     }
 
     function withSubstations(p) {
+        const substationOptionsPromise = fetchSubstations(
+            studyUuid,
+            currentTreeNode?.id,
+            []
+        );
         return {
             ...p,
-            substationOptions: network?.substations,
+            substationOptionsPromise: substationOptionsPromise,
         };
     }
 
-    function withEquipmentModificationOptions(
-        Dialog,
-        resourceType,
-        resource,
-        props
-    ) {
-        const fetchedEquipmentOptions = fetchEquipments(
+    function withEquipmentModificationOptions(Dialog, resourceType, resource) {
+        const equipmentOptionsPromise = fetchEquipments(
             studyUuid,
             currentTreeNode?.id,
             [],
@@ -210,11 +224,11 @@ const NetworkModificationNodeEditor = () => {
         function withFetchedOptions(p) {
             return {
                 ...p,
-                fetchedEquipmentOptions: fetchedEquipmentOptions,
+                equipmentOptionsPromise: equipmentOptionsPromise,
             };
         }
 
-        return adapt(Dialog, withVLs, withFetchedOptions);
+        return adapt(Dialog, withFetchedOptions);
     }
 
     const dialogs = {
@@ -626,6 +640,7 @@ const NetworkModificationNodeEditor = () => {
             <Fab
                 className={classes.addButton}
                 color="primary"
+                size="medium"
                 onClick={openNetworkModificationConfiguration}
                 disabled={isAnyNodeBuilding}
             >

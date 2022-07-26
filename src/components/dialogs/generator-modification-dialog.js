@@ -58,18 +58,16 @@ function getValueOrNull(val) {
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param voltageLevelOptions : the network voltageLevels available
  * @param currentNodeUuid : the currently selected tree node
- * @param fetchedEquipmentOptions the data generator option
+ * @param equipmentOptionsPromise Promise handling list of generator options
  * @param editData the data to edit
  */
 const GeneratorModificationDialog = ({
     editData,
     open,
     onClose,
-    voltageLevelOptions,
     currentNodeUuid,
-    fetchedEquipmentOptions,
+    equipmentOptionsPromise,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -93,11 +91,12 @@ const GeneratorModificationDialog = ({
     };
 
     useEffect(() => {
-        fetchedEquipmentOptions.then((values) => {
+        if (!equipmentOptionsPromise) return;
+        equipmentOptionsPromise.then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
         });
-    }, [fetchedEquipmentOptions]);
+    }, [equipmentOptionsPromise]);
 
     useEffect(() => {
         if (editData) {
@@ -350,10 +349,10 @@ const GeneratorModificationDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave}>
-                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -365,8 +364,11 @@ GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
+    equipmentOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
 };
 
 export default GeneratorModificationDialog;

@@ -27,7 +27,10 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { fetchNADSvg } from '../../../utils/rest-api';
 
-import { fullScreenNetworkAreaDiagramId } from '../../../redux/actions';
+import {
+    fullScreenNetworkAreaDiagramId,
+    setNadDepth,
+} from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -182,7 +185,6 @@ const SizedNetworkAreaDiagram = (props) => {
         svgUrl,
         onClose,
         depth,
-        setDepth,
         loadFlowStatus,
         disabled,
     } = props;
@@ -256,7 +258,6 @@ const SizedNetworkAreaDiagram = (props) => {
                     snackError(errorMessage);
                     updateLoadingState(false);
                     setSvg({
-                        //It's kind of a hack. It's necessary to have a line break for to powsybl-diagram-viewer to parse the svg. It has to be fixed.
                         svg:
                             '<svg width="' +
                             minWidth +
@@ -264,7 +265,6 @@ const SizedNetworkAreaDiagram = (props) => {
                             minHeight +
                             '" xmlns="http://www.w3.org/2000/svg" ' +
                             'viewBox="0 0 0 0">' +
-                            '\n' +
                             '</svg>',
                         metadata: null,
                         error: null,
@@ -346,9 +346,8 @@ const SizedNetworkAreaDiagram = (props) => {
 
     const onCloseHandler = () => {
         if (onClose !== null) {
-            dispatch(fullScreenNetworkAreaDiagramId(null));
-            onClose(nadId);
-            setDepth(0);
+            onClose();
+            dispatch(setNadDepth(0));
         }
     };
 
@@ -457,12 +456,14 @@ const SizedNetworkAreaDiagram = (props) => {
                                     depth}
                             </Typography>
                             <AddCircleIcon
-                                onClick={() => setDepth(depth + 1)}
+                                onClick={() => dispatch(setNadDepth(depth + 1))}
                                 className={classes.plusIcon}
                             />
                             <RemoveCircleIcon
                                 onClick={() =>
-                                    setDepth(depth === 0 ? 0 : depth - 1)
+                                    dispatch(
+                                        setNadDepth(depth === 0 ? 0 : depth - 1)
+                                    )
                                 }
                                 className={classes.lessIcon}
                             />
@@ -506,7 +507,6 @@ NetworkAreaDiagram.propTypes = {
     nadId: PropTypes.string,
     currentNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
-    setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,
     studyUuid: PropTypes.string.isRequired,
     disabled: PropTypes.bool,

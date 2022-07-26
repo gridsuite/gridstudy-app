@@ -19,7 +19,6 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
-import { useParameterState } from '../parameters';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
@@ -38,6 +37,7 @@ import {
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
+import { useParameterState } from '../dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
