@@ -19,7 +19,11 @@ import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
-import { isNodeBuilt, isNodeRenamed } from './graph/util/model-functions';
+import {
+    isNodeBuilt,
+    isNodeReadOnly,
+    isNodeRenamed,
+} from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
 
 const INITIAL_POSITION = [0, 0];
@@ -342,7 +346,7 @@ export const NetworkMapTab = ({
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
-                    disabled={disabled}
+                    disabled={disabled || isNodeReadOnly(currentNode)}
                 />
             </div>
         </>

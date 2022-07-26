@@ -399,6 +399,7 @@ const App = () => {
     const onChangeTab = useCallback((newTabIndex) => {
         setTabIndex(newTabIndex);
     }, []);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     // if result tab is displayed, clean badge
     useEffect(() => {
@@ -406,7 +407,7 @@ const App = () => {
             dispatch(resetSANotif());
             dispatch(resetLoadflowNotif());
         }
-    }, [tabIndex, dispatch]);
+    }, [tabIndex, dispatch, currentNode]);
 
     return (
         <div

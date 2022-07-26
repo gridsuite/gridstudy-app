@@ -79,7 +79,7 @@ import {
     PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { FluxConventions } from '../components/parameters';
+import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),

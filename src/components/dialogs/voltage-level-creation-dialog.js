@@ -63,8 +63,8 @@ const BusBarSection = ({
         errorMsg: errors?.BusBarSectionID,
     });
     const [name, nameField] = useTextValue({
-        id: 'BusBarSectionName' + index,
-        label: 'BusBarSectionName',
+        id: 'BusBarSection' + index,
+        label: 'NameOptional',
         defaultValue: defaultValue?.name || '',
         inputForm: inputForm,
     });
@@ -231,7 +231,7 @@ function validateConnection(values) {
  * Dialog to create a voltage level in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param fetchedSubstationOptions Promise handling list of network substations
+ * @param substationOptionsPromise Promise handling list of network substations
  * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  * @param onCreateVoltageLevel callback when OK is triggered,
@@ -251,7 +251,7 @@ const VoltageLevelCreationDialog = ({
     editData,
     open,
     onClose,
-    fetchedSubstationOptions,
+    substationOptionsPromise,
     currentNodeUuid,
     onCreateVoltageLevel = createVoltageLevel,
 }) => {
@@ -308,12 +308,12 @@ const VoltageLevelCreationDialog = ({
     }, [editData]);
 
     useEffect(() => {
-        if (!fetchedSubstationOptions) return;
-        fetchedSubstationOptions.then((values) => {
+        if (!substationOptionsPromise) return;
+        substationOptionsPromise.then((values) => {
             setSubstationOptions(values);
             setLoadingSubstationOptions(false);
         });
-    }, [fetchedSubstationOptions]);
+    }, [substationOptionsPromise]);
 
     const [voltageLevelId, voltageLevelIdField] = useTextValue({
         label: 'ID',
@@ -488,8 +488,7 @@ VoltageLevelCreationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    // Promise
-    fetchedSubstationOptions: PropTypes.shape({
+    substationOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

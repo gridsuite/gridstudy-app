@@ -4,11 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     EQUIPMENT_TYPE,
     equipmentStyles,
-    getEquipmentsInfosForSearchBar,
     LIGHT_THEME,
     logout,
     EquipmentItem,
@@ -23,7 +22,6 @@ import { StudyView } from './study-pane';
 import { Badge, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@mui/material/Tab';
-import Parameters, { useParameterState } from './parameters';
 import {
     PARAM_LANGUAGE,
     PARAM_THEME,
@@ -32,21 +30,27 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchAppsAndUrls,
-    fetchEquipmentsInfos,
     fetchLoadFlowInfos,
-    fetchSecurityAnalysisResult,
+    fetchSecurityAnalysisStatus,
 } from '../utils/rest-api';
-import { SEARCH_FETCH_TIMEOUT } from '../utils/UIconstants';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import { useSnackMessage } from '../utils/messages';
-import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
+import {
+    addLoadflowNotif,
+    addSANotif,
+    centerOnSubstation,
+    openNetworkAreaDiagram,
+    resetLoadflowNotif,
+    resetSANotif,
+} from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
+import Parameters, { useParameterState } from './dialogs/parameters/parameters';
+import { useSearchMatchingEquipments } from './util/search-matching-equipments';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -135,7 +139,13 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 };
 
-const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
+const AppTopBar = ({
+    user,
+    tabIndex,
+    onChangeTab,
+    userManager,
+    securityAnalysisStatus,
+}) => {
     const classes = useStyles();
 
     const equipmentClasses = useEquipmentStyles();
@@ -143,8 +153,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
 
     const intl = useIntl();
-
-    const { snackError } = useSnackMessage();
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
@@ -166,11 +174,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const [showParameters, setShowParameters] = useState(false);
+    const [isParametersOpen, setParametersOpen] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
-    // Equipments search bar
-    const [equipmentsFound, setEquipmentsFound] = useState([]);
-    const lastSearchTermRef = useRef('');
+
+    const [searchMatchingEquipments, equipmentsFound] =
+        useSearchMatchingEquipments(studyUuid, currentNode?.id);
     const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
     const securityAnalysisStatusInvalidations = [
         'securityAnalysis_status',
@@ -186,40 +194,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [securityAnalysisStatusNode] = useNodeData(
         studyUuid,
         currentNode?.id,
-        fetchSecurityAnalysisResult,
+        fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations
     );
-    const timer = useRef();
 
-    const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
-            clearTimeout(timer.current);
-
-            timer.current = setTimeout(() => {
-                lastSearchTermRef.current = searchTerm;
-                fetchEquipmentsInfos(
-                    studyUuid,
-                    currentNode?.id,
-                    searchTerm,
-                    useNameLocal
-                )
-                    .then((infos) => {
-                        if (searchTerm === lastSearchTermRef.current) {
-                            setEquipmentsFound(
-                                getEquipmentsInfosForSearchBar(
-                                    infos,
-                                    useNameLocal
-                                )
-                            );
-                        } // else ignore results of outdated fetch
-                    })
-                    .catch((errorMessage) =>
-                        snackError(errorMessage, 'equipmentsSearchingError')
-                    );
-            }, SEARCH_FETCH_TIMEOUT);
-        },
-        [studyUuid, currentNode, useNameLocal, snackError]
-    );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
@@ -241,28 +219,43 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         }
     }, [user]);
 
-    function isBadgeActive() {
+    useEffect(() => {
         if (
-            (loadflowNotif &&
-                (loadFlowInfosNode?.loadFlowStatus !== null ||
-                    loadFlowInfosNode?.loadFlowStatus !== 'NOT_DONE') &&
-                loadFlowInfosNode?.loadFlowResult != null) ||
-            (saNotif &&
-                securityAnalysisStatusNode?.postContingencyResults !== null &&
-                securityAnalysisStatusNode?.preContingencyResult !== null)
+            isNodeBuilt(currentNode) &&
+            loadFlowInfosNode?.loadFlowStatus !== 'NOT_DONE' &&
+            loadFlowInfosNode?.loadFlowResult != null
         ) {
-            return true;
+            dispatch(addLoadflowNotif());
         } else {
-            return false;
+            dispatch(resetLoadflowNotif());
         }
-    }
+    }, [
+        currentNode,
+        dispatch,
+        loadFlowInfosNode?.loadFlowResult,
+        loadFlowInfosNode?.loadFlowStatus,
+        user,
+    ]);
 
-    function showParametersClicked() {
-        setShowParameters(true);
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            (securityAnalysisStatusNode === 'CONVERGED' ||
+                securityAnalysisStatusNode === 'DIVERGED' ||
+                securityAnalysisStatusNode === 'RUNNING')
+        ) {
+            dispatch(addSANotif());
+        } else {
+            dispatch(resetSANotif());
+        }
+    }, [currentNode, dispatch, securityAnalysisStatusNode, user]);
+
+    function showParameters() {
+        setParametersOpen(true);
     }
 
     function hideParameters() {
-        setShowParameters(false);
+        setParametersOpen(false);
     }
     return (
         <>
@@ -276,7 +269,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         <GridStudyLogoDark />
                     )
                 }
-                onParametersClick={() => showParametersClicked()}
+                onParametersClick={showParameters}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
                 user={user}
                 appsAndUrls={appsAndUrls}
@@ -339,8 +332,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             let label;
                             if (
                                 tabName === StudyView.RESULTS &&
-                                isNodeBuilt(currentNode) &&
-                                isBadgeActive()
+                                (loadflowNotif || saNotif)
                             ) {
                                 label = (
                                     <Badge
@@ -359,7 +351,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 )}
             </TopBar>
             <Parameters
-                showParameters={showParameters}
+                isParametersOpen={isParametersOpen}
                 hideParameters={hideParameters}
                 user={user}
             />

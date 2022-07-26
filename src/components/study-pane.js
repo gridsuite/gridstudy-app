@@ -13,6 +13,7 @@ import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     filteredNominalVoltagesUpdated,
+    fullScreenNetworkAreaDiagramId,
     openNetworkAreaDiagram,
 } from '../redux/actions';
 import { equipments } from './network/network-equipments';
@@ -144,9 +145,10 @@ const StudyPane = ({
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram(studyUuid);
 
-    const voltageLevelsIdsForNad = useSelector(
-        (state) => state.voltageLevelsIdsForNad
-    );
+    function closeNetworkAreaDiagram() {
+        dispatch(fullScreenNetworkAreaDiagramId(null));
+        dispatch(openNetworkAreaDiagram([]));
+    }
 
     const disabled = !isNodeBuilt(currentNode);
 
@@ -323,22 +325,18 @@ const StudyPane = ({
                                 visible={props.view === StudyView.MAP}
                             />
 
-                            {props.view === StudyView.MAP &&
-                                voltageLevelsIdsForNad?.length > 0 && (
-                                    <NetworkAreaDiagramPane
-                                        studyUuid={studyUuid}
-                                        network={network}
-                                        currentNode={currentNode}
-                                        loadFlowStatus={getLoadFlowRunningStatus(
-                                            loadFlowInfos?.loadFlowStatus
-                                        )}
-                                        onClose={() =>
-                                            dispatch(openNetworkAreaDiagram([]))
-                                        }
-                                        disabled={disabled}
-                                        align="left"
-                                    />
+                            <NetworkAreaDiagramPane
+                                studyUuid={studyUuid}
+                                network={network}
+                                currentNode={currentNode}
+                                loadFlowStatus={getLoadFlowRunningStatus(
+                                    loadFlowInfos?.loadFlowStatus
                                 )}
+                                onClose={closeNetworkAreaDiagram}
+                                disabled={disabled}
+                                visible={props.view === StudyView.MAP}
+                                align="left"
+                            />
                         </div>
                     </div>
                 </div>
