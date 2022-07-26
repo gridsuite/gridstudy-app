@@ -1159,6 +1159,8 @@ export const TABLES_DEFINITIONS = {
 export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE =
     'displayedColumns.';
 export const LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'lockedColumns.';
+export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE =
+    'reorderedColumns.';
 
 export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
     .map((table) => table.columns)

@@ -359,7 +359,7 @@ export const reducer = createReducer(initialState, {
         });
         state.allLockedColumnsNames = newLockedColumnsNames;
     },
-    /*[CHANGE_REORDERED_COLUMNS]: (state, action) => {
+    [CHANGE_REORDERED_COLUMNS]: (state, action) => {
         let newReorderedColumns = [...state.allReorderedTableDefinitionIndexes];
         action.reorderedColumnsParams.forEach((param) => {
             if (param) {
@@ -367,7 +367,7 @@ export const reducer = createReducer(initialState, {
             }
         });
         state.allReorderedTableDefinitionIndexes = newReorderedColumns;
-    },*/
+    },
     [FAVORITE_CONTINGENCY_LISTS]: (state, action) => {
         state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
             action[PARAM_FAVORITE_CONTINGENCY_LISTS];

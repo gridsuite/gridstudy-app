@@ -20,7 +20,6 @@ import {
     updateConfigParameter,
 } from '../../utils/rest-api';
 import { SelectOptionsDialog } from '../../utils/dialogs';
-import List from '@mui/material/List';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -30,6 +29,7 @@ import ListItemText from '@mui/material/ListItemText';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
     TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITIONS,
@@ -234,9 +234,8 @@ const NetworkTable = (props) => {
     const allLockedColumnsNames = useSelector(
         (state) => state.allLockedColumnsNames
     );
-
     const allReorderedTableDefinitionIndexes = useSelector(
-        (state) => state.allreorderedTableDefinitionIndexes
+        (state) => state.allReorderedTableDefinitionIndexes
     );
 
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
@@ -248,16 +247,15 @@ const NetworkTable = (props) => {
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
+    const [
+        reorderedTableDefinitionIndexes,
+        setReorderedTableDefinitionIndexes,
+    ] = useState(new Set());
     const [scrollToIndex, setScrollToIndex] = useState(-1);
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
 
     const searchTextInput = useRef(null);
-    const [
-        reorderedTableDefinitionIndexes,
-        setReorderedTableDefinitionIndexes,
-    ] = useState(new Set());
-    const [popupColumns, setPopupColumns] = useState([]);
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
@@ -310,16 +308,15 @@ const NetworkTable = (props) => {
     }, [tabIndex, allLockedColumnsNames]);
 
     useEffect(() => {
-        console.log(allReorderedTableDefinitionIndexes);
-        if (allReorderedTableDefinitionIndexes) {
-            const allReorderedTemp =
-                allReorderedTableDefinitionIndexes[tabIndex];
-            setReorderedTableDefinitionIndexes(
-                new Set(allReorderedTemp ? JSON.parse(allReorderedTemp) : [])
-            );
-        }
-        setPopupColumns(TABLES_COLUMNS_NAMES[tabIndex]);
-    }, [tabIndex, allReorderedTableDefinitionIndexes]);
+        const allReorderedTemp = allReorderedTableDefinitionIndexes[tabIndex];
+        setReorderedTableDefinitionIndexes(
+            allReorderedTemp
+                ? JSON.parse(allReorderedTemp)
+                : TABLES_DEFINITION_INDEXES.get(tabIndex).columns.map(
+                      (item) => item.id
+                  )
+        );
+    }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
     useEffect(() => {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
@@ -923,20 +920,21 @@ const NetworkTable = (props) => {
                 });
             }
 
-            reorderedTableDefinitionIndexes.forEach((value) => {
-                let columnIndex = generatedTableColumns.findIndex((c) => {
-                    return c.id === value.columnName;
-                });
-
-                const [reorderedItem] = generatedTableColumns.splice(
-                    columnIndex,
-                    1
-                );
-
-                generatedTableColumns.splice(value.newIndex, 0, reorderedItem);
-            });
+            function sortByIndex(a, b) {
+                if (
+                    reorderedTableDefinitionIndexes.indexOf(a.id) <
+                    reorderedTableDefinitionIndexes.indexOf(b.id)
+                )
+                    return -1;
+                if (
+                    reorderedTableDefinitionIndexes.indexOf(a.id) >
+                    reorderedTableDefinitionIndexes.indexOf(b.id)
+                )
+                    return 1;
+                return 0;
+            }
+            generatedTableColumns.sort(sortByIndex);
         }
-        generatedTableColumns.headerCellRender = headerCellRender;
 
         function sortByLock(a, b) {
             if (a.locked && !b.locked) return -1;
@@ -944,6 +942,8 @@ const NetworkTable = (props) => {
             return 0;
         }
         generatedTableColumns.sort(sortByLock);
+
+        generatedTableColumns.headerCellRender = headerCellRender;
         return generatedTableColumns;
     }
 
@@ -1043,16 +1043,31 @@ const NetworkTable = (props) => {
                 },
             });
         });
-
         setPopupSelectColumnNames(false);
+
+        updateConfigParameter(
+            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
+                TABLES_NAMES[tabIndex],
+            JSON.stringify(reorderedTableDefinitionIndexes)
+        ).catch((errorMessage) => {
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'paramsChangingError',
+                    intlRef: intlRef,
+                },
+            });
+        });
     }, [
         tabIndex,
         selectedColumnsNames,
         lockedColumnsNames,
+        reorderedTableDefinitionIndexes,
         allDisplayedColumnsNames,
-        allLockedColumnsNames,
         enqueueSnackbar,
         intlRef,
+        allLockedColumnsNames,
     ]);
 
     const handleToggle = (value) => () => {
@@ -1096,27 +1111,23 @@ const NetworkTable = (props) => {
 
     const commit = useCallback(
         ({ source, destination }) => {
-            setReorderedTableDefinitionIndexes(
-                reorderedTableDefinitionIndexes.add({
-                    columnName: Array.from(popupColumns)[source.index],
-                    newIndex: destination.index,
-                })
-            );
-
-            let orderedColumns = Array.from(popupColumns);
-            if (orderedColumns.length > 0) {
-                reorderedTableDefinitionIndexes.forEach((value) => {
-                    let columnIndex = orderedColumns.indexOf(value.columnName);
-                    const [reorderedItem] = orderedColumns.splice(
-                        columnIndex,
-                        1
-                    );
-                    orderedColumns.splice(value.newIndex, 0, reorderedItem);
-                });
-                setPopupColumns(orderedColumns);
+            if (destination) {
+                let reorderedTableDefinitionIndexesTemp = [
+                    ...reorderedTableDefinitionIndexes,
+                ];
+                const [reorderedItem] =
+                    reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
+                reorderedTableDefinitionIndexesTemp.splice(
+                    destination.index,
+                    0,
+                    reorderedItem
+                );
+                setReorderedTableDefinitionIndexes(
+                    reorderedTableDefinitionIndexesTemp
+                );
             }
         },
-        [popupColumns, reorderedTableDefinitionIndexes]
+        [reorderedTableDefinitionIndexes]
     );
 
     const checkListColumnsNames = () => {
@@ -1124,93 +1135,106 @@ const NetworkTable = (props) => {
             selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
 
-        if (popupColumns.length === 0) {
-            setPopupColumns(TABLES_COLUMNS_NAMES[tabIndex]);
-        }
-
         return (
-            <DragDropContext onDragEnd={commit} onDragStart={() => console}>
-                <Droppable droppableId="network-table-columns-list">
-                    {(provided) => (
-                        <List
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
-                            <ListItem
-                                className={classes.checkboxSelectAll}
-                                onClick={handleToggleAll}
-                            >
-                                <Checkbox
-                                    style={{ marginLeft: '21px' }}
-                                    checked={isAllChecked}
-                                    indeterminate={isSomeChecked}
-                                />
-                                <FormattedMessage id="CheckAll" />
-                            </ListItem>
-                            {[...popupColumns].map((value, index) => (
-                                <Draggable
-                                    draggableId={tabIndex + '-' + index}
-                                    index={index}
-                                    /*isDragDisabled={isOneNodeBuilding}*/
-                                    key={tabIndex + '-' + index}
-                                >
-                                    {(provided) => (
-                                        <ListItem
-                                            className={classes.checkboxItem}
-                                            style={{
-                                                padding: '0 16px',
-                                            }}
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                        >
-                                            <IconButton
-                                                {...provided.dragHandleProps}
-                                                className={classes.dragIcon}
-                                                size={'small'}
-                                            >
-                                                <DragIndicatorIcon
-                                                    edge="start"
-                                                    spacing={0}
-                                                />
-                                            </IconButton>
+            <>
+                <ListItem
+                    className={classes.checkboxSelectAll}
+                    onClick={handleToggleAll}
+                >
+                    <Checkbox
+                        style={{ marginLeft: '21px' }}
+                        checked={isAllChecked}
+                        indeterminate={isSomeChecked}
+                    />
+                    <FormattedMessage id="CheckAll" />
+                </ListItem>
 
-                                            <ListItemIcon
-                                                onClick={handleClickOnLock(
-                                                    value
-                                                )}
-                                                style={{
-                                                    minWidth: 0,
-                                                    width: '20px',
-                                                }}
-                                            >
-                                                {renderColumnConfigLockIcon(
-                                                    value
-                                                )}
-                                            </ListItemIcon>
-                                            <ListItemIcon
-                                                onClick={handleToggle(value)}
-                                            >
-                                                <Checkbox
-                                                    checked={selectedColumnsNames.has(
-                                                        value
-                                                    )}
-                                                />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                onClick={handleToggle(value)}
-                                                primary={intl.formatMessage({
-                                                    id: `${value}`,
-                                                })}
-                                            />
-                                        </ListItem>
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
-                        </List>
-                    )}
-                </Droppable>
-            </DragDropContext>
+                <DragDropContext onDragEnd={commit}>
+                    <Droppable droppableId="network-table-columns-list">
+                        {(provided) => (
+                            <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
+                                {[...reorderedTableDefinitionIndexes].map(
+                                    (value, index) => (
+                                        <Draggable
+                                            draggableId={tabIndex + '-' + index}
+                                            index={index}
+                                            key={tabIndex + '-' + index}
+                                        >
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                >
+                                                    <ListItem
+                                                        className={
+                                                            classes.checkboxItem
+                                                        }
+                                                        style={{
+                                                            padding: '0 16px',
+                                                        }}
+                                                    >
+                                                        <IconButton
+                                                            {...provided.dragHandleProps}
+                                                            className={
+                                                                classes.dragIcon
+                                                            }
+                                                            size={'small'}
+                                                        >
+                                                            <DragIndicatorIcon
+                                                                edge="start"
+                                                                spacing={0}
+                                                            />
+                                                        </IconButton>
+
+                                                        <ListItemIcon
+                                                            onClick={handleClickOnLock(
+                                                                value
+                                                            )}
+                                                            style={{
+                                                                minWidth: 0,
+                                                                width: '20px',
+                                                            }}
+                                                        >
+                                                            {renderColumnConfigLockIcon(
+                                                                value
+                                                            )}
+                                                        </ListItemIcon>
+                                                        <ListItemIcon
+                                                            onClick={handleToggle(
+                                                                value
+                                                            )}
+                                                        >
+                                                            <Checkbox
+                                                                checked={selectedColumnsNames.has(
+                                                                    value
+                                                                )}
+                                                            />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            onClick={handleToggle(
+                                                                value
+                                                            )}
+                                                            primary={intl.formatMessage(
+                                                                {
+                                                                    id: `${value}`,
+                                                                }
+                                                            )}
+                                                        />
+                                                    </ListItem>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    )
+                                )}
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
+            </>
         );
     };
 
@@ -1341,15 +1365,6 @@ const NetworkTable = (props) => {
                                 >
                                     <ViewColumnIcon />
                                 </IconButton>
-                                <SelectOptionsDialog
-                                    open={popupSelectColumnNames}
-                                    onClose={handleCancelPopupSelectColumnNames}
-                                    onClick={handleSaveSelectedColumnNames}
-                                    title={intl.formatMessage({
-                                        id: 'ColumnsList',
-                                    })}
-                                    child={checkListColumnsNames()}
-                                />
                             </Grid>
                             {props.disabled && <AlertInvalidNode />}
                             <Grid item className={classes.exportCsv}>
@@ -1393,6 +1408,22 @@ const NetworkTable = (props) => {
                         {/*This render is fast, rerender full dom everytime*/}
                         {renderTable(rows)}
                     </div>
+
+                    <SelectOptionsDialog
+                        open={popupSelectColumnNames}
+                        onClose={handleCancelPopupSelectColumnNames}
+                        onClick={handleSaveSelectedColumnNames}
+                        title={intl.formatMessage({
+                            id: 'ColumnsList',
+                        })}
+                        child={checkListColumnsNames()}
+                        //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beatiful-dnd warning related to nested scroll containers
+                        style={{
+                            '& .MuiPaper-root': {
+                                overflowY: 'visible',
+                            },
+                        }}
+                    />
                 </>
             )
         );
