@@ -131,10 +131,18 @@ export const NumericalField = ({
 
     return (
         <div>
-            {min !== undefined || max !== undefined ? (
+            {min !== undefined && max !== undefined ? (
                 <Tooltip
                     title={intl.formatMessage({ id: 'MinMax' }, { min, max })}
                 >
+                    {renderNumericText()}
+                </Tooltip>
+            ) : min !== undefined ? (
+                <Tooltip title={intl.formatMessage({ id: 'OnlyMin' }, { min })}>
+                    {renderNumericText()}
+                </Tooltip>
+            ) : max !== undefined ? (
+                <Tooltip title={intl.formatMessage({ id: 'OnlyMax' }, { max })}>
                     {renderNumericText()}
                 </Tooltip>
             ) : (

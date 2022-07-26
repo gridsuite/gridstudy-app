@@ -113,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
     },
     inlineEditionCell: {
         backgroundColor: theme.palette.action.hover,
+        '& div': {
+            height: '100%',
+        },
     },
     tableHeader: {
         fontSize: 'small',
