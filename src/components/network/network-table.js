@@ -941,6 +941,7 @@ const NetworkTable = (props) => {
             }
             generatedTableColumns.sort(sortByIndex);
         }
+        generatedTableColumns.headerCellRender = headerCellRender;
 
         function sortByLock(a, b) {
             if (a.locked && !b.locked) return -1;
@@ -948,8 +949,6 @@ const NetworkTable = (props) => {
             return 0;
         }
         generatedTableColumns.sort(sortByLock);
-
-        generatedTableColumns.headerCellRender = headerCellRender;
         return generatedTableColumns;
     }
 
