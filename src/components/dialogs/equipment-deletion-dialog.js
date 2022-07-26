@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -13,22 +13,17 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import {
-    Autocomplete,
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField,
-} from '@mui/material';
+import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useParams } from 'react-router-dom';
 import { deleteEquipment } from '../../utils/rest-api';
 import { useSnackMessage } from '../../utils/messages';
 import { validateField } from '../util/validation-functions';
-import { useInputForm } from './input-hooks';
+import { useAutocompleteField, useInputForm } from './input-hooks';
 import { EquipmentItem, equipmentStyles } from '@gridsuite/commons-ui';
 import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
 import makeStyles from '@mui/styles/makeStyles';
+import { filledTextField } from './dialogUtils';
 
 const equipmentTypes = [
     'LINE',
@@ -46,177 +41,6 @@ const equipmentTypes = [
     'VOLTAGE_LEVEL',
 ];
 
-const QUESTIONABLE_SIZE = 1000;
-
-const isWorthLoading = (term, elements, old, minLen) => {
-    const idx = elements.findIndex((e) => e.label === term);
-    if (idx >= 0) {
-        return false;
-    }
-    if (term.length < minLen) {
-        return false;
-    }
-    if (!term.startsWith(old)) {
-        return true;
-    }
-    if (old.length < minLen || minLen === 0) {
-        return true;
-    }
-    if (elements.length === QUESTIONABLE_SIZE) {
-        return true;
-    }
-
-    return false;
-};
-
-const useAutoPartial = (props) => {
-    const {
-        onClose,
-        searchingLabel,
-        onSearchTermChange,
-        elementsFound, // [{ label: aLabel, id: anId }, ...]
-        renderElement,
-        minCharsBeforeSearch = 3,
-        allowsUnknown = false,
-    } = props;
-
-    const intl = useIntl();
-
-    const [expanded, setExpanded] = useState(false);
-
-    const [isLoading, setIsLoading] = useState(false);
-
-    const [userStr, setUserStr] = useState('');
-
-    const [selectedValue, setSelectedValue] = useState(null);
-
-    useEffect(() => {
-        setIsLoading(false);
-        if (elementsFound?.length === 0) setExpanded(false);
-    }, [elementsFound]);
-
-    const handleKeyDown = (e) => {
-        if (e.ctrlKey && e.code === 'Space') {
-            handleForcedSearch(userStr);
-        }
-    };
-
-    const handleForcedSearch = useCallback(
-        (term) => {
-            if (!onSearchTermChange) return;
-            setIsLoading(true);
-            setExpanded(true);
-            onSearchTermChange(term, true);
-        },
-        [onSearchTermChange]
-    );
-
-    const myOnOpen = useCallback(() => {
-        setExpanded(true);
-
-        if (!onSearchTermChange) return;
-        if (isWorthLoading(userStr, elementsFound, userStr, 0)) {
-            setIsLoading(true);
-            onSearchTermChange(userStr, false);
-        }
-    }, [userStr, elementsFound, onSearchTermChange]);
-
-    const handleSearchTermChange = useCallback(
-        (term) => {
-            const min = minCharsBeforeSearch;
-
-            setUserStr((old) => {
-                if (isWorthLoading(term, elementsFound, old, min)) {
-                    setIsLoading(true);
-                    setExpanded(true);
-                    onSearchTermChange(term, false);
-                }
-                return term;
-            });
-        },
-        [elementsFound, minCharsBeforeSearch, onSearchTermChange]
-    );
-
-    const handleClose = useCallback(() => {
-        setExpanded(false);
-        onClose();
-    }, [onClose]);
-
-    const optionEqualsToValue = (option, input) => {
-        if (!allowsUnknown) return option.id === input.id;
-        return (
-            option === input || option.id === input || option.id === input?.id
-        );
-    };
-
-    const onSelectionChange = useCallback(
-        (newValue) => {
-            setSelectedValue(newValue);
-        },
-        [setSelectedValue]
-    );
-
-    const field = (
-        <Autocomplete
-            id="element-search"
-            onChange={(_event, newValue) => {
-                onSelectionChange(newValue);
-            }}
-            open={expanded}
-            onOpen={myOnOpen}
-            onClose={() => {
-                setExpanded(false);
-            }}
-            forcePopupIcon
-            options={isLoading ? [] : elementsFound}
-            getOptionLabel={(option) => option?.label || option?.id || option}
-            loading={isLoading}
-            loadingText={<FormattedMessage id="loadingOptions" />}
-            // fullWidth
-            {...(allowsUnknown && {
-                freeSolo: true,
-                autoSelect: true,
-                autoComplete: true,
-                blurOnSelect: true,
-                clearOnBlur: true,
-            })}
-            onInputChange={(_event, value) => handleSearchTermChange(value)}
-            isOptionEqualToValue={optionEqualsToValue}
-            noOptionsText={intl.formatMessage({
-                id: 'element_search/noResult',
-            })}
-            renderOption={(optionProps, element, { inputValue }) =>
-                renderElement({
-                    ...optionProps,
-                    element,
-                    inputValue,
-                    onClose: handleClose,
-                })
-            }
-            renderInput={(params) => (
-                <TextField
-                    autoFocus={true}
-                    {...params}
-                    variant={'filled'}
-                    onKeyDown={handleKeyDown}
-                    size="small"
-                    label={
-                        searchingLabel ||
-                        intl.formatMessage({
-                            id: 'element_search/label',
-                        })
-                    }
-                    InputProps={{
-                        ...params.InputProps,
-                    }}
-                />
-            )}
-        />
-    );
-
-    return [selectedValue, field];
-};
-
 const makeItems = (eqpts, usesNames) => {
     if (!eqpts) return [];
     return eqpts
@@ -226,7 +50,6 @@ const makeItems = (eqpts, usesNames) => {
                 label: label,
                 id: e.id,
                 key: e.id,
-                // type: e.type,
             };
         })
         .sort((a, b) => a.label.localeCompare(b.label));
@@ -269,13 +92,18 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
             makeItems
         );
 
-    const [equipmentOrId, equipmentField] = useAutoPartial({
-        allowsUnknown: true,
-        searchingLabel: intl.formatMessage({
+    const [equipmentOrId, equipmentField] = useAutocompleteField({
+        allowNewValue: true,
+        label: intl.formatMessage({
             id: 'ID',
         }),
+        getLabel: (option) => option?.label || option?.id || option,
+        validation: { isFieldRequired: true },
+        formProps: filledTextField,
+        inputForm: inputForm,
         onSearchTermChange: searchMatchingEquipments,
-        elementsFound: equipmentsFound,
+        values: equipmentsFound,
+        defaultValue: '',
         renderElement: (props) => (
             <EquipmentItem
                 classes={equipmentClasses}

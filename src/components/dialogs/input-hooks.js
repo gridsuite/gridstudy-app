@@ -32,7 +32,6 @@ import ConnectivityEdition, {
 } from './connectivity-edition';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
-import { createFilterOptions } from '@mui/material/useAutocomplete';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -395,7 +394,28 @@ export const useConnectivityValue = ({
     return [connectivity, render];
 };
 
-const filter = createFilterOptions();
+const QUESTIONABLE_SIZE = 1000;
+
+const isWorthLoading = (term, elements, old, minLen) => {
+    const idx = elements.findIndex((e) => e.label === term);
+    if (idx >= 0) {
+        return false;
+    }
+    if (term.length < minLen) {
+        return false;
+    }
+    if (!term.startsWith(old)) {
+        return true;
+    }
+    if (old.length < minLen || minLen === 0) {
+        return true;
+    }
+    if (elements.length === QUESTIONABLE_SIZE) {
+        return true;
+    }
+
+    return false;
+};
 
 export const useAutocompleteField = ({
     id,
@@ -403,7 +423,10 @@ export const useAutocompleteField = ({
     validation = {},
     inputForm,
     formProps,
+    onSearchTermChange,
+    minCharsBeforeSearch = 3,
     values,
+    renderElement,
     getLabel = func_identity,
     allowNewValue = false,
     errorMsg,
@@ -412,8 +435,12 @@ export const useAutocompleteField = ({
     previousValue,
     loading = false,
 }) => {
+    const intl = useIntl();
+
     const [presentedOptions, setPresentedOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(loading);
+    const [expanded, setExpanded] = useState(false);
+    const [userStr, setUserStr] = useState('');
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState();
     const validationRef = useRef();
@@ -445,7 +472,10 @@ export const useAutocompleteField = ({
     }, [selectedValue]);
 
     useEffect(() => {
-        if (!values || typeof values === 'function') return;
+        if (!values || typeof values === 'function') {
+            setIsLoading(false);
+            return;
+        }
         if (typeof values?.then === 'function') {
             setIsLoading(true);
         }
@@ -453,25 +483,57 @@ export const useAutocompleteField = ({
         valuePromise.then((vals) => {
             setPresentedOptions(vals);
             setIsLoading(false);
+            if (values?.length === 0) setExpanded(false);
         });
     }, [values]);
 
+    const handleForcedSearch = useCallback(
+        (term) => {
+            if (!onSearchTermChange) return;
+            setIsLoading(true);
+            setExpanded(true);
+            onSearchTermChange(term, true);
+        },
+        [onSearchTermChange]
+    );
+
+    const myOnOpen = useCallback(() => {
+        setExpanded(true);
+
+        if (!onSearchTermChange) return;
+        if (isWorthLoading(userStr, presentedOptions, userStr, 0)) {
+            setIsLoading(true);
+            onSearchTermChange(userStr, false);
+        }
+    }, [presentedOptions, userStr, onSearchTermChange]);
+
+    const handleSearchTermChange = useCallback(
+        (term) => {
+            if (!onSearchTermChange) return;
+
+            const min = minCharsBeforeSearch;
+
+            setUserStr((old) => {
+                if (isWorthLoading(term, values, old, min)) {
+                    setIsLoading(true);
+                    setExpanded(true);
+                    onSearchTermChange(term, false);
+                }
+                return term;
+            });
+        },
+        [values, minCharsBeforeSearch, onSearchTermChange]
+    );
+
     const field = useMemo(() => {
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && e.code === 'Space') {
+                handleForcedSearch(userStr);
+            }
+        };
+
         const optionEqualsToValue = (option, input) =>
             option === input || option.id === input || option.id === input?.id;
-        const filterOptionsFunc = (options, params) => {
-            const filtered = filter(options, params);
-            if (
-                params.inputValue !== '' &&
-                !options.find((opt) => opt.id === params.inputValue)
-            ) {
-                filtered.push({
-                    inputValue: params.inputValue,
-                    id: params.inputValue,
-                });
-            }
-            return filtered;
-        };
 
         return (
             <Autocomplete
@@ -479,29 +541,45 @@ export const useAutocompleteField = ({
                 onChange={(event, newValue) => {
                     handleChangeValue(newValue);
                 }}
+                open={expanded}
+                onOpen={myOnOpen}
+                onClose={() => {
+                    setExpanded(false);
+                }}
                 size={'small'}
                 forcePopupIcon
-                options={presentedOptions}
+                options={isLoading ? [] : presentedOptions}
                 getOptionLabel={getLabel}
                 defaultValue={defaultValue}
                 value={value}
                 loading={isLoading}
                 loadingText={<FormattedMessage id="loadingOptions" />}
-                freeSolo={allowNewValue}
                 {...(allowNewValue && {
                     freeSolo: true,
                     isOptionEqualToValue: optionEqualsToValue,
-                    filterOptions: filterOptionsFunc,
                     autoSelect: true,
                     autoComplete: true,
                     autoHighlight: true,
                     blurOnSelect: true,
                     clearOnBlur: true,
                 })}
+                onInputChange={(_event, value) => handleSearchTermChange(value)}
+                noOptionsText={intl.formatMessage({
+                    id: 'element_search/noResult',
+                })}
+                {...(renderElement && {
+                    renderOption: (optionProps, element, { inputValue }) =>
+                        renderElement({
+                            ...optionProps,
+                            element,
+                            inputValue,
+                        }),
+                })}
                 renderInput={(props) => (
                     <TextField
                         {...formProps}
                         {...props}
+                        onKeyDown={handleKeyDown}
                         size="small"
                         label={
                             <FieldLabel
@@ -530,6 +608,13 @@ export const useAutocompleteField = ({
         errorMsg,
         formProps,
         isLoading,
+        expanded,
+        handleSearchTermChange,
+        handleForcedSearch,
+        intl,
+        renderElement,
+        myOnOpen,
+        userStr,
     ]);
 
     return [value, field, setValue];
