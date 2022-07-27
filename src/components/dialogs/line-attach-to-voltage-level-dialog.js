@@ -95,7 +95,6 @@ const LineAttachToVoltageLevelDialog = ({
     };
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
-    const newVoltageLevelRef = useRef(newVoltageLevel);
 
     const [attachmentLine, setAttachmentLine] = useState(null);
 
@@ -116,7 +115,6 @@ const LineAttachToVoltageLevelDialog = ({
         if (editData) {
             setFormValues(editData);
             setNewVoltageLevel(editData.mayNewVoltageLevelInfos);
-            newVoltageLevelRef.current = editData.mayNewVoltageLevelInfos;
             setAttachmentLine(editData.attachmentLine);
         }
     }, [editData]);
@@ -227,16 +225,14 @@ const LineAttachToVoltageLevelDialog = ({
                 ? voltageLevelOrId
                 : voltageLevelOrId?.id;
         if (
-            newVoltageLevelRef.current &&
+            newVoltageLevel &&
             voltageLevelOrIdRef.current &&
-            vlId !== newVoltageLevelRef.current.equipmentId
+            vlId !== newVoltageLevel.equipmentId
         ) {
             // switch from new voltage level to existing voltage level
-            voltageLevelOrIdRef.current = voltageLevelOrId;
-            newVoltageLevelRef.current = null;
             setNewVoltageLevel(null);
         }
-    }, [voltageLevelOrId]);
+    }, [voltageLevelOrId, newVoltageLevel]);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
@@ -412,7 +408,6 @@ const LineAttachToVoltageLevelDialog = ({
                     busbarConnections: busbarConnections,
                 };
                 setNewVoltageLevel(preparedVoltageLevel);
-                newVoltageLevelRef.current = preparedVoltageLevel;
                 setVoltageLevelOrId(voltageLevelId);
                 voltageLevelOrIdRef.current = voltageLevelId;
                 if (
