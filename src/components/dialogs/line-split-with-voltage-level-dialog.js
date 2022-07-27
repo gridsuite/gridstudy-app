@@ -40,6 +40,7 @@ import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import EditIcon from '@mui/icons-material/Edit';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -132,6 +133,7 @@ const LineSplitWithVoltageLevelDialog = ({
         if (editData) {
             setFormValues(editData);
             setNewVoltageLevel(editData.mayNewVoltageLevelInfos);
+            newVoltageLevelRef.current = editData.mayNewVoltageLevelInfos;
         }
     }, [editData]);
 
@@ -235,6 +237,7 @@ const LineSplitWithVoltageLevelDialog = ({
         });
 
     useEffect(() => {
+        voltageLevelOrIdRef.current = voltageLevelOrId;
         const vlId =
             typeof voltageLevelOrId === 'string'
                 ? voltageLevelOrId
@@ -244,16 +247,12 @@ const LineSplitWithVoltageLevelDialog = ({
             voltageLevelOrIdRef.current &&
             vlId !== newVoltageLevelRef.current.equipmentId
         ) {
+            // switch from new voltage level to existing voltage level
             voltageLevelOrIdRef.current = voltageLevelOrId;
             newVoltageLevelRef.current = null;
-        }
-    }, [voltageLevelOrId]);
-
-    useEffect(() => {
-        if (newVoltageLevelRef.current === null) {
             setNewVoltageLevel(null);
         }
-    }, [newVoltageLevelRef]);
+    }, [voltageLevelOrId]);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
@@ -388,7 +387,9 @@ const LineSplitWithVoltageLevelDialog = ({
                     busbarConnections: busbarConnections,
                 };
                 setNewVoltageLevel(preparedVoltageLevel);
+                newVoltageLevelRef.current = preparedVoltageLevel;
                 setVoltageLevelOrId(voltageLevelId);
+                voltageLevelOrIdRef.current = voltageLevelId;
                 if (
                     busbarSections.find(
                         (bbs) => bbs.id === (bbsOrNodeId?.id || bbsOrNodeId)
@@ -471,7 +472,9 @@ const LineSplitWithVoltageLevelDialog = ({
                         {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
-                                startIcon={<AddIcon />}
+                                startIcon={
+                                    newVoltageLevel ? <EditIcon /> : <AddIcon />
+                                }
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="NewVoltageLevel" />
