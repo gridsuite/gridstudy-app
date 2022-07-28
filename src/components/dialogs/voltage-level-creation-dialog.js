@@ -35,7 +35,8 @@ import {
     gridItem,
     GridSection,
     VoltageAdornment,
-    compareById, getIdOrSelf,
+    compareById,
+    getIdOrSelf,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';

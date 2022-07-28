@@ -32,26 +32,26 @@ export const useSearchMatchingEquipments = (
 
             timer.current = setTimeout(
                 () => {
-                lastSearchTermRef.current = searchTerm;
-                fetchEquipmentsInfos(
-                    studyUuid,
-                    nodeUuid,
-                    searchTerm,
-                    useNameLocal,
-                    inUpstreamBuiltParentNode,
-                    equipmentType
-                )
-                    .then((infos) => {
-                        if (searchTerm === lastSearchTermRef.current) {
+                    lastSearchTermRef.current = searchTerm;
+                    fetchEquipmentsInfos(
+                        studyUuid,
+                        nodeUuid,
+                        searchTerm,
+                        useNameLocal,
+                        inUpstreamBuiltParentNode,
+                        equipmentType
+                    )
+                        .then((infos) => {
+                            if (searchTerm === lastSearchTermRef.current) {
                                 setEquipmentsFound(
                                     makeItems(infos, useNameLocal)
                                 );
-                        } // else ignore results of outdated fetch
+                            } // else ignore results of outdated fetch
                             timer.current = undefined;
-                    })
-                    .catch((errorMessage) =>
-                        snackError(errorMessage, 'equipmentsSearchingError')
-                    );
+                        })
+                        .catch((errorMessage) =>
+                            snackError(errorMessage, 'equipmentsSearchingError')
+                        );
                 },
                 sooner ? 10 : SEARCH_FETCH_TIMEOUT_MILLIS
             );
