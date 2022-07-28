@@ -22,7 +22,6 @@ import { StudyView } from './study-pane';
 import { Badge, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@mui/material/Tab';
-import Parameters, { useParameterState } from './parameters';
 import {
     PARAM_LANGUAGE,
     PARAM_THEME,
@@ -38,6 +37,7 @@ import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { isNodeBuilt } from './graph/util/model-functions';
+import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './util/search-matching-equipments';
 
 const useStyles = makeStyles((theme) => ({
@@ -156,7 +156,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const [showParameters, setShowParameters] = useState(false);
+    const [isParametersOpen, setParametersOpen] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
 
     const [searchMatchingEquipments, equipmentsFound] =
@@ -183,12 +183,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         }
     }, [user]);
 
-    function showParametersClicked() {
-        setShowParameters(true);
+    function showParameters() {
+        setParametersOpen(true);
     }
 
     function hideParameters() {
-        setShowParameters(false);
+        setParametersOpen(false);
     }
     return (
         <>
@@ -202,7 +202,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         <GridStudyLogoDark />
                     )
                 }
-                onParametersClick={() => showParametersClicked()}
+                onParametersClick={showParameters}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
                 user={user}
                 appsAndUrls={appsAndUrls}
@@ -284,7 +284,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 )}
             </TopBar>
             <Parameters
-                showParameters={showParameters}
+                isParametersOpen={isParametersOpen}
                 hideParameters={hideParameters}
                 user={user}
             />

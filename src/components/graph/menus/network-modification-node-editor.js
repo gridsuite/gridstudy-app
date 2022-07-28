@@ -61,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
+        paddingBottom: theme.spacing(8),
     },
     list: {
         paddingTop: theme.spacing(0),
@@ -68,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     },
     addButton: {
         position: 'absolute',
-        bottom: 0,
+        bottom: theme.spacing(-1.5),
         right: 0,
         margin: theme.spacing(3),
     },
@@ -347,11 +348,8 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const dofetchNetworkModifications = useCallback(() => {
-        // In most cases here this condition manage that current Node is the root node
-        if (!currentTreeNode?.data?.modificationGroupUuid) return;
-
         setLaunchLoader(true);
-        fetchNetworkModifications(currentTreeNode?.data?.modificationGroupUuid)
+        fetchNetworkModifications(studyUuid, currentTreeNode?.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -364,7 +362,7 @@ const NetworkModificationNodeEditor = () => {
                 setPendingState(false);
                 setLaunchLoader(false);
             });
-    }, [currentTreeNode, snackError]);
+    }, [studyUuid, currentTreeNode, snackError]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -642,6 +640,7 @@ const NetworkModificationNodeEditor = () => {
             <Fab
                 className={classes.addButton}
                 color="primary"
+                size="medium"
                 onClick={openNetworkModificationConfiguration}
                 disabled={isAnyNodeBuilding}
             >
