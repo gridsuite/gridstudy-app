@@ -58,6 +58,15 @@ export function displayErrorMessageWithSnackbar({ ...args }) {
 export function displayInfoMessageWithSnackbar({ ...args }) {
     displayMessageWithSnackbar({ ...args, level: 'info', persistent: false });
 }
+
+export function displayWarningMessageWithSnackbar({ ...args }) {
+    displayMessageWithSnackbar({
+        ...args,
+        level: 'warning',
+        persistent: false,
+    });
+}
+
 export function useSnackMessage() {
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
@@ -92,5 +101,20 @@ export function useSnackMessage() {
         [enqueueSnackbar, intlRef]
     );
 
-    return { snackError, snackInfo };
+    const snackWarning = useCallback(
+        (msg, headerMessageId, headerValues) =>
+            displayWarningMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: headerMessageId,
+                    intlRef: intlRef,
+                    headerMessageValues: headerValues,
+                },
+            }),
+
+        [enqueueSnackbar, intlRef]
+    );
+
+    return { snackError, snackInfo, snackWarning };
 }
