@@ -925,6 +925,7 @@ const NetworkTable = (props) => {
                 fetched={props.network.isResourceFetched(resource)}
                 scrollTop={scrollToIndex}
                 disableVerticalScroll={isModifyingRow()}
+                visible={props.visible}
             />
         );
     }
