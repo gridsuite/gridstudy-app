@@ -19,9 +19,6 @@ export function convertNodetoReactFlowModelNode(node, parentNodeUuid) {
         type: node.type,
         data: {
             parentNodeUuid: parentNodeUuid,
-            variantId: node.variantId,
-            reportUuid: node.reportUuid,
-            modificationGroupUuid: node.networkModification,
             label: node.name,
             description: node.description,
             buildStatus: node.buildStatus,
