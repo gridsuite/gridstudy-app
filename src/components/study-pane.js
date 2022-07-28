@@ -358,6 +358,7 @@ const StudyPane = ({
                         loadFlowInfos?.loadFlowStatus
                     )}
                     disabled={disabled}
+                    visible={props.view === StudyView.SPREADSHEET}
                 />
             </Paper>
         );
