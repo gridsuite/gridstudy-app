@@ -39,6 +39,7 @@ import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import {
     func_identity,
+    getId,
     toFloatValue,
     toIntValue,
     useStyles,
@@ -55,6 +56,7 @@ import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../utils/UIconstants';
 import { useParameterState } from './parameters/parameters';
+import { createFilterOptions } from '@mui/material/useAutocomplete';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -394,6 +396,8 @@ export const useConnectivityValue = ({
     return [connectivity, render];
 };
 
+const filter = createFilterOptions();
+
 const QUESTIONABLE_SIZE = 1000;
 
 const isWorthLoading = (term, elements, old, minLen) => {
@@ -535,6 +539,20 @@ export const useAutocompleteField = ({
         const optionEqualsToValue = (option, input) =>
             option === input || option.id === input || option.id === input?.id;
 
+        const filterOptionsFunc = (options, params) => {
+            const filtered = filter(options, params);
+            if (
+                params.inputValue !== '' &&
+                !options.find((opt) => opt.id === params.inputValue)
+            ) {
+                filtered.push({
+                    inputValue: params.inputValue,
+                    id: params.inputValue,
+                });
+            }
+            return filtered;
+        };
+
         return (
             <Autocomplete
                 id={label}
@@ -563,6 +581,8 @@ export const useAutocompleteField = ({
                     blurOnSelect: true,
                     clearOnBlur: true,
                 })}
+                {...(allowNewValue &&
+                    getLabel === getId && { filterOptions: filterOptionsFunc })}
                 onInputChange={(_event, value) => handleSearchTermChange(value)}
                 noOptionsText={intl.formatMessage({
                     id: 'element_search/noResult',

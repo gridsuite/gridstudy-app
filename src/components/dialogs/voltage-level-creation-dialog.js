@@ -35,7 +35,7 @@ import {
     gridItem,
     GridSection,
     VoltageAdornment,
-    compareById,
+    compareById, getIdOrSelf,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
@@ -353,7 +353,7 @@ const VoltageLevelCreationDialog = ({
         formProps: filledTextField,
         values: substationOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue:
             substationOptions.find(
                 (value) => value.id === formValues?.substationId

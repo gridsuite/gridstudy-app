@@ -133,6 +133,8 @@ export const gridItemWithTooltip = (field, tooltip = '', size = 6) => {
 };
 
 export const getId = (e) => e?.id;
+export const getIdOrSelf = (e) => e?.id ?? e;
+
 export const compareById = (a, b) => a?.id?.localeCompare(b?.id);
 
 export function LineSeparator() {
