@@ -310,7 +310,6 @@ export const useConnectivityValue = ({
     }, [
         voltageLevelOptions,
         busOrBusbarSectionIdDefaultValue,
-
         voltageLevelIdDefaultValue,
     ]);
 
