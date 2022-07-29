@@ -17,6 +17,9 @@ const ITEMS_PADDING = 8;
 
 export const TapChangerSelector = ({
     tapChanger,
+    setcolerror,
+    resetcolerror,
+    datakey,
     setter,
     defaultValue,
     ...props
@@ -54,6 +57,9 @@ export const NumericalField = ({
     defaultValue,
     min,
     max,
+    setcolerror,
+    resetcolerror,
+    datakey,
     setter,
     style,
     ...props
@@ -61,25 +67,42 @@ export const NumericalField = ({
     const [error, setError] = useState(false);
     const intl = useIntl();
 
-    function isNumeric(str) {
-        return !isNaN(str) && !isNaN(parseFloat(str));
-    }
+    const isValid = useCallback((val, minVal, maxVal) => {
+        if (isNaN(val)) {
+            return false;
+        }
+        let valFloat = parseFloat(val);
+        if (isNaN(valFloat)) {
+            return false;
+        }
+        return (
+            (minVal === undefined || valFloat >= minVal) &&
+            (maxVal === undefined || valFloat <= maxVal)
+        );
+    }, []);
 
     const validateChange = useCallback(
         (ev) => {
             const newVal = ev.target.value;
-            if (
-                isNumeric(newVal) &&
-                (min === undefined || newVal >= min) &&
-                (max === undefined || newVal <= max)
-            ) {
+            if (isValid(newVal, min, max)) {
                 setError(false);
+                resetcolerror(datakey);
             } else {
                 setError(true);
+                setcolerror(datakey);
             }
             setter(newVal);
         },
-        [setError, min, max, setter]
+        [
+            setError,
+            min,
+            max,
+            setter,
+            isValid,
+            setcolerror,
+            resetcolerror,
+            datakey,
+        ]
     );
 
     function renderNumericText() {
@@ -121,13 +144,18 @@ export const NumericalField = ({
     );
 };
 
-export const NameField = ({ defaultValue, setter, style, ...props }) => {
-    const [error, setError] = useState(false);
-
+export const NameField = ({
+    defaultValue,
+    setcolerror,
+    resetcolerror,
+    datakey,
+    setter,
+    style,
+    ...props
+}) => {
     const validateChange = useCallback(
         (ev) => {
             const newVal = ev.target.value;
-            setError(newVal.length === 0);
             setter(newVal);
         },
         [setter]
@@ -138,7 +166,6 @@ export const NameField = ({ defaultValue, setter, style, ...props }) => {
             defaultValue={defaultValue}
             onChange={validateChange}
             {...props}
-            error={error}
             size={'small'}
             margin={'none'}
             style={{ ...style, padding: 0 }}
@@ -152,7 +179,15 @@ export const NameField = ({ defaultValue, setter, style, ...props }) => {
     );
 };
 
-export const EnumField = ({ enumList, setter, defaultValue, ...props }) => {
+export const EnumField = ({
+    enumList,
+    setcolerror,
+    resetcolerror,
+    datakey,
+    setter,
+    defaultValue,
+    ...props
+}) => {
     return (
         <Select
             defaultValue={defaultValue || ''}

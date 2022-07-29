@@ -1143,7 +1143,8 @@ export function modifyLoad(
         },
         body: JSON.stringify({
             equipmentId: id,
-            equipmentName: name ? { value: name, op: 'SET' } : null,
+            equipmentName:
+                name !== undefined ? { value: name, op: 'SET' } : null,
             loadType: loadType ? { value: loadType, op: 'SET' } : null,
             activePower:
                 activePower === 0 || activePower

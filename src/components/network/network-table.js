@@ -616,7 +616,6 @@ const NetworkTable = (props) => {
                 Object.values(lineEdit.newValues).forEach((cr) => {
                     groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
                 });
-
                 Promise.resolve(
                     lineEdit.equipmentType === 'load'
                         ? modifyLoad(
@@ -831,39 +830,42 @@ const NetworkTable = (props) => {
         ]
     );
 
-    const registerChangeRequest = useCallback(
-        (data, columnDefinition, value) => {
-            function setColumnInError(dataKey) {
+    const setColumnInError = useCallback(
+        (dataKey) => {
+            if (!lineEdit.errors.has(dataKey)) {
                 let newLineEdit = { ...lineEdit };
                 newLineEdit.errors.set(dataKey, true);
                 setLineEdit(newLineEdit);
             }
-            function resetColumnInError(dataKey) {
-                if (lineEdit.errors.has(dataKey)) {
-                    let newLineEdit = { ...lineEdit };
-                    newLineEdit.errors.delete(dataKey);
-                    setLineEdit(newLineEdit);
-                }
-            }
+        },
+        [lineEdit]
+    );
 
+    const resetColumnInError = useCallback(
+        (dataKey) => {
+            if (lineEdit.errors.has(dataKey)) {
+                let newLineEdit = { ...lineEdit };
+                newLineEdit.errors.delete(dataKey);
+                setLineEdit(newLineEdit);
+            }
+        },
+        [lineEdit]
+    );
+
+    const registerChangeRequest = useCallback(
+        (data, columnDefinition, value) => {
             const dataKey = columnDefinition.dataKey;
             const changeCmd = columnDefinition.changeCmd;
 
-            if (value === undefined || value.length === 0) {
-                // empty values are now allowed
-                setColumnInError(dataKey);
-            } else {
-                resetColumnInError(dataKey);
-                // save original value, dont erase if exists
-                if (!lineEdit.oldValues.hasOwnProperty(dataKey)) {
-                    lineEdit.oldValues[dataKey] = data[dataKey];
-                }
-                lineEdit.newValues[dataKey] = {
-                    changeCmd: changeCmd,
-                    value: value,
-                };
-                data[dataKey] = value;
+            // save original value, dont erase if exists
+            if (!lineEdit.oldValues.hasOwnProperty(dataKey)) {
+                lineEdit.oldValues[dataKey] = data[dataKey];
             }
+            lineEdit.newValues[dataKey] = {
+                changeCmd: changeCmd,
+                value: value,
+            };
+            data[dataKey] = value;
         },
         [lineEdit]
     );
@@ -888,6 +890,9 @@ const NetworkTable = (props) => {
                             )}
                             equipment={rowData}
                             defaultValue={text}
+                            setcolerror={(k) => setColumnInError(k)}
+                            resetcolerror={(k) => resetColumnInError(k)}
+                            datakey={columnDefinition.dataKey}
                             setter={(val) => changeRequest(val)}
                             style={style}
                         />
@@ -903,6 +908,8 @@ const NetworkTable = (props) => {
             registerChangeRequest,
             classes.tableCell,
             classes.inlineEditionCell,
+            setColumnInError,
+            resetColumnInError,
         ]
     );
 
