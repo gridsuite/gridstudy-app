@@ -281,6 +281,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const theme = useTheme();
 
+    const [modificationInProgress, setModificationInProgress] = useState(false);
+
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
@@ -745,7 +747,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             addNavigationArrow(svg);
 
             // handling the right click on a feeder (menus)
-            if (!isComputationRunning && !isAnyNodeBuilding) {
+            if (
+                !isComputationRunning &&
+                !isAnyNodeBuilding &&
+                !modificationInProgress
+            ) {
                 const feeders = svg.metadata.nodes.filter((element) => {
                     return (
                         element.vid !== '' &&
@@ -792,7 +798,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             if (
                 !isComputationRunning &&
                 !isAnyNodeBuilding &&
-                !isNodeReadOnly(currentNode)
+                !isNodeReadOnly(currentNode) &&
+                !modificationInProgress
             ) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
@@ -813,7 +820,15 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         }
                         const switchId = aSwitch.equipmentId;
                         const open = aSwitch.open;
-                        onBreakerClick(switchId, !open, event.currentTarget);
+
+                        if (!modificationInProgress) {
+                            setModificationInProgress(true);
+                            onBreakerClick(
+                                switchId,
+                                !open,
+                                event.currentTarget
+                            );
+                        }
                     });
                 });
             }
@@ -849,6 +864,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         svgFinalHeight,
         svgFinalWidth,
         disabled,
+        modificationInProgress,
     ]);
 
     useLayoutEffect(() => {
@@ -864,6 +880,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     svgEl.setAttribute('height', svgFinalHeight);
                 }
             }
+            setModificationInProgress(false);
         } else {
         }
     }, [
@@ -872,7 +889,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         //TODO, these are from the previous useLayoutEffect
         //how to refactor to avoid repeating them here ?
         svg,
-        equipmentMenu,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
@@ -907,6 +923,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     currentNode={currentNode}
+                    modificationInProgress={modificationInProgress}
+                    setModificationInProgress={(value) =>
+                        setModificationInProgress(value)
+                    }
                 />
             )
         );
