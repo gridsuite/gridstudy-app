@@ -50,7 +50,7 @@ import {
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
-import { computePageTitle } from '../utils/compute-title';
+import { computePageTitle, computeFullPath } from '../utils/compute-title';
 
 export function useNodeData(
     studyUuid,
@@ -143,6 +143,8 @@ export function StudyContainer({ view, onChangeTab }) {
         decodeURIComponent(useParams().studyUuid)
     );
 
+    const [studyMetadata, setStudyMetadata] = useState({});
+
     const network = useSelector((state) => state.network);
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
@@ -180,7 +182,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
-    const { snackError, snackWarning } = useSnackMessage();
+    const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     const intl = useIntl();
 
@@ -353,6 +355,34 @@ export function StudyContainer({ view, onChangeTab }) {
         loadNetwork(true);
     }, [loadNetwork, currentNode]);
 
+    const displayPathUpdate = useCallback(
+        (path) => {
+            if (studyMetadata.path) {
+                if (studyMetadata.path !== path) {
+                    snackInfo('', 'moveStudyNotification', {
+                        oldStudyPath: studyMetadata.path,
+                        studyPath: path,
+                    });
+                }
+            }
+        },
+        [snackInfo, studyMetadata]
+    );
+
+    const displayNameUpdate = useCallback(
+        (name) => {
+            if (studyMetadata.name) {
+                if (studyMetadata.name !== name) {
+                    snackInfo('', 'renameStudyNotification', {
+                        oldStudyName: studyMetadata.name,
+                        studyName: name,
+                    });
+                }
+            }
+        },
+        [snackInfo, studyMetadata]
+    );
+
     const fetchStudyPath = useCallback(() => {
         fetchPath(studyUuid)
             .then((response) => {
@@ -366,12 +396,26 @@ export function StudyContainer({ view, onChangeTab }) {
                     study?.elementName,
                     parents
                 );
+
+                const path = computeFullPath(parents);
+                displayPathUpdate(path);
+                displayNameUpdate(study?.elementName);
+                studyMetadata.path = computeFullPath(parents);
+                studyMetadata.name = study?.elementName;
+                setStudyMetadata(studyMetadata);
             })
             .catch((errorMessage) => {
                 document.title = initialTitle;
                 snackError(errorMessage, 'LoadStudyAndParentsInfoError');
             });
-    }, [studyUuid, initialTitle, snackError]);
+    }, [
+        studyUuid,
+        displayPathUpdate,
+        displayNameUpdate,
+        initialTitle,
+        studyMetadata,
+        snackError,
+    ]);
 
     useEffect(() => {
         if (!studyUuid) {
@@ -391,7 +435,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 fetchStudyPath();
             }
         }
-    }, [studyUuid, studyUpdatedForce, fetchStudyPath]);
+    }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
 
     useEffect(() => {
         if (studyUuid) {
