@@ -212,7 +212,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 withElementsSearch={true}
-                searchDisabled={!isNodeBuilt(currentNode)}
                 searchingLabel={intl.formatMessage({
                     id: 'equipment_search/label',
                 })}
@@ -229,6 +228,14 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
+                searchTermDisabled={!isNodeBuilt(currentNode)}
+                initialSearchTerm={
+                    !isNodeBuilt(currentNode)
+                        ? intl.formatMessage({
+                              id: 'InvalidNode',
+                          })
+                        : ''
+                }
             >
                 {/* Add current Node name between Logo and Tabs */}
                 <Box
