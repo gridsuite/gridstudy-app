@@ -17,6 +17,9 @@ const ITEMS_PADDING = 8;
 
 export const TapChangerSelector = ({
     tapChanger,
+    setcolerror,
+    resetcolerror,
+    datakey,
     setter,
     defaultValue,
     ...props
@@ -54,6 +57,9 @@ export const NumericalField = ({
     defaultValue,
     min,
     max,
+    setcolerror,
+    resetcolerror,
+    datakey,
     setter,
     style,
     ...props
@@ -61,21 +67,46 @@ export const NumericalField = ({
     const [error, setError] = useState(false);
     const intl = useIntl();
 
+    const isValid = useCallback((val, minVal, maxVal) => {
+        if (isNaN(val)) {
+            return false;
+        }
+        let valFloat = parseFloat(val);
+        if (isNaN(valFloat)) {
+            return false;
+        }
+        return (
+            (minVal === undefined || valFloat >= minVal) &&
+            (maxVal === undefined || valFloat <= maxVal)
+        );
+    }, []);
+
     const validateChange = useCallback(
         (ev) => {
             const newVal = ev.target.value;
-            if (newVal >= min && newVal <= max) {
+            if (isValid(newVal, min, max)) {
                 setError(false);
+                resetcolerror(datakey);
             } else {
                 setError(true);
+                setcolerror(datakey);
             }
             setter(newVal);
         },
-        [setError, min, max, setter]
+        [
+            setError,
+            min,
+            max,
+            setter,
+            isValid,
+            setcolerror,
+            resetcolerror,
+            datakey,
+        ]
     );
 
-    return (
-        <Tooltip title={intl.formatMessage({ id: 'MinMax' }, { min, max })}>
+    function renderNumericText() {
+        return (
             <TextField
                 defaultValue={defaultValue}
                 onChange={validateChange}
@@ -89,12 +120,91 @@ export const NumericalField = ({
                     style: {
                         textAlign: 'center',
                         fontSize: 'small',
-                        flexGrow: 1,
                     },
                     min: { min },
                     max: { max },
+                    step: 'any',
                 }}
             />
-        </Tooltip>
+        );
+    }
+
+    function renderNumericTextWithTooltip() {
+        let tooltip = '';
+        if (min !== undefined && max !== undefined) {
+            tooltip = intl.formatMessage({ id: 'MinMax' }, { min, max });
+        } else if (min !== undefined) {
+            tooltip = intl.formatMessage({ id: 'OnlyMin' }, { min });
+        } else if (max !== undefined) {
+            tooltip = intl.formatMessage({ id: 'OnlyMax' }, { max });
+        }
+        if (tooltip !== '') {
+            return <Tooltip title={tooltip}>{renderNumericText()}</Tooltip>;
+        }
+        return renderNumericText();
+    }
+
+    return <div>{renderNumericTextWithTooltip()}</div>;
+};
+
+export const NameField = ({
+    defaultValue,
+    setcolerror,
+    resetcolerror,
+    datakey,
+    setter,
+    style,
+    ...props
+}) => {
+    const validateChange = useCallback(
+        (ev) => {
+            const newVal = ev.target.value;
+            setter(newVal);
+        },
+        [setter]
+    );
+
+    return (
+        <TextField
+            defaultValue={defaultValue}
+            onChange={validateChange}
+            {...props}
+            size={'small'}
+            margin={'none'}
+            style={{ ...style, padding: 0 }}
+            inputProps={{
+                style: {
+                    textAlign: 'center',
+                    fontSize: 'small',
+                },
+            }}
+        />
+    );
+};
+
+export const EnumField = ({
+    enumList,
+    setcolerror,
+    resetcolerror,
+    datakey,
+    setter,
+    defaultValue,
+    ...props
+}) => {
+    return (
+        <Select
+            defaultValue={defaultValue || ''}
+            onChange={(ev) => setter(ev.target.value)}
+            size={'medium'}
+            margin={'none'}
+            {...props}
+        >
+            {enumList.map((e, index) => (
+                // 'id' is displayed in the select as is
+                <MenuItem value={e.id} key={e.id + '_' + index}>
+                    <em>{e.id}</em>
+                </MenuItem>
+            ))}
+        </Select>
     );
 };

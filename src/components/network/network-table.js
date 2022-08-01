@@ -17,6 +17,7 @@ import { IconButton, TextField, Tooltip, Grid } from '@mui/material';
 import {
     requestNetworkChange,
     updateConfigParameter,
+    modifyLoad,
 } from '../../utils/rest-api';
 import { SelectOptionsDialog } from '../../utils/dialogs';
 import List from '@mui/material/List';
@@ -112,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
     },
     inlineEditionCell: {
         backgroundColor: theme.palette.action.hover,
+        '& div': {
+            height: '100%',
+        },
     },
     tableHeader: {
         fontSize: 'small',
@@ -595,6 +599,14 @@ const NetworkTable = (props) => {
                 function capitaliseFirst(str) {
                     return str.charAt(0).toUpperCase() + str.slice(1);
                 }
+
+                if (Object.values(lineEdit.newValues).length === 0) {
+                    // nothing to commit => abort
+                    resetChanges();
+                    return;
+                }
+                // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
+                // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
                 let groovyCr =
                     'equipment = network.get' +
                     capitaliseFirst(
@@ -607,12 +619,28 @@ const NetworkTable = (props) => {
                 Object.values(lineEdit.newValues).forEach((cr) => {
                     groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
                 });
-                requestNetworkChange(
-                    props.studyUuid,
-                    props.currentNode?.id,
-                    groovyCr
-                ).then((response) => {
-                    if (response.ok) {
+                Promise.resolve(
+                    lineEdit.equipmentType === 'load'
+                        ? modifyLoad(
+                              props.studyUuid,
+                              props.currentNode?.id,
+                              lineEdit.id,
+                              lineEdit.newValues.name?.value,
+                              lineEdit.newValues.type?.value,
+                              lineEdit.newValues.p0?.value,
+                              lineEdit.newValues.q0?.value,
+                              undefined,
+                              undefined,
+                              false,
+                              undefined
+                          )
+                        : requestNetworkChange(
+                              props.studyUuid,
+                              props.currentNode?.id,
+                              groovyCr
+                          )
+                )
+                    .then(() => {
                         Object.entries(lineEdit.newValues).forEach(
                             ([key, cr]) => {
                                 rowData[key] = cr.value;
@@ -620,13 +648,14 @@ const NetworkTable = (props) => {
                         );
                         // TODO When the data is saved, we should force an update of the table's data. As is, it takes too long to update.
                         // And maybe add a visual clue that the save was successful ?
-                    } else {
+                    })
+                    .catch((promiseErrorMsg) => {
+                        console.error(promiseErrorMsg);
                         Object.entries(lineEdit.oldValues).forEach(
                             ([key, oldValue]) => {
                                 rowData[key] = oldValue;
                             }
                         );
-
                         let message = intl.formatMessage({
                             id: 'paramsChangingDenied',
                         });
@@ -638,21 +667,22 @@ const NetworkTable = (props) => {
                                 intlRef: intlRef,
                             },
                         });
-                    }
-                    setLineEdit({});
-                });
+                    });
+                setLineEdit({});
             }
 
             if (isLineOnEditMode(rowData)) {
                 return (
                     <div key={key} style={style}>
                         <div className={classes.editCell}>
-                            <IconButton
-                                size={'small'}
-                                onClick={() => commitChanges(rowData)}
-                            >
-                                <CheckIcon />
-                            </IconButton>
+                            {lineEdit.errors.size === 0 && (
+                                <IconButton
+                                    size={'small'}
+                                    onClick={() => commitChanges(rowData)}
+                                >
+                                    <CheckIcon />
+                                </IconButton>
+                            )}
                             <IconButton
                                 size={'small'}
                                 onClick={() => resetChanges(rowData)}
@@ -678,6 +708,7 @@ const NetworkTable = (props) => {
                                         oldValues: {},
                                         newValues: {},
                                         id: rowData.id,
+                                        errors: new Map(),
                                         equipmentType:
                                             TABLES_DEFINITION_INDEXES.get(
                                                 tabIndex
@@ -802,10 +833,35 @@ const NetworkTable = (props) => {
         ]
     );
 
+    const setColumnInError = useCallback(
+        (dataKey) => {
+            if (!lineEdit.errors.has(dataKey)) {
+                let newLineEdit = { ...lineEdit };
+                newLineEdit.errors.set(dataKey, true);
+                setLineEdit(newLineEdit);
+            }
+        },
+        [lineEdit]
+    );
+
+    const resetColumnInError = useCallback(
+        (dataKey) => {
+            if (lineEdit.errors.has(dataKey)) {
+                let newLineEdit = { ...lineEdit };
+                newLineEdit.errors.delete(dataKey);
+                setLineEdit(newLineEdit);
+            }
+        },
+        [lineEdit]
+    );
+
     const registerChangeRequest = useCallback(
-        (data, dataKey, changeCmd, value) => {
+        (data, columnDefinition, value) => {
+            const dataKey = columnDefinition.dataKey;
+            const changeCmd = columnDefinition.changeCmd;
+
             // save original value, dont erase if exists
-            if (!lineEdit.oldValues[dataKey]) {
+            if (!lineEdit.oldValues.hasOwnProperty(dataKey)) {
                 lineEdit.oldValues[dataKey] = data[dataKey];
             }
             lineEdit.newValues[dataKey] = {
@@ -825,23 +881,21 @@ const NetworkTable = (props) => {
             ) {
                 const text = formatCell(rowData, columnDefinition).value;
                 const changeRequest = (value) =>
-                    registerChangeRequest(
-                        rowData,
-                        columnDefinition.dataKey,
-                        columnDefinition.changeCmd,
-                        value
-                    );
+                    registerChangeRequest(rowData, columnDefinition, value);
                 const Editor = columnDefinition.editor;
                 if (Editor) {
                     return (
                         <Editor
-                            key={rowData.dataKey + rowData.id}
+                            key={columnDefinition.dataKey + key}
                             className={clsx(
                                 classes.tableCell,
                                 classes.inlineEditionCell
                             )}
                             equipment={rowData}
                             defaultValue={text}
+                            setcolerror={(k) => setColumnInError(k)}
+                            resetcolerror={(k) => resetColumnInError(k)}
+                            datakey={columnDefinition.dataKey}
                             setter={(val) => changeRequest(val)}
                             style={style}
                         />
@@ -857,6 +911,8 @@ const NetworkTable = (props) => {
             registerChangeRequest,
             classes.tableCell,
             classes.inlineEditionCell,
+            setColumnInError,
+            resetColumnInError,
         ]
     );
 
