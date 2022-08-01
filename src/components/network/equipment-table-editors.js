@@ -129,27 +129,22 @@ export const NumericalField = ({
         );
     }
 
-    return (
-        <div>
-            {min !== undefined && max !== undefined ? (
-                <Tooltip
-                    title={intl.formatMessage({ id: 'MinMax' }, { min, max })}
-                >
-                    {renderNumericText()}
-                </Tooltip>
-            ) : min !== undefined ? (
-                <Tooltip title={intl.formatMessage({ id: 'OnlyMin' }, { min })}>
-                    {renderNumericText()}
-                </Tooltip>
-            ) : max !== undefined ? (
-                <Tooltip title={intl.formatMessage({ id: 'OnlyMax' }, { max })}>
-                    {renderNumericText()}
-                </Tooltip>
-            ) : (
-                renderNumericText()
-            )}
-        </div>
-    );
+    function renderNumericTextWithTooltip() {
+        let tooltip = '';
+        if (min !== undefined && max !== undefined) {
+            tooltip = intl.formatMessage({ id: 'MinMax' }, { min, max });
+        } else if (min !== undefined) {
+            tooltip = intl.formatMessage({ id: 'OnlyMin' }, { min });
+        } else if (max !== undefined) {
+            tooltip = intl.formatMessage({ id: 'OnlyMax' }, { max });
+        }
+        if (tooltip !== '') {
+            return <Tooltip title={tooltip}>{renderNumericText()}</Tooltip>;
+        }
+        return renderNumericText();
+    }
+
+    return <div>{renderNumericTextWithTooltip()}</div>;
 };
 
 export const NameField = ({
