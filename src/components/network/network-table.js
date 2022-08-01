@@ -19,6 +19,7 @@ import {
     requestNetworkChange,
     updateConfigParameter,
     modifyLoad,
+    modifyGenerator,
 } from '../../utils/rest-api';
 import { SelectOptionsDialog } from '../../utils/dialogs';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -640,6 +641,7 @@ const NetworkTable = (props) => {
                 Object.values(lineEdit.newValues).forEach((cr) => {
                     groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
                 });
+
                 Promise.resolve(
                     lineEdit.equipmentType === 'load'
                         ? modifyLoad(
@@ -653,6 +655,24 @@ const NetworkTable = (props) => {
                               undefined,
                               undefined,
                               false,
+                              undefined
+                          )
+                        : lineEdit.equipmentType === 'generator'
+                        ? modifyGenerator(
+                              props.studyUuid,
+                              props.currentNode?.id,
+                              lineEdit.id,
+                              lineEdit.newValues.name?.value,
+                              lineEdit.newValues.energySource?.value,
+                              lineEdit.newValues.minP?.value,
+                              lineEdit.newValues.maxP?.value,
+                              undefined,
+                              lineEdit.newValues.targetP?.value,
+                              lineEdit.newValues.targetQ?.value,
+                              lineEdit.newValues.voltageRegulatorOn?.value,
+                              lineEdit.newValues.targetV?.value,
+                              undefined,
+                              undefined,
                               undefined
                           )
                         : requestNetworkChange(
@@ -922,11 +942,15 @@ const NetworkTable = (props) => {
                         />
                     );
                 }
+            } else if (columnDefinition.boolean) {
+                return booleanCellRender(rowData, columnDefinition, key, style);
+            } else {
+                return defaultCellRender(rowData, columnDefinition, key, style);
             }
-            return defaultCellRender(rowData, columnDefinition, key, style);
         },
         [
             isLineOnEditMode,
+            booleanCellRender,
             defaultCellRender,
             formatCell,
             registerChangeRequest,
@@ -951,7 +975,7 @@ const NetworkTable = (props) => {
                         ? c.columnWidth
                         : MIN_COLUMN_WIDTH,
                 };
-                if (c.changeCmd !== undefined) {
+                if (c.editor !== undefined) {
                     column.cellRenderer = editableCellRender;
                 } else if (column.boolean) {
                     column.cellRenderer = booleanCellRender;

@@ -8,6 +8,7 @@
 import React, { useCallback, useState } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Checkbox from '@mui/material/Checkbox';
 import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 
@@ -179,6 +180,77 @@ export const NameField = ({
                 },
             }}
         />
+    );
+};
+
+export const BooleanCheckField = ({
+    defaultValue,
+    setcolerror,
+    resetcolerror,
+    datakey,
+    setter,
+    style,
+    ...props
+}) => {
+    const [checked, setChecked] = useState(defaultValue);
+
+    const validateChange = useCallback(
+        (ev) => {
+            const boolValue = ev.target.checked;
+            setChecked(boolValue);
+            setter(boolValue);
+        },
+        [setter]
+    );
+
+    return (
+        <Checkbox
+            checked={checked}
+            indeterminate={checked === null}
+            onChange={validateChange}
+            {...props}
+            color="default"
+            disableRipple={true}
+            style={{ ...style, borderRadius: 0 }}
+        />
+    );
+};
+
+export const BooleanListField = ({
+    setcolerror,
+    resetcolerror,
+    datakey,
+    setter,
+    defaultValue,
+    ...props
+}) => {
+    const intl = useIntl();
+    const [value, setValue] = useState(defaultValue === true ? 1 : 0);
+
+    const validateChange = useCallback(
+        (ev) => {
+            const val = ev.target.value;
+            setValue(val);
+            setter(val === 1);
+        },
+        [setter]
+    );
+
+    return (
+        <Select
+            value={value}
+            onChange={validateChange}
+            size={'medium'}
+            margin={'none'}
+            {...props}
+        >
+            <MenuItem value={1} key={datakey + '_1'}>
+                <em>{intl.formatMessage({ id: 'true' })}</em>
+            </MenuItem>
+            <MenuItem value={0} key={datakey + '_0'}>
+                <em>{intl.formatMessage({ id: 'false' })}</em>
+            </MenuItem>
+        </Select>
     );
 };
 
