@@ -15,6 +15,7 @@ import {
     fetchSubstations,
     fetchLines,
     fetchVoltageLevels,
+    duplicateModifications,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,10 +31,10 @@ import {
     CircularProgress,
     Fab,
     Toolbar,
+    Tooltip,
     Typography,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import { FormattedMessage } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../dialogs/load-creation-dialog';
 import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
@@ -44,7 +45,10 @@ import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
 import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
@@ -133,6 +137,7 @@ function isPartial(s1, s2) {
 }
 
 const NetworkModificationNodeEditor = () => {
+    const intl = useIntl();
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -145,6 +150,10 @@ const NetworkModificationNodeEditor = () => {
 
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
+    const [copiedModifications, setCopiedModifications] = useState({
+        sourceNodeId: currentTreeNode?.id,
+        modifications: new Map(),
+    });
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -449,6 +458,31 @@ const NetworkModificationNodeEditor = () => {
         ).then();
     };
 
+    const doCopyModification = () => {
+        // just memorize the list of selected modifications
+        let newCopyMap = new Map();
+        selectedItems.forEach((item) => {
+            if (item.type !== 'GROOVY_SCRIPT') {
+                newCopyMap.set(item.uuid, item.equipmentId);
+            }
+        });
+        setCopiedModifications({
+            sourceNodeId: currentTreeNode.id,
+            modifications: newCopyMap,
+        });
+    };
+
+    const doPasteModification = () => {
+        duplicateModifications(
+            studyUuid,
+            copiedModifications.sourceNodeId,
+            currentTreeNode.id, // current target node
+            Array.from(copiedModifications.modifications.keys())
+        )
+            .then()
+            .catch(() => snackError('', 'errDuplicateModificationMsg'));
+    };
+
     const doEditModification = (modificationUuid) => {
         const modification = fetchNetworkModification(modificationUuid);
         modification
@@ -628,6 +662,32 @@ const NetworkModificationNodeEditor = () => {
                     onClick={() => setToggleSelectAll((oldVal) => !oldVal)}
                 />
                 <div className={classes.filler} />
+                <IconButton
+                    onClick={doCopyModification}
+                    size={'small'}
+                    className={classes.toolbarIcon}
+                    disabled={!(selectedItems?.size > 0) || isAnyNodeBuilding}
+                >
+                    <ContentCopyIcon />
+                </IconButton>
+                <Tooltip
+                    title={intl.formatMessage(
+                        { id: 'NbModification' },
+                        { nb: copiedModifications.modifications.size }
+                    )}
+                >
+                    <IconButton
+                        onClick={doPasteModification}
+                        size={'small'}
+                        className={classes.toolbarIcon}
+                        disabled={
+                            !(copiedModifications.modifications.size > 0) ||
+                            isAnyNodeBuilding
+                        }
+                    >
+                        <ContentPasteIcon />
+                    </IconButton>
+                </Tooltip>
                 <IconButton
                     onClick={doDeleteModification}
                     size={'small'}
