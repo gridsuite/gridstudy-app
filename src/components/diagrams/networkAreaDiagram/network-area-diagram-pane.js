@@ -19,7 +19,6 @@ export function NetworkAreaDiagramPane({
     onClose,
     align,
     disabled,
-    visible,
 }) {
     const [depth, setDepth] = useState(0);
 
