@@ -100,5 +100,4 @@ NetworkAreaDiagramPane.propTypes = {
     onClose: PropTypes.func,
     align: PropTypes.string,
     disabled: PropTypes.bool,
-    visible: PropTypes.bool,
 };
