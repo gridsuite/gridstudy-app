@@ -875,6 +875,11 @@ const NetworkTable = (props) => {
         [lineEdit]
     );
 
+    const forceLineUpdate = useCallback(() => {
+        let newLineEdit = { ...lineEdit };
+        setLineEdit(newLineEdit);
+    }, [lineEdit]);
+
     const registerChangeRequest = useCallback(
         (data, columnDefinition, value) => {
             const dataKey = columnDefinition.dataKey;
@@ -899,7 +904,11 @@ const NetworkTable = (props) => {
                 isLineOnEditMode(rowData) &&
                 rowData[columnDefinition.dataKey] !== undefined
             ) {
-                const text = formatCell(rowData, columnDefinition).value;
+                // when we edit a numeric field, we display the original un-rounded value
+                const currentValue = columnDefinition.numeric
+                    ? rowData[columnDefinition.dataKey]
+                    : formatCell(rowData, columnDefinition).value;
+
                 const changeRequest = (value) =>
                     registerChangeRequest(rowData, columnDefinition, value);
                 const Editor = columnDefinition.editor;
@@ -912,10 +921,11 @@ const NetworkTable = (props) => {
                                 classes.inlineEditionCell
                             )}
                             equipment={rowData}
-                            defaultValue={text}
+                            defaultValue={currentValue}
                             setcolerror={(k) => setColumnInError(k)}
                             resetcolerror={(k) => resetColumnInError(k)}
-                            datakey={columnDefinition.dataKey}
+                            forcecolupdate={forceLineUpdate}
+                            coldef={columnDefinition}
                             setter={(val) => changeRequest(val)}
                             style={style}
                         />
@@ -937,6 +947,7 @@ const NetworkTable = (props) => {
             classes.inlineEditionCell,
             setColumnInError,
             resetColumnInError,
+            forceLineUpdate,
         ]
     );
 

@@ -626,6 +626,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'minP',
                 numeric: true,
                 fractionDigits: 1,
+                forceUpdateOnChange: true,
                 changeCmd: 'equipment.setMinP({})\n',
                 editor: ({ equipment, ...props }) =>
                     NumericalField({
@@ -638,6 +639,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'maxP',
                 numeric: true,
                 fractionDigits: 1,
+                forceUpdateOnChange: true,
                 changeCmd: 'equipment.setMaxP({})\n',
                 editor: ({ equipment, ...props }) =>
                     NumericalField({
