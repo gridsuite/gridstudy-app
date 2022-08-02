@@ -386,22 +386,23 @@ export function StudyContainer({ view, onChangeTab }) {
     const fetchStudyPath = useCallback(() => {
         fetchPath(studyUuid)
             .then((response) => {
-                const study = response[0];
+                const studyName = response[0]?.elementName;
                 const parents = response
                     .slice(1)
                     .map((parent) => parent.elementName);
 
+                const path = computeFullPath(parents);
+                displayPathUpdate(path);
+                displayNameUpdate(studyName);
+
                 document.title = computePageTitle(
                     initialTitle,
-                    study?.elementName,
+                    studyName,
                     parents
                 );
 
-                const path = computeFullPath(parents);
-                displayPathUpdate(path);
-                displayNameUpdate(study?.elementName);
-                studyMetadata.path = computeFullPath(parents);
-                studyMetadata.name = study?.elementName;
+                studyMetadata.path = path;
+                studyMetadata.name = studyName;
                 setStudyMetadata(studyMetadata);
             })
             .catch((errorMessage) => {
