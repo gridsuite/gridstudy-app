@@ -295,12 +295,11 @@ export const useConnectivityValue = ({
 
     useEffect(() => {
         if (!voltageLevelOptions) return;
-
         setConnectivity({
             voltageLevel: voltageLevelIdDefaultValue
-                ? voltageLevelOptions.find(
-                      (value) => value.id === voltageLevelIdDefaultValue
-                  )
+                ? {
+                      id: voltageLevelIdDefaultValue,
+                  }
                 : null,
             busOrBusbarSection: busOrBusbarSectionIdDefaultValue
                 ? {
