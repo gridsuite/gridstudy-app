@@ -381,12 +381,3 @@ export function openNetworkAreaDiagram(voltageLevelsIds) {
         voltageLevelsIdsForNad: voltageLevelsIds,
     };
 }
-
-export const NAD_DEPTH = 'NAD_DEPTH';
-
-export function setNadDepth(nadDepth) {
-    return {
-        type: NAD_DEPTH,
-        nadDepth: nadDepth,
-    };
-}
