@@ -14,13 +14,14 @@ import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
 import { IconButton, TextField, Tooltip, Grid } from '@mui/material';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {
     requestNetworkChange,
     updateConfigParameter,
     modifyLoad,
 } from '../../utils/rest-api';
 import { SelectOptionsDialog } from '../../utils/dialogs';
-import List from '@mui/material/List';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
@@ -29,6 +30,7 @@ import ListItemText from '@mui/material/ListItemText';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
     TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITIONS,
@@ -237,6 +239,10 @@ const NetworkTable = (props) => {
     const allLockedColumnsNames = useSelector(
         (state) => state.allLockedColumnsNames
     );
+    const allReorderedTableDefinitionIndexes = useSelector(
+        (state) => state.allReorderedTableDefinitionIndexes
+    );
+
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
     const [lineEdit, setLineEdit] = useState(undefined);
@@ -246,6 +252,10 @@ const NetworkTable = (props) => {
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
+    const [
+        reorderedTableDefinitionIndexes,
+        setReorderedTableDefinitionIndexes,
+    ] = useState(new Set());
     const [scrollToIndex, setScrollToIndex] = useState(-1);
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
@@ -301,6 +311,17 @@ const NetworkTable = (props) => {
             new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
         );
     }, [tabIndex, allLockedColumnsNames]);
+
+    useEffect(() => {
+        const allReorderedTemp = allReorderedTableDefinitionIndexes[tabIndex];
+        setReorderedTableDefinitionIndexes(
+            allReorderedTemp
+                ? JSON.parse(allReorderedTemp)
+                : TABLES_DEFINITION_INDEXES.get(tabIndex).columns.map(
+                      (item) => item.id
+                  )
+        );
+    }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
     useEffect(() => {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
@@ -950,14 +971,31 @@ const NetworkTable = (props) => {
                     .filter((c) => selectedColumnsNames.has(c.id)).length > 0
             );
         }
-        if (generatedTableColumns.length > 0 && isEditColumnVisible()) {
-            generatedTableColumns.unshift({
-                locked: true,
-                editColumn: true,
-                columnWidth: EDIT_CELL_WIDTH,
-                cellRenderer: (rowData, columnDefinition, key, style) =>
-                    editCellRender(rowData, columnDefinition, key, style),
-            });
+        if (generatedTableColumns.length > 0) {
+            if (isEditColumnVisible()) {
+                generatedTableColumns.unshift({
+                    locked: true,
+                    editColumn: true,
+                    columnWidth: EDIT_CELL_WIDTH,
+                    cellRenderer: (rowData, columnDefinition, key, style) =>
+                        editCellRender(rowData, columnDefinition, key, style),
+                });
+            }
+
+            function sortByIndex(a, b) {
+                if (
+                    reorderedTableDefinitionIndexes.indexOf(a.id) <
+                    reorderedTableDefinitionIndexes.indexOf(b.id)
+                )
+                    return -1;
+                if (
+                    reorderedTableDefinitionIndexes.indexOf(a.id) >
+                    reorderedTableDefinitionIndexes.indexOf(b.id)
+                )
+                    return 1;
+                return 0;
+            }
+            generatedTableColumns.sort(sortByIndex);
         }
         generatedTableColumns.headerCellRender = headerCellRender;
 
@@ -1067,16 +1105,31 @@ const NetworkTable = (props) => {
                 },
             });
         });
-
         setPopupSelectColumnNames(false);
+
+        updateConfigParameter(
+            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
+                TABLES_NAMES[tabIndex],
+            JSON.stringify(reorderedTableDefinitionIndexes)
+        ).catch((errorMessage) => {
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'paramsChangingError',
+                    intlRef: intlRef,
+                },
+            });
+        });
     }, [
         tabIndex,
         selectedColumnsNames,
         lockedColumnsNames,
+        reorderedTableDefinitionIndexes,
         allDisplayedColumnsNames,
-        allLockedColumnsNames,
         enqueueSnackbar,
         intlRef,
+        allLockedColumnsNames,
     ]);
 
     const handleToggle = (value) => () => {
@@ -1118,13 +1171,34 @@ const NetworkTable = (props) => {
         setLockedColumnsNames(newLocked);
     };
 
+    const commit = useCallback(
+        ({ source, destination }) => {
+            if (destination) {
+                let reorderedTableDefinitionIndexesTemp = [
+                    ...reorderedTableDefinitionIndexes,
+                ];
+                const [reorderedItem] =
+                    reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
+                reorderedTableDefinitionIndexesTemp.splice(
+                    destination.index,
+                    0,
+                    reorderedItem
+                );
+                setReorderedTableDefinitionIndexes(
+                    reorderedTableDefinitionIndexesTemp
+                );
+            }
+        },
+        [reorderedTableDefinitionIndexes]
+    );
+
     const checkListColumnsNames = () => {
         let isAllChecked =
             selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
 
         return (
-            <List>
+            <>
                 <ListItem
                     className={classes.checkboxSelectAll}
                     onClick={handleToggleAll}
@@ -1136,30 +1210,93 @@ const NetworkTable = (props) => {
                     />
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
-                {[...TABLES_COLUMNS_NAMES[tabIndex]].map((value, index) => (
-                    <ListItem
-                        key={tabIndex + '-' + index}
-                        className={classes.checkboxItem}
-                        style={{ padding: '0 16px' }}
-                    >
-                        <ListItemIcon
-                            onClick={handleClickOnLock(value)}
-                            style={{ minWidth: 0, width: '20px' }}
-                        >
-                            {renderColumnConfigLockIcon(value)}
-                        </ListItemIcon>
-                        <ListItemIcon onClick={handleToggle(value)}>
-                            <Checkbox
-                                checked={selectedColumnsNames.has(value)}
-                            />
-                        </ListItemIcon>
-                        <ListItemText
-                            onClick={handleToggle(value)}
-                            primary={intl.formatMessage({ id: `${value}` })}
-                        />
-                    </ListItem>
-                ))}
-            </List>
+
+                <DragDropContext onDragEnd={commit}>
+                    <Droppable droppableId="network-table-columns-list">
+                        {(provided) => (
+                            <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
+                                {[...reorderedTableDefinitionIndexes].map(
+                                    (value, index) => (
+                                        <Draggable
+                                            draggableId={tabIndex + '-' + index}
+                                            index={index}
+                                            key={tabIndex + '-' + index}
+                                        >
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                >
+                                                    <ListItem
+                                                        className={
+                                                            classes.checkboxItem
+                                                        }
+                                                        style={{
+                                                            padding: '0 16px',
+                                                        }}
+                                                    >
+                                                        <IconButton
+                                                            {...provided.dragHandleProps}
+                                                            className={
+                                                                classes.dragIcon
+                                                            }
+                                                            size={'small'}
+                                                        >
+                                                            <DragIndicatorIcon
+                                                                edge="start"
+                                                                spacing={0}
+                                                            />
+                                                        </IconButton>
+
+                                                        <ListItemIcon
+                                                            onClick={handleClickOnLock(
+                                                                value
+                                                            )}
+                                                            style={{
+                                                                minWidth: 0,
+                                                                width: '20px',
+                                                            }}
+                                                        >
+                                                            {renderColumnConfigLockIcon(
+                                                                value
+                                                            )}
+                                                        </ListItemIcon>
+                                                        <ListItemIcon
+                                                            onClick={handleToggle(
+                                                                value
+                                                            )}
+                                                        >
+                                                            <Checkbox
+                                                                checked={selectedColumnsNames.has(
+                                                                    value
+                                                                )}
+                                                            />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            onClick={handleToggle(
+                                                                value
+                                                            )}
+                                                            primary={intl.formatMessage(
+                                                                {
+                                                                    id: `${value}`,
+                                                                }
+                                                            )}
+                                                        />
+                                                    </ListItem>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    )
+                                )}
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
+            </>
         );
     };
 
@@ -1290,15 +1427,6 @@ const NetworkTable = (props) => {
                                 >
                                     <ViewColumnIcon />
                                 </IconButton>
-                                <SelectOptionsDialog
-                                    open={popupSelectColumnNames}
-                                    onClose={handleCancelPopupSelectColumnNames}
-                                    onClick={handleSaveSelectedColumnNames}
-                                    title={intl.formatMessage({
-                                        id: 'ColumnsList',
-                                    })}
-                                    child={checkListColumnsNames()}
-                                />
                             </Grid>
                             {props.disabled && <AlertInvalidNode />}
                             <Grid item className={classes.exportCsv}>
@@ -1342,6 +1470,22 @@ const NetworkTable = (props) => {
                         {/*This render is fast, rerender full dom everytime*/}
                         {renderTable(rows)}
                     </div>
+
+                    <SelectOptionsDialog
+                        open={popupSelectColumnNames}
+                        onClose={handleCancelPopupSelectColumnNames}
+                        onClick={handleSaveSelectedColumnNames}
+                        title={intl.formatMessage({
+                            id: 'ColumnsList',
+                        })}
+                        child={checkListColumnsNames()}
+                        //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beatiful-dnd warning related to nested scroll containers
+                        style={{
+                            '& .MuiPaper-root': {
+                                overflowY: 'visible',
+                            },
+                        }}
+                    />
                 </>
             )
         );
