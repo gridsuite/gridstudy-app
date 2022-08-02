@@ -348,11 +348,8 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const dofetchNetworkModifications = useCallback(() => {
-        // In most cases here this condition manage that current Node is the root node
-        if (!currentTreeNode?.data?.modificationGroupUuid) return;
-
         setLaunchLoader(true);
-        fetchNetworkModifications(currentTreeNode?.data?.modificationGroupUuid)
+        fetchNetworkModifications(studyUuid, currentTreeNode?.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -365,7 +362,7 @@ const NetworkModificationNodeEditor = () => {
                 setPendingState(false);
                 setLaunchLoader(false);
             });
-    }, [currentTreeNode, snackError]);
+    }, [studyUuid, currentTreeNode, snackError]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);

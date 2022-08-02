@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import React, { useEffect, useRef, useState } from 'react';
 import LoaderWithOverlay from '../util/loader-with-overlay';
 import { MultiGrid, AutoSizer } from 'react-virtualized';
@@ -78,8 +85,8 @@ export const EquipmentTable = (props) => {
     }
 
     useEffect(() => {
-        setScrollTopLock(props.scrollTop !== -1);
-    }, [props.scrollTop]);
+        if (props.visible) setScrollTopLock(props.scrollTop !== -1);
+    }, [props.scrollTop, props.visible]);
 
     const getScrollTop = () => {
         if (!scrollTopLock) return -1;
@@ -132,8 +139,9 @@ export const EquipmentTable = (props) => {
                                         scrollBars?.vertical
                                     );
                                 }}
-                                scrollTop={getScrollTop()}
+                                scrollTop={props.visible ? getScrollTop() : 0}
                                 onScroll={() => {
+                                    // This is to allow scrolling when scrollTop is set.
                                     if (getScrollTop() !== -1) {
                                         setScrollTopLock(false);
                                     }
