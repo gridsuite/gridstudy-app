@@ -14,6 +14,7 @@ import {
 } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
+import { nodeHeight, nodeWidth } from './model-constants';
 
 const CenterGraphButton = ({ currentNode }) => {
     const { setCenter } = useZoomPanHelper();
@@ -24,9 +25,10 @@ const CenterGraphButton = ({ currentNode }) => {
     const intl = useIntl();
 
     const focusNode = useCallback(() => {
+        console.log('current node & zoom', currentNode, zoom);
         // if no selected node, center on Root
-        const x = currentNode ? currentNode.position.x : 0;
-        const y = currentNode ? currentNode.position.y : 0;
+        const x = currentNode ? currentNode.position.x + nodeWidth / 2.0 : 0;
+        const y = currentNode ? currentNode.position.y + nodeHeight / 2.0 : 0;
         setCenter(x, y, zoom);
     }, [setCenter, currentNode, zoom]);
 
