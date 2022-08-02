@@ -180,7 +180,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
 
     const intl = useIntl();
 
@@ -302,7 +302,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         }
                     })
                     .catch((err) => {
-                        snackError(err, 'CaseNameLoadError');
+                        snackWarning('', 'CaseNameLoadError');
                     });
 
                 const firstSelectedNode =
@@ -336,7 +336,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 console.debug('Network modification tree loading finished')
             );
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, dispatch, snackError]);
+    }, [studyUuid, dispatch, snackError, snackWarning]);
 
     useEffect(() => {
         if (studyUuid) {

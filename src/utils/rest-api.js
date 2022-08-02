@@ -979,7 +979,9 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
         },
         body: groovyScript,
     }).then((response) => {
-        return response;
+        return response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
@@ -1141,7 +1143,8 @@ export function modifyLoad(
         },
         body: JSON.stringify({
             equipmentId: id,
-            equipmentName: name ? { value: name, op: 'SET' } : null,
+            equipmentName:
+                name !== undefined ? { value: name, op: 'SET' } : null,
             loadType: loadType ? { value: loadType, op: 'SET' } : null,
             activePower:
                 activePower === 0 || activePower
@@ -1188,7 +1191,7 @@ export function modifyGenerator(
     busOrBusbarSectionId,
     modificationId
 ) {
-    console.info('Modifying load ');
+    console.info('Modifying generator ');
     const idUrl =
         modificationId === undefined
             ? ''
