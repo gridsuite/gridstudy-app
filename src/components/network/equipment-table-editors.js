@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
 import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 
@@ -20,7 +19,8 @@ export const TapChangerSelector = ({
     tapChanger,
     setcolerror,
     resetcolerror,
-    datakey,
+    forcecolupdate,
+    coldef,
     setter,
     defaultValue,
     ...props
@@ -60,12 +60,15 @@ export const NumericalField = ({
     max,
     setcolerror,
     resetcolerror,
-    datakey,
+    forcecolupdate,
+    coldef,
     setter,
     style,
     ...props
 }) => {
     const [error, setError] = useState(false);
+    const [userChangeInProgress, setUserChangeInProgress] = useState(false);
+    const [currentValue, setCurrentValue] = useState(defaultValue);
     const intl = useIntl();
 
     const isValid = useCallback((val, minVal, maxVal) => {
@@ -83,34 +86,60 @@ export const NumericalField = ({
     }, []);
 
     const validateChange = useCallback(
-        (ev) => {
-            const newVal = ev.target.value;
+        (newVal) => {
             if (isValid(newVal, min, max)) {
                 setError(false);
-                resetcolerror(datakey);
+                resetcolerror(coldef.dataKey);
             } else {
                 setError(true);
-                setcolerror(datakey);
+                setcolerror(coldef.dataKey);
             }
-            setter(newVal);
         },
         [
             setError,
             min,
             max,
-            setter,
             isValid,
             setcolerror,
             resetcolerror,
-            datakey,
+            coldef.dataKey,
         ]
+    );
+
+    const validateEvent = useCallback(
+        (ev) => {
+            const newVal = ev.target.value;
+            validateChange(newVal);
+            setUserChangeInProgress(true);
+            setter(newVal);
+            setCurrentValue(newVal);
+        },
+        [validateChange, setter]
+    );
+
+    useEffect(() => {
+        // to validate the initial state when line editing starts, or on (force)update
+        validateChange(currentValue);
+    }, [currentValue, validateChange]);
+
+    const onFocusOut = useCallback(
+        (ev) => {
+            if (userChangeInProgress && coldef.forceUpdateOnChange) {
+                setUserChangeInProgress(false);
+                // force a parent update: all Editors will be updated. Ex: usefull to propagate min/max updates
+                forcecolupdate();
+            }
+        },
+        [forcecolupdate, userChangeInProgress, coldef.forceUpdateOnChange]
     );
 
     function renderNumericText() {
         return (
             <TextField
-                defaultValue={defaultValue}
-                onChange={validateChange}
+                value={currentValue}
+                onChange={validateEvent}
+                onBlur={onFocusOut}
+                onMouseOut={onFocusOut}
                 {...props}
                 error={error}
                 type="Number"
@@ -125,6 +154,7 @@ export const NumericalField = ({
                     min: { min },
                     max: { max },
                     step: 'any',
+                    lang: 'en-US', // to have . as decimal separator
                 }}
             />
         );
@@ -152,7 +182,8 @@ export const NameField = ({
     defaultValue,
     setcolerror,
     resetcolerror,
-    datakey,
+    forcecolupdate,
+    coldef,
     setter,
     style,
     ...props
@@ -183,43 +214,11 @@ export const NameField = ({
     );
 };
 
-export const BooleanCheckField = ({
-    defaultValue,
-    setcolerror,
-    resetcolerror,
-    datakey,
-    setter,
-    style,
-    ...props
-}) => {
-    const [checked, setChecked] = useState(defaultValue);
-
-    const validateChange = useCallback(
-        (ev) => {
-            const boolValue = ev.target.checked;
-            setChecked(boolValue);
-            setter(boolValue);
-        },
-        [setter]
-    );
-
-    return (
-        <Checkbox
-            checked={checked}
-            indeterminate={checked === null}
-            onChange={validateChange}
-            {...props}
-            color="default"
-            disableRipple={true}
-            style={{ ...style, borderRadius: 0 }}
-        />
-    );
-};
-
 export const BooleanListField = ({
     setcolerror,
     resetcolerror,
-    datakey,
+    forcecolupdate,
+    coldef,
     setter,
     defaultValue,
     ...props
@@ -244,10 +243,10 @@ export const BooleanListField = ({
             margin={'none'}
             {...props}
         >
-            <MenuItem value={1} key={datakey + '_1'}>
+            <MenuItem value={1} key={coldef.dataKey + '_1'}>
                 <em>{intl.formatMessage({ id: 'true' })}</em>
             </MenuItem>
-            <MenuItem value={0} key={datakey + '_0'}>
+            <MenuItem value={0} key={coldef.dataKey + '_0'}>
                 <em>{intl.formatMessage({ id: 'false' })}</em>
             </MenuItem>
         </Select>
@@ -258,15 +257,25 @@ export const EnumField = ({
     enumList,
     setcolerror,
     resetcolerror,
-    datakey,
+    forcecolupdate,
+    coldef,
     setter,
     defaultValue,
     ...props
 }) => {
+    const [value, setValue] = useState(defaultValue);
+    const validateChange = useCallback(
+        (ev) => {
+            const val = ev.target.value;
+            setValue(val);
+            setter(val);
+        },
+        [setter]
+    );
     return (
         <Select
-            defaultValue={defaultValue || ''}
-            onChange={(ev) => setter(ev.target.value)}
+            value={value}
+            onChange={validateChange}
             size={'medium'}
             margin={'none'}
             {...props}
