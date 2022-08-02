@@ -501,7 +501,7 @@ export const useAutocompleteField = ({
         [onSearchTermChange]
     );
 
-    const myOnOpen = useCallback(() => {
+    const onOpen = useCallback(() => {
         setExpanded(true);
 
         if (!onSearchTermChange) return;
@@ -560,7 +560,7 @@ export const useAutocompleteField = ({
                     handleChangeValue(newValue);
                 }}
                 open={expanded}
-                onOpen={myOnOpen}
+                onOpen={onOpen}
                 onClose={() => {
                     setExpanded(false);
                 }}
@@ -633,7 +633,7 @@ export const useAutocompleteField = ({
         handleForcedSearch,
         intl,
         renderElement,
-        myOnOpen,
+        onOpen,
         userStr,
     ]);
 

@@ -354,7 +354,7 @@ const VoltageLevelCreationDialog = ({
         formProps: filledTextField,
         values: substationOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getIdOrSelf,
+        getLabel: getIdOrSelf, // as useAutocompleteField is given allowNewValue: true, it will add the string (that has no id property) the user types as allowed option along with the substationOptions that are supposed to have an id property
         defaultValue:
             substationOptions.find(
                 (value) => value.id === formValues?.substationId

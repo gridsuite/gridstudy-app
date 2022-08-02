@@ -47,7 +47,6 @@ export const useSearchMatchingEquipments = (
                                     makeItems(infos, useNameLocal)
                                 );
                             } // else ignore results of outdated fetch
-                            timer.current = undefined;
                         })
                         .catch((errorMessage) =>
                             snackError(errorMessage, 'equipmentsSearchingError')
