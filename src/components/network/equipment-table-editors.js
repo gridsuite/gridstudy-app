@@ -109,16 +109,15 @@ export const NumericalField = ({
     const validateEvent = useCallback(
         (ev) => {
             const newVal = ev.target.value;
-            validateChange(newVal);
             setUserChangeInProgress(true);
             setter(newVal);
             setCurrentValue(newVal);
         },
-        [validateChange, setter]
+        [setter]
     );
 
     useEffect(() => {
-        // to validate the initial state when line editing starts, or on (force)update
+        // validate the initial state, or any further update
         validateChange(currentValue);
     }, [currentValue, validateChange]);
 
