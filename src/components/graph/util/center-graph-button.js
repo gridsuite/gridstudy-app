@@ -25,7 +25,6 @@ const CenterGraphButton = ({ currentNode }) => {
     const intl = useIntl();
 
     const focusNode = useCallback(() => {
-        console.log('current node & zoom', currentNode, zoom);
         // if no selected node, center on Root
         const x = currentNode ? currentNode.position.x + nodeWidth / 2.0 : 0;
         const y = currentNode ? currentNode.position.y + nodeHeight / 2.0 : 0;
