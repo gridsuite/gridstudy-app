@@ -943,10 +943,10 @@ const NetworkTable = (props) => {
                             )}
                             equipment={rowData}
                             defaultValue={currentValue}
-                            setcolerror={(k) => setColumnInError(k)}
-                            resetcolerror={(k) => resetColumnInError(k)}
-                            forcecolupdate={forceLineUpdate}
-                            coldef={columnDefinition}
+                            setColumnError={(k) => setColumnInError(k)}
+                            resetColumnError={(k) => resetColumnInError(k)}
+                            forceLineUpdate={forceLineUpdate}
+                            columnDefinition={columnDefinition}
                             setter={(val) => changeRequest(val)}
                             style={style}
                         />

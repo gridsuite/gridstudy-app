@@ -17,10 +17,10 @@ const ITEMS_PADDING = 8;
 
 export const TapChangerSelector = ({
     tapChanger,
-    setcolerror,
-    resetcolerror,
-    forcecolupdate,
-    coldef,
+    setColumnError,
+    resetColumnError,
+    forceLineUpdate,
+    columnDefinition,
     setter,
     defaultValue,
     ...props
@@ -58,10 +58,10 @@ export const NumericalField = ({
     defaultValue,
     min,
     max,
-    setcolerror,
-    resetcolerror,
-    forcecolupdate,
-    coldef,
+    setColumnError,
+    resetColumnError,
+    forceLineUpdate,
+    columnDefinition,
     setter,
     style,
     ...props
@@ -89,10 +89,10 @@ export const NumericalField = ({
         (newVal) => {
             if (isValid(newVal, min, max)) {
                 setError(false);
-                resetcolerror(coldef.dataKey);
+                resetColumnError(columnDefinition.dataKey);
             } else {
                 setError(true);
-                setcolerror(coldef.dataKey);
+                setColumnError(columnDefinition.dataKey);
             }
         },
         [
@@ -100,9 +100,9 @@ export const NumericalField = ({
             min,
             max,
             isValid,
-            setcolerror,
-            resetcolerror,
-            coldef.dataKey,
+            setColumnError,
+            resetColumnError,
+            columnDefinition.dataKey,
         ]
     );
 
@@ -123,13 +123,17 @@ export const NumericalField = ({
 
     const onFocusOut = useCallback(
         (ev) => {
-            if (userChangeInProgress && coldef.forceUpdateOnChange) {
+            if (userChangeInProgress && columnDefinition.forceUpdateOnChange) {
                 setUserChangeInProgress(false);
                 // force a parent update: all Editors will be updated. Ex: usefull to propagate min/max updates
-                forcecolupdate();
+                forceLineUpdate();
             }
         },
-        [forcecolupdate, userChangeInProgress, coldef.forceUpdateOnChange]
+        [
+            forceLineUpdate,
+            userChangeInProgress,
+            columnDefinition.forceUpdateOnChange,
+        ]
     );
 
     function renderNumericText() {
@@ -179,10 +183,10 @@ export const NumericalField = ({
 
 export const NameField = ({
     defaultValue,
-    setcolerror,
-    resetcolerror,
-    forcecolupdate,
-    coldef,
+    setColumnError,
+    resetColumnError,
+    forceLineUpdate,
+    columnDefinition,
     setter,
     style,
     ...props
@@ -214,10 +218,10 @@ export const NameField = ({
 };
 
 export const BooleanListField = ({
-    setcolerror,
-    resetcolerror,
-    forcecolupdate,
-    coldef,
+    setColumnError,
+    resetColumnError,
+    forceLineUpdate,
+    columnDefinition,
     setter,
     defaultValue,
     ...props
@@ -242,10 +246,10 @@ export const BooleanListField = ({
             margin={'none'}
             {...props}
         >
-            <MenuItem value={1} key={coldef.dataKey + '_1'}>
+            <MenuItem value={1} key={columnDefinition.dataKey + '_1'}>
                 <em>{intl.formatMessage({ id: 'true' })}</em>
             </MenuItem>
-            <MenuItem value={0} key={coldef.dataKey + '_0'}>
+            <MenuItem value={0} key={columnDefinition.dataKey + '_0'}>
                 <em>{intl.formatMessage({ id: 'false' })}</em>
             </MenuItem>
         </Select>
@@ -254,10 +258,10 @@ export const BooleanListField = ({
 
 export const EnumField = ({
     enumList,
-    setcolerror,
-    resetcolerror,
-    forcecolupdate,
-    coldef,
+    setColumnError,
+    resetColumnError,
+    forceLineUpdate,
+    columnDefinition,
     setter,
     defaultValue,
     ...props
