@@ -14,12 +14,14 @@ import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
 import { IconButton, TextField, Tooltip, Grid } from '@mui/material';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {
     requestNetworkChange,
     updateConfigParameter,
+    modifyLoad,
 } from '../../utils/rest-api';
 import { SelectOptionsDialog } from '../../utils/dialogs';
-import List from '@mui/material/List';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
@@ -28,6 +30,7 @@ import ListItemText from '@mui/material/ListItemText';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
     TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITIONS,
@@ -112,6 +115,9 @@ const useStyles = makeStyles((theme) => ({
     },
     inlineEditionCell: {
         backgroundColor: theme.palette.action.hover,
+        '& div': {
+            height: '100%',
+        },
     },
     tableHeader: {
         fontSize: 'small',
@@ -233,6 +239,10 @@ const NetworkTable = (props) => {
     const allLockedColumnsNames = useSelector(
         (state) => state.allLockedColumnsNames
     );
+    const allReorderedTableDefinitionIndexes = useSelector(
+        (state) => state.allReorderedTableDefinitionIndexes
+    );
+
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
     const [lineEdit, setLineEdit] = useState(undefined);
@@ -242,6 +252,10 @@ const NetworkTable = (props) => {
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
+    const [
+        reorderedTableDefinitionIndexes,
+        setReorderedTableDefinitionIndexes,
+    ] = useState(new Set());
     const [scrollToIndex, setScrollToIndex] = useState(-1);
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
@@ -297,6 +311,17 @@ const NetworkTable = (props) => {
             new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
         );
     }, [tabIndex, allLockedColumnsNames]);
+
+    useEffect(() => {
+        const allReorderedTemp = allReorderedTableDefinitionIndexes[tabIndex];
+        setReorderedTableDefinitionIndexes(
+            allReorderedTemp
+                ? JSON.parse(allReorderedTemp)
+                : TABLES_DEFINITION_INDEXES.get(tabIndex).columns.map(
+                      (item) => item.id
+                  )
+        );
+    }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
     useEffect(() => {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
@@ -595,6 +620,14 @@ const NetworkTable = (props) => {
                 function capitaliseFirst(str) {
                     return str.charAt(0).toUpperCase() + str.slice(1);
                 }
+
+                if (Object.values(lineEdit.newValues).length === 0) {
+                    // nothing to commit => abort
+                    resetChanges();
+                    return;
+                }
+                // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
+                // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
                 let groovyCr =
                     'equipment = network.get' +
                     capitaliseFirst(
@@ -607,12 +640,28 @@ const NetworkTable = (props) => {
                 Object.values(lineEdit.newValues).forEach((cr) => {
                     groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
                 });
-                requestNetworkChange(
-                    props.studyUuid,
-                    props.currentNode?.id,
-                    groovyCr
-                ).then((response) => {
-                    if (response.ok) {
+                Promise.resolve(
+                    lineEdit.equipmentType === 'load'
+                        ? modifyLoad(
+                              props.studyUuid,
+                              props.currentNode?.id,
+                              lineEdit.id,
+                              lineEdit.newValues.name?.value,
+                              lineEdit.newValues.type?.value,
+                              lineEdit.newValues.p0?.value,
+                              lineEdit.newValues.q0?.value,
+                              undefined,
+                              undefined,
+                              false,
+                              undefined
+                          )
+                        : requestNetworkChange(
+                              props.studyUuid,
+                              props.currentNode?.id,
+                              groovyCr
+                          )
+                )
+                    .then(() => {
                         Object.entries(lineEdit.newValues).forEach(
                             ([key, cr]) => {
                                 rowData[key] = cr.value;
@@ -620,13 +669,14 @@ const NetworkTable = (props) => {
                         );
                         // TODO When the data is saved, we should force an update of the table's data. As is, it takes too long to update.
                         // And maybe add a visual clue that the save was successful ?
-                    } else {
+                    })
+                    .catch((promiseErrorMsg) => {
+                        console.error(promiseErrorMsg);
                         Object.entries(lineEdit.oldValues).forEach(
                             ([key, oldValue]) => {
                                 rowData[key] = oldValue;
                             }
                         );
-
                         let message = intl.formatMessage({
                             id: 'paramsChangingDenied',
                         });
@@ -638,21 +688,22 @@ const NetworkTable = (props) => {
                                 intlRef: intlRef,
                             },
                         });
-                    }
-                    setLineEdit({});
-                });
+                    });
+                setLineEdit({});
             }
 
             if (isLineOnEditMode(rowData)) {
                 return (
                     <div key={key} style={style}>
                         <div className={classes.editCell}>
-                            <IconButton
-                                size={'small'}
-                                onClick={() => commitChanges(rowData)}
-                            >
-                                <CheckIcon />
-                            </IconButton>
+                            {lineEdit.errors.size === 0 && (
+                                <IconButton
+                                    size={'small'}
+                                    onClick={() => commitChanges(rowData)}
+                                >
+                                    <CheckIcon />
+                                </IconButton>
+                            )}
                             <IconButton
                                 size={'small'}
                                 onClick={() => resetChanges(rowData)}
@@ -678,6 +729,7 @@ const NetworkTable = (props) => {
                                         oldValues: {},
                                         newValues: {},
                                         id: rowData.id,
+                                        errors: new Map(),
                                         equipmentType:
                                             TABLES_DEFINITION_INDEXES.get(
                                                 tabIndex
@@ -802,10 +854,35 @@ const NetworkTable = (props) => {
         ]
     );
 
+    const setColumnInError = useCallback(
+        (dataKey) => {
+            if (!lineEdit.errors.has(dataKey)) {
+                let newLineEdit = { ...lineEdit };
+                newLineEdit.errors.set(dataKey, true);
+                setLineEdit(newLineEdit);
+            }
+        },
+        [lineEdit]
+    );
+
+    const resetColumnInError = useCallback(
+        (dataKey) => {
+            if (lineEdit.errors.has(dataKey)) {
+                let newLineEdit = { ...lineEdit };
+                newLineEdit.errors.delete(dataKey);
+                setLineEdit(newLineEdit);
+            }
+        },
+        [lineEdit]
+    );
+
     const registerChangeRequest = useCallback(
-        (data, dataKey, changeCmd, value) => {
+        (data, columnDefinition, value) => {
+            const dataKey = columnDefinition.dataKey;
+            const changeCmd = columnDefinition.changeCmd;
+
             // save original value, dont erase if exists
-            if (!lineEdit.oldValues[dataKey]) {
+            if (!lineEdit.oldValues.hasOwnProperty(dataKey)) {
                 lineEdit.oldValues[dataKey] = data[dataKey];
             }
             lineEdit.newValues[dataKey] = {
@@ -825,23 +902,21 @@ const NetworkTable = (props) => {
             ) {
                 const text = formatCell(rowData, columnDefinition).value;
                 const changeRequest = (value) =>
-                    registerChangeRequest(
-                        rowData,
-                        columnDefinition.dataKey,
-                        columnDefinition.changeCmd,
-                        value
-                    );
+                    registerChangeRequest(rowData, columnDefinition, value);
                 const Editor = columnDefinition.editor;
                 if (Editor) {
                     return (
                         <Editor
-                            key={rowData.dataKey + rowData.id}
+                            key={columnDefinition.dataKey + key}
                             className={clsx(
                                 classes.tableCell,
                                 classes.inlineEditionCell
                             )}
                             equipment={rowData}
                             defaultValue={text}
+                            setcolerror={(k) => setColumnInError(k)}
+                            resetcolerror={(k) => resetColumnInError(k)}
+                            datakey={columnDefinition.dataKey}
                             setter={(val) => changeRequest(val)}
                             style={style}
                         />
@@ -857,6 +932,8 @@ const NetworkTable = (props) => {
             registerChangeRequest,
             classes.tableCell,
             classes.inlineEditionCell,
+            setColumnInError,
+            resetColumnInError,
         ]
     );
 
@@ -894,14 +971,31 @@ const NetworkTable = (props) => {
                     .filter((c) => selectedColumnsNames.has(c.id)).length > 0
             );
         }
-        if (generatedTableColumns.length > 0 && isEditColumnVisible()) {
-            generatedTableColumns.unshift({
-                locked: true,
-                editColumn: true,
-                columnWidth: EDIT_CELL_WIDTH,
-                cellRenderer: (rowData, columnDefinition, key, style) =>
-                    editCellRender(rowData, columnDefinition, key, style),
-            });
+        if (generatedTableColumns.length > 0) {
+            if (isEditColumnVisible()) {
+                generatedTableColumns.unshift({
+                    locked: true,
+                    editColumn: true,
+                    columnWidth: EDIT_CELL_WIDTH,
+                    cellRenderer: (rowData, columnDefinition, key, style) =>
+                        editCellRender(rowData, columnDefinition, key, style),
+                });
+            }
+
+            function sortByIndex(a, b) {
+                if (
+                    reorderedTableDefinitionIndexes.indexOf(a.id) <
+                    reorderedTableDefinitionIndexes.indexOf(b.id)
+                )
+                    return -1;
+                if (
+                    reorderedTableDefinitionIndexes.indexOf(a.id) >
+                    reorderedTableDefinitionIndexes.indexOf(b.id)
+                )
+                    return 1;
+                return 0;
+            }
+            generatedTableColumns.sort(sortByIndex);
         }
         generatedTableColumns.headerCellRender = headerCellRender;
 
@@ -1011,16 +1105,31 @@ const NetworkTable = (props) => {
                 },
             });
         });
-
         setPopupSelectColumnNames(false);
+
+        updateConfigParameter(
+            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
+                TABLES_NAMES[tabIndex],
+            JSON.stringify(reorderedTableDefinitionIndexes)
+        ).catch((errorMessage) => {
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'paramsChangingError',
+                    intlRef: intlRef,
+                },
+            });
+        });
     }, [
         tabIndex,
         selectedColumnsNames,
         lockedColumnsNames,
+        reorderedTableDefinitionIndexes,
         allDisplayedColumnsNames,
-        allLockedColumnsNames,
         enqueueSnackbar,
         intlRef,
+        allLockedColumnsNames,
     ]);
 
     const handleToggle = (value) => () => {
@@ -1062,13 +1171,34 @@ const NetworkTable = (props) => {
         setLockedColumnsNames(newLocked);
     };
 
+    const commit = useCallback(
+        ({ source, destination }) => {
+            if (destination) {
+                let reorderedTableDefinitionIndexesTemp = [
+                    ...reorderedTableDefinitionIndexes,
+                ];
+                const [reorderedItem] =
+                    reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
+                reorderedTableDefinitionIndexesTemp.splice(
+                    destination.index,
+                    0,
+                    reorderedItem
+                );
+                setReorderedTableDefinitionIndexes(
+                    reorderedTableDefinitionIndexesTemp
+                );
+            }
+        },
+        [reorderedTableDefinitionIndexes]
+    );
+
     const checkListColumnsNames = () => {
         let isAllChecked =
             selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
 
         return (
-            <List>
+            <>
                 <ListItem
                     className={classes.checkboxSelectAll}
                     onClick={handleToggleAll}
@@ -1080,30 +1210,93 @@ const NetworkTable = (props) => {
                     />
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
-                {[...TABLES_COLUMNS_NAMES[tabIndex]].map((value, index) => (
-                    <ListItem
-                        key={tabIndex + '-' + index}
-                        className={classes.checkboxItem}
-                        style={{ padding: '0 16px' }}
-                    >
-                        <ListItemIcon
-                            onClick={handleClickOnLock(value)}
-                            style={{ minWidth: 0, width: '20px' }}
-                        >
-                            {renderColumnConfigLockIcon(value)}
-                        </ListItemIcon>
-                        <ListItemIcon onClick={handleToggle(value)}>
-                            <Checkbox
-                                checked={selectedColumnsNames.has(value)}
-                            />
-                        </ListItemIcon>
-                        <ListItemText
-                            onClick={handleToggle(value)}
-                            primary={intl.formatMessage({ id: `${value}` })}
-                        />
-                    </ListItem>
-                ))}
-            </List>
+
+                <DragDropContext onDragEnd={commit}>
+                    <Droppable droppableId="network-table-columns-list">
+                        {(provided) => (
+                            <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
+                                {[...reorderedTableDefinitionIndexes].map(
+                                    (value, index) => (
+                                        <Draggable
+                                            draggableId={tabIndex + '-' + index}
+                                            index={index}
+                                            key={tabIndex + '-' + index}
+                                        >
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                >
+                                                    <ListItem
+                                                        className={
+                                                            classes.checkboxItem
+                                                        }
+                                                        style={{
+                                                            padding: '0 16px',
+                                                        }}
+                                                    >
+                                                        <IconButton
+                                                            {...provided.dragHandleProps}
+                                                            className={
+                                                                classes.dragIcon
+                                                            }
+                                                            size={'small'}
+                                                        >
+                                                            <DragIndicatorIcon
+                                                                edge="start"
+                                                                spacing={0}
+                                                            />
+                                                        </IconButton>
+
+                                                        <ListItemIcon
+                                                            onClick={handleClickOnLock(
+                                                                value
+                                                            )}
+                                                            style={{
+                                                                minWidth: 0,
+                                                                width: '20px',
+                                                            }}
+                                                        >
+                                                            {renderColumnConfigLockIcon(
+                                                                value
+                                                            )}
+                                                        </ListItemIcon>
+                                                        <ListItemIcon
+                                                            onClick={handleToggle(
+                                                                value
+                                                            )}
+                                                        >
+                                                            <Checkbox
+                                                                checked={selectedColumnsNames.has(
+                                                                    value
+                                                                )}
+                                                            />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            onClick={handleToggle(
+                                                                value
+                                                            )}
+                                                            primary={intl.formatMessage(
+                                                                {
+                                                                    id: `${value}`,
+                                                                }
+                                                            )}
+                                                        />
+                                                    </ListItem>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    )
+                                )}
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
+            </>
         );
     };
 
@@ -1234,15 +1427,6 @@ const NetworkTable = (props) => {
                                 >
                                     <ViewColumnIcon />
                                 </IconButton>
-                                <SelectOptionsDialog
-                                    open={popupSelectColumnNames}
-                                    onClose={handleCancelPopupSelectColumnNames}
-                                    onClick={handleSaveSelectedColumnNames}
-                                    title={intl.formatMessage({
-                                        id: 'ColumnsList',
-                                    })}
-                                    child={checkListColumnsNames()}
-                                />
                             </Grid>
                             {props.disabled && <AlertInvalidNode />}
                             <Grid item className={classes.exportCsv}>
@@ -1286,6 +1470,22 @@ const NetworkTable = (props) => {
                         {/*This render is fast, rerender full dom everytime*/}
                         {renderTable(rows)}
                     </div>
+
+                    <SelectOptionsDialog
+                        open={popupSelectColumnNames}
+                        onClose={handleCancelPopupSelectColumnNames}
+                        onClick={handleSaveSelectedColumnNames}
+                        title={intl.formatMessage({
+                            id: 'ColumnsList',
+                        })}
+                        child={checkListColumnsNames()}
+                        //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beatiful-dnd warning related to nested scroll containers
+                        style={{
+                            '& .MuiPaper-root': {
+                                overflowY: 'visible',
+                            },
+                        }}
+                    />
                 </>
             )
         );

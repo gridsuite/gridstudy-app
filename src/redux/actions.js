@@ -319,6 +319,15 @@ export function changeLockedColumns(lockedColumnsParams) {
     };
 }
 
+export const CHANGE_REORDERED_COLUMNS = 'CHANGE_REORDERED_COLUMNS';
+
+export function changeReorderedColumns(reorderedColumnsParams) {
+    return {
+        type: CHANGE_REORDERED_COLUMNS,
+        reorderedColumnsParams: reorderedColumnsParams,
+    };
+}
+
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
 
 export function selectFavoriteContingencyLists(favoriteContingencyLists) {
@@ -379,14 +388,5 @@ export function openNetworkAreaDiagram(voltageLevelsIds) {
     return {
         type: OPEN_NETWORK_AREA_DIAGRAM,
         voltageLevelsIdsForNad: voltageLevelsIds,
-    };
-}
-
-export const NAD_DEPTH = 'NAD_DEPTH';
-
-export function setNadDepth(nadDepth) {
-    return {
-        type: NAD_DEPTH,
-        nadDepth: nadDepth,
     };
 }

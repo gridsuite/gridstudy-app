@@ -6,8 +6,14 @@
  */
 
 import { equipments } from './network-equipments';
-import { NumericalField, TapChangerSelector } from './equipment-table-editors';
+import {
+    NumericalField,
+    NameField,
+    EnumField,
+    TapChangerSelector,
+} from './equipment-table-editors';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
+import { LOAD_TYPES } from './constants';
 
 const nominalVoltage = (network, voltageLevelId) => {
     return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
@@ -664,6 +670,7 @@ export const TABLES_DEFINITIONS = {
         index: 6,
         name: 'Loads',
         resource: equipments.loads,
+        modifiableEquipmentType: 'load',
         columns: [
             {
                 id: 'ID',
@@ -674,10 +681,18 @@ export const TABLES_DEFINITIONS = {
                 id: 'Name',
                 dataKey: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                changeCmd: "equipment.setName('{}')\n",
+                editor: NameField,
             },
             {
                 id: 'LoadType',
                 dataKey: 'type',
+                changeCmd: 'equipment.setLoadType(LoadType.{})\n',
+                editor: ({ equipment, ...props }) =>
+                    EnumField({
+                        enumList: LOAD_TYPES.slice(1), // dont use/display the first empty entry
+                        ...props,
+                    }),
             },
             {
                 id: 'VoltageLevelId',
@@ -711,12 +726,16 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'p0',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setP0({})\n',
+                editor: NumericalField,
             },
             {
                 id: 'ConstantReactivePower',
                 dataKey: 'q0',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setQ0({})\n',
+                editor: NumericalField,
             },
         ],
     },
@@ -1159,6 +1178,8 @@ export const TABLES_DEFINITIONS = {
 export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE =
     'displayedColumns.';
 export const LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'lockedColumns.';
+export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE =
+    'reorderedColumns.';
 
 export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
     .map((table) => table.columns)
