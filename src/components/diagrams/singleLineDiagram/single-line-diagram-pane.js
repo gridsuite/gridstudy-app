@@ -239,11 +239,16 @@ export function SingleLineDiagramPane({
     currentNodeRef.current = currentNode;
 
     const updateSld = useCallback((id) => {
-        if (id)
+        if (id) {
             viewsRef.current
                 .find((sld) => sld.id === id)
                 ?.ref?.current?.reloadSvg();
-        else viewsRef.current.forEach((sld) => sld?.ref?.current?.reloadSvg());
+        } else
+            viewsRef.current.forEach((sld) => {
+                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+                    sld?.ref?.current?.reloadSvg();
+                }
+            });
     }, []);
 
     const classes = useStyles();
@@ -370,6 +375,16 @@ export function SingleLineDiagramPane({
                     if (vlToClose.length > 0)
                         closeView([...vlToClose, deletedId]);
                 } else {
+                    updateSld();
+                }
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'buildCompleted'
+            ) {
+                if (
+                    studyUpdatedForce.eventData.headers['node'] ===
+                    currentNodeRef.current?.id
+                ) {
                     updateSld();
                 }
             }

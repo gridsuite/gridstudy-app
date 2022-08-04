@@ -95,7 +95,6 @@ const LineAttachToVoltageLevelDialog = ({
     };
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
-    const newVoltageLevelRef = useRef(newVoltageLevel);
 
     const [attachmentLine, setAttachmentLine] = useState(null);
 
@@ -220,25 +219,20 @@ const LineAttachToVoltageLevelDialog = ({
         });
 
     useEffect(() => {
+        voltageLevelOrIdRef.current = voltageLevelOrId;
         const vlId =
             typeof voltageLevelOrId === 'string'
                 ? voltageLevelOrId
                 : voltageLevelOrId?.id;
         if (
-            newVoltageLevelRef.current &&
+            newVoltageLevel &&
             voltageLevelOrIdRef.current &&
-            vlId !== newVoltageLevelRef.current.equipmentId
+            vlId !== newVoltageLevel.equipmentId
         ) {
-            voltageLevelOrIdRef.current = voltageLevelOrId;
-            newVoltageLevelRef.current = null;
-        }
-    }, [voltageLevelOrId]);
-
-    useEffect(() => {
-        if (newVoltageLevelRef.current === null) {
+            // switch from new voltage level to existing voltage level
             setNewVoltageLevel(null);
         }
-    }, [newVoltageLevelRef]);
+    }, [voltageLevelOrId, newVoltageLevel]);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
@@ -415,6 +409,7 @@ const LineAttachToVoltageLevelDialog = ({
                 };
                 setNewVoltageLevel(preparedVoltageLevel);
                 setVoltageLevelOrId(voltageLevelId);
+                voltageLevelOrIdRef.current = voltageLevelId;
                 if (
                     busbarSections.find(
                         (bbs) => bbs.id === (bbsOrNodeId?.id || bbsOrNodeId)

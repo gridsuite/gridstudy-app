@@ -85,8 +85,8 @@ export const EquipmentTable = (props) => {
     }
 
     useEffect(() => {
-        setScrollTopLock(props.scrollTop !== -1);
-    }, [props.scrollTop]);
+        if (props.visible) setScrollTopLock(props.scrollTop !== -1);
+    }, [props.scrollTop, props.visible]);
 
     const getScrollTop = () => {
         if (!scrollTopLock) return -1;
@@ -139,8 +139,9 @@ export const EquipmentTable = (props) => {
                                         scrollBars?.vertical
                                     );
                                 }}
-                                scrollTop={getScrollTop()}
+                                scrollTop={props.visible ? getScrollTop() : 0}
                                 onScroll={() => {
+                                    // This is to allow scrolling when scrollTop is set.
                                     if (getScrollTop() !== -1) {
                                         setScrollTopLock(false);
                                     }
