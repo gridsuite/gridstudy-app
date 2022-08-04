@@ -9,23 +9,26 @@ const MAX_TITLE_LENGTH = 106;
 const SEPARATOR = ' | ';
 
 export const computeFullPath = (parents) => {
-    let testedPath = '';
-    let path = '';
-    for (let i = 0; i < parents.length; i++) {
-        testedPath = '/' + parents[i] + testedPath;
-        path = testedPath;
-    }
-    return path;
-};
-
-const computePath = (parents, maxAllowedPathSize) => {
     let path = '';
 
     for (let i = 0; i < parents.length; i++) {
         path = '/' + parents[i] + path;
-        if (path.length > maxAllowedPathSize) {
+    }
+
+    return path;
+};
+
+const computePath = (parents, maxAllowedPathSize) => {
+    let testedPath = '';
+    let path = '';
+
+    for (let i = 0; i < parents.length; i++) {
+        testedPath = '/' + parents[i] + testedPath;
+        if (testedPath.length > maxAllowedPathSize) {
             return '...' + path;
         }
+
+        path = testedPath;
     }
 
     return path;
