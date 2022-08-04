@@ -34,6 +34,7 @@ import {
     filledTextField,
     gridItem,
     MVAPowerAdornment,
+    OhmAdornment,
     ReactivePowerAdornment,
     VoltageAdornment,
 } from './dialogUtils';
@@ -228,6 +229,28 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
+    const [transientReactance, transientReactanceField] = useDoubleValue({
+        label: 'TransientReactance',
+        validation: {
+            isFieldRequired: false,
+            isFieldNumeric: true,
+        },
+        adornment: OhmAdornment,
+        inputForm: inputForm,
+        defaultValue: formValues?.marginalCost,
+    });
+
+    const [transformerReactance, transformerReactanceField] = useDoubleValue({
+        label: 'TransformerReactance',
+        validation: {
+            isFieldRequired: false,
+            isFieldNumeric: true,
+        },
+        adornment: OhmAdornment,
+        inputForm: inputForm,
+        defaultValue: formValues?.marginalCost,
+    });
+
     const [marginalCost, marginalCostField] = useDoubleValue({
         label: 'MarginalCost',
         validation: {
@@ -237,6 +260,7 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
         defaultValue: formValues?.marginalCost,
     });
+
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
         inputForm: inputForm,
@@ -266,7 +290,9 @@ const GeneratorCreationDialog = ({
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                marginalCost
+                marginalCost ? marginalCost : null,
+                transientReactance ? transientReactance : null,
+                transformerReactance ? transformerReactance : null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -346,6 +372,18 @@ const GeneratorCreationDialog = ({
                             <Box sx={{ width: '100%' }} />
                             {gridItem(voltageRegulationField, 4)}
                             {gridItem(voltageSetpointField, 4)}
+                        </Grid>
+                        {/*Court-circuit part*/}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="CourtCircuit" />
+                                </h3>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            {gridItem(transientReactanceField, 4)}
+                            {gridItem(transformerReactanceField, 4)}
                         </Grid>
                         {/* Coast of start part*/}
                         <Grid container spacing={2}>

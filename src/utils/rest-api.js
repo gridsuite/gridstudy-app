@@ -1264,7 +1264,9 @@ export function createGenerator(
     busOrBusbarSectionId,
     isUpdate = false,
     modificationUuid,
-    marginalCost
+    marginalCost,
+    transientReactance,
+    transformerReactance
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1300,6 +1302,8 @@ export function createGenerator(
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
             marginalCost: marginalCost,
+            transientReactance: transientReactance,
+            transformerReactance: transformerReactance,
         }),
     }).then((response) => {
         return response.ok
