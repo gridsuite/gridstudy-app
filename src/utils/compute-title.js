@@ -19,16 +19,13 @@ export const computeFullPath = (parents) => {
 };
 
 const computePath = (parents, maxAllowedPathSize) => {
-    let testedPath = '';
     let path = '';
 
     for (let i = 0; i < parents.length; i++) {
-        testedPath = '/' + parents[i] + testedPath;
-        if (testedPath.length > maxAllowedPathSize) {
+        path = '/' + parents[i] + path;
+        if (path.length > maxAllowedPathSize) {
             return '...' + path;
         }
-
-        path = testedPath;
     }
 
     return path;
