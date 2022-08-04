@@ -359,6 +359,7 @@
     "VoltageRegulationText": "Voltage regulation",
     "VoltageText": "Voltage",
     "Limits": "Limits",
+    "MarginalCost": "Cost of start",
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",

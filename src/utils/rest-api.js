@@ -1263,7 +1263,8 @@ export function createGenerator(
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    marginalCost
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1298,6 +1299,7 @@ export function createGenerator(
             voltageSetpoint: voltageSetpoint,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
+            marginalCost: marginalCost,
         }),
     }).then((response) => {
         return response.ok

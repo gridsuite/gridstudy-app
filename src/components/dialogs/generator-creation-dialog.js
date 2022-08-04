@@ -90,6 +90,7 @@ const GeneratorCreationDialog = ({
             reactivePowerSetpoint: generator.targetQ,
             voltageLevelId: generator.voltageLevelId,
             busOrBusbarSectionId: null,
+            marginalCost: generator.marginalCost,
         };
     };
 
@@ -227,6 +228,15 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
+    const [marginalCost, marginalCostField] = useDoubleValue({
+        label: 'MarginalCost',
+        validation: {
+            isFieldRequired: false,
+            isFieldNumeric: true,
+        },
+        inputForm: inputForm,
+        defaultValue: formValues?.marginalCost,
+    });
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
         inputForm: inputForm,
@@ -255,7 +265,8 @@ const GeneratorCreationDialog = ({
                 connectivity.voltageLevel.id,
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
-                editData ? editData.uuid : undefined
+                editData ? editData.uuid : undefined,
+                marginalCost
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -335,6 +346,17 @@ const GeneratorCreationDialog = ({
                             <Box sx={{ width: '100%' }} />
                             {gridItem(voltageRegulationField, 4)}
                             {gridItem(voltageSetpointField, 4)}
+                        </Grid>
+                        {/* Coast of start part*/}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="MarginalCost" />
+                                </h3>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            {gridItem(marginalCostField, 4)}
                         </Grid>
                         {/* Connectivity part */}
                         <Grid container spacing={2}>
