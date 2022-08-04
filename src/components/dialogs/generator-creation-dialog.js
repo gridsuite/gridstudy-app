@@ -35,6 +35,7 @@ import {
     gridItem,
     MVAPowerAdornment,
     OhmAdornment,
+    percentageTextField,
     ReactivePowerAdornment,
     VoltageAdornment,
 } from './dialogUtils';
@@ -50,6 +51,52 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 4,
     },
 }));
+
+const RCCurve = ({ index, onChange, defaultValue, inputForm, errors }) => {
+    const [pmin, pminField] = useDoubleValue({
+        label: 'Pmin',
+        validation: {
+            isFieldRequired: false,
+            isFieldNumeric: true,
+        },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: defaultValue?.pmin ? defaultValue.pmin : null,
+    });
+    const [qminPmin, qinPminField] = useDoubleValue({
+        label: 'QminPmin',
+        validation: {
+            isFieldRequired: false,
+            isFieldNumeric: true,
+        },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: defaultValue?.qminPmin ? defaultValue.qminPmin : null,
+    });
+
+    const [qmaxPmin, qmaxPminField] = useDoubleValue({
+        label: 'QmaxPmin',
+        validation: {
+            isFieldRequired: false,
+            isFieldNumeric: true,
+        },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: defaultValue?.qmaxPmin ? defaultValue.qmaxPmin : null,
+    });
+
+    useEffect(() => {
+        onChange(index, { pmin, qminPmin, qmaxPmin });
+    }, [index, onChange, pmin, qminPmin, qmaxPmin]);
+
+    return (
+        <>
+            {gridItem(pminField, 3)}
+            {gridItem(qinPminField, 3)}
+            {gridItem(qmaxPminField, 3)}
+        </>
+    );
+};
 
 /**
  * Dialog to create a generator in the network
@@ -77,6 +124,8 @@ const GeneratorCreationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
+    const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
+
     const toFormValues = (generator) => {
         return {
             equipmentId: generator.id + '(1)',
@@ -92,6 +141,10 @@ const GeneratorCreationDialog = ({
             voltageLevelId: generator.voltageLevelId,
             busOrBusbarSectionId: null,
             marginalCost: generator.marginalCost,
+            participate: generator.activePowerControlOn,
+            droop: generator.droop,
+            transientReactance: generator.transientReactance,
+            reactiveCapabilityCurvePt: generator.reactiveCapabilityCurvePt,
         };
     };
 
@@ -185,6 +238,51 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.ratedNominalPower,
     });
 
+    const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
+        useBooleanValue({
+            label: 'ReactiveCapabilityCurve',
+            validation: { isFieldRequired: true },
+            inputForm: inputForm,
+            defaultValue: true,
+        });
+
+    const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
+        label: 'MinimumReactivePower',
+        validation: {
+            isFieldRequired: reactivePowerRequired,
+            isFieldNumeric: true,
+        },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: formValues?.activePowerSetpoint,
+    });
+
+    const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
+        label: 'MaximumReactivePower',
+        validation: {
+            isFieldRequired: reactivePowerRequired,
+            isFieldNumeric: true,
+        },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: formValues?.activePowerSetpoint,
+    });
+
+    /* const [reactiveCapabilityCurveOn, reactiveCapabilityCurveOnField] =
+        useTableValues({
+            id: 'rcc',
+            tableHeadersIds: ["ActivePower", "MinimumReactivePower", "MaximumReactivePower"],
+            inputForm: inputForm,
+            Field: RCCurve,
+            defaultValues: formValues?.reactiveCapabilityCurvePt ? formValues?.reactiveCapabilityCurvePt : [
+                {
+                    pmin: '',
+                    qminPmin: '',
+                    qmaxPmin: '',
+                }],
+            isRequired: false,
+        }); */
+
     const [activePowerSetpoint, activePowerSetpointField] = useDoubleValue({
         label: 'ActivePowerText',
         validation: {
@@ -229,6 +327,36 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
+    const [regulatingTerminal, regulatingTerminalField] = useConnectivityValue({
+        label: 'RegulatingTerminal',
+        inputForm: inputForm,
+        disabled: !voltageRegulation,
+        voltageLevelOptionsPromise: voltageLevelOptionsPromise,
+        currentNodeUuid: currentNodeUuid,
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId || null,
+    });
+
+    const [frequencyRegulation, frequencyRegulationField] = useBooleanValue({
+        label: 'FrequencyRegulation',
+        validation: { isFieldRequired: true },
+        inputForm: inputForm,
+        defaultValue: formValues?.participate || false,
+    });
+
+    const [droop, droopField] = useDoubleValue({
+        label: 'Droop',
+        validation: {
+            isFieldRequired: !voltageRegulation,
+            isFieldNumeric: true,
+        },
+        adornment: percentageTextField,
+        inputForm: inputForm,
+        formProps: { disabled: !frequencyRegulation },
+        defaultValue: formValues?.reactivePowerSetpoint,
+    });
+
     const [transientReactance, transientReactanceField] = useDoubleValue({
         label: 'TransientReactance',
         validation: {
@@ -264,12 +392,19 @@ const GeneratorCreationDialog = ({
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
         inputForm: inputForm,
+        disabled: voltageRegulation,
         voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
     });
+
+    useEffect(() => {
+        setReactivePowerRequired(
+            minimumReactivePower !== '' || maximumReactivePower !== ''
+        );
+    }, [minimumReactivePower, maximumReactivePower]);
 
     const handleSave = () => {
         if (inputForm.validate()) {
@@ -292,7 +427,11 @@ const GeneratorCreationDialog = ({
                 editData ? editData.uuid : undefined,
                 marginalCost ? marginalCost : null,
                 transientReactance ? transientReactance : null,
-                transformerReactance ? transformerReactance : null
+                transformerReactance ? transformerReactance : null,
+                regulatingTerminal.voltageLevel.id,
+                regulatingTerminal.busOrBusbarSection.id,
+                frequencyRegulation,
+                droop
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -358,6 +497,13 @@ const GeneratorCreationDialog = ({
                             {gridItem(minimumActivePowerField, 4)}
                             {gridItem(maximumActivePowerField, 4)}
                             {gridItem(ratedNominalPowerField, 4)}
+                            <Box sx={{ width: '100%' }} />
+                            {gridItem(reactiveCapabilityCurveField, 8)}
+                            <Box sx={{ width: '100%' }} />
+                            {reactiveCapabilityCurve &&
+                                gridItem(minimumReactivePowerField, 4)}
+                            {reactiveCapabilityCurve &&
+                                gridItem(maximumReactivePowerField, 4)}
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -372,6 +518,14 @@ const GeneratorCreationDialog = ({
                             <Box sx={{ width: '100%' }} />
                             {gridItem(voltageRegulationField, 4)}
                             {gridItem(voltageSetpointField, 4)}
+                            <Box sx={{ width: '100%' }} />
+                            <Grid item xs={4} justifySelf={'end'}>
+                                <FormattedMessage id="RegulatingTerminal" />
+                            </Grid>
+                            {gridItem(regulatingTerminalField, 8)}
+                            <Box sx={{ width: '100%' }} />
+                            {gridItem(frequencyRegulationField, 4)}
+                            {gridItem(droopField, 4)}
                         </Grid>
                         {/*Court-circuit part*/}
                         <Grid container spacing={2}>

@@ -951,6 +951,98 @@ export const useExpandableValues = ({
     return [values, field];
 };
 
+/*export const useTableValues = ({
+    id,
+    labelAddValue,
+    tableHeadersIds,
+    Field,
+    inputForm,
+    defaultValues,
+    fieldProps,
+    validateItem,
+    isRequired,
+}) => {
+    const [values, setValues] = useState([]);
+    const classes = useStyles();
+
+    useEffect(() => {
+        if (defaultValues) {
+            setValues([...defaultValues]);
+        } else {
+            setValues([]);
+        }
+    }, [defaultValues]);
+
+    const handleDeleteItem = useCallback(
+        (index) => {
+            setValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues.splice(index, 1);
+                return newValues;
+            });
+            inputForm.reset();
+        },
+        [inputForm]
+    );
+
+    const handleSetValue = useCallback((index, newValue) => {
+        setValues((oldValues) => {
+            let newValues = [...oldValues];
+            newValues[index] = newValue;
+            return newValues;
+        });
+    }, []);
+
+    const handleAddValue = useCallback(() => {
+        setValues((oldValues) => [...oldValues, {}]);
+    }, []);
+
+    const field = useMemo(() => {
+        return (
+            <Grid item container spacing={2}>
+                {tableHeadersIds.map((header) => (
+                    <Grid item xs={3}>
+                        <FormattedMessage id = {header} />
+                    </Grid>
+                ))}
+                <Box sx={{ width: '100%' }} />
+                {values.map((value, idx) => (
+                    <Grid key={id + idx} container spacing={3} item>
+                        <Field
+                            defaultValue={value}
+                            onChange={handleSetValue}
+                            index={idx}
+                            inputForm={inputForm}
+                        />
+                        <Grid item xs={1}>
+                            <IconButton
+                                className={classes.icon}
+                                key={id + idx}
+                                onClick={() => handleDeleteItem(idx)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Grid>
+                        {idx === values.length - 1 && (
+                            <Grid container spacing={3}>
+                                <Grid item xs={3}>
+                                    <Button
+                                        fullWidth
+                                        className={classes.button}
+                                        startIcon={<AddIcon />}
+                                        onClick={handleAddValue}
+                                    >
+                                        <FormattedMessage id={labelAddValue} />
+                                    </Button>
+                                </Grid>
+                            </Grid>)}
+                    </Grid>
+                ))}
+            </Grid>)
+    }, []);
+        return [values, field]
+}*/
+
 export const useSimpleTextValue = ({
     defaultValue,
     adornment,

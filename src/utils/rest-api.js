@@ -1266,7 +1266,11 @@ export function createGenerator(
     modificationUuid,
     marginalCost,
     transientReactance,
-    transformerReactance
+    transformerReactance,
+    regulatingTerminalVl,
+    regulatingTerminalBbsId,
+    frequencyRegulation,
+    droop
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1304,6 +1308,10 @@ export function createGenerator(
             marginalCost: marginalCost,
             transientReactance: transientReactance,
             transformerReactance: transformerReactance,
+            regulatingTerminalVl: regulatingTerminalVl,
+            regulatingTerminalBbsId: regulatingTerminalBbsId,
+            frequencyRegulation: frequencyRegulation,
+            droop: droop,
         }),
     }).then((response) => {
         return response.ok
