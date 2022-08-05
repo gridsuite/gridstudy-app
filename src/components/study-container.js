@@ -129,6 +129,14 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+    return ref.current;
+}
+
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
 const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
@@ -143,7 +151,10 @@ export function StudyContainer({ view, onChangeTab }) {
         decodeURIComponent(useParams().studyUuid)
     );
 
-    const [studyMetadata, setStudyMetadata] = useState({});
+    const [studyName, setStudyName] = useState();
+    const prevStudyName = usePrevious(studyName);
+    const [studyPath, setStudyPath] = useState();
+    const prevStudyPath = usePrevious(studyPath);
 
     const network = useSelector((state) => state.network);
 
@@ -355,6 +366,25 @@ export function StudyContainer({ view, onChangeTab }) {
         loadNetwork(true);
     }, [loadNetwork, currentNode]);
 
+    useEffect(
+        () => {
+            if (prevStudyPath && prevStudyPath !== studyPath) {
+                snackInfo('', 'moveStudyNotification', {
+                    oldStudyPath: prevStudyPath,
+                    studyPath: studyPath,
+                });
+            }
+
+            if (prevStudyName && prevStudyName !== studyName) {
+                snackInfo('', 'renameStudyNotification', {
+                    oldStudyName: prevStudyName,
+                    studyName: studyName,
+                });
+            }
+        },
+        [snackInfo, studyName, studyPath]
+    );
+
     const fetchStudyPath = useCallback(() => {
         fetchPath(studyUuid)
             .then((response) => {
@@ -362,41 +392,22 @@ export function StudyContainer({ view, onChangeTab }) {
                     .slice(1)
                     .map((parent) => parent.elementName);
 
-                const path = computeFullPath(parents);
-                if (studyMetadata.path) {
-                    if (studyMetadata.path !== path) {
-                        snackInfo('', 'moveStudyNotification', {
-                            oldStudyPath: studyMetadata.path,
-                            studyPath: path,
-                        });
-                    }
-                }
-
                 const studyName = response[0]?.elementName;
-                if (studyMetadata.name) {
-                    if (studyMetadata.name !== studyName) {
-                        snackInfo('', 'renameStudyNotification', {
-                            oldStudyName: studyMetadata.name,
-                            studyName: studyName,
-                        });
-                    }
-                }
+                const path = computeFullPath(parents);
+                setStudyName(studyName);
+                setStudyPath(path);
 
                 document.title = computePageTitle(
                     initialTitle,
                     studyName,
                     parents
                 );
-
-                studyMetadata.path = path;
-                studyMetadata.name = studyName;
-                setStudyMetadata(studyMetadata);
             })
             .catch((errorMessage) => {
                 document.title = initialTitle;
                 snackError(errorMessage, 'LoadStudyAndParentsInfoError');
             });
-    }, [studyUuid, studyMetadata, initialTitle, snackInfo, snackError]);
+    }, [studyUuid, initialTitle, snackError]);
 
     useEffect(() => {
         if (!studyUuid) {
