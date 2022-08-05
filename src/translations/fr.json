@@ -13,6 +13,9 @@
     "renameStudyMsg": "Nouveau nom de l'étude\u00a0:",
     "renameStudy": "Renommer l'étude",
     "renameStudyError": "Vous ne pouvez pas renommer une étude dont vous n'êtes pas propriétaire",
+    "renameStudyNotification": "L'étude a été renommée de {oldStudyName} à {studyName}",
+
+    "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
