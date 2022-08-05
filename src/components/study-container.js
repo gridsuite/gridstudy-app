@@ -366,24 +366,21 @@ export function StudyContainer({ view, onChangeTab }) {
         loadNetwork(true);
     }, [loadNetwork, currentNode]);
 
-    useEffect(
-        () => {
-            if (prevStudyPath && prevStudyPath !== studyPath) {
-                snackInfo('', 'moveStudyNotification', {
-                    oldStudyPath: prevStudyPath,
-                    studyPath: studyPath,
-                });
-            }
+    useEffect(() => {
+        if (prevStudyPath && prevStudyPath !== studyPath) {
+            snackInfo('', 'moveStudyNotification', {
+                oldStudyPath: prevStudyPath,
+                studyPath: studyPath,
+            });
+        }
 
-            if (prevStudyName && prevStudyName !== studyName) {
-                snackInfo('', 'renameStudyNotification', {
-                    oldStudyName: prevStudyName,
-                    studyName: studyName,
-                });
-            }
-        },
-        [snackInfo, studyName, studyPath]
-    );
+        if (prevStudyName && prevStudyName !== studyName) {
+            snackInfo('', 'renameStudyNotification', {
+                oldStudyName: prevStudyName,
+                studyName: studyName,
+            });
+        }
+    }, [snackInfo, studyName, studyPath, prevStudyPath, prevStudyName]);
 
     const fetchStudyPath = useCallback(() => {
         fetchPath(studyUuid)
