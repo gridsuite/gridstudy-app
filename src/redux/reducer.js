@@ -52,6 +52,7 @@ import {
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
+    SET_MODIFICATIONS_IN_PROGRESS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -122,6 +123,7 @@ const initialState = {
     voltageLevelsIdsForNad: [],
     centerOnSubstation: null,
     notificationIdList: [],
+    isModificationsInProgress: false,
     ...paramsInitialState,
 };
 
@@ -394,6 +396,9 @@ export const reducer = createReducer(initialState, {
     },
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
         state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;
+    },
+    [SET_MODIFICATIONS_IN_PROGRESS]: (state, action) => {
+        state.isModificationsInProgress = action.isModificationsInProgress;
     },
 });
 
