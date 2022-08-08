@@ -57,7 +57,8 @@ export const EquipmentTable = (props) => {
                     cell,
                     columnDefinition,
                     key,
-                    style
+                    style,
+                    rowIndex
                 );
             } else {
                 return (
@@ -111,7 +112,7 @@ export const EquipmentTable = (props) => {
                                 ref={gridRef}
                                 cellRenderer={cellRenderer}
                                 fixedColumnCount={fixedColumnsCount}
-                                fixedRowCount={props.showEditRow ? 2 : 1}
+                                fixedRowCount={props.showEditRow ? 2 : 1} // 1 for the header, 2 if there is a line in edit mode just under the header
                                 height={height}
                                 width={width}
                                 columnCount={props.columns.length}

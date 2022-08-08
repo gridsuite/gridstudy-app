@@ -66,7 +66,6 @@ import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { isNodeReadOnly } from '../graph/util/model-functions';
-import cloneDeep from 'lodash/cloneDeep';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -137,9 +136,20 @@ const useStyles = makeStyles((theme) => ({
             borderBottom: '1px solid ' + theme.palette.divider,
         },
     },
-    rowInEdit: {
+    leftFade: {
+        background:
+            'linear-gradient(to right, ' +
+            theme.palette.primary.main +
+            ', rgba(0,0,0,0) 10%)',
+    },
+    topEditRow: {
+        borderTop: '1px solid ' + theme.palette.primary.main,
+        borderBottom: '1px solid ' + theme.palette.primary.main,
+    },
+    referenceEditRow: {
         '& button': {
             color: theme.palette.primary.main,
+            cursor: 'initial',
         },
     },
     editCell: {
@@ -434,7 +444,7 @@ const NetworkTable = (props) => {
             }
 
             if (isModifyingRow()) {
-                // When modifying a row, a copy of the edited row is created and put on top of the table
+                // When modifying a row, a shallow copy of the edited row is created and put on top of the table.
                 // The edition is then done on the copy, on top of the table, and not below, to prevent
                 // bugs of rows changing position in the middle of modifications.
                 let editRowPosition;
@@ -444,9 +454,7 @@ const NetworkTable = (props) => {
                     editRowPosition++
                 ) {
                     if (isLineOnEditMode(result[editRowPosition])) {
-                        let copyForEdit = cloneDeep(result[editRowPosition]);
-                        copyForEdit.isEditRow = true;
-                        return [copyForEdit, ...result];
+                        return [result[editRowPosition], ...result];
                     }
                 }
             }
@@ -637,7 +645,7 @@ const NetworkTable = (props) => {
     );
 
     const editCellRender = useCallback(
-        (rowData, columnDefinition, key, style) => {
+        (rowData, columnDefinition, key, style, rowIndex) => {
             function resetChanges(rowData) {
                 Object.entries(lineEdit.oldValues).forEach(
                     ([key, oldValue]) => {
@@ -741,44 +749,55 @@ const NetworkTable = (props) => {
                 setLineEdit({});
             }
 
-            if (rowData.isEditRow) {
-                return (
-                    <div key={key} style={style}>
-                        <div className={classes.editCell}>
-                            {lineEdit.errors.size === 0 && (
+            if (isLineOnEditMode(rowData)) {
+                if (rowIndex === 1) {
+                    // The current line is in edit mode and is the top one.
+                    return (
+                        <div
+                            key={key}
+                            style={style}
+                            className={clsx(
+                                classes.topEditRow,
+                                classes.leftFade
+                            )}
+                        >
+                            <div className={classes.editCell}>
+                                {lineEdit.errors.size === 0 && (
+                                    <IconButton
+                                        size={'small'}
+                                        onClick={() => commitChanges(rowData)}
+                                    >
+                                        <CheckIcon />
+                                    </IconButton>
+                                )}
                                 <IconButton
                                     size={'small'}
-                                    onClick={() => commitChanges(rowData)}
+                                    onClick={() => resetChanges(rowData)}
                                 >
-                                    <CheckIcon />
-                                </IconButton>
-                            )}
-                            <IconButton
-                                size={'small'}
-                                onClick={() => resetChanges(rowData)}
-                            >
-                                <ClearIcon />
-                            </IconButton>
-                        </div>
-                    </div>
-                );
-            } else {
-                if (isLineOnEditMode(rowData)) {
-                    return (
-                        <div key={key} style={style}>
-                            <div
-                                className={clsx(
-                                    classes.editCell,
-                                    classes.rowInEdit
-                                )}
-                            >
-                                <IconButton size={'small'}>
-                                    <MoreHorizIcon />
+                                    <ClearIcon />
                                 </IconButton>
                             </div>
                         </div>
                     );
                 }
+                // The current line is in edit mode, but is not the top one.
+                return (
+                    <div
+                        key={key}
+                        style={style}
+                        className={clsx(
+                            classes.referenceEditRow,
+                            classes.leftFade
+                        )}
+                    >
+                        <div className={classes.editCell}>
+                            <IconButton size={'small'}>
+                                <MoreHorizIcon />
+                            </IconButton>
+                        </div>
+                    </div>
+                );
+            } else {
                 return (
                     <div key={key} style={style}>
                         <div className={classes.editCell}>
@@ -824,16 +843,26 @@ const NetworkTable = (props) => {
             classes.editCell,
             isModifyingRow,
             props.currentNode,
-            isLineOnEditMode,
-            isModifyingRow,
+            classes.topEditRow,
+            classes.referenceEditRow,
+            classes.leftFade,
         ]
     );
 
     const defaultCellRender = useCallback(
-        (rowData, columnDefinition, key, style) => {
+        (rowData, columnDefinition, key, style, rowIndex) => {
             const cellValue = formatCell(rowData, columnDefinition);
             return (
-                <div key={key} style={style}>
+                <div
+                    key={key}
+                    style={style}
+                    className={clsx({
+                        [classes.topEditRow]:
+                            isLineOnEditMode(rowData) && rowIndex === 1,
+                        [classes.referenceEditRow]:
+                            isLineOnEditMode(rowData) && rowIndex > 1,
+                    })}
+                >
                     <div className={classes.tableCell}>
                         {cellValue.tooltip !== undefined ? (
                             <Tooltip
@@ -874,8 +903,11 @@ const NetworkTable = (props) => {
             classes.tableCell,
             classes.valueInvalid,
             classes.numericValue,
+            classes.topEditRow,
+            classes.referenceEditRow,
             props.loadFlowStatus,
             formatCell,
+            isLineOnEditMode,
         ]
     );
 
@@ -885,13 +917,23 @@ const NetworkTable = (props) => {
      * @param {any} columnDefinition definition of column
      * @param {any} key key of element
      * @param {any} style style for table cell element
+     * @param {any} rowIndex rowIndex of element
      * @returns {JSX.Element} Component template
      */
     const booleanCellRender = useCallback(
-        (rowData, columnDefinition, key, style) => {
+        (rowData, columnDefinition, key, style, rowIndex) => {
             const isChecked = formatCell(rowData, columnDefinition).value;
             return (
-                <div key={key} style={style}>
+                <div
+                    key={key}
+                    style={style}
+                    className={clsx({
+                        [classes.topEditRow]:
+                            isLineOnEditMode(rowData) && rowIndex === 1,
+                        [classes.referenceEditRow]:
+                            isLineOnEditMode(rowData) && rowIndex > 1,
+                    })}
+                >
                     <div
                         className={clsx(classes.tableCell, {
                             [classes.valueInvalid]:
@@ -917,7 +959,10 @@ const NetworkTable = (props) => {
             classes.tableCell,
             classes.valueInvalid,
             classes.checkbox,
+            classes.topEditRow,
+            classes.referenceEditRow,
             props.loadFlowStatus,
+            isLineOnEditMode,
         ]
     );
 
@@ -967,50 +1012,57 @@ const NetworkTable = (props) => {
     );
 
     const editableCellRender = useCallback(
-        (rowData, columnDefinition, key, style) => {
+        (rowData, columnDefinition, key, style, rowIndex) => {
             if (
                 isLineOnEditMode(rowData) &&
-                rowData[columnDefinition.dataKey] !== undefined &&
-                rowData.isEditRow === true
+                rowData[columnDefinition.dataKey] !== undefined
             ) {
-                // when we edit a numeric field, we display the original un-rounded value
-                const currentValue = columnDefinition.numeric
-                    ? rowData[columnDefinition.dataKey]
-                    : formatCell(rowData, columnDefinition).value;
+                if (rowIndex === 1) {
+                    // when we edit a numeric field, we display the original un-rounded value
+                    const currentValue = columnDefinition.numeric
+                        ? rowData[columnDefinition.dataKey]
+                        : formatCell(rowData, columnDefinition).value;
 
-                const changeRequest = (value) =>
-                    registerChangeRequest(rowData, columnDefinition, value);
-                const Editor = columnDefinition.editor;
-                if (Editor) {
-                    return (
-                        <Editor
-                            key={columnDefinition.dataKey + key}
-                            className={clsx(
-                                classes.tableCell,
-                                classes.inlineEditionCell
-                            )}
-                            equipment={rowData}
-                            defaultValue={currentValue}
-                            setColumnError={(k) => setColumnInError(k)}
-                            resetColumnError={(k) => resetColumnInError(k)}
-                            forceLineUpdate={forceLineUpdate}
-                            columnDefinition={columnDefinition}
-                            setter={(val) => changeRequest(val)}
-                            style={style}
-                        />
-                    );
+                    const changeRequest = (value) =>
+                        registerChangeRequest(rowData, columnDefinition, value);
+                    const Editor = columnDefinition.editor;
+                    if (Editor) {
+                        return (
+                            <Editor
+                                key={columnDefinition.dataKey + key}
+                                className={clsx(
+                                    classes.tableCell,
+                                    classes.inlineEditionCell
+                                )}
+                                equipment={rowData}
+                                defaultValue={currentValue}
+                                setColumnError={(k) => setColumnInError(k)}
+                                resetColumnError={(k) => resetColumnInError(k)}
+                                forceLineUpdate={forceLineUpdate}
+                                columnDefinition={columnDefinition}
+                                setter={(val) => changeRequest(val)}
+                                style={style}
+                            />
+                        );
+                    }
                 }
-            } else {
-                if (columnDefinition.boolean) {
-                    return booleanCellRender(
-                        rowData,
-                        columnDefinition,
-                        key,
-                        style
-                    );
-                }
-                return defaultCellRender(rowData, columnDefinition, key, style);
             }
+            if (columnDefinition.boolean) {
+                return booleanCellRender(
+                    rowData,
+                    columnDefinition,
+                    key,
+                    style,
+                    rowIndex
+                );
+            }
+            return defaultCellRender(
+                rowData,
+                columnDefinition,
+                key,
+                style,
+                rowIndex
+            );
         },
         [
             isLineOnEditMode,
@@ -1066,8 +1118,20 @@ const NetworkTable = (props) => {
                     locked: true,
                     editColumn: true,
                     columnWidth: EDIT_CELL_WIDTH,
-                    cellRenderer: (rowData, columnDefinition, key, style) =>
-                        editCellRender(rowData, columnDefinition, key, style),
+                    cellRenderer: (
+                        rowData,
+                        columnDefinition,
+                        key,
+                        style,
+                        rowIndex
+                    ) =>
+                        editCellRender(
+                            rowData,
+                            columnDefinition,
+                            key,
+                            style,
+                            rowIndex
+                        ),
                 });
             }
 
