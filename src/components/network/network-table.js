@@ -59,12 +59,14 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { isNodeReadOnly } from '../graph/util/model-functions';
+import cloneDeep from 'lodash/cloneDeep';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -133,6 +135,11 @@ const useStyles = makeStyles((theme) => ({
             right: theme.spacing(0.5),
             bottom: 0,
             borderBottom: '1px solid ' + theme.palette.divider,
+        },
+    },
+    rowInEdit: {
+        '& button': {
+            color: theme.palette.primary.main,
         },
     },
     editCell: {
@@ -380,6 +387,10 @@ const NetworkTable = (props) => {
         [rowFilter, selectedDataKey, formatCell]
     );
 
+    const isModifyingRow = useCallback(() => {
+        return lineEdit?.id !== undefined;
+    }, [lineEdit]);
+
     const getRows = useCallback(
         (index) => {
             if (props.disabled) {
@@ -412,7 +423,7 @@ const NetworkTable = (props) => {
             }
 
             if (columnSort) {
-                return result.sort((a, b) => {
+                result = result.sort((a, b) => {
                     return compareValue(
                         formatCell(a, columnSort.colDef).value,
                         formatCell(b, columnSort.colDef).value,
@@ -420,6 +431,24 @@ const NetworkTable = (props) => {
                         columnSort.reverse
                     );
                 });
+            }
+
+            if (isModifyingRow()) {
+                // When modifying a row, a copy of the edited row is created and put on top of the table
+                // The edition is then done on the copy, on top of the table, and not below, to prevent
+                // bugs of rows changing position in the middle of modifications.
+                let editRowPosition;
+                for (
+                    editRowPosition = 0;
+                    editRowPosition < result.length;
+                    editRowPosition++
+                ) {
+                    if (isLineOnEditMode(result[editRowPosition])) {
+                        let copyForEdit = cloneDeep(result[editRowPosition]);
+                        copyForEdit.isEditRow = true;
+                        return [copyForEdit, ...result];
+                    }
+                }
             }
             return result;
         },
@@ -430,6 +459,8 @@ const NetworkTable = (props) => {
             filter,
             formatCell,
             props.disabled,
+            isLineOnEditMode,
+            isModifyingRow,
         ]
     );
 
@@ -459,7 +490,8 @@ const NetworkTable = (props) => {
         if (
             props.equipmentId !== null && // TODO always equals to true. Maybe this function is broken ?
             props.equipmentType !== null &&
-            !manualTabSwitch
+            !manualTabSwitch &&
+            !isModifyingRow()
         ) {
             const newIndex = getTabIndexFromEquipementType(props.equipmentType);
             setTabIndex(newIndex); // select the right table type
@@ -477,15 +509,12 @@ const NetworkTable = (props) => {
         props.equipmentChanged,
         getRows,
         manualTabSwitch,
+        isModifyingRow,
     ]);
 
     const renderTableLockIcon = useCallback(() => {
         return <LockIcon className={classes.tableLock} />;
     }, [classes.tableLock]);
-
-    const isModifyingRow = useCallback(() => {
-        return lineEdit?.id !== undefined;
-    }, [lineEdit]);
 
     const isActiveSortArrow = (columnSort, dataKey) => {
         return columnSort && columnSort.key === dataKey;
@@ -712,7 +741,7 @@ const NetworkTable = (props) => {
                 setLineEdit({});
             }
 
-            if (isLineOnEditMode(rowData)) {
+            if (rowData.isEditRow) {
                 return (
                     <div key={key} style={style}>
                         <div className={classes.editCell}>
@@ -734,6 +763,22 @@ const NetworkTable = (props) => {
                     </div>
                 );
             } else {
+                if (isLineOnEditMode(rowData)) {
+                    return (
+                        <div key={key} style={style}>
+                            <div
+                                className={clsx(
+                                    classes.editCell,
+                                    classes.rowInEdit
+                                )}
+                            >
+                                <IconButton size={'small'}>
+                                    <MoreHorizIcon />
+                                </IconButton>
+                            </div>
+                        </div>
+                    );
+                }
                 return (
                     <div key={key} style={style}>
                         <div className={classes.editCell}>
@@ -779,6 +824,8 @@ const NetworkTable = (props) => {
             classes.editCell,
             isModifyingRow,
             props.currentNode,
+            isLineOnEditMode,
+            isModifyingRow,
         ]
     );
 
@@ -923,7 +970,8 @@ const NetworkTable = (props) => {
         (rowData, columnDefinition, key, style) => {
             if (
                 isLineOnEditMode(rowData) &&
-                rowData[columnDefinition.dataKey] !== undefined
+                rowData[columnDefinition.dataKey] !== undefined &&
+                rowData.isEditRow === true
             ) {
                 // when we edit a numeric field, we display the original un-rounded value
                 const currentValue = columnDefinition.numeric
@@ -952,9 +1000,15 @@ const NetworkTable = (props) => {
                         />
                     );
                 }
-            } else if (columnDefinition.boolean) {
-                return booleanCellRender(rowData, columnDefinition, key, style);
             } else {
+                if (columnDefinition.boolean) {
+                    return booleanCellRender(
+                        rowData,
+                        columnDefinition,
+                        key,
+                        style
+                    );
+                }
                 return defaultCellRender(rowData, columnDefinition, key, style);
             }
         },
@@ -1053,8 +1107,8 @@ const NetworkTable = (props) => {
                 columns={columns}
                 fetched={props.network.isResourceFetched(resource)}
                 scrollTop={scrollToIndex}
-                disableVerticalScroll={isModifyingRow()}
                 visible={props.visible}
+                showEditRow={isModifyingRow()}
             />
         );
     }

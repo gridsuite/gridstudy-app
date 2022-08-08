@@ -111,7 +111,7 @@ export const EquipmentTable = (props) => {
                                 ref={gridRef}
                                 cellRenderer={cellRenderer}
                                 fixedColumnCount={fixedColumnsCount}
-                                fixedRowCount={1}
+                                fixedRowCount={props.showEditRow ? 2 : 1}
                                 height={height}
                                 width={width}
                                 columnCount={props.columns.length}
@@ -124,16 +124,6 @@ export const EquipmentTable = (props) => {
                                 enableFixedRowScroll={true}
                                 hideTopRightGridScrollbar={true}
                                 hideBottomLeftGridScrollbar={true}
-                                styleBottomLeftGrid={
-                                    props.disableVerticalScroll
-                                        ? { overflowY: 'hidden' }
-                                        : {}
-                                }
-                                styleBottomRightGrid={
-                                    props.disableVerticalScroll
-                                        ? { overflowY: 'hidden' }
-                                        : {}
-                                }
                                 onScrollbarPresenceChange={(scrollBars) => {
                                     setVerticalScrollbarPresence(
                                         scrollBars?.vertical
