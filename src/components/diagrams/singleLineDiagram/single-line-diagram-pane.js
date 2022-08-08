@@ -374,6 +374,17 @@ export function SingleLineDiagramPane({
                     );
                     if (vlToClose.length > 0)
                         closeView([...vlToClose, deletedId]);
+
+                    const substationsIds =
+                        studyUpdatedForce.eventData.headers['substationsIds'];
+                    viewsRef.current.forEach((v) => {
+                        const vl = network.getVoltageLevel(v.id);
+                        if (vl) {
+                            if (substationsIds.includes(vl.substationId)) {
+                                updateSld(vl.id);
+                            }
+                        }
+                    });
                 } else {
                     updateSld();
                 }
@@ -390,7 +401,7 @@ export function SingleLineDiagramPane({
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView]);
+    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView, network]);
 
     useEffect(() => {
         setDisplayedSld((oldSld) => {
