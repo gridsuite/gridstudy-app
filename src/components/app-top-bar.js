@@ -28,15 +28,27 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls } from '../utils/rest-api';
+import {
+    fetchAppsAndUrls,
+    fetchLoadFlowInfos,
+    fetchSecurityAnalysisStatus,
+} from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
+import {
+    addLoadflowNotif,
+    addSANotif,
+    centerOnSubstation,
+    openNetworkAreaDiagram,
+    resetLoadflowNotif,
+    resetSANotif,
+} from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { isNodeBuilt } from './graph/util/model-functions';
+import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './util/search-matching-equipments';
 
@@ -127,7 +139,13 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 };
 
-const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
+const AppTopBar = ({
+    user,
+    tabIndex,
+    onChangeTab,
+    userManager,
+    securityAnalysisStatus,
+}) => {
     const classes = useStyles();
 
     const equipmentClasses = useEquipmentStyles();
@@ -161,6 +179,24 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
+    const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
+    const securityAnalysisStatusInvalidations = [
+        'securityAnalysis_status',
+        'securityAnalysis_failed',
+    ];
+    const [loadFlowInfosNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchLoadFlowInfos,
+        loadFlowStatusInvalidations
+    );
+
+    const [securityAnalysisStatusNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchSecurityAnalysisStatus,
+        securityAnalysisStatusInvalidations
+    );
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -182,6 +218,37 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             });
         }
     }, [user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            loadFlowInfosNode?.loadFlowStatus !== 'NOT_DONE' &&
+            loadFlowInfosNode?.loadFlowResult != null
+        ) {
+            dispatch(addLoadflowNotif());
+        } else {
+            dispatch(resetLoadflowNotif());
+        }
+    }, [
+        currentNode,
+        dispatch,
+        loadFlowInfosNode?.loadFlowResult,
+        loadFlowInfosNode?.loadFlowStatus,
+        user,
+    ]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            (securityAnalysisStatusNode === 'CONVERGED' ||
+                securityAnalysisStatusNode === 'DIVERGED' ||
+                securityAnalysisStatusNode === 'RUNNING')
+        ) {
+            dispatch(addSANotif());
+        } else {
+            dispatch(resetSANotif());
+        }
+    }, [currentNode, dispatch, securityAnalysisStatusNode, user]);
 
     function showParameters() {
         setParametersOpen(true);
