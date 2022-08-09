@@ -27,7 +27,7 @@ import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
 import IconButton from '@mui/material/IconButton';
-import { useMeta } from '@gridsuite/commons-ui';
+import { useImportExportParams } from '@gridsuite/commons-ui';
 
 /**
  * Dialog to export the network case
@@ -68,7 +68,8 @@ const ExportDialog = ({
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
     const metasAsArray = formatWithParameter?.parameters || [];
-    const [currentParameters, paramsComponent] = useMeta(metasAsArray);
+    const [currentParameters, paramsComponent] =
+        useImportExportParams(metasAsArray);
 
     const handleExportClick = () => {
         if (selectedFormat) {
