@@ -150,9 +150,10 @@ const NetworkModificationNodeEditor = () => {
 
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
+    const [selectedItemsCopyable, setSelectedItemsCopyable] = useState(false);
     const [copiedModifications, setCopiedModifications] = useState({
         sourceNodeId: currentTreeNode?.id,
-        modifications: new Map(),
+        modifications: new Set(),
     });
 
     const [isDragging, setIsDragging] = useState(false);
@@ -326,6 +327,26 @@ const NetworkModificationNodeEditor = () => {
         },
     };
 
+    const changeSelectedItems = useCallback(
+        (items) => {
+            if (items instanceof Set) {
+                setSelectedItems(items);
+
+                let canCopySelection = false;
+                if (items.size > 0) {
+                    canCopySelection = true;
+                    items.forEach((item) => {
+                        if (item.type === 'GROOVY_SCRIPT') {
+                            canCopySelection = false;
+                        }
+                    });
+                }
+                setSelectedItemsCopyable(canCopySelection);
+            }
+        },
+        [setSelectedItems]
+    );
+
     const fillNotification = useCallback(
         (study, messageId) => {
             // (work for all users)
@@ -460,15 +481,15 @@ const NetworkModificationNodeEditor = () => {
 
     const doCopyModification = () => {
         // just memorize the list of selected modifications
-        let newCopyMap = new Map();
+        let newCopySet = new Set();
         selectedItems.forEach((item) => {
             if (item.type !== 'GROOVY_SCRIPT') {
-                newCopyMap.set(item.uuid, item.equipmentId);
+                newCopySet.add(item.uuid);
             }
         });
         setCopiedModifications({
             sourceNodeId: currentTreeNode.id,
-            modifications: newCopyMap,
+            modifications: newCopySet,
         });
     };
 
@@ -559,7 +580,7 @@ const NetworkModificationNodeEditor = () => {
                         >
                             <CheckboxList
                                 className={classes.list}
-                                onChecked={setSelectedItems}
+                                onChecked={changeSelectedItems}
                                 values={modifications}
                                 itemRenderer={(props) => (
                                     <ModificationListItem
@@ -666,7 +687,7 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCopyModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={!(selectedItems?.size > 0) || isAnyNodeBuilding}
+                    disabled={!selectedItemsCopyable || isAnyNodeBuilding}
                 >
                     <ContentCopyIcon />
                 </IconButton>
