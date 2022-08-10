@@ -12,6 +12,7 @@ import {
     fetchNetworkModificationTreeNode,
     getUniqueNodeName,
     buildNode,
+    copyTreeNode,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -80,6 +81,7 @@ export const NetworkModificationTreePane = ({
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
+    const [selectedNodeForCopy, setSelectedNodeForCopy] = useState(null);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
@@ -180,6 +182,27 @@ export const NetworkModificationTreePane = ({
                 });
         },
         [studyUuid, enqueueSnackbar, intlRef]
+    );
+
+    const handlePasteNode = useCallback(
+        (referenceNode, insertMode) => {
+            copyTreeNode(
+                studyUuid,
+                selectedNodeForCopy.id,
+                referenceNode.id,
+                insertMode
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NodeCreateError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+        },
+        [studyUuid, selectedNodeForCopy, enqueueSnackbar, intlRef]
     );
 
     const handleRemoveNode = useCallback(
@@ -284,6 +307,9 @@ export const NetworkModificationTreePane = ({
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
+                    selectedNodeForCopy={selectedNodeForCopy}
+                    handleCopyNode={setSelectedNodeForCopy}
+                    handlePasteNode={handlePasteNode}
                 />
             )}
             {openExportDialog && (
