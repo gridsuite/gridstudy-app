@@ -41,3 +41,11 @@ export function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
             return RunningStatus.IDLE;
     }
 }
+
+export function getSensiRunningStatus(sensiStatus) {
+    // TODO to implement
+    switch (sensiStatus) {
+        default:
+            return RunningStatus.IDLE;
+    }
+}

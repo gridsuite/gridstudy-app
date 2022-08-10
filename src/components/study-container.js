@@ -25,6 +25,7 @@ import {
     fetchStudyExists,
     fetchPath,
     fetchCaseInfos,
+    fetchSensiStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -47,6 +48,7 @@ import {
 } from './graph/util/model-functions';
 import {
     getSecurityAnalysisRunningStatus,
+    getSensiRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
@@ -142,6 +144,7 @@ const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
     'securityAnalysis_failed',
 ];
+const sensiStatusInvalidations = ['sensi_status', 'sensi_failed'];
 const UPDATE_TYPE_HEADER = 'updateType';
 
 export function StudyContainer({ view, onChangeTab }) {
@@ -185,6 +188,15 @@ export function StudyContainer({ view, onChangeTab }) {
         securityAnalysisStatusInvalidations,
         RunningStatus.IDLE,
         getSecurityAnalysisRunningStatus
+    );
+
+    const [sensiStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchSensiStatus,
+        sensiStatusInvalidations,
+        RunningStatus.IDLE,
+        getSensiRunningStatus
     );
 
     const [updatedLines, setUpdatedLines] = useState([]);
@@ -534,6 +546,7 @@ export function StudyContainer({ view, onChangeTab }) {
             SECURITY_ANALYSIS: intl.formatMessage({
                 id: 'SecurityAnalysis',
             }),
+            SENSI: intl.formatMessage({ id: 'SensitivityAnalysis' }),
         };
     }, [intl]);
 
@@ -587,6 +600,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 updatedLines={updatedLines}
                 loadFlowInfos={loadFlowInfos}
                 securityAnalysisStatus={securityAnalysisStatus}
+                sensiStatus={sensiStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />

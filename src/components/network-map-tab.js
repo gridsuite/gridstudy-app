@@ -70,6 +70,7 @@ export const NetworkMapTab = ({
     securityAnalysisStatus,
     runnable,
     loadFlowStatus,
+    sensiStatus,
     /* visual*/
     visible,
     useName,
@@ -351,6 +352,7 @@ export const NetworkMapTab = ({
                     currentNode={currentNode}
                     loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
+                    sensiStatus={sensiStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}

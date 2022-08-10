@@ -141,6 +141,15 @@
     "getContingencyListError": "Impossible de récuperer les listes d'aléas",
     "xContingenciesWillBeSimulated": "{x} aléas seront simulées",
 
+    "SensitivityAnalysis": "Analyse de sensibilité",
+    "SensibilityAnalysisParameters": "Paramètres de l'analyse de sensibilité",
+    "VariablesToSimulate": "Variables à simuler",
+    "SimulatedContingencies": "Aléas simulés",
+    "SupervisedQuadrupoles": "Quadripôles surveillés",
+    "getVariablesFiltersListError": "Impossible de récuperer la liste des variables à simuler",
+    "getQuadFiltersListError": "Impossible de récuperer la liste des quadripôles surveillés",
+    "FiltersListsSelection": "Sélection des listes de filtres",
+
     "LimitType": "Type de limite",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",

@@ -722,6 +722,29 @@ export function startSecurityAnalysis(
     return backendFetch(url, { method: 'post' });
 }
 
+export function startSensi(
+    studyUuid,
+    currentNodeUuid,
+    variablesFiltersNames,
+    contingencyListNames,
+    quadFiltersNames
+) {
+    console.info(
+        'Running sensi on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    // TODO implement call to sensi start
+    /*    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensi/run'
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+ */
+}
+
 export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
     console.info(
         'Fetching security analysis on ' +
@@ -761,8 +784,31 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     });
 }
 
-export function fetchContingencyLists(listIds) {
-    console.info('Fetching contingency lists');
+export function fetchSensiStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        'Fetching sensitivity status on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    // TODO implement sensitivity calculation status fetching
+    /*    const url =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/sensi/status';
+        console.debug(url);
+        return backendFetch(url, { method: 'get' }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                return Promise.resolve(0);
+            }
+        });*/
+    return Promise.resolve(0);
+}
+
+export function fetchContingencyAndFiltersLists(listIds) {
+    console.info('Fetching contingency and filters lists');
     const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         '/v1/elements?strictMode=false&ids=' +

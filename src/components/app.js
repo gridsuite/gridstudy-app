@@ -31,6 +31,7 @@ import {
     selectDiagonalLabelState,
     selectDisplayOverloadTableState,
     selectFavoriteContingencyLists,
+    selectFavoriteSensiContingencyLists,
     selectLanguage,
     selectLineFlowAlertThreshold,
     selectLineFlowColorMode,
@@ -41,6 +42,8 @@ import {
     selectTheme,
     selectUseName,
     selectFluxConvention,
+    selectFavoriteSensiVariablesFiltersLists,
+    selectFavoriteSensiQuadFiltersLists,
 } from '../redux/actions';
 
 import {
@@ -77,6 +80,9 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FLUX_CONVENTION,
+    PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
+    PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
+    PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS,
 } from '../utils/config-params';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -194,6 +200,27 @@ const App = () => {
                     case PARAM_FAVORITE_CONTINGENCY_LISTS:
                         dispatch(
                             selectFavoriteContingencyLists(
+                                param.value.split(',')
+                            )
+                        );
+                        break;
+                    case PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS:
+                        dispatch(
+                            selectFavoriteSensiVariablesFiltersLists(
+                                param.value.split(',')
+                            )
+                        );
+                        break;
+                    case PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS:
+                        dispatch(
+                            selectFavoriteSensiContingencyLists(
+                                param.value.split(',')
+                            )
+                        );
+                        break;
+                    case PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS:
+                        dispatch(
+                            selectFavoriteSensiQuadFiltersLists(
                                 param.value.split(',')
                             )
                         );

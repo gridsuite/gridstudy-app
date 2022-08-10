@@ -137,8 +137,17 @@
     "Execute": "Execute",
     "AddContingencyList": "Add",
     "DeleteContingencyList": "Delete",
-    "getContingencyListError": "can't fetch contingencies lists",
+    "getContingencyListError": "Can't fetch contingencies lists",
     "xContingenciesWillBeSimulated": "{x} contingencies will be simulated",
+
+    "SensitivityAnalysis": "Sensitivity analysis",
+    "SensibilityAnalysisParameters": "Sensitivity analysis parameters",
+    "VariablesToSimulate": "Variables to simulate",
+    "SimulatedContingencies": "Simulated contingencies",
+    "SupervisedQuadrupoles": "Supervised quadrupoles",
+    "getVariablesFiltersListError": "Can't fetch simulated variables lists",
+    "getQuadFiltersListError": "Can't fetch supervised quadrupoles filters lists",
+    "FiltersListsSelection": "Filters lists selection",
 
     "LimitType": "Limit type",
     "Value": "Value",
