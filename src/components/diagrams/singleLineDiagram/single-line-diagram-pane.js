@@ -379,10 +379,8 @@ export function SingleLineDiagramPane({
                         studyUpdatedForce.eventData.headers['substationsIds'];
                     viewsRef.current.forEach((v) => {
                         const vl = network.getVoltageLevel(v.id);
-                        if (vl) {
-                            if (substationsIds.includes(vl.substationId)) {
-                                updateSld(vl.id);
-                            }
+                        if (vl && substationsIds.includes(vl.substationId)) {
+                            updateSld(vl.id);
                         }
                     });
                 } else {
