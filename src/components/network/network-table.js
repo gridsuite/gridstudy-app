@@ -447,16 +447,7 @@ const NetworkTable = (props) => {
                 // When modifying a row, a shallow copy of the edited row is created and put on top of the table.
                 // The edition is then done on the copy, on top of the table, and not below, to prevent
                 // bugs of rows changing position in the middle of modifications.
-                let editRowPosition;
-                for (
-                    editRowPosition = 0;
-                    editRowPosition < result.length;
-                    editRowPosition++
-                ) {
-                    if (isLineOnEditMode(result[editRowPosition])) {
-                        return [result[editRowPosition], ...result];
-                    }
-                }
+                return [result[parseInt(lineEdit.rowIndex) - 1], ...result];
             }
             return result;
         },
@@ -467,8 +458,8 @@ const NetworkTable = (props) => {
             filter,
             formatCell,
             props.disabled,
-            isLineOnEditMode,
             isModifyingRow,
+            lineEdit,
         ]
     );
 
@@ -813,6 +804,7 @@ const NetworkTable = (props) => {
                                         oldValues: {},
                                         newValues: {},
                                         id: rowData.id,
+                                        rowIndex: rowIndex,
                                         errors: new Map(),
                                         equipmentType:
                                             TABLES_DEFINITION_INDEXES.get(
@@ -1015,36 +1007,35 @@ const NetworkTable = (props) => {
         (rowData, columnDefinition, key, style, rowIndex) => {
             if (
                 isLineOnEditMode(rowData) &&
-                rowData[columnDefinition.dataKey] !== undefined
+                rowData[columnDefinition.dataKey] !== undefined &&
+                rowIndex === 1
             ) {
-                if (rowIndex === 1) {
-                    // when we edit a numeric field, we display the original un-rounded value
-                    const currentValue = columnDefinition.numeric
-                        ? rowData[columnDefinition.dataKey]
-                        : formatCell(rowData, columnDefinition).value;
+                // when we edit a numeric field, we display the original un-rounded value
+                const currentValue = columnDefinition.numeric
+                    ? rowData[columnDefinition.dataKey]
+                    : formatCell(rowData, columnDefinition).value;
 
-                    const changeRequest = (value) =>
-                        registerChangeRequest(rowData, columnDefinition, value);
-                    const Editor = columnDefinition.editor;
-                    if (Editor) {
-                        return (
-                            <Editor
-                                key={columnDefinition.dataKey + key}
-                                className={clsx(
-                                    classes.tableCell,
-                                    classes.inlineEditionCell
-                                )}
-                                equipment={rowData}
-                                defaultValue={currentValue}
-                                setColumnError={(k) => setColumnInError(k)}
-                                resetColumnError={(k) => resetColumnInError(k)}
-                                forceLineUpdate={forceLineUpdate}
-                                columnDefinition={columnDefinition}
-                                setter={(val) => changeRequest(val)}
-                                style={style}
-                            />
-                        );
-                    }
+                const changeRequest = (value) =>
+                    registerChangeRequest(rowData, columnDefinition, value);
+                const Editor = columnDefinition.editor;
+                if (Editor) {
+                    return (
+                        <Editor
+                            key={columnDefinition.dataKey + key}
+                            className={clsx(
+                                classes.tableCell,
+                                classes.inlineEditionCell
+                            )}
+                            equipment={rowData}
+                            defaultValue={currentValue}
+                            setColumnError={(k) => setColumnInError(k)}
+                            resetColumnError={(k) => resetColumnInError(k)}
+                            forceLineUpdate={forceLineUpdate}
+                            columnDefinition={columnDefinition}
+                            setter={(val) => changeRequest(val)}
+                            style={style}
+                        />
+                    );
                 }
             }
             if (columnDefinition.boolean) {
