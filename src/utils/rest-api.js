@@ -722,60 +722,6 @@ export function startSecurityAnalysis(
     return backendFetch(url, { method: 'post' });
 }
 
-function getSensiQueryParams(
-    variablesFiltersUuids,
-    contingencyListUuids,
-    quadFiltersUuids
-) {
-    if (
-        variablesFiltersUuids.length > 0 ||
-        contingencyListUuids.length > 0 ||
-        quadFiltersUuids.length > 0
-    ) {
-        const urlSearchParams = new URLSearchParams();
-        variablesFiltersUuids.forEach((variablesFiltersUuid) =>
-            urlSearchParams.append(
-                'variablesFiltersListUuid',
-                variablesFiltersUuid
-            )
-        );
-        contingencyListUuids.forEach((contingencyListUuid) =>
-            urlSearchParams.append('contingencyListUuid', contingencyListUuid)
-        );
-        quadFiltersUuids.forEach((quadFiltersUuid) =>
-            urlSearchParams.append('quadFiltersListUuid', quadFiltersUuid)
-        );
-        return '?' + urlSearchParams.toString();
-    }
-    return '';
-}
-
-export function startSensibilityAnalysis(
-    studyUuid,
-    currentNodeUuid,
-    variablesFiltersUuids,
-    contingencyListUuids,
-    quadFiltersUuids
-) {
-    console.info(
-        'Running sensi on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            ' ...'
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensitivity-analysis/run' +
-        getSensiQueryParams(
-            variablesFiltersUuids,
-            contingencyListUuids,
-            quadFiltersUuids
-        );
-    console.debug(url);
-    return backendFetch(url, { method: 'post' });
-}
-
 export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
     console.info(
         'Fetching security analysis on ' +
@@ -815,27 +761,79 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     });
 }
 
-export function fetchSensiStatus(studyUuid, currentNodeUuid) {
+function getSensitivityAnalysisQueryParams(
+    variablesFiltersUuids,
+    contingencyListUuids,
+    quadFiltersUuids
+) {
+    if (
+        variablesFiltersUuids.length > 0 ||
+        contingencyListUuids.length > 0 ||
+        quadFiltersUuids.length > 0
+    ) {
+        const urlSearchParams = new URLSearchParams();
+        variablesFiltersUuids.forEach((variablesFiltersUuid) =>
+            urlSearchParams.append(
+                'variablesFiltersListUuid',
+                variablesFiltersUuid
+            )
+        );
+        contingencyListUuids.forEach((contingencyListUuid) =>
+            urlSearchParams.append('contingencyListUuid', contingencyListUuid)
+        );
+        quadFiltersUuids.forEach((quadFiltersUuid) =>
+            urlSearchParams.append('quadFiltersListUuid', quadFiltersUuid)
+        );
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
+export function startSensitivityAnalysis(
+    studyUuid,
+    currentNodeUuid,
+    variablesFiltersUuids,
+    contingencyListUuids,
+    quadFiltersUuids
+) {
     console.info(
-        'Fetching sensitivity status on ' +
+        'Running sensi on ' +
             studyUuid +
             ' and node ' +
             currentNodeUuid +
             ' ...'
     );
-    // TODO implement sensitivity calculation status fetching
-    /*    const url =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/sensi/status';
-        console.debug(url);
-        return backendFetch(url, { method: 'get' }).then(function (response) {
-            if (response.ok) {
-                return response.text();
-            } else {
-                return Promise.resolve(0);
-            }
-        });*/
-    return Promise.resolve(0);
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/run' +
+        getSensitivityAnalysisQueryParams(
+            variablesFiltersUuids,
+            contingencyListUuids,
+            quadFiltersUuids
+        );
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+}
+
+export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        'Fetching sensitivity analysis status on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return Promise.resolve(0);
+        }
+    });
 }
 
 export function fetchContingencyAndFiltersLists(listIds) {

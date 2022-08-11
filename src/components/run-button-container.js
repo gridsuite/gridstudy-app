@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import {
     startLoadFlow,
     startSecurityAnalysis,
-    startSensibilityAnalysis,
+    startSensitivityAnalysis,
     stopSecurityAnalysis,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
@@ -121,7 +121,7 @@ export function RunButtonContainer({
         setComputationStopped(false);
 
         // start server side security analysis
-        startSensibilityAnalysis(
+        startSensitivityAnalysis(
             studyUuid,
             currentNode?.id,
             variablesFiltersUuids,

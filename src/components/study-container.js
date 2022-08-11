@@ -25,7 +25,7 @@ import {
     fetchStudyExists,
     fetchPath,
     fetchCaseInfos,
-    fetchSensiStatus,
+    fetchSensitivityAnalysisStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -193,7 +193,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const [sensiStatus] = useNodeData(
         studyUuid,
         currentNode?.id,
-        fetchSensiStatus,
+        fetchSensitivityAnalysisStatus,
         sensiStatusInvalidations,
         RunningStatus.IDLE,
         getSensiRunningStatus
