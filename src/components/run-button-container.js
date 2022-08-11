@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import {
     startLoadFlow,
     startSecurityAnalysis,
-    startSensi,
+    startSensibilityAnalysis,
     stopSecurityAnalysis,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
@@ -111,9 +111,9 @@ export function RunButtonContainer({
     };
 
     const handleStartSensi = (
-        variablesFiltersNames,
-        contingencyListNames,
-        quadFiltersNames
+        variablesFiltersUuids,
+        contingencyListUuids,
+        quadFiltersUuids
     ) => {
         // close the contingency list selection window
         setShowSensiParametersSelector(false);
@@ -121,12 +121,12 @@ export function RunButtonContainer({
         setComputationStopped(false);
 
         // start server side security analysis
-        startSensi(
+        startSensibilityAnalysis(
             studyUuid,
             currentNode?.id,
-            variablesFiltersNames,
-            contingencyListNames,
-            quadFiltersNames
+            variablesFiltersUuids,
+            contingencyListUuids,
+            quadFiltersUuids
         );
     };
 

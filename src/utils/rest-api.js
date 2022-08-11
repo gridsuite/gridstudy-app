@@ -722,12 +722,40 @@ export function startSecurityAnalysis(
     return backendFetch(url, { method: 'post' });
 }
 
-export function startSensi(
+function getSensiQueryParams(
+    variablesFiltersUuids,
+    contingencyListUuids,
+    quadFiltersUuids
+) {
+    if (
+        variablesFiltersUuids.length > 0 ||
+        contingencyListUuids.length > 0 ||
+        quadFiltersUuids.length > 0
+    ) {
+        const urlSearchParams = new URLSearchParams();
+        variablesFiltersUuids.forEach((variablesFiltersUuid) =>
+            urlSearchParams.append(
+                'variablesFiltersListUuid',
+                variablesFiltersUuid
+            )
+        );
+        contingencyListUuids.forEach((contingencyListUuid) =>
+            urlSearchParams.append('contingencyListUuid', contingencyListUuid)
+        );
+        quadFiltersUuids.forEach((quadFiltersUuid) =>
+            urlSearchParams.append('quadFiltersListUuid', quadFiltersUuid)
+        );
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
+export function startSensibilityAnalysis(
     studyUuid,
     currentNodeUuid,
-    variablesFiltersNames,
-    contingencyListNames,
-    quadFiltersNames
+    variablesFiltersUuids,
+    contingencyListUuids,
+    quadFiltersUuids
 ) {
     console.info(
         'Running sensi on ' +
@@ -736,13 +764,16 @@ export function startSensi(
             currentNodeUuid +
             ' ...'
     );
-    // TODO implement call to sensi start
-    /*    const url =
+    const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensi/run'
+        '/sensitivity-analysis/run' +
+        getSensiQueryParams(
+            variablesFiltersUuids,
+            contingencyListUuids,
+            quadFiltersUuids
+        );
     console.debug(url);
     return backendFetch(url, { method: 'post' });
- */
 }
 
 export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
