@@ -9,6 +9,7 @@ import { IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -184,4 +185,15 @@ const ContingenciesFiltersSelector = ({
         </>
     );
 };
+
+ContingenciesFiltersSelector.propTypes = {
+    title: PropTypes.string.isRequired,
+    paramName: PropTypes.string.isRequired,
+    selectedValues: PropTypes.array.isRequired,
+    setSelectedValues: PropTypes.func.isRequired,
+    elementTypes: PropTypes.array.isRequired,
+    selectorTitleId: PropTypes.string.isRequired,
+    fetchErrorMsgId: PropTypes.string.isRequired,
+};
+
 export default ContingenciesFiltersSelector;
