@@ -138,7 +138,7 @@ const ContingenciesFiltersSelector = ({
 
     return (
         <>
-            <Grid container spacing={1} direction="column" item xs={12}>
+            <Grid container direction="column" item xs={12}>
                 <Grid item>
                     <Typography component="span" variant="h7">
                         <FormattedMessage id={title} />
@@ -151,6 +151,7 @@ const ContingenciesFiltersSelector = ({
                         label={(item) => item.name}
                         id={(item) => item.id}
                         selection={selectedValues}
+                        disablePadding
                         itemRenderer={({ item, checked, handleToggle }) => (
                             <ListItemWithDeleteButton
                                 key={item.id}

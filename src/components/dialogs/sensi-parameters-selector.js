@@ -80,7 +80,7 @@ const SensiParametersSelector = (props) => {
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
-                    <Grid container spacing={1} direction="column" item xs={12}>
+                    <Grid container spacing={2} direction="column" item xs={12}>
                         <Grid item>
                             <ContingenciesFiltersSelector
                                 title={'VariablesToSimulate'}
