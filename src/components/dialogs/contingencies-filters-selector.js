@@ -9,7 +9,7 @@ import { IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useSnackbar } from 'notistack';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
@@ -27,12 +27,8 @@ import ListItemWithDeleteButton from '../util/list-item-with-delete-button';
 const ContingenciesFiltersSelector = ({
     title,
     paramName,
-    values,
-    setValues,
-    checkedValues,
-    setCheckedValues,
-    openSelector,
-    isSelectorOpen,
+    selectedValues,
+    setSelectedValues,
     elementTypes,
     selectorTitleId,
     fetchErrorMsgId,
@@ -40,15 +36,20 @@ const ContingenciesFiltersSelector = ({
     const intlRef = useIntlRef();
     const intl = useIntl();
 
+    const [values, setValues] = useState([]);
+
+    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] =
+        useState(false);
+
     const { enqueueSnackbar } = useSnackbar();
 
     const favoriteListUuids = useSelector((state) => state[paramName]);
 
     const handleFavoriteChecked = useCallback(
         (checked) => {
-            setCheckedValues([...checked].map((item) => item.id));
+            setSelectedValues([...checked].map((item) => item.id));
         },
-        [setCheckedValues]
+        [setSelectedValues]
     );
 
     const saveFavorite = (newList) => {
@@ -66,7 +67,7 @@ const ContingenciesFiltersSelector = ({
             });
     };
 
-    const addFavoritesVariablesFilters = (favorites) => {
+    const addFavorites = (favorites) => {
         if (favorites && favorites.length > 0) {
             saveFavorite(
                 Array.from([
@@ -77,7 +78,7 @@ const ContingenciesFiltersSelector = ({
                 ])
             );
         }
-        openSelector(false);
+        setDirectoryItemSelectorOpen(false);
     };
 
     const removeFromFavorite = (toRemove) => {
@@ -85,9 +86,9 @@ const ContingenciesFiltersSelector = ({
         saveFavorite(
             values.map((e) => e.id).filter((item) => !toDelete.has(item))
         );
-        const newChecked = checkedValues.filter((item) => !toDelete.has(item));
-        if (newChecked.length !== checkedValues.length)
-            setCheckedValues(new Set(newChecked));
+        const newChecked = selectedValues.filter((item) => !toDelete.has(item));
+        if (newChecked.length !== selectedValues.length)
+            setSelectedValues(new Set(newChecked));
     };
 
     useEffect(() => {
@@ -148,7 +149,7 @@ const ContingenciesFiltersSelector = ({
                         onChecked={handleFavoriteChecked}
                         label={(item) => item.name}
                         id={(item) => item.id}
-                        selection={checkedValues}
+                        selection={selectedValues}
                         itemRenderer={({ item, checked, handleToggle }) => (
                             <ListItemWithDeleteButton
                                 key={item.id}
@@ -168,15 +169,15 @@ const ContingenciesFiltersSelector = ({
                     <IconButton
                         color="primary"
                         size="medium"
-                        onClick={() => openSelector(true)}
+                        onClick={() => setDirectoryItemSelectorOpen(true)}
                     >
                         <AddCircle />
                     </IconButton>
                 </Grid>
             </Grid>
             <DirectoryItemSelector
-                open={isSelectorOpen}
-                onClose={addFavoritesVariablesFilters}
+                open={directoryItemSelectorOpen}
+                onClose={addFavorites}
                 types={elementTypes}
                 title={intl.formatMessage({ id: selectorTitleId })}
             />

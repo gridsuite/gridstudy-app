@@ -34,29 +34,16 @@ function makeButton(onClick, message, disabled) {
 }
 
 const SensiParametersSelector = (props) => {
-    const [variablesFiltersList, setVariablesFiltersList] = useState([]);
-    const [contingencyList, setContingencyList] = useState([]);
-    const [quadFiltersList, setQuadFiltersList] = useState([]);
-
     const [
-        checkedVariablesFiltersListUuids,
-        setCheckedVariablesFiltersListUuids,
+        selectedVariablesFiltersListUuids,
+        setSelectedVariablesFiltersListUuids,
     ] = useState([]);
 
-    const [checkedContingencyListUuids, setCheckedContingencyListUuids] =
+    const [selectedContingencyListUuids, setSelectedContingencyListUuids] =
         useState([]);
 
-    const [checkedQuadFiltersListUuids, setCheckedQuadFiltersListUuids] =
+    const [selectedQuadFiltersListUuids, setSelectedQuadFiltersListUuids] =
         useState([]);
-
-    const [variablesFiltersSelectorOpen, setVariablesFiltersSelectorOpen] =
-        useState(false);
-
-    const [contingenciesSelectorOpen, setContingenciesSelectorOpen] =
-        useState(false);
-
-    const [quadFiltersSelectorOpen, setQuadFiltersSelectorOpen] =
-        useState(false);
 
     const handleClose = () => {
         props.onClose();
@@ -64,9 +51,9 @@ const SensiParametersSelector = (props) => {
 
     const handleStart = () => {
         props.onStart(
-            checkedVariablesFiltersListUuids,
-            checkedContingencyListUuids,
-            checkedQuadFiltersListUuids
+            selectedVariablesFiltersListUuids,
+            selectedContingencyListUuids,
+            selectedQuadFiltersListUuids
         );
     };
 
@@ -100,14 +87,12 @@ const SensiParametersSelector = (props) => {
                                 paramName={
                                     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS
                                 }
-                                values={variablesFiltersList}
-                                setValues={setVariablesFiltersList}
-                                checkedValues={checkedVariablesFiltersListUuids}
-                                setCheckedValues={
-                                    setCheckedVariablesFiltersListUuids
+                                selectedValues={
+                                    selectedVariablesFiltersListUuids
                                 }
-                                openSelector={setVariablesFiltersSelectorOpen}
-                                isSelectorOpen={variablesFiltersSelectorOpen}
+                                setSelectedValues={
+                                    setSelectedVariablesFiltersListUuids
+                                }
                                 elementTypes={[elementType.FILTER]}
                                 selectorTitleId={'FiltersListsSelection'}
                                 fetchErrorMsgId={'getVariablesFiltersListError'}
@@ -119,14 +104,10 @@ const SensiParametersSelector = (props) => {
                                 paramName={
                                     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS
                                 }
-                                values={contingencyList}
-                                setValues={setContingencyList}
-                                checkedValues={checkedContingencyListUuids}
-                                setCheckedValues={
-                                    setCheckedContingencyListUuids
+                                selectedValues={selectedContingencyListUuids}
+                                setSelectedValues={
+                                    setSelectedContingencyListUuids
                                 }
-                                openSelector={setContingenciesSelectorOpen}
-                                isSelectorOpen={contingenciesSelectorOpen}
                                 elementTypes={[elementType.CONTINGENCY_LIST]}
                                 selectorTitleId={'ContingencyListsSelection'}
                                 fetchErrorMsgId={'getContingencyListError'}
@@ -138,14 +119,10 @@ const SensiParametersSelector = (props) => {
                                 paramName={
                                     PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS
                                 }
-                                values={quadFiltersList}
-                                setValues={setQuadFiltersList}
-                                checkedValues={checkedQuadFiltersListUuids}
-                                setCheckedValues={
-                                    setCheckedQuadFiltersListUuids
+                                selectedValues={selectedQuadFiltersListUuids}
+                                setSelectedValues={
+                                    setSelectedQuadFiltersListUuids
                                 }
-                                openSelector={setQuadFiltersSelectorOpen}
-                                isSelectorOpen={quadFiltersSelectorOpen}
                                 elementTypes={[elementType.FILTER]}
                                 selectorTitleId={'FiltersListsSelection'}
                                 fetchErrorMsgId={'getQuadFiltersListError'}
@@ -163,7 +140,6 @@ SensiParametersSelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onStart: PropTypes.func.isRequired,
-    currentNodeUuid: PropTypes.string,
 };
 
 export default SensiParametersSelector;
