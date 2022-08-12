@@ -140,7 +140,11 @@ const useStyles = makeStyles((theme) => ({
         background:
             'linear-gradient(to right, ' +
             theme.palette.primary.main +
-            ', rgba(0,0,0,0) 10%)',
+            ' 0%, ' +
+            theme.palette.primary.main +
+            ' 2%, rgba(0,0,0,0) 12%)',
+        borderBottomLeftRadius: theme.spacing(0.5),
+        borderTopLeftRadius: theme.spacing(0.5),
     },
     topEditRow: {
         borderTop: '1px solid ' + theme.palette.primary.main,
@@ -782,7 +786,11 @@ const NetworkTable = (props) => {
                         )}
                     >
                         <div className={classes.editCell}>
-                            <IconButton size={'small'}>
+                            <IconButton
+                                size={'small'}
+                                style={{ backgroundColor: 'transparent' }}
+                                disableRipple
+                            >
                                 <MoreHorizIcon />
                             </IconButton>
                         </div>
