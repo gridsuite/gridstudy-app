@@ -13,6 +13,9 @@
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
     "renameStudyError": "Cannot rename the study if you are not the owner",
+    "renameStudyNotification": "The study has been renamed from {oldStudyName} to {studyName}",
+
+    "moveStudyNotification": "The study has been moved from {oldStudyPath} to {studyPath}",
 
     "exportNetwork": "Export the network",
     "export": "Export",

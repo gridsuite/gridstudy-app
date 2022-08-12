@@ -15,6 +15,7 @@ import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -43,6 +44,9 @@ const CreateNodeMenu = ({
     const classes = useStyles();
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
+    const isModificationsInProgress = useSelector(
+        (state) => state.isModificationsInProgress
+    );
 
     function buildNode() {
         handleBuildNode(activeNode);
@@ -81,7 +85,8 @@ const CreateNodeMenu = ({
             id: 'buildNode',
             disabled:
                 activeNode?.data?.buildStatus === 'BUILT' ||
-                activeNode?.data?.buildStatus === 'BUILDING',
+                activeNode?.data?.buildStatus === 'BUILDING' ||
+                isModificationsInProgress,
         },
         CREATE_MODIFICATION_NODE: {
             onRoot: true,

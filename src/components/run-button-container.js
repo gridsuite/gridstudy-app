@@ -58,6 +58,9 @@ export function RunButtonContainer({
 
     const dispatch = useDispatch();
 
+    const isModificationsInProgress = useSelector(
+        (state) => state.isModificationsInProgress
+    );
     useEffect(() => {
         if (
             ranLoadflow &&
@@ -158,7 +161,7 @@ export function RunButtonContainer({
                 getText={getRunningText}
                 getStartIcon={getRunningIcon}
                 computationStopped={computationStopped}
-                disabled={disabled}
+                disabled={isModificationsInProgress || disabled}
             />
             {!disabled && (
                 <ContingencyListSelector

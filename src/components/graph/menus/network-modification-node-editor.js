@@ -52,6 +52,7 @@ import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import {
     addNotification,
     removeNotificationByNode,
+    setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 
@@ -361,8 +362,9 @@ const NetworkModificationNodeEditor = () => {
             .finally(() => {
                 setPendingState(false);
                 setLaunchLoader(false);
+                dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentTreeNode, snackError]);
+    }, [studyUuid, currentTreeNode.id, snackError, dispatch]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -395,6 +397,7 @@ const NetworkModificationNodeEditor = () => {
                     studyUpdatedForce.eventData.headers['updateType']
                 )
             ) {
+                dispatch(setModificationsInProgress(true));
                 setPendingState(true);
                 manageNotification(studyUpdatedForce);
             }
