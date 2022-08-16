@@ -301,6 +301,9 @@ export const useConnectivityValue = ({
             voltageLevel: voltageLevelIdDefaultValue
                 ? {
                       id: voltageLevelIdDefaultValue,
+                      topologyKind: voltageLevelOptions.find(
+                          (vl) => vl.id === voltageLevelIdDefaultValue
+                      )?.topologyKind,
                   }
                 : null,
             busOrBusbarSection: busOrBusbarSectionIdDefaultValue

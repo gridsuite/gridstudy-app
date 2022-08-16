@@ -52,7 +52,7 @@ import {
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
-    NAD_DEPTH,
+    SET_MODIFICATIONS_IN_PROGRESS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -123,7 +123,7 @@ const initialState = {
     voltageLevelsIdsForNad: [],
     centerOnSubstation: null,
     notificationIdList: [],
-    nadDepth: 0,
+    isModificationsInProgress: false,
     ...paramsInitialState,
 };
 
@@ -397,11 +397,8 @@ export const reducer = createReducer(initialState, {
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
         state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;
     },
-
-    //TODO we using nadDepth as variable because we support only one network area diagram at the moment.
-    // When we add support for multiple diagrams, we have to store the depth of each NAD.
-    [NAD_DEPTH]: (state, action) => {
-        state.nadDepth = action.nadDepth;
+    [SET_MODIFICATIONS_IN_PROGRESS]: (state, action) => {
+        state.isModificationsInProgress = action.isModificationsInProgress;
     },
 });
 

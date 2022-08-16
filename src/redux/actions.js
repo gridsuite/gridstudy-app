@@ -391,11 +391,11 @@ export function openNetworkAreaDiagram(voltageLevelsIds) {
     };
 }
 
-export const NAD_DEPTH = 'NAD_DEPTH';
+export const SET_MODIFICATIONS_IN_PROGRESS = 'SET_MODIFICATIONS_IN_PROGRESS';
 
-export function setNadDepth(nadDepth) {
+export function setModificationsInProgress(isModificationsInProgress) {
     return {
-        type: NAD_DEPTH,
-        nadDepth: nadDepth,
+        type: SET_MODIFICATIONS_IN_PROGRESS,
+        isModificationsInProgress: isModificationsInProgress,
     };
 }

@@ -10,10 +10,11 @@ import {
     NumericalField,
     NameField,
     EnumField,
+    BooleanListField,
     TapChangerSelector,
 } from './equipment-table-editors';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
-import { LOAD_TYPES } from './constants';
+import { ENERGY_SOURCES, LOAD_TYPES } from './constants';
 
 const nominalVoltage = (network, voltageLevelId) => {
     return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
@@ -573,6 +574,8 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 dataKey: 'name',
+                changeCmd: "equipment.setName('{}')\n",
+                editor: NameField,
             },
             {
                 id: 'VoltageLevelId',
@@ -590,6 +593,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Type',
                 dataKey: 'energySource',
+                changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
+                editor: ({ equipment, ...props }) =>
+                    EnumField({
+                        enumList: ENERGY_SOURCES.slice(1), // dont use/display the first empty entry
+                        ...props,
+                    }),
             },
             {
                 id: 'ActivePower',
@@ -617,12 +626,26 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'minP',
                 numeric: true,
                 fractionDigits: 1,
+                forceUpdateOnChange: true,
+                changeCmd: 'equipment.setMinP({})\n',
+                editor: ({ equipment, ...props }) =>
+                    NumericalField({
+                        max: equipment.maxP,
+                        ...props,
+                    }),
             },
             {
                 id: 'MaxP',
                 dataKey: 'maxP',
                 numeric: true,
                 fractionDigits: 1,
+                forceUpdateOnChange: true,
+                changeCmd: 'equipment.setMaxP({})\n',
+                editor: ({ equipment, ...props }) =>
+                    NumericalField({
+                        min: equipment.minP,
+                        ...props,
+                    }),
             },
             {
                 id: 'TargetP',
@@ -647,17 +670,23 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'targetQ',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setTargetQ({})\n',
+                editor: NumericalField,
             },
             {
                 id: 'VoltageRegulatorOn',
                 dataKey: 'voltageRegulatorOn',
                 boolean: true,
+                changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
+                editor: BooleanListField,
             },
             {
                 id: 'TargetV',
                 dataKey: 'targetV',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setTargetV({})\n',
+                editor: NumericalField,
             },
             {
                 id: 'RegulatingTerminal',
