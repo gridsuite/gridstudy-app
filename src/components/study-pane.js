@@ -334,7 +334,6 @@ const StudyPane = ({
                                 )}
                                 onClose={closeNetworkAreaDiagram}
                                 disabled={disabled}
-                                visible={props.view === StudyView.MAP}
                                 align="left"
                             />
                         </div>
@@ -358,6 +357,7 @@ const StudyPane = ({
                         loadFlowInfos?.loadFlowStatus
                     )}
                     disabled={disabled}
+                    visible={props.view === StudyView.SPREADSHEET}
                 />
             </Paper>
         );

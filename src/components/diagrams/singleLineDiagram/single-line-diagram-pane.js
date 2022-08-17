@@ -239,11 +239,16 @@ export function SingleLineDiagramPane({
     currentNodeRef.current = currentNode;
 
     const updateSld = useCallback((id) => {
-        if (id)
+        if (id) {
             viewsRef.current
                 .find((sld) => sld.id === id)
                 ?.ref?.current?.reloadSvg();
-        else viewsRef.current.forEach((sld) => sld?.ref?.current?.reloadSvg());
+        } else
+            viewsRef.current.forEach((sld) => {
+                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+                    sld?.ref?.current?.reloadSvg();
+                }
+            });
     }, []);
 
     const classes = useStyles();
@@ -369,13 +374,32 @@ export function SingleLineDiagramPane({
                     );
                     if (vlToClose.length > 0)
                         closeView([...vlToClose, deletedId]);
+
+                    const substationsIds =
+                        studyUpdatedForce.eventData.headers['substationsIds'];
+                    viewsRef.current.forEach((v) => {
+                        const vl = network.getVoltageLevel(v.id);
+                        if (vl && substationsIds.includes(vl.substationId)) {
+                            updateSld(vl.id);
+                        }
+                    });
                 } else {
+                    updateSld();
+                }
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'buildCompleted'
+            ) {
+                if (
+                    studyUpdatedForce.eventData.headers['node'] ===
+                    currentNodeRef.current?.id
+                ) {
                     updateSld();
                 }
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView]);
+    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView, network]);
 
     useEffect(() => {
         setDisplayedSld((oldSld) => {

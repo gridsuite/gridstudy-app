@@ -21,6 +21,7 @@ import { StudyView } from './study-pane';
 import {
     changeDisplayedColumns,
     changeLockedColumns,
+    changeReorderedColumns,
     resetLoadflowNotif,
     resetSANotif,
     selectCenterLabelState,
@@ -80,6 +81,7 @@ import {
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_NAMES_INDEXES,
 } from './network/config-tables';
 import { getComputedLanguage } from '../utils/language';
@@ -125,6 +127,9 @@ const App = () => {
             let dispatchDisplayedColumns = false;
             let lockedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
             let dispatchLockedColumns = false;
+            let reorderedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
+            let dispatchReorderedColumns = false;
+
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAM_THEME:
@@ -226,6 +231,22 @@ const App = () => {
                             };
                             dispatchLockedColumns = true;
                         }
+                        if (
+                            param.name.startsWith(
+                                REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE
+                            )
+                        ) {
+                            let index = TABLES_NAMES_INDEXES.get(
+                                param.name.slice(
+                                    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+                                )
+                            );
+                            reorderedColumnsParams[index] = {
+                                index: index,
+                                value: param.value,
+                            };
+                            dispatchReorderedColumns = true;
+                        }
                 }
             });
             if (dispatchDisplayedColumns) {
@@ -233,6 +254,9 @@ const App = () => {
             }
             if (dispatchLockedColumns) {
                 dispatch(changeLockedColumns(lockedColumnsParams));
+            }
+            if (dispatchReorderedColumns) {
+                dispatch(changeReorderedColumns(reorderedColumnsParams));
             }
         },
         [dispatch]
@@ -399,6 +423,7 @@ const App = () => {
     const onChangeTab = useCallback((newTabIndex) => {
         setTabIndex(newTabIndex);
     }, []);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     // if result tab is displayed, clean badge
     useEffect(() => {
@@ -406,7 +431,7 @@ const App = () => {
             dispatch(resetSANotif());
             dispatch(resetLoadflowNotif());
         }
-    }, [tabIndex, dispatch]);
+    }, [tabIndex, dispatch, currentNode]);
 
     return (
         <div

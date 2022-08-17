@@ -19,7 +19,6 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
-import { useParameterState } from '../parameters';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
@@ -38,6 +37,7 @@ import {
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
+import { useParameterState } from '../dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -53,7 +53,15 @@ const useStyles = makeStyles((theme) => ({
 
 const withLineMenu =
     (BaseMenu) =>
-    ({ id, position, handleClose, handleViewInSpreadsheet, currentNode }) => {
+    ({
+        id,
+        position,
+        handleClose,
+        handleViewInSpreadsheet,
+        currentNode,
+        modificationInProgress,
+        setModificationInProgress,
+    }) => {
         const classes = useStyles();
         const intl = useIntl();
         const intlRef = useIntlRef();
@@ -73,10 +81,11 @@ const withLineMenu =
                 return (
                     isNodeBuilt(currentNode) &&
                     !isNodeReadOnly(currentNode) &&
-                    !isAnyNodeBuilding
+                    !isAnyNodeBuilding &&
+                    !modificationInProgress
                 );
             },
-            [currentNode, isAnyNodeBuilding]
+            [currentNode, isAnyNodeBuilding, modificationInProgress]
         );
 
         const getLineDescriptor = useCallback(
@@ -103,11 +112,17 @@ const withLineMenu =
                         },
                     });
                 });
+            if (setModificationInProgress !== undefined) {
+                setModificationInProgress(false);
+            }
         }
 
         function handleLockout() {
             if (line.branchStatus === 'PLANNED_OUTAGE') return;
             handleClose();
+            if (setModificationInProgress !== undefined) {
+                setModificationInProgress(true);
+            }
             lockoutLine(studyUuid, currentNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {
@@ -123,6 +138,9 @@ const withLineMenu =
         function handleTrip() {
             if (line.branchStatus === 'FORCED_OUTAGE') return;
             handleClose();
+            if (setModificationInProgress !== undefined) {
+                setModificationInProgress(true);
+            }
             tripLine(studyUuid, currentNode?.id, line.id).then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(response, 'UnableToTripLine');
@@ -141,6 +159,9 @@ const withLineMenu =
             )
                 return;
             handleClose();
+            if (setModificationInProgress !== undefined) {
+                setModificationInProgress(true);
+            }
             energiseLineEnd(studyUuid, currentNode?.id, line.id, side).then(
                 (response) => {
                     if (response.status !== 200) {
@@ -156,6 +177,9 @@ const withLineMenu =
         function handleSwitchOn() {
             if (line.terminal1Connected && line.terminal2Connected) return;
             handleClose();
+            if (setModificationInProgress !== undefined) {
+                setModificationInProgress(true);
+            }
             switchOnLine(studyUuid, currentNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {

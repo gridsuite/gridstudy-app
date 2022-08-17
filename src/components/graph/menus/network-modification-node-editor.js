@@ -52,6 +52,7 @@ import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import {
     addNotification,
     removeNotificationByNode,
+    setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 
@@ -348,11 +349,8 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const dofetchNetworkModifications = useCallback(() => {
-        // In most cases here this condition manage that current Node is the root node
-        if (!currentTreeNode?.data?.modificationGroupUuid) return;
-
         setLaunchLoader(true);
-        fetchNetworkModifications(currentTreeNode?.data?.modificationGroupUuid)
+        fetchNetworkModifications(studyUuid, currentTreeNode?.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -364,8 +362,9 @@ const NetworkModificationNodeEditor = () => {
             .finally(() => {
                 setPendingState(false);
                 setLaunchLoader(false);
+                dispatch(setModificationsInProgress(false));
             });
-    }, [currentTreeNode, snackError]);
+    }, [studyUuid, currentTreeNode.id, snackError, dispatch]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -398,6 +397,7 @@ const NetworkModificationNodeEditor = () => {
                     studyUpdatedForce.eventData.headers['updateType']
                 )
             ) {
+                dispatch(setModificationsInProgress(true));
                 setPendingState(true);
                 manageNotification(studyUpdatedForce);
             }
