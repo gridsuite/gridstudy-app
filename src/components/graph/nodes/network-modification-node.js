@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(1.25),
     },
     tooltip: {
-        maxWidth: '1000px',
+        maxWidth: '720px',
     },
 }));
 
