@@ -400,7 +400,7 @@ const VoltageLevelCreationDialog = ({
                 voltageLevelId,
                 voltageLevelName: voltageLevelName ? voltageLevelName : null,
                 nominalVoltage,
-                substationId: substation.id,
+                substationId: substation.id ?? substation,
                 busbarSections: busBarSections,
                 busbarConnections: busbarConnections,
                 isUpdate: editData ? true : false,
