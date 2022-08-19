@@ -451,7 +451,16 @@ const NetworkTable = (props) => {
                 // When modifying a row, a shallow copy of the edited row is created and put on top of the table.
                 // The edition is then done on the copy, on top of the table, and not below, to prevent
                 // bugs of rows changing position in the middle of modifications.
-                return [result[parseInt(lineEdit.rowIndex) - 1], ...result];
+                let editRowPosition;
+                for (
+                    editRowPosition = 0;
+                    editRowPosition < result.length;
+                    editRowPosition++
+                ) {
+                    if (isLineOnEditMode(result[editRowPosition])) {
+                        return [result[editRowPosition], ...result];
+                    }
+                }
             }
             return result;
         },
@@ -463,7 +472,7 @@ const NetworkTable = (props) => {
             formatCell,
             props.disabled,
             isModifyingRow,
-            lineEdit,
+            isLineOnEditMode,
         ]
     );
 
@@ -812,7 +821,6 @@ const NetworkTable = (props) => {
                                         oldValues: {},
                                         newValues: {},
                                         id: rowData.id,
-                                        rowIndex: rowIndex,
                                         errors: new Map(),
                                         equipmentType:
                                             TABLES_DEFINITION_INDEXES.get(
