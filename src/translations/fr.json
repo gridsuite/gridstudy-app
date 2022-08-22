@@ -13,6 +13,9 @@
     "renameStudyMsg": "Nouveau nom de l'étude\u00a0:",
     "renameStudy": "Renommer l'étude",
     "renameStudyError": "Vous ne pouvez pas renommer une étude dont vous n'êtes pas propriétaire",
+    "renameStudyNotification": "L'étude a été renommée de {oldStudyName} à {studyName}",
+
+    "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
@@ -160,7 +163,7 @@
     "descLfDcValues": "DC",
     "resetToDefault": "Valeurs par défaut",
     "showAdvancedParameters": "Paramètres avancés",
-    "save": "enregister",
+
     "descLfReadSlackBus": "Utiliser le nœud bilan défini dans le réseau\u00a0:",
     "descLfWriteSlackBus": "Ecrire le nœud bilan calculé automatiquement dans le réseau\u00a0:",
     "descLfDC": "Lancer le calcul en actif seul\u00a0:",
@@ -267,6 +270,8 @@
     "NetworkModificationTree": "Arbre de modification de réseau",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+    "OnlyMin": "Min:\u202F{min}",
+    "OnlyMax": "Max:\u202F{max}",
     "CenterSelectedNode": "Centrer sur le nœud sélectionné",
     "DisplayMinimap": "Afficher la mini-carte",
     "HideMinimap": "Masquer la mini-carte",
@@ -290,6 +295,7 @@
     "exportCaseOnNode": "Exporter la situation",
     "nodeNameAlreadyUsed": "Ce nom est déjà utilisé",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
+    "CaseNameLoadError": "Une erreur est survenue lors de la récupération du nom de la situation",
     "StudyUnrecoverableStateRecreate": "Votre étude a un problème. Veuillez la recréer",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
@@ -324,6 +330,7 @@
     "BATTERY": "Batterie",
     "DANGLING_LINE": "Ligne frontière",
     "HVDC_LINE": "Ligne HVDC",
+    "HVDC_CONVERTER_STATION": "Station de conversion HVDC",
     "LCC_CONVERTER_STATION": "Station de conversion LCC",
     "VSC_CONVERTER_STATION": "Station de conversion VSC",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
@@ -382,7 +389,6 @@
     "Substation": "Site",
     "BusBarSections": "Sections de jeu de barre",
     "BusBarSectionID": "ID",
-    "BusBarSectionName": "Nom",
     "BusBarHorizPos": "Position horizontale",
     "BusBarVertPos": "Position verticale",
     "CreateBusBarSection": "Ajouter SJB",
@@ -438,8 +444,6 @@
 
     "insertNetworkModificationNodeAbove": "Insérer un nœud au dessus dans la branche courante",
     "insertNetworkModificationNodeBelow": "Insérer un nœud en dessous dans la branche courante",
-
-    "Update": "Mettre à jour",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",

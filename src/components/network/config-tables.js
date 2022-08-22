@@ -6,8 +6,15 @@
  */
 
 import { equipments } from './network-equipments';
-import { NumericalField, TapChangerSelector } from './equipment-table-editors';
-import { FluxConventions } from '../parameters';
+import {
+    NumericalField,
+    NameField,
+    EnumField,
+    BooleanListField,
+    TapChangerSelector,
+} from './equipment-table-editors';
+import { FluxConventions } from '../dialogs/parameters/network-parameters';
+import { ENERGY_SOURCES, LOAD_TYPES } from './constants';
 
 const nominalVoltage = (network, voltageLevelId) => {
     return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
@@ -567,6 +574,8 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 dataKey: 'name',
+                changeCmd: "equipment.setName('{}')\n",
+                editor: NameField,
             },
             {
                 id: 'VoltageLevelId',
@@ -584,6 +593,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Type',
                 dataKey: 'energySource',
+                changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
+                editor: ({ equipment, ...props }) =>
+                    EnumField({
+                        enumList: ENERGY_SOURCES.slice(1), // dont use/display the first empty entry
+                        ...props,
+                    }),
             },
             {
                 id: 'ActivePower',
@@ -611,12 +626,26 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'minP',
                 numeric: true,
                 fractionDigits: 1,
+                forceUpdateOnChange: true,
+                changeCmd: 'equipment.setMinP({})\n',
+                editor: ({ equipment, ...props }) =>
+                    NumericalField({
+                        max: equipment.maxP,
+                        ...props,
+                    }),
             },
             {
                 id: 'MaxP',
                 dataKey: 'maxP',
                 numeric: true,
                 fractionDigits: 1,
+                forceUpdateOnChange: true,
+                changeCmd: 'equipment.setMaxP({})\n',
+                editor: ({ equipment, ...props }) =>
+                    NumericalField({
+                        min: equipment.minP,
+                        ...props,
+                    }),
             },
             {
                 id: 'TargetP',
@@ -641,17 +670,23 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'targetQ',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setTargetQ({})\n',
+                editor: NumericalField,
             },
             {
                 id: 'VoltageRegulatorOn',
                 dataKey: 'voltageRegulatorOn',
                 boolean: true,
+                changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
+                editor: BooleanListField,
             },
             {
                 id: 'TargetV',
                 dataKey: 'targetV',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setTargetV({})\n',
+                editor: NumericalField,
             },
             {
                 id: 'RegulatingTerminal',
@@ -664,6 +699,7 @@ export const TABLES_DEFINITIONS = {
         index: 6,
         name: 'Loads',
         resource: equipments.loads,
+        modifiableEquipmentType: 'load',
         columns: [
             {
                 id: 'ID',
@@ -674,10 +710,18 @@ export const TABLES_DEFINITIONS = {
                 id: 'Name',
                 dataKey: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                changeCmd: "equipment.setName('{}')\n",
+                editor: NameField,
             },
             {
                 id: 'LoadType',
                 dataKey: 'type',
+                changeCmd: 'equipment.setLoadType(LoadType.{})\n',
+                editor: ({ equipment, ...props }) =>
+                    EnumField({
+                        enumList: LOAD_TYPES.slice(1), // dont use/display the first empty entry
+                        ...props,
+                    }),
             },
             {
                 id: 'VoltageLevelId',
@@ -711,12 +755,16 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'p0',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setP0({})\n',
+                editor: NumericalField,
             },
             {
                 id: 'ConstantReactivePower',
                 dataKey: 'q0',
                 numeric: true,
                 fractionDigits: 1,
+                changeCmd: 'equipment.setQ0({})\n',
+                editor: NumericalField,
             },
         ],
     },
@@ -822,6 +870,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'reactivePowerSetpoint',
                 numeric: true,
                 fractionDigits: 1,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
         ],
     },
@@ -1158,6 +1207,8 @@ export const TABLES_DEFINITIONS = {
 export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE =
     'displayedColumns.';
 export const LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'lockedColumns.';
+export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE =
+    'reorderedColumns.';
 
 export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
     .map((table) => table.columns)

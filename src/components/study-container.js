@@ -38,24 +38,19 @@ import {
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-    useSnackMessage,
-} from '../utils/messages';
+import { useIntlRef, useSnackMessage } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
     getFirstNodeOfType,
     isNodeBuilt,
     isNodeRenamed,
 } from './graph/util/model-functions';
-import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
-import { computePageTitle } from '../utils/compute-title';
+import { computePageTitle, computeFullPath } from '../utils/compute-title';
 
 export function useNodeData(
     studyUuid,
@@ -134,6 +129,14 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+    return ref.current;
+}
+
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
 const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
@@ -147,6 +150,11 @@ export function StudyContainer({ view, onChangeTab }) {
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(
         decodeURIComponent(useParams().studyUuid)
     );
+
+    const [studyName, setStudyName] = useState();
+    const prevStudyName = usePrevious(studyName);
+    const [studyPath, setStudyPath] = useState();
+    const prevStudyPath = usePrevious(studyPath);
 
     const network = useSelector((state) => state.network);
 
@@ -185,10 +193,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
-    const { enqueueSnackbar } = useSnackbar();
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
-    const intlRef = useIntlRef();
     const intl = useIntl();
 
     const checkFailNotifications = useCallback(
@@ -309,16 +315,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         }
                     })
                     .catch((err) => {
-                        console.error(err.message);
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: err.message,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId:
-                                    'NetworkModificationTreeLoadError',
-                                intlRef: intlRef,
-                            },
-                        });
+                        snackWarning('', 'CaseNameLoadError');
                     });
 
                 const firstSelectedNode =
@@ -341,29 +338,18 @@ export function StudyContainer({ view, onChangeTab }) {
             })
             .catch((errorMessage) => {
                 if (errorMessage.status === 404)
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: '',
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'StudyUnrecoverableStateRecreate',
-                            intlRef: intlRef,
-                        },
-                    });
+                    snackError('', 'StudyUnrecoverableStateRecreate');
                 else
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NetworkModificationTreeLoadError',
-                            intlRef: intlRef,
-                        },
-                    });
+                    snackError(
+                        errorMessage,
+                        'NetworkModificationTreeLoadError'
+                    );
             })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
             );
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, enqueueSnackbar, intlRef, dispatch]);
+    }, [studyUuid, dispatch, snackError, snackWarning]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -381,36 +367,64 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [loadNetwork, currentNode]);
 
     useEffect(() => {
-        if (!studyUuid) {
-            document.title = initialTitle;
-            return;
+        if (prevStudyPath && prevStudyPath !== studyPath) {
+            snackInfo('', 'moveStudyNotification', {
+                oldStudyPath: prevStudyPath,
+                studyPath: studyPath,
+            });
         }
 
+        if (prevStudyName && prevStudyName !== studyName) {
+            snackInfo('', 'renameStudyNotification', {
+                oldStudyName: prevStudyName,
+                studyName: studyName,
+            });
+        }
+    }, [snackInfo, studyName, studyPath, prevStudyPath, prevStudyName]);
+
+    const fetchStudyPath = useCallback(() => {
         fetchPath(studyUuid)
             .then((response) => {
-                const study = response[0];
                 const parents = response
                     .slice(1)
                     .map((parent) => parent.elementName);
 
+                const studyName = response[0]?.elementName;
+                const path = computeFullPath(parents);
+                setStudyName(studyName);
+                setStudyPath(path);
+
                 document.title = computePageTitle(
                     initialTitle,
-                    study?.elementName,
+                    studyName,
                     parents
                 );
             })
             .catch((errorMessage) => {
                 document.title = initialTitle;
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'LoadStudyAndParentsInfoError',
-                        intlRef: intlRef,
-                    },
-                });
+                snackError(errorMessage, 'LoadStudyAndParentsInfoError');
             });
-    }, [studyUuid, initialTitle, enqueueSnackbar, intlRef]);
+    }, [studyUuid, initialTitle, snackError]);
+
+    useEffect(() => {
+        if (!studyUuid) {
+            document.title = initialTitle;
+            return;
+        }
+        fetchStudyPath();
+    }, [studyUuid, initialTitle, fetchStudyPath]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
+                    'metadata_updated'
+            ) {
+                fetchStudyPath();
+            }
+        }
+    }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -433,6 +447,10 @@ export function StudyContainer({ view, onChangeTab }) {
         // connectNotifications don't change
     }, [dispatch, studyUuid, connectNotifications]);
 
+    function checkAndGetValues(values) {
+        return values ? values : [];
+    }
+
     const updateNetwork = useCallback(
         (substationsIds) => {
             const updatedEquipments = fetchAllEquipments(
@@ -443,33 +461,43 @@ export function StudyContainer({ view, onChangeTab }) {
             console.info('network update');
             Promise.all([updatedEquipments])
                 .then((values) => {
-                    network.updateSubstations(values[0].substations);
-                    network.updateLines(values[0].lines);
+                    network.updateSubstations(
+                        checkAndGetValues(values[0].substations)
+                    );
+                    network.updateLines(checkAndGetValues(values[0].lines));
                     network.updateTwoWindingsTransformers(
-                        values[0].twoWindingsTransformers
+                        checkAndGetValues(values[0].twoWindingsTransformers)
                     );
                     network.updateThreeWindingsTransformers(
-                        values[0].threeWindingsTransformers
+                        checkAndGetValues(values[0].threeWindingsTransformers)
                     );
-                    network.updateGenerators(values[0].generators);
-                    network.updateLoads(values[0].loads);
-                    network.updateBatteries(values[0].batteries);
-                    network.updateDanglingLines(values[0].danglingLines);
+                    network.updateGenerators(
+                        checkAndGetValues(values[0].generators)
+                    );
+                    network.updateLoads(checkAndGetValues(values[0].loads));
+                    network.updateBatteries(
+                        checkAndGetValues(values[0].batteries)
+                    );
+                    network.updateDanglingLines(
+                        checkAndGetValues(values[0].danglingLines)
+                    );
                     network.updateLccConverterStations(
-                        values[0].lccConverterStations
+                        checkAndGetValues(values[0].lccConverterStations)
                     );
                     network.updateVscConverterStations(
-                        values[0].vscConverterStations
+                        checkAndGetValues(values[0].vscConverterStations)
                     );
-                    network.updateHvdcLines(values[0].hvdcLines);
+                    network.updateHvdcLines(
+                        checkAndGetValues(values[0].hvdcLines)
+                    );
                     network.updateShuntCompensators(
-                        values[0].shuntCompensators
+                        checkAndGetValues(values[0].shuntCompensators)
                     );
                     network.updateStaticVarCompensators(
-                        values[0].staticVarCompensators
+                        checkAndGetValues(values[0].staticVarCompensators)
                     );
 
-                    setUpdatedLines(values[0].lines);
+                    setUpdatedLines(checkAndGetValues(values[0].lines));
                 })
                 .catch(function (error) {
                     console.error(error.message);

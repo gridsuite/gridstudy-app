@@ -8,8 +8,9 @@
 import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
-import { Tooltip } from '@mui/material';
+import React, { useState } from 'react';
+import { Divider, Slider, Tooltip, Typography } from '@mui/material';
+import { Box } from '@mui/system';
 
 export const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -132,4 +133,53 @@ export const gridItemWithTooltip = (field, tooltip = '', size = 6) => {
 };
 
 export const getId = (e) => e?.id;
+export const getIdOrSelf = (e) => e?.id ?? e;
+
 export const compareById = (a, b) => a?.id?.localeCompare(b?.id);
+
+export function LineSeparator() {
+    return (
+        <Grid item xs={12}>
+            <Divider />
+        </Grid>
+    );
+}
+
+export const LabelledSilder = ({
+    value,
+    label,
+    disabled,
+    onCommitCallback,
+    marks,
+}) => {
+    const [sliderValue, setSliderValue] = useState(value);
+
+    const handleValueChanged = (event, newValue) => {
+        setSliderValue(newValue);
+    };
+    const classes = useStyles();
+
+    return (
+        <>
+            <Grid item xs={7}>
+                <Typography component="span" variant="body1">
+                    <Box fontWeight="fontWeightBold" m={1}>
+                        <FormattedMessage id={label} />
+                    </Box>
+                </Typography>
+            </Grid>
+            <Grid item container xs={5} className={classes.controlItem}>
+                <Slider
+                    min={0}
+                    max={100}
+                    valueLabelDisplay="auto"
+                    onChange={handleValueChanged}
+                    onChangeCommitted={onCommitCallback}
+                    value={sliderValue}
+                    disabled={disabled}
+                    marks={marks}
+                />
+            </Grid>
+        </>
+    );
+};

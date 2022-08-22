@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -51,6 +58,9 @@ export function RunButtonContainer({
 
     const dispatch = useDispatch();
 
+    const isModificationsInProgress = useSelector(
+        (state) => state.isModificationsInProgress
+    );
     useEffect(() => {
         if (
             ranLoadflow &&
@@ -151,7 +161,7 @@ export function RunButtonContainer({
                 getText={getRunningText}
                 getStartIcon={getRunningIcon}
                 computationStopped={computationStopped}
-                disabled={disabled}
+                disabled={isModificationsInProgress || disabled}
             />
             {!disabled && (
                 <ContingencyListSelector

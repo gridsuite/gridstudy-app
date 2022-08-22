@@ -56,7 +56,7 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeBuilt } from '../../graph/util/model-functions';
+import { isNodeReadOnly } from '../../graph/util/model-functions';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -281,6 +281,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const theme = useTheme();
 
+    const [modificationInProgress, setModificationInProgress] = useState(false);
+
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
@@ -368,7 +370,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (props.svgUrl && isNodeBuilt(currentNode)) {
+        if (props.svgUrl) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -394,7 +396,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef, currentNode]);
+    }, [props.svgUrl, forceState, snackError, intlRef]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -745,7 +747,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             addNavigationArrow(svg);
 
             // handling the right click on a feeder (menus)
-            if (!isComputationRunning && !isAnyNodeBuilding) {
+            if (
+                !isComputationRunning &&
+                !isAnyNodeBuilding &&
+                !modificationInProgress
+            ) {
                 const feeders = svg.metadata.nodes.filter((element) => {
                     return (
                         element.vid !== '' &&
@@ -789,7 +795,12 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
 
             // handling the click on a switch
-            if (!isComputationRunning && !isAnyNodeBuilding) {
+            if (
+                !isComputationRunning &&
+                !isAnyNodeBuilding &&
+                !isNodeReadOnly(currentNode) &&
+                !modificationInProgress
+            ) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
                 );
@@ -809,7 +820,15 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         }
                         const switchId = aSwitch.equipmentId;
                         const open = aSwitch.open;
-                        onBreakerClick(switchId, !open, event.currentTarget);
+
+                        if (!modificationInProgress) {
+                            setModificationInProgress(true);
+                            onBreakerClick(
+                                switchId,
+                                !open,
+                                event.currentTarget
+                            );
+                        }
                     });
                 });
             }
@@ -845,6 +864,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         svgFinalHeight,
         svgFinalWidth,
         disabled,
+        modificationInProgress,
     ]);
 
     useLayoutEffect(() => {
@@ -860,6 +880,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     svgEl.setAttribute('height', svgFinalHeight);
                 }
             }
+            setModificationInProgress(false);
         } else {
         }
     }, [
@@ -868,7 +889,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         //TODO, these are from the previous useLayoutEffect
         //how to refactor to avoid repeating them here ?
         svg,
-        equipmentMenu,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
@@ -903,6 +923,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     currentNode={currentNode}
+                    modificationInProgress={modificationInProgress}
+                    setModificationInProgress={(value) =>
+                        setModificationInProgress(value)
+                    }
                 />
             )
         );

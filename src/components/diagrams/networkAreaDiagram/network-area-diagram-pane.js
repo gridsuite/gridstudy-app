@@ -62,7 +62,7 @@ export function NetworkAreaDiagramPane({
 
     return (
         <>
-            {voltageLevelsIds?.length && (
+            {voltageLevelsIds?.length > 0 && (
                 <div
                     style={{
                         flexGrow: 1,

@@ -33,6 +33,7 @@ import {
     FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
+    CHANGE_REORDERED_COLUMNS,
     ADD_LOADFLOW_NOTIF,
     RESET_LOADFLOW_NOTIF,
     ADD_SA_NOTIF,
@@ -51,6 +52,7 @@ import {
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
+    SET_MODIFICATIONS_IN_PROGRESS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -78,7 +80,7 @@ import {
     PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
-import { FluxConventions } from '../components/parameters';
+import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -115,11 +117,13 @@ const initialState = {
     fullScreenNadId: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
+    allReorderedTableDefinitionIndexes: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     voltageLevelsIdsForNad: [],
     centerOnSubstation: null,
     notificationIdList: [],
+    isModificationsInProgress: false,
     ...paramsInitialState,
 };
 
@@ -355,6 +359,15 @@ export const reducer = createReducer(initialState, {
         });
         state.allLockedColumnsNames = newLockedColumnsNames;
     },
+    [CHANGE_REORDERED_COLUMNS]: (state, action) => {
+        let newReorderedColumns = [...state.allReorderedTableDefinitionIndexes];
+        action.reorderedColumnsParams.forEach((param) => {
+            if (param) {
+                newReorderedColumns[param.index] = param.value;
+            }
+        });
+        state.allReorderedTableDefinitionIndexes = newReorderedColumns;
+    },
     [FAVORITE_CONTINGENCY_LISTS]: (state, action) => {
         state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
             action[PARAM_FAVORITE_CONTINGENCY_LISTS];
@@ -383,6 +396,9 @@ export const reducer = createReducer(initialState, {
     },
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
         state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;
+    },
+    [SET_MODIFICATIONS_IN_PROGRESS]: (state, action) => {
+        state.isModificationsInProgress = action.isModificationsInProgress;
     },
 });
 

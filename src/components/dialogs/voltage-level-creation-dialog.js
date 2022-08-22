@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -35,6 +35,8 @@ import {
     gridItem,
     GridSection,
     VoltageAdornment,
+    compareById,
+    getIdOrSelf,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
@@ -62,8 +64,8 @@ const BusBarSection = ({
         errorMsg: errors?.BusBarSectionID,
     });
     const [name, nameField] = useTextValue({
-        id: 'BusBarSectionName' + index,
-        label: 'BusBarSectionName',
+        id: 'BusBarSection' + index,
+        label: 'NameOptional',
         defaultValue: defaultValue?.name || '',
         inputForm: inputForm,
     });
@@ -230,7 +232,7 @@ function validateConnection(values) {
  * Dialog to create a voltage level in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param substationOptions the available network sites
+ * @param substationOptionsPromise Promise handling list of network substations
  * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  * @param onCreateVoltageLevel callback when OK is triggered,
@@ -250,7 +252,7 @@ const VoltageLevelCreationDialog = ({
     editData,
     open,
     onClose,
-    substationOptions,
+    substationOptionsPromise,
     currentNodeUuid,
     onCreateVoltageLevel = createVoltageLevel,
 }) => {
@@ -265,6 +267,11 @@ const VoltageLevelCreationDialog = ({
     const [formValues, setFormValues] = useState(undefined);
 
     const equipmentPath = 'voltage-levels';
+
+    const [substationOptions, setSubstationOptions] = useState([]);
+
+    const [loadingSubstationOptions, setLoadingSubstationOptions] =
+        useState(true);
 
     const clearValues = () => {
         setFormValues(null);
@@ -301,6 +308,14 @@ const VoltageLevelCreationDialog = ({
         }
     }, [editData]);
 
+    useEffect(() => {
+        if (!substationOptionsPromise) return;
+        substationOptionsPromise.then((values) => {
+            setSubstationOptions(values);
+            setLoadingSubstationOptions(false);
+        });
+    }, [substationOptionsPromise]);
+
     const [voltageLevelId, voltageLevelIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
@@ -326,20 +341,25 @@ const VoltageLevelCreationDialog = ({
         defaultValue: formValues?.nominalVoltage,
     });
 
+    const formValueSubstationId = useMemo(() => {
+        return formValues?.substationId
+            ? { id: formValues?.substationId }
+            : { id: '' };
+    }, [formValues]);
+
     const [substation, substationField] = useAutocompleteField({
         label: 'Substation',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        values: substationOptions,
+        values: substationOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
-        defaultValue: null,
-        selectedValue: formValues
-            ? substationOptions.find(
-                  (value) => value.id === formValues.substationId
-              )
-            : formValues?.substationId || '',
+        getLabel: getIdOrSelf, // as useAutocompleteField is given allowNewValue: true, it will add the string (that has no id property) the user types as allowed option along with the substationOptions that are supposed to have an id property
+        defaultValue:
+            substationOptions.find(
+                (value) => value.id === formValues?.substationId
+            ) || formValueSubstationId,
+        loading: loadingSubstationOptions,
     });
 
     const [busBarSections, busBarSectionsField] = useExpandableValues({
@@ -447,10 +467,10 @@ const VoltageLevelCreationDialog = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="close" />
+                        <FormattedMessage id="cancel" />
                     </Button>
                     <Button onClick={handleSave}>
-                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                        <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -469,7 +489,10 @@ VoltageLevelCreationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    substationOptions: PropTypes.arrayOf(PropTypes.object),
+    substationOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
     currentNodeUuid: PropTypes.string,
 };
 

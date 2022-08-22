@@ -8,13 +8,7 @@ import {
     Collapse,
     Dialog,
     DialogTitle,
-    List,
-    ListItem,
-    ListItemText,
     Stack,
-    Switch,
-    TextField,
-    Tooltip,
     Typography,
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -24,7 +18,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
@@ -33,86 +27,7 @@ import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
 import IconButton from '@mui/material/IconButton';
-
-function longestCommonPrefix(strs) {
-    if (!strs?.length) return '';
-    let prefix = strs.reduce((acc, str) =>
-        str.length < acc.length ? str : acc
-    );
-
-    for (let str of strs) {
-        while (str.slice(0, prefix.length) !== prefix) {
-            prefix = prefix.slice(0, -1);
-        }
-    }
-    return prefix;
-}
-
-const useMeta = (metasAsArray) => {
-    const longestPrefix = longestCommonPrefix(metasAsArray.map((m) => m.name));
-    const lastDotIndex = longestPrefix.lastIndexOf('.');
-    const prefix = longestPrefix.slice(0, lastDotIndex + 1);
-
-    const defaultInst = useMemo(() => {
-        return Object.fromEntries(
-            metasAsArray.map((m) => {
-                if (m.type === 'BOOLEAN') return [m.name, m.defaultValue];
-                return [m.name, m.defaultValue ?? null];
-            })
-        );
-    }, [metasAsArray]);
-    const [inst, setInst] = useState(defaultInst);
-
-    const onBoolChange = (event, paramName) => {
-        setInst((prevInst) => {
-            const nextInst = { ...prevInst };
-            nextInst[paramName] = event.target.checked;
-            return nextInst;
-        });
-    };
-
-    const onFieldChange = (event, paramName) => {
-        setInst((prevInst) => {
-            const nextInst = { ...prevInst };
-            nextInst[paramName] = event.target.value;
-            return nextInst;
-        });
-    };
-
-    const comp = (
-        <List>
-            {metasAsArray.map((meta, idx) => (
-                <Tooltip
-                    title={meta.description}
-                    enterDelay={1200}
-                    key={meta.name}
-                >
-                    <ListItem key={meta.name}>
-                        <ListItemText
-                            primary={meta.name.slice(prefix.length)}
-                        />
-                        {meta.type === 'BOOLEAN' ? (
-                            <Switch
-                                checked={inst?.[meta.name] ?? meta.defaultValue}
-                                onChange={(e) => onBoolChange(e, meta.name)}
-                            />
-                        ) : (
-                            <TextField
-                                defaultValue={
-                                    inst?.[meta.name] ?? meta.defaultValue
-                                }
-                                onChange={(e) => onFieldChange(e, meta.name)}
-                                variant={'standard'}
-                            />
-                        )}
-                    </ListItem>
-                </Tooltip>
-            ))}
-        </List>
-    );
-
-    return [inst, comp];
-};
+import { useImportExportParams } from '@gridsuite/commons-ui';
 
 /**
  * Dialog to export the network case
@@ -153,7 +68,8 @@ const ExportDialog = ({
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
     const metasAsArray = formatWithParameter?.parameters || [];
-    const [currentParameters, paramsComponent] = useMeta(metasAsArray);
+    const [currentParameters, paramsComponent] =
+        useImportExportParams(metasAsArray);
 
     const handleExportClick = () => {
         if (selectedFormat) {

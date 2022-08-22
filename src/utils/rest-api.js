@@ -306,7 +306,8 @@ export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
         currentNodeUuid,
         substationsIds,
         'Substations',
-        'substations'
+        'substations',
+        true
     );
 }
 
@@ -329,7 +330,19 @@ export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
         currentNodeUuid,
         substationsIds,
         'Lines',
-        'lines'
+        'lines',
+        true
+    );
+}
+
+export function fetchVoltageLevels(studyUuid, currentNodeUuid, substationsIds) {
+    return fetchEquipments(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'Voltage-levels',
+        'voltage-levels',
+        true
     );
 }
 
@@ -966,7 +979,9 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
         },
         body: groovyScript,
     }).then((response) => {
-        return response;
+        return response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
@@ -1128,22 +1143,12 @@ export function modifyLoad(
         },
         body: JSON.stringify({
             equipmentId: id,
-            equipmentName: name ? { value: name, op: 'SET' } : null,
-            loadType: loadType ? { value: loadType, op: 'SET' } : null,
-            activePower:
-                activePower === 0 || activePower
-                    ? { value: activePower, op: 'SET' }
-                    : null,
-            reactivePower:
-                reactivePower === 0 || reactivePower
-                    ? { value: reactivePower, op: 'SET' }
-                    : null,
-            voltageLevelId: voltageLevelId
-                ? { value: voltageLevelId, op: 'SET' }
-                : null,
-            busOrBusbarSectionId: busOrBusbarSectionId
-                ? { value: busOrBusbarSectionId, op: 'SET' }
-                : null,
+            equipmentName: toModificationOperation(name),
+            loadType: toModificationOperation(loadType),
+            activePower: toModificationOperation(activePower),
+            reactivePower: toModificationOperation(reactivePower),
+            voltageLevelId: toModificationOperation(voltageLevelId),
+            busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         }),
     }).then((response) => {
         return response.ok
@@ -1175,7 +1180,7 @@ export function modifyGenerator(
     busOrBusbarSectionId,
     modificationId
 ) {
-    console.info('Modifying load ');
+    console.info('Modifying generator ');
     const idUrl =
         modificationId === undefined
             ? ''
@@ -1748,15 +1753,20 @@ export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
     );
 }
 
-export function fetchNetworkModifications(groupUuid) {
-    console.info('Fetching network modifications for groupUuid : ', groupUuid);
-    const url =
-        PREFIX_NETWORK_MODIFICATION_QUERIES +
-        '/v1/groups/' +
-        encodeURIComponent(groupUuid) +
-        '/modifications?errorOnGroupNotFound=false';
-    console.debug(url);
-    return backendFetch(url, { method: 'get' }).then((response) =>
+export function fetchNetworkModifications(studyUuid, nodeUuid) {
+    console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
+    const modificationsGetUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modification/modifications';
+
+    console.debug(modificationsGetUrl);
+    return backendFetch(modificationsGetUrl, {
+        method: 'get',
+    }).then((response) =>
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
@@ -1830,7 +1840,11 @@ export function fetchCaseInfos(studyUuid) {
     return backendFetch(url, { method: 'get' }).then((response) => {
         return response.ok
             ? response.json()
-            : response.text().then((text) => Promise.reject(text));
+            : response
+                  .text()
+                  .then((text) =>
+                      Promise.reject(text ? text : response.statusText)
+                  );
     });
 }
 

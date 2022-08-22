@@ -4,11 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     EQUIPMENT_TYPE,
     equipmentStyles,
-    getEquipmentsInfosForSearchBar,
     LIGHT_THEME,
     logout,
     EquipmentItem,
@@ -23,24 +22,35 @@ import { StudyView } from './study-pane';
 import { Badge, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@mui/material/Tab';
-import Parameters, { useParameterState } from './parameters';
 import {
     PARAM_LANGUAGE,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
+import {
+    fetchAppsAndUrls,
+    fetchLoadFlowInfos,
+    fetchSecurityAnalysisStatus,
+} from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
-import { useSnackbar } from 'notistack';
+import {
+    addLoadflowNotif,
+    addSANotif,
+    centerOnSubstation,
+    openNetworkAreaDiagram,
+    resetLoadflowNotif,
+    resetSANotif,
+} from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { isNodeBuilt } from './graph/util/model-functions';
+import { useNodeData } from './study-container';
+import Parameters, { useParameterState } from './dialogs/parameters/parameters';
+import { useSearchMatchingEquipments } from './util/search-matching-equipments';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -129,7 +139,13 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 };
 
-const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
+const AppTopBar = ({
+    user,
+    tabIndex,
+    onChangeTab,
+    userManager,
+    securityAnalysisStatus,
+}) => {
     const classes = useStyles();
 
     const equipmentClasses = useEquipmentStyles();
@@ -137,10 +153,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
 
     const intl = useIntl();
-
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
@@ -162,41 +174,30 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const [showParameters, setShowParameters] = useState(false);
+    const [isParametersOpen, setParametersOpen] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
-    // Equipments search bar
-    const [equipmentsFound, setEquipmentsFound] = useState([]);
-    const lastSearchTermRef = useRef('');
 
-    const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
-            lastSearchTermRef.current = searchTerm;
-            fetchEquipmentsInfos(
-                studyUuid,
-                currentNode?.id,
-                searchTerm,
-                useNameLocal
-            )
-                .then((infos) => {
-                    if (searchTerm === lastSearchTermRef.current) {
-                        setEquipmentsFound(
-                            getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                        );
-                    } // else ignore results of outdated fetch
-                })
-                .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'equipmentsSearchingError',
-                            intlRef: intlRef,
-                        },
-                    })
-                );
-        },
-        [studyUuid, currentNode, useNameLocal, enqueueSnackbar, intlRef]
+    const [searchMatchingEquipments, equipmentsFound] =
+        useSearchMatchingEquipments(studyUuid, currentNode?.id);
+    const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
+    const securityAnalysisStatusInvalidations = [
+        'securityAnalysis_status',
+        'securityAnalysis_failed',
+    ];
+    const [loadFlowInfosNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchLoadFlowInfos,
+        loadFlowStatusInvalidations
     );
+
+    const [securityAnalysisStatusNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchSecurityAnalysisStatus,
+        securityAnalysisStatusInvalidations
+    );
+
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
@@ -218,12 +219,43 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         }
     }, [user]);
 
-    function showParametersClicked() {
-        setShowParameters(true);
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            loadFlowInfosNode?.loadFlowStatus !== 'NOT_DONE' &&
+            loadFlowInfosNode?.loadFlowResult != null
+        ) {
+            dispatch(addLoadflowNotif());
+        } else {
+            dispatch(resetLoadflowNotif());
+        }
+    }, [
+        currentNode,
+        dispatch,
+        loadFlowInfosNode?.loadFlowResult,
+        loadFlowInfosNode?.loadFlowStatus,
+        user,
+    ]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            (securityAnalysisStatusNode === 'CONVERGED' ||
+                securityAnalysisStatusNode === 'DIVERGED' ||
+                securityAnalysisStatusNode === 'RUNNING')
+        ) {
+            dispatch(addSANotif());
+        } else {
+            dispatch(resetSANotif());
+        }
+    }, [currentNode, dispatch, securityAnalysisStatusNode, user]);
+
+    function showParameters() {
+        setParametersOpen(true);
     }
 
     function hideParameters() {
-        setShowParameters(false);
+        setParametersOpen(false);
     }
     return (
         <>
@@ -237,7 +269,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         <GridStudyLogoDark />
                     )
                 }
-                onParametersClick={() => showParametersClicked()}
+                onParametersClick={showParameters}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
                 user={user}
                 appsAndUrls={appsAndUrls}
@@ -247,7 +279,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 withElementsSearch={true}
-                searchDisabled={!isNodeBuilt(currentNode)}
                 searchingLabel={intl.formatMessage({
                     id: 'equipment_search/label',
                 })}
@@ -264,6 +295,14 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
+                searchTermDisabled={!isNodeBuilt(currentNode)}
+                initialSearchTerm={
+                    !isNodeBuilt(currentNode)
+                        ? intl.formatMessage({
+                              id: 'InvalidNode',
+                          })
+                        : ''
+                }
             >
                 {/* Add current Node name between Logo and Tabs */}
                 <Box
@@ -319,7 +358,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 )}
             </TopBar>
             <Parameters
-                showParameters={showParameters}
+                isParametersOpen={isParametersOpen}
                 hideParameters={hideParameters}
                 user={user}
             />

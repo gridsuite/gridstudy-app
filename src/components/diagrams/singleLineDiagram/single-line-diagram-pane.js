@@ -91,37 +91,41 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            getVoltageLevelSingleLineDiagram(
-                studyUuid,
-                currentNode?.id,
-                voltageLevelId,
-                useName,
-                centerName,
-                diagonalName,
-                componentLibrary
-            ),
+            isNodeBuilt(currentNode)
+                ? getVoltageLevelSingleLineDiagram(
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelId,
+                      useName,
+                      centerName,
+                      diagonalName,
+                      componentLibrary
+                  )
+                : null,
         [
-            centerName,
-            componentLibrary,
-            diagonalName,
+            currentNode,
             studyUuid,
             useName,
-            currentNode?.id,
+            centerName,
+            diagonalName,
+            componentLibrary,
         ]
     );
 
     const getSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            getSubstationSingleLineDiagram(
-                studyUuid,
-                currentNode?.id,
-                voltageLevelId,
-                useName,
-                centerName,
-                diagonalName,
-                substationLayout,
-                componentLibrary
-            ),
+            isNodeBuilt(currentNode)
+                ? getSubstationSingleLineDiagram(
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelId,
+                      useName,
+                      centerName,
+                      diagonalName,
+                      substationLayout,
+                      componentLibrary
+                  )
+                : null,
         [
             centerName,
             componentLibrary,
@@ -129,7 +133,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             studyUuid,
             substationLayout,
             useName,
-            currentNode?.id,
+            currentNode,
         ]
     );
 
@@ -235,11 +239,16 @@ export function SingleLineDiagramPane({
     currentNodeRef.current = currentNode;
 
     const updateSld = useCallback((id) => {
-        if (id)
+        if (id) {
             viewsRef.current
                 .find((sld) => sld.id === id)
                 ?.ref?.current?.reloadSvg();
-        else viewsRef.current.forEach((sld) => sld?.ref?.current?.reloadSvg());
+        } else
+            viewsRef.current.forEach((sld) => {
+                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+                    sld?.ref?.current?.reloadSvg();
+                }
+            });
     }, []);
 
     const classes = useStyles();
@@ -365,6 +374,15 @@ export function SingleLineDiagramPane({
                     );
                     if (vlToClose.length > 0)
                         closeView([...vlToClose, deletedId]);
+
+                    const substationsIds =
+                        studyUpdatedForce.eventData.headers['substationsIds'];
+                    viewsRef.current.forEach((v) => {
+                        const vl = network.getVoltageLevel(v.id);
+                        if (vl && substationsIds.includes(vl.substationId)) {
+                            updateSld(vl.id);
+                        }
+                    });
                 } else {
                     updateSld();
                 }
@@ -381,7 +399,7 @@ export function SingleLineDiagramPane({
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView]);
+    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView, network]);
 
     useEffect(() => {
         setDisplayedSld((oldSld) => {

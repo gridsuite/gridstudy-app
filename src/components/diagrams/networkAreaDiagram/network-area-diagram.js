@@ -256,7 +256,6 @@ const SizedNetworkAreaDiagram = (props) => {
                     snackError(errorMessage);
                     updateLoadingState(false);
                     setSvg({
-                        //It's kind of a hack. It's necessary to have a line break for to powsybl-diagram-viewer to parse the svg. It has to be fixed.
                         svg:
                             '<svg width="' +
                             minWidth +
@@ -264,7 +263,6 @@ const SizedNetworkAreaDiagram = (props) => {
                             minHeight +
                             '" xmlns="http://www.w3.org/2000/svg" ' +
                             'viewBox="0 0 0 0">' +
-                            '\n' +
                             '</svg>',
                         metadata: null,
                         error: null,
@@ -346,8 +344,7 @@ const SizedNetworkAreaDiagram = (props) => {
 
     const onCloseHandler = () => {
         if (onClose !== null) {
-            dispatch(fullScreenNetworkAreaDiagramId(null));
-            onClose(nadId);
+            onClose();
             setDepth(0);
         }
     };
@@ -506,7 +503,6 @@ NetworkAreaDiagram.propTypes = {
     nadId: PropTypes.string,
     currentNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
-    setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,
     studyUuid: PropTypes.string.isRequired,
     disabled: PropTypes.bool,

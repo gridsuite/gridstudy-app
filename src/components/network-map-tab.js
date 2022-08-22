@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
@@ -19,7 +26,11 @@ import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
-import { isNodeBuilt, isNodeRenamed } from './graph/util/model-functions';
+import {
+    isNodeBuilt,
+    isNodeReadOnly,
+    isNodeRenamed,
+} from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
 
 const INITIAL_POSITION = [0, 0];
@@ -342,7 +353,7 @@ export const NetworkMapTab = ({
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
-                    disabled={disabled}
+                    disabled={disabled || isNodeReadOnly(currentNode)}
                 />
             </div>
         </>
