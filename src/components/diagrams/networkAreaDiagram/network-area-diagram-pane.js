@@ -6,7 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { getNetworkAreaDiagramUrl } from '../../../utils/rest-api';
 import NetworkAreaDiagram from './network-area-diagram';
 import PropTypes from 'prop-types';
@@ -19,9 +19,8 @@ export function NetworkAreaDiagramPane({
     onClose,
     align,
     disabled,
-    visible,
 }) {
-    const depth = useSelector((state) => state.nadDepth);
+    const [depth, setDepth] = useState(0);
 
     const voltageLevelsIds = useSelector(
         (state) => state.voltageLevelsIdsForNad
@@ -63,7 +62,7 @@ export function NetworkAreaDiagramPane({
 
     return (
         <>
-            {visible && voltageLevelsIds?.length > 0 && (
+            {voltageLevelsIds?.length > 0 && (
                 <div
                     style={{
                         flexGrow: 1,
@@ -82,6 +81,7 @@ export function NetworkAreaDiagramPane({
                         nadId={voltageLevelsIds[0]}
                         currentNode={currentNode}
                         depth={depth}
+                        setDepth={setDepth}
                         studyUuid={studyUuid}
                         loadFlowStatus={loadFlowStatus}
                         disabled={disabled}
@@ -100,5 +100,4 @@ NetworkAreaDiagramPane.propTypes = {
     onClose: PropTypes.func,
     align: PropTypes.string,
     disabled: PropTypes.bool,
-    visible: PropTypes.bool,
 };

@@ -13,6 +13,9 @@
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
     "renameStudyError": "Cannot rename the study if you are not the owner",
+    "renameStudyNotification": "The study has been renamed from {oldStudyName} to {studyName}",
+
+    "moveStudyNotification": "The study has been moved from {oldStudyPath} to {studyPath}",
 
     "exportNetwork": "Export the network",
     "export": "Export",
@@ -266,6 +269,8 @@
     "NetworkModificationTree": "Network modification tree",
     "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+    "OnlyMin": "Min:\u202F{min}",
+    "OnlyMax": "Max:\u202F{max}",
     "CenterSelectedNode": "Center on selected node",
     "DisplayMinimap": "Display minimap",
     "HideMinimap": "Hide minimap",
@@ -324,6 +329,7 @@
     "BATTERY": "Battery",
     "DANGLING_LINE": "Dangling Line",
     "HVDC_LINE": "Hvdc Line",
+    "HVDC_CONVERTER_STATION": "HVDC Converter Station",
     "LCC_CONVERTER_STATION": "Lcc Converter Station",
     "VSC_CONVERTER_STATION": "Vsc Converter Station",
     "SHUNT_COMPENSATOR": "Shunt Compensator",

@@ -50,7 +50,7 @@ import {
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
-import { computePageTitle } from '../utils/compute-title';
+import { computePageTitle, computeFullPath } from '../utils/compute-title';
 
 export function useNodeData(
     studyUuid,
@@ -129,6 +129,14 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+    return ref.current;
+}
+
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
 const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
@@ -142,6 +150,11 @@ export function StudyContainer({ view, onChangeTab }) {
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(
         decodeURIComponent(useParams().studyUuid)
     );
+
+    const [studyName, setStudyName] = useState();
+    const prevStudyName = usePrevious(studyName);
+    const [studyPath, setStudyPath] = useState();
+    const prevStudyPath = usePrevious(studyPath);
 
     const network = useSelector((state) => state.network);
 
@@ -180,7 +193,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     const intl = useIntl();
 
@@ -302,7 +315,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         }
                     })
                     .catch((err) => {
-                        snackError(err, 'CaseNameLoadError');
+                        snackWarning('', 'CaseNameLoadError');
                     });
 
                 const firstSelectedNode =
@@ -336,7 +349,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 console.debug('Network modification tree loading finished')
             );
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, dispatch, snackError]);
+    }, [studyUuid, dispatch, snackError, snackWarning]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -353,17 +366,37 @@ export function StudyContainer({ view, onChangeTab }) {
         loadNetwork(true);
     }, [loadNetwork, currentNode]);
 
+    useEffect(() => {
+        if (prevStudyPath && prevStudyPath !== studyPath) {
+            snackInfo('', 'moveStudyNotification', {
+                oldStudyPath: prevStudyPath,
+                studyPath: studyPath,
+            });
+        }
+
+        if (prevStudyName && prevStudyName !== studyName) {
+            snackInfo('', 'renameStudyNotification', {
+                oldStudyName: prevStudyName,
+                studyName: studyName,
+            });
+        }
+    }, [snackInfo, studyName, studyPath, prevStudyPath, prevStudyName]);
+
     const fetchStudyPath = useCallback(() => {
         fetchPath(studyUuid)
             .then((response) => {
-                const study = response[0];
                 const parents = response
                     .slice(1)
                     .map((parent) => parent.elementName);
 
+                const studyName = response[0]?.elementName;
+                const path = computeFullPath(parents);
+                setStudyName(studyName);
+                setStudyPath(path);
+
                 document.title = computePageTitle(
                     initialTitle,
-                    study?.elementName,
+                    studyName,
                     parents
                 );
             })
@@ -391,7 +424,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 fetchStudyPath();
             }
         }
-    }, [studyUuid, studyUpdatedForce, fetchStudyPath]);
+    }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
 
     useEffect(() => {
         if (studyUuid) {

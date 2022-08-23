@@ -14,13 +14,20 @@ import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const SelectOptionsDialog = ({ open, onClose, onClick, title, child }) => {
+const SelectOptionsDialog = ({
+    open,
+    onClose,
+    onClick,
+    title,
+    child,
+    style,
+}) => {
     const handleClose = () => {
         onClose();
     };
 
     return (
-        <Dialog open={open} onClose={handleClose}>
+        <Dialog open={open} onClose={handleClose} sx={style}>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent style={{ padding: '8px 32px 8px 15px' }}>
                 {child}
