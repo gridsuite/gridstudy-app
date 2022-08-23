@@ -6,36 +6,32 @@
  */
 
 import dagre from 'dagre';
-import { isNode } from 'react-flow-renderer';
 import { nodeWidth, nodeHeight, rootNodeWidth } from './util/model-constants';
 
-export function getLayoutedElements(elements) {
+export function getLayoutedNodes(nodes, edges) {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
     dagreGraph.setGraph({ direction: 'TB', align: 'UL' });
 
-    elements.forEach((el) => {
-        if (isNode(el)) {
-            dagreGraph.setNode(el.id, { width: nodeWidth, height: nodeHeight });
-        } else {
-            dagreGraph.setEdge(el.source, el.target);
-        }
+    nodes.forEach((node) => {
+        dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+    });
+    edges.forEach((edge) => {
+        dagreGraph.setEdge(edge.source, edge.target);
     });
 
     dagre.layout(dagreGraph, { debugTiming: true });
 
-    return elements.map((el) => {
-        if (isNode(el)) {
-            const nodeWithPosition = dagreGraph.node(el.id);
-            el.targetPosition = 'top';
-            el.sourcePosition = 'bottom';
-            const width = el?.type === 'ROOT' ? rootNodeWidth : nodeWidth;
+    return nodes.map((el) => {
+        const nodeWithPosition = dagreGraph.node(el.id);
+        el.targetPosition = 'top';
+        el.sourcePosition = 'bottom';
+        const width = el?.type === 'ROOT' ? rootNodeWidth : nodeWidth;
 
-            el.position = {
-                x: nodeWithPosition.x - width / 2,
-                y: nodeWithPosition.y - nodeHeight / 2,
-            };
-        }
+        el.position = {
+            x: nodeWithPosition.x - width / 2,
+            y: nodeWithPosition.y - nodeHeight / 2,
+        };
 
         return el;
     });
