@@ -601,7 +601,7 @@ export function fetchBusesForVoltageLevel(
     const fetchBusesUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
-        voltageLevelId +
+        encodeURIComponent(voltageLevelId) +
         '/buses' +
         '?' +
         urlSearchParams.toString();
@@ -623,7 +623,7 @@ export function fetchBusbarSectionsForVoltageLevel(
     const fetchBusbarSectionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
-        voltageLevelId +
+        encodeURIComponent(voltageLevelId) +
         '/busbar-sections' +
         '?' +
         urlSearchParams.toString();
