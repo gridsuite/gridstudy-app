@@ -16,15 +16,19 @@ const SensitivityAnalysisResult = ({ result }) => {
 
     function renderResult() {
         return (
-            <ReactJson
-                src={result}
-                onEdit={false}
-                onAdd={false}
-                onDelete={false}
-                theme={
-                    selectedTheme === LIGHT_THEME ? 'rjv-default' : 'monokai'
-                }
-            />
+            result && (
+                <ReactJson
+                    src={result}
+                    onEdit={false}
+                    onAdd={false}
+                    onDelete={false}
+                    theme={
+                        selectedTheme === LIGHT_THEME
+                            ? 'rjv-default'
+                            : 'monokai'
+                    }
+                />
+            )
         );
     }
 
