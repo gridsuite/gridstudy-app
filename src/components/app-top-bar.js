@@ -32,7 +32,6 @@ import {
     fetchAppsAndUrls,
     fetchLoadFlowInfos,
     fetchSecurityAnalysisStatus,
-    fetchSecurityAnalysisResult,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
