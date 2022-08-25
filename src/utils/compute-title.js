@@ -8,6 +8,16 @@
 const MAX_TITLE_LENGTH = 106;
 const SEPARATOR = ' | ';
 
+export const computeFullPath = (parents) => {
+    let path = '';
+
+    for (let i = 0; i < parents.length; i++) {
+        path = '/' + parents[i] + path;
+    }
+
+    return path;
+};
+
 const computePath = (parents, maxAllowedPathSize) => {
     let testedPath = '';
     let path = '';

@@ -390,3 +390,12 @@ export function openNetworkAreaDiagram(voltageLevelsIds) {
         voltageLevelsIdsForNad: voltageLevelsIds,
     };
 }
+
+export const SET_MODIFICATIONS_IN_PROGRESS = 'SET_MODIFICATIONS_IN_PROGRESS';
+
+export function setModificationsInProgress(isModificationsInProgress) {
+    return {
+        type: SET_MODIFICATIONS_IN_PROGRESS,
+        isModificationsInProgress: isModificationsInProgress,
+    };
+}
