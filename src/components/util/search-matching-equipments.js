@@ -9,7 +9,7 @@ import { useCallback, useRef, useState } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '../../utils/messages';
-import { SEARCH_FETCH_TIMEOUT } from '../../utils/UIconstants';
+import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useParameterState } from '../dialogs/parameters/parameters';
 
@@ -17,7 +17,8 @@ export const useSearchMatchingEquipments = (
     studyUuid,
     nodeUuid,
     inUpstreamBuiltParentNode,
-    equipmentType
+    equipmentType,
+    makeItems = getEquipmentsInfosForSearchBar
 ) => {
     const { snackError } = useSnackMessage();
     const [equipmentsFound, setEquipmentsFound] = useState([]);
@@ -26,33 +27,33 @@ export const useSearchMatchingEquipments = (
     const [useNameLocal] = useParameterState(PARAM_USE_NAME);
 
     const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
+        (searchTerm, sooner = false) => {
             clearTimeout(timer.current);
 
-            timer.current = setTimeout(() => {
-                lastSearchTermRef.current = searchTerm;
-                fetchEquipmentsInfos(
-                    studyUuid,
-                    nodeUuid,
-                    searchTerm,
-                    useNameLocal,
-                    inUpstreamBuiltParentNode,
-                    equipmentType
-                )
-                    .then((infos) => {
-                        if (searchTerm === lastSearchTermRef.current) {
-                            setEquipmentsFound(
-                                getEquipmentsInfosForSearchBar(
-                                    infos,
-                                    useNameLocal
-                                )
-                            );
-                        } // else ignore results of outdated fetch
-                    })
-                    .catch((errorMessage) =>
-                        snackError(errorMessage, 'equipmentsSearchingError')
-                    );
-            }, SEARCH_FETCH_TIMEOUT);
+            timer.current = setTimeout(
+                () => {
+                    lastSearchTermRef.current = searchTerm;
+                    fetchEquipmentsInfos(
+                        studyUuid,
+                        nodeUuid,
+                        searchTerm,
+                        useNameLocal,
+                        inUpstreamBuiltParentNode,
+                        equipmentType
+                    )
+                        .then((infos) => {
+                            if (searchTerm === lastSearchTermRef.current) {
+                                setEquipmentsFound(
+                                    makeItems(infos, useNameLocal)
+                                );
+                            } // else ignore results of outdated fetch
+                        })
+                        .catch((errorMessage) =>
+                            snackError(errorMessage, 'equipmentsSearchingError')
+                        );
+                },
+                sooner ? 10 : SEARCH_FETCH_TIMEOUT_MILLIS
+            );
         },
         [
             studyUuid,
@@ -60,6 +61,7 @@ export const useSearchMatchingEquipments = (
             useNameLocal,
             equipmentType,
             inUpstreamBuiltParentNode,
+            makeItems,
             snackError,
         ]
     );

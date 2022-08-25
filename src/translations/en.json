@@ -329,6 +329,7 @@
     "BATTERY": "Battery",
     "DANGLING_LINE": "Dangling Line",
     "HVDC_LINE": "Hvdc Line",
+    "HVDC_CONVERTER_STATION": "HVDC Converter Station",
     "LCC_CONVERTER_STATION": "Lcc Converter Station",
     "VSC_CONVERTER_STATION": "Vsc Converter Station",
     "SHUNT_COMPENSATOR": "Shunt Compensator",
