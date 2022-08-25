@@ -55,12 +55,12 @@ const CreateNodeMenu = ({
     }
 
     function pasteNetworkModificationNode(insertMode) {
-        handlePasteNode(activeNode, insertMode);
+        handlePasteNode(activeNode.id, insertMode);
         handleClose();
     }
 
     function copyNetworkModificationNode() {
-        handleCopyNode(activeNode);
+        handleCopyNode(activeNode.id);
         handleClose();
     }
 
@@ -98,10 +98,16 @@ const CreateNodeMenu = ({
             action: () => createNetworkModificationNode('AFTER'),
             id: 'insertNetworkModificationNodeBelow',
         },
-        COPY_MODIFICATION: {
+        COPY_MODIFICATION_NODE: {
             onRoot: false,
             action: () => copyNetworkModificationNode(),
             id: 'copyNetworkModificationNode',
+        },
+        PASTE_MODIFICATION_NODE_ON_NEW_BRANCH: {
+            onRoot: false,
+            action: () => pasteNetworkModificationNode('NEW_BRANCH'),
+            id: 'pasteNetworkModificationNodeOnNewBranch',
+            disabled: selectedNodeForCopy == null,
         },
         PASTE_MODIFICATION_NODE_BEFORE: {
             onRoot: false,
@@ -113,12 +119,6 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => pasteNetworkModificationNode('AFTER'),
             id: 'pasteNetworkModificationNodeBelow',
-            disabled: selectedNodeForCopy == null,
-        },
-        PASTE_MODIFICATION_NODE_ON_NEW_BRANCH: {
-            onRoot: false,
-            action: () => pasteNetworkModificationNode('NEW_BRANCH'),
-            id: 'pasteNetworkModificationNodeOnNewBranch',
             disabled: selectedNodeForCopy == null,
         },
         REMOVE_NODE: {

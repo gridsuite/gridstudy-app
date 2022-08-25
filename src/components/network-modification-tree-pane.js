@@ -28,7 +28,11 @@ import { StudyDrawer } from './study-drawer';
 import { StudyDisplayMode } from './study-pane';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+    useSnackMessage,
+} from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import { useStoreState } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
@@ -77,11 +81,12 @@ export const NetworkModificationTreePane = ({
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
-    const [selectedNodeForCopy, setSelectedNodeForCopy] = useState(null);
+    const [selectedNodeIdForCopy, setSelectedNodeIdForCopy] = useState(null);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
@@ -185,24 +190,17 @@ export const NetworkModificationTreePane = ({
     );
 
     const handlePasteNode = useCallback(
-        (referenceNode, insertMode) => {
+        (referenceNodeId, insertMode) => {
             copyTreeNode(
                 studyUuid,
-                selectedNodeForCopy.id,
-                referenceNode.id,
+                selectedNodeIdForCopy,
+                referenceNodeId,
                 insertMode
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NodeCreateError',
-                        intlRef: intlRef,
-                    },
-                });
+                snackError(errorMessage, 'NodeCreateError');
             });
         },
-        [studyUuid, selectedNodeForCopy, enqueueSnackbar, intlRef]
+        [studyUuid, selectedNodeIdForCopy, snackError]
     );
 
     const handleRemoveNode = useCallback(
@@ -307,8 +305,8 @@ export const NetworkModificationTreePane = ({
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
-                    selectedNodeForCopy={selectedNodeForCopy}
-                    handleCopyNode={setSelectedNodeForCopy}
+                    selectedNodeForCopy={selectedNodeIdForCopy}
+                    handleCopyNode={setSelectedNodeIdForCopy}
                     handlePasteNode={handlePasteNode}
                 />
             )}

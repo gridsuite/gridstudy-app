@@ -442,8 +442,7 @@
     "copyNetworkModificationNode": "Copy node",
     "pasteNetworkModificationNodeAbove": "Paste node above in the current branch",
     "pasteNetworkModificationNodeBelow": "Paste node below in the current branch",
-    "pasteNetworkModificationNodeOnNewBranch":  "Paste node in a new branch",
-
+    "pasteNetworkModificationNodeOnNewBranch": "Paste node in a new branch",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",

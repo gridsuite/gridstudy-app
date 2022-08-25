@@ -443,7 +443,7 @@
     "copyNetworkModificationNode": "Copier le nœud",
     "pasteNetworkModificationNodeAbove": "Coller le nœud au dessus dans la branche courante",
     "pasteNetworkModificationNodeBelow": "Coller le nœud en dessous dans la branche courante",
-    "pasteNetworkModificationNodeOnNewBranch":  "Coller le nœud dans une nouvelle branche",
+    "pasteNetworkModificationNodeOnNewBranch": "Coller le nœud dans une nouvelle branche",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
