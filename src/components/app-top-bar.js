@@ -262,8 +262,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            (sensitivityAnalysisStatusNode === 'COMPLETED' ||
-                sensitivityAnalysisStatusNode === 'RUNNING')
+            sensitivityAnalysisStatusNode === 'COMPLETED'
         ) {
             dispatch(addSensiNotif());
         } else {
