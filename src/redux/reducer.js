@@ -123,6 +123,7 @@ const initialState = {
     studyUpdated: { force: 0, eventData: {} },
     loadflowNotif: false,
     saNotif: false,
+    sensiNotif: false,
     filteredNominalVoltages: null,
     fullScreenSldId: null,
     fullScreenNadId: null,

@@ -148,6 +148,8 @@
     "getVariablesFiltersListError": "Can't fetch simulated variables lists",
     "getQuadFiltersListError": "Can't fetch supervised quadrupoles filters lists",
     "FiltersListsSelection": "Filters lists selection",
+    "sensitivityAnalysisResults": "Sensitivity analysis results",
+    "sensitivityAnalysisError": "An error occured when executing sensitivity analysis",
 
     "LimitType": "Limit type",
     "Value": "Value",

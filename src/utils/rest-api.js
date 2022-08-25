@@ -815,6 +815,21 @@ export function startSensitivityAnalysis(
     return backendFetch(url, { method: 'post' });
 }
 
+export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        'Stopping sensitivity analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const stopSensitivityAnalysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/stop';
+    console.debug(stopSensitivityAnalysisUrl);
+    return backendFetch(stopSensitivityAnalysisUrl, { method: 'put' });
+}
+
 export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
         'Fetching sensitivity analysis status on ' +
@@ -833,6 +848,24 @@ export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
         } else {
             return Promise.resolve(0);
         }
+    });
+}
+
+export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
+    console.info(
+        'Fetching sensitivity analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/result';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) return response.json();
+        throw new Error(response.status + ' ' + response.statusText);
     });
 }
 

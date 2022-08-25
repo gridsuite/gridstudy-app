@@ -14,6 +14,7 @@ import {
     startSecurityAnalysis,
     startSensitivityAnalysis,
     stopSecurityAnalysis,
+    stopSensitivityAnalysis,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
 import LoopIcon from '@mui/icons-material/Loop';
@@ -84,7 +85,8 @@ export function RunButtonContainer({
             dispatch(addSANotif());
         } else if (
             ranSensi &&
-            studyUpdatedForce?.eventData?.headers?.updateType === 'sensiResult'
+            studyUpdatedForce?.eventData?.headers?.updateType ===
+                'sensitivityAnalysisResult'
         ) {
             dispatch(addSensiNotif());
         }
@@ -95,6 +97,9 @@ export function RunButtonContainer({
         action: (action) => {
             if (action === runnable.SECURITY_ANALYSIS) {
                 stopSecurityAnalysis(studyUuid, currentNode?.id);
+                setComputationStopped(!computationStopped);
+            } else if (action === runnable.SENSITIVITY_ANALYSIS) {
+                stopSensitivityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -140,7 +145,7 @@ export function RunButtonContainer({
         } else if (action === runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
             setRanSA(true);
-        } else if (action === runnable.SENSI) {
+        } else if (action === runnable.SENSITIVITY_ANALYSIS) {
             setShowSensiParametersSelector(true);
             setRanSensi(true);
         }
@@ -152,7 +157,7 @@ export function RunButtonContainer({
                 return loadFlowStatus;
             } else if (runnableType === runnable.SECURITY_ANALYSIS) {
                 return securityAnalysisStatus;
-            } else if (runnableType === runnable.SENSI) {
+            } else if (runnableType === runnable.SENSITIVITY_ANALYSIS) {
                 return sensiStatus;
             }
         },
@@ -178,7 +183,11 @@ export function RunButtonContainer({
     };
 
     const RUNNABLES = useMemo(
-        () => [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS, runnable.SENSI],
+        () => [
+            runnable.LOADFLOW,
+            runnable.SECURITY_ANALYSIS,
+            runnable.SENSITIVITY_ANALYSIS,
+        ],
         [runnable]
     );
 

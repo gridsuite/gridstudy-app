@@ -25,6 +25,7 @@ import {
     changeReorderedColumns,
     resetLoadflowNotif,
     resetSANotif,
+    resetSensiNotif,
     selectCenterLabelState,
     selectComponentLibrary,
     selectComputedLanguage,
@@ -458,6 +459,7 @@ const App = () => {
         if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
             dispatch(resetSANotif());
             dispatch(resetLoadflowNotif());
+            dispatch(resetSensiNotif());
         }
     }, [tabIndex, dispatch, currentNode]);
 

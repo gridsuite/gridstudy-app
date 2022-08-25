@@ -144,7 +144,10 @@ const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
     'securityAnalysis_failed',
 ];
-const sensiStatusInvalidations = ['sensi_status', 'sensi_failed'];
+const sensiStatusInvalidations = [
+    'sensitivityAnalysis_status',
+    'sensitivityAnalysis_failed',
+];
 const UPDATE_TYPE_HEADER = 'updateType';
 
 export function StudyContainer({ view, onChangeTab }) {
@@ -217,6 +220,9 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             if (updateTypeHeader === 'securityAnalysis_failed') {
                 snackError('', 'securityAnalysisError');
+            }
+            if (updateTypeHeader === 'sensitivityAnalysis_failed') {
+                snackError('', 'sensitivityAnalysisError');
             }
         },
         [snackError]
@@ -546,7 +552,9 @@ export function StudyContainer({ view, onChangeTab }) {
             SECURITY_ANALYSIS: intl.formatMessage({
                 id: 'SecurityAnalysis',
             }),
-            SENSI: intl.formatMessage({ id: 'SensitivityAnalysis' }),
+            SENSITIVITY_ANALYSIS: intl.formatMessage({
+                id: 'SensitivityAnalysis',
+            }),
         };
     }, [intl]);
 

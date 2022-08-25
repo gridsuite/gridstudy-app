@@ -149,6 +149,8 @@
     "getVariablesFiltersListError": "Impossible de récuperer la liste des variables à simuler",
     "getQuadFiltersListError": "Impossible de récuperer la liste des quadripôles surveillés",
     "FiltersListsSelection": "Sélection des listes de filtres",
+    "sensitivityAnalysisResults": "Résultats de l'analyse de sensibilité",
+    "sensitivityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibilité",
 
     "LimitType": "Type de limite",
     "Value": "Valeur",

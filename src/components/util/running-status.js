@@ -43,8 +43,13 @@ export function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
 }
 
 export function getSensiRunningStatus(sensiStatus) {
-    // TODO to implement
     switch (sensiStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
         default:
             return RunningStatus.IDLE;
     }
