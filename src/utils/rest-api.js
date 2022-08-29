@@ -346,6 +346,21 @@ export function fetchVoltageLevels(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
+export function fetchVoltageLevelsEquipments(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
+    return fetchEquipments(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'Voltage-levels-equipments',
+        'voltage-levels-equipments',
+        true
+    );
+}
+
 export function fetchTwoWindingsTransformers(
     studyUuid,
     currentNodeUuid,
@@ -552,7 +567,7 @@ export function fetchEquipments(
         equipmentPath +
         '?' +
         getQueryParamsList(substationsIds, 'substationId');
-    console.debug(fetchEquipmentsUrl);
+    console.log(fetchEquipmentsUrl);
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
@@ -1267,10 +1282,11 @@ export function createGenerator(
     marginalCost,
     transientReactance,
     transformerReactance,
-    regulatingTerminalVl,
-    regulatingTerminalBbsId,
+    regulatingTerminalId,
+    regulatingTerminalType,
     frequencyRegulation,
-    droop
+    droop,
+    reactiveCapabilityCurveOn
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1308,10 +1324,11 @@ export function createGenerator(
             marginalCost: marginalCost,
             transientReactance: transientReactance,
             transformerReactance: transformerReactance,
-            regulatingTerminalVl: regulatingTerminalVl,
-            regulatingTerminalBbsId: regulatingTerminalBbsId,
+            regulatingTerminalId: regulatingTerminalId,
+            regulatingTerminalType: regulatingTerminalType,
             frequencyRegulation: frequencyRegulation,
             droop: droop,
+            points: reactiveCapabilityCurveOn,
         }),
     }).then((response) => {
         return response.ok

@@ -27,6 +27,8 @@ import {
     useDoubleValue,
     useEnumValue,
     useInputForm,
+    useRegulatorValue,
+    useTableValues,
     useTextValue,
 } from './input-hooks';
 import {
@@ -52,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const RCCurve = ({ index, onChange, defaultValue, inputForm, errors }) => {
+const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
     const [pmin, pminField] = useDoubleValue({
         label: 'Pmin',
         validation: {
@@ -61,9 +63,9 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm, errors }) => {
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: defaultValue?.pmin ? defaultValue.pmin : null,
+        defaultValue: defaultValue?.pmin ? defaultValue.pmin : '',
     });
-    const [qminPmin, qinPminField] = useDoubleValue({
+    const [qminPmin, qminPminField] = useDoubleValue({
         label: 'QminPmin',
         validation: {
             isFieldRequired: false,
@@ -71,7 +73,7 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm, errors }) => {
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: defaultValue?.qminPmin ? defaultValue.qminPmin : null,
+        defaultValue: defaultValue?.qminPmin ? defaultValue.qminPmin : '',
     });
 
     const [qmaxPmin, qmaxPminField] = useDoubleValue({
@@ -82,7 +84,7 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm, errors }) => {
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: defaultValue?.qmaxPmin ? defaultValue.qmaxPmin : null,
+        defaultValue: defaultValue?.qmaxPmin ? defaultValue.qmaxPmin : '',
     });
 
     useEffect(() => {
@@ -92,7 +94,7 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm, errors }) => {
     return (
         <>
             {gridItem(pminField, 3)}
-            {gridItem(qinPminField, 3)}
+            {gridItem(qminPminField, 3)}
             {gridItem(qmaxPminField, 3)}
         </>
     );
@@ -110,9 +112,11 @@ const GeneratorCreationDialog = ({
     open,
     onClose,
     voltageLevelOptionsPromise,
+    voltageLevelsEquipmentsOptionsPromise,
     currentNodeUuid,
     editData,
 }) => {
+    console.log('HERE!!!!! : ', voltageLevelsEquipmentsOptionsPromise);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const classes = useStyles();
@@ -268,20 +272,19 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.activePowerSetpoint,
     });
 
-    /* const [reactiveCapabilityCurveOn, reactiveCapabilityCurveOnField] =
+    const [reactiveCapabilityCurveOn, reactiveCapabilityCurveOnField] =
         useTableValues({
-            id: 'rcc',
-            tableHeadersIds: ["ActivePower", "MinimumReactivePower", "MaximumReactivePower"],
+            id: 'ReactiveCapabilityCurveOn',
+            tableHeadersIds: [
+                'ActivePower',
+                'MinimumReactivePower',
+                'MaximumReactivePower',
+            ],
             inputForm: inputForm,
             Field: RCCurve,
-            defaultValues: formValues?.reactiveCapabilityCurvePt ? formValues?.reactiveCapabilityCurvePt : [
-                {
-                    pmin: '',
-                    qminPmin: '',
-                    qmaxPmin: '',
-                }],
+            defaultValues: formValues?.reactiveCapabilityCurvePt,
             isRequired: false,
-        }); */
+        });
 
     const [activePowerSetpoint, activePowerSetpointField] = useDoubleValue({
         label: 'ActivePowerText',
@@ -327,11 +330,11 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
-    const [regulatingTerminal, regulatingTerminalField] = useConnectivityValue({
-        label: 'RegulatingTerminal',
+    const [regulatingTerminal, regulatingTerminalField] = useRegulatorValue({
+        label: 'RegulatingTerminalGenerator',
         inputForm: inputForm,
         disabled: !voltageRegulation,
-        voltageLevelOptionsPromise: voltageLevelOptionsPromise,
+        voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
         currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
@@ -348,7 +351,7 @@ const GeneratorCreationDialog = ({
     const [droop, droopField] = useDoubleValue({
         label: 'Droop',
         validation: {
-            isFieldRequired: !voltageRegulation,
+            isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
         },
         adornment: percentageTextField,
@@ -407,7 +410,7 @@ const GeneratorCreationDialog = ({
     }, [minimumReactivePower, maximumReactivePower]);
 
     const handleSave = () => {
-        if (inputForm.validate()) {
+        if (inputForm?.validate()) {
             createGenerator(
                 studyUuid,
                 currentNodeUuid,
@@ -428,10 +431,11 @@ const GeneratorCreationDialog = ({
                 marginalCost ? marginalCost : null,
                 transientReactance ? transientReactance : null,
                 transformerReactance ? transformerReactance : null,
-                regulatingTerminal.voltageLevel.id,
-                regulatingTerminal.busOrBusbarSection.id,
+                regulatingTerminal?.equipmentSection?.id,
+                regulatingTerminal?.equipmentSection?.type,
                 frequencyRegulation,
-                droop
+                droop,
+                reactiveCapabilityCurveOn
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -504,6 +508,8 @@ const GeneratorCreationDialog = ({
                                 gridItem(minimumReactivePowerField, 4)}
                             {reactiveCapabilityCurve &&
                                 gridItem(maximumReactivePowerField, 4)}
+                            {!reactiveCapabilityCurve &&
+                                reactiveCapabilityCurveOnField}
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>

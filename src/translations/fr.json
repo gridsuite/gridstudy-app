@@ -367,6 +367,7 @@
     "MinimumReactivePower": "Puissance reactive minimale",
     "MaximumReactivePower": "Puissance reactive maximale",
     "RegulatingTerminal": "Terminal distant réglé",
+    "Equipments": "Ouvarge",
     "CourtCircuit": "Court-circuit",
     "TransientReactance": "Réactance transitoire",
     "TransformerReactance": "Réactance du transformateur",

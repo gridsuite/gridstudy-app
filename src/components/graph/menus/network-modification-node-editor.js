@@ -15,6 +15,7 @@ import {
     fetchSubstations,
     fetchLines,
     fetchVoltageLevels,
+    fetchVoltageLevelsEquipments,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
@@ -177,11 +178,22 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
+    function withVLsAndEquipments(p) {
+        const voltageLevelsEquipmentsOptionsPromise =
+            fetchVoltageLevelsEquipments(studyUuid, currentTreeNode?.id);
+        return {
+            ...p,
+            voltageLevelsEquipmentsOptionsPromise:
+                voltageLevelsEquipmentsOptionsPromise,
+        };
+    }
+
     function withVLs(p) {
         const voltageLevelOptionsPromise = fetchVoltageLevels(
             studyUuid,
             currentTreeNode?.id
         );
+        //const testValue = fetch
         return {
             ...p,
             voltageLevelOptionsPromise: voltageLevelOptionsPromise,
@@ -250,7 +262,8 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_CREATION: {
             label: 'CreateGenerator',
-            dialog: () => adapt(GeneratorCreationDialog, withVLs),
+            dialog: () =>
+                adapt(GeneratorCreationDialog, withVLs, withVLsAndEquipments),
             icon: <AddIcon />,
         },
         GENERATOR_MODIFICATION: {

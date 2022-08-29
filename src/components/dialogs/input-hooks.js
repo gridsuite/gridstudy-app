@@ -29,6 +29,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import ConnectivityEdition, {
     makeRefreshBusOrBusbarSectionsCallback,
+    makeRefreshRegulatingTerminalSectionsCallback,
 } from './connectivity-edition';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
@@ -57,6 +58,8 @@ import { isNodeExists } from '../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../utils/UIconstants';
 import { useParameterState } from './parameters/parameters';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
+import { Box } from '@mui/system';
+import RegulatingTerminalEdition from './regulating-terminal-edition';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -288,11 +291,11 @@ export const useConnectivityValue = ({
     useEffect(() => {
         if (!voltageLevelOptionsPromise) return;
 
-        voltageLevelOptionsPromise.then((values) =>
+        voltageLevelOptionsPromise.then((values) => {
             setVoltageLevelOptions(
                 values.sort((a, b) => a.id.localeCompare(b.id))
-            )
-        );
+            );
+        });
     }, [voltageLevelOptionsPromise]);
 
     useEffect(() => {
@@ -397,6 +400,156 @@ export const useConnectivityValue = ({
     ]);
 
     return [connectivity, render];
+};
+
+export const useRegulatorValue = ({
+    label,
+    id,
+    validation = {
+        isFieldRequired: false,
+    },
+    disabled = false,
+    inputForm,
+    voltageLevelOptionsPromise,
+    currentNodeUuid,
+    direction = 'row',
+    voltageLevelIdDefaultValue,
+    voltageLevelPreviousValue,
+    equipmentSectionIdDefaultValue,
+}) => {
+    const [regulatingTerminal, setRegulatingTerminal] = useState({
+        voltageLevel: null,
+        equipmentSection: null,
+    });
+    const [errorVoltageLevel, setErrorVoltageLevel] = useState();
+    const [errorBusBarSection, setErrorBusBarSection] = useState();
+    const intl = useIntl();
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+    const [voltageLevelsEquipments, setVoltageLevelsEquipments] = useState([]);
+
+    useEffect(() => {
+        setRegulatingTerminal({
+            voltageLevel: null,
+            equipmentSection: null,
+        });
+    }, [inputForm.toggleClear]);
+
+    useEffect(() => {
+        if (!voltageLevelOptionsPromise) return;
+
+        voltageLevelOptionsPromise.then((values) => {
+            setVoltageLevelOptions(
+                Array.from(values, (val) => val.voltageLevel).sort((a, b) =>
+                    a.id.localeCompare(b.id)
+                )
+            );
+            setVoltageLevelsEquipments(values);
+        });
+    }, [voltageLevelOptionsPromise]);
+
+    useEffect(() => {
+        console.log('BBBBB vlOptions : ', voltageLevelOptions);
+    }, [voltageLevelOptions]);
+
+    useEffect(() => {
+        if (!voltageLevelOptions) return;
+        console.log('CCCCCC eqSeDeVal : ', equipmentSectionIdDefaultValue);
+        setRegulatingTerminal({
+            voltageLevel: voltageLevelIdDefaultValue
+                ? {
+                      id: voltageLevelIdDefaultValue,
+                      topologyKind: voltageLevelOptions.find(
+                          (vl) => vl.id === voltageLevelIdDefaultValue
+                      )?.topologyKind,
+                  }
+                : null,
+            equipmentSection: equipmentSectionIdDefaultValue
+                ? {
+                      id: equipmentSectionIdDefaultValue,
+                  }
+                : null,
+        });
+    }, [
+        voltageLevelOptions,
+        equipmentSectionIdDefaultValue,
+        voltageLevelIdDefaultValue,
+    ]);
+
+    useEffect(() => {
+        function validate() {
+            const resVL = validateField(
+                regulatingTerminal.voltageLevel,
+                validation
+            );
+            setErrorVoltageLevel(resVL?.errorMsgId);
+            const resBBS = validateField(
+                regulatingTerminal.equipmentSection,
+                validation
+            );
+            setErrorBusBarSection(resBBS?.errorMsgId);
+            return !resVL.error && !resBBS.error;
+        }
+        inputForm.addValidation(id ? id : label, validate);
+    }, [regulatingTerminal, label, validation, inputForm, id]);
+
+    const setVoltageLevel = useCallback((newVal) => {
+        setRegulatingTerminal((oldVal) => {
+            return { ...oldVal, voltageLevel: newVal };
+        });
+    }, []);
+
+    const setEquipmentSection = useCallback((newVal) => {
+        setRegulatingTerminal((oldVal) => {
+            return { ...oldVal, equipmentSection: newVal };
+        });
+    }, []);
+
+    const render = useMemo(() => {
+        return (
+            <RegulatingTerminalEdition
+                disabled={disabled}
+                voltageLevelOptions={voltageLevelOptions}
+                voltageLevel={regulatingTerminal.voltageLevel}
+                voltageLevelPreviousValue={voltageLevelPreviousValue}
+                voltageLevelsEquipments={voltageLevelsEquipments}
+                equipmentSection={regulatingTerminal.equipmentSection}
+                onChangeVoltageLevel={(value) => setVoltageLevel(value)}
+                onChangeEquipmentSection={(equipmentSection) =>
+                    setEquipmentSection(equipmentSection)
+                }
+                errorVoltageLevel={errorVoltageLevel}
+                helperTextVoltageLevel={
+                    errorVoltageLevel &&
+                    intl.formatMessage({
+                        id: errorVoltageLevel,
+                    })
+                }
+                errorBusOrBusBarSection={errorBusBarSection}
+                helperTextBusOrBusBarSection={
+                    errorBusBarSection &&
+                    intl.formatMessage({
+                        id: errorBusBarSection,
+                    })
+                }
+                direction={direction}
+                voltageLevelEquipmentsCallback={makeRefreshRegulatingTerminalSectionsCallback()}
+            />
+        );
+    }, [
+        regulatingTerminal,
+        disabled,
+        direction,
+        errorBusBarSection,
+        errorVoltageLevel,
+        intl,
+        setEquipmentSection,
+        setVoltageLevel,
+        voltageLevelOptions,
+        voltageLevelPreviousValue,
+        voltageLevelsEquipments,
+    ]);
+
+    return [regulatingTerminal, render];
 };
 
 const filter = createFilterOptions();
@@ -951,27 +1104,32 @@ export const useExpandableValues = ({
     return [values, field];
 };
 
-/*export const useTableValues = ({
+export const useTableValues = ({
     id,
-    labelAddValue,
     tableHeadersIds,
     Field,
     inputForm,
     defaultValues,
-    fieldProps,
-    validateItem,
-    isRequired,
 }) => {
     const [values, setValues] = useState([]);
     const classes = useStyles();
 
-    useEffect(() => {
-        if (defaultValues) {
+    const handleAddValue = useCallback(() => {
+        setValues((oldValues) => [...oldValues, {}]);
+    }, []);
+
+    const checkValues = useCallback(() => {
+        if (defaultValues !== undefined) {
             setValues([...defaultValues]);
         } else {
             setValues([]);
+            handleAddValue();
         }
-    }, [defaultValues]);
+    }, [defaultValues, handleAddValue]);
+
+    useEffect(() => {
+        checkValues();
+    }, [checkValues]);
 
     const handleDeleteItem = useCallback(
         (index) => {
@@ -993,16 +1151,12 @@ export const useExpandableValues = ({
         });
     }, []);
 
-    const handleAddValue = useCallback(() => {
-        setValues((oldValues) => [...oldValues, {}]);
-    }, []);
-
     const field = useMemo(() => {
         return (
             <Grid item container spacing={2}>
                 {tableHeadersIds.map((header) => (
-                    <Grid item xs={3}>
-                        <FormattedMessage id = {header} />
+                    <Grid key={header} item xs={3}>
+                        <FormattedMessage id={header} />
                     </Grid>
                 ))}
                 <Box sx={{ width: '100%' }} />
@@ -1024,24 +1178,33 @@ export const useExpandableValues = ({
                             </IconButton>
                         </Grid>
                         {idx === values.length - 1 && (
-                            <Grid container spacing={3}>
-                                <Grid item xs={3}>
-                                    <Button
-                                        fullWidth
-                                        className={classes.button}
-                                        startIcon={<AddIcon />}
-                                        onClick={handleAddValue}
-                                    >
-                                        <FormattedMessage id={labelAddValue} />
-                                    </Button>
-                                </Grid>
-                            </Grid>)}
+                            <Grid item xs={1}>
+                                <IconButton
+                                    className={classes.icon}
+                                    key={id + idx}
+                                    onClick={() => handleAddValue()}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Grid>
+                        )}
                     </Grid>
                 ))}
-            </Grid>)
-    }, []);
-        return [values, field]
-}*/
+            </Grid>
+        );
+    }, [
+        values,
+        id,
+        classes.icon,
+        handleAddValue,
+        handleDeleteItem,
+        handleSetValue,
+        inputForm,
+        tableHeadersIds,
+    ]);
+
+    return [values, field];
+};
 
 export const useSimpleTextValue = ({
     defaultValue,
