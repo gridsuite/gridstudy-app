@@ -481,5 +481,7 @@
     "VoltageSetpointKV": "Consigne tension (KV)",
     "ReactivePowerSetpointMVAR": "Consigne de reactif (MVAR)",
     "EmptyList/bbs": "La liste de jeux de barres est vide",
-    "EmptyList/connections": "La liste de connexions est vide"
+    "EmptyList/connections": "La liste de connexions est vide",
+
+    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre"
 }

@@ -42,6 +42,7 @@ import {
     openNetworkAreaDiagram,
     resetLoadflowNotif,
     resetSANotif,
+    STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
@@ -198,6 +199,8 @@ const AppTopBar = ({
         securityAnalysisStatusInvalidations
     );
 
+    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
@@ -256,6 +259,20 @@ const AppTopBar = ({
     function hideParameters() {
         setParametersOpen(false);
     }
+
+    function getDisableReason() {
+        if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE)
+            return intl.formatMessage({
+                id: 'UnsupportedView',
+            });
+
+        if (!isNodeBuilt(currentNode))
+            return intl.formatMessage({
+                id: 'InvalidNode',
+            });
+        return '';
+    }
+
     return (
         <>
             <TopBar
@@ -294,14 +311,11 @@ const AppTopBar = ({
                 )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
-                searchTermDisabled={!isNodeBuilt(currentNode)}
-                initialSearchTerm={
-                    !isNodeBuilt(currentNode)
-                        ? intl.formatMessage({
-                              id: 'InvalidNode',
-                          })
-                        : ''
+                searchTermDisabled={
+                    !isNodeBuilt(currentNode) ||
+                    studyDisplayMode === STUDY_DISPLAY_MODE.TREE
                 }
+                initialSearchTerm={getDisableReason()}
             >
                 {/* Add current Node name between Logo and Tabs */}
                 <Box

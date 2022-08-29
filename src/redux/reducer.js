@@ -53,6 +53,8 @@ import {
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
     SET_MODIFICATIONS_IN_PROGRESS,
+    STUDY_DISPLAY_MODE,
+    SET_STUDY_DISPLAY_MODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -124,6 +126,7 @@ const initialState = {
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
+    studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     ...paramsInitialState,
 };
 
@@ -399,6 +402,13 @@ export const reducer = createReducer(initialState, {
     },
     [SET_MODIFICATIONS_IN_PROGRESS]: (state, action) => {
         state.isModificationsInProgress = action.isModificationsInProgress;
+    },
+    [SET_STUDY_DISPLAY_MODE]: (state, action) => {
+        if (
+            Object.values(STUDY_DISPLAY_MODE).includes(action.studyDisplayMode)
+        ) {
+            state.studyDisplayMode = action.studyDisplayMode;
+        }
     },
 });
 

@@ -10,14 +10,16 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import PublicIcon from '@mui/icons-material/Public';
 import IconButton from '@mui/material/IconButton';
 import ListIcon from '@mui/icons-material/List';
-import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { StudyDisplayMode } from './study-pane';
 import Divider from '@mui/material/Divider';
-import { setModificationsDrawerOpen } from '../redux/actions';
+import {
+    setModificationsDrawerOpen,
+    STUDY_DISPLAY_MODE,
+    setStudyDisplayMode,
+} from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 const useStyles = makeStyles((theme) => ({
     selected: {
@@ -34,12 +36,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
+export function HorizontalToolbar() {
     const classes = useStyles();
     const intl = useIntl();
     const dispatch = useDispatch();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
@@ -50,15 +53,15 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
     };
 
     function setMapDisplay() {
-        setStudyDisplayMode(StudyDisplayMode.MAP);
+        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.MAP));
     }
 
     function setTreeDisplay() {
-        setStudyDisplayMode(StudyDisplayMode.TREE);
+        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.TREE));
     }
 
     function setHybridDisplay() {
-        setStudyDisplayMode(StudyDisplayMode.HYBRID);
+        dispatch(setStudyDisplayMode(STUDY_DISPLAY_MODE.HYBRID));
     }
 
     return (
@@ -91,7 +94,7 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                                 : classes.notSelected
                         }
                         disabled={
-                            studyDisplayMode === StudyDisplayMode.MAP ||
+                            studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
                             currentNode === null ||
                             currentNode?.type !== 'NETWORK_MODIFICATION'
                         }
@@ -117,7 +120,7 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 <IconButton
                     size={'small'}
                     className={
-                        studyDisplayMode === StudyDisplayMode.TREE
+                        studyDisplayMode === STUDY_DISPLAY_MODE.TREE
                             ? classes.selected
                             : classes.notSelected
                     }
@@ -141,7 +144,7 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 <IconButton
                     size={'small'}
                     className={
-                        studyDisplayMode === StudyDisplayMode.HYBRID
+                        studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
                             ? classes.selected
                             : classes.notSelected
                     }
@@ -166,7 +169,7 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 <IconButton
                     size={'small'}
                     className={
-                        studyDisplayMode === StudyDisplayMode.MAP
+                        studyDisplayMode === STUDY_DISPLAY_MODE.MAP
                             ? classes.selected
                             : classes.notSelected
                     }
@@ -179,9 +182,6 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
     );
 }
 
-HorizontalToolbar.propTypes = {
-    setStudyDisplayMode: PropTypes.func,
-    studyDisplayMode: PropTypes.string,
-};
+HorizontalToolbar.propTypes = {};
 
 export default HorizontalToolbar;
