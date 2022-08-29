@@ -274,7 +274,11 @@ const StudyPane = ({
                                     /* TODO do we move redux param to container */
                                     studyUuid={studyUuid}
                                     network={network}
-                                    visible={props.view === StudyView.MAP}
+                                    visible={
+                                        props.view === StudyView.MAP &&
+                                        studyDisplayMode !==
+                                            StudyDisplayMode.TREE
+                                    }
                                     updatedLines={updatedLines}
                                     useName={useName}
                                     lineFullPath={lineFullPath}
@@ -322,7 +326,10 @@ const StudyPane = ({
                                 )}
                                 currentNode={currentNode}
                                 disabled={disabled}
-                                visible={props.view === StudyView.MAP}
+                                visible={
+                                    props.view === StudyView.MAP &&
+                                    studyDisplayMode !== StudyDisplayMode.TREE
+                                }
                             />
 
                             <NetworkAreaDiagramPane
@@ -335,6 +342,10 @@ const StudyPane = ({
                                 onClose={closeNetworkAreaDiagram}
                                 disabled={disabled}
                                 align="left"
+                                visible={
+                                    props.view === StudyView.MAP &&
+                                    studyDisplayMode !== StudyDisplayMode.TREE
+                                }
                             />
                         </div>
                     </div>
