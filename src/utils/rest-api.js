@@ -1832,14 +1832,14 @@ export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
     return getUrlWithToken(url);
 }
 
-export function fetchCaseInfos(studyUuid) {
+export function fetchCaseName(studyUuid) {
     console.info('Fetching case infos');
     const url = getStudyUrl(studyUuid) + '/case/name';
     console.debug(url);
 
     return backendFetch(url, { method: 'get' }).then((response) => {
         return response.ok
-            ? response.json()
+            ? response.text()
             : response
                   .text()
                   .then((text) =>
