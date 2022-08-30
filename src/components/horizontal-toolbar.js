@@ -21,6 +21,7 @@ import {
     setStudyDisplayMode,
 } from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
+
 const useStyles = makeStyles((theme) => ({
     selected: {
         color: theme.palette.action.active,
@@ -181,7 +182,5 @@ export function HorizontalToolbar() {
         </List>
     );
 }
-
-HorizontalToolbar.propTypes = {};
 
 export default HorizontalToolbar;
