@@ -27,7 +27,7 @@ import {
     useDoubleValue,
     useEnumValue,
     useInputForm,
-    useRegulatorValue,
+    useRegulatingTerminalValue,
     useTableValues,
     useTextValue,
 } from './input-hooks';
@@ -55,20 +55,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
-    const [pmin, pminField] = useDoubleValue({
-        label: 'Pmin',
+    const [isFieldRequired, setIsFieldRequired] = useState(false);
+    const [p, pField] = useDoubleValue({
+        label: 'P',
         validation: {
-            isFieldRequired: false,
+            isFieldRequired: isFieldRequired,
             isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.pmin ? defaultValue.pmin : '',
     });
-    const [qminPmin, qminPminField] = useDoubleValue({
-        label: 'QminPmin',
+    const [qminP, qminPField] = useDoubleValue({
+        label: 'QminP',
         validation: {
-            isFieldRequired: false,
+            isFieldRequired: isFieldRequired,
             isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
@@ -76,10 +77,10 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
         defaultValue: defaultValue?.qminPmin ? defaultValue.qminPmin : '',
     });
 
-    const [qmaxPmin, qmaxPminField] = useDoubleValue({
-        label: 'QmaxPmin',
+    const [qmaxP, qmaxPField] = useDoubleValue({
+        label: 'QmaxP',
         validation: {
-            isFieldRequired: false,
+            isFieldRequired: isFieldRequired,
             isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
@@ -88,14 +89,15 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
     });
 
     useEffect(() => {
-        onChange(index, { pmin, qminPmin, qmaxPmin });
-    }, [index, onChange, pmin, qminPmin, qmaxPmin]);
+        onChange(index, { pmin: p, qminPmin: qminP, qmaxPmin: qmaxP });
+        setIsFieldRequired(p || qminP || qmaxP);
+    }, [index, onChange, p, qminP, qmaxP]);
 
     return (
         <>
-            {gridItem(pminField, 3)}
-            {gridItem(qminPminField, 3)}
-            {gridItem(qmaxPminField, 3)}
+            {gridItem(pField, 3)}
+            {gridItem(qminPField, 3)}
+            {gridItem(qmaxPField, 3)}
         </>
     );
 };
@@ -116,7 +118,6 @@ const GeneratorCreationDialog = ({
     currentNodeUuid,
     editData,
 }) => {
-    console.log('HERE!!!!! : ', voltageLevelsEquipmentsOptionsPromise);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const classes = useStyles();
@@ -330,16 +331,16 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
-    const [regulatingTerminal, regulatingTerminalField] = useRegulatorValue({
-        label: 'RegulatingTerminalGenerator',
-        inputForm: inputForm,
-        disabled: !voltageRegulation,
-        voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
-        currentNodeUuid: currentNodeUuid,
-        voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
-        busOrBusbarSectionIdDefaultValue:
-            formValues?.busOrBusbarSectionId || null,
-    });
+    const [regulatingTerminal, regulatingTerminalField] =
+        useRegulatingTerminalValue({
+            label: 'RegulatingTerminalGenerator',
+            inputForm: inputForm,
+            disabled: !voltageRegulation,
+            voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
+            voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+            busOrBusbarSectionIdDefaultValue:
+                formValues?.busOrBusbarSectionId || null,
+        });
 
     const [frequencyRegulation, frequencyRegulationField] = useBooleanValue({
         label: 'FrequencyRegulation',
@@ -395,7 +396,6 @@ const GeneratorCreationDialog = ({
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
         inputForm: inputForm,
-        disabled: voltageRegulation,
         voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
@@ -410,7 +410,7 @@ const GeneratorCreationDialog = ({
     }, [minimumReactivePower, maximumReactivePower]);
 
     const handleSave = () => {
-        if (inputForm?.validate()) {
+        if (inputForm.validate()) {
             createGenerator(
                 studyUuid,
                 currentNodeUuid,

@@ -193,7 +193,6 @@ const NetworkModificationNodeEditor = () => {
             studyUuid,
             currentTreeNode?.id
         );
-        //const testValue = fetch
         return {
             ...p,
             voltageLevelOptionsPromise: voltageLevelOptionsPromise,

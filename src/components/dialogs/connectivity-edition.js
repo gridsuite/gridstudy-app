@@ -53,7 +53,6 @@ export function makeRefreshBusOrBusbarSectionsCallback(
                     currentNodeUuid,
                     voltageLevel.id
                 ).then((busbarSections) => {
-                    console.log('CCCC : ', busbarSections);
                     putter(busbarSections);
                 });
                 break;
@@ -63,28 +62,12 @@ export function makeRefreshBusOrBusbarSectionsCallback(
                     studyUuid,
                     currentNodeUuid,
                     voltageLevel.id
-                ).then((buses) => {
-                    console.log('CCCC 2 : ', buses);
-                    putter(buses);
-                });
+                ).then((buses) => putter(buses));
                 break;
 
             default:
                 putter([]);
                 break;
-        }
-    };
-}
-
-export function makeRefreshRegulatingTerminalSectionsCallback() {
-    return (voltageLevel, putter) => {
-        console.log('CCCCC that : ', voltageLevel);
-        if (voltageLevel?.equipments) {
-            console.log('CCCCC HHHHHHHHHHHHHHERE');
-            putter(voltageLevel.equipments);
-        } else {
-            console.log('Nopeeeeeeeeee!');
-            putter([]);
         }
     };
 }

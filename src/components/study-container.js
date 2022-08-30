@@ -458,7 +458,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 currentNode?.id,
                 substationsIds
             );
-            console.log('testest : ', updatedEquipments);
             console.info('network update');
             Promise.all([updatedEquipments])
                 .then((values) => {

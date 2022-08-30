@@ -29,7 +29,6 @@ import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import ConnectivityEdition, {
     makeRefreshBusOrBusbarSectionsCallback,
-    makeRefreshRegulatingTerminalSectionsCallback,
 } from './connectivity-edition';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
@@ -59,7 +58,9 @@ import { TOOLTIP_DELAY } from '../../utils/UIconstants';
 import { useParameterState } from './parameters/parameters';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { Box } from '@mui/system';
-import RegulatingTerminalEdition from './regulating-terminal-edition';
+import RegulatingTerminalEdition, {
+    makeRefreshRegulatingTerminalSectionsCallback,
+} from './regulating-terminal-edition';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -291,11 +292,11 @@ export const useConnectivityValue = ({
     useEffect(() => {
         if (!voltageLevelOptionsPromise) return;
 
-        voltageLevelOptionsPromise.then((values) => {
+        voltageLevelOptionsPromise.then((values) =>
             setVoltageLevelOptions(
                 values.sort((a, b) => a.id.localeCompare(b.id))
-            );
-        });
+            )
+        );
     }, [voltageLevelOptionsPromise]);
 
     useEffect(() => {
@@ -402,7 +403,7 @@ export const useConnectivityValue = ({
     return [connectivity, render];
 };
 
-export const useRegulatorValue = ({
+export const useRegulatingTerminalValue = ({
     label,
     id,
     validation = {
@@ -411,10 +412,8 @@ export const useRegulatorValue = ({
     disabled = false,
     inputForm,
     voltageLevelOptionsPromise,
-    currentNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
-    voltageLevelPreviousValue,
     equipmentSectionIdDefaultValue,
 }) => {
     const [regulatingTerminal, setRegulatingTerminal] = useState({
@@ -422,7 +421,7 @@ export const useRegulatorValue = ({
         equipmentSection: null,
     });
     const [errorVoltageLevel, setErrorVoltageLevel] = useState();
-    const [errorBusBarSection, setErrorBusBarSection] = useState();
+    const [errorEquipmentSection, setErrorEquipmentSection] = useState();
     const intl = useIntl();
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [voltageLevelsEquipments, setVoltageLevelsEquipments] = useState([]);
@@ -448,12 +447,7 @@ export const useRegulatorValue = ({
     }, [voltageLevelOptionsPromise]);
 
     useEffect(() => {
-        console.log('BBBBB vlOptions : ', voltageLevelOptions);
-    }, [voltageLevelOptions]);
-
-    useEffect(() => {
         if (!voltageLevelOptions) return;
-        console.log('CCCCCC eqSeDeVal : ', equipmentSectionIdDefaultValue);
         setRegulatingTerminal({
             voltageLevel: voltageLevelIdDefaultValue
                 ? {
@@ -482,12 +476,12 @@ export const useRegulatorValue = ({
                 validation
             );
             setErrorVoltageLevel(resVL?.errorMsgId);
-            const resBBS = validateField(
+            const resEquipment = validateField(
                 regulatingTerminal.equipmentSection,
                 validation
             );
-            setErrorBusBarSection(resBBS?.errorMsgId);
-            return !resVL.error && !resBBS.error;
+            setErrorEquipmentSection(resEquipment?.errorMsgId);
+            return !resVL.error && !resEquipment.error;
         }
         inputForm.addValidation(id ? id : label, validate);
     }, [regulatingTerminal, label, validation, inputForm, id]);
@@ -510,7 +504,6 @@ export const useRegulatorValue = ({
                 disabled={disabled}
                 voltageLevelOptions={voltageLevelOptions}
                 voltageLevel={regulatingTerminal.voltageLevel}
-                voltageLevelPreviousValue={voltageLevelPreviousValue}
                 voltageLevelsEquipments={voltageLevelsEquipments}
                 equipmentSection={regulatingTerminal.equipmentSection}
                 onChangeVoltageLevel={(value) => setVoltageLevel(value)}
@@ -524,11 +517,11 @@ export const useRegulatorValue = ({
                         id: errorVoltageLevel,
                     })
                 }
-                errorBusOrBusBarSection={errorBusBarSection}
+                errorBusOrBusBarSection={errorEquipmentSection}
                 helperTextBusOrBusBarSection={
-                    errorBusBarSection &&
+                    errorEquipmentSection &&
                     intl.formatMessage({
-                        id: errorBusBarSection,
+                        id: errorEquipmentSection,
                     })
                 }
                 direction={direction}
@@ -539,13 +532,12 @@ export const useRegulatorValue = ({
         regulatingTerminal,
         disabled,
         direction,
-        errorBusBarSection,
+        errorEquipmentSection,
         errorVoltageLevel,
         intl,
         setEquipmentSection,
         setVoltageLevel,
         voltageLevelOptions,
-        voltageLevelPreviousValue,
         voltageLevelsEquipments,
     ]);
 

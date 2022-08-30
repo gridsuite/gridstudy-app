@@ -567,7 +567,7 @@ export function fetchEquipments(
         equipmentPath +
         '?' +
         getQueryParamsList(substationsIds, 'substationId');
-    console.log(fetchEquipmentsUrl);
+    console.debug(fetchEquipmentsUrl);
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 

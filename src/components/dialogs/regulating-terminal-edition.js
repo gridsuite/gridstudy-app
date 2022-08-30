@@ -29,10 +29,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export function makeRefreshRegulatingTerminalSectionsCallback() {
+    return (voltageLevel, putter) => {
+        if (voltageLevel?.equipments) {
+            putter(voltageLevel.equipments);
+        } else {
+            putter([]);
+        }
+    };
+}
+
 const RegulatingTerminalEdition = ({
     voltageLevelOptions,
     voltageLevel,
-    voltageLevelPreviousValue,
     equipmentSection,
     voltageLevelsEquipments,
     onChangeVoltageLevel,
@@ -76,7 +85,6 @@ const RegulatingTerminalEdition = ({
     );
 
     const handleChangeEquipment = (event, value, reason) => {
-        console.log('CCCC eq val : ', value);
         onChangeEquipmentSection(value);
     };
 
@@ -168,10 +176,6 @@ const RegulatingTerminalEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
-                                {...(voltageLevelPreviousValue && {
-                                    error: false,
-                                    helperText: voltageLevelPreviousValue,
-                                })}
                             />
                         )}
                         PopperComponent={FittingPopper}
@@ -198,7 +202,7 @@ const RegulatingTerminalEdition = ({
                         forcePopupIcon
                         autoHighlight
                         selectOnFocus
-                        id="bus"
+                        id="equipment"
                         disabled={!voltageLevel || disabled}
                         options={equipmentsOptions}
                         getOptionLabel={(equipment) => {
@@ -256,8 +260,6 @@ RegulatingTerminalEdition.propTypes = {
     direction: PropTypes.string,
     errorVoltageLevel: PropTypes.bool,
     helperTextVoltageLevel: PropTypes.string,
-    errorBusOrBusBarSection: PropTypes.bool,
-    helperTextBusOrBusBarSection: PropTypes.string,
 };
 
 export default RegulatingTerminalEdition;
