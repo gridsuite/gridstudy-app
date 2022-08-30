@@ -90,7 +90,7 @@ const CreateNodeMenu = ({
         },
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
-            action: () => createNetworkModificationNode('CHILD'),
+            action: () => createNetworkModificationNode('NEW_BRANCH'),
             id: 'createNetworkModificationNode',
         },
         INSERT_MODIFICATION_NODE_BEFORE: {
