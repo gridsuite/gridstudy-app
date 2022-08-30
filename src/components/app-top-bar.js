@@ -241,8 +241,7 @@ const AppTopBar = ({
         if (
             isNodeBuilt(currentNode) &&
             (securityAnalysisStatusNode === 'CONVERGED' ||
-                securityAnalysisStatusNode === 'DIVERGED' ||
-                securityAnalysisStatusNode === 'RUNNING')
+                securityAnalysisStatusNode === 'DIVERGED')
         ) {
             dispatch(addSANotif());
         } else {
