@@ -22,8 +22,6 @@ import {
     changeDisplayedColumns,
     changeLockedColumns,
     changeReorderedColumns,
-    resetLoadflowNotif,
-    resetSANotif,
     selectCenterLabelState,
     selectComponentLibrary,
     selectComputedLanguage,
@@ -423,15 +421,6 @@ const App = () => {
     const onChangeTab = useCallback((newTabIndex) => {
         setTabIndex(newTabIndex);
     }, []);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-
-    // if result tab is displayed, clean badge
-    useEffect(() => {
-        if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
-            dispatch(resetSANotif());
-            dispatch(resetLoadflowNotif());
-        }
-    }, [tabIndex, dispatch, currentNode]);
 
     return (
         <div
