@@ -109,7 +109,7 @@ const CreateNodeMenu = ({
             id: 'copyNetworkModificationNode',
         },
         PASTE_MODIFICATION_NODE_ON_NEW_BRANCH: {
-            onRoot: false,
+            onRoot: true,
             action: () => pasteNetworkModificationNode('NEW_BRANCH'),
             id: 'pasteNetworkModificationNodeOnNewBranch',
             disabled: selectedNodeForCopy == null,
