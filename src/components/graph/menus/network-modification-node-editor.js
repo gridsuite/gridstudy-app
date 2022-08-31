@@ -141,7 +141,7 @@ const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
     const currentTreeNode = useSelector((state) => state.currentTreeNode);
 
@@ -500,8 +500,22 @@ const NetworkModificationNodeEditor = () => {
             currentTreeNode.id, // current target node
             Array.from(copiedModifications.modifications.keys())
         )
-            .then()
-            .catch(() => snackError('', 'errDuplicateModificationMsg'));
+            .then((modificationsInFailure) => {
+                if (modificationsInFailure.length > 0) {
+                    console.warn(
+                        'Modifications not pasted:',
+                        modificationsInFailure
+                    );
+                    snackWarning(
+                        modificationsInFailure.length,
+                        'warnDuplicateModificationMsg'
+                    );
+                }
+            })
+            .catch((errmsg) => {
+                console.error('doPasteModification error:', errmsg);
+                snackError('', 'errDuplicateModificationMsg');
+            });
     };
 
     const doEditModification = (modificationUuid) => {
@@ -694,7 +708,13 @@ const NetworkModificationNodeEditor = () => {
                 <Tooltip
                     title={intl.formatMessage(
                         { id: 'NbModification' },
-                        { nb: copiedModifications.modifications.size }
+                        {
+                            nb: copiedModifications.modifications.size,
+                            several:
+                                copiedModifications.modifications.size > 1
+                                    ? 's'
+                                    : '',
+                        }
                     )}
                 >
                     <IconButton

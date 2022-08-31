@@ -919,7 +919,7 @@ export function duplicateModifications(
         body: JSON.stringify(modificationsIdList),
     }).then((response) =>
         response.ok
-            ? response
+            ? response.json()
             : response.text().then((text) => Promise.reject(text))
     );
 }
