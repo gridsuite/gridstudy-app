@@ -13,17 +13,17 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import { InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import makeStyles from '@mui/styles/makeStyles';
 import { useParams } from 'react-router-dom';
 import { deleteEquipment } from '../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import { validateField } from '../util/validation-functions';
+import { useAutocompleteField, useInputForm } from './input-hooks';
+import { EquipmentItem, equipmentStyles } from '@gridsuite/commons-ui';
+import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
+import makeStyles from '@mui/styles/makeStyles';
+import { filledTextField } from './dialogUtils';
 
 const equipmentTypes = [
     'LINE',
@@ -34,20 +34,28 @@ const equipmentTypes = [
     'BATTERY',
     'DANGLING_LINE',
     'HVDC_LINE',
-    'LCC_CONVERTER_STATION',
-    'VSC_CONVERTER_STATION',
+    'HVDC_CONVERTER_STATION',
     'SHUNT_COMPENSATOR',
     'STATIC_VAR_COMPENSATOR',
     'SUBSTATION',
     'VOLTAGE_LEVEL',
 ];
 
-const useStyles = makeStyles(() => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-}));
+const makeItems = (eqpts, usesNames) => {
+    if (!eqpts) return [];
+    return eqpts
+        .map((e) => {
+            let label = usesNames ? e.name : e.id;
+            return {
+                label: label,
+                id: e.id,
+                key: e.id,
+            };
+        })
+        .sort((a, b) => a.label.localeCompare(b.label));
+};
+
+const useEquipmentStyles = makeStyles(equipmentStyles);
 
 /**
  * Dialog to delete an equipment in the network
@@ -59,25 +67,52 @@ const useStyles = makeStyles(() => ({
 const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const classes = useStyles();
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const intl = useIntl();
+    const inputForm = useInputForm();
 
-    const [equipmentId, setEquipmentId] = useState('');
+    const equipmentClasses = useEquipmentStyles();
 
     const [equipmentType, setEquipmentType] = useState('LINE');
 
     const [errors, setErrors] = useState(new Map());
 
-    const handleChangeEquipmentId = (event) => {
-        setEquipmentId(event.target.value);
+    const handleChangeEquipmentType = (event) => {
+        const nextEquipmentType = event.target.value;
+        setEquipmentType(nextEquipmentType);
     };
 
-    const handleChangeEquipmentType = (event) => {
-        setEquipmentType(event.target.value);
-    };
+    const [searchMatchingEquipments, equipmentsFound] =
+        useSearchMatchingEquipments(
+            studyUuid,
+            currentNodeUuid,
+            true,
+            equipmentType,
+            makeItems
+        );
+
+    const [equipmentOrId, equipmentField] = useAutocompleteField({
+        allowNewValue: true,
+        label: intl.formatMessage({
+            id: 'ID',
+        }),
+        getLabel: (option) => option?.label || option?.id || option,
+        validation: { isFieldRequired: true },
+        formProps: filledTextField,
+        inputForm: inputForm,
+        onSearchTermChange: searchMatchingEquipments,
+        values: equipmentsFound,
+        defaultValue: '',
+        renderElement: (props) => (
+            <EquipmentItem
+                classes={equipmentClasses}
+                {...props}
+                key={props.element.key}
+                showsJustText={true}
+            />
+        ),
+    });
 
     function handleDeleteEquipmentError(response, messsageId) {
         const utf8Decoder = new TextDecoder('utf-8');
@@ -85,39 +120,38 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
             .getReader()
             .read()
             .then((value) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: utf8Decoder.decode(value.value),
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: messsageId,
-                        intlRef: intlRef,
-                    },
-                });
+                snackError(utf8Decoder.decode(value.value), messsageId);
             });
     }
 
     const handleSave = () => {
-        let tmpErrors = new Map(errors);
-
-        tmpErrors.set(
-            'equipment-id',
-            validateField(equipmentId, {
-                isFieldRequired: true,
-            })
-        );
-
-        setErrors(tmpErrors);
-
         // Check if error list contains an error
-        let isValid =
-            Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
+        let isValid;
+        if (inputForm) {
+            isValid = inputForm.validate();
+        } else {
+            let errMap = new Map(errors);
+
+            errMap.set(
+                'equipment-id',
+                validateField(equipmentOrId, {
+                    isFieldRequired: true,
+                })
+            );
+            setErrors(errMap);
+            isValid = Array.from(errMap.values())
+                .map((p) => p.error)
+                .every((e) => e);
+        }
 
         if (isValid) {
             deleteEquipment(
                 studyUuid,
                 currentNodeUuid,
-                equipmentType,
-                equipmentId
+                equipmentType.endsWith('CONVERTER_STATION')
+                    ? 'HVDC_CONVERTER_STATION'
+                    : equipmentType,
+                equipmentOrId?.id || equipmentOrId
             ).then((response) => {
                 if (response.status !== 200) {
                     handleDeleteEquipmentError(
@@ -132,7 +166,6 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     };
 
     const clearValues = () => {
-        setEquipmentId('');
         setEquipmentType('LINE');
     };
 
@@ -165,7 +198,6 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                         <FormControl fullWidth size="small">
                             <InputLabel
                                 id="equipment-type-label"
-                                margin={'dense'}
                                 variant={'filled'}
                             >
                                 {intl.formatMessage({ id: 'Type' })}
@@ -190,26 +222,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} align="start">
-                        <TextField
-                            size="small"
-                            fullWidth
-                            id="equipment-id"
-                            label={intl.formatMessage({ id: 'ID' })}
-                            variant="filled"
-                            value={equipmentId}
-                            onChange={handleChangeEquipmentId}
-                            /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-                                which is not the case when no variant is used) */
-                            FormHelperTextProps={{
-                                className: classes.helperText,
-                            }}
-                            {...(errors.get('equipment-id')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('equipment-id')?.errorMsgId,
-                                }),
-                            })}
-                        />
+                        {equipmentField}
                     </Grid>
                 </Grid>
             </DialogContent>

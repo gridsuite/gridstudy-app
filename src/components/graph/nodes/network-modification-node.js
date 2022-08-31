@@ -11,7 +11,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
-import Tooltip from '@mui/material/Tooltip';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
@@ -81,6 +81,9 @@ const useStyles = makeStyles((theme) => ({
     margin: {
         marginLeft: theme.spacing(1.25),
     },
+    tooltip: {
+        maxWidth: '720px',
+    },
 }));
 
 const NetworkModificationNode = (props) => {
@@ -107,45 +110,47 @@ const NetworkModificationNode = (props) => {
                 style={{ background: '#555' }}
                 isConnectable={false}
             />
-            <Tooltip title={props.data.label} placement="top">
-                <Button
+            <Button
+                className={
+                    isSelectedNode()
+                        ? classes.networkModificationSelected
+                        : classes.networkModification
+                }
+            >
+                <div
                     className={
-                        isSelectedNode()
-                            ? classes.networkModificationSelected
-                            : classes.networkModification
+                        props.data.buildStatus === 'BUILT'
+                            ? classes.buildBannerOK
+                            : classes.buildBannerInvalid
                     }
                 >
-                    <div
-                        className={
-                            props.data.buildStatus === 'BUILT'
-                                ? classes.buildBannerOK
-                                : classes.buildBannerInvalid
-                        }
-                    >
-                        {props.data.buildStatus === 'BUILDING' && (
-                            <CircularProgress
-                                size={20}
-                                color="primary"
-                                style={{ margin: 'auto' }}
-                            />
-                        )}
-                    </div>
+                    {props.data.buildStatus === 'BUILDING' && (
+                        <CircularProgress
+                            size={20}
+                            color="primary"
+                            style={{ margin: 'auto' }}
+                        />
+                    )}
+                </div>
 
-                    <div className={classes.labelWrapper}>
-                        <span
-                            style={{
-                                overflow: 'hidden',
-                                display: '-webkit-box',
-                                WebkitLineClamp: '3',
-                                //Usage of a deprecated property because there's no satisfying alternative yet : replace with line-clamp in the future
-                                WebkitBoxOrient: 'vertical',
-                            }}
-                        >
-                            {props.data.label}
-                        </span>
-                    </div>
-                </Button>
-            </Tooltip>
+                <div className={classes.labelWrapper}>
+                    <span
+                        style={{
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            WebkitLineClamp: '3',
+                            //Usage of a deprecated property because there's no satisfying alternative yet : replace with line-clamp in the future
+                            WebkitBoxOrient: 'vertical',
+                        }}
+                    >
+                        <OverflowableText
+                            text={props.data.label}
+                            style={{ width: '100%' }}
+                            tooltipStyle={classes.tooltip}
+                        />
+                    </span>
+                </div>
+            </Button>
 
             <div className={classes.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}

@@ -601,7 +601,7 @@ export function fetchBusesForVoltageLevel(
     const fetchBusesUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
-        voltageLevelId +
+        encodeURIComponent(voltageLevelId) +
         '/buses' +
         '?' +
         urlSearchParams.toString();
@@ -623,7 +623,7 @@ export function fetchBusbarSectionsForVoltageLevel(
     const fetchBusbarSectionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
-        voltageLevelId +
+        encodeURIComponent(voltageLevelId) +
         '/busbar-sections' +
         '?' +
         urlSearchParams.toString();
@@ -1170,23 +1170,12 @@ export function modifyLoad(
         },
         body: JSON.stringify({
             equipmentId: id,
-            equipmentName:
-                name !== undefined ? { value: name, op: 'SET' } : null,
-            loadType: loadType ? { value: loadType, op: 'SET' } : null,
-            activePower:
-                activePower === 0 || activePower
-                    ? { value: activePower, op: 'SET' }
-                    : null,
-            reactivePower:
-                reactivePower === 0 || reactivePower
-                    ? { value: reactivePower, op: 'SET' }
-                    : null,
-            voltageLevelId: voltageLevelId
-                ? { value: voltageLevelId, op: 'SET' }
-                : null,
-            busOrBusbarSectionId: busOrBusbarSectionId
-                ? { value: busOrBusbarSectionId, op: 'SET' }
-                : null,
+            equipmentName: toModificationOperation(name),
+            loadType: toModificationOperation(loadType),
+            activePower: toModificationOperation(activePower),
+            reactivePower: toModificationOperation(reactivePower),
+            voltageLevelId: toModificationOperation(voltageLevelId),
+            busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         }),
     }).then((response) => {
         return response.ok

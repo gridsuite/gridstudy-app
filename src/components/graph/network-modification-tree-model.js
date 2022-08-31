@@ -4,68 +4,67 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { getLayoutedElements } from './layout';
+import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
 
 export default class NetworkModificationTreeModel {
-    treeElements = [];
+    treeNodes = [];
+    treeEdges = [];
 
     isAnyNodeBuilding = false;
 
     updateLayout() {
-        this.treeElements = getLayoutedElements(this.treeElements);
+        this.treeNodes = getLayoutedNodes(this.treeNodes, this.treeEdges);
+        this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
     }
 
-    addChild(newElement, parentId, insertMode) {
+    addChild(newNode, parentId, insertMode) {
         // Add node
-        this.treeElements.push(
-            convertNodetoReactFlowModelNode(newElement, parentId)
-        );
+        this.treeNodes.push(convertNodetoReactFlowModelNode(newNode, parentId));
         // Add edge between node and its parent
-        this.treeElements.push({
-            id: 'e' + parentId + '-' + newElement.id,
+        this.treeEdges.push({
+            id: 'e' + parentId + '-' + newNode.id,
             source: parentId,
-            target: newElement.id,
+            target: newNode.id,
             type: 'smoothstep',
         });
 
         if (insertMode === 'BEFORE' || insertMode === 'AFTER') {
             // remove previous edges between parent and node children
-            const filteredTreeElements = this.treeElements.filter((element) => {
+            const filteredEdges = this.treeEdges.filter((edge) => {
                 return (
-                    (element.source !== parentId ||
-                        !newElement.childrenIds.includes(element.target)) &&
-                    (element.target !== parentId ||
-                        !newElement.childrenIds.includes(element.source))
+                    (edge.source !== parentId ||
+                        !newNode.childrenIds.includes(edge.target)) &&
+                    (edge.target !== parentId ||
+                        !newNode.childrenIds.includes(edge.source))
                 );
             });
             // create new edges between node and its children
-            newElement.childrenIds.forEach((childId) => {
-                filteredTreeElements.push({
-                    id: 'e' + newElement.id + '-' + childId,
-                    source: newElement.id,
+            newNode.childrenIds.forEach((childId) => {
+                filteredEdges.push({
+                    id: 'e' + newNode.id + '-' + childId,
+                    source: newNode.id,
                     target: childId,
                     type: 'smoothstep',
                 });
             });
 
             // fix old children nodes parentUuid when inserting new nodes
-            const nextTreeElements = filteredTreeElements.map((element) => {
-                // skip edges
-                if (newElement.childrenIds.includes(element.id)) {
-                    element.data = {
-                        ...element.data,
-                        parentNodeUuid: newElement.id,
+            const nextEdges = filteredEdges.map((edge) => {
+                if (newNode.childrenIds.includes(edge.id)) {
+                    edge.data = {
+                        ...edge.data,
+                        parentNodeUuid: newNode.id,
                     };
                 }
-                return element;
+                return edge;
             });
 
-            this.treeElements = nextTreeElements;
+            this.treeEdges = nextEdges;
         }
-        if (newElement.children) {
-            newElement.children.forEach((child) => {
-                this.addChild(child, newElement.id);
+        if (newNode.children) {
+            newNode.children.forEach((child) => {
+                this.addChild(child, newNode.id);
             });
         }
     }
@@ -75,30 +74,29 @@ export default class NetworkModificationTreeModel {
     removeNodes(deletedNodes) {
         deletedNodes.forEach((nodeId) => {
             // get edges which have the deleted node as source or target
-            const edges = this.treeElements.filter(
-                (element) =>
-                    element.source === nodeId || element.target === nodeId
+            const edges = this.treeEdges.filter(
+                (edge) => edge.source === nodeId || edge.target === nodeId
             );
             // From the edges array
             // get edges which have the deleted node as source
             const edgesOfSource = edges.filter(
-                (element) => element.source === nodeId
+                (edge) => edge.source === nodeId
             );
             // get edges which have the deleted node as target
             const edgesOfTarget = edges.filter(
-                (element) => element.target === nodeId
+                (edge) => edge.target === nodeId
             );
-            // Remove these edges and the node from the treeElements array
-            const filteredTreeElements = this.treeElements.filter(
-                (element) =>
-                    element.id !== nodeId &&
-                    element.source !== nodeId &&
-                    element.target !== nodeId
+            // Remove these edges and the node from the edges and nodes array
+            const filteredEdges = this.treeEdges.filter(
+                (edge) => edge.source !== nodeId && edge.target !== nodeId
+            );
+            const filteredNodes = this.treeNodes.filter(
+                (node) => node.id !== nodeId
             );
             // Recreate edges by reparenting previously targeted nodes to previous source nodes
             edgesOfTarget.forEach((edgeOfTarget) => {
                 edgesOfSource.forEach((edgeOfSource) => {
-                    filteredTreeElements.push({
+                    filteredEdges.push({
                         id:
                             'e' +
                             edgeOfTarget.source +
@@ -110,47 +108,45 @@ export default class NetworkModificationTreeModel {
                     });
                 });
             });
+            this.treeEdges = filteredEdges;
 
             // fix parentNodeUuid of children
-            const nodeToDelete = this.treeElements.find(
-                (el) => el.id === nodeId
-            );
+            const nodeToDelete = this.treeNodes.find((el) => el.id === nodeId);
 
-            const nextTreeElements = filteredTreeElements.map((element) => {
-                // skip edges
-                if (element.data?.parentNodeUuid === nodeId) {
-                    element.data = {
-                        ...element.data,
+            const nextTreeNodes = filteredNodes.map((node) => {
+                if (node.data?.parentNodeUuid === nodeId) {
+                    node.data = {
+                        ...node.data,
                         parentNodeUuid: nodeToDelete.data?.parentNodeUuid,
                     };
                 }
-                return element;
+                return node;
             });
 
-            this.treeElements = nextTreeElements;
+            this.treeNodes = nextTreeNodes;
         });
     }
 
     updateNodes(updatedNodes) {
         updatedNodes.forEach((node) => {
-            const indexModifiedNode = this.treeElements.findIndex(
-                (element) => element.id === node.id
+            const indexModifiedNode = this.treeNodes.findIndex(
+                (othernode) => othernode.id === node.id
             );
             if (indexModifiedNode !== -1) {
-                this.treeElements[indexModifiedNode].data = {
-                    ...this.treeElements[indexModifiedNode].data,
+                this.treeNodes[indexModifiedNode].data = {
+                    ...this.treeNodes[indexModifiedNode].data,
                     label: node.name,
                     buildStatus: node.buildStatus,
                     readOnly: node.readOnly,
                 };
             }
         });
-        this.treeElements = [...this.treeElements];
+        this.treeNodes = [...this.treeNodes];
     }
 
     setTreeElements(elements) {
         // handle root node
-        this.treeElements.push(
+        this.treeNodes.push(
             convertNodetoReactFlowModelNode(elements, undefined)
         );
         // handle root children
@@ -171,19 +167,19 @@ export default class NetworkModificationTreeModel {
 
     setBuildingStatus() {
         this.isAnyNodeBuilding =
-            this.treeElements.find(
+            this.treeNodes.find(
                 (node) => node?.data?.buildStatus === 'BUILDING'
             ) !== undefined;
     }
 
     setCaseName(newCaseName) {
         if (
-            this.treeElements.length > 0 &&
-            this.treeElements[0].data &&
+            this.treeNodes.length > 0 &&
+            this.treeNodes[0].data &&
             newCaseName
         ) {
-            this.treeElements[0].data = {
-                ...this.treeElements[0].data,
+            this.treeNodes[0].data = {
+                ...this.treeNodes[0].data,
                 caseName: newCaseName,
             };
         }

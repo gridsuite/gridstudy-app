@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCallback } from 'react';
 import { parse, stringify } from 'qs';
 import { SvgType } from './single-line-diagram';
@@ -23,7 +23,7 @@ export function getArray(value) {
 const arrayFormat = 'indices';
 
 export const useSingleLineDiagram = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const location = useLocation();
 
     const addToSearchParams = useCallback(
@@ -38,15 +38,16 @@ export const useSingleLineDiagram = () => {
                     return { id, type }; // filter to only id, type
                 });
             current.push({ id, type, lastOpen: true });
-            history.replace(
+            navigate(
                 location.pathname +
                     stringify(
                         { views: current },
                         { arrayFormat, addQueryPrefix: true }
-                    )
+                    ),
+                { replace: true }
             );
         },
-        [location.search, location.pathname, history]
+        [location.search, location.pathname, navigate]
     );
 
     const showVoltageLevelDiagram = useCallback(
@@ -73,12 +74,12 @@ export const useSingleLineDiagram = () => {
                 arrayFormat,
             });
             if (idsToRemove === undefined) {
-                history.replace(location.pathname);
+                navigate(location.pathname, { replace: true });
             } else {
                 const views = getArray(queryParams['views']).filter(
                     ({ id }) => !toRemove.has(id)
                 );
-                history.replace(
+                navigate(
                     location.pathname +
                         stringify(
                             { views },
@@ -86,11 +87,12 @@ export const useSingleLineDiagram = () => {
                                 addQueryPrefix: true,
                                 arrayFormat,
                             }
-                        )
+                        ),
+                    { replace: true }
                 );
             }
         },
-        [history, location.search, location.pathname]
+        [navigate, location.search, location.pathname]
     );
 
     return [closeDiagram, showVoltageLevelDiagram, showSubstationDiagram];

@@ -241,8 +241,7 @@ const AppTopBar = ({
         if (
             isNodeBuilt(currentNode) &&
             (securityAnalysisStatusNode === 'CONVERGED' ||
-                securityAnalysisStatusNode === 'DIVERGED' ||
-                securityAnalysisStatusNode === 'RUNNING')
+                securityAnalysisStatusNode === 'DIVERGED')
         ) {
             dispatch(addSANotif());
         } else {
@@ -279,7 +278,6 @@ const AppTopBar = ({
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 withElementsSearch={true}
-                searchDisabled={!isNodeBuilt(currentNode)}
                 searchingLabel={intl.formatMessage({
                     id: 'equipment_search/label',
                 })}
@@ -296,6 +294,14 @@ const AppTopBar = ({
                 )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
+                searchTermDisabled={!isNodeBuilt(currentNode)}
+                initialSearchTerm={
+                    !isNodeBuilt(currentNode)
+                        ? intl.formatMessage({
+                              id: 'InvalidNode',
+                          })
+                        : ''
+                }
             >
                 {/* Add current Node name between Logo and Tabs */}
                 <Box
