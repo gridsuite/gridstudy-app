@@ -89,7 +89,7 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
     });
 
     useEffect(() => {
-        onChange(index, { pmin: p, qminPmin: qminP, qmaxPmin: qmaxP });
+        onChange(index, { p: p, qminP: qminP, qmaxP: qmaxP });
         setIsFieldRequired(p || qminP || qmaxP);
     }, [index, onChange, p, qminP, qmaxP]);
 
@@ -132,6 +132,7 @@ const GeneratorCreationDialog = ({
     const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
 
     const toFormValues = (generator) => {
+        console.log('test : ', generator);
         return {
             equipmentId: generator.id + '(1)',
             equipmentName: generator.name,
@@ -146,7 +147,7 @@ const GeneratorCreationDialog = ({
             voltageLevelId: generator.voltageLevelId,
             busOrBusbarSectionId: null,
             marginalCost: generator.marginalCost,
-            participate: generator.activePowerControlOn,
+            participate: generator.frequencyRegulation,
             droop: generator.droop,
             transientReactance: generator.transientReactance,
             reactiveCapabilityCurvePt: generator.reactiveCapabilityCurvePt,
@@ -435,7 +436,9 @@ const GeneratorCreationDialog = ({
                 regulatingTerminal?.equipmentSection?.type,
                 frequencyRegulation,
                 droop,
-                reactiveCapabilityCurveOn
+                reactiveCapabilityCurve ? maximumReactivePower : null,
+                reactiveCapabilityCurve ? minimumReactivePower : null,
+                reactiveCapabilityCurve ? null : reactiveCapabilityCurveOn
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,

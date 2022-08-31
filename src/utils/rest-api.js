@@ -1286,6 +1286,8 @@ export function createGenerator(
     regulatingTerminalType,
     frequencyRegulation,
     droop,
+    maximumReactivePower,
+    minimumReactivePower,
     reactiveCapabilityCurveOn
 ) {
     let createGeneratorUrl;
@@ -1302,6 +1304,8 @@ export function createGenerator(
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/generators';
     }
+
+    console.log('Test : ', reactiveCapabilityCurveOn);
     return backendFetch(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1323,11 +1327,13 @@ export function createGenerator(
             busOrBusbarSectionId: busOrBusbarSectionId,
             marginalCost: marginalCost,
             transientReactance: transientReactance,
-            transformerReactance: transformerReactance,
+            stepUpTransformerReactance: transformerReactance,
             regulatingTerminalId: regulatingTerminalId,
             regulatingTerminalType: regulatingTerminalType,
-            frequencyRegulation: frequencyRegulation,
+            participate: frequencyRegulation,
             droop: droop,
+            maximumReactivePower: maximumReactivePower,
+            minimumReactivePower: minimumReactivePower,
             points: reactiveCapabilityCurveOn,
         }),
     }).then((response) => {
