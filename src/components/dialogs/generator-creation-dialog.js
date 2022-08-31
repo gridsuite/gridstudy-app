@@ -428,7 +428,7 @@ const GeneratorCreationDialog = ({
                 connectivity.voltageLevel.id,
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
-                editData ? editData.uuid : undefined,
+                editData?.uuid,
                 marginalCost ? marginalCost : null,
                 transientReactance ? transientReactance : null,
                 transformerReactance ? transformerReactance : null,
