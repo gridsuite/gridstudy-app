@@ -1833,7 +1833,7 @@ export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
 }
 
 export function fetchCaseName(studyUuid) {
-    console.info('Fetching case infos');
+    console.info('Fetching case name');
     const url = getStudyUrl(studyUuid) + '/case/name';
     console.debug(url);
 
