@@ -151,10 +151,7 @@ const NetworkModificationNodeEditor = () => {
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
     const [selectedItemsCopyable, setSelectedItemsCopyable] = useState(false);
-    const [copiedModifications, setCopiedModifications] = useState({
-        sourceNodeId: currentTreeNode?.id,
-        modifications: new Set(),
-    });
+    const [copiedModifications, setCopiedModifications] = useState(new Set());
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -487,18 +484,14 @@ const NetworkModificationNodeEditor = () => {
                 newCopySet.add(item.uuid);
             }
         });
-        setCopiedModifications({
-            sourceNodeId: currentTreeNode.id,
-            modifications: newCopySet,
-        });
+        setCopiedModifications(newCopySet);
     };
 
     const doPasteModification = () => {
         duplicateModifications(
             studyUuid,
-            copiedModifications.sourceNodeId,
-            currentTreeNode.id, // current target node
-            Array.from(copiedModifications.modifications.keys())
+            currentTreeNode.id,
+            Array.from(copiedModifications.keys())
         )
             .then((modificationsInFailure) => {
                 if (modificationsInFailure.length > 0) {
@@ -709,11 +702,8 @@ const NetworkModificationNodeEditor = () => {
                     title={intl.formatMessage(
                         { id: 'NbModification' },
                         {
-                            nb: copiedModifications.modifications.size,
-                            several:
-                                copiedModifications.modifications.size > 1
-                                    ? 's'
-                                    : '',
+                            nb: copiedModifications.size,
+                            several: copiedModifications.size > 1 ? 's' : '',
                         }
                     )}
                 >
@@ -722,8 +712,7 @@ const NetworkModificationNodeEditor = () => {
                         size={'small'}
                         className={classes.toolbarIcon}
                         disabled={
-                            !(copiedModifications.modifications.size > 0) ||
-                            isAnyNodeBuilding
+                            !(copiedModifications.size > 0) || isAnyNodeBuilding
                         }
                     >
                         <ContentPasteIcon />

@@ -896,7 +896,6 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
 
 export function duplicateModifications(
     studyUuid,
-    sourceNodeId,
     targetNodeId,
     modificationsIdList
 ) {
@@ -906,9 +905,7 @@ export function duplicateModifications(
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
-        encodeURIComponent(targetNodeId) +
-        '?sourceNodeUuid=' +
-        sourceNodeId;
+        encodeURIComponent(targetNodeId);
 
     return backendFetch(duplicateModificationUrl, {
         method: 'PUT',
