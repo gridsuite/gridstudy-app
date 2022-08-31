@@ -90,7 +90,7 @@ const CreateNodeMenu = ({
         },
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
-            action: () => createNetworkModificationNode('NEW_BRANCH'),
+            action: () => createNetworkModificationNode('CHILD'),
             id: 'createNetworkModificationNode',
         },
         INSERT_MODIFICATION_NODE_BEFORE: {
@@ -108,9 +108,9 @@ const CreateNodeMenu = ({
             action: () => copyNetworkModificationNode(),
             id: 'copyNetworkModificationNode',
         },
-        PASTE_MODIFICATION_NODE_ON_NEW_BRANCH: {
+        PASTE_MODIFICATION_NODE: {
             onRoot: true,
-            action: () => pasteNetworkModificationNode('NEW_BRANCH'),
+            action: () => pasteNetworkModificationNode('CHILD'),
             id: 'pasteNetworkModificationNodeOnNewBranch',
             disabled: selectedNodeForCopy == null,
         },
