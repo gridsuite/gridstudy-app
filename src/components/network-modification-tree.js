@@ -19,12 +19,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     setModificationsDrawerOpen,
     setCurrentTreeNode,
+    STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
-import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
@@ -138,8 +138,8 @@ const NetworkModificationTree = ({
             focusParams.current;
         if (prevTreeDisplay) {
             if (
-                prevTreeDisplay.display === StudyDisplayMode.TREE &&
-                studyMapTreeDisplay === StudyDisplayMode.HYBRID
+                prevTreeDisplay.display === STUDY_DISPLAY_MODE.TREE &&
+                studyMapTreeDisplay === STUDY_DISPLAY_MODE.HYBRID
             ) {
                 setViewport({
                     x: x - (prevTreeDisplay.width + nodeEditorShift) / 4,
@@ -147,8 +147,8 @@ const NetworkModificationTree = ({
                     zoom: zoom,
                 });
             } else if (
-                prevTreeDisplay.display === StudyDisplayMode.HYBRID &&
-                studyMapTreeDisplay === StudyDisplayMode.TREE
+                prevTreeDisplay.display === STUDY_DISPLAY_MODE.HYBRID &&
+                studyMapTreeDisplay === STUDY_DISPLAY_MODE.TREE
             ) {
                 setViewport({
                     x: x + (prevTreeDisplay.width + nodeEditorShift) / 2,
