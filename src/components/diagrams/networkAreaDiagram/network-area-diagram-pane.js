@@ -19,6 +19,7 @@ export function NetworkAreaDiagramPane({
     onClose,
     align,
     disabled,
+    visible,
 }) {
     const [depth, setDepth] = useState(0);
 
@@ -34,30 +35,33 @@ export function NetworkAreaDiagramPane({
     displayedVoltageLevelIdRef.current = voltageLevelsIds[0];
 
     let displayedVoltageLevels = [];
-    if (network) {
-        if (voltageLevelsIds) {
-            voltageLevelsIds.forEach((id) =>
-                displayedVoltageLevels.push(network.getVoltageLevel(id))
-            );
-        }
-    }
-
     let nadTitle = '';
     let svgUrl = '';
-    if (displayedVoltageLevels) {
-        displayedVoltageLevels.forEach((vl) => {
-            const name = vl?.name;
-            if (name !== undefined) {
-                nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
-            }
-        });
 
-        svgUrl = getNetworkAreaDiagramUrl(
-            studyUuid,
-            currentNode?.id,
-            voltageLevelsIds,
-            depth
-        );
+    if (visible) {
+        if (network) {
+            if (voltageLevelsIds) {
+                voltageLevelsIds.forEach((id) =>
+                    displayedVoltageLevels.push(network.getVoltageLevel(id))
+                );
+            }
+        }
+
+        if (displayedVoltageLevels) {
+            displayedVoltageLevels.forEach((vl) => {
+                const name = vl?.name;
+                if (name !== undefined) {
+                    nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
+                }
+            });
+
+            svgUrl = getNetworkAreaDiagramUrl(
+                studyUuid,
+                currentNode?.id,
+                voltageLevelsIds,
+                depth
+            );
+        }
     }
 
     return (
@@ -100,4 +104,5 @@ NetworkAreaDiagramPane.propTypes = {
     onClose: PropTypes.func,
     align: PropTypes.string,
     disabled: PropTypes.bool,
+    visible: PropTypes.bool,
 };

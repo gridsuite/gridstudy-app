@@ -452,3 +452,18 @@ export function setModificationsInProgress(isModificationsInProgress) {
         isModificationsInProgress: isModificationsInProgress,
     };
 }
+
+export const STUDY_DISPLAY_MODE = {
+    MAP: 'Map',
+    TREE: 'Tree',
+    HYBRID: 'Hybrid',
+};
+
+export const SET_STUDY_DISPLAY_MODE = 'SET_STUDY_DISPLAY_MODE';
+
+export function setStudyDisplayMode(studyDisplayMode) {
+    return {
+        type: SET_STUDY_DISPLAY_MODE,
+        studyDisplayMode: studyDisplayMode,
+    };
+}

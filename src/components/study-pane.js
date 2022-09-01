@@ -15,6 +15,7 @@ import {
     filteredNominalVoltagesUpdated,
     fullScreenNetworkAreaDiagramId,
     openNetworkAreaDiagram,
+    STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { equipments } from './network/network-equipments';
 import Paper from '@mui/material/Paper';
@@ -86,12 +87,6 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
-export const StudyDisplayMode = {
-    MAP: 'Map',
-    TREE: 'Tree',
-    HYBRID: 'Hybrid',
-};
-
 const StudyPane = ({
     studyUuid,
     network,
@@ -123,9 +118,7 @@ const StudyPane = ({
         Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
     );
 
-    const [studyDisplayMode, setStudyDisplayMode] = useState(
-        StudyDisplayMode.HYBRID
-    );
+    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
     const filteredNominalVoltages = useSelector(
         (state) => state.filteredNominalVoltages
@@ -214,10 +207,7 @@ const StudyPane = ({
                             flexDirection: 'row',
                         }}
                     >
-                        <HorizontalToolbar
-                            setStudyDisplayMode={setStudyDisplayMode}
-                            studyDisplayMode={studyDisplayMode}
-                        />
+                        <HorizontalToolbar />
                     </div>
                     <div
                         style={{
@@ -230,11 +220,12 @@ const StudyPane = ({
                         <div
                             style={{
                                 display:
-                                    studyDisplayMode === StudyDisplayMode.MAP
+                                    studyDisplayMode === STUDY_DISPLAY_MODE.MAP
                                         ? 'none'
                                         : null,
                                 width:
-                                    studyDisplayMode === StudyDisplayMode.HYBRID
+                                    studyDisplayMode ===
+                                    STUDY_DISPLAY_MODE.HYBRID
                                         ? '50%'
                                         : '100%',
                             }}
@@ -251,11 +242,12 @@ const StudyPane = ({
                             )}
                             style={{
                                 display:
-                                    studyDisplayMode === StudyDisplayMode.TREE
+                                    studyDisplayMode === STUDY_DISPLAY_MODE.TREE
                                         ? 'none'
                                         : null,
                                 width:
-                                    studyDisplayMode === StudyDisplayMode.HYBRID
+                                    studyDisplayMode ===
+                                    STUDY_DISPLAY_MODE.HYBRID
                                         ? '50%'
                                         : '100%',
                             }}
@@ -275,7 +267,11 @@ const StudyPane = ({
                                     /* TODO do we move redux param to container */
                                     studyUuid={studyUuid}
                                     network={network}
-                                    visible={props.view === StudyView.MAP}
+                                    visible={
+                                        props.view === StudyView.MAP &&
+                                        studyDisplayMode !==
+                                            STUDY_DISPLAY_MODE.TREE
+                                    }
                                     updatedLines={updatedLines}
                                     useName={useName}
                                     lineFullPath={lineFullPath}
@@ -324,7 +320,10 @@ const StudyPane = ({
                                 )}
                                 currentNode={currentNode}
                                 disabled={disabled}
-                                visible={props.view === StudyView.MAP}
+                                visible={
+                                    props.view === StudyView.MAP &&
+                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                                }
                             />
 
                             <NetworkAreaDiagramPane
@@ -337,6 +336,10 @@ const StudyPane = ({
                                 onClose={closeNetworkAreaDiagram}
                                 disabled={disabled}
                                 align="left"
+                                visible={
+                                    props.view === StudyView.MAP &&
+                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
+                                }
                             />
                         </div>
                     </div>

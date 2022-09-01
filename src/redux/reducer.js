@@ -58,6 +58,8 @@ import {
     FAVORITE_SENSI_CONTINGENCY_LISTS,
     FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
     FAVORITE_SENSI_QUAD_FILTERS_LISTS,
+    STUDY_DISPLAY_MODE,
+    SET_STUDY_DISPLAY_MODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -136,6 +138,7 @@ const initialState = {
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
+    studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     ...paramsInitialState,
 };
 
@@ -431,6 +434,13 @@ export const reducer = createReducer(initialState, {
     },
     [SET_MODIFICATIONS_IN_PROGRESS]: (state, action) => {
         state.isModificationsInProgress = action.isModificationsInProgress;
+    },
+    [SET_STUDY_DISPLAY_MODE]: (state, action) => {
+        if (
+            Object.values(STUDY_DISPLAY_MODE).includes(action.studyDisplayMode)
+        ) {
+            state.studyDisplayMode = action.studyDisplayMode;
+        }
     },
 });
 
