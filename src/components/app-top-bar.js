@@ -311,10 +311,7 @@ const AppTopBar = ({
                 )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
-                searchTermDisabled={
-                    !isNodeBuilt(currentNode) ||
-                    studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                }
+                searchTermDisabled={getDisableReason() !== ''}
                 initialSearchTerm={getDisableReason()}
             >
                 {/* Add current Node name between Logo and Tabs */}
