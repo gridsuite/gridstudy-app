@@ -29,7 +29,7 @@ import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
-import { useStoreState } from 'react-flow-renderer';
+import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
@@ -88,7 +88,7 @@ export const NetworkModificationTreePane = ({
     );
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const width = useStoreState((state) => state.width);
+    const width = useStore((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
 
     const updateNodes = useCallback(

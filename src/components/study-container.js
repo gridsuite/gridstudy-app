@@ -324,8 +324,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
                 // To get positions we must get the node from the model class
                 const ModelFirstSelectedNode = {
-                    ...networkModificationTreeModel.treeElements.find(
-                        (el) => el.id === firstSelectedNode.id
+                    ...networkModificationTreeModel.treeNodes.find(
+                        (node) => node.id === firstSelectedNode.id
                     ),
                 };
                 currentNodeRef.current = ModelFirstSelectedNode;
