@@ -473,7 +473,12 @@ const NetworkModificationNodeEditor = () => {
             studyUuid,
             currentTreeNode?.id,
             [...selectedItems.values()].map((item) => item.uuid)
-        ).then();
+        )
+            .then()
+            .catch((errmsg) => {
+                console.error('doDeleteModification error:', errmsg);
+                snackError('', 'errDeleteModificationMsg');
+            });
     };
 
     const doCopyModification = () => {
