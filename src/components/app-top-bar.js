@@ -208,7 +208,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         fetchSensitivityAnalysisStatus,
         sensitivityAnalysisStatusInvalidations
     );
-  
+
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
     const showVoltageLevelDiagram = useCallback(
