@@ -413,10 +413,9 @@ export const reducer = createReducer(initialState, {
 });
 
 function synchCurrentTreeNode(state, nextCurrentNodeUuid) {
-    const nextCurrentNode =
-        state.networkModificationTreeModel?.treeElements.find(
-            (entry) => entry?.id === nextCurrentNodeUuid
-        );
+    const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
+        (node) => node?.id === nextCurrentNodeUuid
+    );
     //  we need to overwrite state.currentTreeNode to consider label change for example.
     state.currentTreeNode = { ...nextCurrentNode };
 }

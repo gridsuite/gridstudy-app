@@ -8,8 +8,8 @@
 import { Box, Tooltip } from '@mui/material';
 import ReactFlow, {
     Controls,
-    useStoreState,
-    useZoomPanHelper,
+    useStore,
+    useReactFlow,
     ControlButton,
     MiniMap,
 } from 'react-flow-renderer';
@@ -86,15 +86,13 @@ const NetworkModificationTree = ({
         }
     };
 
-    const onElementClick = useCallback(
-        (event, element) => {
+    const onNodeClick = useCallback(
+        (event, node) => {
             dispatch(
-                setModificationsDrawerOpen(
-                    element.type === 'NETWORK_MODIFICATION'
-                )
+                setModificationsDrawerOpen(node.type === 'NETWORK_MODIFICATION')
             );
-            if (!isSameNode(currentNode, element))
-                dispatch(setCurrentTreeNode(element));
+            if (!isSameNode(currentNode, node))
+                dispatch(setCurrentTreeNode(node));
         },
         [dispatch, currentNode]
     );
@@ -111,11 +109,11 @@ const NetworkModificationTree = ({
         setIsMoving(false);
     }, []);
 
-    const [x, y, zoom] = useStoreState((state) => state.transform);
+    const [x, y, zoom] = useStore((state) => state.transform);
 
-    const { transform, fitView } = useZoomPanHelper();
+    const { setViewport, fitView } = useReactFlow();
 
-    const onLoad = useCallback((reactFlowInstance) => {
+    const onInit = useCallback((reactFlowInstance) => {
         reactFlowInstance.fitView();
     }, []);
 
@@ -126,7 +124,7 @@ const NetworkModificationTree = ({
         x,
         y,
         zoom,
-        transform,
+        setViewport,
         prevTreeDisplay,
     };
 
@@ -136,13 +134,14 @@ const NetworkModificationTree = ({
         const nodeEditorShift = isModificationsDrawerOpen
             ? DRAWER_NODE_EDITOR_WIDTH
             : 0;
-        const { x, y, zoom, transform, prevTreeDisplay } = focusParams.current;
+        const { x, y, zoom, setViewport, prevTreeDisplay } =
+            focusParams.current;
         if (prevTreeDisplay) {
             if (
                 prevTreeDisplay.display === STUDY_DISPLAY_MODE.TREE &&
                 studyMapTreeDisplay === STUDY_DISPLAY_MODE.HYBRID
             ) {
-                transform({
+                setViewport({
                     x: x - (prevTreeDisplay.width + nodeEditorShift) / 4,
                     y: y,
                     zoom: zoom,
@@ -151,7 +150,7 @@ const NetworkModificationTree = ({
                 prevTreeDisplay.display === STUDY_DISPLAY_MODE.HYBRID &&
                 studyMapTreeDisplay === STUDY_DISPLAY_MODE.TREE
             ) {
-                transform({
+                setViewport({
                     x: x + (prevTreeDisplay.width + nodeEditorShift) / 2,
                     y: y,
                     zoom: zoom,
@@ -161,15 +160,15 @@ const NetworkModificationTree = ({
     }, [studyMapTreeDisplay, isModificationsDrawerOpen]);
 
     useEffect(() => {
-        const { x, y, zoom, transform } = focusParams.current;
+        const { x, y, zoom, setViewport } = focusParams.current;
         if (isModificationsDrawerOpen) {
-            transform({
+            setViewport({
                 x: x - DRAWER_NODE_EDITOR_WIDTH / 2,
                 y: y,
                 zoom: zoom,
             });
         } else {
-            transform({
+            setViewport({
                 x: x + DRAWER_NODE_EDITOR_WIDTH / 2,
                 y: y,
                 zoom: zoom,
@@ -183,11 +182,13 @@ const NetworkModificationTree = ({
                 style={{
                     cursor: isMoving ? 'grabbing' : 'grab',
                 }}
-                elements={treeModel ? treeModel.treeElements : []}
+                nodes={treeModel ? treeModel.treeNodes : []}
+                edges={treeModel ? treeModel.treeEdges : []}
                 onNodeContextMenu={onNodeContextMenu}
-                onElementClick={onElementClick}
+                onNodeClick={onNodeClick}
+                //TODO why onMove instead of onMoveStart
                 onMove={onMove}
-                onLoad={onLoad}
+                onInit={onInit}
                 onMoveEnd={onMoveEnd}
                 elementsSelectable
                 selectNodesOnDrag={false}

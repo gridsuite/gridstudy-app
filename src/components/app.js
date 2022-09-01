@@ -10,11 +10,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-    Redirect,
+    Navigate,
     Route,
-    Switch,
-    useHistory,
+    Routes,
     useLocation,
+    useMatch,
+    useNavigate,
 } from 'react-router-dom';
 
 import { StudyView } from './study-pane';
@@ -50,7 +51,6 @@ import {
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
-import { useRouteMatch } from 'react-router';
 import { FormattedMessage } from 'react-intl';
 
 import {
@@ -112,7 +112,7 @@ const App = () => {
 
     const [userManager, setUserManager] = useState(noUserManager);
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const dispatch = useDispatch();
 
@@ -290,16 +290,14 @@ const App = () => {
 
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
-        useRouteMatch({
+        useMatch({
             path: '/silent-renew-callback',
-            exact: true,
         })
     );
 
     const isStudyPane =
-        useRouteMatch({
+        useMatch({
             path: '/studies/:studyUuid',
-            exact: true,
         }) !== null;
 
     useEffect(() => {
@@ -329,7 +327,10 @@ const App = () => {
                                 error.message ===
                                     'authority mismatch on settings vs. signin state'
                             ) {
-                                sessionStorage.setItem(oidcHackReloaded, true);
+                                sessionStorage.setItem(
+                                    oidcHackReloaded,
+                                    'true'
+                                );
                                 console.log(
                                     'Hack oidc, reload page to make login work'
                                 );
@@ -465,36 +466,51 @@ const App = () => {
                     }}
                 >
                     {user !== null ? (
-                        <Switch>
-                            <Route exact path="/studies/:studyUuid">
-                                <StudyContainer
-                                    view={STUDY_VIEWS[tabIndex]}
-                                    onChangeTab={onChangeTab}
-                                />
-                            </Route>
-                            <Route exact path="/sign-in-callback">
-                                <Redirect to={getPreLoginPath() || '/'} />
-                            </Route>
-                            <Route exact path="/logout-callback">
-                                <h1>
-                                    Error: logout failed; you are still logged
-                                    in.
-                                </h1>
-                            </Route>
-                            <Route>
-                                <PageNotFound
-                                    message={
-                                        <FormattedMessage id="PageNotFound" />
-                                    }
-                                />
-                            </Route>
-                        </Switch>
+                        <Routes>
+                            <Route
+                                path="/studies/:studyUuid"
+                                element={
+                                    <StudyContainer
+                                        view={STUDY_VIEWS[tabIndex]}
+                                        onChangeTab={onChangeTab}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/sign-in-callback"
+                                element={
+                                    <Navigate
+                                        replace
+                                        to={getPreLoginPath() || '/'}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="/logout-callback"
+                                element={
+                                    <h1>
+                                        Error: logout failed; you are still
+                                        logged in.
+                                    </h1>
+                                }
+                            />
+                            <Route
+                                path="*"
+                                element={
+                                    <PageNotFound
+                                        message={
+                                            <FormattedMessage id="PageNotFound" />
+                                        }
+                                    />
+                                }
+                            />
+                        </Routes>
                     ) : (
                         <AuthenticationRouter
                             userManager={userManager}
                             signInCallbackError={signInCallbackError}
                             dispatch={dispatch}
-                            history={history}
+                            navigate={navigate}
                             location={location}
                         />
                     )}
