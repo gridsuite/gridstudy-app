@@ -24,7 +24,7 @@ import {
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchPath,
-    fetchCaseInfos,
+    fetchCaseName,
     fetchSensitivityAnalysisStatus,
 } from '../utils/rest-api';
 import {
@@ -326,7 +326,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 networkModificationTreeModel.setTreeElements(tree);
                 networkModificationTreeModel.updateLayout();
 
-                fetchCaseInfos(studyUuid)
+                fetchCaseName(studyUuid)
                     .then((res) => {
                         if (res) {
                             networkModificationTreeModel.setCaseName(res);
