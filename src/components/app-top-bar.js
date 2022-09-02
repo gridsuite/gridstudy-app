@@ -237,6 +237,7 @@ const AppTopBar = ({
         dispatch,
         loadFlowInfosNode?.loadFlowResult,
         loadFlowInfosNode?.loadFlowStatus,
+        tabIndex,
         user,
     ]);
 
@@ -250,7 +251,7 @@ const AppTopBar = ({
         } else {
             dispatch(resetSANotif());
         }
-    }, [currentNode, dispatch, securityAnalysisStatusNode, user]);
+    }, [currentNode, dispatch, securityAnalysisStatusNode, tabIndex, user]);
 
     function showParameters() {
         setParametersOpen(true);
