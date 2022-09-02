@@ -437,6 +437,7 @@ export const useRegulatingTerminalValue = ({
         if (!voltageLevelOptionsPromise) return;
 
         voltageLevelOptionsPromise.then((values) => {
+            console.log('AAAAA values : ', values);
             setVoltageLevelOptions(
                 Array.from(values, (val) => val.voltageLevel).sort((a, b) =>
                     a.id.localeCompare(b.id)

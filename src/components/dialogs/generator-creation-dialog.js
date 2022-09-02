@@ -176,6 +176,7 @@ const GeneratorCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            console.log('AAAAAAAAA : ', editData);
             setFormValues(editData);
         }
     }, [editData]);
@@ -339,8 +340,8 @@ const GeneratorCreationDialog = ({
             disabled: !voltageRegulation,
             voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
-            busOrBusbarSectionIdDefaultValue:
-                formValues?.busOrBusbarSectionId || null,
+            equipmentSectionIdDefaultValue:
+                formValues?.regulatingTerminalId || null,
         });
 
     const [frequencyRegulation, frequencyRegulationField] = useBooleanValue({
