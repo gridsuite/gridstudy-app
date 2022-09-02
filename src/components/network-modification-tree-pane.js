@@ -19,13 +19,13 @@ import {
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
+    STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
-import { StudyDisplayMode } from './study-pane';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import {
@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 const usePreviousTreeDisplay = (display, width) => {
     const ref = useRef();
     useEffect(() => {
-        if (display !== StudyDisplayMode.MAP) {
+        if (display !== STUDY_DISPLAY_MODE.MAP) {
             ref.current = { display, width };
         }
     }, [display, width]);
@@ -287,7 +287,7 @@ export const NetworkModificationTreePane = ({
                         drawerClassName={classes.nodeEditor}
                         drawerShiftClassName={classes.nodeEditorShift}
                         anchor={
-                            prevTreeDisplay === StudyDisplayMode.TREE
+                            prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
                                 ? 'right'
                                 : 'left'
                         }
