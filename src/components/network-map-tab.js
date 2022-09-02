@@ -91,7 +91,7 @@ export const NetworkMapTab = ({
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
-    const disabled = !isNodeBuilt(currentNode);
+    const disabled = !visible || !isNodeBuilt(currentNode);
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({

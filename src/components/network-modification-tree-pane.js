@@ -18,18 +18,18 @@ import {
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
+    STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
-import { StudyDisplayMode } from './study-pane';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
-import { useStoreState } from 'react-flow-renderer';
+import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 const usePreviousTreeDisplay = (display, width) => {
     const ref = useRef();
     useEffect(() => {
-        if (display !== StudyDisplayMode.MAP) {
+        if (display !== STUDY_DISPLAY_MODE.MAP) {
             ref.current = { display, width };
         }
     }, [display, width]);
@@ -88,7 +88,7 @@ export const NetworkModificationTreePane = ({
     );
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const width = useStoreState((state) => state.width);
+    const width = useStore((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
 
     const updateNodes = useCallback(
@@ -266,7 +266,7 @@ export const NetworkModificationTreePane = ({
                         drawerClassName={classes.nodeEditor}
                         drawerShiftClassName={classes.nodeEditorShift}
                         anchor={
-                            prevTreeDisplay === StudyDisplayMode.TREE
+                            prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
                                 ? 'right'
                                 : 'left'
                         }
