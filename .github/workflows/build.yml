@@ -7,7 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
           matrix:
-            node: [ lts/erbium, lts/fermium, lts/gallium, latest ]
+            node: [ lts/erbium, lts/fermium ]
         name: Node ${{ matrix.node }} sample
 
         steps:
