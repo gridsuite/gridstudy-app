@@ -2,7 +2,8 @@
     "name": "gridstudy-app",
     "version": "0.1.0",
     "engines": {
-        "node": ">=12"
+        "npm": "<=6",
+        "node": ">=12 <=14"
     },
     "homepage": ".",
     "private": true,
