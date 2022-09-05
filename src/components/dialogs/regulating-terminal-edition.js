@@ -266,8 +266,6 @@ RegulatingTerminalEdition.propTypes = {
     onChangeVoltageLevel: PropTypes.func.isRequired,
     onChangeEquipmentSection: PropTypes.func.isRequired,
     direction: PropTypes.string,
-    errorVoltageLevel: PropTypes.bool,
-    helperTextVoltageLevel: PropTypes.string,
 };
 
 export default RegulatingTerminalEdition;

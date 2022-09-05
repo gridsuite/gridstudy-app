@@ -1084,7 +1084,7 @@ export const useTableValues = ({
         if (defaultValues !== undefined) {
             setValues([...defaultValues]);
         } else {
-            setValues([]);
+            setValues([{ p: '', qminP: '', qmaxP: '' }]);
             handleAddValue();
         }
     }, [defaultValues, handleAddValue]);

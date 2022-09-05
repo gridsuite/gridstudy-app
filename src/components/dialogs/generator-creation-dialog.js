@@ -149,7 +149,11 @@ const GeneratorCreationDialog = ({
             participate: generator.frequencyRegulation,
             droop: generator.droop,
             transientReactance: generator.transientReactance,
+            transformerReactance: generator.transformerReactance,
             reactiveCapabilityCurvePt: generator.reactiveCapabilityCurvePt,
+            minimumReactivePower: generator.minimumReactivePower,
+            maximumReactivePower: generator.minimumReactivePower,
+            regulatingTerminal: generator.regulatingTerminal,
         };
     };
 
@@ -248,7 +252,7 @@ const GeneratorCreationDialog = ({
             label: 'ReactiveCapabilityCurve',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            defaultValue: formValues?.reactiveCapabilityCurve,
+            defaultValue: formValues?.reactiveCapabilityCurve || true,
         });
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
@@ -259,7 +263,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.activePowerSetpoint,
+        defaultValue: formValues?.minimumReactivePower,
     });
 
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
@@ -270,7 +274,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.activePowerSetpoint,
+        defaultValue: formValues?.maximumReactivePower,
     });
 
     const [reactiveCapabilityCurveOn, reactiveCapabilityCurveOnField] =
