@@ -247,6 +247,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         dispatch,
         loadFlowInfosNode?.loadFlowResult,
         loadFlowInfosNode?.loadFlowStatus,
+        tabIndex,
         user,
     ]);
 
@@ -260,7 +261,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         } else {
             dispatch(resetSANotif());
         }
-    }, [currentNode, dispatch, securityAnalysisStatusNode, user]);
+    }, [currentNode, dispatch, securityAnalysisStatusNode, tabIndex, user]);
 
     useEffect(() => {
         if (
@@ -271,7 +272,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         } else {
             dispatch(resetSensiNotif());
         }
-    }, [currentNode, dispatch, sensitivityAnalysisStatusNode, user]);
+    }, [currentNode, dispatch, sensitivityAnalysisStatusNode, tabIndex, user]);
 
     function showParameters() {
         setParametersOpen(true);
