@@ -5,6 +5,10 @@ on: [push]
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
+        strategy:
+          matrix:
+            node: [ lts/erbium, lts/fermium, lts/gallium, latest ]
+        name: Node ${{ matrix.node }} sample
 
         steps:
             - name: Checkout
@@ -13,6 +17,9 @@ jobs:
                   persist-credentials: false
 
             - name: Install and Build
+              uses: actions/setup-node@v3
+              with:
+                node-version: ${{ matrix.node }}
               run: |
                   npm install
                   npm run-script build
