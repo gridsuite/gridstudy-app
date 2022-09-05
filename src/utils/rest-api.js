@@ -1284,6 +1284,8 @@ export function createGenerator(
     transformerReactance,
     regulatingTerminalId,
     regulatingTerminalType,
+    regulatingTerminalVlId,
+    reactiveCapabilityCurve,
     frequencyRegulation,
     droop,
     maximumReactivePower,
@@ -1305,7 +1307,6 @@ export function createGenerator(
             '/network-modification/generators';
     }
 
-    console.log('Test : ', reactiveCapabilityCurveOn);
     return backendFetch(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1330,6 +1331,8 @@ export function createGenerator(
             stepUpTransformerReactance: transformerReactance,
             regulatingTerminalId: regulatingTerminalId,
             regulatingTerminalType: regulatingTerminalType,
+            regulatingTerminalVlId: regulatingTerminalVlId,
+            reactiveCapabilityCurve: reactiveCapabilityCurve,
             participate: frequencyRegulation,
             droop: droop,
             maximumReactivePower: maximumReactivePower,

@@ -41,8 +41,7 @@ export function makeRefreshRegulatingTerminalSectionsCallback() {
 
 const RegulatingTerminalEdition = ({
     voltageLevelOptions,
-    voltageLevel,
-    equipmentSection,
+    regulatingTerminalValue,
     voltageLevelsEquipments,
     onChangeVoltageLevel,
     onChangeEquipmentSection,
@@ -93,13 +92,14 @@ const RegulatingTerminalEdition = ({
             voltageLevelEquipmentsCallback(
                 voltageLevelsEquipments.find(
                     (vlEquipment) =>
-                        vlEquipment?.voltageLevel?.id === voltageLevel?.id
+                        vlEquipment?.voltageLevel?.id ===
+                        regulatingTerminalValue?.voltageLevel?.id
                 ),
                 setEquipmentsOptions
             );
         }
     }, [
-        voltageLevel,
+        regulatingTerminalValue.voltageLevel,
         setEquipmentsOptions,
         voltageLevelEquipmentsCallback,
         voltageLevelsEquipments,
@@ -107,15 +107,18 @@ const RegulatingTerminalEdition = ({
 
     useEffect(() => {
         setCurrentEquipment(
-            equipmentSection && equipmentsOptions.length
+            regulatingTerminalValue?.equipmentSection &&
+                equipmentsOptions.length
                 ? equipmentsOptions.find(
-                      (value) => value.id === equipmentSection.id
+                      (value) =>
+                          value.id ===
+                          regulatingTerminalValue.equipmentSection.id
                   )
-                : equipmentSection === null
+                : regulatingTerminalValue?.equipmentSection === null
                 ? ''
-                : equipmentSection
+                : regulatingTerminalValue.equipmentSection
         );
-    }, [equipmentsOptions, equipmentSection]);
+    }, [equipmentsOptions, regulatingTerminalValue.equipmentSection]);
 
     return (
         <>
@@ -144,7 +147,7 @@ const RegulatingTerminalEdition = ({
                         disabled={disabled}
                         id="voltage-level"
                         options={voltageLevelOptions}
-                        getOptionLabel={(vl) => vl.id}
+                        getOptionLabel={(vl) => (vl?.id ? vl.id : '')}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
                         */
@@ -164,7 +167,11 @@ const RegulatingTerminalEdition = ({
                             }
                             return filtered;
                         }}
-                        value={voltageLevel}
+                        value={
+                            regulatingTerminalValue?.voltageLevel
+                                ? regulatingTerminalValue.voltageLevel
+                                : ''
+                        }
                         onChange={handleChangeVoltageLevel}
                         renderInput={(params) => (
                             <TextField
@@ -203,7 +210,9 @@ const RegulatingTerminalEdition = ({
                         autoHighlight
                         selectOnFocus
                         id="equipment"
-                        disabled={!voltageLevel || disabled}
+                        disabled={
+                            !regulatingTerminalValue?.voltageLevel || disabled
+                        }
                         options={equipmentsOptions}
                         getOptionLabel={(equipment) => {
                             return equipment === ''
@@ -253,8 +262,7 @@ const RegulatingTerminalEdition = ({
 
 RegulatingTerminalEdition.propTypes = {
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    voltageLevel: PropTypes.object,
-    equipmentSection: PropTypes.object,
+    regulatingTerminalValue: PropTypes.object,
     onChangeVoltageLevel: PropTypes.func.isRequired,
     onChangeEquipmentSection: PropTypes.func.isRequired,
     direction: PropTypes.string,

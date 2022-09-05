@@ -63,7 +63,7 @@ export default class NetworkModificationTreeModel {
             this.treeEdges = nextEdges;
         }
         if (newNode.children) {
-            newNode.children.   forEach((child) => {
+            newNode.children.forEach((child) => {
                 this.addChild(child, newNode.id);
             });
         }

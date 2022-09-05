@@ -62,9 +62,9 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
             isFieldRequired: isFieldRequired,
             isFieldNumeric: true,
         },
-        adornment: ReactivePowerAdornment,
+        adornment: ActivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: defaultValue?.pmin ? defaultValue.pmin : '',
+        defaultValue: defaultValue?.p || '',
     });
     const [qminP, qminPField] = useDoubleValue({
         label: 'QminP',
@@ -74,7 +74,7 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: defaultValue?.qminPmin ? defaultValue.qminPmin : '',
+        defaultValue: defaultValue?.qminP || '',
     });
 
     const [qmaxP, qmaxPField] = useDoubleValue({
@@ -85,7 +85,7 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: defaultValue?.qmaxPmin ? defaultValue.qmaxPmin : '',
+        defaultValue: defaultValue?.qmaxP || '',
     });
 
     useEffect(() => {
@@ -132,7 +132,6 @@ const GeneratorCreationDialog = ({
     const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
 
     const toFormValues = (generator) => {
-        console.log('test : ', generator);
         return {
             equipmentId: generator.id + '(1)',
             equipmentName: generator.name,
@@ -176,7 +175,6 @@ const GeneratorCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            console.log('AAAAAAAAA : ', editData);
             setFormValues(editData);
         }
     }, [editData]);
@@ -250,7 +248,7 @@ const GeneratorCreationDialog = ({
             label: 'ReactiveCapabilityCurve',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            defaultValue: true,
+            defaultValue: formValues?.reactiveCapabilityCurve,
         });
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
@@ -285,7 +283,7 @@ const GeneratorCreationDialog = ({
             ],
             inputForm: inputForm,
             Field: RCCurve,
-            defaultValues: formValues?.reactiveCapabilityCurvePt,
+            defaultValues: formValues?.points,
             isRequired: false,
         });
 
@@ -304,7 +302,7 @@ const GeneratorCreationDialog = ({
         label: 'VoltageRegulationText',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        defaultValue: formValues?.voltageRegulatorOn || false,
+        defaultValue: formValues?.voltageRegulationOn || false,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
@@ -339,7 +337,10 @@ const GeneratorCreationDialog = ({
             inputForm: inputForm,
             disabled: !voltageRegulation,
             voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
-            voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+            voltageLevelIdDefaultValue:
+                formValues?.regulatingTerminalVlId || null,
+            equipmentSectionTypeDefaultValue:
+                formValues?.regulatingTerminalType || null,
             equipmentSectionIdDefaultValue:
                 formValues?.regulatingTerminalId || null,
         });
@@ -354,13 +355,13 @@ const GeneratorCreationDialog = ({
     const [droop, droopField] = useDoubleValue({
         label: 'Droop',
         validation: {
-            isFieldRequired: voltageRegulation,
+            isFieldRequired: frequencyRegulation,
             isFieldNumeric: true,
         },
         adornment: percentageTextField,
         inputForm: inputForm,
         formProps: { disabled: !frequencyRegulation },
-        defaultValue: formValues?.reactivePowerSetpoint,
+        defaultValue: formValues?.droop,
     });
 
     const [transientReactance, transientReactanceField] = useDoubleValue({
@@ -371,7 +372,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: OhmAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.marginalCost,
+        defaultValue: formValues?.transientReactance,
     });
 
     const [transformerReactance, transformerReactanceField] = useDoubleValue({
@@ -382,7 +383,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: OhmAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.marginalCost,
+        defaultValue: formValues?.stepUpTransformerReactance,
     });
 
     const [marginalCost, marginalCostField] = useDoubleValue({
@@ -433,10 +434,16 @@ const GeneratorCreationDialog = ({
                 marginalCost ? marginalCost : null,
                 transientReactance ? transientReactance : null,
                 transformerReactance ? transformerReactance : null,
-                regulatingTerminal?.equipmentSection?.id,
-                regulatingTerminal?.equipmentSection?.type,
+                voltageRegulation
+                    ? regulatingTerminal?.equipmentSection?.id
+                    : null,
+                voltageRegulation
+                    ? regulatingTerminal?.equipmentSection?.type
+                    : null,
+                voltageRegulation ? regulatingTerminal?.voltageLevel.id : null,
+                reactiveCapabilityCurve,
                 frequencyRegulation,
-                droop,
+                frequencyRegulation ? droop : null,
                 reactiveCapabilityCurve ? maximumReactivePower : null,
                 reactiveCapabilityCurve ? minimumReactivePower : null,
                 reactiveCapabilityCurve ? null : reactiveCapabilityCurveOn
