@@ -3,12 +3,12 @@ name: CI
 on: [push]
 
 jobs:
-    build-and-deploy:
+    builds:
         runs-on: ubuntu-latest
         strategy:
           matrix:
             node: [ lts/erbium, lts/fermium ]
-        name: Node ${{ matrix.node }} sample
+        name: Node ${{ matrix.node }} Build sample
 
         steps:
             - name: Checkout
@@ -21,6 +21,21 @@ jobs:
               with:
                 node-version: ${{ matrix.node }}
             - run: |
+                  npm install
+                  npm run-script build
+                  npm run-script test
+
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
+              with:
+                  persist-credentials: false
+
+            - name: Install and Build
+              run: |
                   npm install
                   npm run-script build
                   npm run-script test
