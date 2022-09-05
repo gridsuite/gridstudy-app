@@ -20,7 +20,7 @@ jobs:
               uses: actions/setup-node@v3
               with:
                 node-version: ${{ matrix.node }}
-              run: |
+            - run: |
                   npm install
                   npm run-script build
                   npm run-script test
