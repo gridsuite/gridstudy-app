@@ -37,6 +37,9 @@ const CreateNodeMenu = ({
     handleNodeRemoval,
     handleExportCaseOnNode,
     activeNode,
+    selectedNodeForCopy,
+    handleCopyNode,
+    handlePasteNode,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -52,6 +55,16 @@ const CreateNodeMenu = ({
 
     function createNetworkModificationNode(insertMode) {
         handleNodeCreation(activeNode, 'NETWORK_MODIFICATION', insertMode);
+        handleClose();
+    }
+
+    function pasteNetworkModificationNode(insertMode) {
+        handlePasteNode(activeNode.id, insertMode);
+        handleClose();
+    }
+
+    function copyNetworkModificationNode() {
+        handleCopyNode(activeNode.id);
         handleClose();
     }
 
@@ -89,6 +102,29 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => createNetworkModificationNode('AFTER'),
             id: 'insertNetworkModificationNodeBelow',
+        },
+        COPY_MODIFICATION_NODE: {
+            onRoot: false,
+            action: () => copyNetworkModificationNode(),
+            id: 'copyNetworkModificationNode',
+        },
+        PASTE_MODIFICATION_NODE: {
+            onRoot: true,
+            action: () => pasteNetworkModificationNode('CHILD'),
+            id: 'pasteNetworkModificationNodeOnNewBranch',
+            disabled: selectedNodeForCopy == null,
+        },
+        PASTE_MODIFICATION_NODE_BEFORE: {
+            onRoot: false,
+            action: () => pasteNetworkModificationNode('BEFORE'),
+            id: 'pasteNetworkModificationNodeAbove',
+            disabled: selectedNodeForCopy == null,
+        },
+        PASTE_MODIFICATION_NODE_AFTER: {
+            onRoot: true,
+            action: () => pasteNetworkModificationNode('AFTER'),
+            id: 'pasteNetworkModificationNodeBelow',
+            disabled: selectedNodeForCopy == null,
         },
         REMOVE_NODE: {
             onRoot: false,
