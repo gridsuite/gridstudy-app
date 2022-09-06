@@ -484,5 +484,7 @@
     "VoltageSetpointKV": "Voltage set point (KV)",
     "ReactivePowerSetpointMVAR": "Reactive power set point (MVAR)",
     "EmptyList/bbs": "Bus Bar list is empty",
-    "EmptyList/connections": "Connections list is empty"
+    "EmptyList/connections": "Connections list is empty",
+
+    "UnsupportedView": "Search is unavailable in tree view"
 }
