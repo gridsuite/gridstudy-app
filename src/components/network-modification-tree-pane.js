@@ -12,24 +12,29 @@ import {
     fetchNetworkModificationTreeNode,
     getUniqueNodeName,
     buildNode,
+    copyTreeNode,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
+    STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
-import { StudyDisplayMode } from './study-pane';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+    useSnackMessage,
+} from '../utils/messages';
 import { useSnackbar } from 'notistack';
-import { useStoreState } from 'react-flow-renderer';
+import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
@@ -62,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 const usePreviousTreeDisplay = (display, width) => {
     const ref = useRef();
     useEffect(() => {
-        if (display !== StudyDisplayMode.MAP) {
+        if (display !== STUDY_DISPLAY_MODE.MAP) {
             ref.current = { display, width };
         }
     }, [display, width]);
@@ -76,10 +81,12 @@ export const NetworkModificationTreePane = ({
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
+    const [selectedNodeIdForCopy, setSelectedNodeIdForCopy] = useState(null);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
@@ -88,7 +95,7 @@ export const NetworkModificationTreePane = ({
     );
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const width = useStoreState((state) => state.width);
+    const width = useStore((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
 
     const updateNodes = useCallback(
@@ -182,6 +189,20 @@ export const NetworkModificationTreePane = ({
         [studyUuid, enqueueSnackbar, intlRef]
     );
 
+    const handlePasteNode = useCallback(
+        (referenceNodeId, insertMode) => {
+            copyTreeNode(
+                studyUuid,
+                selectedNodeIdForCopy,
+                referenceNodeId,
+                insertMode
+            ).catch((errorMessage) => {
+                snackError(errorMessage, 'NodeCreateError');
+            });
+        },
+        [studyUuid, selectedNodeIdForCopy, snackError]
+    );
+
     const handleRemoveNode = useCallback(
         (element) => {
             deleteTreeNode(studyUuid, element.id).catch((errorMessage) => {
@@ -266,7 +287,7 @@ export const NetworkModificationTreePane = ({
                         drawerClassName={classes.nodeEditor}
                         drawerShiftClassName={classes.nodeEditorShift}
                         anchor={
-                            prevTreeDisplay === StudyDisplayMode.TREE
+                            prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
                                 ? 'right'
                                 : 'left'
                         }
@@ -284,6 +305,9 @@ export const NetworkModificationTreePane = ({
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
+                    selectedNodeForCopy={selectedNodeIdForCopy}
+                    handleCopyNode={setSelectedNodeIdForCopy}
+                    handlePasteNode={handlePasteNode}
                 />
             )}
             {openExportDialog && (

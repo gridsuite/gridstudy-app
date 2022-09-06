@@ -874,6 +874,34 @@ export function updateTreeNode(studyUuid, node) {
     );
 }
 
+export function copyTreeNode(
+    studyUuid,
+    nodeToCopyUuid,
+    referenceNodeUuid,
+    insertMode
+) {
+    const nodeCopyUrl =
+        getStudyUrl(studyUuid) +
+        '/tree/nodes?insertMode=' +
+        insertMode +
+        '&nodeToCopyUuid=' +
+        nodeToCopyUuid +
+        '&referenceNodeUuid=' +
+        referenceNodeUuid;
+    console.debug(nodeCopyUrl);
+    return backendFetch(nodeCopyUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
@@ -1832,14 +1860,14 @@ export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
     return getUrlWithToken(url);
 }
 
-export function fetchCaseInfos(studyUuid) {
-    console.info('Fetching case infos');
+export function fetchCaseName(studyUuid) {
+    console.info('Fetching case name');
     const url = getStudyUrl(studyUuid) + '/case/name';
     console.debug(url);
 
     return backendFetch(url, { method: 'get' }).then((response) => {
         return response.ok
-            ? response.json()
+            ? response.text()
             : response
                   .text()
                   .then((text) =>
