@@ -12,6 +12,7 @@ import {
     fetchNetworkModificationTreeNode,
     getUniqueNodeName,
     buildNode,
+    copyTreeNode,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -27,7 +28,11 @@ import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+    useSnackMessage,
+} from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
@@ -76,10 +81,12 @@ export const NetworkModificationTreePane = ({
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
+    const [selectedNodeIdForCopy, setSelectedNodeIdForCopy] = useState(null);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
@@ -180,6 +187,20 @@ export const NetworkModificationTreePane = ({
                 });
         },
         [studyUuid, enqueueSnackbar, intlRef]
+    );
+
+    const handlePasteNode = useCallback(
+        (referenceNodeId, insertMode) => {
+            copyTreeNode(
+                studyUuid,
+                selectedNodeIdForCopy,
+                referenceNodeId,
+                insertMode
+            ).catch((errorMessage) => {
+                snackError(errorMessage, 'NodeCreateError');
+            });
+        },
+        [studyUuid, selectedNodeIdForCopy, snackError]
     );
 
     const handleRemoveNode = useCallback(
@@ -284,6 +305,9 @@ export const NetworkModificationTreePane = ({
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
+                    selectedNodeForCopy={selectedNodeIdForCopy}
+                    handleCopyNode={setSelectedNodeIdForCopy}
+                    handlePasteNode={handlePasteNode}
                 />
             )}
             {openExportDialog && (
