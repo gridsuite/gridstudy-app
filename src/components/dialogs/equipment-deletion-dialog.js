@@ -19,7 +19,7 @@ import { useParams } from 'react-router-dom';
 import { deleteEquipment } from '../../utils/rest-api';
 import { useSnackMessage } from '../../utils/messages';
 import { validateField } from '../util/validation-functions';
-import { useAutocompleteField, useInputForm } from './input-hooks';
+import { useAutocompleteField, useInputForm } from './inputs/input-hooks';
 import { EquipmentItem, equipmentStyles } from '@gridsuite/commons-ui';
 import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
 import makeStyles from '@mui/styles/makeStyles';

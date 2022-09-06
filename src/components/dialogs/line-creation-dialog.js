@@ -28,7 +28,7 @@ import {
     useTextValue,
     useConnectivityValue,
     useButtonWithTooltip,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import {
     AmpereAdornment,
     filledTextField,

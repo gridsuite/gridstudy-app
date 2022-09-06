@@ -27,7 +27,7 @@ import {
     useInputForm,
     useButtonWithTooltip,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
     filledTextField,

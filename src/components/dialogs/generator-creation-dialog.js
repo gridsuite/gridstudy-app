@@ -28,7 +28,7 @@ import {
     useEnumValue,
     useInputForm,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
     filledTextField,

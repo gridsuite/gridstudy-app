@@ -14,7 +14,7 @@ import React, {
     useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { validateField } from '../util/validation-functions';
+import { validateField } from '../../util/validation-functions';
 import {
     Autocomplete,
     CircularProgress,
@@ -26,10 +26,10 @@ import {
     Tooltip,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
-import TextFieldWithAdornment from '../util/text-field-with-adornment';
+import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import ConnectivityEdition, {
     makeRefreshBusOrBusbarSectionsCallback,
-} from './connectivity-edition';
+} from '../connectivity-edition';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -43,19 +43,19 @@ import {
     toFloatValue,
     toIntValue,
     useStyles,
-} from './dialogUtils';
-import { getComputedLanguage } from '../../utils/language';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
+} from '../dialogUtils';
+import { getComputedLanguage } from '../../../utils/language';
+import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSelector } from 'react-redux';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
-} from '../../utils/messages';
+} from '../../../utils/messages';
 import { useSnackbar } from 'notistack';
-import { isNodeExists } from '../../utils/rest-api';
-import { TOOLTIP_DELAY } from '../../utils/UIconstants';
-import { useParameterState } from './parameters/parameters';
+import { isNodeExists } from '../../../utils/rest-api';
+import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
+import { useParameterState } from '../parameters/parameters';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 
 export const useInputForm = () => {

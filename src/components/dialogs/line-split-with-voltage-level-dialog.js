@@ -27,7 +27,7 @@ import {
     useButtonWithTooltip,
     useInputForm,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import { gridItem, GridSection, compareById } from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';

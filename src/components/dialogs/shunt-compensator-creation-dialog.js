@@ -26,7 +26,7 @@ import {
     useInputForm,
     useIntegerValue,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import { createShuntCompensator } from '../../utils/rest-api';
 import {
     filledTextField,

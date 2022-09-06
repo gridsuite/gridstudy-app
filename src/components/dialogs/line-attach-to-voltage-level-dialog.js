@@ -26,7 +26,7 @@ import {
     useAutocompleteField,
     useInputForm,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import {
     gridItem,
     GridSection,

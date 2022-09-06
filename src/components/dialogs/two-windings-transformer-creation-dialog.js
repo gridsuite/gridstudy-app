@@ -27,7 +27,7 @@ import {
     useDoubleValue,
     useInputForm,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import {
     filledTextField,
     gridItem,
