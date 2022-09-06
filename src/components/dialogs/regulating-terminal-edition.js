@@ -266,6 +266,8 @@ RegulatingTerminalEdition.propTypes = {
     onChangeVoltageLevel: PropTypes.func.isRequired,
     onChangeEquipmentSection: PropTypes.func.isRequired,
     direction: PropTypes.string,
+    disabled: PropTypes.bool,
+    voltageLevelEquipmentsCallback: PropTypes.func.isRequired,
 };
 
 export default RegulatingTerminalEdition;

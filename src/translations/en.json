@@ -363,8 +363,6 @@
     "MinimumReactivePower": "Minimum reactive power",
     "MaximumReactivePower": "Maximum reactive power",
     "ActivePower": "Active power",
-    "MinimumReactivePower": "Minimum reactive power",
-    "MaximumReactivePower": "Maximum reactive power",
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",
