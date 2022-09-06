@@ -46,11 +46,11 @@ import { RunningStatus } from '../../util/running-status';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 
 const loadingWidth = 150;
-const maxWidth = 1200;
-const maxHeight = 650;
-const minWidth = 500;
-const minHeight = 400;
-const errorWidth = maxWidth;
+const MAX_WIDTH = 1200;
+const MAX_HEIGHT = 650;
+const MIN_WIDTH = 500;
+const MIN_HEIGHT = 400;
+const errorWidth = MAX_WIDTH;
 let initialWidth, initialHeight;
 
 const useStyles = makeStyles((theme) => ({
@@ -137,6 +137,11 @@ const computePaperAndSvgSizesIfReady = (
     svgPreferredHeight,
     headerPreferredHeight
 ) => {
+    console.info('fullScreen', fullScreen);
+    console.info('totalWidth', totalWidth);
+    console.info('totalHeight', totalHeight);
+    console.info('svgPreferredWidth', svgPreferredWidth);
+    console.info('svgPreferredHeight', svgPreferredHeight);
     if (
         typeof svgPreferredWidth != 'undefined' &&
         typeof headerPreferredHeight != 'undefined'
@@ -151,13 +156,12 @@ const computePaperAndSvgSizesIfReady = (
             svgWidth = Math.min(
                 svgPreferredWidth,
                 totalWidth - mapRightOffset,
-                maxWidth
+                MAX_WIDTH
             );
             svgHeight = Math.min(
                 svgPreferredHeight,
                 totalHeight - mapBottomOffset - headerPreferredHeight,
-                maxHeight
-            );
+                MAX_HEIGHT            );
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
         }
@@ -258,9 +262,9 @@ const SizedNetworkAreaDiagram = (props) => {
                     setSvg({
                         svg:
                             '<svg width="' +
-                            minWidth +
+                            MIN_WIDTH +
                             '" height="' +
-                            minHeight +
+                            MIN_HEIGHT +
                             '" xmlns="http://www.w3.org/2000/svg" ' +
                             'viewBox="0 0 0 0">' +
                             '</svg>',
@@ -300,10 +304,10 @@ const SizedNetworkAreaDiagram = (props) => {
             const nad = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 svg.svg,
-                minWidth,
-                minHeight,
-                maxWidth,
-                maxHeight
+                MIN_WIDTH,
+                MIN_HEIGHT,
+                MAX_WIDTH,
+                MAX_HEIGHT
             );
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());

@@ -427,22 +427,29 @@ export function SingleLineDiagramPane({
     const displayedIds = new Set(displayedSLD.map(({ id }) => id));
     const minimized = views.filter(({ id }) => !displayedIds.has(id));
     return (
-        <>
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                pointerEvents: 'none',
+            }}
+        >
             {displayedSLD.map((sld) => (
-                <div
-                    style={{
-                        flexGrow: 1,
-                        flexShrink: 1,
-                        position: 'relative',
-                        display:
-                            !fullScreenSldId || sld.id === fullScreenSldId
-                                ? 'inline-flex'
-                                : 'none',
-                        pointerEvents: 'none',
-                        flexDirection: 'column',
-                    }}
-                    key={sld.svgUrl}
-                >
+                // <div
+                //     className={'baba'}
+                //     style={{
+                //         flexGrow: 1,
+                //         flexShrink: 1,
+                //         position: 'relative',
+                //         display:
+                //             !fullScreenSldId || sld.id === fullScreenSldId
+                //                 ? 'inline-flex'
+                //                 : 'none',
+                //         pointerEvents: 'none',
+                //         flexDirection: 'column',
+                //     }}
+                //     key={sld.svgUrl}
+                // >
                     <SingleLineDiagram
                         onClose={handleCloseSLD}
                         onNextVoltageLevelClick={handleOpenView}
@@ -461,7 +468,7 @@ export function SingleLineDiagramPane({
                         pinned={viewState.get(sld.id) === ViewState.PINNED}
                         disabled={disabled}
                     />
-                </div>
+                // </div>
             ))}
             <Stack
                 direction={{ xs: 'column', sm: 'row' }}
@@ -478,7 +485,7 @@ export function SingleLineDiagramPane({
                     />
                 ))}
             </Stack>
-        </>
+        </div>
     );
 }
 

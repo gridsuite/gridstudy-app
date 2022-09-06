@@ -201,11 +201,16 @@ const computePaperAndSvgSizesIfReady = (
     svgType,
     totalWidth,
     totalHeight,
-    svgPreferredWidth,
     svgPreferredHeight,
+    svgPreferredWidth,
     headerPreferredHeight,
     numberToDisplay
 ) => {
+    console.info('fullScreen', fullScreen);
+    console.info('totalWidth', totalWidth);
+    console.info('totalHeight', totalHeight);
+    console.info('svgPreferredWidth', svgPreferredWidth);
+    console.info('headerPreferredHeight', headerPreferredHeight);
     if (
         typeof svgPreferredWidth != 'undefined' &&
         typeof headerPreferredHeight != 'undefined'
@@ -227,16 +232,16 @@ const computePaperAndSvgSizesIfReady = (
             }
             svgWidth = Math.min(
                 svgPreferredWidth,
-                totalWidth - mapRightOffset,
+                svgPreferredWidth - mapRightOffset,
                 maxWidth
             );
             svgHeight = Math.min(
                 svgPreferredHeight,
-                totalHeight - mapBottomOffset - headerPreferredHeight,
+                svgPreferredHeight - mapBottomOffset - headerPreferredHeight,
                 maxHeight
             );
             if (numberToDisplay > 1) {
-                svgWidth = totalWidth - borders;
+                svgWidth = svgPreferredWidth - borders;
             }
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
@@ -339,6 +344,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [svgFinalHeight, setSvgFinalHeight] = useState();
 
     useLayoutEffect(() => {
+        console.info('fullScreen======', fullScreenSldId);
+        console.info('totalWidth======', totalWidth);
+        console.info('totalHeight======', totalHeight);
+        console.info('svgPreferredWidth======', svgPreferredWidth);
+        console.info('svgPreferredHeight======', svgPreferredHeight);
         const sizes = computePaperAndSvgSizesIfReady(
             fullScreenSldId,
             svgType,
@@ -360,11 +370,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         totalWidth,
         totalHeight,
         svgType,
-        svgPreferredWidth,
-        svgPreferredHeight,
         headerPreferredHeight,
         numberToDisplay,
         sldId,
+        svgPreferredWidth,
+        svgPreferredHeight,
     ]);
 
     useEffect(() => {
@@ -667,23 +677,52 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
         }
 
+        console.info('Avant le if');
         if (svg.svg) {
+            let parsedWidth;
+            let parsedHeight;
+            let parsedViewBox;
+            console.info('ON PARSE');
+            console.info('svg', svg);
+            const result = svg.svg.match('<svg[^>]*>');
+            console.info('result', result);
+            if (result === null || result.length === 0) {
+                return null;
+            }
+            const emptiedSvgContent = result[0] + '</svg>';
+            const parsedSvg = new DOMParser()
+                .parseFromString(emptiedSvgContent, 'image/svg+xml')
+                .getElementsByTagName('svg')[0];
+            console.info('parsedSvg', parsedSvg);
+            parsedWidth = +parsedSvg.getAttribute('width') + 40;
+            parsedHeight = +parsedSvg.getAttribute('height') + 40;
+            parsedViewBox = parsedSvg.viewBox.baseVal;
+            setSvgPreferredWidth(parsedWidth);
+            setSvgPreferredHeight(parsedHeight);
+
+            console.info('DIMENSION', {
+                width: parsedWidth,
+                height: parsedHeight,
+                parsedViewbox: parsedViewBox,
+            });
+
             const divElt = svgRef.current;
             divElt.innerHTML = svg.svg;
             //need to add it there so the bbox has the right size
             addNavigationArrow(svg);
-            // calculate svg width and height from svg bounding box
-            const svgEl = divElt.getElementsByTagName('svg')[0];
-            const bbox = svgEl.getBBox();
-            const xOrigin = bbox.x - 20;
-            const yOrigin = bbox.y - 20;
-            const svgWidth = Math.ceil(bbox.width + 40);
-            const svgHeight = Math.ceil(bbox.height + 40);
 
-            if (shouldResetPreferredSizes.current) {
-                setSvgPreferredWidth(svgWidth);
-                setSvgPreferredHeight(svgHeight);
-            }
+            // calculate svg width and height from svg bounding box
+            // const svgEl = divElt.getElementsByTagName('svg')[0];
+            // const bbox = svgEl.getBBox();
+            // const xOrigin = bbox.x - 20;
+            // const yOrigin = bbox.y - 20;
+            // const svgWidth = Math.ceil(bbox.width + 40);
+            // const svgHeight = Math.ceil(bbox.height + 40);
+
+            // if (shouldResetPreferredSizes.current) {
+            //     setSvgPreferredWidth(svgWidth);
+            //     setSvgPreferredHeight(svgHeight);
+            // }
 
             let viewboxMaxWidth =
                 svgType === SvgType.VOLTAGE_LEVEL
@@ -696,13 +735,19 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
+            console.info('parsedViewBox', parsedViewBox);
             const draw = SVG()
                 .addTo(divElt)
                 .size(
-                    svgFinalWidth !== undefined ? svgFinalWidth : svgWidth,
-                    svgFinalHeight !== undefined ? svgFinalHeight : svgHeight
+                    svgFinalWidth !== undefined ? svgFinalWidth : parsedWidth,
+                    svgFinalHeight !== undefined ? svgFinalHeight : parsedHeight
                 )
-                .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
+                .viewbox(
+                    parsedViewBox.x,
+                    parsedViewBox.y,
+                    parsedViewBox.width,
+                    parsedViewBox.height
+                )
                 .panZoom({
                     panning: true,
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
@@ -716,25 +761,28 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
             draw.node.firstChild.removeAttribute('viewBox');
 
-            if (svgWidth > viewboxMaxWidth || svgHeight > viewboxMaxHeight) {
+            if (
+                parsedWidth > viewboxMaxWidth ||
+                parsedHeight > viewboxMaxHeight
+            ) {
                 //The svg is too big, display only the top left corner because that's
                 //better for users than zooming out. Keep the same aspect ratio
                 //so that panzoom's margins still work correctly.
                 //I am not sure the offsetX and offsetY thing is correct. It seems
                 //to help. When someone finds a big problem, then we can fix it.
-                const newLvlX = svgWidth / viewboxMaxWidth;
-                const newLvlY = svgHeight / viewboxMaxHeight;
+                const newLvlX = parsedWidth / viewboxMaxWidth;
+                const newLvlY = parsedHeight / viewboxMaxHeight;
                 if (newLvlX > newLvlY) {
-                    const offsetY = (viewboxMaxHeight - svgHeight) / newLvlX;
+                    const offsetY = (viewboxMaxHeight - parsedHeight) / newLvlX;
                     draw.zoom(newLvlX, {
-                        x: xOrigin,
-                        y: (yOrigin + viewboxMaxHeight - offsetY) / 2,
+                        x: parsedViewBox.x,
+                        y: (parsedViewBox.y + viewboxMaxHeight - offsetY) / 2,
                     });
                 } else {
-                    const offsetX = (viewboxMaxWidth - svgWidth) / newLvlY;
+                    const offsetX = (viewboxMaxWidth - parsedWidth) / newLvlY;
                     draw.zoom(newLvlY, {
-                        x: (xOrigin + viewboxMaxWidth - offsetX) / 2,
-                        y: yOrigin,
+                        x: (parsedViewBox.x + viewboxMaxWidth - offsetX) / 2,
+                        y: parsedViewBox.y,
                     });
                 }
             }
@@ -964,7 +1012,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     } else if (initialWidth !== undefined || loadingState) {
         sizeWidth = initialWidth;
     } else {
-        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
+        sizeWidth = initialWidth; // happens during initialization if initial width value is undefined
     }
 
     if (sizeWidth !== undefined) {
@@ -1113,16 +1161,16 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
 const SingleLineDiagram = forwardRef((props, ref) => {
     return (
-        <AutoSizer>
-            {({ width, height }) => (
+        // <AutoSizer>
+        //     {({ width, height }) => (
                 <SizedSingleLineDiagram
                     ref={ref}
-                    totalWidth={width}
-                    totalHeight={height}
+                    // totalWidth={width}
+                    // totalHeight={height}
                     {...props}
                 />
-            )}
-        </AutoSizer>
+        //     )}
+        // </AutoSizer>
     );
 });
 
