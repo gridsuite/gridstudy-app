@@ -93,6 +93,7 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
+    const reloadGeoDataNeeded = useSelector((state) => state.reloadGeoData);
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -188,6 +189,9 @@ export const NetworkMapTab = ({
         // if only renaming, do not reload geo data
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (disabled) return;
+        // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
+        // TODO REMOVE LATER
+        if (!reloadGeoDataNeeded) return;
 
         console.info(`Loading geo data of study '${studyUuid}'...`);
         const substationPositions = fetchSubstationPositions(
@@ -220,6 +224,7 @@ export const NetworkMapTab = ({
         // Note: studyUuid and dispatch don't change
     }, [
         disabled,
+        reloadGeoDataNeeded,
         studyUuid,
         currentNode,
         lineFullPath,
