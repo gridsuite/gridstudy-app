@@ -268,6 +268,7 @@ RegulatingTerminalEdition.propTypes = {
     direction: PropTypes.string,
     disabled: PropTypes.bool,
     voltageLevelEquipmentsCallback: PropTypes.func.isRequired,
+    voltageLevelsEquipments: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default RegulatingTerminalEdition;
