@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { func_identity, getId } from '../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
@@ -21,9 +22,29 @@ import {
     genHelperError,
     genHelperPreviousValue,
 } from './hooks-helpers';
-import { createFilterOptions } from '@mui/material/useAutocomplete';
 
 const QUESTIONABLE_SIZE = 1000;
+
+/**
+ * Returns the lowest index for which the two given arrays differ.
+ * If full shallow match, return -1.
+ * if not arrays, return undefined
+ * @param a1 an array
+ * @param a2 an other array
+ * @returns {number|undefined}
+ */
+function arraysMismatchIndex(a1, a2) {
+    if (!Array.isArray(a1) || !Array.isArray(a2)) return undefined;
+
+    if (a1.length !== a2.length) return Math.min(a1.length, a2.length);
+
+    for (var i in a2) {
+        if (a1[i] !== a2[i]) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 const filter = createFilterOptions();
 
@@ -47,7 +68,6 @@ const isWorthLoading = (term, elements, old, minLen) => {
 
     return false;
 };
-
 export const useAutocompleteField = ({
     id,
     label,
@@ -74,12 +94,17 @@ export const useAutocompleteField = ({
     const [userStr, setUserStr] = useState('');
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState();
+
     const validationRef = useRef();
+
+    const prevValues = useRef();
     validationRef.current = validation;
+    const prevValue = useRef();
+    prevValue.current = value;
 
     useEffect(() => {
-        setValue(defaultValue);
-    }, [defaultValue, values]); // to reset when alternatives have changed
+        if (defaultValue !== undefined) setValue(defaultValue);
+    }, [defaultValue]);
 
     useEffect(() => {
         function validate() {
@@ -91,33 +116,49 @@ export const useAutocompleteField = ({
         if (inputForm) {
             inputForm.addValidation(id ? id : label, validate);
         }
-    }, [label, validation, inputForm, value, id]);
+    }, [label, validation, inputForm, value, selectedValue, id]);
 
     const handleChangeValue = useCallback((value) => {
         setValue(value);
     }, []);
 
     useEffect(() => {
-        if (selectedValue) {
-            setValue(selectedValue);
-        }
+        if (selectedValue) setValue(selectedValue);
     }, [selectedValue]);
 
     useEffect(() => {
+        const mismatchIdx = arraysMismatchIndex(prevValues.current, values);
+        const shouldUpdateValueToo =
+            mismatchIdx >= 0 &&
+            prevValues.current.length > mismatchIdx &&
+            value === prevValues.current[mismatchIdx];
+        prevValues.current = values;
+
+        if (mismatchIdx === -1) {
+            if (!getLabel) return;
+
+            const inOps = presentedOptions.find((o) => getLabel(o) === value);
+            if (inOps) {
+                setValue(inOps);
+            }
+
+            return;
+        }
+
         if (!values || typeof values === 'function') {
             setIsLoading(false);
             return;
         }
-        if (typeof values?.then === 'function') {
-            setIsLoading(true);
-        }
+
+        if (typeof values?.then === 'function') setIsLoading(true);
         const valuePromise = Promise.resolve(values);
         valuePromise.then((vals) => {
             setPresentedOptions(vals);
+            if (shouldUpdateValueToo) setValue(values[mismatchIdx]);
             setIsLoading(false);
             if (values?.length === 0) setExpanded(false);
         });
-    }, [values]);
+    }, [values, id, defaultValue, getLabel, presentedOptions, value]);
 
     const handleForcedSearch = useCallback(
         (term) => {
@@ -157,113 +198,147 @@ export const useAutocompleteField = ({
         [values, minCharsBeforeSearch, onSearchTermChange]
     );
 
-    const field = useMemo(() => {
-        const handleKeyDown = (e) => {
-            if (e.ctrlKey && e.code === 'Space') {
-                handleForcedSearch(userStr);
-            }
-        };
+    const field = useMemo(
+        () => {
+            const handleKeyDown = (e) => {
+                if (e.ctrlKey && e.code === 'Space') {
+                    handleForcedSearch(userStr);
+                }
+            };
 
-        const optionEqualsToValue = (option, input) =>
-            option === input || option.id === input || option.id === input?.id;
+            const optionEqualsToValue = (option, input) =>
+                option === input ||
+                option.id === input ||
+                option.id === input?.id;
 
-        const filterOptionsFunc = (options, params) => {
-            const filtered = filter(options, params);
-            if (
-                params.inputValue !== '' &&
-                !options.find((opt) => opt.id === params.inputValue)
-            ) {
-                filtered.push({
-                    inputValue: params.inputValue,
-                    id: params.inputValue,
-                });
-            }
-            return filtered;
-        };
+            const filterOptionsFunc = (options, params) => {
+                const filtered = filter(options, params);
+                if (
+                    params.inputValue !== '' &&
+                    !options.find((opt) => opt.id === params.inputValue)
+                ) {
+                    filtered.push({
+                        inputValue: params.inputValue,
+                        id: params.inputValue,
+                    });
+                }
+                return filtered;
+            };
 
-        return (
-            <Autocomplete
-                id={label}
-                onChange={(event, newValue) => {
-                    handleChangeValue(newValue);
-                }}
-                open={expanded}
-                onOpen={onOpen}
-                onClose={() => {
-                    setExpanded(false);
-                }}
-                size={'small'}
-                forcePopupIcon
-                options={isLoading ? [] : presentedOptions}
-                getOptionLabel={getLabel}
-                defaultValue={defaultValue}
-                value={value}
-                loading={isLoading}
-                loadingText={<FormattedMessage id="loadingOptions" />}
-                {...(allowNewValue && {
-                    freeSolo: true,
-                    isOptionEqualToValue: optionEqualsToValue,
-                    autoSelect: true,
-                    autoComplete: true,
-                    autoHighlight: true,
-                    blurOnSelect: true,
-                    clearOnBlur: true,
-                })}
-                {...(allowNewValue &&
-                    getLabel === getId && { filterOptions: filterOptionsFunc })}
-                onInputChange={(_event, value) => handleSearchTermChange(value)}
-                noOptionsText={intl.formatMessage({
-                    id: 'element_search/noResult',
-                })}
-                {...(renderElement && {
-                    renderOption: (optionProps, element, { inputValue }) =>
-                        renderElement({
-                            ...optionProps,
-                            element,
-                            inputValue,
-                        }),
-                })}
-                renderInput={(props) => (
-                    <TextField
-                        {...formProps}
-                        {...props}
-                        onKeyDown={handleKeyDown}
-                        size="small"
-                        label={
-                            <FieldLabel
-                                label={label}
-                                optional={validation.isFieldRequired === false}
-                            />
-                        }
-                        value={value}
-                        {...genHelperPreviousValue(previousValue)}
-                        {...genHelperError(error, errorMsg)}
-                    />
-                )}
-            />
-        );
-    }, [
-        label,
-        presentedOptions,
-        getLabel,
-        allowNewValue,
-        handleChangeValue,
-        validation.isFieldRequired,
-        value,
-        defaultValue,
-        previousValue,
-        error,
-        errorMsg,
-        formProps,
-        isLoading,
-        expanded,
-        handleSearchTermChange,
-        handleForcedSearch,
-        intl,
-        renderElement,
-        onOpen,
-        userStr,
-    ]);
+            return (
+                <Autocomplete
+                    id={label}
+                    onChange={(event, newValue) => {
+                        handleChangeValue(newValue);
+                    }}
+                    open={expanded}
+                    onOpen={onOpen}
+                    onClose={() => {
+                        setExpanded(false);
+                    }}
+                    size={'small'}
+                    forcePopupIcon
+                    options={isLoading ? [] : presentedOptions}
+                    getOptionLabel={getLabel}
+                    defaultValue={defaultValue}
+                    value={value}
+                    loading={isLoading}
+                    loadingText={<FormattedMessage id="loadingOptions" />}
+                    {...(allowNewValue && {
+                        freeSolo: true,
+                        isOptionEqualToValue: optionEqualsToValue,
+                        autoSelect: true,
+                        autoComplete: true,
+                        autoHighlight: true,
+                        blurOnSelect: true,
+                        clearOnBlur: true,
+                    })}
+                    {...(allowNewValue &&
+                        getLabel === getId && {
+                            filterOptions: filterOptionsFunc,
+                        })}
+                    onInputChange={(_event, value) =>
+                        handleSearchTermChange(value)
+                    }
+                    noOptionsText={intl.formatMessage({
+                        id: 'element_search/noResult',
+                    })}
+                    {...(renderElement && {
+                        renderOption: (optionProps, element, { inputValue }) =>
+                            renderElement({
+                                ...optionProps,
+                                element,
+                                inputValue,
+                            }),
+                    })}
+                    renderInput={(props) => (
+                        <TextField
+                            {...formProps}
+                            {...props}
+                            onKeyDown={handleKeyDown}
+                            size="small"
+                            label={
+                                <FieldLabel
+                                    label={label}
+                                    optional={
+                                        validation.isFieldRequired === false
+                                    }
+                                />
+                            }
+                            value={value}
+                            {...genHelperPreviousValue(previousValue)}
+                            {...genHelperError(error, errorMsg)}
+                        />
+                    )}
+                />
+            );
+        },
+        [
+            label,
+            presentedOptions,
+            getLabel,
+            allowNewValue,
+            handleChangeValue,
+            validation.isFieldRequired,
+            value,
+            defaultValue,
+            previousValue,
+            error,
+            errorMsg,
+            formProps,
+            isLoading,
+            expanded,
+            handleSearchTermChange,
+            handleForcedSearch,
+            intl,
+            renderElement,
+            onOpen,
+            userStr,
+        ],
+        [
+            'label',
+            'presentedOptions',
+            'getLabel',
+            'allowNewValue',
+            'handleChangeValue',
+            'validation.isFieldRequired',
+            'value',
+            'defaultValue',
+            'previousValue',
+            'error',
+            'errorMsg',
+            'formProps',
+            'isLoading',
+            'expanded',
+            'handleSearchTermChange',
+            'handleForcedSearch',
+            'intl',
+            'renderElement',
+            'onOpen',
+            'userStr',
+        ],
+        'trois' + (id || label)
+    );
 
     return [value, field, setValue];
 };
