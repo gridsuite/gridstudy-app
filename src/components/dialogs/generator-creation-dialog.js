@@ -80,7 +80,9 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
     });
 
     useEffect(() => {
-        onChange(index, { p: p, qminP: qminP, qmaxP: qmaxP });
+        if (p !== null && qminP !== null && qmaxP !== null) {
+            onChange(index, { p: p, qminP: qminP, qmaxP: qmaxP });
+        }
         setIsFieldRequired(p || qminP || qmaxP);
     }, [index, onChange, p, qminP, qmaxP]);
 
