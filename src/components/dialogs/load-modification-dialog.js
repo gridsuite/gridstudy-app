@@ -22,7 +22,6 @@ import {
 import { modifyLoad } from '../../utils/rest-api';
 import { LOAD_TYPES } from '../network/constants';
 import {
-    useAutocompleteField,
     useDoubleValue,
     useEnumValue,
     useInputForm,
@@ -37,6 +36,7 @@ import {
     GridSection,
     ReactivePowerAdornment,
 } from './dialogUtils';
+import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
 /**
  * Dialog to modify a load in the network

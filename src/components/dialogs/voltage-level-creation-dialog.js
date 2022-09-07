@@ -21,11 +21,9 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import {
-    useAutocompleteField,
     useButtonWithTooltip,
     useDoubleValue,
     useEnumValue,
-    useExpandableValues,
     useInputForm,
     useIntegerValue,
     useTextValue,
@@ -40,6 +38,8 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import { useExpandableValues } from './inputs/use-expandable-values';
 
 const numericalWithButton = {
     type: 'number',
