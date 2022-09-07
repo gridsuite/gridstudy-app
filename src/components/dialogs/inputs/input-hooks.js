@@ -12,7 +12,6 @@ import { validateField } from '../../util/validation-functions';
 import { CircularProgress, FormHelperText, InputLabel, MenuItem, Select, TextField, Tooltip } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
-import ConnectivityEdition, { makeRefreshBusOrBusbarSectionsCallback } from '../connectivity-edition';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -20,7 +19,6 @@ import { func_identity, toFloatValue, toIntValue, useStyles } from '../dialogUti
 import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import { useSelector } from 'react-redux';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../../utils/rest-api';
@@ -193,153 +191,6 @@ export const useDoubleValue = ({
         transformValue: transformValue,
         validation: { ...validation, isFieldNumeric: true },
     });
-};
-
-export const useConnectivityValue = ({
-    label,
-    id,
-    validation = {
-        isFieldRequired: true,
-    },
-    disabled = false,
-    inputForm,
-    voltageLevelOptionsPromise,
-    currentNodeUuid,
-    direction = 'row',
-    voltageLevelIdDefaultValue,
-    voltageLevelPreviousValue,
-    busOrBusbarSectionIdDefaultValue,
-    busOrBusbarSectionPreviousValue,
-}) => {
-    const [connectivity, setConnectivity] = useState({
-        voltageLevel: null,
-        busOrBusbarSection: null,
-    });
-    const [errorVoltageLevel, setErrorVoltageLevel] = useState();
-    const [errorBusBarSection, setErrorBusBarSection] = useState();
-    const intl = useIntl();
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-
-    useEffect(() => {
-        setConnectivity({
-            voltageLevel: null,
-            busOrBusbarSection: null,
-        });
-    }, [inputForm.toggleClear]);
-
-    useEffect(() => {
-        if (!voltageLevelOptionsPromise) return;
-
-        voltageLevelOptionsPromise.then((values) =>
-            setVoltageLevelOptions(
-                values.sort((a, b) => a.id.localeCompare(b.id))
-            )
-        );
-    }, [voltageLevelOptionsPromise]);
-
-    useEffect(() => {
-        if (!voltageLevelOptions) return;
-        setConnectivity({
-            voltageLevel: voltageLevelIdDefaultValue
-                ? {
-                      id: voltageLevelIdDefaultValue,
-                      topologyKind: voltageLevelOptions.find(
-                          (vl) => vl.id === voltageLevelIdDefaultValue
-                      )?.topologyKind,
-                  }
-                : null,
-            busOrBusbarSection: busOrBusbarSectionIdDefaultValue
-                ? {
-                      id: busOrBusbarSectionIdDefaultValue,
-                  }
-                : null,
-        });
-    }, [
-        voltageLevelOptions,
-        busOrBusbarSectionIdDefaultValue,
-        voltageLevelIdDefaultValue,
-    ]);
-
-    useEffect(() => {
-        function validate() {
-            const resVL = validateField(connectivity.voltageLevel, validation);
-            setErrorVoltageLevel(resVL?.errorMsgId);
-            const resBBS = validateField(
-                connectivity.busOrBusbarSection,
-                validation
-            );
-            setErrorBusBarSection(resBBS?.errorMsgId);
-            return !resVL.error && !resBBS.error;
-        }
-        inputForm.addValidation(id ? id : label, validate);
-    }, [connectivity, label, validation, inputForm, id]);
-
-    const setVoltageLevel = useCallback((newVal) => {
-        setConnectivity((oldVal) => {
-            return { ...oldVal, voltageLevel: newVal };
-        });
-    }, []);
-
-    const setBusOrBusbarSection = useCallback((newVal) => {
-        setConnectivity((oldVal) => {
-            return { ...oldVal, busOrBusbarSection: newVal };
-        });
-    }, []);
-
-    const render = useMemo(() => {
-        return (
-            <ConnectivityEdition
-                disabled={disabled}
-                voltageLevelOptions={voltageLevelOptions}
-                voltageLevel={connectivity.voltageLevel}
-                voltageLevelPreviousValue={voltageLevelPreviousValue}
-                busOrBusbarSection={connectivity.busOrBusbarSection}
-                busOrBusbarSectionPreviousValue={
-                    busOrBusbarSectionPreviousValue
-                }
-                onChangeVoltageLevel={(value) => setVoltageLevel(value)}
-                onChangeBusOrBusbarSection={(busOrBusbarSection) =>
-                    setBusOrBusbarSection(busOrBusbarSection)
-                }
-                errorVoltageLevel={errorVoltageLevel}
-                helperTextVoltageLevel={
-                    errorVoltageLevel &&
-                    intl.formatMessage({
-                        id: errorVoltageLevel,
-                    })
-                }
-                errorBusOrBusBarSection={errorBusBarSection}
-                helperTextBusOrBusBarSection={
-                    errorBusBarSection &&
-                    intl.formatMessage({
-                        id: errorBusBarSection,
-                    })
-                }
-                direction={direction}
-                voltageLevelBusOrBBSCallback={makeRefreshBusOrBusbarSectionsCallback(
-                    studyUuid,
-                    currentNodeUuid
-                )}
-            />
-        );
-    }, [
-        connectivity,
-        disabled,
-        direction,
-        errorBusBarSection,
-        errorVoltageLevel,
-        intl,
-        setBusOrBusbarSection,
-        setVoltageLevel,
-        voltageLevelOptions,
-        studyUuid,
-        currentNodeUuid,
-        voltageLevelPreviousValue,
-        busOrBusbarSectionPreviousValue,
-    ]);
-
-    return [connectivity, render];
 };
 
 export const useButtonWithTooltip = ({ handleClick, label }) => {

@@ -26,7 +26,6 @@ import {
     useDoubleValue,
     useInputForm,
     useTextValue,
-    useConnectivityValue,
     useButtonWithTooltip,
 } from './inputs/input-hooks';
 import {
@@ -38,6 +37,7 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { useConnectivityValue } from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {

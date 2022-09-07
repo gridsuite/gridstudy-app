@@ -23,7 +23,6 @@ import {
 import { createTwoWindingsTransformer } from '../../utils/rest-api';
 import {
     useButtonWithTooltip,
-    useConnectivityValue,
     useDoubleValue,
     useInputForm,
     useTextValue,
@@ -37,6 +36,7 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { useConnectivityValue } from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
