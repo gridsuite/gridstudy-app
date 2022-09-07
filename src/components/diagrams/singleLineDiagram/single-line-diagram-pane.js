@@ -427,6 +427,7 @@ export function SingleLineDiagramPane({
 
     const displayedIds = new Set(displayedSLD.map(({ id }) => id));
     const minimized = views.filter(({ id }) => !displayedIds.has(id));
+
     return (
         <AutoSizer>
             {({ width, height }) => (
@@ -449,10 +450,9 @@ export function SingleLineDiagramPane({
                             toggleState={toggleState}
                             pinned={viewState.get(sld.id) === ViewState.PINNED}
                             disabled={disabled}
-                            width={width}
-                            height={height}
+                            totalWidth={width}
+                            totalHeight={height}
                         />
-                        // </div>
                     ))}
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}

@@ -245,7 +245,7 @@ const computePaperAndSvgSizesIfReady = (
     }
 };
 
-const SizedSingleLineDiagram = forwardRef((props, ref) => {
+const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgUrl = useRef('');
     const svgDraw = useRef();
@@ -1113,17 +1113,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         </Paper>
     ) : (
         <></>
-    );
-});
-
-const SingleLineDiagram = forwardRef((props, ref) => {
-    return (
-            <SizedSingleLineDiagram
-                ref={ref}
-                totalWidth={props.width}
-                totalHeight={props.height}
-                {...props}
-            />
     );
 });
 
