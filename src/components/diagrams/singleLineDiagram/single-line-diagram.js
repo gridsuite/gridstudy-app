@@ -235,9 +235,9 @@ const computePaperAndSvgSizesIfReady = (
                 totalHeight - mapBottomOffset - headerPreferredHeight,
                 maxHeight
             );
-            if (numberToDisplay > 1) {
-                svgWidth = totalWidth - borders;
-            }
+            // if (numberToDisplay > 1) {
+            //     svgWidth = totalWidth - borders;
+            // }
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
         }
@@ -675,6 +675,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // calculate svg width and height from svg bounding box
             const svgEl = divElt.getElementsByTagName('svg')[0];
             const bbox = svgEl.getBBox();
+            console.info('bbox', bbox);
             const xOrigin = bbox.x - 20;
             const yOrigin = bbox.y - 20;
             const svgWidth = Math.ceil(bbox.width + 40);
@@ -996,6 +997,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 height: sizeHeight,
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
                 overflow: 'hidden',
+                display:
+                    !fullScreenSldId || sldId === fullScreenSldId
+                        ? ''
+                        : 'none',
             }}
         >
             <Box>
@@ -1113,16 +1118,12 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
 const SingleLineDiagram = forwardRef((props, ref) => {
     return (
-        <AutoSizer>
-            {({ width, height }) => (
-                <SizedSingleLineDiagram
-                    ref={ref}
-                    totalWidth={width}
-                    totalHeight={height}
-                    {...props}
-                />
-            )}
-        </AutoSizer>
+            <SizedSingleLineDiagram
+                ref={ref}
+                totalWidth={props.width}
+                totalHeight={props.height}
+                {...props}
+            />
     );
 });
 
