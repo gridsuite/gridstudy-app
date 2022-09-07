@@ -353,12 +353,17 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             if(sizes.svgWidth * numberToDisplay > totalWidth) {
                 setSvgFinalWidth(totalWidth / numberToDisplay);
                 setFinalPaperWidth(totalWidth / numberToDisplay);
+
+                setSvgFinalHeight(sizes.svgHeight * ((totalWidth / numberToDisplay) / sizes.svgWidth));
+                setFinalPaperHeight(sizes.svgHeight * ((totalWidth / numberToDisplay) / sizes.svgWidth));
             } else {
                 setSvgFinalWidth(sizes.svgWidth);
                 setFinalPaperWidth(sizes.paperWidth);
+                setSvgFinalHeight(sizes.svgHeight);
+                setFinalPaperHeight(sizes.paperHeight);
             }
-            setSvgFinalHeight(sizes.svgHeight);
-            setFinalPaperHeight(sizes.paperHeight);
+
+
         }
     }, [
         fullScreenSldId,
