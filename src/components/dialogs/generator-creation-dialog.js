@@ -238,7 +238,7 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.ratedNominalPower,
     });
 
-    const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
+    const [isReactiveCapabilityCurveOn, isReactiveCapabilityCurveOnField] =
         useBooleanValue({
             label: 'ReactiveCapabilityCurve',
             validation: { isFieldRequired: true },
@@ -262,7 +262,7 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.maximumReactivePower,
     });
 
-    const [reactiveCapabilityCurveOn, reactiveCapabilityCurveOnField] =
+    const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
         useTableValues({
             id: 'ReactiveCapabilityCurveOn',
             tableHeadersIds: [
@@ -418,12 +418,12 @@ const GeneratorCreationDialog = ({
                     ? regulatingTerminal?.equipmentSection?.type
                     : null,
                 voltageRegulation ? regulatingTerminal?.voltageLevel.id : null,
-                reactiveCapabilityCurve,
+                isReactiveCapabilityCurveOn,
                 frequencyRegulation,
                 frequencyRegulation ? droop : null,
-                reactiveCapabilityCurve ? maximumReactivePower : null,
-                reactiveCapabilityCurve ? minimumReactivePower : null,
-                reactiveCapabilityCurve ? null : reactiveCapabilityCurveOn
+                isReactiveCapabilityCurveOn ? null : maximumReactivePower,
+                isReactiveCapabilityCurveOn ? null : minimumReactivePower,
+                isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -490,14 +490,14 @@ const GeneratorCreationDialog = ({
                             {gridItem(maximumActivePowerField, 4)}
                             {gridItem(ratedNominalPowerField, 4)}
                             <Box sx={{ width: '100%' }} />
-                            {gridItem(reactiveCapabilityCurveField, 8)}
+                            {gridItem(isReactiveCapabilityCurveOnField, 8)}
                             <Box sx={{ width: '100%' }} />
-                            {reactiveCapabilityCurve &&
+                            {!isReactiveCapabilityCurveOn &&
                                 gridItem(minimumReactivePowerField, 4)}
-                            {reactiveCapabilityCurve &&
+                            {!isReactiveCapabilityCurveOn &&
                                 gridItem(maximumReactivePowerField, 4)}
-                            {!reactiveCapabilityCurve &&
-                                reactiveCapabilityCurveOnField}
+                            {isReactiveCapabilityCurveOn &&
+                                reactiveCapabilityCurveField}
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>

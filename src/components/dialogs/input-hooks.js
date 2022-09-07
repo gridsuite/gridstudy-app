@@ -1081,7 +1081,7 @@ export const useTableValues = ({
     }, []);
 
     const checkValues = useCallback(() => {
-        if (defaultValues !== undefined) {
+        if (defaultValues !== undefined && defaultValues.length !== 0) {
             setValues([...defaultValues]);
         } else {
             setValues([]);
