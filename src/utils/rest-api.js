@@ -1285,12 +1285,12 @@ export function createGenerator(
     regulatingTerminalId,
     regulatingTerminalType,
     regulatingTerminalVlId,
-    reactiveCapabilityCurve,
+    isReactiveCapabilityCurveOn,
     frequencyRegulation,
     droop,
     maximumReactivePower,
     minimumReactivePower,
-    reactiveCapabilityCurveOn
+    reactiveCapabilityCurve
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1332,12 +1332,12 @@ export function createGenerator(
             regulatingTerminalId: regulatingTerminalId,
             regulatingTerminalType: regulatingTerminalType,
             regulatingTerminalVlId: regulatingTerminalVlId,
-            reactiveCapabilityCurve: reactiveCapabilityCurve,
+            reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
             participate: frequencyRegulation,
             droop: droop,
             maximumReactivePower: maximumReactivePower,
             minimumReactivePower: minimumReactivePower,
-            points: reactiveCapabilityCurveOn,
+            points: reactiveCapabilityCurve,
         }),
     }).then((response) => {
         return response.ok
