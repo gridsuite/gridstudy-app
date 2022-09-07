@@ -350,9 +350,14 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             numberToDisplay
         );
         if (typeof sizes != 'undefined') {
-            setSvgFinalWidth(sizes.svgWidth);
+            if(sizes.svgWidth * numberToDisplay > totalWidth) {
+                setSvgFinalWidth(totalWidth / numberToDisplay);
+                setFinalPaperWidth(totalWidth / numberToDisplay);
+            } else {
+                setSvgFinalWidth(sizes.svgWidth);
+                setFinalPaperWidth(sizes.paperWidth);
+            }
             setSvgFinalHeight(sizes.svgHeight);
-            setFinalPaperWidth(sizes.paperWidth);
             setFinalPaperHeight(sizes.paperHeight);
         }
     }, [
