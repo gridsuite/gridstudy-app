@@ -201,8 +201,8 @@ const computePaperAndSvgSizesIfReady = (
     svgType,
     totalWidth,
     totalHeight,
-    svgPreferredHeight,
     svgPreferredWidth,
+    svgPreferredHeight,
     headerPreferredHeight,
     numberToDisplay
 ) => {
@@ -210,6 +210,7 @@ const computePaperAndSvgSizesIfReady = (
     console.info('totalWidth', totalWidth);
     console.info('totalHeight', totalHeight);
     console.info('svgPreferredWidth', svgPreferredWidth);
+    console.info('svgPreferredHeight', svgPreferredHeight);
     console.info('headerPreferredHeight', headerPreferredHeight);
     if (
         typeof svgPreferredWidth != 'undefined' &&
@@ -232,12 +233,12 @@ const computePaperAndSvgSizesIfReady = (
             }
             svgWidth = Math.min(
                 svgPreferredWidth,
-                svgPreferredWidth - mapRightOffset,
+                // svgPreferredWidth - mapRightOffset,
                 maxWidth
             );
             svgHeight = Math.min(
                 svgPreferredHeight,
-                svgPreferredHeight - mapBottomOffset - headerPreferredHeight,
+                // svgPreferredHeight - mapBottomOffset - headerPreferredHeight,
                 maxHeight
             );
             if (numberToDisplay > 1) {
@@ -359,6 +360,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             headerPreferredHeight,
             numberToDisplay
         );
+        console.info('SIZESSSSSSSSSSSSSSSSSSSSSS', sizes);
         if (typeof sizes != 'undefined') {
             setSvgFinalWidth(sizes.svgWidth);
             setSvgFinalHeight(sizes.svgHeight);
@@ -712,8 +714,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             addNavigationArrow(svg);
 
             // calculate svg width and height from svg bounding box
-            // const svgEl = divElt.getElementsByTagName('svg')[0];
-            // const bbox = svgEl.getBBox();
+            const svgEl = divElt.getElementsByTagName('svg')[0];
+            const bbox = svgEl.getBBox();
+            console.info('bbox', bbox);
             // const xOrigin = bbox.x - 20;
             // const yOrigin = bbox.y - 20;
             // const svgWidth = Math.ceil(bbox.width + 40);
@@ -999,6 +1002,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         );
     }
 
+    console.info('FINAL   WIDTH', finalPaperWidth)
+    console.info('FINAL   HEIGHT', finalPaperHeight)
+
     let sizeWidth,
         sizeHeight = initialHeight;
     if (svg.error) {
@@ -1030,6 +1036,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         () => toggleState(sldId, svgType, ViewState.MINIMIZED),
         [toggleState, sldId, svgType]
     );
+
+    console.info('WIDTH', sizeWidth)
+    console.info('HEIGHT', sizeHeight)
 
     return !svg.error ? (
         <Paper
