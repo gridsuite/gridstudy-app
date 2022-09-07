@@ -11,7 +11,10 @@ import { Autocomplete, Popper, TextField } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { fetchBusbarSectionsForVoltageLevel, fetchBusesForVoltageLevel } from '../../utils/rest-api';
+import {
+    fetchBusbarSectionsForVoltageLevel,
+    fetchBusesForVoltageLevel,
+} from '../../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import { validateField } from '../util/validation-functions';
@@ -31,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-
 
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level.
@@ -71,7 +73,6 @@ export function makeRefreshBusOrBusbarSectionsCallback(
     };
 }
 
-
 export const useConnectivityValue = ({
     label,
     id,
@@ -110,8 +111,8 @@ export const useConnectivityValue = ({
 
         voltageLevelOptionsPromise.then((values) =>
             setVoltageLevelOptions(
-                values.sort((a, b) => a.id.localeCompare(b.id)),
-            ),
+                values.sort((a, b) => a.id.localeCompare(b.id))
+            )
         );
     }, [voltageLevelOptionsPromise]);
 
@@ -120,16 +121,16 @@ export const useConnectivityValue = ({
         setConnectivity({
             voltageLevel: voltageLevelIdDefaultValue
                 ? {
-                    id: voltageLevelIdDefaultValue,
-                    topologyKind: voltageLevelOptions.find(
-                        (vl) => vl.id === voltageLevelIdDefaultValue,
-                    )?.topologyKind,
-                }
+                      id: voltageLevelIdDefaultValue,
+                      topologyKind: voltageLevelOptions.find(
+                          (vl) => vl.id === voltageLevelIdDefaultValue
+                      )?.topologyKind,
+                  }
                 : null,
             busOrBusbarSection: busOrBusbarSectionIdDefaultValue
                 ? {
-                    id: busOrBusbarSectionIdDefaultValue,
-                }
+                      id: busOrBusbarSectionIdDefaultValue,
+                  }
                 : null,
         });
     }, [
@@ -144,7 +145,7 @@ export const useConnectivityValue = ({
             setErrorVoltageLevel(resVL?.errorMsgId);
             const resBBS = validateField(
                 connectivity.busOrBusbarSection,
-                validation,
+                validation
             );
             setErrorBusBarSection(resBBS?.errorMsgId);
             return !resVL.error && !resBBS.error;
@@ -197,7 +198,7 @@ export const useConnectivityValue = ({
                 direction={direction}
                 voltageLevelBusOrBBSCallback={makeRefreshBusOrBusbarSectionsCallback(
                     studyUuid,
-                    currentNodeUuid,
+                    currentNodeUuid
                 )}
             />
         );

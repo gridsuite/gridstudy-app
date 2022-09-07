@@ -42,7 +42,7 @@ export const useExpandableValues = ({
             });
             inputForm.reset();
         },
-        [inputForm],
+        [inputForm]
     );
 
     const handleSetValue = useCallback((index, newValue) => {

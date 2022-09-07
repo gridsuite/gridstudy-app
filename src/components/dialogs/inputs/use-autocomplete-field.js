@@ -7,10 +7,20 @@
 
 import { func_identity, getId } from '../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { validateField } from '../../util/validation-functions';
 import { Autocomplete, TextField } from '@mui/material';
-import { FieldLabel, genHelperError, genHelperPreviousValue } from './hooks-helpers';
+import {
+    FieldLabel,
+    genHelperError,
+    genHelperPreviousValue,
+} from './hooks-helpers';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 
 const QUESTIONABLE_SIZE = 1000;
@@ -116,7 +126,7 @@ export const useAutocompleteField = ({
             setExpanded(true);
             onSearchTermChange(term, true);
         },
-        [onSearchTermChange],
+        [onSearchTermChange]
     );
 
     const onOpen = useCallback(() => {
@@ -144,7 +154,7 @@ export const useAutocompleteField = ({
                 return term;
             });
         },
-        [values, minCharsBeforeSearch, onSearchTermChange],
+        [values, minCharsBeforeSearch, onSearchTermChange]
     );
 
     const field = useMemo(() => {
@@ -189,7 +199,7 @@ export const useAutocompleteField = ({
                 defaultValue={defaultValue}
                 value={value}
                 loading={isLoading}
-                loadingText={<FormattedMessage id='loadingOptions' />}
+                loadingText={<FormattedMessage id="loadingOptions" />}
                 {...(allowNewValue && {
                     freeSolo: true,
                     isOptionEqualToValue: optionEqualsToValue,
@@ -218,7 +228,7 @@ export const useAutocompleteField = ({
                         {...formProps}
                         {...props}
                         onKeyDown={handleKeyDown}
-                        size='small'
+                        size="small"
                         label={
                             <FieldLabel
                                 label={label}

@@ -6,25 +6,51 @@
  */
 
 import InputAdornment from '@mui/material/InputAdornment';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { validateField } from '../../util/validation-functions';
-import { CircularProgress, FormHelperText, InputLabel, MenuItem, Select, TextField, Tooltip } from '@mui/material';
+import {
+    CircularProgress,
+    FormHelperText,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+    Tooltip,
+} from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
-import { func_identity, toFloatValue, toIntValue, useStyles } from '../dialogUtils';
+import {
+    func_identity,
+    toFloatValue,
+    toIntValue,
+    useStyles,
+} from '../dialogUtils';
 import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../../../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useParameterState } from '../parameters/parameters';
-import { FieldLabel, genHelperError, genHelperPreviousValue } from './hooks-helpers';
+import {
+    FieldLabel,
+    genHelperError,
+    genHelperPreviousValue,
+} from './hooks-helpers';
 import { useAutocompleteField } from './use-autocomplete-field';
 
 export const useInputForm = () => {
@@ -83,6 +109,7 @@ export const useTextValue = ({
             setError(res?.errorMsgId);
             return !res.error;
         }
+
         inputForm.addValidation(id ? id : label, validate);
     }, [label, inputForm, value, id, validation]);
 
@@ -292,6 +319,7 @@ export const useEnumValue = ({
         function validate() {
             return true;
         }
+
         inputForm.addValidation(label, validate);
     }, [label, validation, inputForm, value]);
 

@@ -22,10 +22,7 @@ import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
-import {
-    useInputForm,
-    useTextValue,
-} from './inputs/input-hooks';
+import { useInputForm, useTextValue } from './inputs/input-hooks';
 import {
     gridItem,
     GridSection,
