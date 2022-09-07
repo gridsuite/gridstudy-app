@@ -319,7 +319,7 @@
     "FieldIsRequired": "Ce champ doit être renseigné",
     "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",
     "errDuplicateModificationMsg": "Une erreur est survenue lors de la copie des modifications",
-    "warnDuplicateModificationMsg": "Nombre de modifications non copiées:",
+    "warnDuplicateModificationMsg": "Nombre de modifications non copiées :",
     "errDeleteModificationMsg": "Une erreur est survenue lors de la suppression des modifications",
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
