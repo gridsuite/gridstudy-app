@@ -58,20 +58,14 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
     const [isFieldRequired, setIsFieldRequired] = useState(false);
     const [p, pField] = useDoubleValue({
         label: 'P',
-        validation: {
-            isFieldRequired: isFieldRequired,
-            isFieldNumeric: true,
-        },
+        validation: { isFieldRequired: isFieldRequired },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.p || '',
     });
     const [qminP, qminPField] = useDoubleValue({
         label: 'QminP',
-        validation: {
-            isFieldRequired: isFieldRequired,
-            isFieldNumeric: true,
-        },
+        validation: { isFieldRequired: isFieldRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qminP || '',
@@ -79,10 +73,7 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
 
     const [qmaxP, qmaxPField] = useDoubleValue({
         label: 'QmaxP',
-        validation: {
-            isFieldRequired: isFieldRequired,
-            isFieldNumeric: true,
-        },
+        validation: { isFieldRequired: isFieldRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qmaxP || '',
@@ -252,15 +243,12 @@ const GeneratorCreationDialog = ({
             label: 'ReactiveCapabilityCurve',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            defaultValue: formValues?.reactiveCapabilityCurve || true,
+            defaultValue: formValues?.reactiveCapabilityCurve ?? true,
         });
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
         label: 'MinimumReactivePower',
-        validation: {
-            isFieldRequired: reactivePowerRequired,
-            isFieldNumeric: true,
-        },
+        validation: { isFieldRequired: reactivePowerRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: formValues?.minimumReactivePower,
@@ -268,10 +256,7 @@ const GeneratorCreationDialog = ({
 
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
         label: 'MaximumReactivePower',
-        validation: {
-            isFieldRequired: reactivePowerRequired,
-            isFieldNumeric: true,
-        },
+        validation: { isFieldRequired: reactivePowerRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: formValues?.maximumReactivePower,
@@ -353,15 +338,12 @@ const GeneratorCreationDialog = ({
         label: 'FrequencyRegulation',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        defaultValue: formValues?.participate || false,
+        defaultValue: formValues?.participate ?? false,
     });
 
     const [droop, droopField] = useDoubleValue({
         label: 'Droop',
-        validation: {
-            isFieldRequired: frequencyRegulation,
-            isFieldNumeric: true,
-        },
+        validation: { isFieldRequired: frequencyRegulation },
         adornment: percentageTextField,
         inputForm: inputForm,
         formProps: { disabled: !frequencyRegulation },
@@ -370,10 +352,7 @@ const GeneratorCreationDialog = ({
 
     const [transientReactance, transientReactanceField] = useDoubleValue({
         label: 'TransientReactance',
-        validation: {
-            isFieldRequired: false,
-            isFieldNumeric: true,
-        },
+        validation: { isFieldRequired: false },
         adornment: OhmAdornment,
         inputForm: inputForm,
         defaultValue: formValues?.transientReactance,
@@ -381,10 +360,7 @@ const GeneratorCreationDialog = ({
 
     const [transformerReactance, transformerReactanceField] = useDoubleValue({
         label: 'TransformerReactance',
-        validation: {
-            isFieldRequired: false,
-            isFieldNumeric: true,
-        },
+        validation: { isFieldRequired: false },
         adornment: OhmAdornment,
         inputForm: inputForm,
         defaultValue: formValues?.stepUpTransformerReactance,
@@ -392,10 +368,7 @@ const GeneratorCreationDialog = ({
 
     const [marginalCost, marginalCostField] = useDoubleValue({
         label: 'MarginalCost',
-        validation: {
-            isFieldRequired: false,
-            isFieldNumeric: true,
-        },
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.marginalCost,
     });
