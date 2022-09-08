@@ -25,7 +25,7 @@ import {
     useCountryValue,
     useInputForm,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import { filledTextField, gridItem } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';

@@ -23,11 +23,10 @@ import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
 import {
-    useAutocompleteField,
     useButtonWithTooltip,
     useInputForm,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import { gridItem, GridSection, compareById } from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
@@ -41,6 +40,7 @@ import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
+import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
