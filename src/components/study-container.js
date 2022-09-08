@@ -351,6 +351,10 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
+    function limitChar(str) {
+        return str.length > 30 ? str.substring(0, 30) + '...' : str;
+    }
+
     useEffect(() => {
         if (studyUuid) {
             loadTree();
@@ -389,8 +393,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     .slice(1)
                     .map((parent) => parent.elementName);
 
-                const studyName =
-                    response[0]?.elementName.substring(0, 30) + '...';
+                const studyName = limitChar(response[0]?.elementName);
                 const path = computeFullPath(parents);
                 setStudyName(studyName);
                 setStudyPath(path);
