@@ -21,13 +21,12 @@ import {
 } from '../../utils/messages';
 import { LOAD_TYPES } from '../network/constants';
 import {
-    useConnectivityValue,
     useDoubleValue,
     useEnumValue,
     useInputForm,
     useButtonWithTooltip,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -39,6 +38,7 @@ import {
 import { createLoad } from '../../utils/rest-api';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { useConnectivityValue } from './connectivity-edition';
 
 /**
  * Dialog to create a load in the network

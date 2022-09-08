@@ -7,16 +7,17 @@
 
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
-import { Autocomplete } from '@mui/material';
+import { Autocomplete, Popper, TextField } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { Popper, TextField } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
 } from '../../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
+import { useSelector } from 'react-redux';
+import { validateField } from '../util/validation-functions';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
@@ -71,6 +72,154 @@ export function makeRefreshBusOrBusbarSectionsCallback(
         }
     };
 }
+
+export const useConnectivityValue = ({
+    label,
+    id,
+    validation = {
+        isFieldRequired: true,
+    },
+    disabled = false,
+    inputForm,
+    voltageLevelOptionsPromise,
+    currentNodeUuid,
+    direction = 'row',
+    voltageLevelIdDefaultValue,
+    voltageLevelPreviousValue,
+    busOrBusbarSectionIdDefaultValue,
+    busOrBusbarSectionPreviousValue,
+}) => {
+    const [connectivity, setConnectivity] = useState({
+        voltageLevel: null,
+        busOrBusbarSection: null,
+    });
+    const [errorVoltageLevel, setErrorVoltageLevel] = useState();
+    const [errorBusBarSection, setErrorBusBarSection] = useState();
+    const intl = useIntl();
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    useEffect(() => {
+        setConnectivity({
+            voltageLevel: null,
+            busOrBusbarSection: null,
+        });
+    }, [inputForm.toggleClear]);
+
+    useEffect(() => {
+        if (!voltageLevelOptionsPromise) return;
+
+        voltageLevelOptionsPromise.then((values) =>
+            setVoltageLevelOptions(
+                values.sort((a, b) => a.id.localeCompare(b.id))
+            )
+        );
+    }, [voltageLevelOptionsPromise]);
+
+    useEffect(() => {
+        if (!voltageLevelOptions) return;
+        setConnectivity({
+            voltageLevel: voltageLevelIdDefaultValue
+                ? {
+                      id: voltageLevelIdDefaultValue,
+                      topologyKind: voltageLevelOptions.find(
+                          (vl) => vl.id === voltageLevelIdDefaultValue
+                      )?.topologyKind,
+                  }
+                : null,
+            busOrBusbarSection: busOrBusbarSectionIdDefaultValue
+                ? {
+                      id: busOrBusbarSectionIdDefaultValue,
+                  }
+                : null,
+        });
+    }, [
+        voltageLevelOptions,
+        busOrBusbarSectionIdDefaultValue,
+        voltageLevelIdDefaultValue,
+    ]);
+
+    useEffect(() => {
+        function validate() {
+            const resVL = validateField(connectivity.voltageLevel, validation);
+            setErrorVoltageLevel(resVL?.errorMsgId);
+            const resBBS = validateField(
+                connectivity.busOrBusbarSection,
+                validation
+            );
+            setErrorBusBarSection(resBBS?.errorMsgId);
+            return !resVL.error && !resBBS.error;
+        }
+
+        inputForm.addValidation(id ? id : label, validate);
+    }, [connectivity, label, validation, inputForm, id]);
+
+    const setVoltageLevel = useCallback((newVal) => {
+        setConnectivity((oldVal) => {
+            return { ...oldVal, voltageLevel: newVal };
+        });
+    }, []);
+
+    const setBusOrBusbarSection = useCallback((newVal) => {
+        setConnectivity((oldVal) => {
+            return { ...oldVal, busOrBusbarSection: newVal };
+        });
+    }, []);
+
+    const render = useMemo(() => {
+        return (
+            <ConnectivityEdition
+                disabled={disabled}
+                voltageLevelOptions={voltageLevelOptions}
+                voltageLevel={connectivity.voltageLevel}
+                voltageLevelPreviousValue={voltageLevelPreviousValue}
+                busOrBusbarSection={connectivity.busOrBusbarSection}
+                busOrBusbarSectionPreviousValue={
+                    busOrBusbarSectionPreviousValue
+                }
+                onChangeVoltageLevel={(value) => setVoltageLevel(value)}
+                onChangeBusOrBusbarSection={(busOrBusbarSection) =>
+                    setBusOrBusbarSection(busOrBusbarSection)
+                }
+                errorVoltageLevel={errorVoltageLevel}
+                helperTextVoltageLevel={
+                    errorVoltageLevel &&
+                    intl.formatMessage({
+                        id: errorVoltageLevel,
+                    })
+                }
+                errorBusOrBusBarSection={errorBusBarSection}
+                helperTextBusOrBusBarSection={
+                    errorBusBarSection &&
+                    intl.formatMessage({
+                        id: errorBusBarSection,
+                    })
+                }
+                direction={direction}
+                voltageLevelBusOrBBSCallback={makeRefreshBusOrBusbarSectionsCallback(
+                    studyUuid,
+                    currentNodeUuid
+                )}
+            />
+        );
+    }, [
+        connectivity,
+        disabled,
+        direction,
+        errorBusBarSection,
+        errorVoltageLevel,
+        intl,
+        setBusOrBusbarSection,
+        setVoltageLevel,
+        voltageLevelOptions,
+        studyUuid,
+        currentNodeUuid,
+        voltageLevelPreviousValue,
+        busOrBusbarSectionPreviousValue,
+    ]);
+
+    return [connectivity, render];
+};
 
 /*
  * Component to edit the connection of an equipment (voltage level and bus or busbar section)

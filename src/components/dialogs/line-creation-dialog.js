@@ -26,9 +26,8 @@ import {
     useDoubleValue,
     useInputForm,
     useTextValue,
-    useConnectivityValue,
     useButtonWithTooltip,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import {
     AmpereAdornment,
     filledTextField,
@@ -38,6 +37,7 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { useConnectivityValue } from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
