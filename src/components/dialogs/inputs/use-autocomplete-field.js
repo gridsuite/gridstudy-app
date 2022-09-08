@@ -198,147 +198,115 @@ export const useAutocompleteField = ({
         [values, minCharsBeforeSearch, onSearchTermChange]
     );
 
-    const field = useMemo(
-        () => {
-            const handleKeyDown = (e) => {
-                if (e.ctrlKey && e.code === 'Space') {
-                    handleForcedSearch(userStr);
-                }
-            };
+    const field = useMemo(() => {
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && e.code === 'Space') {
+                handleForcedSearch(userStr);
+            }
+        };
 
-            const optionEqualsToValue = (option, input) =>
-                option === input ||
-                option.id === input ||
-                option.id === input?.id;
+        const optionEqualsToValue = (option, input) =>
+            option === input || option.id === input || option.id === input?.id;
 
-            const filterOptionsFunc = (options, params) => {
-                const filtered = filter(options, params);
-                if (
-                    params.inputValue !== '' &&
-                    !options.find((opt) => opt.id === params.inputValue)
-                ) {
-                    filtered.push({
-                        inputValue: params.inputValue,
-                        id: params.inputValue,
-                    });
-                }
-                return filtered;
-            };
+        const filterOptionsFunc = (options, params) => {
+            const filtered = filter(options, params);
+            if (
+                params.inputValue !== '' &&
+                !options.find((opt) => opt.id === params.inputValue)
+            ) {
+                filtered.push({
+                    inputValue: params.inputValue,
+                    id: params.inputValue,
+                });
+            }
+            return filtered;
+        };
 
-            return (
-                <Autocomplete
-                    id={label}
-                    onChange={(event, newValue) => {
-                        handleChangeValue(newValue);
-                    }}
-                    open={expanded}
-                    onOpen={onOpen}
-                    onClose={() => {
-                        setExpanded(false);
-                    }}
-                    size={'small'}
-                    forcePopupIcon
-                    options={isLoading ? [] : presentedOptions}
-                    getOptionLabel={getLabel}
-                    defaultValue={defaultValue}
-                    value={value}
-                    loading={isLoading}
-                    loadingText={<FormattedMessage id="loadingOptions" />}
-                    {...(allowNewValue && {
-                        freeSolo: true,
-                        isOptionEqualToValue: optionEqualsToValue,
-                        autoSelect: true,
-                        autoComplete: true,
-                        autoHighlight: true,
-                        blurOnSelect: true,
-                        clearOnBlur: true,
+        return (
+            <Autocomplete
+                id={label}
+                onChange={(event, newValue) => {
+                    handleChangeValue(newValue);
+                }}
+                open={expanded}
+                onOpen={onOpen}
+                onClose={() => {
+                    setExpanded(false);
+                }}
+                size={'small'}
+                forcePopupIcon
+                options={isLoading ? [] : presentedOptions}
+                getOptionLabel={getLabel}
+                defaultValue={defaultValue}
+                value={value}
+                loading={isLoading}
+                loadingText={<FormattedMessage id="loadingOptions" />}
+                {...(allowNewValue && {
+                    freeSolo: true,
+                    isOptionEqualToValue: optionEqualsToValue,
+                    autoSelect: true,
+                    autoComplete: true,
+                    autoHighlight: true,
+                    blurOnSelect: true,
+                    clearOnBlur: true,
+                })}
+                {...(allowNewValue &&
+                    getLabel === getId && {
+                        filterOptions: filterOptionsFunc,
                     })}
-                    {...(allowNewValue &&
-                        getLabel === getId && {
-                            filterOptions: filterOptionsFunc,
-                        })}
-                    onInputChange={(_event, value) =>
-                        handleSearchTermChange(value)
-                    }
-                    noOptionsText={intl.formatMessage({
-                        id: 'element_search/noResult',
-                    })}
-                    {...(renderElement && {
-                        renderOption: (optionProps, element, { inputValue }) =>
-                            renderElement({
-                                ...optionProps,
-                                element,
-                                inputValue,
-                            }),
-                    })}
-                    renderInput={(props) => (
-                        <TextField
-                            {...formProps}
-                            {...props}
-                            onKeyDown={handleKeyDown}
-                            size="small"
-                            label={
-                                <FieldLabel
-                                    label={label}
-                                    optional={
-                                        validation.isFieldRequired === false
-                                    }
-                                />
-                            }
-                            value={value}
-                            {...genHelperPreviousValue(previousValue)}
-                            {...genHelperError(error, errorMsg)}
-                        />
-                    )}
-                />
-            );
-        },
-        [
-            label,
-            presentedOptions,
-            getLabel,
-            allowNewValue,
-            handleChangeValue,
-            validation.isFieldRequired,
-            value,
-            defaultValue,
-            previousValue,
-            error,
-            errorMsg,
-            formProps,
-            isLoading,
-            expanded,
-            handleSearchTermChange,
-            handleForcedSearch,
-            intl,
-            renderElement,
-            onOpen,
-            userStr,
-        ],
-        [
-            'label',
-            'presentedOptions',
-            'getLabel',
-            'allowNewValue',
-            'handleChangeValue',
-            'validation.isFieldRequired',
-            'value',
-            'defaultValue',
-            'previousValue',
-            'error',
-            'errorMsg',
-            'formProps',
-            'isLoading',
-            'expanded',
-            'handleSearchTermChange',
-            'handleForcedSearch',
-            'intl',
-            'renderElement',
-            'onOpen',
-            'userStr',
-        ],
-        'trois' + (id || label)
-    );
+                onInputChange={(_event, value) => handleSearchTermChange(value)}
+                noOptionsText={intl.formatMessage({
+                    id: 'element_search/noResult',
+                })}
+                {...(renderElement && {
+                    renderOption: (optionProps, element, { inputValue }) =>
+                        renderElement({
+                            ...optionProps,
+                            element,
+                            inputValue,
+                        }),
+                })}
+                renderInput={(props) => (
+                    <TextField
+                        {...formProps}
+                        {...props}
+                        onKeyDown={handleKeyDown}
+                        size="small"
+                        label={
+                            <FieldLabel
+                                label={label}
+                                optional={validation.isFieldRequired === false}
+                            />
+                        }
+                        value={value}
+                        {...genHelperPreviousValue(previousValue)}
+                        {...genHelperError(error, errorMsg)}
+                    />
+                )}
+            />
+        );
+    }, [
+        label,
+        presentedOptions,
+        getLabel,
+        allowNewValue,
+        handleChangeValue,
+        validation.isFieldRequired,
+        value,
+        defaultValue,
+        previousValue,
+        error,
+        errorMsg,
+        formProps,
+        isLoading,
+        expanded,
+        handleSearchTermChange,
+        handleForcedSearch,
+        intl,
+        renderElement,
+        onOpen,
+        userStr,
+    ]);
 
     return [value, field, setValue];
 };
