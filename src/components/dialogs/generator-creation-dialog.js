@@ -23,12 +23,11 @@ import { useSnackbar } from 'notistack';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     useButtonWithTooltip,
-    useConnectivityValue,
     useDoubleValue,
     useEnumValue,
     useInputForm,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -42,6 +41,7 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 import { Box } from '@mui/system';
 import { ENERGY_SOURCES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
+import { useConnectivityValue } from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
