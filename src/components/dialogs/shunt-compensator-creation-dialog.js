@@ -21,12 +21,11 @@ import {
 import { useSnackbar } from 'notistack';
 import {
     useButtonWithTooltip,
-    useConnectivityValue,
     useDoubleValue,
     useInputForm,
     useIntegerValue,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import { createShuntCompensator } from '../../utils/rest-api';
 import {
     filledTextField,
@@ -38,6 +37,7 @@ import {
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useBooleanValue } from './inputs/boolean';
+import { useConnectivityValue } from './connectivity-edition';
 
 const disabledChecked = { disabled: true };
 
