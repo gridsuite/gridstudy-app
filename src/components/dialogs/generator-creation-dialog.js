@@ -54,11 +54,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
+const RCCurve = ({
+    index,
+    onChange,
+    defaultValue,
+    inputForm,
+    isFieldRequired,
+}) => {
     const [p, pField] = useDoubleValue({
         label: 'P',
         id: 'P' + index,
-        validation: { isFieldRequired: true },
+        validation: { isFieldRequired: isFieldRequired },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.p || '',
@@ -66,7 +72,7 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
     const [qminP, qminPField] = useDoubleValue({
         label: 'QminP',
         id: 'QminP' + index,
-        validation: { isFieldRequired: true  },
+        validation: { isFieldRequired: isFieldRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qminP || '',
@@ -75,7 +81,7 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
     const [qmaxP, qmaxPField] = useDoubleValue({
         label: 'QmaxP',
         id: 'QmaxP' + index,
-        validation: { isFieldRequired: true  },
+        validation: { isFieldRequired: isFieldRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qmaxP || '',

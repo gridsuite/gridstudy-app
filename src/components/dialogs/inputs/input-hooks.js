@@ -553,17 +553,21 @@ export const useTableValues = ({
 
     useEffect(() => {
         if (!isReactiveCapabilityCurveOn) {
+            //TODO When isReactiveCapabilityCurveOn is false, the reactive capability curve component does not change
+            // the validation of its values and they still required.
+            // we update the validations of reactive capability curve values so they are not required any more.
+            // is there a better way to do it ?
             function validate() {
                 return !isReactiveCapabilityCurveOn;
             }
 
             values.forEach((value, index) => {
-                inputForm.addValidation('P'+index, validate);
-                inputForm.addValidation('QmaxP'+index, validate);
-                inputForm.addValidation('QminP'+index, validate);
-            })
+                inputForm.addValidation('P' + index, validate);
+                inputForm.addValidation('QmaxP' + index, validate);
+                inputForm.addValidation('QminP' + index, validate);
+            });
         }
-    }, [isReactiveCapabilityCurveOn])
+    }, [inputForm, values, isReactiveCapabilityCurveOn]);
 
     const field = useMemo(() => {
         return (
@@ -581,6 +585,7 @@ export const useTableValues = ({
                             onChange={handleSetValue}
                             index={idx}
                             inputForm={inputForm}
+                            isFieldRequired={isReactiveCapabilityCurveOn}
                         />
                         <Grid item xs={1}>
                             <IconButton
@@ -615,6 +620,7 @@ export const useTableValues = ({
         handleSetValue,
         inputForm,
         tableHeadersIds,
+        isReactiveCapabilityCurveOn,
     ]);
 
     return [values, field];
