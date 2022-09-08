@@ -17,12 +17,11 @@ import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
 import makeStyles from '@mui/styles/makeStyles';
 import {
-    useAutocompleteField,
     useDoubleValue,
     useEnumValue,
     useInputForm,
     useTextValue,
-} from './input-hooks';
+} from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
     compareById,
@@ -38,6 +37,7 @@ import { Box } from '@mui/system';
 import { ENERGY_SOURCES, getEnergySourceLabel } from '../network/constants';
 import { useNullableBooleanValue } from './inputs/boolean';
 import { modifyGenerator } from '../../utils/rest-api';
+import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
