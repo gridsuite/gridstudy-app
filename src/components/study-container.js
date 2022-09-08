@@ -144,10 +144,6 @@ const securityAnalysisStatusInvalidations = [
 ];
 const UPDATE_TYPE_HEADER = 'updateType';
 
-function limitChar(str, limit) {
-    return str.length > limit ? str.substring(0, limit) + '...' : str;
-}
-
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
 
@@ -393,7 +389,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     .slice(1)
                     .map((parent) => parent.elementName);
 
-                const studyName = limitChar(response[0]?.elementName, 30);
+                const studyName = response[0]?.elementName;
                 const path = computeFullPath(parents);
                 setStudyName(studyName);
                 setStudyPath(path);
