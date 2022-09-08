@@ -47,9 +47,13 @@ const computePageTitleWithFullPath = (pageTitle, parents) => {
     return pageTitle;
 };
 
+const limitChar = (str, limit) => {
+    return str.length > limit ? str.substring(0, limit) + '...' : str;
+};
+
 export const computePageTitle = (appName, studyName, parents) => {
     if (!studyName) return appName;
-    let pageTitle = appName + SEPARATOR + studyName;
+    let pageTitle = appName + SEPARATOR + limitChar(studyName, 30);
     if (!parents?.length) return pageTitle;
 
     pageTitle = pageTitle + SEPARATOR;
