@@ -219,7 +219,6 @@ export function SingleLineDiagramPane({
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const [views, setViews] = useState([]);
-    const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const [viewState, setViewState] = useState(new Map());
 

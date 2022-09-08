@@ -203,7 +203,7 @@ const computePaperAndSvgSizesIfReady = (
     totalHeight,
     svgPreferredWidth,
     svgPreferredHeight,
-    headerPreferredHeight,
+    headerPreferredHeight
 ) => {
     if (
         typeof svgPreferredWidth != 'undefined' &&
@@ -342,23 +342,27 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
-            headerPreferredHeight,
+            headerPreferredHeight
         );
         if (typeof sizes != 'undefined') {
-            if(sizes.svgWidth * numberToDisplay > totalWidth) {
+            if (sizes.svgWidth * numberToDisplay > totalWidth) {
                 setSvgFinalWidth(totalWidth / numberToDisplay);
                 setFinalPaperWidth(totalWidth / numberToDisplay);
 
-                setSvgFinalHeight(sizes.svgHeight * ((totalWidth / numberToDisplay) / sizes.svgWidth));
-                setFinalPaperHeight(sizes.svgHeight * ((totalWidth / numberToDisplay) / sizes.svgWidth));
+                setSvgFinalHeight(
+                    sizes.svgHeight *
+                        (totalWidth / numberToDisplay / sizes.svgWidth)
+                );
+                setFinalPaperHeight(
+                    sizes.svgHeight *
+                        (totalWidth / numberToDisplay / sizes.svgWidth)
+                );
             } else {
                 setSvgFinalWidth(sizes.svgWidth);
                 setFinalPaperWidth(sizes.paperWidth);
                 setSvgFinalHeight(sizes.svgHeight);
                 setFinalPaperHeight(sizes.paperHeight);
             }
-
-
         }
     }, [
         fullScreenSldId,
@@ -1002,9 +1006,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
                 overflow: 'hidden',
                 display:
-                    !fullScreenSldId || sldId === fullScreenSldId
-                        ? ''
-                        : 'none',
+                    !fullScreenSldId || sldId === fullScreenSldId ? '' : 'none',
             }}
         >
             <Box>
