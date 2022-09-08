@@ -13,6 +13,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
+import { useSelector } from 'react-redux';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -46,6 +47,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     );
 
     const intl = useIntl();
+    const saNotif = useSelector((state) => state.saNotif);
 
     const switchNmkTypeResult = () => {
         setNmkTypeResult(
@@ -484,17 +486,20 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     )}
                 </div>
                 <div style={{ flexGrow: 1 }}>
-                    {result &&
+                    {saNotif &&
+                        result &&
                         tabIndex === 0 &&
                         renderTableN(result.preContingencyResult)}
-                    {result &&
+                    {saNotif &&
+                        result &&
                         tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
                         renderTableNmKContingencies(
                             result.postContingencyResults
                         )}
-                    {result &&
+                    {saNotif &&
+                        result &&
                         tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
