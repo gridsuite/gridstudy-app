@@ -81,12 +81,18 @@ export const useInputForm = () => {
     const reset = useCallback((label, validate) => {
         validationMap.current = new Map();
     }, []);
+    const deleteValidation = useCallback((id) => {
+        if (validationMap.current.has(id)) {
+            validationMap.current.delete(id);
+        }
+    }, []);
     return {
         toggleClear,
         clear,
         validate,
         addValidation,
         reset,
+        deleteValidation,
     };
 };
 function genHelperPreviousValue(previousValue, adornment) {

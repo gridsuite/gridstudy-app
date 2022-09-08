@@ -55,17 +55,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
-    const [isFieldRequired, setIsFieldRequired] = useState(false);
     const [p, pField] = useDoubleValue({
         label: 'P',
-        validation: { isFieldRequired: isFieldRequired },
+        validation: { isFieldRequired: true },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.p || '',
     });
     const [qminP, qminPField] = useDoubleValue({
         label: 'QminP',
-        validation: { isFieldRequired: isFieldRequired },
+        validation: { isFieldRequired: true },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qminP || '',
@@ -73,17 +72,14 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
 
     const [qmaxP, qmaxPField] = useDoubleValue({
         label: 'QmaxP',
-        validation: { isFieldRequired: isFieldRequired },
+        validation: { isFieldRequired: true },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qmaxP || '',
     });
 
     useEffect(() => {
-        if (p !== null && qminP !== null && qmaxP !== null) {
-            onChange(index, { p: p, qminP: qminP, qmaxP: qmaxP });
-        }
-        setIsFieldRequired(p || qminP || qmaxP);
+        onChange(index, { p: p, qminP: qminP, qmaxP: qmaxP });
     }, [index, onChange, p, qminP, qmaxP]);
 
     return (
@@ -392,6 +388,11 @@ const GeneratorCreationDialog = ({
     }, [minimumReactivePower, maximumReactivePower]);
 
     const handleSave = () => {
+        if (!isReactiveCapabilityCurveOn) {
+            inputForm.deleteValidation('P');
+            inputForm.deleteValidation('QminP');
+            inputForm.deleteValidation('QmaxP');
+        }
         if (inputForm.validate()) {
             createGenerator(
                 studyUuid,
