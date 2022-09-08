@@ -204,7 +204,6 @@ const computePaperAndSvgSizesIfReady = (
     svgPreferredWidth,
     svgPreferredHeight,
     headerPreferredHeight,
-    numberToDisplay
 ) => {
     if (
         typeof svgPreferredWidth != 'undefined' &&
@@ -235,9 +234,6 @@ const computePaperAndSvgSizesIfReady = (
                 totalHeight - mapBottomOffset - headerPreferredHeight,
                 maxHeight
             );
-            // if (numberToDisplay > 1) {
-            //     svgWidth = totalWidth - borders;
-            // }
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
         }
@@ -347,7 +343,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             svgPreferredWidth,
             svgPreferredHeight,
             headerPreferredHeight,
-            numberToDisplay
         );
         if (typeof sizes != 'undefined') {
             if(sizes.svgWidth * numberToDisplay > totalWidth) {
@@ -685,7 +680,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             // calculate svg width and height from svg bounding box
             const svgEl = divElt.getElementsByTagName('svg')[0];
             const bbox = svgEl.getBBox();
-            console.info('bbox', bbox);
             const xOrigin = bbox.x - 20;
             const yOrigin = bbox.y - 20;
             const svgWidth = Math.ceil(bbox.width + 40);
