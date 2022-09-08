@@ -52,13 +52,13 @@ import {
     genHelperPreviousValue,
 } from './hooks-helpers';
 import { useAutocompleteField } from './use-autocomplete-field';
-import Grid from "@mui/material/Grid";
-import {Box} from "@mui/system";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/ControlPoint";
+import Grid from '@mui/material/Grid';
+import { Box } from '@mui/system';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import RegulatingTerminalEdition, {
-    makeRefreshRegulatingTerminalSectionsCallback
-} from "../regulating-terminal-edition";
+    makeRefreshRegulatingTerminalSectionsCallback,
+} from '../regulating-terminal-edition';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -393,19 +393,19 @@ export const useEnumValue = ({
     return [value, field];
 };
 export const useRegulatingTerminalValue = ({
-                                               label,
-                                               id,
-                                               validation = {
-                                                   isFieldRequired: false,
-                                               },
-                                               disabled = false,
-                                               inputForm,
-                                               voltageLevelOptionsPromise,
-                                               direction = 'row',
-                                               voltageLevelIdDefaultValue,
-                                               equipmentSectionTypeDefaultValue,
-                                               equipmentSectionIdDefaultValue,
-                                           }) => {
+    label,
+    id,
+    validation = {
+        isFieldRequired: false,
+    },
+    disabled = false,
+    inputForm,
+    voltageLevelOptionsPromise,
+    direction = 'row',
+    voltageLevelIdDefaultValue,
+    equipmentSectionTypeDefaultValue,
+    equipmentSectionIdDefaultValue,
+}) => {
     const [regulatingTerminal, setRegulatingTerminal] = useState({
         voltageLevel: voltageLevelIdDefaultValue,
         equipmentSection: {
@@ -441,19 +441,19 @@ export const useRegulatingTerminalValue = ({
         setRegulatingTerminal({
             voltageLevel: voltageLevelIdDefaultValue
                 ? {
-                    id: voltageLevelIdDefaultValue,
-                    topologyKind: voltageLevelOptions.find(
-                        (vl) => vl.id === voltageLevelIdDefaultValue
-                    )?.topologyKind,
-                }
+                      id: voltageLevelIdDefaultValue,
+                      topologyKind: voltageLevelOptions.find(
+                          (vl) => vl.id === voltageLevelIdDefaultValue
+                      )?.topologyKind,
+                  }
                 : null,
             equipmentSection:
                 equipmentSectionIdDefaultValue &&
                 equipmentSectionTypeDefaultValue
                     ? {
-                        id: equipmentSectionIdDefaultValue,
-                        type: equipmentSectionTypeDefaultValue,
-                    }
+                          id: equipmentSectionIdDefaultValue,
+                          type: equipmentSectionTypeDefaultValue,
+                      }
                     : null,
         });
     }, [

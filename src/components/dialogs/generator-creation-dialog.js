@@ -382,17 +382,24 @@ const GeneratorCreationDialog = ({
     });
 
     useEffect(() => {
+        if (!isReactiveCapabilityCurveOn) {
+            function getIsReactiveCapabilityCurveOn() {
+                return !isReactiveCapabilityCurveOn;
+            }
+
+            inputForm.addValidation('P', getIsReactiveCapabilityCurveOn);
+            inputForm.addValidation('QminP', getIsReactiveCapabilityCurveOn);
+            inputForm.addValidation('QmaxP', getIsReactiveCapabilityCurveOn);
+        }
+    }, [inputForm, isReactiveCapabilityCurveOn]);
+
+    useEffect(() => {
         setReactivePowerRequired(
             minimumReactivePower !== '' || maximumReactivePower !== ''
         );
     }, [minimumReactivePower, maximumReactivePower]);
 
     const handleSave = () => {
-        if (!isReactiveCapabilityCurveOn) {
-            inputForm.deleteValidation('P');
-            inputForm.deleteValidation('QminP');
-            inputForm.deleteValidation('QmaxP');
-        }
         if (inputForm.validate()) {
             createGenerator(
                 studyUuid,
