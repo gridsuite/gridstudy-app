@@ -509,6 +509,7 @@ export const useTableValues = ({
     Field,
     inputForm,
     defaultValues,
+    isReactiveCapabilityCurveOn,
 }) => {
     const [values, setValues] = useState([]);
     const classes = useStyles();
@@ -549,6 +550,20 @@ export const useTableValues = ({
             return newValues;
         });
     }, []);
+
+    useEffect(() => {
+        if (!isReactiveCapabilityCurveOn) {
+            function validate() {
+                return !isReactiveCapabilityCurveOn;
+            }
+
+            values.forEach((value, index) => {
+                inputForm.addValidation('P'+index, validate);
+                inputForm.addValidation('QmaxP'+index, validate);
+                inputForm.addValidation('QminP'+index, validate);
+            })
+        }
+    }, [isReactiveCapabilityCurveOn])
 
     const field = useMemo(() => {
         return (

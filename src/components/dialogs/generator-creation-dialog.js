@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
 const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
     const [p, pField] = useDoubleValue({
         label: 'P',
+        id: 'P' + index,
         validation: { isFieldRequired: true },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
@@ -64,7 +65,8 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
     });
     const [qminP, qminPField] = useDoubleValue({
         label: 'QminP',
-        validation: { isFieldRequired: true },
+        id: 'QminP' + index,
+        validation: { isFieldRequired: true  },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qminP || '',
@@ -72,7 +74,8 @@ const RCCurve = ({ index, onChange, defaultValue, inputForm }) => {
 
     const [qmaxP, qmaxPField] = useDoubleValue({
         label: 'QmaxP',
-        validation: { isFieldRequired: true },
+        id: 'QmaxP' + index,
+        validation: { isFieldRequired: true  },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qmaxP || '',
@@ -272,6 +275,7 @@ const GeneratorCreationDialog = ({
             Field: RCCurve,
             defaultValues: formValues?.points,
             isRequired: false,
+            isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
         });
 
     const [activePowerSetpoint, activePowerSetpointField] = useDoubleValue({
@@ -380,18 +384,6 @@ const GeneratorCreationDialog = ({
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
     });
-
-    useEffect(() => {
-        if (!isReactiveCapabilityCurveOn) {
-            function getIsReactiveCapabilityCurveOn() {
-                return !isReactiveCapabilityCurveOn;
-            }
-
-            inputForm.addValidation('P', getIsReactiveCapabilityCurveOn);
-            inputForm.addValidation('QminP', getIsReactiveCapabilityCurveOn);
-            inputForm.addValidation('QmaxP', getIsReactiveCapabilityCurveOn);
-        }
-    }, [inputForm, isReactiveCapabilityCurveOn]);
 
     useEffect(() => {
         setReactivePowerRequired(
