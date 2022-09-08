@@ -47,6 +47,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     );
 
     const intl = useIntl();
+
     const saNotif = useSelector((state) => state.saNotif);
 
     const switchNmkTypeResult = () => {

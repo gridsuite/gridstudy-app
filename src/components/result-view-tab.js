@@ -52,7 +52,9 @@ export const ResultViewTab = ({
     const classes = useStyles();
 
     const intl = useIntl();
+
     const loadflowNotif = useSelector((state) => state.loadflowNotif);
+
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.table}>
