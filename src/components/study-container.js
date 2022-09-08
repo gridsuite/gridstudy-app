@@ -389,7 +389,8 @@ export function StudyContainer({ view, onChangeTab }) {
                     .slice(1)
                     .map((parent) => parent.elementName);
 
-                const studyName = response[0]?.elementName;
+                const studyName =
+                    response[0]?.elementName.substring(0, 30) + '...';
                 const path = computeFullPath(parents);
                 setStudyName(studyName);
                 setStudyPath(path);
