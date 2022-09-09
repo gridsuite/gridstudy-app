@@ -34,7 +34,7 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { useIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../dialogs/load-creation-dialog';
 import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
@@ -137,7 +137,6 @@ function isPartial(s1, s2) {
 }
 
 const NetworkModificationNodeEditor = () => {
-    const intl = useIntl();
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -150,7 +149,7 @@ const NetworkModificationNodeEditor = () => {
 
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
-    const [copiedModifications, setCopiedModifications] = useState(new Set());
+    const [copiedModifications, setCopiedModifications] = useState([]);
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -461,18 +460,16 @@ const NetworkModificationNodeEditor = () => {
 
     const doCopyModification = () => {
         // just memorize the list of selected modifications
-        let newCopySet = new Set();
-        selectedItems.forEach((item) => {
-            newCopySet.add(item.uuid);
-        });
-        setCopiedModifications(newCopySet);
+        setCopiedModifications(
+            Array.from(selectedItems).map((item) => item.uuid)
+        );
     };
 
-    const doPasteModification = () => {
+    const doPasteModification = useCallback(() => {
         duplicateModifications(
             studyUuid,
             currentTreeNode.id,
-            Array.from(copiedModifications)
+            copiedModifications
         )
             .then((modificationsInFailure) => {
                 if (modificationsInFailure.length > 0) {
@@ -489,7 +486,13 @@ const NetworkModificationNodeEditor = () => {
             .catch((errmsg) => {
                 snackError(errmsg, 'errDuplicateModificationMsg');
             });
-    };
+    }, [
+        studyUuid,
+        currentTreeNode.id,
+        copiedModifications,
+        snackWarning,
+        snackError,
+    ]);
 
     const doEditModification = (modificationUuid) => {
         const modification = fetchNetworkModification(modificationUuid);
@@ -679,13 +682,16 @@ const NetworkModificationNodeEditor = () => {
                     <ContentCopyIcon />
                 </IconButton>
                 <Tooltip
-                    title={intl.formatMessage(
-                        { id: 'NbModification' },
-                        {
-                            nb: copiedModifications.size,
-                            several: copiedModifications.size > 1 ? 's' : '',
-                        }
-                    )}
+                    title={
+                        <FormattedMessage
+                            id={'NbModification'}
+                            values={{
+                                nb: copiedModifications.size,
+                                several:
+                                    copiedModifications.size > 1 ? 's' : '',
+                            }}
+                        />
+                    }
                 >
                     <span>
                         <IconButton
@@ -693,7 +699,7 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             className={classes.toolbarIcon}
                             disabled={
-                                !(copiedModifications.size > 0) ||
+                                !(copiedModifications.length > 0) ||
                                 isAnyNodeBuilding
                             }
                         >
