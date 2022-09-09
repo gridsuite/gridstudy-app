@@ -686,9 +686,9 @@ const NetworkModificationNodeEditor = () => {
                         <FormattedMessage
                             id={'NbModification'}
                             values={{
-                                nb: copiedModifications.size,
+                                nb: copiedModifications.length,
                                 several:
-                                    copiedModifications.size > 1 ? 's' : '',
+                                    copiedModifications.length > 1 ? 's' : '',
                             }}
                         />
                     }
