@@ -382,6 +382,7 @@
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "GeneratorModificationError": "Error while modifying generator",
+    "ReactiveCapabilityCurveCreationError": "The table of reactive capability curve must have at least four points",
 
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",

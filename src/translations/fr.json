@@ -383,6 +383,7 @@
     "RatedNominalPowerGreaterThanZero": "La valeur de la puissance nominale doit être strictement positive",
     "VoltageGreaterThanZero": "La valeur de la tension doit être strictement positive",
     "GeneratorModificationError": "Erreur lors de la modification d'un générateur ",
+    "ReactiveCapabilityCurveCreationError": "Le tableau des limites de réactifs par diagramme doit comporter au moins quatre points",
 
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",

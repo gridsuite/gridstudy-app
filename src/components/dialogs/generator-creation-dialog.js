@@ -20,7 +20,6 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
-import makeStyles from '@mui/styles/makeStyles';
 import {
     useButtonWithTooltip,
     useDoubleValue,
@@ -46,11 +45,19 @@ import { Box } from '@mui/system';
 import { ENERGY_SOURCES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
         marginTop: 4,
+    },
+
+    rccError: {
+        color: theme.palette.error.main,
+        fontSize: 'small',
+        textAlign: 'center',
+        margin: theme.spacing(2),
     },
 }));
 
@@ -128,6 +135,8 @@ const GeneratorCreationDialog = ({
     const [formValues, setFormValues] = useState(undefined);
 
     const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
+
+    const [rCCurveError, setRCCurveError] = useState();
 
     const toFormValues = (generator) => {
         return {
@@ -398,7 +407,13 @@ const GeneratorCreationDialog = ({
     }, [minimumReactivePower, maximumReactivePower]);
 
     const handleSave = () => {
-        if (inputForm.validate()) {
+        const isRCCNotValid =
+            isReactiveCapabilityCurveOn && reactiveCapabilityCurve.length < 2;
+        setRCCurveError(
+            isRCCNotValid ? 'ReactiveCapabilityCurveCreationError' : null
+        );
+
+        if (inputForm.validate() && !isRCCNotValid) {
             createGenerator(
                 studyUuid,
                 currentNodeUuid,
@@ -499,6 +514,12 @@ const GeneratorCreationDialog = ({
                             {gridItem(ratedNominalPowerField, 4)}
                             <Box sx={{ width: '100%' }} />
                             {gridItem(isReactiveCapabilityCurveOnField, 8)}
+                            <Box sx={{ width: '100%' }} />
+                            {rCCurveError && (
+                                <div className={classes.rccError}>
+                                    <FormattedMessage id="ReactiveCapabilityCurveCreationError" />
+                                </div>
+                            )}
                             <Box sx={{ width: '100%' }} />
                             {!isReactiveCapabilityCurveOn &&
                                 gridItem(minimumReactivePowerField, 4)}
