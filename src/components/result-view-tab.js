@@ -16,7 +16,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import AlertInvalidNode from './util/alert-invalid-node';
-import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -53,16 +52,10 @@ export const ResultViewTab = ({
 
     const intl = useIntl();
 
-    const loadflowNotif = useSelector((state) => state.loadflowNotif);
-
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.table}>
-                <LoadFlowResult
-                    result={
-                        loadflowNotif ? loadFlowInfos?.loadFlowResult : null
-                    }
-                />
+                <LoadFlowResult result={loadFlowInfos?.loadFlowResult} />
             </Paper>
         );
     }
