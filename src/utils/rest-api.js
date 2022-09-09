@@ -859,7 +859,7 @@ export function createTreeNode(studyUuid, parentId, insertMode, node) {
 }
 
 export function deleteTreeNode(studyUuid, nodeId) {
-    console.info('Fetching network modification tree');
+    console.info('Deleting tree node : ', nodeId);
     const url =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeId);
     console.debug(url);
@@ -933,6 +933,33 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     }).then((response) =>
         response.ok
             ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function duplicateModifications(
+    studyUuid,
+    targetNodeId,
+    modificationsIdList
+) {
+    console.info('duplicate and append modifications');
+    const duplicateModificationUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(targetNodeId);
+
+    return backendFetch(duplicateModificationUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(modificationsIdList),
+    }).then((response) =>
+        response.ok
+            ? response.json()
             : response.text().then((text) => Promise.reject(text))
     );
 }
