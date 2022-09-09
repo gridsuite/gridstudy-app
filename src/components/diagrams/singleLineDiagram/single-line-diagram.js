@@ -345,17 +345,20 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             headerPreferredHeight
         );
         if (typeof sizes != 'undefined') {
-            if (sizes.svgWidth * numberToDisplay > totalWidth) {
+            if (
+                !fullScreenSldId &&
+                sizes.svgWidth * numberToDisplay > totalWidth
+            ) {
                 setSvgFinalWidth(totalWidth / numberToDisplay);
                 setFinalPaperWidth(totalWidth / numberToDisplay);
 
-                setSvgFinalHeight(
+                const adjustedHeight =
                     sizes.svgHeight *
-                        (totalWidth / numberToDisplay / sizes.svgWidth)
-                );
+                    (totalWidth / numberToDisplay / sizes.svgWidth);
+
+                setSvgFinalHeight(adjustedHeight);
                 setFinalPaperHeight(
-                    sizes.svgHeight *
-                        (totalWidth / numberToDisplay / sizes.svgWidth)
+                    adjustedHeight + (sizes.paperHeight - sizes.svgHeight)
                 );
             } else {
                 setSvgFinalWidth(sizes.svgWidth);
