@@ -63,7 +63,7 @@ export function displayWarningMessageWithSnackbar({ ...args }) {
     displayMessageWithSnackbar({
         ...args,
         level: 'warning',
-        persistent: false,
+        persistent: true,
     });
 }
 
