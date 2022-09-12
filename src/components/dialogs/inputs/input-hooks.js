@@ -52,6 +52,13 @@ import {
     genHelperPreviousValue,
 } from './hooks-helpers';
 import { useAutocompleteField } from './use-autocomplete-field';
+import Grid from '@mui/material/Grid';
+import { Box } from '@mui/system';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/ControlPoint';
+import RegulatingTerminalEdition, {
+    makeRefreshRegulatingTerminalSectionsCallback,
+} from '../regulating-terminal-edition';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -384,6 +391,239 @@ export const useEnumValue = ({
     }, [defaultValue]);
 
     return [value, field];
+};
+export const useRegulatingTerminalValue = ({
+    label,
+    id,
+    validation = {
+        isFieldRequired: false,
+    },
+    disabled = false,
+    inputForm,
+    voltageLevelOptionsPromise,
+    direction = 'row',
+    voltageLevelIdDefaultValue,
+    equipmentSectionTypeDefaultValue,
+    equipmentSectionIdDefaultValue,
+}) => {
+    const [regulatingTerminal, setRegulatingTerminal] = useState({
+        voltageLevel: voltageLevelIdDefaultValue,
+        equipmentSection: {
+            id: equipmentSectionIdDefaultValue,
+            type: equipmentSectionTypeDefaultValue,
+        },
+    });
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+    const [voltageLevelsEquipments, setVoltageLevelsEquipments] = useState([]);
+
+    useEffect(() => {
+        setRegulatingTerminal({
+            voltageLevel: null,
+            equipmentSection: null,
+        });
+    }, [inputForm.toggleClear]);
+
+    useEffect(() => {
+        if (!voltageLevelOptionsPromise) return;
+
+        voltageLevelOptionsPromise.then((values) => {
+            setVoltageLevelOptions(
+                Array.from(values, (val) => val.voltageLevel).sort((a, b) =>
+                    a.id.localeCompare(b.id)
+                )
+            );
+            setVoltageLevelsEquipments(values);
+        });
+    }, [voltageLevelOptionsPromise]);
+
+    useEffect(() => {
+        if (!voltageLevelOptions) return;
+        setRegulatingTerminal({
+            voltageLevel: voltageLevelIdDefaultValue
+                ? {
+                      id: voltageLevelIdDefaultValue,
+                      topologyKind: voltageLevelOptions.find(
+                          (vl) => vl.id === voltageLevelIdDefaultValue
+                      )?.topologyKind,
+                  }
+                : null,
+            equipmentSection:
+                equipmentSectionIdDefaultValue &&
+                equipmentSectionTypeDefaultValue
+                    ? {
+                          id: equipmentSectionIdDefaultValue,
+                          type: equipmentSectionTypeDefaultValue,
+                      }
+                    : null,
+        });
+    }, [
+        voltageLevelOptions,
+        equipmentSectionIdDefaultValue,
+        equipmentSectionTypeDefaultValue,
+        voltageLevelIdDefaultValue,
+    ]);
+
+    const setVoltageLevel = useCallback((newVal) => {
+        setRegulatingTerminal((oldVal) => {
+            return { ...oldVal, voltageLevel: newVal };
+        });
+    }, []);
+
+    const setEquipmentSection = useCallback((newVal) => {
+        setRegulatingTerminal((oldVal) => {
+            return { ...oldVal, equipmentSection: newVal };
+        });
+    }, []);
+
+    const render = useMemo(() => {
+        return (
+            <RegulatingTerminalEdition
+                disabled={disabled}
+                voltageLevelOptions={voltageLevelOptions}
+                regulatingTerminalValue={regulatingTerminal}
+                voltageLevelsEquipments={voltageLevelsEquipments}
+                onChangeVoltageLevel={(value) => setVoltageLevel(value)}
+                onChangeEquipmentSection={(equipmentSection) =>
+                    setEquipmentSection(equipmentSection)
+                }
+                direction={direction}
+                voltageLevelEquipmentsCallback={makeRefreshRegulatingTerminalSectionsCallback()}
+            />
+        );
+    }, [
+        regulatingTerminal,
+        disabled,
+        direction,
+        setEquipmentSection,
+        setVoltageLevel,
+        voltageLevelOptions,
+        voltageLevelsEquipments,
+    ]);
+
+    return [regulatingTerminal, render];
+};
+
+export const useTableValues = ({
+    id,
+    tableHeadersIds,
+    Field,
+    inputForm,
+    defaultValues,
+    isReactiveCapabilityCurveOn,
+}) => {
+    const [values, setValues] = useState([]);
+    const classes = useStyles();
+
+    const handleAddValue = useCallback(() => {
+        setValues((oldValues) => [...oldValues, {}]);
+    }, []);
+
+    const checkValues = useCallback(() => {
+        if (defaultValues !== undefined && defaultValues.length !== 0) {
+            setValues([...defaultValues]);
+        } else {
+            setValues([]);
+            handleAddValue();
+        }
+    }, [defaultValues, handleAddValue]);
+
+    useEffect(() => {
+        checkValues();
+    }, [checkValues]);
+
+    const handleDeleteItem = useCallback(
+        (index) => {
+            setValues((oldValues) => {
+                let newValues = [...oldValues];
+                newValues.splice(index, 1);
+                return newValues;
+            });
+            inputForm.reset();
+        },
+        [inputForm]
+    );
+
+    const handleSetValue = useCallback((index, newValue) => {
+        setValues((oldValues) => {
+            let newValues = [...oldValues];
+            newValues[index] = newValue;
+            return newValues;
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!isReactiveCapabilityCurveOn) {
+            //TODO When isReactiveCapabilityCurveOn is false, the reactive capability curve component does not change
+            // the validation of its values and they still required.
+            // we update the validations of reactive capability curve values so they are not required any more.
+            // is there a better way to do it ?
+            function validate() {
+                return !isReactiveCapabilityCurveOn;
+            }
+
+            values.forEach((value, index) => {
+                inputForm.addValidation('P' + index, validate);
+                inputForm.addValidation('QmaxP' + index, validate);
+                inputForm.addValidation('QminP' + index, validate);
+            });
+        }
+    }, [inputForm, values, isReactiveCapabilityCurveOn]);
+
+    const field = useMemo(() => {
+        return (
+            <Grid item container spacing={2}>
+                {tableHeadersIds.map((header) => (
+                    <Grid key={header} item xs={3}>
+                        <FormattedMessage id={header} />
+                    </Grid>
+                ))}
+                <Box sx={{ width: '100%' }} />
+                {values.map((value, idx) => (
+                    <Grid key={id + idx} container spacing={3} item>
+                        <Field
+                            defaultValue={value}
+                            onChange={handleSetValue}
+                            index={idx}
+                            inputForm={inputForm}
+                            isFieldRequired={isReactiveCapabilityCurveOn}
+                        />
+                        <Grid item xs={1}>
+                            <IconButton
+                                className={classes.icon}
+                                key={id + idx}
+                                onClick={() => handleDeleteItem(idx)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Grid>
+                        {idx === values.length - 1 && (
+                            <Grid item xs={1}>
+                                <IconButton
+                                    className={classes.icon}
+                                    key={id + idx}
+                                    onClick={() => handleAddValue()}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Grid>
+                        )}
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    }, [
+        values,
+        id,
+        classes.icon,
+        handleAddValue,
+        handleDeleteItem,
+        handleSetValue,
+        inputForm,
+        tableHeadersIds,
+        isReactiveCapabilityCurveOn,
+    ]);
+
+    return [values, field];
 };
 
 export const useSimpleTextValue = ({
