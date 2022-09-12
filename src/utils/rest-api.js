@@ -346,6 +346,21 @@ export function fetchVoltageLevels(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
+export function fetchVoltageLevelsEquipments(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
+    return fetchEquipments(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'Voltage-levels-equipments',
+        'voltage-levels-equipments',
+        true
+    );
+}
+
 export function fetchTwoWindingsTransformers(
     studyUuid,
     currentNodeUuid,
@@ -1290,7 +1305,19 @@ export function createGenerator(
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    marginalCost,
+    transientReactance,
+    transformerReactance,
+    regulatingTerminalId,
+    regulatingTerminalType,
+    regulatingTerminalVlId,
+    isReactiveCapabilityCurveOn,
+    frequencyRegulation,
+    droop,
+    maximumReactivePower,
+    minimumReactivePower,
+    reactiveCapabilityCurve
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1306,6 +1333,7 @@ export function createGenerator(
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/generators';
     }
+
     return backendFetch(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1325,6 +1353,18 @@ export function createGenerator(
             voltageSetpoint: voltageSetpoint,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
+            marginalCost: marginalCost,
+            transientReactance: transientReactance,
+            stepUpTransformerReactance: transformerReactance,
+            regulatingTerminalId: regulatingTerminalId,
+            regulatingTerminalType: regulatingTerminalType,
+            regulatingTerminalVlId: regulatingTerminalVlId,
+            reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
+            participate: frequencyRegulation,
+            droop: droop,
+            maximumReactivePower: maximumReactivePower,
+            minimumReactivePower: minimumReactivePower,
+            points: reactiveCapabilityCurve,
         }),
     }).then((response) => {
         return response.ok
