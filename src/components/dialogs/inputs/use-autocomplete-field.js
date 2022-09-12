@@ -77,6 +77,7 @@ export const useAutocompleteField = ({
     onSearchTermChange,
     minCharsBeforeSearch = 3,
     values,
+    resetsWhenValuesChange = false,
     renderElement,
     getLabel = func_identity,
     allowNewValue = false,
@@ -99,8 +100,6 @@ export const useAutocompleteField = ({
 
     const prevValues = useRef();
     validationRef.current = validation;
-    const prevValue = useRef();
-    prevValue.current = value;
 
     useEffect(() => {
         if (defaultValue !== undefined) setValue(defaultValue);
@@ -154,12 +153,23 @@ export const useAutocompleteField = ({
         const valuePromise = Promise.resolve(values);
         valuePromise.then((vals) => {
             setPresentedOptions(vals);
-            if (!vals.length) setValue(null);
-            else if (shouldUpdateValueToo) setValue(values[mismatchIdx]);
+            if (vals?.length > mismatchIdx && shouldUpdateValueToo) {
+                setValue(vals[mismatchIdx]);
+            } else if (resetsWhenValuesChange) {
+                setValue(null);
+            }
             setIsLoading(false);
             if (values?.length === 0) setExpanded(false);
         });
-    }, [values, id, defaultValue, getLabel, presentedOptions, value]);
+    }, [
+        values,
+        id,
+        defaultValue,
+        getLabel,
+        presentedOptions,
+        value,
+        resetsWhenValuesChange,
+    ]);
 
     const handleForcedSearch = useCallback(
         (term) => {
