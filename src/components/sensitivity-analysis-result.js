@@ -14,9 +14,12 @@ import { LIGHT_THEME } from '@gridsuite/commons-ui';
 const SensitivityAnalysisResult = ({ result }) => {
     const selectedTheme = useSelector((state) => state[PARAM_THEME]);
 
+    const sensiNotif = useSelector((state) => state.sensiNotif);
+
     function renderResult() {
         return (
-            result && (
+            result &&
+            sensiNotif && (
                 <ReactJson
                     src={result}
                     onEdit={false}
