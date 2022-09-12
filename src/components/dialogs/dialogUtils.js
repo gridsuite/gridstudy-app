@@ -73,6 +73,10 @@ export const VoltageAdornment = {
 export const filledTextField = {
     variant: 'filled',
 };
+export const percentageTextField = {
+    position: 'end',
+    text: '%',
+};
 export const func_identity = (e) => e;
 
 export function toIntValue(val) {
