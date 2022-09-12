@@ -17,7 +17,7 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import {
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
-    PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS,
+    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
 } from '../../utils/config-params';
 import { elementType } from '@gridsuite/commons-ui';
@@ -42,7 +42,7 @@ const SensiParametersSelector = (props) => {
     const [selectedContingencyListUuids, setSelectedContingencyListUuids] =
         useState([]);
 
-    const [selectedQuadFiltersListUuids, setSelectedQuadFiltersListUuids] =
+    const [selectedBranchFiltersListUuids, setSelectedBranchFiltersListUuids] =
         useState([]);
 
     const handleClose = () => {
@@ -53,7 +53,7 @@ const SensiParametersSelector = (props) => {
         props.onStart(
             selectedVariablesFiltersListUuids,
             selectedContingencyListUuids,
-            selectedQuadFiltersListUuids
+            selectedBranchFiltersListUuids
         );
     };
 
@@ -115,17 +115,17 @@ const SensiParametersSelector = (props) => {
                         </Grid>
                         <Grid item>
                             <ContingenciesFiltersSelector
-                                title={'SupervisedQuadrupoles'}
+                                title={'SupervisedBranches'}
                                 paramName={
-                                    PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS
+                                    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS
                                 }
-                                selectedValues={selectedQuadFiltersListUuids}
+                                selectedValues={selectedBranchFiltersListUuids}
                                 setSelectedValues={
-                                    setSelectedQuadFiltersListUuids
+                                    setSelectedBranchFiltersListUuids
                                 }
                                 elementTypes={[elementType.FILTER]}
                                 selectorTitleId={'FiltersListsSelection'}
-                                fetchErrorMsgId={'getQuadFiltersListError'}
+                                fetchErrorMsgId={'getBranchFiltersListError'}
                             />
                         </Grid>
                         <Grid item>{renderButtons()}</Grid>

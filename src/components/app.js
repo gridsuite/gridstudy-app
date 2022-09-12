@@ -41,7 +41,7 @@ import {
     selectUseName,
     selectFluxConvention,
     selectFavoriteSensiVariablesFiltersLists,
-    selectFavoriteSensiQuadFiltersLists,
+    selectFavoriteSensiBranchFiltersLists,
 } from '../redux/actions';
 
 import {
@@ -80,7 +80,7 @@ import {
     PARAM_FLUX_CONVENTION,
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS,
+    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
 } from '../utils/config-params';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -216,9 +216,9 @@ const App = () => {
                             )
                         );
                         break;
-                    case PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS:
+                    case PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS:
                         dispatch(
-                            selectFavoriteSensiQuadFiltersLists(
+                            selectFavoriteSensiBranchFiltersLists(
                                 param.value.split(',')
                             )
                         );

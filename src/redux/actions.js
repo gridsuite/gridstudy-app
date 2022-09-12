@@ -23,7 +23,7 @@ import {
     PARAM_FLUX_CONVENTION,
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS,
+    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -377,16 +377,16 @@ export function selectFavoriteSensiContingencyLists(
     };
 }
 
-export const FAVORITE_SENSI_QUAD_FILTERS_LISTS =
-    'FAVORITE_SENSI_QUAD_FILTERS_LISTS';
+export const FAVORITE_SENSI_BRANCH_FILTERS_LISTS =
+    'FAVORITE_SENSI_BRANCH_FILTERS_LISTS';
 
-export function selectFavoriteSensiQuadFiltersLists(
-    favoriteSensiQuadFiltersLists
+export function selectFavoriteSensiBranchFiltersLists(
+    favoriteSensiBranchFiltersLists
 ) {
     return {
-        type: FAVORITE_SENSI_QUAD_FILTERS_LISTS,
-        [PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS]:
-            favoriteSensiQuadFiltersLists,
+        type: FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+        [PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS]:
+            favoriteSensiBranchFiltersLists,
     };
 }
 

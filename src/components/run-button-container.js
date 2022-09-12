@@ -118,7 +118,7 @@ export function RunButtonContainer({
     const handleStartSensi = (
         variablesFiltersUuids,
         contingencyListUuids,
-        quadFiltersUuids
+        branchFiltersUuids
     ) => {
         // close the contingency list selection window
         setShowSensiParametersSelector(false);
@@ -131,7 +131,7 @@ export function RunButtonContainer({
             currentNode?.id,
             variablesFiltersUuids,
             contingencyListUuids,
-            quadFiltersUuids
+            branchFiltersUuids
         );
     };
 

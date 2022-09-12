@@ -779,12 +779,12 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
 function getSensitivityAnalysisQueryParams(
     variablesFiltersUuids,
     contingencyListUuids,
-    quadFiltersUuids
+    branchFiltersUuids
 ) {
     if (
         variablesFiltersUuids.length > 0 ||
         contingencyListUuids.length > 0 ||
-        quadFiltersUuids.length > 0
+        branchFiltersUuids.length > 0
     ) {
         const urlSearchParams = new URLSearchParams();
         variablesFiltersUuids.forEach((variablesFiltersUuid) =>
@@ -796,8 +796,8 @@ function getSensitivityAnalysisQueryParams(
         contingencyListUuids.forEach((contingencyListUuid) =>
             urlSearchParams.append('contingencyListUuid', contingencyListUuid)
         );
-        quadFiltersUuids.forEach((quadFiltersUuid) =>
-            urlSearchParams.append('quadFiltersListUuid', quadFiltersUuid)
+        branchFiltersUuids.forEach((branchFiltersUuid) =>
+            urlSearchParams.append('branchFiltersListUuid', branchFiltersUuid)
         );
         return '?' + urlSearchParams.toString();
     }
@@ -809,7 +809,7 @@ export function startSensitivityAnalysis(
     currentNodeUuid,
     variablesFiltersUuids,
     contingencyListUuids,
-    quadFiltersUuids
+    branchFiltersUuids
 ) {
     console.info(
         'Running sensi on ' +
@@ -824,7 +824,7 @@ export function startSensitivityAnalysis(
         getSensitivityAnalysisQueryParams(
             variablesFiltersUuids,
             contingencyListUuids,
-            quadFiltersUuids
+            branchFiltersUuids
         );
     console.debug(url);
     return backendFetch(url, { method: 'post' });

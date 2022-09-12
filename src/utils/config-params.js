@@ -28,8 +28,8 @@ export const PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS =
     'favoriteSensiVariablesFiltersLists';
 export const PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS =
     'favoriteSensiContingencyLists';
-export const PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS =
-    'favoriteSensiQuadFiltersLists';
+export const PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS =
+    'favoriteSensiBranchFiltersLists';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 

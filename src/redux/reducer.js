@@ -57,7 +57,7 @@ import {
     SET_MODIFICATIONS_IN_PROGRESS,
     FAVORITE_SENSI_CONTINGENCY_LISTS,
     FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    FAVORITE_SENSI_QUAD_FILTERS_LISTS,
+    FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
 } from './actions';
@@ -87,7 +87,7 @@ import {
     PARAM_FLUX_CONVENTION,
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS,
+    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -109,7 +109,7 @@ const paramsInitialState = {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS]: [],
     [PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS]: [],
-    [PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS]: [],
+    [PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
 };
 
@@ -409,9 +409,9 @@ export const reducer = createReducer(initialState, {
         state[PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS] =
             action[PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS];
     },
-    [FAVORITE_SENSI_QUAD_FILTERS_LISTS]: (state, action) => {
-        state[PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS] =
-            action[PARAM_FAVORITE_SENSI_QUAD_FILTERS_LISTS];
+    [FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: (state, action) => {
+        state[PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS] =
+            action[PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS];
     },
     [CURRENT_TREE_NODE]: (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
