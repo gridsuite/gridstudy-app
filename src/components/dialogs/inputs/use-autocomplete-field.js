@@ -154,7 +154,8 @@ export const useAutocompleteField = ({
         const valuePromise = Promise.resolve(values);
         valuePromise.then((vals) => {
             setPresentedOptions(vals);
-            if (shouldUpdateValueToo) setValue(values[mismatchIdx]);
+            if (!vals.length) setValue(null);
+            else if (shouldUpdateValueToo) setValue(values[mismatchIdx]);
             setIsLoading(false);
             if (values?.length === 0) setExpanded(false);
         });
