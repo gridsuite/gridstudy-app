@@ -131,9 +131,12 @@ export const useAutocompleteField = ({
             mismatchIdx >= 0 &&
             prevValues.current.length > mismatchIdx &&
             value === prevValues.current[mismatchIdx];
+        const valuesChanged = prevValues.current !== values;
         prevValues.current = values;
 
         if (mismatchIdx === -1) {
+            if (valuesChanged) setIsLoading(false);
+
             if (!getLabel) return;
 
             const inOps = presentedOptions.find((o) => getLabel(o) === value);
