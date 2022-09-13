@@ -552,7 +552,7 @@ const GeneratorCreationDialog = ({
                             {gridItem(voltageSetpointField, 4)}
                             <Box sx={{ width: '100%' }} />
                             <Grid item xs={4} justifySelf={'end'}>
-                                <FormattedMessage id="RegulatingTerminal" />
+                                <FormattedMessage id="RegulatingTerminalGenerator" />
                             </Grid>
                             {gridItem(regulatingTerminalField, 8)}
                             <Box sx={{ width: '100%' }} />
