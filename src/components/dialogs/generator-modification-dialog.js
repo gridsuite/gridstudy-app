@@ -258,7 +258,7 @@ const GeneratorModificationDialog = ({
             label: 'ReactiveCapabilityCurve',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            defaultValue: generatorInfos?.reactiveCapabilityCurve ?? true,
+            defaultValue: !!!generatorInfos?.minMaxReactiveLimits ?? true,
             formProps: { disabled: true },
         });
 
@@ -266,7 +266,8 @@ const GeneratorModificationDialog = ({
         label: 'MinimumReactivePower',
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: generatorInfos?.minimumReactivePower,
+        defaultValue:
+            generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
         formProps: { disabled: true },
     });
 
@@ -274,7 +275,8 @@ const GeneratorModificationDialog = ({
         label: 'MaximumReactivePower',
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: generatorInfos?.maximumReactivePower,
+        defaultValue:
+            generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
         formProps: { disabled: true },
     });
 
@@ -301,9 +303,9 @@ const GeneratorModificationDialog = ({
             disabled: true,
             voltageLevelOptionsPromise: null,
             voltageLevelIdDefaultValue:
-                generatorInfos?.regulatingTerminalVlId || null,
+                generatorInfos?.regulatingTerminalConnectableId || null,
             equipmentSectionTypeDefaultValue:
-                generatorInfos?.regulatingTerminalType || null,
+                generatorInfos?.regulatingTerminalConnectableType || null,
             equipmentSectionIdDefaultValue:
                 generatorInfos?.regulatingTerminalId || null,
         });
@@ -477,11 +479,11 @@ const GeneratorModificationDialog = ({
                             {gridItem(frequencyRegulationField, 4)}
                             {gridItem(droopField, 4)}
                         </Grid>
-                        {/*Court-circuit part*/}
+                        {/*Short-circuit part*/}
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <h3 className={classes.h3}>
-                                    <FormattedMessage id="CourtCircuit" />
+                                    <FormattedMessage id="ShortCircuit" />
                                 </h3>
                             </Grid>
                         </Grid>

@@ -373,7 +373,7 @@
     "QmaxP": "QmaxP",
     "RegulatingTerminalGenerator": "Terminal distant réglé",
     "Equipments": "Ouvrage",
-    "CourtCircuit": "Court-circuit",
+    "ShortCircuit": "Court-circuit",
     "TransientReactance": "Réactance transitoire",
     "TransformerReactance": "Réactance du transformateur",
     "FrequencyRegulation": "Compensation",

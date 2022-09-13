@@ -162,12 +162,12 @@ const GeneratorCreationDialog = ({
             transientReactance: generator.transientReactance,
             stepUpTransformerReactance: generator.stepUpTransformerReactance,
             points: generator.points,
-            minimumReactivePower: generator.minimumReactivePower,
-            maximumReactivePower: generator.minimumReactivePower,
-            regulatingTerminalId: generator.regulatingTerminalId,
-            regulatingTerminalType: generator.regulatingTerminalType,
+            minMaxReactiveLimits: generator?.minMaxReactiveLimits,
+            regulatingTerminalConnectableId:
+                generator.regulatingTerminalConnectableId,
+            regulatingTerminalConnectableType:
+                generator.regulatingTerminalConnectableType,
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
-            isReactiveCapabilityCurveOn: generator.reactiveCapabilityCurve,
         };
     };
 
@@ -266,7 +266,7 @@ const GeneratorCreationDialog = ({
             label: 'ReactiveCapabilityCurve',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            defaultValue: formValues?.isReactiveCapabilityCurveOn ?? true,
+            defaultValue: !!!formValues?.minMaxReactiveLimits ?? true,
         });
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
@@ -274,7 +274,7 @@ const GeneratorCreationDialog = ({
         validation: { isFieldRequired: reactivePowerRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.minimumReactivePower,
+        defaultValue: formValues?.minMaxReactiveLimits?.minimumReactivePower,
     });
 
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
@@ -282,7 +282,7 @@ const GeneratorCreationDialog = ({
         validation: { isFieldRequired: reactivePowerRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.maximumReactivePower,
+        defaultValue: formValues?.minMaxReactiveLimits?.maximumReactivePower,
     });
 
     const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
@@ -559,11 +559,11 @@ const GeneratorCreationDialog = ({
                             {gridItem(frequencyRegulationField, 4)}
                             {gridItem(droopField, 4)}
                         </Grid>
-                        {/*Court-circuit part*/}
+                        {/*Short-circuit part*/}
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
                                 <h3 className={classes.h3}>
-                                    <FormattedMessage id="CourtCircuit" />
+                                    <FormattedMessage id="ShortCircuit" />
                                 </h3>
                             </Grid>
                         </Grid>

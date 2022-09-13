@@ -372,7 +372,7 @@
     "QmaxP": "QmaxP",
     "RegulatingTerminalGenerator": "Regulating Terminal",
     "Equipments": "Equipments",
-    "CourtCircuit": "Court-circuit",
+    "ShortCircuit": "Short-circuit",
     "TransientReactance": "Transient reactance",
     "TransformerReactance": "Transformer reactance",
     "FrequencyRegulation": "Frequency Regulation",
