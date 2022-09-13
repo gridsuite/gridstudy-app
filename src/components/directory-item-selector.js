@@ -11,6 +11,8 @@ import PropTypes from 'prop-types';
 import { fetchDirectoryContent, fetchRootFolders } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { notificationType } from '../utils/NotificationType';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -24,9 +26,16 @@ const DirectoryItemSelector = (props) => {
     const [data, setData] = useState([]);
     const nodeMap = useRef({});
     const classes = useStyles();
-
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const dataRef = useRef([]);
+    dataRef.current = data;
     const contentFilter = useCallback(
-        () => new Set([elementType.DIRECTORY, ...props.types]),
+        () =>
+            new Set([
+                elementType.DIRECTORY,
+                elementType.CONTINGENCY_LIST,
+                ...props.types,
+            ]),
         [props.types]
     );
 
@@ -44,14 +53,6 @@ const DirectoryItemSelector = (props) => {
         [nodeMap, classes]
     );
 
-    useEffect(() => {
-        if (props.open && data.length === 0) {
-            fetchRootFolders().then((roots) => {
-                setData(roots.map(directory2Tree));
-            });
-        }
-    }, [props.open, data, directory2Tree]);
-
     const addToDirectory = useCallback(
         (nodeId, content) => {
             const node = nodeMap.current[nodeId];
@@ -60,16 +61,67 @@ const DirectoryItemSelector = (props) => {
         [directory2Tree]
     );
 
-    const fetchDirectory = (nodeId) => {
-        const filter = contentFilter();
-        fetchDirectoryContent(nodeId).then((content) => {
-            addToDirectory(
-                nodeId,
-                content.filter((item) => filter.has(item.type))
-            );
-            setData([...data]);
-        });
-    };
+    useEffect(() => {
+        if (props.open && data.length === 0) {
+            fetchRootFolders().then((roots) => {
+                setData(roots.map(directory2Tree));
+            });
+        }
+    }, [props.open, data, directory2Tree]);
+
+    const updateDirectoryTreeAndContent = useCallback(
+        (nodeId) => {
+            fetchDirectoryContent(nodeId)
+                .then((childrenToBeInserted) => {
+                    // update directory Content
+                    addToDirectory(
+                        nodeId,
+                        childrenToBeInserted.filter((item) =>
+                            contentFilter().has(item.type)
+                        )
+                    );
+                    setData([...dataRef.current]);
+                })
+                .catch((reason) => {
+                    console.warn(
+                        "Could not update subs (and content) of '" +
+                            nodeId +
+                            "' :" +
+                            reason
+                    );
+                });
+        },
+        [addToDirectory, contentFilter]
+    );
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                Object.values(notificationType).includes(
+                    studyUpdatedForce.eventData.headers['notificationType']
+                )
+            ) {
+                if (!studyUpdatedForce.eventData.headers['isRootDirectory']) {
+                    updateDirectoryTreeAndContent(
+                        studyUpdatedForce.eventData.headers['directoryUuid']
+                    );
+                } else {
+                    fetchRootFolders().then((roots) => {
+                        setData(roots.map(directory2Tree));
+                        dataRef.current.forEach((element) => {
+                            updateDirectoryTreeAndContent(element.elementUuid);
+                        });
+                    });
+                }
+            }
+        }
+    }, [
+        addToDirectory,
+        contentFilter,
+        directory2Tree,
+        studyUpdatedForce,
+        updateDirectoryTreeAndContent,
+    ]);
 
     function sortHandlingDirectories(a, b) {
         //If children property is set it means it's a directory, they are handled differently in order to keep them at the top of the list
@@ -84,7 +136,7 @@ const DirectoryItemSelector = (props) => {
     return (
         <TreeViewFinder
             multiselect={true}
-            onTreeBrowse={fetchDirectory}
+            onTreeBrowse={updateDirectoryTreeAndContent}
             data={data}
             onlyLeaves={true}
             sortMethod={sortHandlingDirectories}

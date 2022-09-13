@@ -28,6 +28,16 @@ module.exports = function (app) {
 
     app.use(
         createProxyMiddleware(
+            'http://localhost:9000/ws/gateway/directory-notification',
+            {
+                pathRewrite: { '^/ws/gateway/': '/' },
+                ws: true,
+            }
+        )
+    );
+
+    app.use(
+        createProxyMiddleware(
             'http://localhost:9000/ws/gateway/config-notification',
             {
                 pathRewrite: { '^/ws/gateway/': '/' },
