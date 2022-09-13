@@ -258,7 +258,7 @@ const GeneratorModificationDialog = ({
             label: 'ReactiveCapabilityCurve',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            defaultValue: !!!generatorInfos?.minMaxReactiveLimits ?? true,
+            defaultValue: !generatorInfos?.minMaxReactiveLimits,
             formProps: { disabled: true },
         });
 
