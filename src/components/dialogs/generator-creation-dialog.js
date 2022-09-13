@@ -61,12 +61,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const RCCurve = ({
+export const RCCurve = ({
     index,
     onChange,
     defaultValue,
     inputForm,
     isFieldRequired,
+    disabled = false,
 }) => {
     const [p, pField] = useDoubleValue({
         label: 'P',
@@ -75,6 +76,7 @@ const RCCurve = ({
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.p || '',
+        formProps: { disabled: disabled },
     });
     const [qminP, qminPField] = useDoubleValue({
         label: 'QminP',
@@ -83,6 +85,7 @@ const RCCurve = ({
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qminP || '',
+        formProps: { disabled: disabled },
     });
 
     const [qmaxP, qmaxPField] = useDoubleValue({
@@ -92,6 +95,7 @@ const RCCurve = ({
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qmaxP || '',
+        formProps: { disabled: disabled },
     });
 
     useEffect(() => {
@@ -153,14 +157,17 @@ const GeneratorCreationDialog = ({
             voltageLevelId: generator.voltageLevelId,
             busOrBusbarSectionId: null,
             marginalCost: generator.marginalCost,
-            participate: generator.frequencyRegulation,
+            participate: generator.activePowerControlOn,
             droop: generator.droop,
             transientReactance: generator.transientReactance,
-            transformerReactance: generator.transformerReactance,
-            reactiveCapabilityCurvePt: generator.reactiveCapabilityCurvePt,
+            stepUpTransformerReactance: generator.stepUpTransformerReactance,
+            points: generator.points,
             minimumReactivePower: generator.minimumReactivePower,
             maximumReactivePower: generator.minimumReactivePower,
-            regulatingTerminal: generator.regulatingTerminal,
+            regulatingTerminalId: generator.regulatingTerminalId,
+            regulatingTerminalType: generator.regulatingTerminalType,
+            regulatingTerminalVlId: generator.regulatingTerminalVlId,
+            isReactiveCapabilityCurveOn: generator.reactiveCapabilityCurve,
         };
     };
 
@@ -259,7 +266,7 @@ const GeneratorCreationDialog = ({
             label: 'ReactiveCapabilityCurve',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            defaultValue: formValues?.reactiveCapabilityCurve ?? true,
+            defaultValue: formValues?.isReactiveCapabilityCurveOn ?? true,
         });
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
@@ -308,7 +315,7 @@ const GeneratorCreationDialog = ({
         label: 'VoltageRegulationText',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        defaultValue: formValues?.voltageRegulationOn || false,
+        defaultValue: formValues?.voltageRegulatorOn ?? false,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
@@ -434,13 +441,15 @@ const GeneratorCreationDialog = ({
                 marginalCost ? marginalCost : null,
                 transientReactance ? transientReactance : null,
                 transformerReactance ? transformerReactance : null,
-                voltageRegulation
+                voltageRegulation && regulatingTerminal?.equipmentSection
                     ? regulatingTerminal?.equipmentSection?.id
                     : null,
-                voltageRegulation
+                voltageRegulation && regulatingTerminal?.equipmentSection
                     ? regulatingTerminal?.equipmentSection?.type
                     : null,
-                voltageRegulation ? regulatingTerminal?.voltageLevel.id : null,
+                voltageRegulation && regulatingTerminal?.voltageLevel
+                    ? regulatingTerminal?.voltageLevel.id
+                    : null,
                 isReactiveCapabilityCurveOn,
                 frequencyRegulation,
                 frequencyRegulation ? droop : null,
