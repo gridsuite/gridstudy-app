@@ -21,12 +21,20 @@ const linePositionIndexer = (map, line) => {
     return map;
 };
 
+function warnBad(positions) {
+    if (!positions?.reduce) {
+        console.error('should have been reduceable', positions);
+        return true;
+    }
+}
+
 export default class GeoData {
     substationPositionsById = new Map();
 
     linePositionsById = new Map();
 
     setSubstationPositions(positions) {
+        if (warnBad(positions)) return;
         // index positions by substation id
         this.substationPositionsById = positions.reduce(
             substationPositionByIdIndexer,
@@ -37,13 +45,14 @@ export default class GeoData {
     getSubstationPosition(substation) {
         const position = this.substationPositionsById.get(substation);
         if (!position) {
-            console.warn(`Position not found for ${substation}`);
+            console.debug(`Position not found for ${substation}`);
             return [0, 0];
         }
         return [position.lon, position.lat];
     }
 
     setLinePositions(positions) {
+        if (warnBad(positions)) return;
         // index positions by line id
         this.linePositionsById = positions.reduce(
             linePositionIndexer,

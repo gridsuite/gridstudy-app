@@ -208,13 +208,18 @@ export const NetworkMapTab = ({
         Promise.all([substationPositions, linePositions])
             .then((values) => {
                 const newGeoData = new GeoData();
+                console.debug('got geo', values);
                 newGeoData.setSubstationPositions(values[0]);
                 newGeoData.setLinePositions(values[1]);
                 setGeoData(newGeoData);
                 setWaitingLoadGeoData(false);
             })
             .catch(function (error) {
-                console.error(error.message);
+                console.error(error);
+                const newGeoData = new GeoData();
+                newGeoData.setSubstationPositions([]);
+                newGeoData.setLinePositions([]);
+                setGeoData(newGeoData);
                 setWaitingLoadGeoData(false);
                 setErrorMessage(
                     intlRef.current.formatMessage(
