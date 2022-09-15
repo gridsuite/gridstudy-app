@@ -18,6 +18,8 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
+const PREFIX_DIRECTORY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 
 function getToken() {
     const state = store.getState();
@@ -35,6 +37,30 @@ function backendFetch(url, init) {
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
 
     return fetch(url, initCopy);
+}
+
+/**
+ * Function will be called to connect with notification websocket when directories is (updated/deleted/created)
+ * @returns {ReconnectingWebSocket}
+ */
+export function connectNotificationsWsUpdateDirectories() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl +
+        PREFIX_DIRECTORY_NOTIFICATION_WS +
+        '/notify?updateType=directories';
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        () => webSocketUrl + '&access_token=' + getToken()
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update studies ' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
 }
 
 export function fetchDefaultParametersValues() {
