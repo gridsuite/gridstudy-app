@@ -14,7 +14,7 @@ jobs:
 
             - name: Parse tag
               id: vars
-              run: echo ::set-output name=tag::${GITHUB_REF#refs/*/v}
+              run: echo ::set-output name=tag::${GITHUB_REF_NAME#v}
               
             - name: Install and Build
               run: |
