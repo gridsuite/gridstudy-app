@@ -449,9 +449,9 @@ const NetworkModificationNodeEditor = () => {
 
     const classes = useStyles();
 
-    const openNetworkModificationConfiguration = () => {
+    const openNetworkModificationConfiguration = useCallback(() => {
         setOpenNetworkModificationsDialog(true);
-    };
+    }, []);
 
     const closeNetworkModificationConfiguration = () => {
         setOpenNetworkModificationsDialog(false);
@@ -470,14 +470,14 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
-    const doCopyModification = () => {
+    const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
         setCopiedModifications(
             Array.from(selectedItems).map((item) => item.uuid)
         );
-    };
+    }, [selectedItems]);
 
-    const doPasteModification = useCallback(() => {
+    const doPasteModification = () => {
         duplicateModifications(
             studyUuid,
             currentTreeNode.id,
@@ -498,13 +498,7 @@ const NetworkModificationNodeEditor = () => {
             .catch((errmsg) => {
                 snackError(errmsg, 'errDuplicateModificationMsg');
             });
-    }, [
-        studyUuid,
-        currentTreeNode.id,
-        copiedModifications,
-        snackWarning,
-        snackError,
-    ]);
+    };
 
     const doEditModification = (modificationUuid) => {
         const modification = fetchNetworkModification(modificationUuid);

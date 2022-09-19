@@ -253,6 +253,11 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, checkFailNotifications]
     );
 
+    const displayNetworkLoadingFailMessage = useCallback((error) => {
+        console.error(error.message);
+        setNetworkLoadingFailMessage(error.message);
+    }, []);
+
     const loadNetwork = useCallback(
         (isUpdate) => {
             if (!isNodeBuilt(currentNode) || !studyUuid) {
@@ -268,11 +273,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 new Network(
                     studyUuid,
                     currentNode?.id,
-                    (error) => {
-                        console.error(error.message);
-                        setNetworkLoadingFailMessage(error.message);
-                        //setIsNetworkPending(false);
-                    },
+                    displayNetworkLoadingFailMessage,
                     dispatch,
                     {
                         equipments: [equipments.lines, equipments.substations],
@@ -282,11 +283,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 const network = new Network(
                     studyUuid,
                     currentNode?.id,
-                    (error) => {
-                        console.error(error.message);
-                        setNetworkLoadingFailMessage(error.message);
-                        //setIsNetworkPending(false);
-                    },
+                    displayNetworkLoadingFailMessage,
                     dispatch
                 );
                 // For initial network loading, no need to initialize lines and substations at first,
@@ -294,23 +291,9 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(networkCreated(network));
             }
         },
-        [studyUuid, currentNode, dispatch]
+        [studyUuid, currentNode, dispatch, displayNetworkLoadingFailMessage]
     );
     loadNetworkRef.current = loadNetwork;
-
-    const removeEquipmentFromNetwork = useCallback(
-        (equipmentType, equipmentId) => {
-            console.info(
-                'removing equipment with id=',
-                equipmentId,
-                ' and type=',
-                equipmentType,
-                ' from the network'
-            );
-            network.removeEquipment(equipmentType, equipmentId);
-        },
-        [network]
-    );
 
     const loadTree = useCallback(() => {
         console.info(
@@ -582,14 +565,21 @@ export function StudyContainer({ view, onChangeTab }) {
                 const deletedEquipmentType =
                     studyUpdatedForce.eventData.headers['deletedEquipmentType'];
                 if (deletedEquipmentId && deletedEquipmentType) {
-                    removeEquipmentFromNetwork(
+                    console.info(
+                        'removing equipment with id=',
+                        deletedEquipmentId,
+                        ' and type=',
+                        deletedEquipmentType,
+                        ' from the network'
+                    );
+                    network.removeEquipment(
                         deletedEquipmentType,
                         deletedEquipmentId
                     );
                 }
             }
         }
-    }, [studyUpdatedForce, updateNetwork, removeEquipmentFromNetwork]);
+    }, [studyUpdatedForce, updateNetwork, network]);
 
     return (
         <WaitingLoader
