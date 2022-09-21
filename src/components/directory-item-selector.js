@@ -24,11 +24,18 @@ const useStyles = makeStyles((theme) => ({
 
 const DirectoryItemSelector = (props) => {
     const [data, setData] = useState([]);
+    const [rootDirectories, setRootDirectories] = useState([]);
     const nodeMap = useRef({});
     const classes = useStyles();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const dataRef = useRef([]);
     dataRef.current = data;
+
+    const rootsRef = useRef([]);
+    rootsRef.current = rootDirectories;
+
+    const openRef = useRef();
+    openRef.current = props.open;
     const contentFilter = useCallback(
         () =>
             new Set([
@@ -39,37 +46,88 @@ const DirectoryItemSelector = (props) => {
         [props.types]
     );
 
-    const directory2Tree = useCallback(
-        (newData) => {
-            const newNode = {
-                id: newData.elementUuid,
-                name: newData.elementName,
-                icon: getFileIcon(newData.type, classes.icon),
-                children:
-                    newData.type === elementType.DIRECTORY ? [] : undefined,
-            };
-            return (nodeMap.current[newNode.id] = newNode);
+    const convertChildren = useCallback(
+        (children) => {
+            let formattedChildren = children.map((e) => {
+                return {
+                    id: e.elementUuid,
+                    name: e.elementName,
+                    icon: getFileIcon(e.type, classes.icon),
+                    children:
+                        e.type === elementType.DIRECTORY
+                            ? convertChildren(e.children)
+                            : undefined,
+                    childrenCount:
+                        e.type === elementType.DIRECTORY
+                            ? e.subdirectoriesCount
+                            : undefined,
+                };
+            });
+
+            return formattedChildren;
         },
-        [nodeMap, classes]
+        [classes.icon]
+    );
+
+    const convertRoots = useCallback(
+        (newRoots) => {
+            return newRoots.map((e) => {
+                return {
+                    id: e.elementUuid,
+                    name: e.elementName,
+                    icon: getFileIcon(e.type, classes.icon),
+                    children:
+                        e.type === elementType.DIRECTORY
+                            ? convertChildren(
+                                  nodeMap.current[e.elementUuid].children
+                              )
+                            : undefined,
+                    childrenCount:
+                        e.type === elementType.DIRECTORY
+                            ? e.subdirectoriesCount
+                            : undefined,
+                };
+            });
+        },
+        [classes.icon, convertChildren]
     );
 
     const addToDirectory = useCallback(
         (nodeId, content) => {
-            const node = nodeMap.current[nodeId];
-            node.children = content.map(directory2Tree);
+            let [nrs, mdr] = updatedTree(
+                rootsRef.current,
+                nodeMap.current,
+                nodeId,
+                content
+            );
+            setRootDirectories(nrs);
+            nodeMap.current = mdr;
+            setData(convertRoots(nrs));
         },
-        [directory2Tree]
+        [convertRoots]
     );
+
+    const updateRootDirectories = useCallback(() => {
+        fetchRootFolders().then((data) => {
+            let [nrs, mdr] = updatedTree(
+                rootsRef.current,
+                nodeMap.current,
+                null,
+                data
+            );
+            setRootDirectories(nrs);
+            nodeMap.current = mdr;
+            setData(convertRoots(nrs));
+        });
+    }, [convertRoots]);
 
     useEffect(() => {
         if (props.open && data.length === 0) {
-            fetchRootFolders().then((roots) => {
-                setData(roots.map(directory2Tree));
-            });
+            updateRootDirectories();
         }
-    }, [props.open, data, directory2Tree]);
+    }, [props.open, data, updateRootDirectories]);
 
-    const updateDirectoryTreeAndContent = useCallback(
+    const fetchDirectory = useCallback(
         (nodeId) => {
             fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
@@ -80,7 +138,6 @@ const DirectoryItemSelector = (props) => {
                             contentFilter().has(item.type)
                         )
                     );
-                    setData([...dataRef.current]);
                 })
                 .catch((reason) => {
                     console.warn(
@@ -95,33 +152,22 @@ const DirectoryItemSelector = (props) => {
     );
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
+        if (openRef.current && studyUpdatedForce.eventData.headers) {
             if (
                 Object.values(notificationType).includes(
                     studyUpdatedForce.eventData.headers['notificationType']
                 )
             ) {
                 if (!studyUpdatedForce.eventData.headers['isRootDirectory']) {
-                    updateDirectoryTreeAndContent(
+                    fetchDirectory(
                         studyUpdatedForce.eventData.headers['directoryUuid']
                     );
                 } else {
-                    fetchRootFolders().then((roots) => {
-                        setData(roots.map(directory2Tree));
-                        dataRef.current.forEach((element) => {
-                            updateDirectoryTreeAndContent(element.elementUuid);
-                        });
-                    });
+                    updateRootDirectories();
                 }
             }
         }
-    }, [
-        addToDirectory,
-        contentFilter,
-        directory2Tree,
-        studyUpdatedForce,
-        updateDirectoryTreeAndContent,
-    ]);
+    }, [studyUpdatedForce, fetchDirectory, updateRootDirectories]);
 
     function sortHandlingDirectories(a, b) {
         //If children property is set it means it's a directory, they are handled differently in order to keep them at the top of the list
@@ -136,7 +182,7 @@ const DirectoryItemSelector = (props) => {
     return (
         <TreeViewFinder
             multiselect={true}
-            onTreeBrowse={updateDirectoryTreeAndContent}
+            onTreeBrowse={fetchDirectory}
             data={data}
             onlyLeaves={true}
             sortMethod={sortHandlingDirectories}
@@ -153,3 +199,116 @@ DirectoryItemSelector.propTypes = {
 };
 
 export default DirectoryItemSelector;
+
+/**
+ * Make an updated tree [root_nodes, id_to_node] from previous tree and new {id, children}
+ * @param prevRoots previous [root nodes]
+ * @param prevMap previous map (js object) uuid to children nodes
+ * @param nodeId uuid of the node to update children, may be null or undefined (means root)
+ * @param children new value of the node children (shallow nodes)
+ */
+function updatedTree(prevRoots, prevMap, nodeId, children) {
+    const nextChildren = children
+        .sort((a, b) => a.elementName.localeCompare(b.elementName))
+        .map((n) => {
+            let pn = prevMap[n.elementUuid];
+            if (!pn) {
+                return { ...n, children: [], parentUuid: nodeId };
+            } else if (
+                n.elementName === pn.elementName &&
+                sameRights(n.accessRights, pn.accessRights) &&
+                n.subdirectoriesCount === pn.subdirectoriesCount &&
+                nodeId === pn.parentUuid
+            ) {
+                return pn;
+            } else {
+                if (pn.parentUuid !== nodeId) {
+                    console.warn('reparent ' + pn.parentUuid + ' -> ' + nodeId);
+                }
+                return {
+                    ...pn,
+                    elementName: n.elementName,
+                    accessRights: n.accessRights,
+                    subdirectoriesCount: n.subdirectoriesCount,
+                    parentUuid: nodeId,
+                };
+            }
+        });
+
+    const prevChildren = nodeId ? prevMap[nodeId]?.children : prevRoots;
+    if (
+        prevChildren?.length === nextChildren.length &&
+        prevChildren.every((e, i) => e === nextChildren[i])
+    ) {
+        return [prevRoots, prevMap];
+    }
+
+    let nextUuids = new Set(children ? children.map((n) => n.elementUuid) : []);
+    let prevUuids = prevChildren ? prevChildren.map((n) => n.elementUuid) : [];
+    let mayNodeId = nodeId ? [nodeId] : [];
+
+    let nonCopyUuids = new Set([
+        ...nextUuids,
+        ...mayNodeId,
+        ...Array.prototype.concat(
+            ...prevUuids
+                .filter((u) => !nextUuids.has(u))
+                .map((u) =>
+                    flattenDownNodes(prevMap[u], (n) => n.children).map(
+                        (n) => n.elementUuid
+                    )
+                )
+        ),
+    ]);
+
+    const prevNode = nodeId ? prevMap[nodeId] : {};
+    const nextNode = {
+        elementUuid: nodeId,
+        parentUuid: null,
+        ...prevNode,
+        children: nextChildren,
+        subdirectoriesCount: nextChildren.length,
+    };
+
+    const nextMap = Object.fromEntries([
+        ...Object.entries(prevMap).filter(([k, v], i) => !nonCopyUuids.has(k)),
+        ...nextChildren.map((n) => [n.elementUuid, n]),
+        ...refreshedUpNodes(prevMap, nextNode).map((n) => [n.elementUuid, n]),
+    ]);
+
+    const nextRoots =
+        nodeId === null
+            ? nextChildren
+            : prevRoots.map((r) => nextMap[r.elementUuid]);
+
+    const ret = [nextRoots, nextMap];
+
+    return ret;
+}
+
+function sameRights(a, b) {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    return a.isPrivate === b.isPrivate;
+}
+
+function flattenDownNodes(n, cef) {
+    const subs = cef(n);
+    if (subs.length === 0) return [n];
+    const ret = Array.prototype.concat(
+        [n],
+        ...subs.map((sn) => flattenDownNodes(sn, cef))
+    );
+    return ret;
+}
+
+function refreshedUpNodes(m, nn) {
+    if (!nn?.elementUuid) return [];
+    if (nn.parentUuid === null) return [nn];
+    const parent = m[nn.parentUuid];
+    const nextChildren = parent.children.map((c) =>
+        c.elementUuid === nn.elementUuid ? nn : c
+    );
+    const nextParent = { ...parent, children: nextChildren };
+    return [nn, ...refreshedUpNodes(m, nextParent)];
+}
