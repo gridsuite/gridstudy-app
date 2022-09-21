@@ -1759,6 +1759,63 @@ export function attachLine(
     );
 }
 
+export function attachLineToSplitLine(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    attachedLineId,
+    mayNewVoltageLevelInfos,
+    existingVoltageLevelId,
+    bbsOrBusId,
+    newLine1Id,
+    newLine1Name,
+    newLine2Id,
+    newLine2Name
+) {
+    const body = JSON.stringify({
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        attachedLineId,
+        mayNewVoltageLevelInfos,
+        existingVoltageLevelId,
+        bbsOrBusId,
+        newLine1Id,
+        newLine1Name,
+        newLine2Id,
+        newLine2Name,
+    });
+
+    let lineAttachUrl;
+    if (modificationUuid) {
+        console.info('Attaching lines to splitting lines update', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/line-attach-to-split-line';
+    } else {
+        console.info('Attaching lines to splitting lines', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/line-attach-to-split-line';
+    }
+
+    return backendFetch(lineAttachUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =
