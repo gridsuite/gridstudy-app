@@ -292,7 +292,8 @@ const StudyPane = ({
                         <div
                             style={{
                                 flex:
-                                    studyDisplayMode === StudyDisplayMode.HYBRID
+                                    studyDisplayMode ===
+                                    STUDY_DISPLAY_MODE.HYBRID
                                         ? '1'
                                         : null,
                                 display:
@@ -311,7 +312,7 @@ const StudyPane = ({
                                 studyMapTreeDisplay={studyDisplayMode}
                             />
                         </div>
-                        {studyDisplayMode === StudyDisplayMode.HYBRID && (
+                        {studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID && (
                             <div
                                 onMouseDown={(event) =>
                                     manageResize(event, 'scrollWidth', 'pageX')
@@ -326,7 +327,8 @@ const StudyPane = ({
                             )}
                             style={{
                                 flex:
-                                    studyDisplayMode === StudyDisplayMode.HYBRID
+                                    studyDisplayMode ===
+                                    STUDY_DISPLAY_MODE.HYBRID
                                         ? '1'
                                         : null,
                                 display:
