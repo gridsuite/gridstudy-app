@@ -1333,7 +1333,6 @@ export function createGenerator(
             '/network-modification/generators';
     }
 
-    console.log('test : ', maximumReactivePower, minimumReactivePower);
     return backendFetch(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
