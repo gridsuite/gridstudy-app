@@ -36,7 +36,7 @@ export const useFormSearchCopy = ({
         ).then((response) => {
             if (response.status === 200) {
                 response.json().then((equipment) => {
-                    clearValues();
+                    // clearValues(); // what is the point of clearing just before putting stuff over ?
                     const equipmentFormValues = toFormValues(equipment);
                     setFormValues(equipmentFormValues);
 

@@ -79,13 +79,16 @@ export const useInputForm = () => {
     const reset = useCallback((label, validate) => {
         validationMap.current = new Map();
     }, []);
-    return {
-        toggleClear,
-        clear,
-        validate,
-        addValidation,
-        reset,
-    };
+
+    return useMemo(() => {
+        return {
+            toggleClear,
+            clear,
+            validate,
+            addValidation,
+            reset,
+        };
+    }, [toggleClear, clear, validate, addValidation, reset]);
 };
 
 export const useTextValue = ({
@@ -326,7 +329,6 @@ export const useEnumValue = ({
         function validate() {
             return true;
         }
-
         inputForm.addValidation(label, validate);
     }, [label, validation, inputForm, value]);
 
