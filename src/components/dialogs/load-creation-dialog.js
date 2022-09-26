@@ -67,10 +67,6 @@ const LoadCreationDialog = ({
 
     const equipmentPath = 'loads';
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (load) => {
         return {
             equipmentId: load.id + '(1)',
@@ -89,7 +85,6 @@ const LoadCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -200,7 +195,7 @@ const LoadCreationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

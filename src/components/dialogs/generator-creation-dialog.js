@@ -166,17 +166,12 @@ const GeneratorCreationDialog = ({
 
     const equipmentPath = 'generators';
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -473,7 +468,7 @@ const GeneratorCreationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 
