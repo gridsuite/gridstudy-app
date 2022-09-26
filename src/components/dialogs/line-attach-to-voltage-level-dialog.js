@@ -22,11 +22,7 @@ import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
-import {
-    useAutocompleteField,
-    useInputForm,
-    useTextValue,
-} from './input-hooks';
+import { useInputForm, useTextValue } from './inputs/input-hooks';
 import {
     gridItem,
     GridSection,
@@ -45,6 +41,7 @@ import {
 import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
+import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 

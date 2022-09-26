@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '../../utils/messages';
@@ -65,6 +65,10 @@ export const useSearchMatchingEquipments = (
             snackError,
         ]
     );
+
+    useEffect(() => {
+        setEquipmentsFound([]);
+    }, [equipmentType]);
 
     return [searchMatchingEquipments, equipmentsFound];
 };

@@ -128,6 +128,10 @@ const initialState = {
     isModificationsInProgress: false,
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     ...paramsInitialState,
+    // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
+    // defaulted to true to init load geo data with HYBRID defaulted display Mode
+    // TODO REMOVE LATER
+    reloadGeoData: true,
 };
 
 export const reducer = createReducer(initialState, {
@@ -233,6 +237,8 @@ export const reducer = createReducer(initialState, {
                 )
             ) {
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
+                // current node has changed, then will need to reload Geo Data
+                state.reloadGeoData = true;
             }
         }
     },
@@ -377,6 +383,8 @@ export const reducer = createReducer(initialState, {
     },
     [CURRENT_TREE_NODE]: (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
+        // current node has changed, then will need to reload Geo Data
+        state.reloadGeoData = true;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
@@ -407,6 +415,12 @@ export const reducer = createReducer(initialState, {
         if (
             Object.values(STUDY_DISPLAY_MODE).includes(action.studyDisplayMode)
         ) {
+            // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
+            // Some actions in the TREE display mode could change this value after that
+            // ex: change current Node, current Node updated ...
+            if (action.studyDisplayMode === STUDY_DISPLAY_MODE.TREE)
+                state.reloadGeoData = false;
+
             state.studyDisplayMode = action.studyDisplayMode;
         }
     },
