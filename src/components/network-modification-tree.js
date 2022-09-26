@@ -37,6 +37,14 @@ import { nodeTypes } from './graph/util/model-constants';
 const snapGrid = [15, 15];
 
 const useStyles = makeStyles((theme) => ({
+    selected: {
+        color: 'white',
+        background: 'black',
+    },
+    notSelected: {
+        color: 'black',
+        background: 'white',
+    },
     controls: {
         position: 'absolute',
         top: '10px',
@@ -65,6 +73,7 @@ const NetworkModificationTree = ({
 
     const [isMoving, setIsMoving] = useState(false);
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
+    const [isAutoFit, setIsAutoFit] = useState(false);
 
     const nodeColor = (node) => {
         if (node.type === 'ROOT') {
@@ -109,6 +118,13 @@ const NetworkModificationTree = ({
         setIsMoving(false);
     }, []);
 
+    const onMoveStart = useCallback((flowTransform) => {
+        // flowTransform !== null when motion/zoom is (directly) from user
+        if (flowTransform !== null) {
+            setIsAutoFit(false);
+        }
+    }, []);
+
     const [x, y, zoom] = useStore((state) => state.transform);
 
     const { setViewport, fitView } = useReactFlow();
@@ -116,6 +132,20 @@ const NetworkModificationTree = ({
     const onInit = useCallback((reactFlowInstance) => {
         reactFlowInstance.fitView();
     }, []);
+
+    const { width, height } = useStore((state) => {
+        return { width: state.width, height: state.height };
+    });
+
+    useEffect(() => {
+        if (isAutoFit) {
+            fitView();
+        }
+    }, [width, height, isAutoFit, fitView]);
+
+    const toggleFitView = useCallback(() => {
+        setIsAutoFit((prev) => !prev);
+    }, [setIsAutoFit]);
 
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.
@@ -187,6 +217,7 @@ const NetworkModificationTree = ({
                 onNodeContextMenu={onNodeContextMenu}
                 onNodeClick={onNodeClick}
                 //TODO why onMove instead of onMoveStart
+                onMoveStart={onMoveStart}
                 onMove={onMove}
                 onInit={onInit}
                 onMoveEnd={onMoveEnd}
@@ -217,7 +248,14 @@ const NetworkModificationTree = ({
                         enterNextDelay={TOOLTIP_DELAY}
                     >
                         <span>
-                            <ControlButton onClick={fitView}>
+                            <ControlButton
+                                onClick={toggleFitView}
+                                className={
+                                    isAutoFit
+                                        ? classes.selected
+                                        : classes.notSelected
+                                }
+                            >
                                 <CropFreeIcon />
                             </ControlButton>
                         </span>
