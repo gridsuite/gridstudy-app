@@ -25,6 +25,7 @@ import {
     fetchStudyExists,
     fetchPath,
     fetchCaseName,
+    fetchSensitivityAnalysisStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -47,6 +48,7 @@ import {
 } from './graph/util/model-functions';
 import {
     getSecurityAnalysisRunningStatus,
+    getSensiRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
@@ -142,6 +144,10 @@ const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
     'securityAnalysis_failed',
 ];
+const sensiStatusInvalidations = [
+    'sensitivityAnalysis_status',
+    'sensitivityAnalysis_failed',
+];
 const UPDATE_TYPE_HEADER = 'updateType';
 
 export function StudyContainer({ view, onChangeTab }) {
@@ -187,6 +193,15 @@ export function StudyContainer({ view, onChangeTab }) {
         getSecurityAnalysisRunningStatus
     );
 
+    const [sensiStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchSensitivityAnalysisStatus,
+        sensiStatusInvalidations,
+        RunningStatus.IDLE,
+        getSensiRunningStatus
+    );
+
     const [updatedLines, setUpdatedLines] = useState([]);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -205,6 +220,9 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             if (updateTypeHeader === 'securityAnalysis_failed') {
                 snackError('', 'securityAnalysisError');
+            }
+            if (updateTypeHeader === 'sensitivityAnalysis_failed') {
+                snackError('', 'sensitivityAnalysisError');
             }
         },
         [snackError]
@@ -534,6 +552,9 @@ export function StudyContainer({ view, onChangeTab }) {
             SECURITY_ANALYSIS: intl.formatMessage({
                 id: 'SecurityAnalysis',
             }),
+            SENSITIVITY_ANALYSIS: intl.formatMessage({
+                id: 'SensitivityAnalysis',
+            }),
         };
     }, [intl]);
 
@@ -587,6 +608,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 updatedLines={updatedLines}
                 loadFlowInfos={loadFlowInfos}
                 securityAnalysisStatus={securityAnalysisStatus}
+                sensiStatus={sensiStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />
