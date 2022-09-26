@@ -12,19 +12,32 @@ jobs:
               with:
                   persist-credentials: false
 
+            - name: Parse tag
+              id: vars
+              run: echo ::set-output name=tag::${GITHUB_REF_NAME#v}
+              
             - name: Install and Build
               run: |
                   npm install
                   npm run-script build
                   npm run-script test
 
-            - name: Build and publish Docker image
+            - name: Build and publish Docker image - Main
               if: github.ref == 'refs/heads/main'
-              uses: elgohr/Publish-Docker-Github-Action@master
+              uses: elgohr/Publish-Docker-Github-Action@33a481be3e179353cb7793a92b57cf9a6c985860 # v4
               with:
                   name: gridsuite/gridstudy-app
                   username: gridsuiteci
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Build and publish Docker image - Tag
+              if: startsWith(github.ref, 'refs/tags/')
+              uses: elgohr/Publish-Docker-Github-Action@33a481be3e179353cb7793a92b57cf9a6c985860 # v4
+              with:
+                  name: gridsuite/gridstudy-app
+                  username: gridsuiteci
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+                  tags: ${{ steps.vars.outputs.tag }}
 
             - name: Broadcast update event
               if: github.ref == 'refs/heads/main'

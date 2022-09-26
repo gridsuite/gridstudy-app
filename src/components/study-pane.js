@@ -94,6 +94,7 @@ const StudyPane = ({
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
+    sensiStatus,
     runnable,
     setUpdateSwitchMsg,
     setErrorMessage,
@@ -294,6 +295,7 @@ const StudyPane = ({
                                     securityAnalysisStatus={
                                         securityAnalysisStatus
                                     }
+                                    sensiStatus={sensiStatus}
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
