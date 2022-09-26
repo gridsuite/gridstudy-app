@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { func_identity, getId } from '../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
@@ -21,9 +22,29 @@ import {
     genHelperError,
     genHelperPreviousValue,
 } from './hooks-helpers';
-import { createFilterOptions } from '@mui/material/useAutocomplete';
 
 const QUESTIONABLE_SIZE = 1000;
+
+/**
+ * Returns the lowest index for which the two given arrays differ.
+ * If full shallow match, return -1.
+ * if not arrays, return undefined
+ * @param a1 an array
+ * @param a2 an other array
+ * @returns {number|undefined}
+ */
+function arraysMismatchIndex(a1, a2) {
+    if (!Array.isArray(a1) || !Array.isArray(a2)) return undefined;
+
+    if (a1.length !== a2.length) return Math.min(a1.length, a2.length);
+
+    for (var i in a2) {
+        if (a1[i] !== a2[i]) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 const filter = createFilterOptions();
 
@@ -47,7 +68,6 @@ const isWorthLoading = (term, elements, old, minLen) => {
 
     return false;
 };
-
 export const useAutocompleteField = ({
     id,
     label,
@@ -57,6 +77,7 @@ export const useAutocompleteField = ({
     onSearchTermChange,
     minCharsBeforeSearch = 3,
     values,
+    resetsWhenValuesChange = false,
     renderElement,
     getLabel = func_identity,
     allowNewValue = false,
@@ -74,12 +95,15 @@ export const useAutocompleteField = ({
     const [userStr, setUserStr] = useState('');
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState();
+
     const validationRef = useRef();
+
+    const prevValues = useRef();
     validationRef.current = validation;
 
     useEffect(() => {
-        setValue(defaultValue);
-    }, [defaultValue, values]); // to reset when alternatives have changed
+        if (defaultValue !== undefined) setValue(defaultValue);
+    }, [defaultValue]);
 
     useEffect(() => {
         function validate() {
@@ -91,33 +115,64 @@ export const useAutocompleteField = ({
         if (inputForm) {
             inputForm.addValidation(id ? id : label, validate);
         }
-    }, [label, validation, inputForm, value, id]);
+    }, [label, validation, inputForm, value, selectedValue, id]);
 
     const handleChangeValue = useCallback((value) => {
         setValue(value);
     }, []);
 
     useEffect(() => {
-        if (selectedValue) {
-            setValue(selectedValue);
-        }
+        if (selectedValue) setValue(selectedValue);
     }, [selectedValue]);
 
     useEffect(() => {
+        const mismatchIdx = arraysMismatchIndex(prevValues.current, values);
+        const shouldUpdateValueToo =
+            mismatchIdx >= 0 &&
+            prevValues.current.length > mismatchIdx &&
+            value === prevValues.current[mismatchIdx];
+        const valuesChanged = prevValues.current !== values;
+        prevValues.current = values;
+
+        if (mismatchIdx === -1) {
+            if (valuesChanged) setIsLoading(false);
+
+            if (!getLabel) return;
+
+            const inOps = presentedOptions.find((o) => getLabel(o) === value);
+            if (inOps) {
+                setValue(inOps);
+            }
+
+            return;
+        }
+
         if (!values || typeof values === 'function') {
             setIsLoading(false);
             return;
         }
-        if (typeof values?.then === 'function') {
-            setIsLoading(true);
-        }
+
+        if (typeof values?.then === 'function') setIsLoading(true);
         const valuePromise = Promise.resolve(values);
         valuePromise.then((vals) => {
             setPresentedOptions(vals);
+            if (vals?.length > mismatchIdx && shouldUpdateValueToo) {
+                setValue(vals[mismatchIdx]);
+            } else if (resetsWhenValuesChange) {
+                setValue(null);
+            }
             setIsLoading(false);
             if (values?.length === 0) setExpanded(false);
         });
-    }, [values]);
+    }, [
+        values,
+        id,
+        defaultValue,
+        getLabel,
+        presentedOptions,
+        value,
+        resetsWhenValuesChange,
+    ]);
 
     const handleForcedSearch = useCallback(
         (term) => {
@@ -210,7 +265,9 @@ export const useAutocompleteField = ({
                     clearOnBlur: true,
                 })}
                 {...(allowNewValue &&
-                    getLabel === getId && { filterOptions: filterOptionsFunc })}
+                    getLabel === getId && {
+                        filterOptions: filterOptionsFunc,
+                    })}
                 onInputChange={(_event, value) => handleSearchTermChange(value)}
                 noOptionsText={intl.formatMessage({
                     id: 'element_search/noResult',
