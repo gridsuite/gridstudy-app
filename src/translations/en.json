@@ -132,6 +132,7 @@
     "LoadFlow": "LoadFlow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
+    "ShortCircuit": "Short-circuit analysis",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
@@ -181,10 +182,19 @@
     "descLfAllCountries": "All countries",
     "descLfCountriesToBalance": "Countries participating in balancing: ",
 
+    "descWithVoltageMap": "Display voltage drop",
+    "descWithFeederResult": "With feeder results",
+    "descMinVoltageDropProportionalThreshold": "Voltage drop display threshold (%)",
+    "descStudyType": "Study type",
+    "descTransient": "Transient",
+    "descSubTransient": "Sub-transient",
+
     "securityAnalysisResults": "Security analysis results",
-    "securityAnalysisError": "An error occured when executing security analysis",
+    "securityAnalysisError": "An error occurred while executing the security analysis",
     "loadFlowResults": "Loadflow results",
     "startLoadFlowError": "An error occurred while starting the load flow",
+    "shortCircuitsError": "An error occurred while executing the short-circuit analysis",
+    "shortCircuitsResults": "Short-circuit analysis results",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",

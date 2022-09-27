@@ -139,7 +139,11 @@ export function RunButtonContainer({
     };
 
     const RUNNABLES = useMemo(
-        () => [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS],
+        () => [
+            runnable.LOADFLOW,
+            runnable.SECURITY_ANALYSIS,
+            runnable.SHORT_CIRCUITS_ANALYSIS,
+        ],
         [runnable]
     );
 

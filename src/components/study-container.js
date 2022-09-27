@@ -534,6 +534,7 @@ export function StudyContainer({ view, onChangeTab }) {
             SECURITY_ANALYSIS: intl.formatMessage({
                 id: 'SecurityAnalysis',
             }),
+            SHORT_CIRCUITS_ANALYSIS: intl.formatMessage({ id: 'ShortCircuit' }),
         };
     }, [intl]);
 
