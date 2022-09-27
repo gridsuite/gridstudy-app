@@ -17,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import CheckboxList from '../util/checkbox-list';
 import {
     fetchContingencyCount,
-    fetchContingencyLists,
+    fetchContingencyAndFiltersLists,
     updateConfigParameter,
 } from '../../utils/rest-api';
 import Button from '@mui/material/Button';
@@ -117,7 +117,7 @@ const ContingencyListSelector = (props) => {
             favoriteContingencyListUuids &&
             favoriteContingencyListUuids.length > 0
         ) {
-            fetchContingencyLists(favoriteContingencyListUuids)
+            fetchContingencyAndFiltersLists(favoriteContingencyListUuids)
                 .then((res) => {
                     const mapCont = res.reduce((map, obj) => {
                         map[obj.elementUuid] = {

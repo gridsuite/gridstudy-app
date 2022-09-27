@@ -104,6 +104,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
         inputForm: inputForm,
         onSearchTermChange: searchMatchingEquipments,
         values: equipmentsFound,
+        resetsWhenValuesChange: true,
         defaultValue: '',
         renderElement: (props) => (
             <EquipmentItem

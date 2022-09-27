@@ -25,6 +25,7 @@ import {
     fetchStudyExists,
     fetchPath,
     fetchCaseName,
+    fetchSensitivityAnalysisStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -47,6 +48,7 @@ import {
 } from './graph/util/model-functions';
 import {
     getSecurityAnalysisRunningStatus,
+    getSensiRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
@@ -142,6 +144,10 @@ const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
     'securityAnalysis_failed',
 ];
+const sensiStatusInvalidations = [
+    'sensitivityAnalysis_status',
+    'sensitivityAnalysis_failed',
+];
 const UPDATE_TYPE_HEADER = 'updateType';
 
 export function StudyContainer({ view, onChangeTab }) {
@@ -187,6 +193,15 @@ export function StudyContainer({ view, onChangeTab }) {
         getSecurityAnalysisRunningStatus
     );
 
+    const [sensiStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchSensitivityAnalysisStatus,
+        sensiStatusInvalidations,
+        RunningStatus.IDLE,
+        getSensiRunningStatus
+    );
+
     const [updatedLines, setUpdatedLines] = useState([]);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -205,6 +220,9 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             if (updateTypeHeader === 'securityAnalysis_failed') {
                 snackError('', 'securityAnalysisError');
+            }
+            if (updateTypeHeader === 'sensitivityAnalysis_failed') {
+                snackError('', 'sensitivityAnalysisError');
             }
         },
         [snackError]
@@ -235,6 +253,11 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, checkFailNotifications]
     );
 
+    const displayNetworkLoadingFailMessage = useCallback((error) => {
+        console.error(error.message);
+        setNetworkLoadingFailMessage(error.message);
+    }, []);
+
     const loadNetwork = useCallback(
         (isUpdate) => {
             if (!isNodeBuilt(currentNode) || !studyUuid) {
@@ -250,11 +273,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 new Network(
                     studyUuid,
                     currentNode?.id,
-                    (error) => {
-                        console.error(error.message);
-                        setNetworkLoadingFailMessage(error.message);
-                        //setIsNetworkPending(false);
-                    },
+                    displayNetworkLoadingFailMessage,
                     dispatch,
                     {
                         equipments: [equipments.lines, equipments.substations],
@@ -264,11 +283,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 const network = new Network(
                     studyUuid,
                     currentNode?.id,
-                    (error) => {
-                        console.error(error.message);
-                        setNetworkLoadingFailMessage(error.message);
-                        //setIsNetworkPending(false);
-                    },
+                    displayNetworkLoadingFailMessage,
                     dispatch
                 );
                 // For initial network loading, no need to initialize lines and substations at first,
@@ -276,23 +291,9 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(networkCreated(network));
             }
         },
-        [studyUuid, currentNode, dispatch]
+        [studyUuid, currentNode, dispatch, displayNetworkLoadingFailMessage]
     );
     loadNetworkRef.current = loadNetwork;
-
-    const removeEquipmentFromNetwork = useCallback(
-        (equipmentType, equipmentId) => {
-            console.info(
-                'removing equipment with id=',
-                equipmentId,
-                ' and type=',
-                equipmentType,
-                ' from the network'
-            );
-            network.removeEquipment(equipmentType, equipmentId);
-        },
-        [network]
-    );
 
     const loadTree = useCallback(() => {
         console.info(
@@ -535,6 +536,9 @@ export function StudyContainer({ view, onChangeTab }) {
                 id: 'SecurityAnalysis',
             }),
             SHORT_CIRCUITS_ANALYSIS: intl.formatMessage({ id: 'ShortCircuit' }),
+            SENSITIVITY_ANALYSIS: intl.formatMessage({
+                id: 'SensitivityAnalysis',
+            }),
         };
     }, [intl]);
 
@@ -562,14 +566,21 @@ export function StudyContainer({ view, onChangeTab }) {
                 const deletedEquipmentType =
                     studyUpdatedForce.eventData.headers['deletedEquipmentType'];
                 if (deletedEquipmentId && deletedEquipmentType) {
-                    removeEquipmentFromNetwork(
+                    console.info(
+                        'removing equipment with id=',
+                        deletedEquipmentId,
+                        ' and type=',
+                        deletedEquipmentType,
+                        ' from the network'
+                    );
+                    network.removeEquipment(
                         deletedEquipmentType,
                         deletedEquipmentId
                     );
                 }
             }
         }
-    }, [studyUpdatedForce, updateNetwork, removeEquipmentFromNetwork]);
+    }, [studyUpdatedForce, updateNetwork, network]);
 
     return (
         <WaitingLoader
@@ -588,6 +599,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 updatedLines={updatedLines}
                 loadFlowInfos={loadFlowInfos}
                 securityAnalysisStatus={securityAnalysisStatus}
+                sensiStatus={sensiStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />
