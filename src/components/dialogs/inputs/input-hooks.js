@@ -255,7 +255,10 @@ export const useCountryValue = (props) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [code, setCode] = useState(props.defaultCodeValue);
 
-    const countriesList = useMemo(() => {
+    const englishCountriesModule = require('localized-countries')(
+        require('localized-countries/data/en')
+    );
+    const localizedCountriesModule = useMemo(() => {
         try {
             return require('localized-countries')(
                 require('localized-countries/data/' +
@@ -271,11 +274,9 @@ export const useCountryValue = (props) => {
 
     useEffect(() => {
         //We only need to search for the code if we only have the label
-        if (
-            props.defaultLabelValue !== null &&
-            props.defaultCodeValue === null
-        ) {
-            let res = countriesList
+        if (props.defaultLabelValue && !props.defaultCodeValue) {
+            // code -> name is currently done in NetworkMapService::toDataMap and gives english
+            let res = englishCountriesModule
                 .array()
                 .filter(
                     (obj) =>
@@ -288,15 +289,22 @@ export const useCountryValue = (props) => {
         } else {
             setCode(null);
         }
-    }, [countriesList, props.defaultLabelValue, props.defaultCodeValue]);
+    }, [
+        englishCountriesModule,
+        props.defaultLabelValue,
+        props.defaultCodeValue,
+    ]);
 
     const values = useMemo(
-        () => (countriesList ? Object.keys(countriesList.object()) : []),
-        [countriesList]
+        () =>
+            localizedCountriesModule
+                ? Object.keys(localizedCountriesModule.object())
+                : [],
+        [localizedCountriesModule]
     );
     const getOptionLabel = useCallback(
-        (code) => countriesList.get(code),
-        [countriesList]
+        (code) => localizedCountriesModule.get(code),
+        [localizedCountriesModule]
     );
 
     return useAutocompleteField({

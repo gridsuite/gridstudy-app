@@ -109,10 +109,8 @@ const SubstationCreationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         validation: { isFieldRequired: false },
-        defaultCodeValue: formValues ? formValues.substationCountry : null,
-        defaultLabelValue: formValues
-            ? formValues.substationCountryLabel
-            : null,
+        defaultCodeValue: formValues?.substationCountry ?? null,
+        defaultLabelValue: formValues?.substationCountryLabel ?? null,
     });
 
     const handleSave = () => {
