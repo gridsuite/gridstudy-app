@@ -369,6 +369,44 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     ]);
 
     useEffect(() => {
+        if (loadFlowStatus !== RunningStatus.SUCCEED) {
+            let newSvg = ''.concat(svg['svg']);
+            let indexOfKV = newSvg?.indexOf('kV<');
+            let indexOfDegree = newSvg?.indexOf('°<');
+
+            if (indexOfKV !== -1) {
+                let dashKV = newSvg.substring(indexOfKV - 2, indexOfKV + 2);
+                let degreeValue = newSvg.substring(
+                    indexOfDegree - 6,
+                    indexOfDegree + 1
+                );
+                if (dashKV !== '— kV') {
+                    dashKV = newSvg.substring(indexOfKV - 8, indexOfKV + 2);
+                    let arrowPositionJustBefore = dashKV.indexOf('>');
+                    let copiedValueToReplace = dashKV.substring(
+                        arrowPositionJustBefore + 1,
+                        dashKV.length
+                    );
+                    let updatedSvg = newSvg.replace(
+                        copiedValueToReplace,
+                        '— kV'
+                    );
+                    arrowPositionJustBefore = degreeValue.indexOf('>');
+                    copiedValueToReplace = degreeValue.substring(
+                        arrowPositionJustBefore + 1,
+                        degreeValue.length
+                    );
+                    updatedSvg = updatedSvg.replace(
+                        copiedValueToReplace,
+                        '— °'
+                    );
+                    svg['svg'] = updatedSvg;
+                }
+            }
+        }
+    }, [loadFlowStatus, svg]);
+
+    useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
         if (props.svgUrl) {
