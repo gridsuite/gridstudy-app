@@ -29,10 +29,15 @@ const ListItemWithDeleteButton = (props) => {
             onClick={props.onClick}
             onMouseEnter={() => handleHoover(true)}
             onMouseLeave={() => handleHoover(false)}
+            style={{
+                paddingTop: 0,
+                paddingBottom: 0,
+            }}
         >
             <ListItemIcon>
                 <Checkbox
                     edge="start"
+                    size={'small'}
                     checked={props.checked}
                     tabIndex={-1}
                     disableRipple

@@ -449,16 +449,16 @@ const NetworkModificationNodeEditor = () => {
 
     const classes = useStyles();
 
-    const openNetworkModificationConfiguration = () => {
+    const openNetworkModificationConfiguration = useCallback(() => {
         setOpenNetworkModificationsDialog(true);
-    };
+    }, []);
 
     const closeNetworkModificationConfiguration = () => {
         setOpenNetworkModificationsDialog(false);
         setEditData(undefined);
     };
 
-    const doDeleteModification = () => {
+    const doDeleteModification = useCallback(() => {
         deleteModifications(
             studyUuid,
             currentTreeNode?.id,
@@ -468,14 +468,14 @@ const NetworkModificationNodeEditor = () => {
             .catch((errmsg) => {
                 snackError(errmsg, 'errDeleteModificationMsg');
             });
-    };
+    }, [currentTreeNode?.id, selectedItems, snackError, studyUuid]);
 
-    const doCopyModification = () => {
+    const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
         setCopiedModifications(
             Array.from(selectedItems).map((item) => item.uuid)
         );
-    };
+    }, [selectedItems]);
 
     const doPasteModification = useCallback(() => {
         duplicateModifications(
@@ -499,11 +499,11 @@ const NetworkModificationNodeEditor = () => {
                 snackError(errmsg, 'errDuplicateModificationMsg');
             });
     }, [
-        studyUuid,
-        currentTreeNode.id,
         copiedModifications,
-        snackWarning,
+        currentTreeNode.id,
         snackError,
+        snackWarning,
+        studyUuid,
     ]);
 
     const doEditModification = (modificationUuid) => {
@@ -522,6 +522,10 @@ const NetworkModificationNodeEditor = () => {
             })
             .catch((errorMessage) => snackError(errorMessage));
     };
+
+    const toggleSelectAllModifications = useCallback(() => {
+        setToggleSelectAll((oldVal) => !oldVal);
+    }, []);
 
     const renderDialog = () => {
         return dialogs[editDialogOpen].dialog();
@@ -682,7 +686,7 @@ const NetworkModificationNodeEditor = () => {
                         modifications?.length
                     )}
                     disableRipple
-                    onClick={() => setToggleSelectAll((oldVal) => !oldVal)}
+                    onClick={toggleSelectAllModifications}
                 />
                 <div className={classes.filler} />
                 <IconButton

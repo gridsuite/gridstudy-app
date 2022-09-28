@@ -129,6 +129,7 @@ const useStyles = makeStyles((theme) => ({
         padding: 5,
         display: 'flex',
         flexDirection: 'row',
+        wordBreak: 'break-all',
         backgroundColor: theme.palette.background.default,
     },
     fullScreenIcon: {
@@ -994,26 +995,36 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     <Box flexGrow={1}>
                         <Typography>{props.diagramTitle}</Typography>
                     </Box>
-                    <IconButton
-                        className={classes.actionIcon}
-                        onClick={minimizeSld}
-                    >
-                        <MinimizeIcon />
-                    </IconButton>
-                    <IconButton
-                        className={
-                            pinned ? classes.actionIcon : classes.pinRotate
-                        }
-                        onClick={pinSld}
-                    >
-                        {pinned ? <PushPinIcon /> : <PushPinOutlinedIcon />}
-                    </IconButton>
-                    <IconButton
-                        className={classes.close}
-                        onClick={onCloseHandler}
-                    >
-                        <CloseIcon />
-                    </IconButton>
+                    <Box>
+                        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                            <IconButton
+                                className={classes.actionIcon}
+                                onClick={minimizeSld}
+                            >
+                                <MinimizeIcon />
+                            </IconButton>
+                            <IconButton
+                                className={
+                                    pinned
+                                        ? classes.actionIcon
+                                        : classes.pinRotate
+                                }
+                                onClick={pinSld}
+                            >
+                                {pinned ? (
+                                    <PushPinIcon />
+                                ) : (
+                                    <PushPinOutlinedIcon />
+                                )}
+                            </IconButton>
+                            <IconButton
+                                className={classes.close}
+                                onClick={onCloseHandler}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Box>
+                    </Box>
                 </Box>
             </Box>
             {loadingState && (
