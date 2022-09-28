@@ -887,13 +887,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         }
     };
 
-    const showFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagramId(sldId));
-    };
+    const showFullScreen = useCallback(
+        () => dispatch(fullScreenSingleLineDiagramId(sldId)),
+        [dispatch, sldId]
+    );
 
-    const hideFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagramId(undefined));
-    };
+    const hideFullScreen = useCallback(
+        () => dispatch(fullScreenSingleLineDiagramId(undefined)),
+        [dispatch]
+    );
 
     function displayMenuLine() {
         return (
@@ -960,10 +962,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         () => toggleState(sldId, svgType, ViewState.PINNED),
         [sldId, svgType, toggleState]
     );
-    const minimizeSld = useCallback(
-        () => toggleState(sldId, svgType, ViewState.MINIMIZED),
-        [toggleState, sldId, svgType]
-    );
+
+    const minimizeSld = useCallback(() => {
+        toggleState(sldId, svgType, ViewState.MINIMIZED);
+        hideFullScreen();
+    }, [toggleState, sldId, svgType, hideFullScreen]);
 
     return !svg.error ? (
         <Paper
