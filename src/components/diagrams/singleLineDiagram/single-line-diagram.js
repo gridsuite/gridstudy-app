@@ -697,15 +697,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 setSvgPreferredHeight(svgHeight);
             }
 
-            let viewboxMaxWidth =
-                svgType === SvgType.VOLTAGE_LEVEL
-                    ? maxWidthVoltageLevel
-                    : maxWidthSubstation;
-            let viewboxMaxHeight =
-                svgType === SvgType.VOLTAGE_LEVEL
-                    ? maxHeightVoltageLevel
-                    : maxHeightSubstation;
-
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
@@ -728,28 +719,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
             draw.node.firstChild.removeAttribute('viewBox');
 
-            // if (svgWidth > viewboxMaxWidth || svgHeight > viewboxMaxHeight) {
-            //     //The svg is too big, display only the top left corner because that's
-            //     //better for users than zooming out. Keep the same aspect ratio
-            //     //so that panzoom's margins still work correctly.
-            //     //I am not sure the offsetX and offsetY thing is correct. It seems
-            //     //to help. When someone finds a big problem, then we can fix it.
-            //     const newLvlX = svgWidth / viewboxMaxWidth;
-            //     const newLvlY = svgHeight / viewboxMaxHeight;
-            //     if (newLvlX > newLvlY) {
-            //         const offsetY = (viewboxMaxHeight - svgHeight) / newLvlX;
-            //         draw.zoom(newLvlX, {
-            //             x: xOrigin,
-            //             y: (yOrigin + viewboxMaxHeight - offsetY) / 2,
-            //         });
-            //     } else {
-            //         const offsetX = (viewboxMaxWidth - svgWidth) / newLvlY;
-            //         draw.zoom(newLvlY, {
-            //             x: (xOrigin + viewboxMaxWidth - offsetX) / 2,
-            //             y: yOrigin,
-            //         });
-            //     }
-            // }
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = 'move';
             });
