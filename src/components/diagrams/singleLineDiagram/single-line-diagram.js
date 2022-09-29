@@ -397,6 +397,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
+
     }, [props.svgUrl, forceState, snackError, intlRef]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
@@ -680,6 +681,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             const yOrigin = bbox.y - 20;
             const svgWidth = Math.ceil(bbox.width + 40);
             const svgHeight = Math.ceil(bbox.height + 40);
+
+            svgEl.getElementsByClassName("sld-node-infos")[0].parentElement.getElementsByTagName("text")[0].textLength = "JIIJIJIJIJIJ";
 
             if (shouldResetPreferredSizes.current) {
                 setSvgPreferredWidth(svgWidth);

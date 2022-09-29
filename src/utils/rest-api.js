@@ -904,6 +904,7 @@ export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
 
 export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
     // TODO
+    return ShortCircuit
 }
 
 export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
