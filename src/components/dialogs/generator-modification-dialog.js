@@ -91,10 +91,6 @@ const GeneratorModificationDialog = ({
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const headerIds = [
         'ActivePower',
         'MinimumReactivePower',
@@ -405,7 +401,7 @@ const GeneratorModificationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

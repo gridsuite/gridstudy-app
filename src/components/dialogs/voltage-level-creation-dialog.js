@@ -273,10 +273,6 @@ const VoltageLevelCreationDialog = ({
     const [loadingSubstationOptions, setLoadingSubstationOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (voltageLevel) => {
         return {
             equipmentId: voltageLevel.id + '(1)',
@@ -294,7 +290,6 @@ const VoltageLevelCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -423,7 +418,7 @@ const VoltageLevelCreationDialog = ({
     };
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

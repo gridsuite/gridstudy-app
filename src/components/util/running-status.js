@@ -41,3 +41,16 @@ export function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
             return RunningStatus.IDLE;
     }
 }
+
+export function getSensiRunningStatus(sensiStatus) {
+    switch (sensiStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}

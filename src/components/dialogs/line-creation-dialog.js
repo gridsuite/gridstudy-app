@@ -109,17 +109,12 @@ const LineCreationDialog = ({
 
     const equipmentPath = 'lines';
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -302,7 +297,7 @@ const LineCreationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 
