@@ -598,6 +598,7 @@ export function fetchEquipmentInfos(
         encodeURIComponent(equipmentId) +
         '?' +
         urlSearchParams.toString();
+    console.debug(fetchEquipmentInfosUrl);
     return backendFetch(fetchEquipmentInfosUrl);
 }
 
