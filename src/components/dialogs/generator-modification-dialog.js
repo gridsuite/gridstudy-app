@@ -86,10 +86,6 @@ const GeneratorModificationDialog = ({
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     useEffect(() => {
         if (!equipmentOptionsPromise) return;
         equipmentOptionsPromise.then((values) => {
@@ -284,7 +280,7 @@ const GeneratorModificationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 
