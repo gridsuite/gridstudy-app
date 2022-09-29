@@ -54,3 +54,16 @@ export function getSensiRunningStatus(sensiStatus) {
             return RunningStatus.IDLE;
     }
 }
+
+export function getShortCircuitRunningStatus(shortCircuitStatus) {
+    switch (shortCircuitStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}

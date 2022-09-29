@@ -884,6 +884,33 @@ export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
     });
 }
 
+export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        'Running short circuit analysis on ' +
+        studyUuid +
+        ' and node ' +
+        currentNodeUuid +
+        '...'
+    );
+    const startShortCircuitAnanysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/shortcircuit/run';
+    console.debug(startShortCircuitAnanysisUrl);
+    return backendFetch(startShortCircuitAnanysisUrl, { method: 'put' }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
+    // TODO
+}
+
+export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
+    // TODO
+}
+
+
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');
     const url =

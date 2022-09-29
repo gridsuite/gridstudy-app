@@ -12,9 +12,9 @@ import PropTypes from 'prop-types';
 import {
     startLoadFlow,
     startSecurityAnalysis,
-    startSensitivityAnalysis,
+    startSensitivityAnalysis, startShortCircuitAnalysis,
     stopSecurityAnalysis,
-    stopSensitivityAnalysis,
+    stopSensitivityAnalysis
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
 import LoopIcon from '@mui/icons-material/Loop';
@@ -23,7 +23,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import ContingencyListSelector from './dialogs/contingency-list-selector';
 import makeStyles from '@mui/styles/makeStyles';
-import { addLoadflowNotif, addSANotif, addSensiNotif } from '../redux/actions';
+import { addLoadflowNotif, addSANotif, addSensiNotif, addShortCircuitNotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '../utils/messages';
@@ -40,6 +40,7 @@ export function RunButtonContainer({
     loadFlowStatus,
     securityAnalysisStatus,
     sensiStatus,
+    shortCircuitStatus,
     setIsComputationRunning,
     runnable,
     disabled,
@@ -59,6 +60,8 @@ export function RunButtonContainer({
     const [ranSA, setRanSA] = useState(false);
 
     const [ranSensi, setRanSensi] = useState(false);
+
+    const [ranShortCircuit, setRanShortCircuit] = useState(false);
 
     const intl = useIntl();
 
@@ -89,7 +92,14 @@ export function RunButtonContainer({
                 'sensitivityAnalysisResult'
         ) {
             dispatch(addSensiNotif());
+        } else if (
+        ranShortCircuit &&
+        studyUpdatedForce?.eventData?.headers?.updateType ===
+        'shortCircuitAnalysisResult'
+        ) {
+            dispatch(addShortCircuitNotif());
         }
+
     }, [dispatch, studyUpdatedForce, ranSA, ranLoadflow, ranSensi]);
 
     const ACTION_ON_RUNNABLES = {
@@ -102,6 +112,10 @@ export function RunButtonContainer({
                 stopSensitivityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
+            // } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
+            //     stopShortCircuitAnalysis(studyUuid, currentNode?.id);
+            //     setComputationStopped(!computationStopped);
+            // }
         },
     };
 
@@ -135,6 +149,16 @@ export function RunButtonContainer({
         );
     };
 
+    const handleStartShortCircuit = () => {
+        setComputationStopped(false);
+
+        // start server side security analysis
+        startShortCircuitAnalysis(
+            studyUuid,
+            currentNode?.id,
+        );
+    };
+
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
             startLoadFlow(studyUuid, currentNode?.id)
@@ -159,9 +183,11 @@ export function RunButtonContainer({
                 return securityAnalysisStatus;
             } else if (runnableType === runnable.SENSITIVITY_ANALYSIS) {
                 return sensiStatus;
+            } else if (runnableType === runnable.SHORT_CIRCUIT_ANALYSIS) {
+                return shortCircuitStatus;
             }
         },
-        [loadFlowStatus, securityAnalysisStatus, sensiStatus, runnable]
+        [loadFlowStatus, securityAnalysisStatus, sensiStatus, shortCircuitStatus, runnable]
     );
 
     const getRunningText = (runnable, status) => {
@@ -187,6 +213,7 @@ export function RunButtonContainer({
             runnable.LOADFLOW,
             runnable.SECURITY_ANALYSIS,
             runnable.SENSITIVITY_ANALYSIS,
+            runnable.SHORT_CIRCUIT_ANALYSIS,
         ],
         [runnable]
     );
