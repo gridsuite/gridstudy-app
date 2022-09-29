@@ -19,7 +19,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
@@ -252,26 +252,26 @@ const LineAttachToSplitLineDialog = ({
         }
     }, [voltageLevelOrId, bobbsCb, setBbsOrNodeId]);
 
-    const voltageLevelToEdit = useMemo(() => {
-        if (
-            typeof voltageLevelOrId === 'string' &&
-            newVoltageLevel &&
-            newVoltageLevel.equipmentId !== voltageLevelOrId
-        ) {
-            const ret = makeVoltageLevelCreationParams(
-                voltageLevelOrId,
-                bbsOrNodeId?.id || bbsOrNodeId,
-                newVoltageLevel
-            );
-            return ret;
-        }
+    // const voltageLevelToEdit = useMemo(() => {
+    //     if (
+    //         typeof voltageLevelOrId === 'string' &&
+    //         newVoltageLevel &&
+    //         newVoltageLevel.equipmentId !== voltageLevelOrId
+    //     ) {
+    //         const ret = makeVoltageLevelCreationParams(
+    //             voltageLevelOrId,
+    //             bbsOrNodeId?.id || bbsOrNodeId,
+    //             newVoltageLevel
+    //         );
+    //         return ret;
+    //     }
 
-        if (!newVoltageLevel && formValues?.mayNewVoltageLevelInfos) {
-            return formValues?.mayNewVoltageLevelInfos;
-        }
+    //     if (!newVoltageLevel && formValues?.mayNewVoltageLevelInfos) {
+    //         return formValues?.mayNewVoltageLevelInfos;
+    //     }
 
-        return newVoltageLevel;
-    }, [voltageLevelOrId, bbsOrNodeId, newVoltageLevel, formValues]);
+    //     return newVoltageLevel;
+    // }, [voltageLevelOrId, bbsOrNodeId, newVoltageLevel, formValues]);
 
     const [newLine1Id, newLine1IdField] = useTextValue({
         id: 'newLine1Id',
@@ -305,7 +305,7 @@ const LineAttachToSplitLineDialog = ({
         defaultValue: formValues?.newLine2Name,
     });
 
-    const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
+    // const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
 
     const handleSave = () => {
         if (inputForm.validate()) {
@@ -316,10 +316,11 @@ const LineAttachToSplitLineDialog = ({
                 lineToAttachTo1.id || lineToAttachTo1,
                 lineToAttachTo2.id || lineToAttachTo2,
                 attachedLine.id || attachedLine,
-                newVoltageLevel,
-                newVoltageLevel
-                    ? null
-                    : voltageLevelOrId?.id || voltageLevelOrId,
+                // newVoltageLevel,
+                // newVoltageLevel
+                //     ? null
+                //     : voltageLevelOrId?.id || voltageLevelOrId,
+                voltageLevelOrId?.id || voltageLevelOrId,
                 bbsOrNodeId?.id || bbsOrNodeId,
                 newLine1Id,
                 newLine1Name || null,
@@ -348,51 +349,51 @@ const LineAttachToSplitLineDialog = ({
         handleClose();
     };
 
-    const onVoltageLevelDo = useCallback(
-        ({
-            studyUuid,
-            currentNodeUuid,
-            voltageLevelId,
-            voltageLevelName,
-            nominalVoltage,
-            substationId,
-            busbarSections,
-            busbarConnections,
-        }) => {
-            return new Promise(() => {
-                const preparedVoltageLevel = {
-                    equipmentId: voltageLevelId,
-                    equipmentName: voltageLevelName,
-                    nominalVoltage: nominalVoltage,
-                    substationId: substationId,
-                    busbarSections: busbarSections,
-                    busbarConnections: busbarConnections,
-                };
-                setNewVoltageLevel(preparedVoltageLevel);
-                setVoltageLevelOrId(voltageLevelId);
-                voltageLevelOrIdRef.current = voltageLevelId;
-                if (
-                    busbarSections.find(
-                        (bbs) => bbs.id === (bbsOrNodeId?.id || bbsOrNodeId)
-                    )
-                ) {
-                    setBusOrBusbarSectionOptions(busbarSections);
-                } else {
-                    setBusOrBusbarSectionOptions(busbarSections);
-                    setBbsOrNodeId(busbarSections[0].id);
-                }
-            });
-        },
-        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId]
-    );
+    // const onVoltageLevelDo = useCallback(
+    //     ({
+    //         studyUuid,
+    //         currentNodeUuid,
+    //         voltageLevelId,
+    //         voltageLevelName,
+    //         nominalVoltage,
+    //         substationId,
+    //         busbarSections,
+    //         busbarConnections,
+    //     }) => {
+    //         return new Promise(() => {
+    //             const preparedVoltageLevel = {
+    //                 equipmentId: voltageLevelId,
+    //                 equipmentName: voltageLevelName,
+    //                 nominalVoltage: nominalVoltage,
+    //                 substationId: substationId,
+    //                 busbarSections: busbarSections,
+    //                 busbarConnections: busbarConnections,
+    //             };
+    //             setNewVoltageLevel(preparedVoltageLevel);
+    //             setVoltageLevelOrId(voltageLevelId);
+    //             voltageLevelOrIdRef.current = voltageLevelId;
+    //             if (
+    //                 busbarSections.find(
+    //                     (bbs) => bbs.id === (bbsOrNodeId?.id || bbsOrNodeId)
+    //                 )
+    //             ) {
+    //                 setBusOrBusbarSectionOptions(busbarSections);
+    //             } else {
+    //                 setBusOrBusbarSectionOptions(busbarSections);
+    //                 setBbsOrNodeId(busbarSections[0].id);
+    //             }
+    //         });
+    //     },
+    //     [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId]
+    // );
 
-    const onVoltageLevelDialogClose = () => {
-        setVoltageLevelDialogOpen(false);
-    };
+    // const onVoltageLevelDialogClose = () => {
+    //     setVoltageLevelDialogOpen(false);
+    // };
 
-    const openVoltageLevelDialog = () => {
-        setVoltageLevelDialogOpen(true);
-    };
+    // const openVoltageLevelDialog = () => {
+    //     setVoltageLevelDialogOpen(true);
+    // };
 
     const lineSubstation = (isFirst, line) => {
         if (!line) return '';
@@ -464,7 +465,7 @@ const LineAttachToSplitLineDialog = ({
                     <Grid container spacing={2}>
                         {gridItem(voltageLevelIdField)}
                         {gridItem(bbsOrNodeIdField)}
-                        {gridItem(
+                        {/* {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
                                 startIcon={
@@ -475,7 +476,7 @@ const LineAttachToSplitLineDialog = ({
                                     <FormattedMessage id="NewVoltageLevel" />
                                 </Typography>
                             </Button>
-                        )}
+                        )} */}
                     </Grid>
                     <GridSection title="ReplacingLines" />
                     <Grid container spacing={2}>
@@ -495,7 +496,7 @@ const LineAttachToSplitLineDialog = ({
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
-                {voltageLevelDialogOpen && (
+                {/* {voltageLevelDialogOpen && (
                     <VoltageLevelCreationDialog
                         open={true}
                         onClose={onVoltageLevelDialogClose}
@@ -504,7 +505,7 @@ const LineAttachToSplitLineDialog = ({
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
                     />
-                )}
+                )} */}
             </Dialog>
         </>
     );

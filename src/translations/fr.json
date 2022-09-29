@@ -445,7 +445,7 @@
     "AttachmentPointName": "Nom point de piquage",
     "AttachedLine": "Créer liaison de piquage",
     "LineAttached": "Liaison de piquage",
-    "AttachedLineId": "ID liaison de piquage",
+    "AttachedLineId": "ID Liaison de piquage",
     "ReplacingLines": "Liaisons de remplacement",
     "LineDivisionError": "Erreur lors de la création d'une coupure",
     "LineAttachmentError": "Erreur lors de la création d'un piquage",

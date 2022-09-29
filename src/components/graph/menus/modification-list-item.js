@@ -30,6 +30,7 @@ const editableModificationTypes = new Set([
     'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
     'LINE_ATTACH_TO_VOLTAGE_LEVEL',
     'GENERATOR_MODIFICATION',
+    'LINE_ATTACH_TO_SPLIT_LINE'
 ]);
 
 const equipmentModificationModificationsType = new Set([
