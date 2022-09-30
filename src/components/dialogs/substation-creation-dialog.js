@@ -55,10 +55,6 @@ const SubstationCreationDialog = ({
 
     const equipmentPath = 'substations';
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (substation) => {
         return {
             equipmentId: substation.id + '(1)',
@@ -74,7 +70,6 @@ const SubstationCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -149,7 +144,7 @@ const SubstationCreationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 
