@@ -370,31 +370,42 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (loadFlowStatus !== RunningStatus.SUCCEED) {
-            if (svg['svg'] !== null) {
+            if (svg['svg']) {
                 var svgToUpdate = svg['svg'];
-                let element =
+                let nodesInfos =
                     document?.getElementsByClassName('sld-node-infos');
-                if (element != null) {
-                    let nodeIdKV;
+                if (nodesInfos != null) {
+                    let nodeIdKv;
                     let nodeIdAngle;
-                    for (var i = 0; i < element.length; i++) {
-                        if (element[i].id.endsWith('_circle')) {
-                            nodeIdKV = element[i].id.replace('circle', 'v');
-                            nodeIdAngle = element[i].id.replace(
+                    for (var i = 0; i < nodesInfos.length; i++) {
+                        if (nodesInfos[i].id.endsWith('_circle')) {
+                            nodeIdKv = nodesInfos[i].id.replace('circle', 'v');
+                            nodeIdAngle = nodesInfos[i].id.replace(
                                 'circle',
                                 'angle'
                             );
+                            let oldValue;
+                            if (nodeIdKv) {
+                                oldValue =
+                                    document.getElementById(
+                                        nodeIdKv
+                                    ).textContent;
+                                svgToUpdate = svgToUpdate.replace(
+                                    oldValue,
+                                    '— kV'
+                                );
+                            }
+                            if (nodeIdAngle) {
+                                oldValue =
+                                    document.getElementById(
+                                        nodeIdAngle
+                                    ).textContent;
+                                svgToUpdate = svgToUpdate.replace(
+                                    oldValue,
+                                    '— °'
+                                );
+                            }
                         }
-                    }
-                    if (nodeIdKV !== null && nodeIdKV !== undefined) {
-                        let oldValue =
-                            document.getElementById(nodeIdKV).textContent;
-                        svgToUpdate = svgToUpdate.replace(oldValue, '— kV');
-                    }
-                    if (nodeIdAngle !== null && nodeIdAngle !== undefined) {
-                        let oldValue =
-                            document.getElementById(nodeIdAngle).textContent;
-                        svgToUpdate = svgToUpdate.replace(oldValue, '— °');
                     }
                     svg['svg'] = svgToUpdate;
                 }
