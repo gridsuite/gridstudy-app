@@ -154,6 +154,7 @@
     "ShortCircuitAnalysis": "Short circuit analysis",
     "ShortCircuitAnalysisParameters": "Short circuit analysis parameters",
     "ShortCircuitAnalysisResults": "Short circuit analysis results",
+    "shortCircuitError": "An error occured when executing short circuit analysis",
 
     "LimitType": "Limit type",
     "Value": "Value",

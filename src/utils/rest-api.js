@@ -887,30 +887,61 @@ export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
     console.info(
         'Running short circuit analysis on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        '...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            '...'
     );
     const startShortCircuitAnanysisUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/shortcircuit/run';
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/run';
     console.debug(startShortCircuitAnanysisUrl);
-    return backendFetch(startShortCircuitAnanysisUrl, { method: 'put' }).then((response) =>
-        response.ok
-            ? response
-            : response.text().then((text) => Promise.reject(text))
+    return backendFetch(startShortCircuitAnanysisUrl, { method: 'put' }).then(
+        (response) =>
+            response.ok
+                ? response
+                : response.text().then((text) => Promise.reject(text))
     );
 }
 
 export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
-    // TODO
-    return ShortCircuit
+    console.info(
+        'Fetching short circuit analysis status on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return Promise.resolve(0);
+        }
+    });
 }
 
 export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
-    // TODO
+    console.info(
+        'Fetching short circuit analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/result';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) return response.json();
+        throw new Error(response.status + ' ' + response.statusText);
+    });
 }
-
 
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');
