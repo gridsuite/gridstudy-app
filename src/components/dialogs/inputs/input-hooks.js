@@ -266,9 +266,7 @@ export const useCountryValue = (props) => {
             );
         } catch (error) {
             // fallback to english if no localised list found
-            return require('localized-countries')(
-                require('localized-countries/data/en')
-            );
+            return englishCountriesModule;
         }
     }, [languageLocal]);
 
