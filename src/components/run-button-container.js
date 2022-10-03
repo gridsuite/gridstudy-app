@@ -225,6 +225,7 @@ export function RunButtonContainer({
         () => [
             runnable.LOADFLOW,
             runnable.SECURITY_ANALYSIS,
+            runnable.SHORT_CIRCUITS_ANALYSIS,
             runnable.SENSITIVITY_ANALYSIS,
             runnable.SHORT_CIRCUIT_ANALYSIS,
         ],
