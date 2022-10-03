@@ -74,10 +74,6 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const equipmentPath = '2-windings-transformers';
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (twt) => {
         return {
             equipmentId: twt.id + '(1)',
@@ -101,7 +97,6 @@ const TwoWindingsTransformerCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -254,7 +249,7 @@ const TwoWindingsTransformerCreationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 
