@@ -255,6 +255,7 @@ export const useCountryValue = (props) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [code, setCode] = useState(props.defaultCodeValue);
 
+    // supposed cached by node.js
     const englishCountriesModule = require('localized-countries')(
         require('localized-countries/data/en')
     );
@@ -268,7 +269,7 @@ export const useCountryValue = (props) => {
             // fallback to english if no localised list found
             return englishCountriesModule;
         }
-    }, [languageLocal]);
+    }, [languageLocal, englishCountriesModule]);
 
     useEffect(() => {
         //We only need to search for the code if we only have the label
