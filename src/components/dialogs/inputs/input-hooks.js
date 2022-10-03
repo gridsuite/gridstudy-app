@@ -520,6 +520,7 @@ export const useTableValues = ({
     inputForm,
     defaultValues,
     isReactiveCapabilityCurveOn,
+    disabled = false,
 }) => {
     const [values, setValues] = useState([]);
     const classes = useStyles();
@@ -596,12 +597,14 @@ export const useTableValues = ({
                             index={idx}
                             inputForm={inputForm}
                             isFieldRequired={isReactiveCapabilityCurveOn}
+                            disabled={disabled}
                         />
                         <Grid item xs={1}>
                             <IconButton
                                 className={classes.icon}
                                 key={id + idx}
                                 onClick={() => handleDeleteItem(idx)}
+                                disabled={disabled}
                             >
                                 <DeleteIcon />
                             </IconButton>
@@ -612,6 +615,7 @@ export const useTableValues = ({
                                     className={classes.icon}
                                     key={id + idx}
                                     onClick={() => handleAddValue()}
+                                    disabled={disabled}
                                 >
                                     <AddIcon />
                                 </IconButton>
@@ -631,6 +635,7 @@ export const useTableValues = ({
         inputForm,
         tableHeadersIds,
         isReactiveCapabilityCurveOn,
+        disabled,
     ]);
 
     return [values, field];
