@@ -220,8 +220,12 @@ const GeneratorCreationDialog = ({
             label: 'ReactiveCapabilityCurve',
             validation: fieldRequired,
             inputForm: inputForm,
-            defaultValue: !formValues?.minMaxReactiveLimits,
+            defaultValue: formValues?.reactiveCapabilityCurve ?? true,
         });
+
+    useEffect(() => {
+        console.log(formValues)
+    }, [formValues]);
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
         label: 'MinimumReactivePower',
@@ -265,7 +269,7 @@ const GeneratorCreationDialog = ({
         label: 'VoltageRegulationText',
         validation: fieldRequired,
         inputForm: inputForm,
-        defaultValue: formValues?.voltageRegulatorOn ?? false,
+        defaultValue: formValues?.voltageRegulationOn ?? false,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
