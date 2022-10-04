@@ -81,7 +81,7 @@ export const NetworkModificationTreePane = ({
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
 
@@ -155,6 +155,30 @@ export const NetworkModificationTreePane = ({
             }
         }
     }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeUpdated'
+            ) {
+                if (
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) => nodeId === selectedNodeIdForCopy
+                    )
+                ) {
+                    setSelectedNodeIdForCopy(null);
+                    snackInfo('', 'invalidateCopyPastOfNode');
+                }
+            }
+        }
+    }, [
+        studyUuid,
+        studyUpdatedForce,
+        updateNodes,
+        selectedNodeIdForCopy,
+        snackInfo,
+    ]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
