@@ -68,10 +68,6 @@ const LoadModificationDialog = ({
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     useEffect(() => {
         if (!equipmentOptionsPromise) return;
         equipmentOptionsPromise.then((values) => {
@@ -197,7 +193,7 @@ const LoadModificationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

@@ -776,8 +776,116 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     });
 }
 
-export function fetchContingencyLists(listIds) {
-    console.info('Fetching contingency lists');
+function getSensitivityAnalysisQueryParams(
+    variablesFiltersUuids,
+    contingencyListUuids,
+    branchFiltersUuids
+) {
+    if (
+        variablesFiltersUuids.length > 0 ||
+        contingencyListUuids.length > 0 ||
+        branchFiltersUuids.length > 0
+    ) {
+        const urlSearchParams = new URLSearchParams();
+        variablesFiltersUuids.forEach((variablesFiltersUuid) =>
+            urlSearchParams.append(
+                'variablesFiltersListUuid',
+                variablesFiltersUuid
+            )
+        );
+        contingencyListUuids.forEach((contingencyListUuid) =>
+            urlSearchParams.append('contingencyListUuid', contingencyListUuid)
+        );
+        branchFiltersUuids.forEach((branchFiltersUuid) =>
+            urlSearchParams.append('branchFiltersListUuid', branchFiltersUuid)
+        );
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
+export function startSensitivityAnalysis(
+    studyUuid,
+    currentNodeUuid,
+    variablesFiltersUuids,
+    contingencyListUuids,
+    branchFiltersUuids
+) {
+    console.info(
+        'Running sensi on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/run' +
+        getSensitivityAnalysisQueryParams(
+            variablesFiltersUuids,
+            contingencyListUuids,
+            branchFiltersUuids
+        );
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+}
+
+export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        'Stopping sensitivity analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const stopSensitivityAnalysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/stop';
+    console.debug(stopSensitivityAnalysisUrl);
+    return backendFetch(stopSensitivityAnalysisUrl, { method: 'put' });
+}
+
+export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        'Fetching sensitivity analysis status on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return Promise.resolve(0);
+        }
+    });
+}
+
+export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
+    console.info(
+        'Fetching sensitivity analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/result';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) return response.json();
+        throw new Error(response.status + ' ' + response.statusText);
+    });
+}
+
+export function fetchContingencyAndFiltersLists(listIds) {
+    console.info('Fetching contingency and filters lists');
     const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         '/v1/elements?strictMode=false&ids=' +

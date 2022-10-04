@@ -87,10 +87,6 @@ const LineAttachToVoltageLevelDialog = ({
     const [loadingVoltageLevelOptions, setLoadingVoltageLevelOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
 
     const [attachmentLine, setAttachmentLine] = useState(null);
@@ -380,7 +376,7 @@ const LineAttachToVoltageLevelDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

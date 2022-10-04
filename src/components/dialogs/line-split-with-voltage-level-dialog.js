@@ -86,10 +86,6 @@ const LineSplitWithVoltageLevelDialog = ({
     const [loadingVoltageLevelOptions, setLoadingVoltageLevelOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (lineSplit) => {
         return {
             lineToSplitId: lineSplit.id + '(1)',
@@ -105,7 +101,6 @@ const LineSplitWithVoltageLevelDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -358,7 +353,7 @@ const LineSplitWithVoltageLevelDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 
