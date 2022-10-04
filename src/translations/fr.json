@@ -424,7 +424,7 @@
     "LineSplitWithVoltageLevel": "Créer une coupure",
     "LineToSplit": "Liaison coupée",
     "LineAttachToVoltageLevel": "Créer un piquage",
-    "LineAttachToSplitLine": "Piquage en coupure",
+    "LinesAttachToSplitLines": "Piquage en coupure",
     "LineToAttachTo": "Liaison piquée",
     "LengthPercentage": "% long.",
     "OutOfBoundsPercentage": "Pourcentage en dehors des limites",

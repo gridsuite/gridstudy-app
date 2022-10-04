@@ -423,7 +423,7 @@
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
     "LineToSplit": "Existing line",
     "LineAttachToVoltageLevel": "Attach a line to another line",
-    "LineAttachToSplitLine": "Attaching lines to splitting lines",
+    "LinesAttachToSplitLines": "Attaching lines to splitting lines",
     "LineToAttachTo": "Existing line",
     "Percentage": "% long",
     "OutOfBoundsPercentage": "Percentage out of bounds",

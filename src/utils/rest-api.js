@@ -1759,30 +1759,30 @@ export function attachLine(
     );
 }
 
-export function attachLineToSplitLine(
+export function linesAttachToSplitLines(
     studyUuid,
     currentNodeUuid,
     modificationUuid,
     lineToAttachTo1Id,
     lineToAttachTo2Id,
     attachedLineId,
-    existingVoltageLevelId,
-    bbsOrBusId,
-    newLine1Id,
-    newLine1Name,
-    newLine2Id,
-    newLine2Name
+    voltageLevelId,
+    bbsBusId,
+    replacingLine1Id,
+    replacingLine1Name,
+    replacingLine2Id,
+    replacingLine2Name
 ) {
     const body = JSON.stringify({
         lineToAttachTo1Id,
         lineToAttachTo2Id,
         attachedLineId,
-        existingVoltageLevelId,
-        bbsOrBusId,
-        newLine1Id,
-        newLine1Name,
-        newLine2Id,
-        newLine2Name,
+        voltageLevelId,
+        bbsBusId,
+        replacingLine1Id,
+        replacingLine1Name,
+        replacingLine2Id,
+        replacingLine2Name,
     });
 
     let lineAttachUrl;
@@ -1792,12 +1792,12 @@ export function attachLineToSplitLine(
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/modifications/' +
             encodeURIComponent(modificationUuid) +
-            '/line-attach-to-split-line';
+            '/lines-attach-to-split-lines';
     } else {
         console.info('Attaching lines to splitting lines', body);
         lineAttachUrl =
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/line-attach-to-split-line';
+            '/network-modification/lines-attach-to-split-lines';
     }
 
     return backendFetch(lineAttachUrl, {

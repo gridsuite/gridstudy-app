@@ -19,19 +19,16 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
 import { gridItem, GridSection, compareById } from './dialogUtils';
-import { attachLineToSplitLine } from '../../utils/rest-api';
+import { linesAttachToSplitLines } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import EditIcon from '@mui/icons-material/Edit';
-import { makeVoltageLevelCreationParams } from './line-split-or-attach-utils';
-import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import { Box } from '@mui/system';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -45,7 +42,7 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * @param substationOptionsPromise Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
  */
-const LineAttachToSplitLineDialog = ({
+const LinesAttachToSplitLinesDialog = ({
     open,
     onClose,
     lineOptionsPromise,
@@ -121,17 +118,27 @@ const LineAttachToSplitLineDialog = ({
 
     const extractDefaultVoltageLevelId = (fv) => {
         if (fv) {
-            if (fv.existingVoltageLevelId) return fv.existingVoltageLevelId;
-            if (fv.mayNewVoltageLevelInfos)
-                return fv.mayNewVoltageLevelInfos.equipmentId;
+            if (fv.voltageLevelId) return fv.voltageLevelId;
         }
         return '';
     };
     const defaultVoltageLevelId = extractDefaultVoltageLevelId(formValues);
 
     const formValueLineTo1AttachId = useMemo(() => {
-        return formValues?.lineToAttachToId
-            ? { id: formValues?.lineToAttachToId }
+        return formValues?.lineToAttachTo1Id
+            ? { id: formValues?.lineToAttachTo1Id }
+            : { id: '' };
+    }, [formValues]);
+
+    const formValueLineTo2AttachId = useMemo(() => {
+        return formValues?.lineToAttachTo2Id
+            ? { id: formValues?.lineToAttachTo2Id }
+            : { id: '' };
+    }, [formValues]);
+
+    const formValueAttachedLineId = useMemo(() => {
+        return formValues?.attachedLineId
+            ? { id: formValues?.attachedLineId }
             : { id: '' };
     }, [formValues]);
 
@@ -145,7 +152,7 @@ const LineAttachToSplitLineDialog = ({
         getLabel: getId,
         defaultValue:
             lineOptions.find(
-                (value) => value.id === formValues?.lineToAttachToId
+                (value) => value.id === formValues?.lineToAttachTo1Id
             ) || formValueLineTo1AttachId,
         loading: loadingLineOptions,
     });
@@ -160,8 +167,8 @@ const LineAttachToSplitLineDialog = ({
         getLabel: getId,
         defaultValue:
             lineOptions.find(
-                (value) => value.id === formValues?.lineToAttachToId
-            ) || formValueLineTo1AttachId,
+                (value) => value.id === formValues?.lineToAttachTo2Id
+            ) || formValueLineTo2AttachId,
         loading: loadingLineOptions,
     });
 
@@ -175,29 +182,28 @@ const LineAttachToSplitLineDialog = ({
         getLabel: getId,
         defaultValue:
             lineOptions.find(
-                (value) => value.id === formValues?.lineToAttachToId
-            ) || formValueLineTo1AttachId,
+                (value) => value.id === formValues?.attachedLineId
+            ) || formValueAttachedLineId,
         loading: loadingLineOptions,
     });
 
-    const [voltageLevelOrId, voltageLevelIdField, setVoltageLevelOrId] =
-        useAutocompleteField({
-            id: 'VoltageLevelId',
-            label: 'AttachedVoltageLevelId',
-            validation: { isFieldRequired: true },
-            inputForm: inputForm,
-            values: allVoltageLevelOptions,
-            allowNewValue: true,
-            getLabel: getId,
-            defaultValue: defaultVoltageLevelId,
-            selectedValue:
-                formValues && allVoltageLevelOptions
-                    ? allVoltageLevelOptions.find(
-                          (value) => value.id === defaultVoltageLevelId
-                      )
-                    : '',
-            loading: loadingVoltageLevelOptions,
-        });
+    const [voltageLevelOrId, voltageLevelIdField] = useAutocompleteField({
+        id: 'VoltageLevelId',
+        label: 'AttachedVoltageLevelId',
+        validation: { isFieldRequired: true },
+        inputForm: inputForm,
+        values: allVoltageLevelOptions,
+        allowNewValue: true,
+        getLabel: getId,
+        defaultValue: defaultVoltageLevelId,
+        selectedValue:
+            formValues && allVoltageLevelOptions
+                ? allVoltageLevelOptions.find(
+                      (value) => value.id === defaultVoltageLevelId
+                  )
+                : '',
+        loading: loadingVoltageLevelOptions,
+    });
     const voltageLevelOrIdRef = useRef(voltageLevelOrId);
 
     const [busbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
@@ -211,7 +217,7 @@ const LineAttachToSplitLineDialog = ({
             values: busbarSectionOptions,
             allowNewValue: true,
             getLabel: getId,
-            defaultValue: formValues?.bbsOrBusId || '',
+            defaultValue: formValues?.bbsBusId || '',
             selectedValue: formValues
                 ? busbarSectionOptions.find(
                       (value) => value.id === formValues.bbsOrBusId
@@ -252,74 +258,47 @@ const LineAttachToSplitLineDialog = ({
         }
     }, [voltageLevelOrId, bobbsCb, setBbsOrNodeId]);
 
-    // const voltageLevelToEdit = useMemo(() => {
-    //     if (
-    //         typeof voltageLevelOrId === 'string' &&
-    //         newVoltageLevel &&
-    //         newVoltageLevel.equipmentId !== voltageLevelOrId
-    //     ) {
-    //         const ret = makeVoltageLevelCreationParams(
-    //             voltageLevelOrId,
-    //             bbsOrNodeId?.id || bbsOrNodeId,
-    //             newVoltageLevel
-    //         );
-    //         return ret;
-    //     }
-
-    //     if (!newVoltageLevel && formValues?.mayNewVoltageLevelInfos) {
-    //         return formValues?.mayNewVoltageLevelInfos;
-    //     }
-
-    //     return newVoltageLevel;
-    // }, [voltageLevelOrId, bbsOrNodeId, newVoltageLevel, formValues]);
-
     const [newLine1Id, newLine1IdField] = useTextValue({
-        id: 'newLine1Id',
+        id: 'replacingLine1Id',
         label: 'Line1ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        defaultValue: formValues?.newLine1Id,
+        defaultValue: formValues?.replacingLine1Id,
     });
 
     const [newLine2Id, newLine2IdField] = useTextValue({
-        id: 'newLine2Id',
+        id: 'replacingLine2Id',
         label: 'Line2ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        defaultValue: formValues?.newLine2Id,
+        defaultValue: formValues?.replacingLine2Id,
     });
 
     const [newLine1Name, newLine1NameField] = useTextValue({
-        id: 'newLine1Name',
+        id: 'replacingLine1Name',
         label: 'Line1Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        defaultValue: formValues?.newLine1Name,
+        defaultValue: formValues?.replacingLine1Name,
     });
 
     const [newLine2Name, newLine2NameField] = useTextValue({
-        id: 'newLine2Name',
+        id: 'replacingLine2Name',
         label: 'Line2Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        defaultValue: formValues?.newLine2Name,
+        defaultValue: formValues?.replacingLine2Name,
     });
-
-    // const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            attachLineToSplitLine(
+            linesAttachToSplitLines(
                 studyUuid,
                 currentNodeUuid,
                 editData ? editData.uuid : undefined,
                 lineToAttachTo1.id || lineToAttachTo1,
                 lineToAttachTo2.id || lineToAttachTo2,
                 attachedLine.id || attachedLine,
-                // newVoltageLevel,
-                // newVoltageLevel
-                //     ? null
-                //     : voltageLevelOrId?.id || voltageLevelOrId,
                 voltageLevelOrId?.id || voltageLevelOrId,
                 bbsOrNodeId?.id || bbsOrNodeId,
                 newLine1Id,
@@ -349,52 +328,6 @@ const LineAttachToSplitLineDialog = ({
         handleClose();
     };
 
-    // const onVoltageLevelDo = useCallback(
-    //     ({
-    //         studyUuid,
-    //         currentNodeUuid,
-    //         voltageLevelId,
-    //         voltageLevelName,
-    //         nominalVoltage,
-    //         substationId,
-    //         busbarSections,
-    //         busbarConnections,
-    //     }) => {
-    //         return new Promise(() => {
-    //             const preparedVoltageLevel = {
-    //                 equipmentId: voltageLevelId,
-    //                 equipmentName: voltageLevelName,
-    //                 nominalVoltage: nominalVoltage,
-    //                 substationId: substationId,
-    //                 busbarSections: busbarSections,
-    //                 busbarConnections: busbarConnections,
-    //             };
-    //             setNewVoltageLevel(preparedVoltageLevel);
-    //             setVoltageLevelOrId(voltageLevelId);
-    //             voltageLevelOrIdRef.current = voltageLevelId;
-    //             if (
-    //                 busbarSections.find(
-    //                     (bbs) => bbs.id === (bbsOrNodeId?.id || bbsOrNodeId)
-    //                 )
-    //             ) {
-    //                 setBusOrBusbarSectionOptions(busbarSections);
-    //             } else {
-    //                 setBusOrBusbarSectionOptions(busbarSections);
-    //                 setBbsOrNodeId(busbarSections[0].id);
-    //             }
-    //         });
-    //     },
-    //     [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId]
-    // );
-
-    // const onVoltageLevelDialogClose = () => {
-    //     setVoltageLevelDialogOpen(false);
-    // };
-
-    // const openVoltageLevelDialog = () => {
-    //     setVoltageLevelDialogOpen(true);
-    // };
-
     const lineSubstation = (isFirst, line) => {
         if (!line) return '';
         let vlId = '';
@@ -420,13 +353,13 @@ const LineAttachToSplitLineDialog = ({
                 fullWidth
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="dialog-attach-voltage-level-to-a-line"
+                aria-labelledby="dialog-attach-lines-to-split-lines"
                 maxWidth={'md'}
             >
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
                         <Grid item xs={12}>
-                            <FormattedMessage id="LineAttachToVoltageLevel" />
+                            <FormattedMessage id="LinesAttachToSplitLines" />
                         </Grid>
                     </Grid>
                 </DialogTitle>
@@ -465,24 +398,13 @@ const LineAttachToSplitLineDialog = ({
                     <Grid container spacing={2}>
                         {gridItem(voltageLevelIdField)}
                         {gridItem(bbsOrNodeIdField)}
-                        {/* {gridItem(
-                            <Button
-                                onClick={openVoltageLevelDialog}
-                                startIcon={
-                                    newVoltageLevel ? <EditIcon /> : <AddIcon />
-                                }
-                            >
-                                <Typography align="left">
-                                    <FormattedMessage id="NewVoltageLevel" />
-                                </Typography>
-                            </Button>
-                        )} */}
                     </Grid>
                     <GridSection title="ReplacingLines" />
                     <Grid container spacing={2}>
                         {gridItem(newLine1IdField, 6)}
                         {gridItem(newLine1NameField, 6)}
                     </Grid>
+
                     <Grid container spacing={2}>
                         {gridItem(newLine2IdField, 6)}
                         {gridItem(newLine2NameField, 6)}
@@ -496,22 +418,12 @@ const LineAttachToSplitLineDialog = ({
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
-                {/* {voltageLevelDialogOpen && (
-                    <VoltageLevelCreationDialog
-                        open={true}
-                        onClose={onVoltageLevelDialogClose}
-                        currentNodeUuid={currentNodeUuid}
-                        substationOptionsPromise={substationOptionsPromise}
-                        onCreateVoltageLevel={onVoltageLevelDo}
-                        editData={voltageLevelToEdit}
-                    />
-                )} */}
             </Dialog>
         </>
     );
 };
 
-LineAttachToSplitLineDialog.propTypes = {
+LinesAttachToSplitLinesDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
@@ -531,4 +443,4 @@ LineAttachToSplitLineDialog.propTypes = {
     editData: PropTypes.object,
 };
 
-export default LineAttachToSplitLineDialog;
+export default LinesAttachToSplitLinesDialog;

@@ -60,7 +60,7 @@ import {
     setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
-import LineAttachToSplitLineDialog from '../../dialogs/line-attach-to-split-line-dialog';
+import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -328,11 +328,11 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
-        LINE_ATTACH_TO_SPLIT_LINE: {
-            label: 'LineAttachToSplitLine',
+        LINES_ATTACH_TO_SPLIT_LINES: {
+            label: 'LinesAttachToSplitLines',
             dialog: () =>
                 adapt(
-                    LineAttachToSplitLineDialog,
+                    LinesAttachToSplitLinesDialog,
                     withVLs,
                     withLines,
                     withSubstations
@@ -596,17 +596,21 @@ const NetworkModificationNodeEditor = () => {
                                 className={classes.list}
                                 onChecked={setSelectedItems}
                                 values={modifications}
-                                itemRenderer={(props) => (
-                                    <ModificationListItem
-                                        key={props.item.uuid}
-                                        onEdit={doEditModification}
-                                        isDragging={isDragging}
-                                        network={network}
-                                        isOneNodeBuilding={isAnyNodeBuilding}
-                                        {...props}
-                                        disabled={isLoading()}
-                                    />
-                                )}
+                                itemRenderer={(props) => {
+                                    return (
+                                        <ModificationListItem
+                                            key={props.item.uuid}
+                                            onEdit={doEditModification}
+                                            isDragging={isDragging}
+                                            network={network}
+                                            isOneNodeBuilding={
+                                                isAnyNodeBuilding
+                                            }
+                                            {...props}
+                                            disabled={isLoading()}
+                                        />
+                                    );
+                                }}
                                 toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}
