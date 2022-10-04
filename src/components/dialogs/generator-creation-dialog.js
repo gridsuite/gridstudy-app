@@ -245,7 +245,7 @@ const GeneratorCreationDialog = ({
             tableHeadersIds: headerIds,
             inputForm: inputForm,
             Field: ReactiveCapabilityCurveTable,
-            defaultValues: formValues?.reactiveCapabilityCurvePoints,
+            defaultValues: formValues?.points,
             isRequired: false,
             isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
         });
