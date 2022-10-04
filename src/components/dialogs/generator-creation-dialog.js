@@ -223,10 +223,6 @@ const GeneratorCreationDialog = ({
             defaultValue: formValues?.reactiveCapabilityCurve ?? true,
         });
 
-    useEffect(() => {
-        console.log(formValues)
-    }, [formValues]);
-
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
         label: 'MinimumReactivePower',
         validation: { isFieldRequired: reactivePowerRequired },
