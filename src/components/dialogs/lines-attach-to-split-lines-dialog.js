@@ -28,7 +28,6 @@ import { linesAttachToSplitLines } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import { Box } from '@mui/system';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
