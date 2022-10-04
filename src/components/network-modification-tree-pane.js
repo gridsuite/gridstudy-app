@@ -172,13 +172,7 @@ export const NetworkModificationTreePane = ({
                 }
             }
         }
-    }, [
-        studyUuid,
-        studyUpdatedForce,
-        updateNodes,
-        selectedNodeIdForCopy,
-        snackInfo,
-    ]);
+    }, [studyUpdatedForce, updateNodes, selectedNodeIdForCopy, snackInfo]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
