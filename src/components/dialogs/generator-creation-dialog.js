@@ -228,7 +228,7 @@ const GeneratorCreationDialog = ({
         validation: { isFieldRequired: reactivePowerRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.minMaxReactiveLimits?.minimumReactivePower,
+        defaultValue: formValues?.minimumReactivePower,
     });
 
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
@@ -236,7 +236,7 @@ const GeneratorCreationDialog = ({
         validation: { isFieldRequired: reactivePowerRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.minMaxReactiveLimits?.maximumReactivePower,
+        defaultValue: formValues?.maximumReactivePower,
     });
 
     const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
