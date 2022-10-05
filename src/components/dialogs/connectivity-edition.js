@@ -57,7 +57,7 @@ export function makeRefreshBusOrBusbarSectionsCallback(
 
 function ided(objOrId) {
     if (!objOrId) return null;
-    if (Object.hasOwn(objOrId, 'id')) return objOrId;
+    if (typeof objOrId?.id === 'string') return objOrId;
 
     return { id: objOrId };
 }
