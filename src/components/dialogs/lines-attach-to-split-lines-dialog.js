@@ -47,7 +47,6 @@ const LinesAttachToSplitLinesDialog = ({
     lineOptionsPromise,
     voltageLevelOptionsPromise,
     currentNodeUuid,
-    substationOptionsPromise,
     editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -428,10 +427,6 @@ LinesAttachToSplitLinesDialog.propTypes = {
     lineOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
     voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    substationOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
