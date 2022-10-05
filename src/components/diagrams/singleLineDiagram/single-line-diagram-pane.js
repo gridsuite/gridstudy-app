@@ -434,6 +434,7 @@ export function SingleLineDiagramPane({
                 <div style={{ flexDirection: 'row', display: 'inline-flex' }}>
                     {displayedSLD.map((sld) => (
                         <SingleLineDiagram
+                            key={sld.svgUrl}
                             onClose={handleCloseSLD}
                             onNextVoltageLevelClick={handleOpenView}
                             onBreakerClick={handleUpdateSwitchState}
