@@ -15,8 +15,6 @@ import { getIdOrSelf } from './dialogUtils';
 import { useSelector } from 'react-redux';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
-const validationObj = { isFieldRequired: true };
-
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
  * Usable firstly for giving to hereunder ConnectivityEdition.
@@ -57,7 +55,7 @@ export function makeRefreshBusOrBusbarSectionsCallback(
 
 function ided(objOrId) {
     if (!objOrId) return null;
-    if (Object.hasOwn(objOrId, 'id')) return objOrId;
+    if (typeof objOrId?.id === 'string') return objOrId;
 
     return { id: objOrId };
 }
@@ -77,6 +75,9 @@ function ided(objOrId) {
 export const useConnectivityValue = ({
     label,
     id,
+    validation = {
+        isFieldRequired: true,
+    },
     inputForm,
     voltageLevelOptionsPromise,
     currentNodeUuid,
@@ -105,7 +106,7 @@ export const useConnectivityValue = ({
     const [voltageLevelObjOrId, voltageLevelField] = useAutocompleteField({
         id: id ? id + '/voltage-level' : 'voltage-level',
         label: 'VoltageLevel',
-        validation: validationObj,
+        validation: validation,
         values: voltageLevelOptions,
         defaultValue: voltageLevelIdDefaultValue,
         getLabel: getIdOrSelf,
@@ -117,7 +118,7 @@ export const useConnectivityValue = ({
         useAutocompleteField({
             id: id ? id + '/bus-bar-bus' : 'bus-bar-bus',
             label: 'BusBarBus',
-            validation: validationObj,
+            validation: validation,
             values: busOrBusbarSectionOptions,
             defaultValue: bbsIdInitOver,
             getLabel: getIdOrSelf,
