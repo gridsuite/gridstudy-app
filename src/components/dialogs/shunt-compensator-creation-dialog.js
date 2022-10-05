@@ -68,10 +68,6 @@ const ShuntCompensatorCreationDialog = ({
 
     const equipmentPath = 'shunt-compensators';
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (shuntCompensator) => {
         return {
             equipmentId: shuntCompensator.id + '(1)',
@@ -90,7 +86,6 @@ const ShuntCompensatorCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -213,7 +208,7 @@ const ShuntCompensatorCreationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 
