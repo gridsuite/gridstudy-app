@@ -698,6 +698,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 setSvgPreferredHeight(svgHeight);
             }
 
+            let viewboxMaxWidth =
+                svgType === SvgType.VOLTAGE_LEVEL
+                    ? maxWidthVoltageLevel
+                    : maxWidthSubstation;
+            let viewboxMaxHeight =
+                svgType === SvgType.VOLTAGE_LEVEL
+                    ? maxHeightVoltageLevel
+                    : maxHeightSubstation;
+
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
@@ -719,15 +728,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             // PowSyBl SLD introduced server side calculated SVG viewbox
             // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
             draw.node.firstChild.removeAttribute('viewBox');
-
-            let viewboxMaxWidth =
-                svgType === SvgType.VOLTAGE_LEVEL
-                    ? maxWidthVoltageLevel
-                    : maxWidthSubstation;
-            let viewboxMaxHeight =
-                svgType === SvgType.VOLTAGE_LEVEL
-                    ? maxHeightVoltageLevel
-                    : maxHeightSubstation;
 
             if (svgWidth > viewboxMaxWidth || svgHeight > viewboxMaxHeight) {
                 //The svg is too big, display only the top left corner because that's
@@ -751,7 +751,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     });
                 }
             }
-
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = 'move';
             });
