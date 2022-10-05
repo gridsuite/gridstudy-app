@@ -596,7 +596,7 @@ const NetworkModificationNodeEditor = () => {
                                 className={classes.list}
                                 onChecked={setSelectedItems}
                                 values={modifications}
-                                itemRenderer={(props) => {
+                                itemRenderer={(props) => (
                                     <ModificationListItem
                                         key={props.item.uuid}
                                         onEdit={doEditModification}
@@ -605,8 +605,8 @@ const NetworkModificationNodeEditor = () => {
                                         isOneNodeBuilding={isAnyNodeBuilding}
                                         {...props}
                                         disabled={isLoading()}
-                                    />;
-                                }}
+                                    />
+                                )}
                                 toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}
