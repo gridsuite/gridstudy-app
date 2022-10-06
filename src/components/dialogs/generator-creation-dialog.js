@@ -245,7 +245,7 @@ const GeneratorCreationDialog = ({
             tableHeadersIds: headerIds,
             inputForm: inputForm,
             Field: ReactiveCapabilityCurveTable,
-            defaultValues: formValues?.points,
+            defaultValues: formValues?.reactiveCapabilityCurvePoints,
             isRequired: false,
             isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
         });
@@ -381,7 +381,7 @@ const GeneratorCreationDialog = ({
                 maximumActivePower,
                 ratedNominalPower ? ratedNominalPower : null,
                 activePowerSetpoint,
-                reactivePowerSetpoint ? reactivePowerSetpoint : null,
+                reactivePowerSetpoint ?? null,
                 voltageRegulation,
                 voltageSetpoint ? voltageSetpoint : null,
                 connectivity.voltageLevel.id,
