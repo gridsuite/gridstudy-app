@@ -30,6 +30,7 @@ const editableModificationTypes = new Set([
     'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
     'LINE_ATTACH_TO_VOLTAGE_LEVEL',
     'GENERATOR_MODIFICATION',
+    'LINES_ATTACH_TO_SPLIT_LINES',
 ]);
 
 const equipmentModificationModificationsType = new Set([
@@ -79,6 +80,8 @@ export const ModificationListItem = ({
             return modif.lineToSplitId;
         } else if (modif.type === 'LINE_ATTACH_TO_VOLTAGE_LEVEL') {
             return modif.lineToAttachToId;
+        } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
+            return modif.attachedLineId;
         } else if (equipmentModificationModificationsType.has(modif.type)) {
             return modif.equipmentId;
         } else if (useName && modif.equipmentName) {
