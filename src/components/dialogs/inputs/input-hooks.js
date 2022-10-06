@@ -23,6 +23,7 @@ import {
     Select,
     TextField,
     Tooltip,
+    Button,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
@@ -59,6 +60,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import RegulatingTerminalEdition, {
     makeRefreshRegulatingTerminalSectionsCallback,
 } from '../regulating-terminal-edition';
+import Papa from 'papaparse';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -473,6 +475,7 @@ export const useRegulatingTerminalValue = ({
     ]);
 
     const setVoltageLevel = useCallback((newVal) => {
+        console.log(newVal);
         setRegulatingTerminal((oldVal) => {
             return { ...oldVal, voltageLevel: newVal };
         });
@@ -497,16 +500,22 @@ export const useRegulatingTerminalValue = ({
                 }
                 direction={direction}
                 voltageLevelEquipmentsCallback={makeRefreshRegulatingTerminalSectionsCallback()}
+                equipmentSectionTypeDefaultValue={
+                    equipmentSectionTypeDefaultValue
+                }
+                equipmentSectionIdDefaultValue={equipmentSectionIdDefaultValue}
             />
         );
     }, [
-        regulatingTerminal,
         disabled,
-        direction,
-        setEquipmentSection,
-        setVoltageLevel,
         voltageLevelOptions,
+        regulatingTerminal,
         voltageLevelsEquipments,
+        direction,
+        equipmentSectionTypeDefaultValue,
+        equipmentSectionIdDefaultValue,
+        setVoltageLevel,
+        setEquipmentSection,
     ]);
 
     return [regulatingTerminal, render];
@@ -749,4 +758,76 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     }, [studyUuid, name, validName, triggerReset]);
 
     return [error, field, isValidName, name];
+};
+
+export const useCSVReader = ({ label, header }) => {
+    const [selectedFile, setSelectedFile] = useState();
+    const intl = useIntl();
+    const [isFileOk, setIsFileOk] = useState(false);
+    const [fileError, setFileError] = useState();
+
+    const equals = (a, b) =>
+        a.length === b.length && a.every((v, i) => v === b[i]);
+
+    const handleFileUpload = useCallback((e) => {
+        let files = e.target.files;
+        if (files.size === 0) {
+            setSelectedFile();
+        } else {
+            setSelectedFile(files[0]);
+        }
+    }, []);
+
+    const field = useMemo(() => {
+        return (
+            <>
+                <Button variant="contained" color="primary" component="label">
+                    <FormattedMessage id={label} />
+                    <input
+                        type="file"
+                        name="file"
+                        onChange={(e) => handleFileUpload(e)}
+                        style={{ display: 'none' }}
+                    />
+                </Button>
+                {selectedFile?.name === undefined ? (
+                    <FormattedMessage id="uploadMessage" />
+                ) : (
+                    selectedFile.name
+                )}
+            </>
+        );
+    }, [handleFileUpload, label, selectedFile?.name]);
+
+    useEffect(() => {
+        if (selectedFile && selectedFile.type === 'text/csv') {
+            Papa.parse(selectedFile, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function (results) {
+                    if (equals(header, results.meta.fields)) {
+                        setFileError();
+                        setIsFileOk(true);
+                    } else {
+                        setFileError(
+                            intl.formatMessage({
+                                id: 'InvalidRuleHeader',
+                            })
+                        );
+                        setIsFileOk(false);
+                    }
+                },
+            });
+        } else if (selectedFile) {
+            setFileError(
+                intl.formatMessage({
+                    id: 'InvalidRuleUploadType',
+                })
+            );
+            setIsFileOk(false);
+        } else {
+            setFileError();
+        }
+    }, [selectedFile, intl, header]);
+    return [selectedFile, setSelectedFile, field, fileError, isFileOk];
 };

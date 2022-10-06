@@ -48,6 +48,8 @@ const RegulatingTerminalEdition = ({
     direction,
     disabled = false,
     voltageLevelEquipmentsCallback,
+    equipmentSectionTypeDefaultValue,
+    equipmentSectionIdDefaultValue,
 }) => {
     const classes = useStyles();
 
@@ -89,14 +91,38 @@ const RegulatingTerminalEdition = ({
 
     useEffect(() => {
         if (voltageLevelEquipmentsCallback) {
-            voltageLevelEquipmentsCallback(
-                voltageLevelsEquipments.find(
-                    (vlEquipment) =>
-                        vlEquipment?.voltageLevel?.id ===
-                        regulatingTerminalValue?.voltageLevel?.id
-                ),
-                setEquipmentsOptions
+            let data = voltageLevelsEquipments.find(
+                (vlEquipment) =>
+                    vlEquipment?.voltageLevel?.id ===
+                    regulatingTerminalValue?.voltageLevel?.id
             );
+
+            if (
+                equipmentSectionIdDefaultValue &&
+                equipmentSectionTypeDefaultValue
+            ) {
+                let isDefaultValueInserted = data?.equipments?.find(
+                    (equipment) =>
+                        equipment.type === equipmentSectionTypeDefaultValue &&
+                        equipment.id === equipmentSectionIdDefaultValue
+                );
+
+                //clear previous inserted default values
+                if (data) {
+                    data.equipments = data?.equipments?.filter(
+                        (equipment) => equipment.isDefaultValue === undefined
+                    );
+                }
+                if (!isDefaultValueInserted) {
+                    data?.equipments?.unshift({
+                        id: equipmentSectionIdDefaultValue,
+                        name: equipmentSectionIdDefaultValue,
+                        type: equipmentSectionTypeDefaultValue,
+                        isDefaultValue: true,
+                    });
+                }
+            }
+            voltageLevelEquipmentsCallback(data, setEquipmentsOptions);
         }
     }, [
         regulatingTerminalValue.voltageLevel,

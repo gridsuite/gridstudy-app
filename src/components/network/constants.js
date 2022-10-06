@@ -32,6 +32,12 @@ export const UPDATE_TYPE = [
     'deletingInProgress',
 ];
 
+export const REGULATION_MODES = [
+    { id: 'FIXED_TAP', label: 'FixedTap' },
+    { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
+    { id: 'ACTIVE_POWER_CONTROL', label: 'ActivePowerControl' },
+];
+
 export function getEnergySourceLabel(energySourceId) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }

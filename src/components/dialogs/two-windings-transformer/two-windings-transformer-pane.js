@@ -1,0 +1,143 @@
+import { Grid, Switch } from '@mui/material';
+import {
+    useDoubleValue,
+    useInputForm,
+    useTextValue,
+} from '../inputs/input-hooks';
+import { useConnectivityValue } from '../connectivity-edition';
+import {
+    filledTextField,
+    gridItem,
+    OhmAdornment,
+    SusceptanceAdornment,
+    VoltageAdornment,
+    MVAPowerAdornment,
+    AmpereAdornment,
+} from '../dialogUtils';
+import makeStyles from '@mui/styles/makeStyles';
+import { FormattedMessage } from 'react-intl';
+import { useState } from 'react';
+
+const useStyles = makeStyles((theme) => ({
+    h3: {
+        marginBottom: 0,
+        paddingBottom: 1,
+    },
+}));
+
+const TwoWindingsTransformerPane = (props) => {
+    const {
+        twoWindingsTransformerIdField,
+        twoWindingsTransformerNameField,
+        seriesResistanceField,
+        seriesReactanceField,
+        magnetizingConductanceField,
+        ratedSField,
+        magnetizingSusceptanceField,
+        ratedVoltage1Field,
+        ratedVoltage2Field,
+        permanentCurrentLimit1Field,
+        permanentCurrentLimit2Field,
+        connectivity1Field,
+        connectivity2Field,
+    } = props;
+
+    const classes = useStyles();
+
+    return (
+        <>
+            <Grid container spacing={2}>
+                {gridItem(twoWindingsTransformerIdField)}
+                {gridItem(twoWindingsTransformerNameField)}
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h3>
+                        <FormattedMessage id="Characteristics" />
+                    </h3>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                {gridItem(seriesResistanceField)}
+                {gridItem(seriesReactanceField)}
+                {gridItem(magnetizingConductanceField)}
+                {gridItem(magnetizingSusceptanceField)}
+                {gridItem(ratedSField)}
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={6}>
+                    <h4 className={classes.h4}>
+                        <FormattedMessage id="Side1" />
+                    </h4>
+                </Grid>
+                <Grid item xs={6}>
+                    <h4 className={classes.h4}>
+                        <FormattedMessage id="Side2" />
+                    </h4>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                {gridItem(ratedVoltage1Field)}
+                {gridItem(ratedVoltage2Field)}
+            </Grid>
+            {/* <br /> */}
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h3 className={classes.h3}>
+                        <FormattedMessage id="Limits" />
+                    </h3>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={6}>
+                    <h4 className={classes.h4}>
+                        <FormattedMessage id="Side1" />
+                    </h4>
+                </Grid>
+                <Grid item xs={6}>
+                    <h4 className={classes.h4}>
+                        <FormattedMessage id="Side2" />
+                    </h4>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                {gridItem(permanentCurrentLimit1Field)}
+                {gridItem(permanentCurrentLimit2Field)}
+            </Grid>
+            {/* <br /> */}
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h3 className={classes.h3}>
+                        <FormattedMessage id="Connectivity" />
+                    </h3>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={6}>
+                    <h4 className={classes.h4}>
+                        <FormattedMessage id="Side1" />
+                    </h4>
+                </Grid>
+                <Grid item xs={6}>
+                    <h4 className={classes.h4}>
+                        <FormattedMessage id="Side2" />
+                    </h4>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item container xs={6} direction="column">
+                    <Grid container direction="column" spacing={2}>
+                        {gridItem(connectivity1Field, 12)}
+                    </Grid>
+                </Grid>
+                <Grid item container direction="column" xs={6}>
+                    <Grid container direction="column" spacing={2}>
+                        {gridItem(connectivity2Field, 12)}
+                    </Grid>
+                </Grid>
+            </Grid>
+        </>
+    );
+};
+
+export default TwoWindingsTransformerPane;

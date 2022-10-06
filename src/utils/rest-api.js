@@ -1608,12 +1608,17 @@ export function createTwoWindingsTransformer(
     seriesReactance,
     magnetizingConductance,
     magnetizingSusceptance,
+    ratedS,
     ratedVoltage1,
     ratedVoltage2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
+    ratioTap,
+    phaseTap,
     isUpdate,
     modificationUuid
 ) {
@@ -1631,6 +1636,28 @@ export function createTwoWindingsTransformer(
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/two-windings-transformers';
     }
+
+    console.log(
+        JSON.stringify({
+            equipmentId: twoWindingsTransformerId,
+            equipmentName: twoWindingsTransformerName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            magnetizingConductance: magnetizingConductance,
+            magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
+            ratedVoltage1: ratedVoltage1,
+            ratedVoltage2: ratedVoltage2,
+            currentLimits1: permanentCurrentLimit1,
+            currentLimits2: permanentCurrentLimit2,
+            voltageLevelId1: voltageLevelId1,
+            busOrBusbarSectionId1: busOrBusbarSectionId1,
+            voltageLevelId2: voltageLevelId2,
+            busOrBusbarSectionId2: busOrBusbarSectionId2,
+            ratioTapChanger: ratioTap,
+            phaseTapChanger: phaseTap,
+        })
+    );
     return backendFetch(createTwoWindingsTransformerUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1644,12 +1671,17 @@ export function createTwoWindingsTransformer(
             seriesReactance: seriesReactance,
             magnetizingConductance: magnetizingConductance,
             magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
             ratedVoltage1: ratedVoltage1,
             ratedVoltage2: ratedVoltage2,
+            currentLimits1: permanentCurrentLimit1,
+            currentLimits2: permanentCurrentLimit2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
+            ratioTapChanger: ratioTap,
+            phaseTapChanger: phaseTap,
         }),
     }).then((response) => {
         return response.ok
