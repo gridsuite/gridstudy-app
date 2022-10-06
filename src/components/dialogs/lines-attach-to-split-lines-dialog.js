@@ -19,7 +19,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
@@ -401,9 +401,7 @@ const LinesAttachToSplitLinesDialog = ({
                     <Grid container spacing={2}>
                         {gridItem(newLine1IdField, 6)}
                         {gridItem(newLine1NameField, 6)}
-                    </Grid>
-
-                    <Grid container spacing={2}>
+                        <Box sx={{ width: '100%' }} />
                         {gridItem(newLine2IdField, 6)}
                         {gridItem(newLine2NameField, 6)}
                     </Grid>
