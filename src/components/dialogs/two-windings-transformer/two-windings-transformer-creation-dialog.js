@@ -637,7 +637,6 @@ const TwoWindingsTransformerCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            console.log(editData);
             let editedRatioTapRows = editData.ratioTapChanger?.steps?.map(
                 (step) => {
                     return {
