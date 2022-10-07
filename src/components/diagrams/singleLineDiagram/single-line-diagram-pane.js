@@ -228,8 +228,18 @@ export function SingleLineDiagramPane({
 
     const dispatch = useDispatch();
 
-    const [closeView, openVoltageLevel, openSubstation] =
-        useSingleLineDiagram();
+    const testChangeStateChange = () => {
+        console.log('CE CALLBACK FONCTIONNE');
+    };
+
+    const [
+        closeView,
+        openVoltageLevel,
+        openSubstation,
+        togglePinSld,
+        minimizeSld,
+        sldState,
+    ] = useSingleLineDiagram(testChangeStateChange);
 
     const location = useLocation();
     const viewsRef = useRef();
@@ -237,6 +247,10 @@ export function SingleLineDiagramPane({
 
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
+
+    useEffect(() => {
+        console.log('USE EFFECT 2', sldState);
+    }, [sldState]);
 
     const updateSld = useCallback((id) => {
         if (id) {
@@ -313,6 +327,17 @@ export function SingleLineDiagramPane({
 
     const toggleState = useCallback(
         (id, type, state) => {
+            console.log('CURRENT STATE ', sldState);
+            if (state === ViewState.MINIMIZED) {
+                minimizeSld(id);
+            }
+            if (state === ViewState.PINNED) {
+                togglePinSld(id);
+            }
+            if (state === ViewState.OPENED) {
+                // if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
+                // else if (type === SvgType.SUBSTATION) openSubstation(id);
+            }
             setViewState((oldValue) => {
                 const newVal = new Map(oldValue);
                 const oldState = oldValue.get(id);
@@ -325,7 +350,7 @@ export function SingleLineDiagramPane({
                 return newVal;
             });
         },
-        [openSubstation, openVoltageLevel]
+        [openSubstation, openVoltageLevel, minimizeSld, togglePinSld, sldState]
     );
 
     const handleCloseSLD = useCallback(

@@ -137,7 +137,7 @@ const StudyPane = ({
     const classes = useStyles();
 
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
-        useSingleLineDiagram(studyUuid);
+        useSingleLineDiagram();
 
     function closeNetworkAreaDiagram() {
         dispatch(fullScreenNetworkAreaDiagramId(null));

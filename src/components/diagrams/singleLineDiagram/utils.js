@@ -6,13 +6,15 @@
  */
 
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { parse, stringify } from 'qs';
 import { SvgType } from './single-line-diagram';
+import { useState } from 'react';
 
 export const ViewState = {
     PINNED: 'pinned',
     MINIMIZED: 'minimized',
+    OPENED: 'opened',
 };
 
 export function getArray(value) {
@@ -22,9 +24,104 @@ export function getArray(value) {
 
 const arrayFormat = 'indices';
 
-export const useSingleLineDiagram = () => {
+export const useSingleLineDiagram = (
+    sldStateChangeCallback = () => console.log('a')
+) => {
+    const [sldState, setSldState] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
+
+    const openSld = useCallback(
+        (type, id) => {
+            const sldToOpenIndex = sldState.findIndex((sld) => sld.id === id);
+
+            // if sld was in state already, and was PINNED or OPENED, nothing happens
+            if (
+                sldToOpenIndex >= 0 &&
+                [ViewState.OPENED, ViewState.PINNED].includes(
+                    sldState[sldToOpenIndex].state
+                )
+            ) {
+                return;
+            }
+            setSldState((oldState) => {
+                const oldSldState = [...oldState];
+                // in the other cases, we will open the targeted sld
+                // previously opened sld is now MINIMIZED
+                const previouslyOpenedSldIndex = oldSldState.findIndex(
+                    (sld) => sld.state === ViewState.OPENED
+                );
+                if (previouslyOpenedSldIndex >= 0) {
+                    oldSldState[previouslyOpenedSldIndex].state =
+                        ViewState.MINIMIZED;
+                }
+
+                // if the target sld was already in the state, hence in MINIMIZED state, we change its state to OPENED
+                if (sldToOpenIndex >= 0) {
+                    oldSldState[sldToOpenIndex].state = ViewState.OPENED;
+                } else {
+                    oldSldState.push({
+                        id: id,
+                        type: type,
+                        state: ViewState.OPENED,
+                    });
+                }
+                console.log('OPENED SLD', oldSldState);
+
+                return oldSldState;
+            });
+        },
+        [sldState]
+    );
+
+    const togglePinSld = useCallback((id) => {
+        setSldState((oldState) => {
+            const oldSldState = [...oldState];
+            // search targeted sld among the sldState
+            const sldToPinToggleIndex = oldSldState.findIndex(
+                (sld) => sld.id === id
+            );
+            if (sldToPinToggleIndex >= 0) {
+                // when found, if was opened, it's now PINNED
+                const sldToPinState = oldSldState[sldToPinToggleIndex].state;
+                if (sldToPinState === ViewState.OPENED) {
+                    oldSldState[sldToPinToggleIndex].state = ViewState.PINNED;
+                } else if (sldToPinState === ViewState.PINNED) {
+                    // if sld is unpinned, the sld that had the state OPENED is now MINIMIZED
+                    const currentlyOpenedSldIndex = oldSldState.findIndex(
+                        (sld) => sld.state === ViewState.OPENED
+                    );
+                    if (currentlyOpenedSldIndex >= 0) {
+                        oldSldState[currentlyOpenedSldIndex].state =
+                            ViewState.MINIMIZED;
+                    }
+                    oldSldState[sldToPinToggleIndex].state = ViewState.OPENED;
+                }
+            }
+            console.log('TOGGLE PIN SLD', oldSldState);
+
+            return oldSldState;
+        });
+    }, []);
+
+    useEffect(() => {
+        console.log(sldStateChangeCallback);
+        console.log('USE EFFECT 1');
+    }, [sldState]);
+
+    const minimizeSld = useCallback((id) => {
+        setSldState((oldState) => {
+            const oldSldState = [...oldState];
+            const sldToMinizeIndex = oldSldState.findIndex(
+                (sld) => sld.id === id
+            );
+            if (sldToMinizeIndex >= 0) {
+                oldSldState[sldToMinizeIndex].state = ViewState.MINIMIZED;
+            }
+            console.log('MINIMIZED SLD', oldSldState);
+            return oldSldState;
+        });
+    }, []);
 
     const addToSearchParams = useCallback(
         (type, id) => {
@@ -52,16 +149,18 @@ export const useSingleLineDiagram = () => {
 
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
+            openSld(SvgType.VOLTAGE_LEVEL, voltageLevelId);
             addToSearchParams(SvgType.VOLTAGE_LEVEL, voltageLevelId);
         },
-        [addToSearchParams]
+        [addToSearchParams, openSld]
     );
 
     const showSubstationDiagram = useCallback(
         (substationId) => {
+            openSld(SvgType.SUBSTATION, substationId);
             addToSearchParams(SvgType.SUBSTATION, substationId);
         },
-        [addToSearchParams]
+        [addToSearchParams, openSld]
     );
 
     const closeDiagram = useCallback(
@@ -95,5 +194,12 @@ export const useSingleLineDiagram = () => {
         [navigate, location.search, location.pathname]
     );
 
-    return [closeDiagram, showVoltageLevelDiagram, showSubstationDiagram];
+    return [
+        closeDiagram,
+        showVoltageLevelDiagram,
+        showSubstationDiagram,
+        togglePinSld,
+        minimizeSld,
+        sldState,
+    ];
 };
