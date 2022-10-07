@@ -3,7 +3,7 @@
     "module": "esnext",
     "target": "es2021",
     "declaration": true,
-    "strict": true,
+    "strict": false,
     "lib": [
       "dom",
       "dom.iterable",
