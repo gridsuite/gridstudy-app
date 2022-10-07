@@ -109,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
     },
     divInvalid: {
-        '& .sld-arrow-p, .sld-arrow-q': {
+        '& .sld-arrow-p, .sld-arrow-q, .sld-label': {
             opacity: INVALID_LOADFLOW_OPACITY,
         },
     },
@@ -379,51 +379,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         numberToDisplay,
         sldId,
     ]);
-
-    useEffect(() => {
-        if (loadFlowStatus !== RunningStatus.SUCCEED) {
-            if (svg['svg']) {
-                var svgToUpdate = svg['svg'];
-                let nodesInfos =
-                    document?.getElementsByClassName('sld-node-infos');
-                if (nodesInfos != null) {
-                    let nodeIdKv;
-                    let nodeIdAngle;
-                    for (var i = 0; i < nodesInfos.length; i++) {
-                        if (nodesInfos[i].id.endsWith('_circle')) {
-                            nodeIdKv = nodesInfos[i].id.replace('circle', 'v');
-                            nodeIdAngle = nodesInfos[i].id.replace(
-                                'circle',
-                                'angle'
-                            );
-                            let oldValue;
-                            if (nodeIdKv) {
-                                oldValue =
-                                    document.getElementById(
-                                        nodeIdKv
-                                    ).textContent;
-                                svgToUpdate = svgToUpdate.replace(
-                                    oldValue,
-                                    '— kV'
-                                );
-                            }
-                            if (nodeIdAngle) {
-                                oldValue =
-                                    document.getElementById(
-                                        nodeIdAngle
-                                    ).textContent;
-                                svgToUpdate = svgToUpdate.replace(
-                                    oldValue,
-                                    '— °'
-                                );
-                            }
-                        }
-                    }
-                    svg['svg'] = svgToUpdate;
-                }
-            }
-        }
-    }, [loadFlowStatus, svg]);
 
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
