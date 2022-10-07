@@ -1,22 +1,7 @@
-import { Grid, Switch } from '@mui/material';
-import {
-    useDoubleValue,
-    useInputForm,
-    useTextValue,
-} from '../inputs/input-hooks';
-import { useConnectivityValue } from '../connectivity-edition';
-import {
-    filledTextField,
-    gridItem,
-    OhmAdornment,
-    SusceptanceAdornment,
-    VoltageAdornment,
-    MVAPowerAdornment,
-    AmpereAdornment,
-} from '../dialogUtils';
+import { Grid } from '@mui/material';
+import { gridItem } from '../dialogUtils';
 import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
-import { useState } from 'react';
 
 const useStyles = makeStyles((theme) => ({
     h3: {

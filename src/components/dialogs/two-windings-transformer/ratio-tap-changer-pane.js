@@ -284,7 +284,7 @@ const RatioTapChangerPane = (props) => {
                 fractionDigits: 5,
             },
         ];
-    });
+    }, [intl]);
 
     const setColumnInError = useCallback(
         (dataKey) => {

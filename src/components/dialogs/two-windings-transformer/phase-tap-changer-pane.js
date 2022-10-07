@@ -291,7 +291,7 @@ const PhaseTapChangerPane = (props) => {
                 dataKey: 'shiftAngle',
             },
         ];
-    });
+    }, [intl]);
 
     const setColumnInError = useCallback(
         (dataKey) => {
@@ -315,40 +315,46 @@ const PhaseTapChangerPane = (props) => {
         [lineEdit]
     );
 
-    const editCellRender = useCallback((rowData) => {
-        return (
-            <div className={classes.tableCell}>
-                <IconButton
-                    size={'small'}
-                    onClick={() => {
-                        setLineEdit({
-                            oldValues: {},
-                            newValues: {},
-                            id: rowData.rowIndex,
-                            errors: new Map(),
-                        });
-                    }}
-                >
-                    <EditIcon />
-                </IconButton>
-            </div>
-        );
-    }, []);
-
-    const defaultCellRender = useCallback((rowData) => {
-        return (
-            <>
-                <div
-                    component="span"
-                    variant="body"
-                    align={'right'}
-                    className={classes.tableCell}
-                >
-                    {rowData.cellData}
+    const editCellRender = useCallback(
+        (rowData) => {
+            return (
+                <div className={classes.tableCell}>
+                    <IconButton
+                        size={'small'}
+                        onClick={() => {
+                            setLineEdit({
+                                oldValues: {},
+                                newValues: {},
+                                id: rowData.rowIndex,
+                                errors: new Map(),
+                            });
+                        }}
+                    >
+                        <EditIcon />
+                    </IconButton>
                 </div>
-            </>
-        );
-    }, []);
+            );
+        },
+        [classes.tableCell]
+    );
+
+    const defaultCellRender = useCallback(
+        (rowData) => {
+            return (
+                <>
+                    <div
+                        component="span"
+                        variant="body"
+                        align={'right'}
+                        className={classes.tableCell}
+                    >
+                        {rowData.cellData}
+                    </div>
+                </>
+            );
+        },
+        [classes.tableCell]
+    );
 
     const handleEditCell = useCallback(
         (rowData, newVal) => {
