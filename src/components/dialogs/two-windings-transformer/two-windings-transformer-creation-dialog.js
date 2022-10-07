@@ -391,17 +391,11 @@ const TwoWindingsTransformerCreationDialog = ({
             disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
             voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
-                formValues?.ratioTapChanger?.regulatingTerminalVlId ?? editData
-                    ? undefined
-                    : connectivity1.voltageLevel?.id,
+                formValues?.ratioTapChanger?.regulatingTerminalVlId ?? '',
             equipmentSectionTypeDefaultValue:
-                formValues?.ratioTapChanger?.regulatingTerminalType ?? editData
-                    ? undefined
-                    : EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name,
+                formValues?.ratioTapChanger?.regulatingTerminalType ?? '',
             equipmentSectionIdDefaultValue:
-                formValues?.ratioTapChanger?.regulatingTerminalId ?? editData
-                    ? undefined
-                    : twoWindingsTransformerId,
+                formValues?.ratioTapChanger?.regulatingTerminalId ?? '',
         });
 
     const [ratioLowTapPosition, ratioLowTapPositionField] = useDoubleValue({
@@ -553,14 +547,11 @@ const TwoWindingsTransformerCreationDialog = ({
             disabled: !phaseTapRegulating || !phaseTapChangerEnabled,
             voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
-                formValues?.phaseTapChanger?.regulatingTerminalVlId ??
-                connectivity1.voltageLevel?.id,
+                formValues?.phaseTapChanger?.regulatingTerminalVlId ?? '',
             equipmentSectionTypeDefaultValue:
-                formValues?.phaseTapChanger?.regulatingTerminalType ??
-                EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name,
+                formValues?.phaseTapChanger?.regulatingTerminalType ?? '',
             equipmentSectionIdDefaultValue:
-                formValues?.phaseTapChanger?.regulatingTerminalId ??
-                twoWindingsTransformerId,
+                formValues?.phaseTapChanger?.regulatingTerminalId ?? '',
         });
 
     const [phaseLowTapPosition, phaseLowTapPositionField] = useDoubleValue({

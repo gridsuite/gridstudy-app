@@ -321,7 +321,6 @@ const PhaseTapChangerPane = (props) => {
                 <IconButton
                     size={'small'}
                     onClick={() => {
-                        console.log(rowData.rowIndex);
                         setLineEdit({
                             oldValues: {},
                             newValues: {},

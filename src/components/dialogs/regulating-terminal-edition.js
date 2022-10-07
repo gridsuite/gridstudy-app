@@ -91,41 +91,17 @@ const RegulatingTerminalEdition = ({
 
     useEffect(() => {
         if (voltageLevelEquipmentsCallback) {
-            let data = voltageLevelsEquipments.find(
-                (vlEquipment) =>
-                    vlEquipment?.voltageLevel?.id ===
-                    regulatingTerminalValue?.voltageLevel?.id
+            voltageLevelEquipmentsCallback(
+                voltageLevelsEquipments.find(
+                    (vlEquipment) =>
+                        vlEquipment?.voltageLevel?.id ===
+                        regulatingTerminalValue?.voltageLevel?.id
+                ),
+                setEquipmentsOptions
             );
-
-            if (
-                equipmentSectionIdDefaultValue &&
-                equipmentSectionTypeDefaultValue
-            ) {
-                let isDefaultValueInserted = data?.equipments?.find(
-                    (equipment) =>
-                        equipment.type === equipmentSectionTypeDefaultValue &&
-                        equipment.id === equipmentSectionIdDefaultValue
-                );
-
-                //clear previous inserted default values
-                if (data) {
-                    data.equipments = data?.equipments?.filter(
-                        (equipment) => equipment.isDefaultValue === undefined
-                    );
-                }
-                if (!isDefaultValueInserted) {
-                    data?.equipments?.unshift({
-                        id: equipmentSectionIdDefaultValue,
-                        name: equipmentSectionIdDefaultValue,
-                        type: equipmentSectionTypeDefaultValue,
-                        isDefaultValue: true,
-                    });
-                }
-            }
-            voltageLevelEquipmentsCallback(data, setEquipmentsOptions);
         }
     }, [
-        regulatingTerminalValue.voltageLevel,
+        regulatingTerminalValue?.voltageLevel?.id,
         setEquipmentsOptions,
         voltageLevelEquipmentsCallback,
         voltageLevelsEquipments,

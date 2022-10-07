@@ -11,12 +11,8 @@ import {
 } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { filledTextField, gridItem } from '../dialogUtils';
-import {
-    useCSVReader,
-    useInputForm,
-    useTextValue,
-} from '../inputs/input-hooks';
+import { gridItem } from '../dialogUtils';
+import { useCSVReader } from '../inputs/input-hooks';
 import EditIcon from '@mui/icons-material/Edit';
 import { NumericalField } from '../../network/equipment-table-editors';
 import CsvDownloader from 'react-csv-downloader';
@@ -319,7 +315,6 @@ const RatioTapChangerPane = (props) => {
                     <IconButton
                         size={'small'}
                         onClick={() => {
-                            console.log(rowData.rowIndex);
                             setLineEdit({
                                 oldValues: {},
                                 newValues: {},

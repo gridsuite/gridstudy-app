@@ -475,7 +475,6 @@ export const useRegulatingTerminalValue = ({
     ]);
 
     const setVoltageLevel = useCallback((newVal) => {
-        console.log(newVal);
         setRegulatingTerminal((oldVal) => {
             return { ...oldVal, voltageLevel: newVal };
         });
@@ -500,10 +499,6 @@ export const useRegulatingTerminalValue = ({
                 }
                 direction={direction}
                 voltageLevelEquipmentsCallback={makeRefreshRegulatingTerminalSectionsCallback()}
-                equipmentSectionTypeDefaultValue={
-                    equipmentSectionTypeDefaultValue
-                }
-                equipmentSectionIdDefaultValue={equipmentSectionIdDefaultValue}
             />
         );
     }, [
@@ -512,8 +507,6 @@ export const useRegulatingTerminalValue = ({
         regulatingTerminal,
         voltageLevelsEquipments,
         direction,
-        equipmentSectionTypeDefaultValue,
-        equipmentSectionIdDefaultValue,
         setVoltageLevel,
         setEquipmentSection,
     ]);
