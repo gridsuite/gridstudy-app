@@ -60,6 +60,8 @@ import {
     FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
+    ADD_SHORT_CIRCUIT_NOTIF,
+    RESET_SHORT_CIRCUIT_NOTIF,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -348,6 +350,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SENSI_NOTIF]: (state) => {
         state.sensiNotif = false;
+    },
+
+    [ADD_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.shortCircuitNotif = true;
+    },
+
+    [RESET_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.shortCircuitNotif = false;
     },
 
     [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {

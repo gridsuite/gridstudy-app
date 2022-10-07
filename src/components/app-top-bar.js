@@ -160,6 +160,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const sensiNotif = useSelector((state) => state.sensiNotif);
 
+    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+
     const theme = useSelector((state) => state[PARAM_THEME]);
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
@@ -371,12 +373,18 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             let label;
                             if (
                                 tabName === StudyView.RESULTS &&
-                                (loadflowNotif || saNotif || sensiNotif)
+                                (loadflowNotif ||
+                                    saNotif ||
+                                    sensiNotif ||
+                                    shortCircuitNotif)
                             ) {
                                 label = (
                                     <Badge
                                         badgeContent={
-                                            loadflowNotif + saNotif + sensiNotif
+                                            loadflowNotif +
+                                            saNotif +
+                                            sensiNotif +
+                                            shortCircuitNotif
                                         }
                                         color="secondary"
                                     >
