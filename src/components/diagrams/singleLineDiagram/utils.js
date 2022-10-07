@@ -5,11 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useCallback, useEffect } from 'react';
-import { parse, stringify } from 'qs';
+import { useCallback } from 'react';
 import { SvgType } from './single-line-diagram';
-import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import {
+    closeSld,
+    minimizeSld,
+    openSld,
+    togglePinSld,
+} from '../../../redux/actions';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { syncSldStateWithSessionStorage } from '../../../redux/session-storage';
 
 export const ViewState = {
     PINNED: 'pinned',
@@ -22,184 +29,65 @@ export function getArray(value) {
     return !Array.isArray(value) ? [value] : value;
 }
 
-const arrayFormat = 'indices';
-
-export const useSingleLineDiagram = (
-    sldStateChangeCallback = () => console.log('a')
-) => {
-    const [sldState, setSldState] = useState([]);
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const openSld = useCallback(
-        (type, id) => {
-            const sldToOpenIndex = sldState.findIndex((sld) => sld.id === id);
-
-            // if sld was in state already, and was PINNED or OPENED, nothing happens
-            if (
-                sldToOpenIndex >= 0 &&
-                [ViewState.OPENED, ViewState.PINNED].includes(
-                    sldState[sldToOpenIndex].state
-                )
-            ) {
-                return;
-            }
-            setSldState((oldState) => {
-                const oldSldState = [...oldState];
-                // in the other cases, we will open the targeted sld
-                // previously opened sld is now MINIMIZED
-                const previouslyOpenedSldIndex = oldSldState.findIndex(
-                    (sld) => sld.state === ViewState.OPENED
-                );
-                if (previouslyOpenedSldIndex >= 0) {
-                    oldSldState[previouslyOpenedSldIndex].state =
-                        ViewState.MINIMIZED;
-                }
-
-                // if the target sld was already in the state, hence in MINIMIZED state, we change its state to OPENED
-                if (sldToOpenIndex >= 0) {
-                    oldSldState[sldToOpenIndex].state = ViewState.OPENED;
-                } else {
-                    oldSldState.push({
-                        id: id,
-                        type: type,
-                        state: ViewState.OPENED,
-                    });
-                }
-                console.log('OPENED SLD', oldSldState);
-
-                return oldSldState;
-            });
-        },
-        [sldState]
-    );
-
-    const togglePinSld = useCallback((id) => {
-        setSldState((oldState) => {
-            const oldSldState = [...oldState];
-            // search targeted sld among the sldState
-            const sldToPinToggleIndex = oldSldState.findIndex(
-                (sld) => sld.id === id
-            );
-            if (sldToPinToggleIndex >= 0) {
-                // when found, if was opened, it's now PINNED
-                const sldToPinState = oldSldState[sldToPinToggleIndex].state;
-                if (sldToPinState === ViewState.OPENED) {
-                    oldSldState[sldToPinToggleIndex].state = ViewState.PINNED;
-                } else if (sldToPinState === ViewState.PINNED) {
-                    // if sld is unpinned, the sld that had the state OPENED is now MINIMIZED
-                    const currentlyOpenedSldIndex = oldSldState.findIndex(
-                        (sld) => sld.state === ViewState.OPENED
-                    );
-                    if (currentlyOpenedSldIndex >= 0) {
-                        oldSldState[currentlyOpenedSldIndex].state =
-                            ViewState.MINIMIZED;
-                    }
-                    oldSldState[sldToPinToggleIndex].state = ViewState.OPENED;
-                }
-            }
-            console.log('TOGGLE PIN SLD', oldSldState);
-
-            return oldSldState;
-        });
-    }, []);
+export const useSingleLineDiagram = () => {
+    const dispatch = useDispatch();
+    const sldState = useSelector((state) => state.sldState);
 
     useEffect(() => {
-        console.log(sldStateChangeCallback);
-        console.log('USE EFFECT 1');
+        syncSldStateWithSessionStorage(sldState);
     }, [sldState]);
 
-    const minimizeSld = useCallback((id) => {
-        setSldState((oldState) => {
-            const oldSldState = [...oldState];
-            const sldToMinizeIndex = oldSldState.findIndex(
-                (sld) => sld.id === id
-            );
-            if (sldToMinizeIndex >= 0) {
-                oldSldState[sldToMinizeIndex].state = ViewState.MINIMIZED;
-            }
-            console.log('MINIMIZED SLD', oldSldState);
-            return oldSldState;
-        });
-    }, []);
-
-    const addToSearchParams = useCallback(
+    const openSldView = useCallback(
         (type, id) => {
-            const queryParams = parse(location.search, {
-                ignoreQueryPrefix: true,
-                arrayFormat,
-            });
-            const current = getArray(queryParams['views'])
-                .filter((item) => item.id !== id)
-                .map(({ id, type }) => {
-                    return { id, type }; // filter to only id, type
-                });
-            current.push({ id, type, lastOpen: true });
-            navigate(
-                location.pathname +
-                    stringify(
-                        { views: current },
-                        { arrayFormat, addQueryPrefix: true }
-                    ),
-                { replace: true }
-            );
+            dispatch(openSld(id, type));
         },
-        [location.search, location.pathname, navigate]
+        [dispatch]
+    );
+
+    const togglePinSldView = useCallback(
+        (id) => {
+            dispatch(togglePinSld(id));
+        },
+        [dispatch]
+    );
+
+    const minimizeSldView = useCallback(
+        (id) => {
+            dispatch(minimizeSld(id));
+        },
+        [dispatch]
     );
 
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
-            openSld(SvgType.VOLTAGE_LEVEL, voltageLevelId);
-            addToSearchParams(SvgType.VOLTAGE_LEVEL, voltageLevelId);
+            openSldView(SvgType.VOLTAGE_LEVEL, voltageLevelId);
         },
-        [addToSearchParams, openSld]
+        [openSldView]
     );
 
     const showSubstationDiagram = useCallback(
         (substationId) => {
-            openSld(SvgType.SUBSTATION, substationId);
-            addToSearchParams(SvgType.SUBSTATION, substationId);
+            openSldView(SvgType.SUBSTATION, substationId);
         },
-        [addToSearchParams, openSld]
+        [openSldView]
     );
 
     const closeDiagram = useCallback(
         (idsToRemove) => {
-            const toRemove = new Set(
-                Array.isArray(idsToRemove) ? idsToRemove : [idsToRemove]
-            );
-            const queryParams = parse(location.search, {
-                ignoreQueryPrefix: true,
-                arrayFormat,
-            });
-            if (idsToRemove === undefined) {
-                navigate(location.pathname, { replace: true });
-            } else {
-                const views = getArray(queryParams['views']).filter(
-                    ({ id }) => !toRemove.has(id)
-                );
-                navigate(
-                    location.pathname +
-                        stringify(
-                            { views },
-                            {
-                                addQueryPrefix: true,
-                                arrayFormat,
-                            }
-                        ),
-                    { replace: true }
-                );
-            }
+            const toRemove = Array.isArray(idsToRemove)
+                ? idsToRemove
+                : [idsToRemove];
+
+            dispatch(closeSld(toRemove));
         },
-        [navigate, location.search, location.pathname]
+        [dispatch]
     );
 
     return [
         closeDiagram,
         showVoltageLevelDiagram,
         showSubstationDiagram,
-        togglePinSld,
-        minimizeSld,
-        sldState,
+        togglePinSldView,
+        minimizeSldView,
     ];
 };

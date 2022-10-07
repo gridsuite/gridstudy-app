@@ -14,7 +14,6 @@ import {
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import {
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
@@ -22,60 +21,11 @@ import {
 } from '../../../utils/rest-api';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import PropTypes from 'prop-types';
-import { parse } from 'qs';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import { getArray, useSingleLineDiagram, ViewState } from './utils';
+import { useSingleLineDiagram, ViewState } from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
-
-function removeFromMap(oldMap, ids) {
-    let removed = false;
-    const newMap = new Map(oldMap);
-    (Array.isArray(ids) ? ids : [ids]).forEach(
-        (id) => (removed |= newMap.delete(id))
-    );
-    return removed ? newMap : oldMap;
-}
-
-const mergeDisplayed = (oldValue, sldToDisplay, createSLD) => {
-    const toAdd = new Map(sldToDisplay.map((o) => [o.id, o]));
-    const toRemove = new Set();
-    const lastOpen = sldToDisplay.find((view) => view.lastOpen)?.id;
-    oldValue.forEach((sld) => {
-        if (sld !== undefined) {
-            // delete already present element
-            if (!toAdd.delete(sld?.id)) {
-                toRemove.add(sld); // if element is absent, then we have to remove it from the map
-            }
-        }
-    });
-
-    // Is there something to add or remove ?
-    if (toAdd.size === 0 && toRemove.size === 0) {
-        // Did the lastOpen SLD changed ?
-        const oldLastOpen = oldValue.find((view) => view.lastOpen)?.id;
-        const newLastOpen = sldToDisplay.find((view) => view.lastOpen)?.id;
-        if (oldLastOpen === newLastOpen) {
-            // Nothing needs to be done.
-            return oldValue;
-        }
-    }
-
-    const newValue =
-        toRemove.size === 0
-            ? [...oldValue]
-            : oldValue.filter((sld) => !toRemove.has(sld));
-    toAdd.forEach((value) => {
-        newValue.push(createSLD(value));
-    });
-    newValue.forEach((view) => {
-        if (view !== undefined) {
-            view.lastOpen = view.id === lastOpen;
-        }
-    });
-    return newValue.filter((n) => n);
-};
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -139,7 +89,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
     return useCallback(
         (view) => {
-            function createSubstationSLD(substationId, lastOpen) {
+            function createSubstationSLD(substationId, state) {
                 const substation = network.getSubstation(substationId);
                 let name = useName ? substation.name : substationId;
                 const countryName = substation?.countryName;
@@ -151,14 +101,14 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 return {
                     id: substationId,
                     ref: React.createRef(),
-                    lastOpen,
+                    state,
                     name,
                     type: SvgType.SUBSTATION,
                     svgUrl,
                 };
             }
 
-            function createVoltageLevelSLD(vlId, lastOpen) {
+            function createVoltageLevelSLD(vlId, state) {
                 const vl = network.getVoltageLevel(vlId);
                 if (!vl) return;
                 let name = useName ? vl.name : vlId;
@@ -173,7 +123,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 return {
                     id: vlId,
                     ref: React.createRef(),
-                    lastOpen,
+                    state,
                     name,
                     svgUrl,
                     type: SvgType.VOLTAGE_LEVEL,
@@ -183,9 +133,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
             if (!network) return;
             if (view.type === SvgType.VOLTAGE_LEVEL)
-                return createVoltageLevelSLD(view.id, view.lastOpen);
+                return createVoltageLevelSLD(view.id, view.state);
             else if (view.type === SvgType.SUBSTATION)
-                return createSubstationSLD(view.id, view.lastOpen);
+                return createSubstationSLD(view.id, view.state);
         },
         [
             network,
@@ -220,17 +170,13 @@ export function SingleLineDiagramPane({
     const [views, setViews] = useState([]);
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
-    const [viewState, setViewState] = useState(new Map());
-
     const [displayedSLD, setDisplayedSld] = useState([]);
 
     const createView = useDisplayView(network, studyUuid, currentNode);
 
     const dispatch = useDispatch();
 
-    const testChangeStateChange = () => {
-        console.log('CE CALLBACK FONCTIONNE');
-    };
+    const sldState = useSelector((state) => state.sldState);
 
     const [
         closeView,
@@ -238,10 +184,8 @@ export function SingleLineDiagramPane({
         openSubstation,
         togglePinSld,
         minimizeSld,
-        sldState,
-    ] = useSingleLineDiagram(testChangeStateChange);
+    ] = useSingleLineDiagram();
 
-    const location = useLocation();
     const viewsRef = useRef();
     viewsRef.current = views;
 
@@ -249,8 +193,9 @@ export function SingleLineDiagramPane({
     currentNodeRef.current = currentNode;
 
     useEffect(() => {
-        console.log('USE EFFECT 2', sldState);
-    }, [sldState]);
+        console.log('Modif state', sldState);
+        setViews(sldState.map((sld) => createView(sld)));
+    }, [sldState, createView, disabled, visible]);
 
     const updateSld = useCallback((id) => {
         if (id) {
@@ -305,25 +250,9 @@ export function SingleLineDiagramPane({
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
         if (isNodeBuilt(currentNodeRef.current) && visible) {
-            setViews((oldVal) => oldVal.map(createView));
+            setViews(sldState.map((sld) => createView(sld)));
         }
-    }, [visible, createView]);
-
-    // set single line diagram voltage level id, contained in url query parameters
-    useEffect(() => {
-        // parse query parameter
-        const queryParams = parse(location.search, {
-            parseArrays: true,
-            ignoreQueryPrefix: true,
-            arrayFormat: 'indices',
-        });
-        let newVoltageLevelIds = getArray(queryParams['views']);
-        setViews((oldValue) =>
-            mergeDisplayed(oldValue, newVoltageLevelIds, createView)
-        );
-
-        setUpdateSwitchMsg('');
-    }, [createView, location, disabled, visible]);
+    }, [sldState, visible, createView]);
 
     const toggleState = useCallback(
         (id, type, state) => {
@@ -334,28 +263,12 @@ export function SingleLineDiagramPane({
             if (state === ViewState.PINNED) {
                 togglePinSld(id);
             }
-            if (state === ViewState.OPENED) {
-                // if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
-                // else if (type === SvgType.SUBSTATION) openSubstation(id);
-            }
-            setViewState((oldValue) => {
-                const newVal = new Map(oldValue);
-                const oldState = oldValue.get(id);
-                if (oldState === state) newVal.delete(id);
-                else newVal.set(id, state);
-                if (state !== ViewState.MINIMIZED) {
-                    if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
-                    else if (type === SvgType.SUBSTATION) openSubstation(id);
-                }
-                return newVal;
-            });
         },
-        [openSubstation, openVoltageLevel, minimizeSld, togglePinSld, sldState]
+        [minimizeSld, togglePinSld, sldState]
     );
 
     const handleCloseSLD = useCallback(
         (id) => {
-            setViewState((oldVal) => removeFromMap(oldVal, id));
             closeView(id);
         },
         [closeView]
@@ -363,14 +276,6 @@ export function SingleLineDiagramPane({
 
     const handleOpenView = useCallback(
         (id, type = SvgType.VOLTAGE_LEVEL) => {
-            setViewState((oldMap) => {
-                if (oldMap.has(id) && oldMap.get(id) !== ViewState.PINNED) {
-                    const newMap = new Map(oldMap);
-                    newMap.delete(id);
-                    return newMap;
-                }
-                return oldMap;
-            });
             if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
             else if (type === SvgType.SUBSTATION) openSubstation(id);
         },
@@ -427,27 +332,12 @@ export function SingleLineDiagramPane({
     }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView, network]);
 
     useEffect(() => {
-        setDisplayedSld((oldSld) => {
-            const configuredViewsIds = new Set(views.map((view) => view.id));
-            // remove view no longer present, keep order
-            let newDisplayed = oldSld
-                .filter(
-                    (view) =>
-                        configuredViewsIds.has(view.id) &&
-                        viewState.get(view.id) === ViewState.PINNED
-                )
-                .map((old) => views.find((v) => v.id === old.id));
-            // there is place for one more
-            let more = views.find(
-                ({ id, lastOpen }) =>
-                    lastOpen && viewState.get(id) === undefined
-            );
-            if (more) {
-                newDisplayed.push(more);
-            }
-            return newDisplayed;
-        });
-    }, [views, viewState]);
+        setDisplayedSld(
+            views.filter((view) =>
+                [ViewState.OPENED, ViewState.PINNED].includes(view.state)
+            )
+        );
+    }, [views]);
 
     const displayedIds = new Set(displayedSLD.map(({ id }) => id));
     const minimized = views.filter(({ id }) => !displayedIds.has(id));
@@ -483,7 +373,7 @@ export function SingleLineDiagramPane({
                         loadFlowStatus={loadFlowStatus}
                         numberToDisplay={displayedSLD.length}
                         toggleState={toggleState}
-                        pinned={viewState.get(sld.id) === ViewState.PINNED}
+                        pinned={sld.state === ViewState.PINNED}
                         disabled={disabled}
                     />
                 </div>

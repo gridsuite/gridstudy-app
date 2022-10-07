@@ -60,6 +60,11 @@ import {
     FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
+    OPEN_SLD,
+    MINIMIZE_SLD,
+    TOGGLE_PIN_SLD,
+    CLOSE_SLD,
+    ViewState,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -91,6 +96,7 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
+import { getSldStateFromSessionStorage } from './session-storage';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -144,6 +150,7 @@ const initialState = {
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
     reloadGeoData: true,
+    sldState: getSldStateFromSessionStorage() || [],
 };
 
 export const reducer = createReducer(initialState, {
@@ -455,6 +462,85 @@ export const reducer = createReducer(initialState, {
 
             state.studyDisplayMode = action.studyDisplayMode;
         }
+    },
+    [OPEN_SLD]: (state, action) => {
+        const sldState = state.sldState;
+        const sldToOpenIndex = sldState.findIndex(
+            (sld) => sld.id === action.id
+        );
+
+        // if sld was in state already, and was PINNED or OPENED, nothing happens
+        if (
+            sldToOpenIndex >= 0 &&
+            [ViewState.OPENED, ViewState.PINNED].includes(
+                sldState[sldToOpenIndex].state
+            )
+        ) {
+            return;
+        }
+
+        // in the other cases, we will open the targeted sld
+        // previously opened sld is now MINIMIZED
+        const previouslyOpenedSldIndex = sldState.findIndex(
+            (sld) => sld.state === ViewState.OPENED
+        );
+        if (previouslyOpenedSldIndex >= 0) {
+            sldState[previouslyOpenedSldIndex].state = ViewState.MINIMIZED;
+        }
+        // if the target sld was already in the state, hence in MINIMIZED state, we change its state to OPENED
+        if (sldToOpenIndex >= 0) {
+            sldState[sldToOpenIndex].state = ViewState.OPENED;
+        } else {
+            sldState.push({
+                id: action.id,
+                type: action.svgType,
+                state: ViewState.OPENED,
+            });
+        }
+
+        state.sldState = sldState;
+    },
+    [MINIMIZE_SLD]: (state, action) => {
+        const sldState = state.sldState;
+        const sldToMinizeIndex = sldState.findIndex(
+            (sld) => sld.id === action.id
+        );
+        if (sldToMinizeIndex >= 0) {
+            sldState[sldToMinizeIndex].state = ViewState.MINIMIZED;
+        }
+
+        state.sldState = sldState;
+    },
+    [TOGGLE_PIN_SLD]: (state, action) => {
+        const sldState = state.sldState;
+        // search targeted sld among the sldState
+        const sldToPinToggleIndex = sldState.findIndex(
+            (sld) => sld.id === action.id
+        );
+        if (sldToPinToggleIndex >= 0) {
+            // when found, if was opened, it's now PINNED
+            const sldToPinState = sldState[sldToPinToggleIndex].state;
+            if (sldToPinState === ViewState.OPENED) {
+                sldState[sldToPinToggleIndex].state = ViewState.PINNED;
+            } else if (sldToPinState === ViewState.PINNED) {
+                // if sld is unpinned, the sld that had the state OPENED is now MINIMIZED
+                const currentlyOpenedSldIndex = sldState.findIndex(
+                    (sld) => sld.state === ViewState.OPENED
+                );
+                if (currentlyOpenedSldIndex >= 0) {
+                    sldState[currentlyOpenedSldIndex].state =
+                        ViewState.MINIMIZED;
+                }
+                sldState[sldToPinToggleIndex].state = ViewState.OPENED;
+            }
+        }
+
+        state.sldState = sldState;
+    },
+    [CLOSE_SLD]: (state, action) => {
+        state.sldState = state.sldState.filter(
+            (sld) => !action.ids.includes(sld.id)
+        );
     },
 });
 
