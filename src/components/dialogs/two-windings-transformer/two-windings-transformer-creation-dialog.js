@@ -414,15 +414,10 @@ const TwoWindingsTransformerCreationDialog = ({
     const [ratioHighTapPosition, ratioHighTapPositionField] = useDoubleValue({
         label: 'HighTapPosition',
         validation: {
-            isFieldRequired: ratioTapChangerEnabled,
+            isFieldRequired: ratioTapChangerEnabled && !editData,
             isFieldNumeric: true,
         },
         inputForm: ratioTapInputForm,
-        defaultValue: formValues?.hasOwnProperty('ratioTapChanger')
-            ? formValues?.ratioTapChanger?.lowTapPosition +
-              ratioTapRows.length -
-              1
-            : undefined,
         formProps: {
             disabled: !ratioTapChangerEnabled,
         },
@@ -568,15 +563,10 @@ const TwoWindingsTransformerCreationDialog = ({
     const [phaseHighTapPosition, phaseHighTapPositionField] = useDoubleValue({
         label: 'HighTapPosition',
         validation: {
-            isFieldRequired: phaseTapChangerEnabled,
+            isFieldRequired: phaseTapChangerEnabled && !editData,
             isFieldNumeric: true,
         },
         inputForm: phaseTapInputForm,
-        defaultValue: formValues?.hasOwnProperty('phaseTapChanger')
-            ? formValues?.phaseTapChanger?.lowTapPosition +
-              phaseTapRows.length -
-              1
-            : undefined,
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
@@ -665,11 +655,73 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     }, [editData]);
 
-    const handleSave = () => {
-        setCreationError(undefined);
+    const validateTapRows = useCallback(() => {
+        setCreationError();
         let creationError = '';
-        let isFormValid = true;
 
+        if (ratioTapRows.length === 0) {
+            creationError = intl.formatMessage({
+                id: 'GenerateRatioTapRowsError',
+            });
+        } else {
+            let tapValues = Object.values(
+                ratioTapRows.map((row) => {
+                    return parseInt(row.tap, 10);
+                })
+            );
+            let minTap = Math.min(...tapValues);
+            if (minTap !== ratioLowTapPosition) {
+                creationError = intl.formatMessage({
+                    id: 'IncoherentRatioLowTapPositionError',
+                });
+            }
+            if (!tapValues.includes(ratioTapPosition)) {
+                creationError = intl.formatMessage({
+                    id: 'IncoherentRatioTapPositionError',
+                });
+            }
+        }
+
+        if (phaseTapRows.length === 0) {
+            creationError += intl.formatMessage({
+                id: 'GeneratePhaseTapRowsError',
+            });
+        } else {
+            let tapValues = Object.values(
+                phaseTapRows.map((row) => {
+                    return parseInt(row.tap, 10);
+                })
+            );
+            let minTap = Math.min(...tapValues);
+            if (minTap !== phaseLowTapPosition) {
+                creationError = intl.formatMessage({
+                    id: 'IncoherentPhaseLowTapPositionError',
+                });
+            }
+            if (!tapValues.includes(phaseTapPosition)) {
+                creationError = intl.formatMessage({
+                    id: 'IncoherentPhaseTapPositionError',
+                });
+            }
+        }
+
+        if (creationError !== '') {
+            setCreationError(creationError);
+            return false;
+        }
+        return true;
+    }, [
+        intl,
+        phaseLowTapPosition,
+        phaseTapPosition,
+        phaseTapRows,
+        ratioLowTapPosition,
+        ratioTapPosition,
+        ratioTapRows,
+    ]);
+
+    const handleSave = () => {
+        let isFormValid = true;
         if (!characteristicsInputForm.validate()) {
             isFormValid = false;
         }
@@ -678,13 +730,6 @@ const TwoWindingsTransformerCreationDialog = ({
         if (ratioTapChangerEnabled && !ratioTapInputForm.validate()) {
             isFormValid = false;
         } else if (ratioTapChangerEnabled && ratioTapInputForm.validate()) {
-            if (ratioTapRows.length === 0) {
-                creationError = intl.formatMessage({
-                    id: 'GenerateRatioTapRowsError',
-                });
-                isFormValid = false;
-            }
-
             let formatedRatioTapSteps = ratioTapRows.map((row) => {
                 return {
                     index: row.tap,
@@ -718,13 +763,6 @@ const TwoWindingsTransformerCreationDialog = ({
         if (phaseTapChangerEnabled && !phaseTapInputForm.validate()) {
             isFormValid = false;
         } else if (phaseTapChangerEnabled && phaseTapInputForm.validate()) {
-            if (phaseTapRows.length === 0) {
-                creationError = intl.formatMessage({
-                    id: 'GeneratePhaseTapRowsError',
-                });
-                isFormValid = false;
-            }
-
             let formatedPhaseTapSteps = phaseTapRows.map((row) => {
                 return {
                     index: row.tap,
@@ -758,6 +796,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 steps: formatedPhaseTapSteps,
             };
         }
+
+        isFormValid = validateTapRows();
 
         if (isFormValid) {
             let currentLimits1 = {
@@ -801,8 +841,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 });
             });
             handleCloseAndClear();
-        } else if (creationError && creationError !== '') {
-            setCreationError(creationError);
         }
     };
 

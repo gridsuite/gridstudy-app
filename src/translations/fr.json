@@ -486,7 +486,11 @@
     "TapPositionBetweenLowAndHighTapPositionValue": "La valeur de la prise courante doit être comprise entre la valeur de Prise min et Prise max",
     "TerminalRef":"Terminal distant réglé",
     "GenerateRatioTapRowsError": "Veuillez générer les prises du régleur",
+    "IncoherentRatioLowTapPositionError": "La valeur du champ Prise min du régleur ne correspond pas aux données de ses prises",
     "GeneratePhaseTapRowsError": "Veuillez générer les prises du déphaseur",
+    "IncoherentPhaseLowTapPositionError": "La valeur du champ Prise min du déphaseur ne correspond pas aux données de ses prises",
+    "IncoherentRatioTapPositionError": "La valeur du champ Prise courante du régleur n'est pas présente dans les données de ses prises",
+    "IncoherentPhaseTapPositionError": "La valeur du champ Prise courante du déphaseur n'est pas présente dans les données de ses prises",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",
