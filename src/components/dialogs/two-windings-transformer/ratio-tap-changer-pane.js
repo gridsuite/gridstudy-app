@@ -429,8 +429,11 @@ const RatioTapChangerPane = (props) => {
 
         setFormValues({
             ...formValues,
-            lowTapPosition: tempLowTapPosition,
-            highTapPosition: tempHighTapPosition,
+            ratioTapChanger: {
+                ...formValues.ratioTapChanger,
+                lowTapPosition: tempLowTapPosition,
+                highTapPosition: tempHighTapPosition,
+            },
         });
         handleRatioTapRows(rows);
     };

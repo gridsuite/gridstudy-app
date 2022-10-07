@@ -445,8 +445,11 @@ const PhaseTapChangerPane = (props) => {
 
         let tempFormValues = {
             ...formValues,
-            lowTapPosition: tempLowTapPosition,
-            highTapPosition: tempHighTapPosition,
+            phaseTapChanger: {
+                ...formValues.phaseTapChanger,
+                lowTapPosition: tempLowTapPosition,
+                highTapPosition: tempHighTapPosition,
+            },
         };
         setFormValues(tempFormValues);
         handlePhaseTapRows(rows);
