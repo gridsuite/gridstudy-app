@@ -333,10 +333,13 @@ export const useEnumValue = ({
     getEnumLabel = getLabel,
 }) => {
     const [value, setValue] = useState(defaultValue);
+    const [error, setError] = useState();
 
     useEffect(() => {
         function validate() {
-            return true;
+            const res = validateField(value, validation);
+            setError(res?.errorMsgId);
+            return !res.error;
         }
         inputForm.addValidation(label, validate);
     }, [label, validation, inputForm, value]);
@@ -347,7 +350,7 @@ export const useEnumValue = ({
 
     const field = useMemo(() => {
         return (
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" {...genHelperError(error, '')}>
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                 <InputLabel id="enum-type-label" {...formProps}>

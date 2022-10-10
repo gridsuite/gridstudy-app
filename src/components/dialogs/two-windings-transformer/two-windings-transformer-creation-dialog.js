@@ -659,49 +659,53 @@ const TwoWindingsTransformerCreationDialog = ({
         setCreationError();
         let creationError = '';
 
-        if (ratioTapRows.length === 0) {
-            creationError = intl.formatMessage({
-                id: 'GenerateRatioTapRowsError',
-            });
-        } else {
-            let tapValues = Object.values(
-                ratioTapRows.map((row) => {
-                    return parseInt(row.tap, 10);
-                })
-            );
-            let minTap = Math.min(...tapValues);
-            if (minTap !== ratioLowTapPosition) {
+        if (ratioTapChangerEnabled) {
+            if (ratioTapRows.length === 0) {
                 creationError = intl.formatMessage({
-                    id: 'IncoherentRatioLowTapPositionError',
+                    id: 'GenerateRatioTapRowsError',
                 });
-            }
-            if (!tapValues.includes(ratioTapPosition)) {
-                creationError = intl.formatMessage({
-                    id: 'IncoherentRatioTapPositionError',
-                });
+            } else {
+                let tapValues = Object.values(
+                    ratioTapRows.map((row) => {
+                        return parseInt(row.tap, 10);
+                    })
+                );
+                let minTap = Math.min(...tapValues);
+                if (minTap !== ratioLowTapPosition) {
+                    creationError = intl.formatMessage({
+                        id: 'IncoherentRatioLowTapPositionError',
+                    });
+                }
+                if (!tapValues.includes(ratioTapPosition)) {
+                    creationError = intl.formatMessage({
+                        id: 'IncoherentRatioTapPositionError',
+                    });
+                }
             }
         }
 
-        if (phaseTapRows.length === 0) {
-            creationError += intl.formatMessage({
-                id: 'GeneratePhaseTapRowsError',
-            });
-        } else {
-            let tapValues = Object.values(
-                phaseTapRows.map((row) => {
-                    return parseInt(row.tap, 10);
-                })
-            );
-            let minTap = Math.min(...tapValues);
-            if (minTap !== phaseLowTapPosition) {
+        if (phaseTapChangerEnabled) {
+            if (phaseTapRows.length === 0) {
                 creationError = intl.formatMessage({
-                    id: 'IncoherentPhaseLowTapPositionError',
+                    id: 'GeneratePhaseTapRowsError',
                 });
-            }
-            if (!tapValues.includes(phaseTapPosition)) {
-                creationError = intl.formatMessage({
-                    id: 'IncoherentPhaseTapPositionError',
-                });
+            } else {
+                let tapValues = Object.values(
+                    phaseTapRows.map((row) => {
+                        return parseInt(row.tap, 10);
+                    })
+                );
+                let minTap = Math.min(...tapValues);
+                if (minTap !== phaseLowTapPosition) {
+                    creationError = intl.formatMessage({
+                        id: 'IncoherentPhaseLowTapPositionError',
+                    });
+                }
+                if (!tapValues.includes(phaseTapPosition)) {
+                    creationError = intl.formatMessage({
+                        id: 'IncoherentPhaseTapPositionError',
+                    });
+                }
             }
         }
 
@@ -713,9 +717,11 @@ const TwoWindingsTransformerCreationDialog = ({
     }, [
         intl,
         phaseLowTapPosition,
+        phaseTapChangerEnabled,
         phaseTapPosition,
         phaseTapRows,
         ratioLowTapPosition,
+        ratioTapChangerEnabled,
         ratioTapPosition,
         ratioTapRows,
     ]);
@@ -797,9 +803,7 @@ const TwoWindingsTransformerCreationDialog = ({
             };
         }
 
-        isFormValid = validateTapRows();
-
-        if (isFormValid) {
+        if (isFormValid && validateTapRows()) {
             let currentLimits1 = {
                 permanentLimit: permanentCurrentLimit1,
             };
