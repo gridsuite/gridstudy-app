@@ -67,6 +67,8 @@ const LoadCreationDialog = ({
 
     const equipmentPath = 'loads';
 
+    const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
+
     const toFormValues = (load) => {
         return {
             equipmentId: load.id + '(1)',
@@ -155,6 +157,19 @@ const LoadCreationDialog = ({
             formValues?.busOrBusbarSectionId || null,
     });
 
+    useEffect(() => {
+        console.log('Anas load name', formValues?.equipmentId);
+        if (
+            loadId !== formValues?.equipmentId
+            // ||
+            // loadName !== formValues?.equipmentName
+        ) {
+            setBtnSaveListDisabled(false);
+        } else {
+            setBtnSaveListDisabled(true);
+        }
+    }, [formValues?.equipmentId, formValues.loadType, loadId]);
+
     const handleSave = () => {
         if (inputForm.validate()) {
             createLoad(
@@ -236,7 +251,7 @@ const LoadCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button onClick={handleSave} disabled={btnSaveListDisabled}>
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

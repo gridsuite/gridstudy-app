@@ -55,6 +55,8 @@ const SubstationCreationDialog = ({
 
     const equipmentPath = 'substations';
 
+    const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
+
     const toFormValues = (substation) => {
         return {
             equipmentId: substation.id + '(1)',
@@ -109,6 +111,18 @@ const SubstationCreationDialog = ({
             ? formValues.substationCountryLabel
             : null,
     });
+
+    useEffect(() => {
+        if (
+            substationId !== formValues?.equipmentId ||
+            substationName !== formValues?.equipmentName ||
+            substationCountry != formValues?.substationCountry
+        ) {
+            setBtnSaveListDisabled(false);
+        } else {
+            setBtnSaveListDisabled(true);
+        }
+    }, [formValues, substationCountry, substationId, substationName]);
 
     const handleSave = () => {
         if (inputForm.validate()) {
@@ -177,7 +191,7 @@ const SubstationCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button onClick={handleSave} disabled={btnSaveListDisabled}>
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
