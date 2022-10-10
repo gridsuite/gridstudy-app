@@ -60,6 +60,7 @@ import {
     setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
+import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -308,12 +309,7 @@ const NetworkModificationNodeEditor = () => {
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
             dialog: () =>
-                adapt(
-                    LineSplitWithVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+                adapt(LineSplitWithVoltageLevelDialog, withVLs, withLines),
             icon: <AddIcon />,
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
@@ -321,6 +317,17 @@ const NetworkModificationNodeEditor = () => {
             dialog: () =>
                 adapt(
                     LineAttachToVoltageLevelDialog,
+                    withVLs,
+                    withLines,
+                    withSubstations
+                ),
+            icon: <AddIcon />,
+        },
+        LINES_ATTACH_TO_SPLIT_LINES: {
+            label: 'LinesAttachToSplitLines',
+            dialog: () =>
+                adapt(
+                    LinesAttachToSplitLinesDialog,
                     withVLs,
                     withLines,
                     withSubstations
