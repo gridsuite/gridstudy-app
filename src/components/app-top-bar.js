@@ -32,16 +32,19 @@ import {
     fetchAppsAndUrls,
     fetchLoadFlowInfos,
     fetchSecurityAnalysisStatus,
+    fetchSensitivityAnalysisStatus,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
     addLoadflowNotif,
     addSANotif,
+    addSensiNotif,
     centerOnSubstation,
     openNetworkAreaDiagram,
     resetLoadflowNotif,
     resetSANotif,
+    resetSensiNotif,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
@@ -140,13 +143,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 };
 
-const AppTopBar = ({
-    user,
-    tabIndex,
-    onChangeTab,
-    userManager,
-    securityAnalysisStatus,
-}) => {
+const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
 
     const equipmentClasses = useEquipmentStyles();
@@ -160,6 +157,8 @@ const AppTopBar = ({
     const loadflowNotif = useSelector((state) => state.loadflowNotif);
 
     const saNotif = useSelector((state) => state.saNotif);
+
+    const sensiNotif = useSelector((state) => state.sensiNotif);
 
     const theme = useSelector((state) => state[PARAM_THEME]);
 
@@ -185,6 +184,10 @@ const AppTopBar = ({
         'securityAnalysis_status',
         'securityAnalysis_failed',
     ];
+    const sensitivityAnalysisStatusInvalidations = [
+        'sensitivityAnalysis_status',
+        'sensitivityAnalysis_failed',
+    ];
     const [loadFlowInfosNode] = useNodeData(
         studyUuid,
         currentNode?.id,
@@ -197,6 +200,13 @@ const AppTopBar = ({
         currentNode?.id,
         fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations
+    );
+
+    const [sensitivityAnalysisStatusNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchSensitivityAnalysisStatus,
+        sensitivityAnalysisStatusInvalidations
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
@@ -252,6 +262,17 @@ const AppTopBar = ({
             dispatch(resetSANotif());
         }
     }, [currentNode, dispatch, securityAnalysisStatusNode, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            sensitivityAnalysisStatusNode === 'COMPLETED'
+        ) {
+            dispatch(addSensiNotif());
+        } else {
+            dispatch(resetSensiNotif());
+        }
+    }, [currentNode, dispatch, sensitivityAnalysisStatusNode, tabIndex, user]);
 
     function showParameters() {
         setParametersOpen(true);
@@ -350,11 +371,13 @@ const AppTopBar = ({
                             let label;
                             if (
                                 tabName === StudyView.RESULTS &&
-                                (loadflowNotif || saNotif)
+                                (loadflowNotif || saNotif || sensiNotif)
                             ) {
                                 label = (
                                     <Badge
-                                        badgeContent={loadflowNotif + saNotif}
+                                        badgeContent={
+                                            loadflowNotif + saNotif + sensiNotif
+                                        }
                                         color="secondary"
                                     >
                                         <FormattedMessage id={tabName} />

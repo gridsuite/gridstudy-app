@@ -94,6 +94,7 @@ const StudyPane = ({
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
+    sensiStatus,
     runnable,
     setUpdateSwitchMsg,
     setErrorMessage,
@@ -294,6 +295,7 @@ const StudyPane = ({
                                     securityAnalysisStatus={
                                         securityAnalysisStatus
                                     }
+                                    sensiStatus={sensiStatus}
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
@@ -333,7 +335,7 @@ const StudyPane = ({
                                 )}
                                 onClose={closeNetworkAreaDiagram}
                                 disabled={disabled}
-                                align="left"
+                                align="right"
                                 visible={
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
