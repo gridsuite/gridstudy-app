@@ -1423,8 +1423,7 @@ export function createGenerator(
     isReactiveCapabilityCurveOn,
     frequencyRegulation,
     droop,
-    maximumReactivePower,
-    minimumReactivePower,
+    minMaxReactiveLimits,
     reactiveCapabilityCurve
 ) {
     let createGeneratorUrl;
@@ -1470,9 +1469,8 @@ export function createGenerator(
             reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
             participate: frequencyRegulation,
             droop: droop,
-            maximumReactivePower: maximumReactivePower,
-            minimumReactivePower: minimumReactivePower,
-            points: reactiveCapabilityCurve,
+            minMaxReactiveLimits: minMaxReactiveLimits,
+            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
         }),
     }).then((response) => {
         return response.ok
