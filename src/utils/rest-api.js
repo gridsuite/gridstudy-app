@@ -904,6 +904,21 @@ export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
     );
 }
 
+export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        'Stopping sensitivity analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const stopShortCircuitAnalysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/stop';
+    console.debug(stopShortCircuitAnalysisUrl);
+    return backendFetch(stopShortCircuitAnalysisUrl, { method: 'put' });
+}
+
 export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
         'Fetching short circuit analysis status on ' +

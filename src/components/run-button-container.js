@@ -16,6 +16,7 @@ import {
     startShortCircuitAnalysis,
     stopSecurityAnalysis,
     stopSensitivityAnalysis,
+    stopShortCircuitAnalysis,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
 import LoopIcon from '@mui/icons-material/Loop';
@@ -124,8 +125,8 @@ export function RunButtonContainer({
                 stopSensitivityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
-                // stopShortCircuitAnalysis(studyUuid, currentNode?.id);
-                // setComputationStopped(!computationStopped);
+                stopShortCircuitAnalysis(studyUuid, currentNode?.id);
+                setComputationStopped(!computationStopped);
             }
         },
     };
