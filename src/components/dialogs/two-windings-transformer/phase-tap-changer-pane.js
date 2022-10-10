@@ -59,7 +59,7 @@ const ImportDephasingRuleDialog = (props) => {
             'Conductance',
             'Susceptance',
             'Ratio',
-            'ShiftAngle',
+            'Alpha',
         ];
     };
 
@@ -95,7 +95,7 @@ const ImportDephasingRuleDialog = (props) => {
                             ratio: isNaN(parseFloat(val.Ratio))
                                 ? 1
                                 : parseFloat(val.Ratio),
-                            shiftAngle: parseIntData(val.ShiftAngle, 0),
+                            alpha: parseIntData(val.Alpha, 0),
                             isEdited: true,
                         };
                     });
@@ -204,7 +204,7 @@ const PhaseTapChangerPane = (props) => {
             conductance: 0,
             susceptance: 0,
             ratio: 1,
-            shiftAngle: 0,
+            alpha: 0,
             isEdited: false,
         };
     };
@@ -286,9 +286,9 @@ const PhaseTapChangerPane = (props) => {
                 dataKey: 'ratio',
             },
             {
-                label: intl.formatMessage({ id: 'ShiftAngle' }).toUpperCase(),
-                id: 'shiftAngle',
-                dataKey: 'shiftAngle',
+                label: intl.formatMessage({ id: 'Alpha' }).toUpperCase(),
+                id: 'alpha',
+                dataKey: 'alpha',
             },
         ];
     }, [intl]);
@@ -455,20 +455,17 @@ const PhaseTapChangerPane = (props) => {
         handlePhaseTapRows(rows);
     };
 
-    const handleCreateShiftAngleTapRule = (
-        lowTapShiftAngle,
-        highTapShiftAngle
-    ) => {
+    const handleCreateAlphaTapRule = (lowTapAlpha, highTapAlpha) => {
         let tempRows = phaseTapRows;
 
         if (tempRows.length > 1) {
-            let shiftAngleInterval =
-                (highTapShiftAngle - lowTapShiftAngle) / (tempRows.length - 1);
-            let currentShiftAngle = lowTapShiftAngle;
+            let alphaInterval =
+                (highTapAlpha - lowTapAlpha) / (tempRows.length - 1);
+            let currentAlpha = lowTapAlpha;
 
             tempRows.forEach((row, index) => {
-                tempRows[index].shiftAngle = currentShiftAngle;
-                currentShiftAngle += shiftAngleInterval;
+                tempRows[index].alpha = currentAlpha;
+                currentAlpha += alphaInterval;
             });
             handlePhaseTapRows(tempRows);
         }
@@ -586,7 +583,7 @@ const PhaseTapChangerPane = (props) => {
                 ruleType={PHASE_TAP}
                 setOpenCreateRuleDialog={setOpenCreateDephasingRule}
                 openCreateRuleDialog={openCreateDephasingRule}
-                handleCreateTapRule={handleCreateShiftAngleTapRule}
+                handleCreateTapRule={handleCreateAlphaTapRule}
             />
 
             <ImportDephasingRuleDialog

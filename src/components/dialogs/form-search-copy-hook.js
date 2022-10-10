@@ -35,6 +35,7 @@ export const useFormSearchCopy = ({
         ).then((response) => {
             if (response.status === 200) {
                 response.json().then((equipment) => {
+                    console.log(equipment);
                     const equipmentFormValues = toFormValues(equipment);
                     setFormValues(equipmentFormValues);
 

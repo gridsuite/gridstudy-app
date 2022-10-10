@@ -49,7 +49,6 @@ const RegulatingTerminalEdition = ({
     disabled = false,
     voltageLevelEquipmentsCallback,
     equipmentSectionTypeDefaultValue,
-    equipmentSectionIdDefaultValue,
 }) => {
     const classes = useStyles();
 
@@ -108,19 +107,30 @@ const RegulatingTerminalEdition = ({
     ]);
 
     useEffect(() => {
+        let selectedExistingEquipment;
+        if (regulatingTerminalValue?.equipmentSection) {
+            selectedExistingEquipment = equipmentsOptions.find(
+                (value) =>
+                    value.id === regulatingTerminalValue.equipmentSection.id
+            );
+        }
         setCurrentEquipment(
             regulatingTerminalValue?.equipmentSection &&
-                equipmentsOptions.length
-                ? equipmentsOptions.find(
-                      (value) =>
-                          value.id ===
-                          regulatingTerminalValue.equipmentSection.id
-                  )
+                selectedExistingEquipment
+                ? selectedExistingEquipment
                 : regulatingTerminalValue?.equipmentSection === null
                 ? ''
-                : regulatingTerminalValue.equipmentSection
+                : {
+                      id: regulatingTerminalValue?.equipmentSection.id,
+                      type: equipmentSectionTypeDefaultValue,
+                  }
         );
-    }, [equipmentsOptions, regulatingTerminalValue.equipmentSection]);
+    }, [
+        equipmentSectionTypeDefaultValue,
+        equipmentsOptions,
+        regulatingTerminalValue,
+        regulatingTerminalValue.equipmentSection,
+    ]);
 
     return (
         <>
@@ -155,7 +165,6 @@ const RegulatingTerminalEdition = ({
                         */
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
-
                             if (
                                 params.inputValue !== '' &&
                                 !options.find(
@@ -219,7 +228,10 @@ const RegulatingTerminalEdition = ({
                         getOptionLabel={(equipment) => {
                             return equipment === ''
                                 ? '' // to clear field
-                                : equipment?.type + ' : ' + equipment?.id || '';
+                                : (equipment?.type ??
+                                      equipmentSectionTypeDefaultValue) +
+                                      ' : ' +
+                                      equipment?.id || '';
                         }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value

@@ -489,7 +489,8 @@
     "GeneratePhaseTapRowsError": "Please generate the phase changer steps",
     "IncoherentPhaseLowTapPositionError": "The Low tap position value is not consistent with the phase tap changer steps data",
     "IncoherentRatioTapPositionError": "The Tap position value is not consistent with the ratio tap changer steps data",
-    "IncoherentPhaseTapPositionError": "The Tap position value is not consistent with the phase tap changer steps data",
+    "IncoherentRatioRegulatingTerminalError": "The phase tap Regulating terminal value must be filled",
+    "IncoherentPhaseRegulatingTerminalError": "The ratio tap Regulating terminal value must be filled",
 
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",
@@ -497,7 +498,7 @@
     "DeltaConductance":"Δ Conductance (%)",
     "DeltaSusceptance":"Δ Susceptance (%)",
     "Ratio":"Ratio",
-    "ShiftAngle":"Shift angle (°)",
+    "Alpha":"Shift angle (°)",
 
     "RegulationMode": "Regulation mode",
     "FixedTap": "Fixed tap",
@@ -515,8 +516,8 @@
     "GenerateTapRows" : "Generate tap rows",
 
     "CreateDephasingRule":"Create dephasing rule",
-    "LowTapShiftAngle":"Shift angle (low tap position)",
-    "HighTapShiftAngle":"Shift angle (high tap position)",
+    "LowTapAlpha":"Shift angle (low tap position)",
+    "HighTapAlpha":"Shift angle (high tap position)",
     "ImportDephasingRule":"Import dephasing rule",
 
     "GenerateSkeleton": "Generate CSV skeleton",

@@ -491,6 +491,8 @@
     "IncoherentPhaseLowTapPositionError": "La valeur du champ Prise min du déphaseur ne correspond pas aux données de ses prises",
     "IncoherentRatioTapPositionError": "La valeur du champ Prise courante du régleur n'est pas présente dans les données de ses prises",
     "IncoherentPhaseTapPositionError": "La valeur du champ Prise courante du déphaseur n'est pas présente dans les données de ses prises",
+    "IncoherentRatioRegulatingTerminalError": "La valeur du Terminal distant réglé du régleur doit être renseignée",
+    "IncoherentPhaseRegulatingTerminalError": "La valeur du Terminal distant réglé du déphaseur doit être renseignée",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",
@@ -498,7 +500,7 @@
     "DeltaConductance":"Δ Conductance (%)",
     "DeltaSusceptance":"Δ Susceptance (%)",
     "Ratio":"Rapport",
-    "ShiftAngle":"Déphasage (°)",
+    "Alpha":"Déphasage (°)",
 
     "RegulationMode": "Mode de réglage",
     "FixedTap": "Déphasage constant",
@@ -516,8 +518,8 @@
     "GenerateTapRows" : "Générer les prises",
 
     "CreateDephasingRule":"Créer loi de déphasage",
-    "LowTapShiftAngle":"Déphasage (prise min)",
-    "HighTapShiftAngle":"Déphasage (prise max)",
+    "LowTapAlpha":"Déphasage (prise min)",
+    "HighTapAlpha":"Déphasage (prise max)",
     "ImportDephasingRule":"Importer loi de déphasage",
 
     "GenerateSkeleton": "Générer le squelette",

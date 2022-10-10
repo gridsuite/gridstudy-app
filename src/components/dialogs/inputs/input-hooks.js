@@ -350,7 +350,7 @@ export const useEnumValue = ({
 
     const field = useMemo(() => {
         return (
-            <FormControl fullWidth size="small" {...genHelperError(error, '')}>
+            <FormControl fullWidth size="small" error={error && error !== ''}>
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                 <InputLabel id="enum-type-label" {...formProps}>
@@ -380,6 +380,11 @@ export const useEnumValue = ({
                 </Select>
                 {previousValue && (
                     <FormHelperText>{previousValue}</FormHelperText>
+                )}
+                {error && (
+                    <FormHelperText>
+                        <FormattedMessage id={error} />
+                    </FormHelperText>
                 )}
             </FormControl>
         );
@@ -503,6 +508,9 @@ export const useRegulatingTerminalValue = ({
                 }
                 direction={direction}
                 voltageLevelEquipmentsCallback={makeRefreshRegulatingTerminalSectionsCallback()}
+                equipmentSectionTypeDefaultValue={
+                    equipmentSectionTypeDefaultValue
+                }
             />
         );
     }, [
@@ -511,6 +519,7 @@ export const useRegulatingTerminalValue = ({
         regulatingTerminal,
         voltageLevelsEquipments,
         direction,
+        equipmentSectionTypeDefaultValue,
         setVoltageLevel,
         setEquipmentSection,
     ]);
