@@ -917,6 +917,34 @@ export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
     });
 }
 
+export function fetchSensitivityAnalysisResultTabbed(
+    studyUuid,
+    currentNodeUuid,
+    selector
+) {
+    console.info(
+        'Fetching sensitivity analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(selector);
+    urlSearchParams.append('selector', jsoned);
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/result-tabbed?' +
+        urlSearchParams.toString();
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) return response.json();
+        throw new Error(response.status + ' ' + response.statusText);
+    });
+}
+
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
     console.info(
         `Running short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
@@ -2206,11 +2234,11 @@ export function deleteEquipment(
     } else {
         console.info('Creating equipment deletion');
         deleteEquipmentUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/equipments/type/' +
-            encodeURIComponent(equipmentType) +
-            '/id/' +
-            encodeURIComponent(equipmentId);
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modification/equipments/type/' +
+        encodeURIComponent(equipmentType) +
+        '/id/' +
+        encodeURIComponent(equipmentId);
     }
     return backendFetch(deleteEquipmentUrl, {
         method: modificationUuid ? 'PUT' : 'DELETE',

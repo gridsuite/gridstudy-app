@@ -61,6 +61,54 @@ import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
 
+function isWorthUpdate(
+    studyUpdatedForce,
+    fetcher,
+    lastUpdateRef,
+    nodeUuidRef,
+    nodeUuid,
+    invalidations
+) {
+    const headers = studyUpdatedForce?.eventData?.headers;
+    const updateType = headers?.[UPDATE_TYPE_HEADER];
+    const node = headers?.['node'];
+    const nodes = headers?.['nodes'];
+    console.log('notified somewhat', lastUpdateRef, studyUpdatedForce, headers);
+    if (nodeUuidRef.current !== nodeUuid) {
+        console.log('changed of node -> do');
+        return true;
+    }
+    if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
+        console.log('changed of fetcher -> do');
+        return true;
+    }
+    if (
+        studyUpdatedForce &&
+        lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce
+    ) {
+        console.log('already forced last time -> do not');
+        return false;
+    }
+    if (!updateType) {
+        console.log('update type not defined -> do not');
+        return false;
+    }
+    if (invalidations.indexOf(updateType) <= -1) {
+        console.log('update type not registered -> do not');
+        return false;
+    }
+    if (node === undefined && nodes === undefined) {
+        console.log('undefined node and nodes -> do');
+        return true;
+    }
+    if (node === nodeUuid || nodes?.indexOf(nodeUuid) !== -1) {
+        console.log('watched node -> do');
+        return true;
+    }
+
+    return false;
+}
+
 export function useNodeData(
     studyUuid,
     nodeUuid,
@@ -81,8 +129,10 @@ export function useNodeData(
         setIsPending(true);
         fetcher(studyUuid, nodeUuid)
             .then((res) => {
-                if (nodeUuidRef.current === nodeUuid)
+                if (nodeUuidRef.current === nodeUuid) {
+                    console.log('got calculus result', res);
                     setResult(resultConversion ? resultConversion(res) : res);
+                }
             })
             .catch((err) => setErrorMessage(err.message))
             .finally(() => setIsPending(false));
@@ -91,22 +141,26 @@ export function useNodeData(
     /* initial fetch and update */
     useEffect(() => {
         if (!studyUuid || !nodeUuid) return;
-        const headers = studyUpdatedForce?.eventData?.headers;
-        const updateType = headers && headers[UPDATE_TYPE_HEADER];
-        const node = headers && headers['node'];
-        const nodes = headers && headers['nodes'];
-        const isUpdateForUs =
-            lastUpdateRef.current !== studyUpdatedForce &&
-            updateType &&
-            ((node === undefined && nodes === undefined) ||
-                node === nodeUuid ||
-                nodes?.indexOf(nodeUuid) !== -1) &&
-            invalidations.indexOf(updateType) !== -1;
-        lastUpdateRef.current = studyUpdatedForce;
+        const isUpdateForUs = isWorthUpdate(
+            studyUpdatedForce,
+            fetcher,
+            lastUpdateRef,
+            nodeUuidRef,
+            nodeUuid,
+            invalidations
+        );
+        lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
             update();
         }
-    }, [update, nodeUuid, invalidations, studyUpdatedForce, studyUuid]);
+    }, [
+        update,
+        fetcher,
+        nodeUuid,
+        invalidations,
+        studyUpdatedForce,
+        studyUuid,
+    ]);
 
     return [result, isPending, errorMessage, update];
 }
