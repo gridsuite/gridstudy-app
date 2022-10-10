@@ -520,5 +520,28 @@
     "EmptyList/bbs": "La liste de jeux de barres est vide",
     "EmptyList/connections": "La liste de connexions est vide",
 
-    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre"
+    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
+
+    "resultsThreshold": "Seuil minimal de sensibilité",
+    "SensitivityBranches": "Sensibilité au niveau des quadripôles",
+    "SensitivityInjectionsSet" : "Par rapport à un ensemble d'injections :",
+    "SensitivityInjection" : "Par rapport à chaque injection :",
+    "SensitivityHvdc": "Par rapport à chaque HVDC :",
+    "SensitivityTD":  "Par rapport à chaque TD :",
+    "SensitivityNodes": "Sensibilité au niveau des nœuds",
+    "Proportional": "Proportionnel",
+    "ProportionalMaxP": "Proportionnel à Pmax",
+    "Regular": "Équirépartition",
+    "Ventilation": "Ventilation",
+    "DistributionType": "Type de répartition",
+    "SensitivityType": "Type de sensibilité",
+    "DeltaMW": "\u0394 MW",
+    "DeltaA": "\u0394 A",
+    "AddSensitivityFactor": "Ajouter calcul de sensibilité",
+    "ContingencyLists": "Aléas",
+    "Injections": "Injections",
+    "SupervisedVoltageLevels": "Postes surveillés",
+    "EquipmentsInVoltageRegulation" : "Ouvrages en réglage tension",
+    "PSTS": "TDs",
+    "ElementAlreadyUsed": "Cet élément est déjà utilisé"
 }

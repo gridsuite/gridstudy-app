@@ -25,6 +25,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
+import FolderIcon from '@mui/icons-material/Folder';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
@@ -59,6 +60,9 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import RegulatingTerminalEdition, {
     makeRefreshRegulatingTerminalSectionsCallback,
 } from '../regulating-terminal-edition';
+import Chip from '@mui/material/Chip';
+import DirectoryItemSelector from '../../directory-item-selector';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -749,4 +753,120 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     }, [studyUuid, name, validName, triggerReset]);
 
     return [error, field, isValidName, name];
+};
+
+// TODO : when metadata will be available, add metadata to filter the element selection
+//  (if elementType is FILTER : filtering by equipment type or type: MANUAL or FORM ...)
+export const useDirectoryElements = ({
+    label,
+    initialValues,
+    elementType,
+    equipmentTypes,
+    titleId,
+    elementClassName,
+}) => {
+    const classes = useStyles();
+    const [values, setValues] = useState(initialValues);
+    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] =
+        useState(false);
+    const intl = useIntl();
+    const intlRef = useIntlRef();
+    const { enqueueSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        if (initialValues !== null) {
+            setValues(initialValues);
+        }
+    }, [initialValues]);
+
+    const handleDelete = useCallback(
+        (item, index) => {
+            let arr = [...values];
+            arr.splice(index, 1);
+            setValues(arr);
+        },
+        [values]
+    );
+
+    const addElements = useCallback(
+        (elements) => {
+            if (elements.length > 0) {
+                elements.forEach((element) => {
+                    const { icon, children, ...elementRest } = element;
+                    // check if element is already present
+                    if (
+                        values.find((v) => v.id === elementRest.id) !==
+                        undefined
+                    ) {
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: '',
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'ElementAlreadyUsed',
+                                intlRef: intlRef,
+                            },
+                        });
+                    } else {
+                        setValues(values.concat(elementRest));
+                    }
+                });
+            }
+            setDirectoryItemSelectorOpen(false);
+        },
+        [values, enqueueSnackbar, intlRef]
+    );
+
+    const field = useMemo(() => {
+        return (
+            <>
+                <InputLabel id="elements">
+                    <FieldLabel label={label} optional={false} />
+                </InputLabel>
+                <FormControl className={classes.formDirectoryElements}>
+                    <div>
+                        {values.map((item, index) => (
+                            <Chip
+                                className={elementClassName}
+                                key={label + '_' + index}
+                                size="small"
+                                onDelete={() => handleDelete(item, index)}
+                                label={
+                                    <OverflowableText
+                                        text={item.name}
+                                        style={{ width: '100%' }}
+                                    />
+                                }
+                            />
+                        ))}
+                    </div>
+                    <IconButton
+                        size={'small'}
+                        onClick={() => setDirectoryItemSelectorOpen(true)}
+                    >
+                        <FolderIcon />
+                    </IconButton>
+                </FormControl>
+                <DirectoryItemSelector
+                    open={directoryItemSelectorOpen}
+                    onClose={addElements}
+                    types={[elementType]}
+                    // equipmentTypes={{equipmentTypes}}   TODO : to use when filtering with equipmentTypes will be available
+                    title={intl.formatMessage({ id: titleId })}
+                />
+            </>
+        );
+    }, [
+        classes.formDirectoryElements,
+        values,
+        addElements,
+        handleDelete,
+        directoryItemSelectorOpen,
+        elementType,
+        intl,
+        titleId,
+        label,
+        elementClassName,
+    ]);
+
+    return [values, field];
 };

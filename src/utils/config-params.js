@@ -24,12 +24,6 @@ export const PARAM_FLUX_CONVENTION = 'fluxConvention';
 export const PARAM_LANGUAGE = 'language';
 
 export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
-export const PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS =
-    'favoriteSensiVariablesFiltersLists';
-export const PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS =
-    'favoriteSensiContingencyLists';
-export const PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS =
-    'favoriteSensiBranchFiltersLists';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 

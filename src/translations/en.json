@@ -519,5 +519,28 @@
     "EmptyList/bbs": "Bus Bar list is empty",
     "EmptyList/connections": "Connections list is empty",
 
-    "UnsupportedView": "Search is unavailable in tree view"
+    "UnsupportedView": "Search is unavailable in tree view",
+
+    "resultsThreshold": "Minimum sensitivity threshold",
+    "SensitivityBranches": "Branch sensitivity",
+    "SensitivityInjectionsSet" : "Relatively to injections set :",
+    "SensitivityInjection" : "Relatively to each injection :",
+    "SensitivityHvdc": "Relatively to each HVDC :",
+    "SensitivityTD":  "Relatively to each PST :",
+    "SensitivityNodes": "Node sensitivity",
+    "Proportional": "Proportional",
+    "ProportionalMaxP": "Proportional to maxP",
+    "Regular": "Regular distribution",
+    "Ventilation": "Ventilation",
+    "DistributionType": "Distribution type",
+    "SensitivityType": "Sensitivity type",
+    "DeltaMW": "\u0394 MW",
+    "DeltaA": "\u0394 A",
+    "AddSensitivityFactor": "Add sensitivity factor",
+    "ContingencyLists": "Contingencies",
+    "Injections": "Injections",
+    "SupervisedVoltageLevels": "Supervised voltage levels",
+    "EquipmentsInVoltageRegulation" : "Equipments in voltage regulation",
+    "PSTS" : "PSTs",
+    "ElementAlreadyUsed": "This element is already used"
 }

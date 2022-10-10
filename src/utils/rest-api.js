@@ -776,40 +776,10 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     });
 }
 
-function getSensitivityAnalysisQueryParams(
-    variablesFiltersUuids,
-    contingencyListUuids,
-    branchFiltersUuids
-) {
-    if (
-        variablesFiltersUuids.length > 0 ||
-        contingencyListUuids.length > 0 ||
-        branchFiltersUuids.length > 0
-    ) {
-        const urlSearchParams = new URLSearchParams();
-        variablesFiltersUuids.forEach((variablesFiltersUuid) =>
-            urlSearchParams.append(
-                'variablesFiltersListUuid',
-                variablesFiltersUuid
-            )
-        );
-        contingencyListUuids.forEach((contingencyListUuid) =>
-            urlSearchParams.append('contingencyListUuid', contingencyListUuid)
-        );
-        branchFiltersUuids.forEach((branchFiltersUuid) =>
-            urlSearchParams.append('branchFiltersListUuid', branchFiltersUuid)
-        );
-        return '?' + urlSearchParams.toString();
-    }
-    return '';
-}
-
 export function startSensitivityAnalysis(
     studyUuid,
     currentNodeUuid,
-    variablesFiltersUuids,
-    contingencyListUuids,
-    branchFiltersUuids
+    sensiConfiguration
 ) {
     console.info(
         'Running sensi on ' +
@@ -820,14 +790,19 @@ export function startSensitivityAnalysis(
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensitivity-analysis/run' +
-        getSensitivityAnalysisQueryParams(
-            variablesFiltersUuids,
-            contingencyListUuids,
-            branchFiltersUuids
-        );
+        '/sensitivity-analysis/run';
     console.debug(url);
-    return backendFetch(url, { method: 'post' });
+
+    const body = JSON.stringify(sensiConfiguration);
+
+    return backendFetch(url, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: body,
+    });
 }
 
 export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {

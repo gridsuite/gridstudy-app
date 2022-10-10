@@ -40,6 +40,16 @@ export const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         margin: theme.spacing(0.5),
     },
+    formDirectoryElements: {
+        display: 'flex',
+        gap: '8px',
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        border: '2px solid lightgray',
+        padding: 4,
+        borderRadius: '4px',
+        overflow: 'hidden',
+    },
 }));
 
 export const SusceptanceAdornment = {
@@ -107,14 +117,14 @@ export const removeNullDataValues = (data) => {
     });
 };
 
-export const GridSection = ({ title, size = 12 }) => {
-    const classes = useStyles();
+export const GridSection = ({ title, heading = '3', size = 12 }) => {
+    const CustomTag = `h${heading}`;
     return (
         <Grid container spacing={2}>
             <Grid item xs={size}>
-                <h3 className={classes.h3}>
+                <CustomTag>
                     <FormattedMessage id={title} />
-                </h3>
+                </CustomTag>
             </Grid>
         </Grid>
     );
