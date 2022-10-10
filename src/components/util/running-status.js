@@ -57,7 +57,7 @@ export function getSensiRunningStatus(sensiStatus) {
 
 export function getShortCircuitRunningStatus(shortCircuitStatus) {
     switch (shortCircuitStatus) {
-        case 'DONE':
+        case 'COMPLETED':
             return RunningStatus.SUCCEED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
