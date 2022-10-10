@@ -17,7 +17,7 @@
 
     "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
-    "invalidateCopyPastOfNode": "Invalidation du collage du noeud suite à la modification du neoud copié",
+    "Invalidation de la copie du nœud suite à modification": "Invalidation du collage du noeud suite à la modification du neoud copié",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "format": "Format",

@@ -151,28 +151,27 @@ export const NetworkModificationTreePane = ({
                     dispatch(
                         removeNotificationByNode(currentNodeRef.current?.id)
                     );
-                }
-            }
-        }
-    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
-
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'nodeUpdated'
-            ) {
-                if (
+                } if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) => nodeId === selectedNodeIdForCopy
                     )
                 ) {
                     setSelectedNodeIdForCopy(null);
-                    snackInfo('', 'invalidateCopyPastOfNode');
+                    snackInfo(
+                        '',
+                        'Invalidation de la copie du nœud suite à modification'
+                    );
                 }
             }
         }
-    }, [studyUpdatedForce, updateNodes, selectedNodeIdForCopy, snackInfo]);
+    }, [
+        studyUuid,
+        studyUpdatedForce,
+        updateNodes,
+        dispatch,
+        selectedNodeIdForCopy,
+        snackInfo,
+    ]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
