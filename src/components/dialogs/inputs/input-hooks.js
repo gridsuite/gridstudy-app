@@ -384,16 +384,17 @@ export const useEnumValue = ({
             </FormControl>
         );
     }, [
-        getId,
-        getEnumLabel,
-        label,
-        value,
-        previousValue,
-        handleChangeValue,
+        error,
         formProps,
-        enumValues,
-        doTranslation,
+        label,
         validation.isFieldRequired,
+        value,
+        handleChangeValue,
+        enumValues,
+        previousValue,
+        getId,
+        doTranslation,
+        getEnumLabel,
     ]);
 
     useEffect(() => {
