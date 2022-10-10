@@ -177,7 +177,7 @@ export function RunButtonContainer({
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(setRanShortCircuit(true))
                 .catch((errorMessage) => {
-                    snackError(errorMessage, 'shortCircuitError');
+                    snackError(errorMessage, 'ShortCircuitError');
                 });
         }
     };

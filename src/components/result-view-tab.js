@@ -131,7 +131,7 @@ export const ResultViewTab = ({
                     />
                     <Tab
                         label={intl.formatMessage({
-                            id: 'shortCircuitAnalysisResults',
+                            id: 'ShortCircuitAnalysisResults',
                         })}
                         disabled={disabled}
                     />
