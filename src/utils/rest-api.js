@@ -898,17 +898,37 @@ export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
 
 export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
     console.info(
-        'Fetching sensitivity analysis on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            ' ...'
+        `Fetching sensitivity analysis on ${studyUuid} and node ${currentNodeUuid}  ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/sensitivity-analysis/result';
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function fetchSensitivityAnalysisResultTabbed(
+    studyUuid,
+    currentNodeUuid,
+    selector
+) {
+    console.info(
+        `Fetching sensitivity analysis on ${studyUuid} and node ${currentNodeUuid}  ...`
+    );
+
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(selector);
+    urlSearchParams.append('selector', jsoned);
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/result-tabbed?' +
+        urlSearchParams.toString();
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) return response.json();
+        throw new Error(response.status + ' ' + response.statusText);
+    });
 }
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
