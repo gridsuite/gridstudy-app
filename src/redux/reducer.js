@@ -128,6 +128,7 @@ const initialState = {
     loadflowNotif: false,
     saNotif: false,
     sensiNotif: false,
+    shortCircuitNotif: false,
     filteredNominalVoltages: null,
     fullScreenSldId: null,
     fullScreenNadId: null,

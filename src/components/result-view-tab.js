@@ -141,7 +141,7 @@ export const ResultViewTab = ({
             {tabIndex === 0 && !disabled && renderLoadFlowResult()}
             {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
             {tabIndex === 2 && !disabled && renderSensitivityAnalysisResult()}
-            {tabIndex === 2 && !disabled && renderShortCircuitAnalysisResult()}
+            {tabIndex === 3 && !disabled && renderShortCircuitAnalysisResult()}
         </Paper>
     );
 };
