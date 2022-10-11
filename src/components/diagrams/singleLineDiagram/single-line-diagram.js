@@ -193,8 +193,7 @@ const computePaperAndSvgSizesIfReady = (
     totalHeight,
     svgPreferredWidth,
     svgPreferredHeight,
-    headerPreferredHeight,
-    numberToDisplay
+    headerPreferredHeight
 ) => {
     if (
         typeof svgPreferredWidth != 'undefined' &&
@@ -225,9 +224,6 @@ const computePaperAndSvgSizesIfReady = (
                 totalHeight - mapBottomOffset - headerPreferredHeight,
                 maxHeight
             );
-            if (numberToDisplay > 1) {
-                svgWidth = totalWidth - borders;
-            }
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
         }
@@ -235,7 +231,7 @@ const computePaperAndSvgSizesIfReady = (
     }
 };
 
-const SizedSingleLineDiagram = forwardRef((props, ref) => {
+const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgUrl = useRef('');
     const svgDraw = useRef();
@@ -336,14 +332,30 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
-            headerPreferredHeight,
-            numberToDisplay
+            headerPreferredHeight
         );
         if (typeof sizes != 'undefined') {
-            setSvgFinalWidth(sizes.svgWidth);
-            setSvgFinalHeight(sizes.svgHeight);
-            setFinalPaperWidth(sizes.paperWidth);
-            setFinalPaperHeight(sizes.paperHeight);
+            if (
+                !fullScreenSldId &&
+                sizes.svgWidth * numberToDisplay > totalWidth
+            ) {
+                setSvgFinalWidth(totalWidth / numberToDisplay);
+                setFinalPaperWidth(totalWidth / numberToDisplay);
+
+                const adjustedHeight =
+                    sizes.svgHeight *
+                    (totalWidth / numberToDisplay / sizes.svgWidth);
+
+                setSvgFinalHeight(adjustedHeight);
+                setFinalPaperHeight(
+                    adjustedHeight + (sizes.paperHeight - sizes.svgHeight)
+                );
+            } else {
+                setSvgFinalWidth(sizes.svgWidth);
+                setFinalPaperWidth(sizes.paperWidth);
+                setSvgFinalHeight(sizes.svgHeight);
+                setFinalPaperHeight(sizes.paperHeight);
+            }
         }
     }, [
         fullScreenSldId,
@@ -534,13 +546,15 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         }
     };
 
-    const showFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagramId(sldId));
-    };
+    const showFullScreen = useCallback(
+        () => dispatch(fullScreenSingleLineDiagramId(sldId)),
+        [dispatch, sldId]
+    );
 
-    const hideFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagramId(undefined));
-    };
+    const hideFullScreen = useCallback(
+        () => dispatch(fullScreenSingleLineDiagramId(undefined)),
+        [dispatch]
+    );
 
     function displayMenuLine() {
         return (
@@ -607,10 +621,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         () => toggleState(sldId, svgType, ViewState.PINNED),
         [sldId, svgType, toggleState]
     );
-    const minimizeSld = useCallback(
-        () => toggleState(sldId, svgType, ViewState.MINIMIZED),
-        [toggleState, sldId, svgType]
-    );
+
+    const minimizeSld = useCallback(() => {
+        toggleState(sldId, svgType, ViewState.MINIMIZED);
+        hideFullScreen();
+    }, [toggleState, sldId, svgType, hideFullScreen]);
 
     return !svg.error ? (
         <Paper
@@ -625,6 +640,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 height: sizeHeight,
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
                 overflow: 'hidden',
+                display:
+                    !fullScreenSldId || sldId === fullScreenSldId ? '' : 'none',
             }}
         >
             <Box>
@@ -747,21 +764,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         </Paper>
     ) : (
         <></>
-    );
-});
-
-const SingleLineDiagram = forwardRef((props, ref) => {
-    return (
-        <AutoSizer>
-            {({ width, height }) => (
-                <SizedSingleLineDiagram
-                    ref={ref}
-                    totalWidth={width}
-                    totalHeight={height}
-                    {...props}
-                />
-            )}
-        </AutoSizer>
     );
 });
 
