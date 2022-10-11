@@ -297,6 +297,10 @@
     "FluxConvention": "Convention des flux actifs et réactifs dans les tableurs\u00a0:",
     "FluxConvention.iidm": "IIDM",
     "FluxConvention.target": "Métier",
+    "Advanced": "Avancé",
+    "EnableDeveloperMode": "Activer mode développeur",
+    "showIncompleteFeatures": "Afficher les fonctionnalités incomplètes",
+    "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",

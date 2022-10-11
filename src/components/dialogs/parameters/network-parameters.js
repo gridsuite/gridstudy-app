@@ -5,17 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
-import { PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
+import { Box, Grid, MenuItem, Select, Typography } from '@mui/material';
+import {
+    PARAM_DEVELOPER_MODE,
+    PARAM_FLUX_CONVENTION,
+} from '../../../utils/config-params';
 import {
     CloseButton,
     LabelledButton,
+    SwitchWithLabel,
     useParameterState,
     useStyles,
 } from './parameters';
 import { fetchDefaultParametersValues } from '../../../utils/rest-api';
+import { LineSeparator } from '../dialogUtils';
+import Alert from '@mui/material/Alert';
+
 export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',
@@ -27,6 +33,9 @@ export const NetworkParameters = ({ hideParameters }) => {
         PARAM_FLUX_CONVENTION
     );
 
+    const [enableDeveloperMode, handleChangeEnableDeveloperMode] =
+        useParameterState(PARAM_DEVELOPER_MODE);
+
     const resetNetworkParameters = () => {
         fetchDefaultParametersValues().then((defaultValues) => {
             const defaultFluxConvention = defaultValues.fluxConvention;
@@ -34,6 +43,14 @@ export const NetworkParameters = ({ hideParameters }) => {
                 Object.values(FluxConventions).includes(defaultFluxConvention)
             ) {
                 handleChangeFluxConvention(defaultFluxConvention);
+            }
+
+            if (defaultValues?.enableDeveloperMode) {
+                handleChangeEnableDeveloperMode(
+                    defaultValues?.enableDeveloperMode
+                );
+            } else {
+                handleChangeEnableDeveloperMode(false);
             }
         });
     };
@@ -65,6 +82,24 @@ export const NetworkParameters = ({ hideParameters }) => {
                         </MenuItem>
                     </Select>
                 </Grid>
+                <LineSeparator />
+                <Grid item container xs={12}>
+                    <SwitchWithLabel
+                        label="EnableDeveloperMode"
+                        value={enableDeveloperMode}
+                        callback={() => {
+                            handleChangeEnableDeveloperMode(
+                                !enableDeveloperMode
+                            );
+                        }}
+                    />
+                    {enableDeveloperMode && (
+                        <Alert severity={'warning'}>
+                            <FormattedMessage id="DeveloperModeWarningMsg" />
+                        </Alert>
+                    )}
+                </Grid>
+                <LineSeparator />
                 <Grid
                     container
                     className={
