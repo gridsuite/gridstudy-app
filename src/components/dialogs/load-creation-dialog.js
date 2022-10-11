@@ -158,17 +158,26 @@ const LoadCreationDialog = ({
     });
 
     useEffect(() => {
-        console.log('Anas load name', formValues?.equipmentId);
+        console.log('ANAS', formValues?.equipmentType);
+        console.log('ANAS 2 ', LOAD_TYPES);
+
         if (
-            loadId !== formValues?.equipmentId
-            // ||
-            // loadName !== formValues?.equipmentName
+            loadId !== formValues?.equipmentId ||
+            loadName !== formValues?.equipmentName ||
+            loadType != formValues?.equipmentType
         ) {
             setBtnSaveListDisabled(false);
         } else {
             setBtnSaveListDisabled(true);
         }
-    }, [formValues?.equipmentId, formValues.loadType, loadId]);
+    }, [
+        formValues?.equipmentId,
+        formValues?.equipmentName,
+        formValues?.equipmentType,
+        loadId,
+        loadName,
+        loadType,
+    ]);
 
     const handleSave = () => {
         if (inputForm.validate()) {
