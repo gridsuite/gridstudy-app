@@ -95,7 +95,9 @@ const ImportDephasingRuleDialog = (props) => {
                             ratio: isNaN(parseFloat(val.Ratio))
                                 ? 1
                                 : parseFloat(val.Ratio),
-                            alpha: parseIntData(val.Alpha, 0),
+                            alpha: isNaN(parseFloat(val.Alpha))
+                                ? 1
+                                : parseFloat(val.Alpha),
                             isEdited: true,
                         };
                     });
