@@ -544,12 +544,12 @@ const TwoWindingsTransformerCreationDialog = ({
             disabled: !phaseTapRegulating || !phaseTapChangerEnabled,
             voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
-                formValues?.ratioTapChanger?.regulatingTerminalVlId ?? '',
+                formValues?.phaseTapChanger?.regulatingTerminalVlId ?? '',
             equipmentSectionTypeDefaultValue:
-                formValues?.ratioTapChanger?.regulatingTerminalType ??
+                formValues?.phaseTapChanger?.regulatingTerminalType ??
                 EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name,
             equipmentSectionIdDefaultValue:
-                formValues?.ratioTapChanger?.regulatingTerminalId ?? '',
+                formValues?.phaseTapChanger?.regulatingTerminalId ?? '',
         });
 
     const [phaseLowTapPosition, phaseLowTapPositionField] = useDoubleValue({
