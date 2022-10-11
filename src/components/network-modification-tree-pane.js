@@ -151,7 +151,8 @@ export const NetworkModificationTreePane = ({
                     dispatch(
                         removeNotificationByNode(currentNodeRef.current?.id)
                     );
-                } if (
+                }
+                if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) => nodeId === selectedNodeIdForCopy
                     )
