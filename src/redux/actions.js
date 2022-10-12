@@ -24,6 +24,7 @@ import {
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
     PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_MAP_MANUAL_REFRESH,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -229,6 +230,15 @@ export function selectDisplayOverloadTableState(displayOverloadTable) {
     return {
         type: DISPLAY_OVERLOAD_TABLE,
         [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
+    };
+}
+
+export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
+
+export function selectMapManualRefresh(mapManualRefresh) {
+    return {
+        type: MAP_MANUAL_REFRESH,
+        [PARAM_MAP_MANUAL_REFRESH]: mapManualRefresh,
     };
 }
 

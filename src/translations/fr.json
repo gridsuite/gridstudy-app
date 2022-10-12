@@ -83,6 +83,8 @@
     "Limit": "Limite",
     "load": "transit",
     "Load": "Transit",
+    "MapManualRefresh": "Mise à jour manuelle de l'image réseau géographique\u00a0:",
+    "ManuallyRefreshGeoData": "Mettre à jour la carte",
 
     "PageNotFound": "Page introuvable",
 

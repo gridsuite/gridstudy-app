@@ -42,6 +42,7 @@ import {
     selectFluxConvention,
     selectFavoriteSensiVariablesFiltersLists,
     selectFavoriteSensiBranchFiltersLists,
+    selectMapManualRefresh,
 } from '../redux/actions';
 
 import {
@@ -81,6 +82,7 @@ import {
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
     PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_MAP_MANUAL_REFRESH,
 } from '../utils/config-params';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -190,6 +192,11 @@ const App = () => {
                             selectDisplayOverloadTableState(
                                 param.value === 'true'
                             )
+                        );
+                        break;
+                    case PARAM_MAP_MANUAL_REFRESH:
+                        dispatch(
+                            selectMapManualRefresh(param.value === 'true')
                         );
                         break;
                     case PARAM_USE_NAME:
