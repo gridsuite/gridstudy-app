@@ -19,7 +19,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
@@ -326,25 +326,6 @@ const LinesAttachToSplitLinesDialog = ({
         handleClose();
     };
 
-    const lineSubstation = (isFirst, line) => {
-        if (!line) return '';
-        let vlId = '';
-        if (typeof line === 'object') {
-            vlId = isFirst ? line.voltageLevelId1 : line.voltageLevelId2;
-        } else if (isFirst) {
-            const mayLine = lineOptions.find((l) => l?.id === newLine1Id);
-            vlId = mayLine?.voltageLevelId1;
-        } else {
-            const mayLine = lineOptions.find((l) => l?.id === newLine2Id);
-            vlId = mayLine?.voltageLevelId2;
-        }
-        if (vlId) {
-            const mayVl = allVoltageLevelOptions.find((vl) => vl.id === vlId);
-            if (mayVl) return mayVl.name;
-        }
-        return '';
-    };
-
     return (
         <>
             <Dialog
@@ -365,32 +346,14 @@ const LinesAttachToSplitLinesDialog = ({
                     <GridSection title="Line1" />
                     <Grid container spacing={2} alignItems="center">
                         {gridItem(lineToAttachTo1Field, 5)}
-                        {gridItem(
-                            <Typography>
-                                {lineSubstation(true, lineToAttachTo1)}
-                            </Typography>,
-                            1
-                        )}
                     </Grid>
                     <GridSection title="Line2" />
                     <Grid container spacing={2} alignItems="center">
                         {gridItem(lineToAttachTo2Field, 5)}
-                        {gridItem(
-                            <Typography>
-                                {lineSubstation(true, lineToAttachTo2)}
-                            </Typography>,
-                            1
-                        )}
                     </Grid>
                     <GridSection title="LineAttached" />
                     <Grid container spacing={2} alignItems="center">
                         {gridItem(attachedLineField, 5)}
-                        {gridItem(
-                            <Typography>
-                                {lineSubstation(true, attachedLine)}
-                            </Typography>,
-                            1
-                        )}
                     </Grid>
                     <GridSection title="VoltageLevel" />
                     <Grid container spacing={2}>

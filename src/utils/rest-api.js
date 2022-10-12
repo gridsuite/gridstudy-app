@@ -1472,7 +1472,7 @@ export function createGenerator(
             droop: droop,
             maximumReactivePower: maximumReactivePower,
             minimumReactivePower: minimumReactivePower,
-            points: reactiveCapabilityCurve,
+            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
         }),
     }).then((response) => {
         return response.ok
