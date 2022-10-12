@@ -65,6 +65,7 @@ import {
     TOGGLE_PIN_SLD,
     CLOSE_SLD,
     ViewState,
+    LOAD_SLD_FROM_SESSION_STORAGE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -96,7 +97,7 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
-import { getSldStateFromSessionStorage } from './session-storage';
+import { loadSldStateFromSessionStorage } from './session-storage';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -145,17 +146,21 @@ const initialState = {
     notificationIdList: [],
     isModificationsInProgress: false,
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
+    sldState: [],
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
     reloadGeoData: true,
-    sldState: getSldStateFromSessionStorage() || [],
 };
 
 export const reducer = createReducer(initialState, {
     [OPEN_STUDY]: (state, action) => {
         state.studyUuid = action.studyRef[0];
+
+        if (action.studyRef[0] != null) {
+            state.sldState = loadSldStateFromSessionStorage(action.studyRef[0]);
+        }
     },
 
     [CLOSE_STUDY]: (state) => {

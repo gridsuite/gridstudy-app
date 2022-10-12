@@ -32,10 +32,11 @@ export function getArray(value) {
 export const useSingleLineDiagram = () => {
     const dispatch = useDispatch();
     const sldState = useSelector((state) => state.sldState);
+    const studyUuid = useSelector((state) => state.studyUuid);
 
     useEffect(() => {
-        syncSldStateWithSessionStorage(sldState);
-    }, [sldState]);
+        syncSldStateWithSessionStorage(sldState, studyUuid);
+    }, [sldState, studyUuid]);
 
     const openSldView = useCallback(
         (type, id) => {

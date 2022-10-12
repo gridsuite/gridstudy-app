@@ -186,25 +186,19 @@ export function SingleLineDiagramPane({
         minimizeSld,
     ] = useSingleLineDiagram();
 
-    const viewsRef = useRef();
-    viewsRef.current = views;
-
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
 
     useEffect(() => {
-        console.log('Modif state', sldState);
-        setViews(sldState.map((sld) => createView(sld)));
+        setViews(sldState.map(createView));
     }, [sldState, createView, disabled, visible]);
 
     const updateSld = useCallback((id) => {
         if (id) {
-            viewsRef.current
-                .find((sld) => sld.id === id)
-                ?.ref?.current?.reloadSvg();
+            views.find((sld) => sld.id === id)?.ref?.current?.reloadSvg();
         } else
-            viewsRef.current.forEach((sld) => {
-                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+            views.forEach((sld) => {
+                if (sld.svgUrl.indexOf(currentNode?.id) !== -1) {
                     sld?.ref?.current?.reloadSvg();
                 }
             });
@@ -250,13 +244,12 @@ export function SingleLineDiagramPane({
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
         if (isNodeBuilt(currentNodeRef.current) && visible) {
-            setViews(sldState.map((sld) => createView(sld)));
+            setViews(sldState.map(createView));
         }
     }, [sldState, visible, createView]);
 
     const toggleState = useCallback(
         (id, type, state) => {
-            console.log('CURRENT STATE ', sldState);
             if (state === ViewState.MINIMIZED) {
                 minimizeSld(id);
             }
@@ -283,7 +276,7 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers && viewsRef.current) {
+        if (studyUpdatedForce.eventData.headers && views) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
@@ -298,7 +291,7 @@ export function SingleLineDiagramPane({
                         studyUpdatedForce.eventData.headers[
                             'deletedEquipmentId'
                         ];
-                    const vlToClose = viewsRef.current.filter(
+                    const vlToClose = views.filter(
                         (vl) =>
                             vl.substationId === deletedId || vl.id === deletedId
                     );
@@ -307,7 +300,7 @@ export function SingleLineDiagramPane({
 
                     const substationsIds =
                         studyUpdatedForce.eventData.headers['substationsIds'];
-                    viewsRef.current.forEach((v) => {
+                    views.forEach((v) => {
                         const vl = network.getVoltageLevel(v.id);
                         if (vl && substationsIds.includes(vl.substationId)) {
                             updateSld(vl.id);
@@ -356,7 +349,7 @@ export function SingleLineDiagramPane({
                         pointerEvents: 'none',
                         flexDirection: 'column',
                     }}
-                    key={sld.svgUrl}
+                    key={sld.id}
                 >
                     <SingleLineDiagram
                         onClose={handleCloseSLD}
