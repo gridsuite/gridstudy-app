@@ -12,10 +12,10 @@ import { useMemo } from 'react';
 
 function makeColumn(isNum, labelId, key, intl) {
     return {
-        width: 200,
         label: intl.formatMessage({ id: labelId }),
         dataKey: key,
         numeric: isNum,
+        fractionDigits: isNum ? 2 : undefined,
     };
 }
 

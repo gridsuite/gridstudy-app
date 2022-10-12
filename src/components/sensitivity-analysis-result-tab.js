@@ -20,6 +20,15 @@ import Tab from '@mui/material/Tab';
 import { useSelector } from 'react-redux';
 import { PARAM_THEME } from '../utils/config-params';
 import { FormattedMessage } from 'react-intl/lib';
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles((theme) => ({
+    jsonResult: {
+        overflowY: 'auto',
+        maxHeight: '60rem',
+        lineHeight: 'normal',
+    },
+}));
 
 const sensitivityAnalysisResultInvalidations = ['sensitivityAnalysisResult'];
 
@@ -83,7 +92,9 @@ export const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                 />
             )}
             <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
-                {nOrNkIndex === 0 && renderAsJsonTree(fetched, selectedTheme)}
+                {nOrNkIndex === 0 && (
+                    <JsonTree fetched={fetched} selectedTheme={selectedTheme} />
+                )}
                 {nOrNkIndex > 0 && Array.isArray(fetched) && (
                     <SensitivityAnalysisResult
                         result={fetched}
@@ -96,9 +107,10 @@ export const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     );
 };
 
-function renderAsJsonTree(result, selectedTheme) {
+function JsonTree(result, selectedTheme) {
+    const classes = useStyles();
     return (
-        <>
+        <div className={classes.jsonResult}>
             <ReactJson
                 src={result}
                 onEdit={false}
@@ -108,7 +120,7 @@ function renderAsJsonTree(result, selectedTheme) {
                     selectedTheme === LIGHT_THEME ? 'rjv-default' : 'monokai'
                 }
             />
-        </>
+        </div>
     );
 }
 
