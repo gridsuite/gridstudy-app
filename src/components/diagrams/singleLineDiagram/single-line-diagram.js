@@ -53,7 +53,7 @@ import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
-import { SingleLineDiagramViewer } from '../single-line-diagram-viewer/single-line-diagram-viewer';
+import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
