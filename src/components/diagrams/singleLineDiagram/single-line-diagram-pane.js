@@ -193,16 +193,19 @@ export function SingleLineDiagramPane({
         setViews(sldState.map(createView));
     }, [sldState, createView, disabled, visible]);
 
-    const updateSld = useCallback((id) => {
-        if (id) {
-            views.find((sld) => sld.id === id)?.ref?.current?.reloadSvg();
-        } else
-            views.forEach((sld) => {
-                if (sld.svgUrl.indexOf(currentNode?.id) !== -1) {
-                    sld?.ref?.current?.reloadSvg();
-                }
-            });
-    }, []);
+    const updateSld = useCallback(
+        (id) => {
+            if (id) {
+                views.find((sld) => sld.id === id)?.ref?.current?.reloadSvg();
+            } else
+                views.forEach((sld) => {
+                    if (sld.svgUrl.indexOf(currentNode?.id) !== -1) {
+                        sld?.ref?.current?.reloadSvg();
+                    }
+                });
+        },
+        [currentNode?.id, views]
+    );
 
     const classes = useStyles();
 
@@ -257,7 +260,7 @@ export function SingleLineDiagramPane({
                 togglePinSld(id);
             }
         },
-        [minimizeSld, togglePinSld, sldState]
+        [minimizeSld, togglePinSld]
     );
 
     const handleCloseSLD = useCallback(
@@ -322,7 +325,15 @@ export function SingleLineDiagramPane({
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView, network]);
+    }, [
+        studyUpdatedForce,
+        views,
+        dispatch,
+        studyUuid,
+        updateSld,
+        closeView,
+        network,
+    ]);
 
     useEffect(() => {
         setDisplayedSld(

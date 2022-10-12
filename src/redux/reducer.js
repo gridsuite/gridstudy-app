@@ -65,7 +65,6 @@ import {
     TOGGLE_PIN_SLD,
     CLOSE_SLD,
     ViewState,
-    LOAD_SLD_FROM_SESSION_STORAGE,
 } from './actions';
 import {
     getLocalStorageTheme,
