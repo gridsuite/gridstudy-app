@@ -1472,7 +1472,7 @@ export function createGenerator(
             droop: droop,
             maximumReactivePower: maximumReactivePower,
             minimumReactivePower: minimumReactivePower,
-            points: reactiveCapabilityCurve,
+            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
         }),
     }).then((response) => {
         return response.ok
@@ -1851,6 +1851,61 @@ export function attachLine(
         lineAttachUrl =
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/line-attach';
+    }
+
+    return backendFetch(lineAttachUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function linesAttachToSplitLines(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    attachedLineId,
+    voltageLevelId,
+    bbsBusId,
+    replacingLine1Id,
+    replacingLine1Name,
+    replacingLine2Id,
+    replacingLine2Name
+) {
+    const body = JSON.stringify({
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        attachedLineId,
+        voltageLevelId,
+        bbsBusId,
+        replacingLine1Id,
+        replacingLine1Name,
+        replacingLine2Id,
+        replacingLine2Name,
+    });
+
+    let lineAttachUrl;
+    if (modificationUuid) {
+        console.info('Attaching lines to splitting lines update', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/lines-attach-to-split-lines';
+    } else {
+        console.info('Attaching lines to splitting lines', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/lines-attach-to-split-lines';
     }
 
     return backendFetch(lineAttachUrl, {

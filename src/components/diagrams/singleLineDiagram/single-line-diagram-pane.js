@@ -26,6 +26,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSingleLineDiagram, ViewState } from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
+import { AutoSizer } from 'react-virtualized';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -345,59 +346,57 @@ export function SingleLineDiagramPane({
 
     const displayedIds = new Set(displayedSLD.map(({ id }) => id));
     const minimized = views.filter(({ id }) => !displayedIds.has(id));
+
     return (
-        <>
-            {displayedSLD.map((sld) => (
-                <div
-                    style={{
-                        flexGrow: 1,
-                        flexShrink: 1,
-                        position: 'relative',
-                        display:
-                            !fullScreenSldId || sld.id === fullScreenSldId
-                                ? 'inline-flex'
-                                : 'none',
-                        pointerEvents: 'none',
-                        flexDirection: 'column',
-                    }}
-                    key={sld.id}
-                >
-                    <SingleLineDiagram
-                        onClose={handleCloseSLD}
-                        onNextVoltageLevelClick={handleOpenView}
-                        onBreakerClick={handleUpdateSwitchState}
-                        diagramTitle={sld.name}
-                        svgUrl={sld.svgUrl}
-                        sldId={sld.id}
-                        ref={sld.ref}
-                        svgType={sld.type}
-                        updateSwitchMsg={updateSwitchMsg}
-                        isComputationRunning={isComputationRunning}
-                        showInSpreadsheet={showInSpreadsheet}
-                        loadFlowStatus={loadFlowStatus}
-                        numberToDisplay={displayedSLD.length}
-                        toggleState={toggleState}
-                        pinned={sld.state === ViewState.PINNED}
-                        disabled={disabled}
-                    />
+        <AutoSizer>
+            {({ width, height }) => (
+                <div style={{ flexDirection: 'row', display: 'inline-flex' }}>
+                    {displayedSLD.map((sld) => (
+                        <SingleLineDiagram
+                            key={sld.id}
+                            onClose={handleCloseSLD}
+                            onNextVoltageLevelClick={handleOpenView}
+                            onBreakerClick={handleUpdateSwitchState}
+                            diagramTitle={sld.name}
+                            svgUrl={sld.svgUrl}
+                            sldId={sld.id}
+                            ref={sld.ref}
+                            svgType={sld.type}
+                            updateSwitchMsg={updateSwitchMsg}
+                            isComputationRunning={isComputationRunning}
+                            showInSpreadsheet={showInSpreadsheet}
+                            loadFlowStatus={loadFlowStatus}
+                            numberToDisplay={displayedSLD.length}
+                            toggleState={toggleState}
+                            pinned={sld.state === ViewState.PINNED}
+                            disabled={disabled}
+                            totalWidth={width}
+                            totalHeight={height}
+                        />
+                    ))}
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        spacing={1}
+                        className={classes.minimizedSLD}
+                        style={{
+                            display: !fullScreenSldId ? '' : 'none',
+                        }}
+                    >
+                        {minimized.map((view) => (
+                            <Chip
+                                key={view.id}
+                                icon={<ArrowUpwardIcon />}
+                                label={view.name}
+                                onClick={() =>
+                                    handleOpenView(view.id, view.type)
+                                }
+                                onDelete={() => handleCloseSLD(view.id)}
+                            />
+                        ))}
+                    </Stack>
                 </div>
-            ))}
-            <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={1}
-                className={classes.minimizedSLD}
-            >
-                {minimized.map((view) => (
-                    <Chip
-                        key={view.id}
-                        icon={<ArrowUpwardIcon />}
-                        label={view.name}
-                        onClick={() => handleOpenView(view.id, view.type)}
-                        onDelete={() => handleCloseSLD(view.id)}
-                    />
-                ))}
-            </Stack>
-        </>
+            )}
+        </AutoSizer>
     );
 }
 
