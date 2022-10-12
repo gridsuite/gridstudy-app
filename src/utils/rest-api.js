@@ -1658,6 +1658,13 @@ export function createTwoWindingsTransformer(
     });
 }
 
+function checkEquipementNameEmptyOrContainsOnlySpaces(name) {
+    if (!name.replace(/\s/g, '').length) {
+        return null;
+    }
+    return name;
+}
+
 export function createSubstation(
     studyUuid,
     currentNodeUuid,
@@ -1690,7 +1697,7 @@ export function createSubstation(
         },
         body: JSON.stringify({
             equipmentId: substationId,
-            equipmentName: substationName,
+            equipmentName: checkEquipementNameEmptyOrContainsOnlySpaces(substationName),
             substationCountry:
                 substationCountry === '' ? null : substationCountry,
         }),
