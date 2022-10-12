@@ -42,7 +42,7 @@ import {
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { Box } from '@mui/system';
-import { ENERGY_SOURCES } from '../network/constants';
+import { CONNECTION_DIRECTION, ENERGY_SOURCES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
@@ -357,6 +357,23 @@ const GeneratorCreationDialog = ({
             formValues?.busOrBusbarSectionId || null,
     });
 
+    const [connectionDirection, connectionDirectionField] = useEnumValue({
+        label: 'ConnectionDirection',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        formProps: filledTextField,
+        enumValues: CONNECTION_DIRECTION,
+        defaultValue: formValues ? formValues.connectionDirection : '',
+    });
+
+    const [connectionName, connectionNameField] = useTextValue({
+        label: 'ConnectionName',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        formProps: filledTextField,
+        defaultValue: formValues?.connectionName,
+    });
+
     useEffect(() => {
         setReactivePowerRequired(
             minimumReactivePower !== '' || maximumReactivePower !== ''
@@ -404,7 +421,9 @@ const GeneratorCreationDialog = ({
                 frequencyRegulation ? droop : null,
                 isReactiveCapabilityCurveOn ? null : maximumReactivePower,
                 isReactiveCapabilityCurveOn ? null : minimumReactivePower,
-                isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null
+                isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null,
+                !connectionDirection ? 'UNDEFINED' : connectionDirection,
+                connectionName ? connectionName : null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -458,6 +477,20 @@ const GeneratorCreationDialog = ({
                             {gridItem(generatorIdField, 4)}
                             {gridItem(generatorNameField, 4)}
                             {gridItem(energySourceField, 4)}
+                        </Grid>
+                        {/* Connectivity part */}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="Connectivity" />
+                                </h3>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            {gridItem(connectivityField, 8)}
+                            <Box sx={{ width: '100%' }} />
+                            {gridItem(connectionNameField, 4)}
+                            {gridItem(connectionDirectionField, 4)}
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -530,17 +563,6 @@ const GeneratorCreationDialog = ({
                         </Grid>
                         <Grid container spacing={2}>
                             {gridItem(marginalCostField, 4)}
-                        </Grid>
-                        {/* Connectivity part */}
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Connectivity" />
-                                </h3>
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                            {gridItem(connectivityField, 8)}
                         </Grid>
                     </div>
                 </DialogContent>

@@ -519,5 +519,9 @@
     "EmptyList/bbs": "Bus Bar list is empty",
     "EmptyList/connections": "Connections list is empty",
 
-    "UnsupportedView": "Search is unavailable in tree view"
+    "UnsupportedView": "Search is unavailable in tree view",
+    "ConnectionName": "Connection name",
+    "ConnectionDirection": "Connection direction",
+    "Top": "Top",
+    "Bottom": "Bottom"
 }
