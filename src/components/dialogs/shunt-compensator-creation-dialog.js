@@ -174,23 +174,6 @@ const ShuntCompensatorCreationDialog = ({
         withPosition: true,
     });
 
-    const [connectionDirection, connectionDirectionField] = useEnumValue({
-        label: 'ConnectionDirection',
-        validation: { isFieldRequired: false },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        enumValues: CONNECTION_DIRECTION,
-        defaultValue: formValues ? formValues.connectionDirection : '',
-    });
-
-    const [connectionName, connectionNameField] = useTextValue({
-        label: 'ConnectionName',
-        validation: { isFieldRequired: false },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        defaultValue: formValues?.connectionName,
-    });
-
     const handleSave = () => {
         if (inputForm.validate()) {
             createShuntCompensator(
@@ -204,9 +187,7 @@ const ShuntCompensatorCreationDialog = ({
                 susceptancePerSection,
                 connectivity,
                 editData ? true : false,
-                editData ? editData.uuid : undefined,
-                !connectionDirection ? 'UNDEFINED' : connectionDirection,
-                connectionName ? connectionName : null
+                editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
