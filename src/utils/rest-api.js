@@ -1662,7 +1662,7 @@ function checkEquipementNameEmptyOrContainsOnlySpaces(name) {
     if (!name.replace(/\s/g, '').length) {
         return null;
     }
-    return name;
+    return name.trim();
 }
 
 export function createSubstation(
@@ -1697,7 +1697,8 @@ export function createSubstation(
         },
         body: JSON.stringify({
             equipmentId: substationId,
-            equipmentName: checkEquipementNameEmptyOrContainsOnlySpaces(substationName),
+            equipmentName:
+                checkEquipementNameEmptyOrContainsOnlySpaces(substationName),
             substationCountry:
                 substationCountry === '' ? null : substationCountry,
         }),
