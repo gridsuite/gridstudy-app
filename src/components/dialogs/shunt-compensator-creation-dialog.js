@@ -22,6 +22,7 @@ import { useSnackbar } from 'notistack';
 import {
     useButtonWithTooltip,
     useDoubleValue,
+    useEnumValue,
     useInputForm,
     useIntegerValue,
     useTextValue,
@@ -38,6 +39,8 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
+import { CONNECTION_DIRECTION } from '../network/constants';
+import { Box } from '@mui/material';
 
 const disabledChecked = { disabled: true };
 
@@ -166,6 +169,26 @@ const ShuntCompensatorCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
+        connectionDirection: formValues ? formValues.connectionDirection : '',
+        connectionName: formValues?.connectionName,
+        withPosition: true,
+    });
+
+    const [connectionDirection, connectionDirectionField] = useEnumValue({
+        label: 'ConnectionDirection',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        formProps: filledTextField,
+        enumValues: CONNECTION_DIRECTION,
+        defaultValue: formValues ? formValues.connectionDirection : '',
+    });
+
+    const [connectionName, connectionNameField] = useTextValue({
+        label: 'ConnectionName',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        formProps: filledTextField,
+        defaultValue: formValues?.connectionName,
     });
 
     const handleSave = () => {
@@ -181,7 +204,9 @@ const ShuntCompensatorCreationDialog = ({
                 susceptancePerSection,
                 connectivity,
                 editData ? true : false,
-                editData ? editData.uuid : undefined
+                editData ? editData.uuid : undefined,
+                !connectionDirection ? 'UNDEFINED' : connectionDirection,
+                connectionName ? connectionName : null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -233,16 +258,16 @@ const ShuntCompensatorCreationDialog = ({
                         {gridItem(shuntCompensatorIdField)}
                         {gridItem(shuntCompensatorNameField)}
                     </Grid>
+                    <GridSection title="Connectivity" />
+                    <Grid container spacing={2}>
+                        {gridItem(connectivityField, 12)}
+                    </Grid>
                     <GridSection title="Characteristics" />
                     <Grid container spacing={2}>
                         {gridItem(maximumNumberOfSectionsField)}
                         {gridItem(currentNumberOfSectionsField)}
                         {gridItem(identicalSectionsField)}
                         {gridItem(susceptancePerSectionField)}
-                    </Grid>
-                    <GridSection title="Connectivity" />
-                    <Grid container spacing={2}>
-                        {gridItem(connectivityField, 12)}
                     </Grid>
                 </DialogContent>
                 <DialogActions>

@@ -14,7 +14,9 @@ import {
 import { getIdOrSelf } from './dialogUtils';
 import { useSelector } from 'react-redux';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-
+import { CONNECTION_DIRECTION } from '../network/constants';
+import { useEnumValue, useTextValue } from './inputs/input-hooks';
+import { filledTextField } from './dialogUtils';
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
  * Usable firstly for giving to hereunder ConnectivityEdition.
@@ -70,6 +72,9 @@ function ided(objOrId) {
  * @param direction direction of placement. Either 'row' or 'column', 'row' by default.
  * @param voltageLevelIdDefaultValue
  * @param busOrBusbarSectionIdDefaultValue
+ * @param connectionDirectionValue
+ * @param connectionNameValue
+ * @param withPosition
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const useConnectivityValue = ({
@@ -84,6 +89,9 @@ export const useConnectivityValue = ({
     direction = 'row',
     voltageLevelIdDefaultValue,
     busOrBusbarSectionIdDefaultValue,
+    connectionDirectionValue,
+    connectionNameValue,
+    withPosition,
 }) => {
     const [bbsIdInitOver, setBbsIdInitOver] = useState(null);
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -126,6 +134,23 @@ export const useConnectivityValue = ({
             inputForm: inputForm,
         });
 
+    const [connectionDirection, connectionDirectionField] = useEnumValue({
+        label: 'ConnectionDirection',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        formProps: filledTextField,
+        enumValues: CONNECTION_DIRECTION,
+        defaultValue: connectionDirectionValue,
+    });
+
+    const [connectionName, connectionNameField] = useTextValue({
+        label: 'ConnectionName',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        formProps: filledTextField,
+        defaultValue: connectionNameValue,
+    });
+
     useEffect(() => {
         setBbsIdInitOver(busOrBusbarSectionIdDefaultValue);
     }, [
@@ -165,9 +190,16 @@ export const useConnectivityValue = ({
         const ret = {
             voltageLevel: ided(voltageLevelObjOrId),
             busOrBusbarSection: ided(busOrBusbarSectionObjOrId),
+            connectionDirection: ided(connectionDirection),
+            connectionName: ided(connectionName),
         };
         return ret;
-    }, [voltageLevelObjOrId, busOrBusbarSectionObjOrId]);
+    }, [
+        voltageLevelObjOrId,
+        busOrBusbarSectionObjOrId,
+        connectionDirection,
+        connectionName,
+    ]);
 
     const render = useMemo(() => {
         return (
@@ -178,9 +210,27 @@ export const useConnectivityValue = ({
                 <Grid item xs={gridSize} align="start">
                     {busOrBusbarSectionField}
                 </Grid>
+                {withPosition && (
+                    <>
+                        <Grid item xs={gridSize} align="start">
+                            {connectionNameField}
+                        </Grid>
+                        <Grid item xs={gridSize} align="start">
+                            {connectionDirectionField}
+                        </Grid>
+                    </>
+                )}
             </Grid>
         );
-    }, [direction, gridSize, voltageLevelField, busOrBusbarSectionField]);
+    }, [
+        direction,
+        gridSize,
+        voltageLevelField,
+        busOrBusbarSectionField,
+        withPosition,
+        connectionNameField,
+        connectionDirectionField,
+    ]);
 
     return [connectivity, render];
 };
