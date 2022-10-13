@@ -61,6 +61,7 @@ import {
     FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
+    RESET_MAP_RELOADED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -142,11 +143,11 @@ const initialState = {
     notificationIdList: [],
     isModificationsInProgress: false,
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
+    reloadGeoData: true,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
-    reloadGeoData: true,
 };
 
 export const reducer = createReducer(initialState, {
@@ -331,6 +332,10 @@ export const reducer = createReducer(initialState, {
 
     [MAP_MANUAL_REFRESH]: (state, action) => {
         state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
+    },
+
+    [RESET_MAP_RELOADED]: (state) => {
+        state.reloadGeoData = false;
     },
 
     [ADD_LOADFLOW_NOTIF]: (state) => {

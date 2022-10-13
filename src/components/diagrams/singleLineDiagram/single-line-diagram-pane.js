@@ -256,28 +256,11 @@ export function SingleLineDiagramPane({
 
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            if (open) {
-                switchElement.classList.replace('sld-closed', 'sld-open');
-            } else {
-                switchElement.classList.replace('sld-open', 'sld-closed');
-            }
-
+            updateSld();
             updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
                 (response) => {
                     if (!response.ok) {
                         console.error(response);
-                        // revert switch position change
-                        if (open) {
-                            switchElement.classList.replace(
-                                'sld-open',
-                                'sld-closed'
-                            );
-                        } else {
-                            switchElement.classList.replace(
-                                'sld-closed',
-                                'sld-open'
-                            );
-                        }
                         setUpdateSwitchMsg(
                             response.status + ' : ' + response.statusText
                         );
@@ -285,7 +268,7 @@ export function SingleLineDiagramPane({
                 }
             );
         },
-        [studyUuid, currentNode]
+        [currentNode?.id, studyUuid, updateSld]
     );
 
     useEffect(() => {

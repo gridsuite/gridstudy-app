@@ -16,7 +16,7 @@ import {
 import { FlyToInterpolator } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
 
-import { useTheme } from '@mui/styles';
+import { makeStyles, useTheme } from '@mui/styles';
 import { decomposeColor } from '@mui/material/styles';
 import LoaderWithOverlay from '../util/loader-with-overlay';
 
@@ -27,6 +27,26 @@ import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
 import { RunningStatus } from '../util/running-status';
 import { useSelector } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
+import ReplayIcon from '@mui/icons-material/Replay';
+import { Button } from '@mui/material';
+import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
+import { isNodeBuilt } from '../graph/util/model-functions';
+
+const useStyles = makeStyles((theme) => ({
+    mapManualRefreshBackdrop: {
+        width: '100%',
+        height: '100%',
+        textAlign: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'grey',
+        opacity: '0.8',
+        zIndex: 99,
+        fontSize: 30,
+    },
+}));
 
 const MAPBOX_TOKEN =
     'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
@@ -60,6 +80,16 @@ const NetworkMap = (props) => {
     const [cursorType, setCursorType] = useState('grab');
 
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
+
+    const mapManualRefresh = useSelector(
+        (state) => state[PARAM_MAP_MANUAL_REFRESH]
+    );
+
+    const reloadGeoDataNeeded = useSelector((state) => state.reloadGeoData);
+
+    const currentNode = useSelector((state) => state.currentTreeNode);
+
+    const classes = useStyles();
 
     useEffect(() => {
         if (centerOnSubstation === null) return;
@@ -384,6 +414,22 @@ const NetworkMap = (props) => {
                 pickingRadius={5}
             >
                 {props.waitingLoadGeoData && renderOverlay()}
+                {mapManualRefresh &&
+                    reloadGeoDataNeeded &&
+                    isNodeBuilt(currentNode) && (
+                        <div className={classes.mapManualRefreshBackdrop}>
+                            <Button
+                                onClick={props.onReloadMapClick}
+                                aria-label="reload"
+                                color="inherit"
+                                size="large"
+                            >
+                                <ReplayIcon />
+                                <FormattedMessage id="ManuallyRefreshGeoData" />
+                            </Button>
+                        </div>
+                    )}
+
                 <StaticMap
                     mapStyle={theme.mapboxStyle}
                     preventStyleDiffing={true}

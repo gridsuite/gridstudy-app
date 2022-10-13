@@ -53,6 +53,7 @@ import {
 } from './util/running-status';
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
+import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
 
 export function useNodeData(
     studyUuid,
@@ -202,6 +203,12 @@ export function StudyContainer({ view, onChangeTab }) {
         getSensiRunningStatus
     );
 
+    const mapManualRefresh = useSelector(
+        (state) => state[PARAM_MAP_MANUAL_REFRESH]
+    );
+
+    const reloadGeoDataNeeded = useSelector((state) => state.reloadGeoData);
+
     const [updatedLines, setUpdatedLines] = useState([]);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -291,7 +298,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(networkCreated(network));
             }
         },
-        [studyUuid, currentNode, dispatch, displayNetworkLoadingFailMessage]
+        [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
     loadNetworkRef.current = loadNetwork;
 
@@ -353,6 +360,12 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
     useEffect(() => {
+        if (mapManualRefresh && !reloadGeoDataNeeded) {
+            loadNetwork(true);
+        }
+    }, [loadNetwork, mapManualRefresh, reloadGeoDataNeeded]);
+
+    useEffect(() => {
         if (studyUuid) {
             loadTree();
         }
@@ -362,10 +375,11 @@ export function StudyContainer({ view, onChangeTab }) {
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only node renaming, do not reload network
+        if (mapManualRefresh) return;
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
         loadNetwork(true);
-    }, [loadNetwork, currentNode]);
+    }, [loadNetwork, currentNode, mapManualRefresh]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
@@ -459,7 +473,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 currentNode?.id,
                 substationsIds
             );
-            console.info('network update');
+            console.info('network partial update');
             Promise.all([updatedEquipments])
                 .then((values) => {
                     network.updateSubstations(
@@ -507,7 +521,7 @@ export function StudyContainer({ view, onChangeTab }) {
             //.finally(() => setIsNetworkPending(false));
             // Note: studyUuid don't change
         },
-        [studyUuid, currentNode, network]
+        [studyUuid, currentNode?.id, network]
     );
 
     useEffect(() => {
@@ -542,44 +556,57 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [intl]);
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'study'
-            ) {
-                // study partial update :
-                // loading equipments involved in the study modification and updating the network
-                const substationsIds =
-                    studyUpdatedForce.eventData.headers['substationsIds'];
-                const tmp = substationsIds.substring(
-                    1,
-                    substationsIds.length - 1
-                ); // removing square brackets
-                if (tmp && tmp.length > 0) {
-                    updateNetwork(tmp.split(', '));
-                }
+        if (!mapManualRefresh || !reloadGeoDataNeeded) {
+            if (studyUpdatedForce.eventData.headers) {
+                if (
+                    studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
+                    'study'
+                ) {
+                    // study partial update :
+                    // loading equipments involved in the study modification and updating the network
 
-                // removing deleted equipment from the network
-                const deletedEquipmentId =
-                    studyUpdatedForce.eventData.headers['deletedEquipmentId'];
-                const deletedEquipmentType =
-                    studyUpdatedForce.eventData.headers['deletedEquipmentType'];
-                if (deletedEquipmentId && deletedEquipmentType) {
-                    console.info(
-                        'removing equipment with id=',
-                        deletedEquipmentId,
-                        ' and type=',
-                        deletedEquipmentType,
-                        ' from the network'
-                    );
-                    network.removeEquipment(
-                        deletedEquipmentType,
-                        deletedEquipmentId
-                    );
+                    const substationsIds =
+                        studyUpdatedForce.eventData.headers['substationsIds'];
+                    const tmp = substationsIds.substring(
+                        1,
+                        substationsIds.length - 1
+                    ); // removing square brackets
+                    if (tmp && tmp.length > 0) {
+                        updateNetwork(tmp.split(', '));
+                    }
+
+                    // removing deleted equipment from the network
+                    const deletedEquipmentId =
+                        studyUpdatedForce.eventData.headers[
+                            'deletedEquipmentId'
+                        ];
+                    const deletedEquipmentType =
+                        studyUpdatedForce.eventData.headers[
+                            'deletedEquipmentType'
+                        ];
+                    if (deletedEquipmentId && deletedEquipmentType) {
+                        console.info(
+                            'removing equipment with id=',
+                            deletedEquipmentId,
+                            ' and type=',
+                            deletedEquipmentType,
+                            ' from the network'
+                        );
+                        network.removeEquipment(
+                            deletedEquipmentType,
+                            deletedEquipmentId
+                        );
+                    }
                 }
             }
         }
-    }, [studyUpdatedForce, updateNetwork, network]);
+    }, [
+        studyUpdatedForce,
+        updateNetwork,
+        network,
+        mapManualRefresh,
+        reloadGeoDataNeeded,
+    ]);
 
     return (
         <WaitingLoader
