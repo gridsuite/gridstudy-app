@@ -28,7 +28,7 @@ export const ReactiveCapabilityCurveTable = ({
         validation: { isFieldRequired: isFieldRequired },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: defaultValue?.p || '',
+        defaultValue: defaultValue?.p ?? '',
         formProps: { disabled: disabled },
     });
     const [qminP, qminPField] = useDoubleValue({
@@ -37,7 +37,7 @@ export const ReactiveCapabilityCurveTable = ({
         validation: { isFieldRequired: isFieldRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: defaultValue?.qminP || '',
+        defaultValue: defaultValue?.qminP ?? '',
         formProps: { disabled: disabled },
     });
 
@@ -47,7 +47,7 @@ export const ReactiveCapabilityCurveTable = ({
         validation: { isFieldRequired: isFieldRequired },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: defaultValue?.qmaxP || '',
+        defaultValue: defaultValue?.qmaxP ?? '',
         formProps: { disabled: disabled },
     });
 

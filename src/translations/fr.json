@@ -523,5 +523,9 @@
     "EmptyList/bbs": "La liste de jeux de barres est vide",
     "EmptyList/connections": "La liste de connexions est vide",
 
-    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre"
+    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
+    "ConnectionName": "Nom départ",
+    "ConnectionDirection": "Sens départ",
+    "Top": "Haut",
+    "Bottom": "Bas"
 }
