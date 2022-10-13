@@ -19,7 +19,7 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { CONNECTION_DIRECTION, LOAD_TYPES } from '../network/constants';
+import { LOAD_TYPES } from '../network/constants';
 import {
     useDoubleValue,
     useEnumValue,
@@ -39,7 +39,6 @@ import { createLoad } from '../../utils/rest-api';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useConnectivityValue } from './connectivity-edition';
-import { Box } from '@mui/material';
 
 /**
  * Dialog to create a load in the network
@@ -154,23 +153,11 @@ const LoadCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
-    });
-
-    const [connectionDirection, connectionDirectionField] = useEnumValue({
-        label: 'ConnectionDirection',
-        validation: { isFieldRequired: false },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        enumValues: CONNECTION_DIRECTION,
-        defaultValue: formValues ? formValues.connectionDirection : '',
-    });
-
-    const [connectionName, connectionNameField] = useTextValue({
-        label: 'ConnectionName',
-        validation: { isFieldRequired: false },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        defaultValue: formValues?.connectionName,
+        connectionDirectionValue: formValues
+            ? formValues.connectionDirection
+            : '',
+        connectionNameValue: formValues?.connectionName,
+        withPosition: true,
     });
 
     const handleSave = () => {
@@ -187,8 +174,8 @@ const LoadCreationDialog = ({
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                !connectionDirection ? 'UNDEFINED' : connectionDirection,
-                connectionName ? connectionName : null
+                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -245,9 +232,6 @@ const LoadCreationDialog = ({
                     <GridSection title="Connectivity" />
                     <Grid container spacing={2}>
                         {gridItem(connectivityField, 8)}
-                        <Box sx={{ width: '100%' }} />
-                        {gridItem(connectionNameField, 4)}
-                        {gridItem(connectionDirectionField, 4)}
                     </Grid>
                     <GridSection title="Setpoints" />
                     <Grid container spacing={2}>
