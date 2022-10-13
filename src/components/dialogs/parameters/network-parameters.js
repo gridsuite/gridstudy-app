@@ -45,13 +45,9 @@ export const NetworkParameters = ({ hideParameters }) => {
                 handleChangeFluxConvention(defaultFluxConvention);
             }
 
-            if (defaultValues?.enableDeveloperMode) {
-                handleChangeEnableDeveloperMode(
-                    defaultValues?.enableDeveloperMode
-                );
-            } else {
-                handleChangeEnableDeveloperMode(false);
-            }
+            handleChangeEnableDeveloperMode(
+                defaultValues?.enableDeveloperMode ?? false
+            )
         });
     };
 

@@ -299,7 +299,6 @@
     "FluxConvention.target": "Métier",
     "Advanced": "Avancé",
     "EnableDeveloperMode": "Activer mode développeur",
-    "showIncompleteFeatures": "Afficher les fonctionnalités incomplètes",
     "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
 
     "Optional": " (optionnel)",

@@ -298,7 +298,6 @@
     "FluxConvention.target": "Target",
     "Advanced": "Advanced",
     "EnableDeveloperMode": "Enable developer mode",
-    "showIncompleteFeatures": "Show incomplete features",
     "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
 
     "Optional": " (optional)",
