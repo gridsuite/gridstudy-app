@@ -1694,8 +1694,7 @@ export function createSubstation(
         },
         body: JSON.stringify({
             equipmentId: substationId,
-            equipmentName:
-                substationName.trim() === '' ? null : substationName.trim(),
+            equipmentName: substationName,
             substationCountry:
                 substationCountry === '' ? null : substationCountry,
         }),
