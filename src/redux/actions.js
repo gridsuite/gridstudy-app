@@ -276,7 +276,7 @@ export function addShortCircuitNotif() {
 
 export const RESET_SHORT_CIRCUIT_NOTIF = 'RESET_SHORT_CIRCUIT_NOTIF';
 
-export function resetShortCircuitiNotif() {
+export function resetShortCircuitNotif() {
     return { type: RESET_SHORT_CIRCUIT_NOTIF };
 }
 

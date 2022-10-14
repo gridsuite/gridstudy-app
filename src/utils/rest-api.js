@@ -906,7 +906,7 @@ export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
 
 export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
     console.info(
-        'Stopping sensitivity analysis on ' +
+        'Stopping short circuit analysis on ' +
             studyUuid +
             ' and node ' +
             currentNodeUuid +
@@ -942,7 +942,7 @@ export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
 
 export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     console.info(
-        'Fetching short circuit analysis on ' +
+        'Fetching short circuit analysis result on ' +
             studyUuid +
             ' and node ' +
             currentNodeUuid +
