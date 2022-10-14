@@ -161,11 +161,21 @@ export const NetworkModificationTreePane = ({
                     )
                 ) {
                     setSelectedNodeIdForCopy(null);
-                    snackInfo('', 'CopiedNodeInvalidationMessage');
+                    let message = intlRef.current.formatMessage({
+                        id: 'CopiedNodeInvalidationMessage',
+                    });
+                    snackInfo(message);
                 }
             }
         }
-    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch, snackInfo]);
+    }, [
+        studyUuid,
+        studyUpdatedForce,
+        updateNodes,
+        dispatch,
+        snackInfo,
+        intlRef,
+    ]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
