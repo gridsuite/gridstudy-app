@@ -115,7 +115,6 @@ export const NetworkModificationTreePane = ({
     );
 
     useEffect(() => {
-        console.log('toto');
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
