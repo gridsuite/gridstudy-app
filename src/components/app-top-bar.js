@@ -47,7 +47,7 @@ import {
     resetLoadflowNotif,
     resetSANotif,
     resetSensiNotif,
-    resetShortCircuitiNotif,
+    resetShortCircuitNotif,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
@@ -297,7 +297,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         ) {
             dispatch(addShortCircuitNotif());
         } else {
-            dispatch(resetShortCircuitiNotif());
+            dispatch(resetShortCircuitNotif());
         }
     }, [currentNode, dispatch, shortCircuitAnalysisStatusNode, tabIndex, user]);
 
