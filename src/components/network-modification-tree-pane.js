@@ -112,6 +112,7 @@ export const NetworkModificationTreePane = ({
     );
 
     useEffect(() => {
+        console.log('toto');
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -158,10 +159,7 @@ export const NetworkModificationTreePane = ({
                     )
                 ) {
                     setSelectedNodeIdForCopy(null);
-                    snackInfo(
-                        '',
-                        'Invalidation de la copie du nœud suite à modification'
-                    );
+                    snackInfo('', 'CopiedNodeInvalidationMessage');
                 }
             }
         }
@@ -170,7 +168,6 @@ export const NetworkModificationTreePane = ({
         studyUpdatedForce,
         updateNodes,
         dispatch,
-        selectedNodeIdForCopy,
         snackInfo,
     ]);
 

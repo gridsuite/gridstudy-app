@@ -17,7 +17,7 @@
 
     "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
-    "Invalidation de la copie du nœud suite à modification": "Invalidation du collage du noeud suite à la modification du neoud copié",
+    "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "format": "Format",

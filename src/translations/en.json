@@ -17,7 +17,7 @@
 
     "moveStudyNotification": "The study has been moved from {oldStudyPath} to {studyPath}",
 
-    "Invalidation de la copie du nœud suite à modification": "Invalidation of pasting of the node following the modification of the copied node",
+    "CopiedNodeInvalidationMessage": "Invalidation of pasting of the node following the modification of the copied node",
     "exportNetwork": "Export the network",
     "export": "Export",
     "format": "Format",
