@@ -88,6 +88,8 @@ const GeneratorModificationDialog = ({
 
     const [equipmentOptions, setEquipmentOptions] = useState([]);
 
+    const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
+
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
@@ -354,6 +356,24 @@ const GeneratorModificationDialog = ({
         formProps: fieldDisabled,
     });
 
+    function isEmpty(value) {
+        return value === '';
+    }
+
+    useEffect(() => {
+        if (
+            (generatorInfos !== null &&
+                generatorName !== formValues?.equipmentName?.value &&
+                formValues?.equipmentName?.value !== null) ||
+            (formValues?.equipmentName?.value === null &&
+                !isEmpty(generatorName))
+        ) {
+            setBtnSaveListDisabled(false);
+        } else {
+            setBtnSaveListDisabled(true);
+        }
+    }, [generatorInfos, generatorName, formValues]);
+
     const handleSave = () => {
         if (inputForm.validate()) {
             modifyGenerator(
@@ -509,7 +529,7 @@ const GeneratorModificationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button onClick={handleSave} disabled={btnSaveListDisabled}>
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
