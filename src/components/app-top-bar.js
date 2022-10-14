@@ -230,6 +230,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 setAppsAndUrls(res);
             });
         }
+        hideParameters();
     }, [user]);
 
     useEffect(() => {

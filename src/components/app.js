@@ -42,6 +42,7 @@ import {
     selectFluxConvention,
     selectFavoriteSensiVariablesFiltersLists,
     selectFavoriteSensiBranchFiltersLists,
+    setCurrentTreeNode
 } from '../redux/actions';
 
 import {
@@ -330,6 +331,11 @@ const App = () => {
             event.preventDefault();
         });
     });
+
+    // Manage user connection / disconnection
+    useEffect(() => {
+        dispatch(setCurrentTreeNode(null));
+    }, [user]);
 
     useEffect(() => {
         initializeAuthenticationProd(
