@@ -87,6 +87,9 @@ export const NetworkModificationTreePane = ({
 
     const [activeNode, setActiveNode] = useState(null);
     const [selectedNodeIdForCopy, setSelectedNodeIdForCopy] = useState(null);
+    const selectedNodeIdForCopyRef = useRef();
+    selectedNodeIdForCopyRef.current = selectedNodeIdForCopy;
+
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
@@ -155,7 +158,7 @@ export const NetworkModificationTreePane = ({
                 }
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) => nodeId === selectedNodeIdForCopy
+                        (nodeId) => nodeId === selectedNodeIdForCopyRef.current
                     )
                 ) {
                     setSelectedNodeIdForCopy(null);
@@ -163,13 +166,7 @@ export const NetworkModificationTreePane = ({
                 }
             }
         }
-    }, [
-        studyUuid,
-        studyUpdatedForce,
-        updateNodes,
-        dispatch,
-        snackInfo,
-    ]);
+    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch, snackInfo]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
