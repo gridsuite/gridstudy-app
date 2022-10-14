@@ -155,6 +155,11 @@ const LoadCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
+        connectionDirectionValue: formValues
+            ? formValues.connectionDirection
+            : '',
+        connectionNameValue: formValues?.connectionName,
+        withPosition: true,
     });
 
     function isEmpty(value) {
@@ -202,7 +207,9 @@ const LoadCreationDialog = ({
                 connectivity.voltageLevel.id,
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
-                editData ? editData.uuid : undefined
+                editData ? editData.uuid : undefined,
+                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -256,14 +263,14 @@ const LoadCreationDialog = ({
                         {gridItem(loadNameField, 4)}
                         {gridItem(loadTypeField, 4)}
                     </Grid>
+                    <GridSection title="Connectivity" />
+                    <Grid container spacing={2}>
+                        {gridItem(connectivityField, 8)}
+                    </Grid>
                     <GridSection title="Setpoints" />
                     <Grid container spacing={2}>
                         {gridItem(activePowerField, 4)}
                         {gridItem(reactivePowerField, 4)}
-                    </Grid>
-                    <GridSection title="Connectivity" />
-                    <Grid container spacing={2}>
-                        {gridItem(connectivityField, 8)}
                     </Grid>
                 </DialogContent>
                 <DialogActions>

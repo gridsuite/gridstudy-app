@@ -229,8 +229,8 @@
     "LccConverterStations": "LCC Converter Stations",
     "VscConverterStations": "VSC Converter Stations",
     "LoadType": "Type",
-    "ConstantActivePower": "Constant p (MW)",
-    "ConstantReactivePower": "Constant q (MVar)",
+    "ConstantActivePower": "Target p (MW)",
+    "ConstantReactivePower": "Target q (MVar)",
     "DanglingLines": "Dangling Lines",
     "UcteXnodeCode": "UCTE Xnode",
     "HvdcLines": "HVDC Lines",
@@ -383,8 +383,7 @@
     "QminP": "QminP",
     "QmaxP": "QmaxP",
     "RegulatingTerminalGenerator": "Regulating Terminal",
-    "Equipments": "Equipments",
-    "CourtCircuit": "Court-circuit",
+    "ShortCircuit": "Short-circuit",
     "TransientReactance": "Transient reactance",
     "TransformerReactance": "Transformer reactance",
     "FrequencyRegulation": "Frequency Regulation",
@@ -435,6 +434,7 @@
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
     "LineToSplit": "Existing line",
     "LineAttachToVoltageLevel": "Attach a line to another line",
+    "LinesAttachToSplitLines": "Attaching lines to splitting lines",
     "LineToAttachTo": "Existing line",
     "Percentage": "% long",
     "OutOfBoundsPercentage": "Percentage out of bounds",
@@ -454,7 +454,9 @@
     "AttachmentPointId": "Attachment point ID",
     "AttachmentPointName": "Attachment point name",
     "AttachedLine": "Create attached line",
+    "LineAttached": "Attached line",
     "AttachedLineId": "Attached line ID",
+    "ReplacingLines": "Replacing lines",
     "LineDivisionError": "Error while puting a voltage level amidst a line",
     "LineAttachmentError": "Error while attaching a voltage level to a line",
 
@@ -518,5 +520,9 @@
     "EmptyList/bbs": "Bus Bar list is empty",
     "EmptyList/connections": "Connections list is empty",
 
-    "UnsupportedView": "Search is unavailable in tree view"
+    "UnsupportedView": "Search is unavailable in tree view",
+    "ConnectionName": "Connection name",
+    "ConnectionDirection": "Connection direction",
+    "Top": "Top",
+    "Bottom": "Bottom"
 }
