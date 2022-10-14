@@ -1245,7 +1245,9 @@ export function createLoad(
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    connectionDirection,
+    connectionName
 ) {
     let createLoadUrl;
     if (isUpdate) {
@@ -1276,6 +1278,8 @@ export function createLoad(
             reactivePower: reactivePower,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
         }),
     }).then((response) => {
         return response.ok
