@@ -157,26 +157,36 @@ const LoadCreationDialog = ({
             formValues?.busOrBusbarSectionId || null,
     });
 
-    useEffect(() => {
-        console.log('ANAS', formValues?.equipmentType);
-        console.log('ANAS 2 ', LOAD_TYPES);
+    function isEmpty(value) {
+        return value === '';
+    }
 
+    useEffect(() => {
         if (
             loadId !== formValues?.equipmentId ||
-            loadName !== formValues?.equipmentName ||
-            loadType != formValues?.equipmentType
+            loadType !== formValues?.loadType ||
+            (formValues?.equipmentName !== undefined &&
+                loadName !== formValues?.equipmentName) ||
+            (formValues?.equipmentName === undefined && !isEmpty(loadName)) ||
+            activePower !== String(formValues?.activePower) ||
+            reactivePower !== String(formValues?.reactivePower) ||
+            connectivity?.voltageLevel?.id !== formValues?.voltageLevelId ||
+            connectivity?.busOrBusbarSection?.id !==
+                formValues?.busOrBusbarSectionId
         ) {
             setBtnSaveListDisabled(false);
         } else {
             setBtnSaveListDisabled(true);
         }
     }, [
-        formValues?.equipmentId,
-        formValues?.equipmentName,
-        formValues?.equipmentType,
-        loadId,
+        activePower,
         loadName,
+        connectivity?.voltageLevel,
+        connectivity?.busOrBusbarSection,
+        formValues,
+        loadId,
         loadType,
+        reactivePower,
     ]);
 
     const handleSave = () => {

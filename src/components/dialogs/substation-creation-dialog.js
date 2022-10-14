@@ -112,11 +112,21 @@ const SubstationCreationDialog = ({
             : null,
     });
 
+    function isEmpty(value) {
+        return value === '';
+    }
+
     useEffect(() => {
         if (
             substationId !== formValues?.equipmentId ||
-            substationName !== formValues?.equipmentName ||
-            substationCountry != formValues?.substationCountry
+            (formValues?.equipmentName !== undefined &&
+                substationName !== formValues?.equipmentName) ||
+            (formValues?.equipmentName === undefined &&
+                !isEmpty(substationName)) ||
+            (formValues?.substationCountry !== undefined &&
+                substationCountry !== formValues?.substationCountry) ||
+            (formValues?.substationCountry === undefined &&
+                substationCountry !== null)
         ) {
             setBtnSaveListDisabled(false);
         } else {

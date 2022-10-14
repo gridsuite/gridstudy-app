@@ -65,6 +65,8 @@ const LoadModificationDialog = ({
 
     const [equipmentOptions, setEquipmentOptions] = useState([]);
 
+    const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
+
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
@@ -153,6 +155,42 @@ const LoadModificationDialog = ({
         clearable: true,
     });
 
+    function isEmpty(value) {
+        return value === '';
+    }
+
+    useEffect(() => {
+        if (
+            (loadInfos?.inputValue !== undefined &&
+                formValueEquipmentId?.id !== loadInfos?.inputValue) ||
+            (formValues?.equipmentName !== undefined &&
+                loadName !== formValues?.equipmentName.value) ||
+            (formValues?.equipmentName === undefined && !isEmpty(loadName)) ||
+            loadType !== formValues?.loadType.value ||
+            (formValues?.reactivePower === undefined &&
+                !isEmpty(reactivePower)) ||
+            (formValues?.reactivePower !== undefined &&
+                reactivePower !== formValues?.reactivePower.value &&
+                reactivePower !== String(formValues?.reactivePower.value)) ||
+            (formValues?.activePower === undefined && !isEmpty(activePower)) ||
+            (formValues?.activePower !== undefined &&
+                activePower !== formValues?.activePower.value &&
+                activePower !== String(formValues?.activePower.value))
+        ) {
+            setBtnSaveListDisabled(false);
+        } else {
+            setBtnSaveListDisabled(true);
+        }
+    }, [
+        formValues,
+        loadType,
+        activePower,
+        loadName,
+        loadInfos,
+        reactivePower,
+        formValueEquipmentId,
+    ]);
+
     const handleSave = () => {
         if (inputForm.validate()) {
             modifyLoad(
@@ -229,7 +267,11 @@ const LoadModificationDialog = ({
                     <Button onClick={handleCloseAndClear} variant="text">
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave} variant="text">
+                    <Button
+                        onClick={handleSave}
+                        variant="text"
+                        disabled={btnSaveListDisabled}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

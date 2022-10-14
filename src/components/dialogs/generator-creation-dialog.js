@@ -136,6 +136,8 @@ const GeneratorCreationDialog = ({
 
     const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
 
+    const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
+
     const [rCCurveError, setRCCurveError] = useState();
 
     const toFormValues = (generator) => {
@@ -401,6 +403,78 @@ const GeneratorCreationDialog = ({
         );
     }, [minimumReactivePower, maximumReactivePower]);
 
+    function isEmpty(value) {
+        return value === '';
+    }
+
+    useEffect(() => {
+        if (
+            formValues?.reactiveCapabilityCurve === false &&
+            reactiveCapabilityCurve.length === 1
+        ) {
+            setBtnSaveListDisabled(false);
+        } else {
+            setBtnSaveListDisabled(true);
+        }
+    }, [formValues, reactiveCapabilityCurve]);
+
+    useEffect(() => {
+        if (
+            generatorId !== formValues?.equipmentId ||
+            (isEmpty(generatorName) &&
+                formValues?.equipmentName !== undefined) ||
+            generatorName !== formValues?.equipmentName ||
+            energySource !== formValues?.energySource ||
+            (minimumActivePower !== formValues?.minActivePower &&
+                minimumActivePower !== String(formValues?.maxActivePower)) ||
+            (maximumActivePower !== formValues?.maxActivePower &&
+                maximumActivePower !== String(formValues?.maxActivePower)) ||
+            (ratedNominalPower !== formValues?.ratedNominalPower &&
+                ratedNominalPower !== String(formValues?.ratedNominalPower)) ||
+            (minimumReactivePower !== formValues?.minimumReactivePower &&
+                minimumReactivePower !==
+                    String(formValues?.minimumReactivePower)) ||
+            (maximumReactivePower !== formValues?.maximumReactivePower &&
+                maximumReactivePower !==
+                    String(formValues?.maximumReactivePower)) ||
+            (activePowerSetpoint !== formValues?.activePowerSetpoint &&
+                activePowerSetpoint !==
+                    String(formValues?.activePowerSetpoint)) ||
+            voltageRegulation !== formValues?.voltageRegulationOn ||
+            frequencyRegulation !== formValues?.participate ||
+            transformerReactance !== formValues?.stepUpTransformerReactance ||
+            transientReactance !== formValues?.transientReactance ||
+            (formValues?.marginalCost === undefined &&
+                !isEmpty(marginalCost)) ||
+            marginalCost !== formValues?.marginalCost ||
+            connectivity?.voltageLevel?.name !== formValues?.voltageLevelId ||
+            connectivity?.busOrBusbarSection?.id !==
+                formValues?.busOrBusbarSectionId
+        ) {
+            setBtnSaveListDisabled(false);
+        } else {
+            setBtnSaveListDisabled(true);
+        }
+    }, [
+        formValues,
+        generatorId,
+        generatorName,
+        energySource,
+        minimumActivePower,
+        maximumActivePower,
+        ratedNominalPower,
+        minimumReactivePower,
+        activePowerSetpoint,
+        maximumReactivePower,
+        voltageRegulation,
+        regulatingTerminal,
+        frequencyRegulation,
+        transformerReactance,
+        transientReactance,
+        marginalCost,
+        connectivity,
+    ]);
+
     const handleSave = () => {
         const isRCCNotValid =
             isReactiveCapabilityCurveOn && reactiveCapabilityCurve.length < 2;
@@ -585,7 +659,7 @@ const GeneratorCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button onClick={handleSave} disabled={btnSaveListDisabled}>
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
