@@ -35,6 +35,7 @@ import {
     OhmAdornment,
     percentageTextField,
     ReactivePowerAdornment,
+    sanitizeString,
     VoltageAdornment,
 } from './dialogUtils';
 import { Box } from '@mui/system';
@@ -360,7 +361,7 @@ const GeneratorModificationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 generatorInfos?.id,
-                generatorName,
+                sanitizeString(generatorName),
                 energySource,
                 minimumActivePower,
                 maximumActivePower,
