@@ -366,13 +366,15 @@ const GeneratorModificationDialog = ({
                 generatorName !== formValues?.equipmentName?.value &&
                 formValues?.equipmentName?.value !== null) ||
             (formValues?.equipmentName?.value === null &&
-                !isEmpty(generatorName))
+                !isEmpty(generatorName)) ||
+            (generatorInfos?.energySource !== undefined &&
+                !isEmpty(energySource))
         ) {
             setBtnSaveListDisabled(false);
         } else {
             setBtnSaveListDisabled(true);
         }
-    }, [generatorInfos, generatorName, formValues]);
+    }, [generatorInfos, generatorName, formValues, energySource]);
 
     const handleSave = () => {
         if (inputForm.validate()) {

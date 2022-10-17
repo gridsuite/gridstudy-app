@@ -166,7 +166,9 @@ const LoadModificationDialog = ({
             (formValues?.equipmentName !== undefined &&
                 loadName !== formValues?.equipmentName.value) ||
             (formValues?.equipmentName === undefined && !isEmpty(loadName)) ||
-            loadType !== formValues?.loadType.value ||
+            (formValues?.loadType?.value === undefined && !isEmpty(loadType)) ||
+            (loadType !== formValues?.loadType?.value &&
+                formValues?.loadType?.value !== undefined) ||
             (formValues?.reactivePower === undefined &&
                 !isEmpty(reactivePower)) ||
             (formValues?.reactivePower !== undefined &&
