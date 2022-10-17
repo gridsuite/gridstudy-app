@@ -252,18 +252,6 @@ export function SingleLineDiagramPane({
         }
     }, [sldState, visible, createView]);
 
-    const toggleState = useCallback(
-        (id, type, state) => {
-            if (state === ViewState.MINIMIZED) {
-                minimizeSld(id);
-            }
-            if (state === ViewState.PINNED) {
-                togglePinSld(id);
-            }
-        },
-        [minimizeSld, togglePinSld]
-    );
-
     const handleCloseSLD = useCallback(
         (id) => {
             closeView(id);
@@ -367,7 +355,8 @@ export function SingleLineDiagramPane({
                             showInSpreadsheet={showInSpreadsheet}
                             loadFlowStatus={loadFlowStatus}
                             numberToDisplay={displayedSLD.length}
-                            toggleState={toggleState}
+                            togglePin={togglePinSld}
+                            minimize={minimizeSld}
                             pinned={sld.state === ViewState.PINNED}
                             disabled={disabled}
                             totalWidth={width}
