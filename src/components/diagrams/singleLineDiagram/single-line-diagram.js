@@ -272,6 +272,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
+    const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState();
+
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const MenuLine = withLineMenu(BaseEquipmentMenu);
@@ -394,6 +396,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         svgUrl: props.svgUrl,
                     });
                     updateLoadingState(false);
+                    setLocallySwitchedBreaker();
                 })
                 .catch((errorMessage) => {
                     console.error(errorMessage);
@@ -405,6 +408,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     });
                     snackError(errorMessage);
                     updateLoadingState(false);
+                    setLocallySwitchedBreaker();
                 });
         } else {
             setSvg(noSvg);
@@ -759,6 +763,24 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             });
             addNavigationArrow(svg);
 
+            //Rotate clicked switch while waiting for updated sld data
+            if (locallySwitchedBreaker) {
+                const breakerToSwitchDom = document.getElementById(
+                    locallySwitchedBreaker.id
+                );
+                if (breakerToSwitchDom.classList.value.includes('sld-closed')) {
+                    breakerToSwitchDom.classList.replace(
+                        'sld-closed',
+                        'sld-open'
+                    );
+                } else {
+                    breakerToSwitchDom.classList.replace(
+                        'sld-open',
+                        'sld-closed'
+                    );
+                }
+            }
+
             // handling the right click on a feeder (menus)
             if (
                 !isComputationRunning &&
@@ -836,6 +858,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
                         if (!modificationInProgress) {
                             setModificationInProgress(true);
+                            updateLoadingState(true);
+                            setLocallySwitchedBreaker(event.currentTarget);
                             onBreakerClick(
                                 switchId,
                                 !open,
@@ -878,6 +902,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgFinalWidth,
         disabled,
         modificationInProgress,
+        loadingState,
+        locallySwitchedBreaker,
     ]);
 
     useLayoutEffect(() => {

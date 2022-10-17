@@ -256,7 +256,6 @@ export function SingleLineDiagramPane({
 
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            updateSld();
             updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
                 (response) => {
                     if (!response.ok) {
@@ -268,7 +267,7 @@ export function SingleLineDiagramPane({
                 }
             );
         },
-        [currentNode?.id, studyUuid, updateSld]
+        [studyUuid, currentNode]
     );
 
     useEffect(() => {
