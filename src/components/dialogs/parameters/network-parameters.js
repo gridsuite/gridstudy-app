@@ -47,7 +47,7 @@ export const NetworkParameters = ({ hideParameters }) => {
 
             handleChangeEnableDeveloperMode(
                 defaultValues?.enableDeveloperMode ?? false
-            )
+            );
         });
     };
 
