@@ -20,8 +20,6 @@ import {
     useDoubleValue,
     useEnumValue,
     useInputForm,
-    useRegulatingTerminalValue,
-    useTableValues,
     useTextValue,
 } from './inputs/input-hooks';
 import {
@@ -32,18 +30,15 @@ import {
     gridItem,
     gridItemWithTooltip,
     MVAPowerAdornment,
-    OhmAdornment,
-    percentageTextField,
     ReactivePowerAdornment,
     sanitizeString,
     VoltageAdornment,
 } from './dialogUtils';
 import { Box } from '@mui/system';
 import { ENERGY_SOURCES, getEnergySourceLabel } from '../network/constants';
-import { useBooleanValue, useNullableBooleanValue } from './inputs/boolean';
+import { useNullableBooleanValue } from './inputs/boolean';
 import { modifyGenerator } from '../../utils/rest-api';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import { ReactiveCapabilityCurveTable } from './reactive-capability-curve-table';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -92,14 +87,7 @@ const GeneratorModificationDialog = ({
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
-    const headerIds = [
-        'ActivePower',
-        'MinimumReactivePower',
-        'MaximumReactivePower',
-    ];
-
     const fieldRequired = { isFieldRequired: true };
-    const fieldDisabled = { disabled: true };
 
     useEffect(() => {
         if (!equipmentOptionsPromise) return;
