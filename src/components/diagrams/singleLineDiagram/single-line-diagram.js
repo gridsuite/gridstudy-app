@@ -773,7 +773,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         'sld-closed',
                         'sld-open'
                     );
-                } else {
+                } else if (
+                    breakerToSwitchDom.classList.value.includes('sld-open')
+                ) {
                     breakerToSwitchDom.classList.replace(
                         'sld-open',
                         'sld-closed'
