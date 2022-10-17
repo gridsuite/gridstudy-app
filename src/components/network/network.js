@@ -133,7 +133,7 @@ export default class Network {
 
         return equipmentsAdded === true
             ? [...currentEquipments]
-            : currentEquipments ?? [];
+            : currentEquipments;
     }
 
     updateSubstations(substations) {
