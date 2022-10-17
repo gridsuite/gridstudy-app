@@ -228,8 +228,8 @@
     "LccConverterStations": "LCC Converter Stations",
     "VscConverterStations": "VSC Converter Stations",
     "LoadType": "Type",
-    "ConstantActivePower": "Constant p (MW)",
-    "ConstantReactivePower": "Constant q (MVar)",
+    "ConstantActivePower": "Target p (MW)",
+    "ConstantReactivePower": "Target q (MVar)",
     "DanglingLines": "Dangling Lines",
     "UcteXnodeCode": "UCTE Xnode",
     "HvdcLines": "HVDC Lines",
@@ -582,5 +582,9 @@
     "EmptyList/bbs": "Bus Bar list is empty",
     "EmptyList/connections": "Connections list is empty",
 
-    "UnsupportedView": "Search is unavailable in tree view"
+    "UnsupportedView": "Search is unavailable in tree view",
+    "ConnectionName": "Connection name",
+    "ConnectionDirection": "Connection direction",
+    "Top": "Top",
+    "Bottom": "Bottom"
 }

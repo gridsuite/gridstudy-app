@@ -50,6 +50,7 @@ import {
     MicroSusceptanceAdornment,
     VoltageAdornment,
     gridItem,
+    sanitizeString,
 } from '../dialogUtils';
 import { REGULATION_MODES } from '../../network/constants';
 import { useBooleanValue } from '../inputs/boolean';
@@ -928,7 +929,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 twoWindingsTransformerId,
-                twoWindingsTransformerName,
+                sanitizeString(twoWindingsTransformerName),
                 seriesResistance,
                 seriesReactance,
                 magnetizingConductance,

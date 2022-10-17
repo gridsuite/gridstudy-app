@@ -94,6 +94,10 @@ export function toPositiveIntValue(val) {
     return parseInt(val) || 0;
 }
 
+export function sanitizeString(val) {
+    return val.trim() === '' ? null : val.trim();
+}
+
 export const toFloatValue = (val) => {
     if (val === '-') return val;
     if (val === '') return '';

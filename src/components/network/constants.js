@@ -38,6 +38,12 @@ export const REGULATION_MODES = [
     { id: 'ACTIVE_POWER_CONTROL', label: 'ActivePowerControl' },
 ];
 
+export const CONNECTION_DIRECTION = [
+    { id: '', label: 'None' },
+    { id: 'TOP', label: 'Top' },
+    { id: 'BOTTOM', label: 'Bottom' },
+];
+
 export function getEnergySourceLabel(energySourceId) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }

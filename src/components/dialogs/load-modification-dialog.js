@@ -35,6 +35,7 @@ import {
     gridItem,
     GridSection,
     ReactivePowerAdornment,
+    sanitizeString,
 } from './dialogUtils';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
@@ -159,7 +160,7 @@ const LoadModificationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 loadInfos?.id,
-                loadName,
+                sanitizeString(loadName),
                 loadType,
                 activePower,
                 reactivePower,

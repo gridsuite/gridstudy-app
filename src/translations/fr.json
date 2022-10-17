@@ -229,8 +229,8 @@
     "LccConverterStations": "Stations conversion LCC",
     "VscConverterStations": "Stations conversion VSC",
     "LoadType": "Type",
-    "ConstantActivePower": "P constant (MW)",
-    "ConstantReactivePower": "Q constant (MVar)",
+    "ConstantActivePower": "P consigne (MW)",
+    "ConstantReactivePower": "Q consigne (MVar)",
     "DanglingLines": "Lignes frontières",
     "UcteXnodeCode": "Xnode UCTE",
     "HvdcLines": "Lignes HVDC",
@@ -584,5 +584,9 @@
     "EmptyList/bbs": "La liste de jeux de barres est vide",
     "EmptyList/connections": "La liste de connexions est vide",
 
-    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre"
+    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
+    "ConnectionName": "Nom départ",
+    "ConnectionDirection": "Sens départ",
+    "Top": "Haut",
+    "Bottom": "Bas"
 }

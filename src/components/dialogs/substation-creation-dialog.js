@@ -26,7 +26,7 @@ import {
     useInputForm,
     useTextValue,
 } from './inputs/input-hooks';
-import { filledTextField, gridItem } from './dialogUtils';
+import { filledTextField, gridItem, sanitizeString } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 
@@ -114,7 +114,7 @@ const SubstationCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 substationId,
-                substationName,
+                sanitizeString(substationName),
                 substationCountry,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
