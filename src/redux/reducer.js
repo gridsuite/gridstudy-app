@@ -103,7 +103,7 @@ const paramsInitialState = {
     [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
-    [PARAM_MAP_MANUAL_REFRESH]: true,
+    [PARAM_MAP_MANUAL_REFRESH]: false,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
     [PARAM_CENTER_LABEL]: false,
@@ -143,7 +143,7 @@ const initialState = {
     notificationIdList: [],
     isModificationsInProgress: false,
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
-    reloadGeoData: true,
+    reloadMap: true,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -254,7 +254,7 @@ export const reducer = createReducer(initialState, {
             ) {
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
                 // current node has changed, then will need to reload Geo Data
-                state.reloadGeoData = true;
+                state.reloadMap = true;
             }
         }
     },
@@ -335,7 +335,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [RESET_MAP_RELOADED]: (state) => {
-        state.reloadGeoData = false;
+        state.reloadMap = false;
     },
 
     [ADD_LOADFLOW_NOTIF]: (state) => {
@@ -428,7 +428,7 @@ export const reducer = createReducer(initialState, {
     [CURRENT_TREE_NODE]: (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
         // current node has changed, then will need to reload Geo Data
-        state.reloadGeoData = true;
+        state.reloadMap = true;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
@@ -463,7 +463,7 @@ export const reducer = createReducer(initialState, {
             // Some actions in the TREE display mode could change this value after that
             // ex: change current Node, current Node updated ...
             if (action.studyDisplayMode === STUDY_DISPLAY_MODE.TREE)
-                state.reloadGeoData = false;
+                state.reloadMap = false;
 
             state.studyDisplayMode = action.studyDisplayMode;
         }

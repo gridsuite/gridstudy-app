@@ -207,7 +207,7 @@ export function StudyContainer({ view, onChangeTab }) {
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
 
-    const reloadGeoDataNeeded = useSelector((state) => state.reloadGeoData);
+    const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
     const [updatedLines, setUpdatedLines] = useState([]);
 
@@ -360,10 +360,10 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
     useEffect(() => {
-        if (mapManualRefresh && !reloadGeoDataNeeded) {
+        if (mapManualRefresh && !reloadMapNeeded) {
             loadNetwork(true);
         }
-    }, [loadNetwork, mapManualRefresh, reloadGeoDataNeeded]);
+    }, [loadNetwork, mapManualRefresh, reloadMapNeeded]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -556,7 +556,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [intl]);
 
     useEffect(() => {
-        if (!mapManualRefresh || !reloadGeoDataNeeded) {
+        if (!mapManualRefresh || !reloadMapNeeded) {
             if (studyUpdatedForce.eventData.headers) {
                 if (
                     studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
@@ -605,7 +605,7 @@ export function StudyContainer({ view, onChangeTab }) {
         updateNetwork,
         network,
         mapManualRefresh,
-        reloadGeoDataNeeded,
+        reloadMapNeeded,
     ]);
 
     return (

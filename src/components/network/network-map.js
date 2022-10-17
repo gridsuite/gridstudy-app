@@ -85,7 +85,7 @@ const NetworkMap = (props) => {
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
 
-    const reloadGeoDataNeeded = useSelector((state) => state.reloadGeoData);
+    const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -415,7 +415,7 @@ const NetworkMap = (props) => {
             >
                 {props.waitingLoadGeoData && renderOverlay()}
                 {mapManualRefresh &&
-                    reloadGeoDataNeeded &&
+                    reloadMapNeeded &&
                     isNodeBuilt(currentNode) && (
                         <div className={classes.mapManualRefreshBackdrop}>
                             <Button

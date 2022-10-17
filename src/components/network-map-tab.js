@@ -103,7 +103,7 @@ export const NetworkMapTab = ({
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
-    const reloadGeoDataNeeded = useSelector((state) => state.reloadGeoData);
+    const reloadMapNeeded = useSelector((state) => state.reloadMap);
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -240,14 +240,14 @@ export const NetworkMapTab = ({
         if (mapManualRefresh && isInitialized) return;
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
-        if (!reloadGeoDataNeeded) return;
+        if (!reloadMapNeeded) return;
 
         reloadMapGeoData();
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
         disabled,
-        reloadGeoDataNeeded,
+        reloadMapNeeded,
         studyUuid,
         currentNode,
         lineFullPath,
