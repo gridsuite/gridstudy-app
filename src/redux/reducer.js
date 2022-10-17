@@ -103,7 +103,7 @@ const paramsInitialState = {
     [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
-    [PARAM_MAP_MANUAL_REFRESH]: false,
+    [PARAM_MAP_MANUAL_REFRESH]: true,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
     [PARAM_CENTER_LABEL]: false,
