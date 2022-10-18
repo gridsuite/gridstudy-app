@@ -214,7 +214,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
-                        <Tab label={<FormattedMessage id="Network" />} />
+                        <Tab label={<FormattedMessage id="Advanced" />} />
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
