@@ -378,7 +378,7 @@
     "ReactiveCapabilityCurve": "Limites de réactif par diagramme",
     "MinimumReactivePower": "Puissance réactive minimale",
     "MaximumReactivePower": "Puissance réactive maximale",
-    "ActivePower": "Puissance active",
+    "ActivePowerLabel": "Puissance active",
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",
@@ -524,5 +524,6 @@
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
-    "Bottom": "Bas"
+    "Bottom": "Bas",
+    "Direction": "Direction"
 }

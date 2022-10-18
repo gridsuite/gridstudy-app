@@ -92,7 +92,7 @@ const GeneratorModificationDialog = ({
         useState(true);
 
     const headerIds = [
-        'ActivePower',
+        'ActivePowerLabel',
         'MinimumReactivePower',
         'MaximumReactivePower',
     ];

@@ -42,7 +42,7 @@ import {
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { Box } from '@mui/system';
-import { CONNECTION_DIRECTION, ENERGY_SOURCES } from '../network/constants';
+import { ENERGY_SOURCES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
@@ -355,23 +355,11 @@ const GeneratorCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
-    });
-
-    const [connectionDirection, connectionDirectionField] = useEnumValue({
-        label: 'ConnectionDirection',
-        validation: { isFieldRequired: false },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        enumValues: CONNECTION_DIRECTION,
-        defaultValue: formValues ? formValues.connectionDirection : '',
-    });
-
-    const [connectionName, connectionNameField] = useTextValue({
-        label: 'ConnectionName',
-        validation: { isFieldRequired: false },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        defaultValue: formValues?.connectionName,
+        connectionDirectionValue: formValues
+            ? formValues.connectionDirection
+            : '',
+        connectionNameValue: formValues?.connectionName,
+        withPosition: true,
     });
 
     useEffect(() => {
@@ -422,8 +410,8 @@ const GeneratorCreationDialog = ({
                 isReactiveCapabilityCurveOn ? null : maximumReactivePower,
                 isReactiveCapabilityCurveOn ? null : minimumReactivePower,
                 isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null,
-                !connectionDirection ? 'UNDEFINED' : connectionDirection,
-                connectionName ? connectionName : null
+                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -488,9 +476,6 @@ const GeneratorCreationDialog = ({
                         </Grid>
                         <Grid container spacing={2}>
                             {gridItem(connectivityField, 8)}
-                            <Box sx={{ width: '100%' }} />
-                            {gridItem(connectionNameField, 4)}
-                            {gridItem(connectionDirectionField, 4)}
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>

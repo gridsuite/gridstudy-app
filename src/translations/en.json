@@ -377,7 +377,7 @@
     "ReactiveCapabilityCurve": "Reactive capability curve",
     "MinimumReactivePower": "Minimum reactive power",
     "MaximumReactivePower": "Maximum reactive power",
-    "ActivePower": "Active power",
+    "ActivePowerLabel": "Active power",
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",
@@ -523,5 +523,7 @@
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
-    "Bottom": "Bottom"
+    "Bottom": "Bottom",
+    "Direction": "Direction"
+
 }
