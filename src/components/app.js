@@ -332,7 +332,7 @@ const App = () => {
         });
     });
 
-    // Manage user connection / disconnection
+    // Manage user (both manual and auto) disconnection
     useEffect(() => {
         if (user == null) dispatch(setCurrentTreeNode(null));
     }, [user, dispatch]);
