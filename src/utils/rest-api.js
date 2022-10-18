@@ -1621,8 +1621,8 @@ export function createTwoWindingsTransformer(
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
-    ratioTap,
-    phaseTap,
+    ratioTapChanger,
+    phaseTapChanger,
     isUpdate,
     modificationUuid
 ) {
@@ -1663,8 +1663,8 @@ export function createTwoWindingsTransformer(
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            ratioTapChanger: ratioTap,
-            phaseTapChanger: phaseTap,
+            ratioTapChanger: ratioTapChanger,
+            phaseTapChanger: phaseTapChanger,
         }),
     }).then((response) => {
         return response.ok

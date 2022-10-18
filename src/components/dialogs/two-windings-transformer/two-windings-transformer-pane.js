@@ -100,12 +100,12 @@ const TwoWindingsTransformerPane = (props) => {
             <Grid container spacing={2}>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="Side1" />
+                        <FormattedMessage id="OriginSide" />
                     </h4>
                 </Grid>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="Side2" />
+                        <FormattedMessage id="ExtrimitySide" />
                     </h4>
                 </Grid>
             </Grid>

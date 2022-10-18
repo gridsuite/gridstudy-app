@@ -18,10 +18,8 @@ import { NumericalField } from '../../network/equipment-table-editors';
 import CsvDownloader from 'react-csv-downloader';
 import Papa from 'papaparse';
 import makeStyles from '@mui/styles/makeStyles';
-import {
-    CreateRuleDialog,
-    RATIO_TAP,
-} from './two-windings-transformer-creation-dialog';
+import { RATIO_TAP } from './two-windings-transformer-creation-dialog';
+import { CreateRuleDialog } from './create-rule-dialog';
 
 const useStyles = makeStyles((theme) => ({
     center: {

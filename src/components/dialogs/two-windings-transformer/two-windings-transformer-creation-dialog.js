@@ -49,7 +49,6 @@ import {
     OhmAdornment,
     MicroSusceptanceAdornment,
     VoltageAdornment,
-    gridItem,
     sanitizeString,
 } from '../dialogUtils';
 import { REGULATION_MODES } from '../../network/constants';
@@ -58,74 +57,6 @@ import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
-
-export const CreateRuleDialog = (props) => {
-    const inputForm = useInputForm();
-
-    const [lowTapValue, lowTapValueField] = useTextValue({
-        ...(props.ruleType === PHASE_TAP && { label: 'LowTapAlpha' }),
-        ...(props.ruleType === RATIO_TAP && { label: 'LowTapRatio' }),
-        validation: { isFieldRequired: true },
-        inputForm: inputForm,
-        formProps: filledTextField,
-    });
-
-    const [highTapValue, highTapValueField] = useTextValue({
-        ...(props.ruleType === PHASE_TAP && { label: 'HighTapAlpha' }),
-        ...(props.ruleType === RATIO_TAP && { label: 'HighTapRatio' }),
-        validation: { isFieldRequired: true },
-        inputForm: inputForm,
-        formProps: filledTextField,
-    });
-
-    const isTapValuesValid = () => {
-        if (highTapValue && lowTapValue) {
-            return !(highTapValue - lowTapValue > 0);
-        }
-        return true;
-    };
-
-    const handleCloseDialog = () => {
-        inputForm.reset();
-        props.setOpenCreateRuleDialog(false);
-    };
-
-    const handleSave = () => {
-        props.handleCreateTapRule(
-            parseFloat(lowTapValue),
-            parseFloat(highTapValue)
-        );
-        handleCloseDialog();
-    };
-
-    return (
-        <Dialog open={props.openCreateRuleDialog} fullWidth={true}>
-            <DialogTitle>
-                <FormattedMessage
-                    id={
-                        props.ruleType === PHASE_TAP
-                            ? 'CreateDephasingRule'
-                            : 'CreateRegulationRule'
-                    }
-                />
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2} direction={'column'}>
-                    {gridItem(lowTapValueField)}
-                    {gridItem(highTapValueField)}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseDialog}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button onClick={handleSave} disabled={isTapValuesValid()}>
-                    <FormattedMessage id="validate" />
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-};
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -1016,17 +947,21 @@ const TwoWindingsTransformerCreationDialog = ({
                     >
                         <Tab
                             label={
-                                <FormattedMessage id="TwoWindingsTransformerTab" />
+                                <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
                             }
                             onClick={() => setDialogWidth('sm')}
                         />
                         <Tab
                             onClick={() => setDialogWidth('xl')}
-                            label={<FormattedMessage id="RatioTapChanger" />}
+                            label={
+                                <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
+                            }
                         />
                         <Tab
                             onClick={() => setDialogWidth('xl')}
-                            label={<FormattedMessage id="PhaseTapChanger" />}
+                            label={
+                                <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
+                            }
                         />
                     </Tabs>
 

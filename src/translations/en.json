@@ -398,8 +398,10 @@
     "Characteristics": "Characteristics",
     "SeriesResistanceText": "Series resistance",
     "SeriesReactanceText": "Series reactance",
-    "Side1": "Origin side",
-    "Side2": "Extremity side",
+    "Side1": "Side 1",
+    "Side2": "Side 2",
+    "OriginSide": "Origin side",
+    "ExtrimitySide": "Extremity side",
     "ShuntConductanceText": "Shunt conductance",
     "ShuntSusceptanceText": "Shunt susceptance",
 
@@ -466,9 +468,9 @@
     "PermanentCurrentLimitText2": "Permanent current limit 2",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
-    "TwoWindingsTransformerTab": "Characteristics",
-    "RatioTapChanger": "Ratio tap changer",
-    "PhaseTapChanger": "Phase tap changer",
+    "TwoWindingsTransformerCharacteristicsTab": "Characteristics",
+    "TwoWindingsTransformerRatioTapChangerTab": "Ratio tap changer",
+    "TwoWindingsTransformerPhaseTapChangerTab": "Phase tap changer",
     "ConfigureRatioTapChanger": "Configure ratio tap changer",
     "ConfigurePhaseTapChanger": "Configure phase tap changer",
 

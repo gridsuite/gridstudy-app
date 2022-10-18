@@ -397,8 +397,10 @@
 
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
-    "Side1": "Côté origine",
-    "Side2": "Côté extrémité",
+    "Side1": "Côté 1",
+    "Side2": "Côté 2",
+    "OriginSide": "Côté origine",
+    "ExtrimitySide": "Côté extrémité",
     "SeriesResistanceText": "Résistance série",
     "SeriesReactanceText": "Réactance série",
     "ShuntConductanceText": "Conductance parallèle",
@@ -467,9 +469,9 @@
     "PermanentCurrentLimitText2": "IST 2",
 
     "CreateTwoWindingsTransformer": "Créer un transformateur à 2 enroulements",
-    "TwoWindingsTransformerTab": "Caractéristiques",
-    "RatioTapChanger": "Régleur",
-    "PhaseTapChanger": "Déphaseur",
+    "TwoWindingsTransformerCharacteristicsTab": "Caractéristiques",
+    "TwoWindingsTransformerRatioTapChangerTab": "Régleur",
+    "TwoWindingsTransformerPhaseTapChangerTab": "Déphaseur",
     "ConfigureRatioTapChanger": "Configurer régleur",
     "ConfigurePhaseTapChanger": "Configurer déphaseur",
 
@@ -510,17 +512,17 @@
     "RegulatingValueCurrentLimiter": "Limitation du courant",
     "RegulatingValueActivePowerControl": "Consigne de transit",
 
-    "CreateRegulationRule":"Créer loi de régleur",
+    "CreateRegulationRule":"Créer une loi de régleur",
     "LowTapRatio":"Rapport (prise min)",
     "HighTapRatio":"Rapport (prise max)",
-    "ImportRegulationRule":"Importer loi de régleur",
+    "ImportRegulationRule":"Importer une loi de régleur",
 
     "GenerateTapRows" : "Générer les prises",
 
-    "CreateDephasingRule":"Créer loi de déphasage",
+    "CreateDephasingRule":"Créer une loi de déphasage",
     "LowTapAlpha":"Déphasage (prise min)",
     "HighTapAlpha":"Déphasage (prise max)",
-    "ImportDephasingRule":"Importer loi de déphasage",
+    "ImportDephasingRule":"Importer une loi de déphasage",
 
     "GenerateSkeleton": "Générer le squelette",
     "UploadCSV": "Télécharger le CSV",

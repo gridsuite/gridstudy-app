@@ -19,10 +19,8 @@ import { REGULATION_MODES } from '../../network/constants';
 import CsvDownloader from 'react-csv-downloader';
 import Papa from 'papaparse';
 import makeStyles from '@mui/styles/makeStyles';
-import {
-    CreateRuleDialog,
-    PHASE_TAP,
-} from './two-windings-transformer-creation-dialog';
+import { PHASE_TAP } from './two-windings-transformer-creation-dialog';
+import { CreateRuleDialog } from './create-rule-dialog';
 
 const useStyles = makeStyles((theme) => ({
     center: {
