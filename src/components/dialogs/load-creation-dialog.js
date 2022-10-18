@@ -33,6 +33,7 @@ import {
     gridItem,
     GridSection,
     ReactivePowerAdornment,
+    sanitizeString,
 } from './dialogUtils';
 
 import { createLoad } from '../../utils/rest-api';
@@ -166,7 +167,7 @@ const LoadCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 loadId,
-                loadName ? loadName : null,
+                sanitizeString(loadName),
                 !loadType ? 'UNDEFINED' : loadType,
                 activePower,
                 reactivePower,
