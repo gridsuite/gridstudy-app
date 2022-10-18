@@ -278,7 +278,7 @@
     "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
 
     "SubstationList": "Liste des postes",
-    "NetworkModificationTree": "Arbre de modification de réseau",
+    "NetworkModificationTree": "Arbre décisionnel",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
     "OnlyMin": "Min:\u202F{min}",
@@ -297,6 +297,9 @@
     "FluxConvention": "Convention des flux actifs et réactifs dans les tableurs\u00a0:",
     "FluxConvention.iidm": "IIDM",
     "FluxConvention.target": "Métier",
+    "Advanced": "Avancé",
+    "EnableDeveloperMode": "Activer mode développeur",
+    "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
