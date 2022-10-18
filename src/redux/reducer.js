@@ -62,6 +62,7 @@ import {
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
     RESET_MAP_RELOADED,
+    ENABLE_DEVELOPER_MODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -91,6 +92,7 @@ import {
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
     PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -115,6 +117,7 @@ const paramsInitialState = {
     [PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS]: [],
     [PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
+    [PARAM_DEVELOPER_MODE]: false,
 };
 
 const initialState = {
@@ -310,6 +313,10 @@ export const reducer = createReducer(initialState, {
 
     [FLUX_CONVENTION]: (state, action) => {
         state[PARAM_FLUX_CONVENTION] = action[PARAM_FLUX_CONVENTION];
+    },
+
+    [ENABLE_DEVELOPER_MODE]: (state, action) => {
+        state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
     },
 
     [LINE_FLOW_COLOR_MODE]: (state, action) => {

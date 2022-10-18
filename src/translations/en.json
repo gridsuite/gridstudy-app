@@ -298,6 +298,9 @@
     "FluxConvention": "Active and reactive flux convention used in spreadsheets: ",
     "FluxConvention.iidm": "IIDM",
     "FluxConvention.target": "Target",
+    "Advanced": "Advanced",
+    "EnableDeveloperMode": "Enable developer mode",
+    "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
 
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
