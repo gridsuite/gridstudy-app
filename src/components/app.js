@@ -43,6 +43,7 @@ import {
     selectFavoriteSensiVariablesFiltersLists,
     selectFavoriteSensiBranchFiltersLists,
     setCurrentTreeNode,
+    selectEnableDeveloperMode,
 } from '../redux/actions';
 
 import {
@@ -82,6 +83,7 @@ import {
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
     PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -169,6 +171,11 @@ const App = () => {
                         break;
                     case PARAM_FLUX_CONVENTION:
                         dispatch(selectFluxConvention(param.value));
+                        break;
+                    case PARAM_DEVELOPER_MODE:
+                        dispatch(
+                            selectEnableDeveloperMode(param.value === 'true')
+                        );
                         break;
                     case PARAM_LINE_FULL_PATH:
                         dispatch(
