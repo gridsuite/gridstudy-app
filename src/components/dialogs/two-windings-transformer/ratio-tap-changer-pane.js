@@ -1,25 +1,15 @@
 import VirtualizedTable from '../../util/virtualized-table';
-import {
-    Alert,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Grid,
-    IconButton,
-} from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, Grid, IconButton } from '@mui/material';
+import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { gridItem } from '../dialogUtils';
-import { useCSVReader } from '../inputs/input-hooks';
 import EditIcon from '@mui/icons-material/Edit';
 import { NumericalField } from '../../network/equipment-table-editors';
-import CsvDownloader from 'react-csv-downloader';
 import Papa from 'papaparse';
 import makeStyles from '@mui/styles/makeStyles';
 import { RATIO_TAP } from './two-windings-transformer-creation-dialog';
 import { CreateRuleDialog } from './create-rule-dialog';
+import { ImportRuleDialog } from './import-rule-dialog';
 
 const useStyles = makeStyles((theme) => ({
     center: {
@@ -42,148 +32,6 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 }));
-
-const ImportRegulationRuleDialog = (props) => {
-    const intl = useIntl();
-
-    const handleCloseDialog = () => {
-        props.setOpenImportRegulationRule(false);
-    };
-
-    const getCSVColumnNames = () => {
-        return [
-            intl.formatMessage({ id: 'Tap' }),
-            intl.formatMessage({ id: 'ImportFileResistance' }),
-            intl.formatMessage({ id: 'ImportFileReactance' }),
-            intl.formatMessage({ id: 'ImportFileConductance' }),
-            intl.formatMessage({ id: 'ImportFileSusceptance' }),
-            intl.formatMessage({ id: 'Ratio' }),
-        ];
-    };
-
-    const [
-        selectedFile,
-        setSelectedFile,
-        FileField,
-        selectedFileError,
-        isSelectedFileOk,
-    ] = useCSVReader({
-        label: 'ImportRegulationRule',
-        header: getCSVColumnNames(),
-    });
-
-    const parseIntData = (data, defaultValue) => {
-        return isNaN(parseInt(data), 10) ? defaultValue : parseInt(data);
-    };
-
-    const handleSave = () => {
-        if (isSelectedFileOk) {
-            Papa.parse(selectedFile, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function (results) {
-                    let rows = results.data.map((val) => {
-                        return {
-                            key: results.data.indexOf(val),
-                            tap: val[intl.formatMessage({ id: 'Tap' })],
-                            resistance: parseIntData(
-                                val[
-                                    intl.formatMessage({
-                                        id: 'ImportFileResistance',
-                                    })
-                                ],
-                                0
-                            ),
-                            reactance: parseIntData(
-                                val[
-                                    intl.formatMessage({
-                                        id: 'ImportFileReactance',
-                                    })
-                                ],
-                                0
-                            ),
-                            conductance: parseIntData(
-                                val[
-                                    intl.formatMessage({
-                                        id: 'ImportFileConductance',
-                                    })
-                                ],
-                                0
-                            ),
-                            susceptance: parseIntData(
-                                val[
-                                    intl.formatMessage({
-                                        id: 'ImportFileSusceptance',
-                                    })
-                                ],
-                                0
-                            ),
-                            ratio: isNaN(
-                                parseFloat(
-                                    val[intl.formatMessage({ id: 'Ratio' })]
-                                )
-                            )
-                                ? 1
-                                : parseFloat(
-                                      val[intl.formatMessage({ id: 'Ratio' })]
-                                  ),
-                            isEdited: true,
-                        };
-                    });
-                    props.handleImportRatioTapRows(rows);
-                    handleCloseDialog();
-                },
-            });
-        }
-    };
-
-    useEffect(() => {
-        if (props.openImportRegulationRule) {
-            setSelectedFile();
-        }
-    }, [props.openImportRegulationRule, setSelectedFile]);
-
-    return (
-        <Dialog open={props.openImportRegulationRule} fullWidth={true}>
-            <DialogTitle>
-                <FormattedMessage id="ImportRegulationRule" />
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2} direction={'column'}>
-                    <Grid item>
-                        <CsvDownloader
-                            columns={getCSVColumnNames()}
-                            filename={'tap-regulating-rule'}
-                        >
-                            <Button variant="contained">
-                                <FormattedMessage id="GenerateSkeleton" />
-                            </Button>
-                        </CsvDownloader>
-                    </Grid>
-                    <Grid item>{FileField}</Grid>
-                    {selectedFileError && (
-                        <Grid item>
-                            <Alert severity="error">{selectedFileError}</Alert>
-                        </Grid>
-                    )}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseDialog}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button
-                    disabled={
-                        selectedFileError && selectedFileError.length !== 0
-                    }
-                    onClick={handleSave}
-                >
-                    <FormattedMessage id="validate" />
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-};
 
 const RatioTapChangerPane = (props) => {
     const {
@@ -211,11 +59,9 @@ const RatioTapChangerPane = (props) => {
 
     const [lineEdit, setLineEdit] = useState(undefined);
 
-    const [openCreateRegulationRule, setOpenCreateRegulationRule] =
-        useState(false);
+    const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
 
-    const [openImportRegulationRule, setOpenImportRegulationRule] =
-        useState(false);
+    const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
 
     const isLineOnEditMode = useCallback(
         (rowData) => {
@@ -458,24 +304,91 @@ const RatioTapChangerPane = (props) => {
         return tableColumns;
     };
 
-    const handleImportRatioTapRows = (rows) => {
-        let tapValues = Object.values(
-            rows.map((row) => {
-                return parseInt(row.tap, 10);
-            })
-        );
-        let tempLowTapPosition = Math.min(...tapValues);
-        let tempHighTapPosition = Math.max(...tapValues);
+    const getCSVColumns = () => {
+        return [
+            intl.formatMessage({ id: 'Tap' }),
+            intl.formatMessage({ id: 'ImportFileResistance' }),
+            intl.formatMessage({ id: 'ImportFileReactance' }),
+            intl.formatMessage({ id: 'ImportFileConductance' }),
+            intl.formatMessage({ id: 'ImportFileSusceptance' }),
+            intl.formatMessage({ id: 'Ratio' }),
+        ];
+    };
 
-        setFormValues({
-            ...formValues,
-            ratioTapChanger: {
-                ...formValues.ratioTapChanger,
-                lowTapPosition: tempLowTapPosition,
-                highTapPosition: tempHighTapPosition,
+    const parseIntData = (data, defaultValue) => {
+        return isNaN(parseInt(data), 10) ? defaultValue : parseInt(data);
+    };
+
+    const handleImportTapRule = (selectedFile) => {
+        Papa.parse(selectedFile, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+                let rows = results.data.map((val) => {
+                    return {
+                        key: results.data.indexOf(val),
+                        tap: val[intl.formatMessage({ id: 'Tap' })],
+                        resistance: parseIntData(
+                            val[
+                                intl.formatMessage({
+                                    id: 'ImportFileResistance',
+                                })
+                            ],
+                            0
+                        ),
+                        reactance: parseIntData(
+                            val[
+                                intl.formatMessage({
+                                    id: 'ImportFileReactance',
+                                })
+                            ],
+                            0
+                        ),
+                        conductance: parseIntData(
+                            val[
+                                intl.formatMessage({
+                                    id: 'ImportFileConductance',
+                                })
+                            ],
+                            0
+                        ),
+                        susceptance: parseIntData(
+                            val[
+                                intl.formatMessage({
+                                    id: 'ImportFileSusceptance',
+                                })
+                            ],
+                            0
+                        ),
+                        ratio: isNaN(
+                            parseFloat(val[intl.formatMessage({ id: 'Ratio' })])
+                        )
+                            ? 1
+                            : parseFloat(
+                                  val[intl.formatMessage({ id: 'Ratio' })]
+                              ),
+                        isEdited: true,
+                    };
+                });
+                let tapValues = Object.values(
+                    rows.map((row) => {
+                        return parseInt(row.tap, 10);
+                    })
+                );
+                let tempLowTapPosition = Math.min(...tapValues);
+                let tempHighTapPosition = Math.max(...tapValues);
+
+                setFormValues({
+                    ...formValues,
+                    ratioTapChanger: {
+                        ...formValues.ratioTapChanger,
+                        lowTapPosition: tempLowTapPosition,
+                        highTapPosition: tempHighTapPosition,
+                    },
+                });
+                handleRatioTapRows(rows);
             },
         });
-        handleRatioTapRows(rows);
     };
 
     const handleCreateRatioTapRule = (lowTapRatio, highTapRatio) => {
@@ -579,9 +492,7 @@ const RatioTapChangerPane = (props) => {
                         <Grid item className={classes.center}>
                             <Button
                                 variant="contained"
-                                onClick={() =>
-                                    setOpenCreateRegulationRule(true)
-                                }
+                                onClick={() => setOpenCreateRuleDialog(true)}
                                 disabled={
                                     !ratioTapChangerEnabled ||
                                     ratioTapRows.length === 0
@@ -593,9 +504,7 @@ const RatioTapChangerPane = (props) => {
                         <Grid item className={classes.center}>
                             <Button
                                 variant="contained"
-                                onClick={() =>
-                                    setOpenImportRegulationRule(true)
-                                }
+                                onClick={() => setOpenImportRuleDialog(true)}
                                 disabled={!ratioTapChangerEnabled}
                             >
                                 <FormattedMessage id="ImportRegulationRule" />
@@ -607,15 +516,17 @@ const RatioTapChangerPane = (props) => {
 
             <CreateRuleDialog
                 ruleType={RATIO_TAP}
-                setOpenCreateRuleDialog={setOpenCreateRegulationRule}
-                openCreateRuleDialog={openCreateRegulationRule}
+                openCreateRuleDialog={openCreateRuleDialog}
+                setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                 handleCreateTapRule={handleCreateRatioTapRule}
             />
 
-            <ImportRegulationRuleDialog
-                setOpenImportRegulationRule={setOpenImportRegulationRule}
-                openImportRegulationRule={openImportRegulationRule}
-                handleImportRatioTapRows={handleImportRatioTapRows}
+            <ImportRuleDialog
+                ruleType={RATIO_TAP}
+                openImportRuleDialog={openImportRuleDialog}
+                setOpenImportRuleDialog={setOpenImportRuleDialog}
+                csvColumns={getCSVColumns()}
+                handleImportTapRule={handleImportTapRule}
             />
         </>
     );
