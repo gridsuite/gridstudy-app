@@ -13,7 +13,7 @@ import {
     Grid,
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { filledTextField, gridItem } from '../dialogUtils';
+import { gridItem } from '../dialogUtils';
 import { useInputForm, useTextValue } from '../inputs/input-hooks';
 import {
     PHASE_TAP,
