@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { CONNECTION_DIRECTION } from '../network/constants';
 import { useEnumValue, useTextValue } from './inputs/input-hooks';
-import { filledTextField } from './dialogUtils';
+import { outlinedTextField } from './dialogUtils';
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
  * Usable firstly for giving to hereunder ConnectivityEdition.
@@ -138,7 +138,7 @@ export const useConnectivityValue = ({
         label: 'ConnectionDirection',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        formProps: filledTextField,
+        formProps: outlinedTextField,
         enumValues: CONNECTION_DIRECTION,
         defaultValue: connectionDirectionValue,
     });
@@ -147,7 +147,7 @@ export const useConnectivityValue = ({
         label: 'ConnectionName',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        formProps: filledTextField,
+        formProps: outlinedTextField,
         defaultValue: connectionNameValue,
     });
 

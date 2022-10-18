@@ -73,6 +73,9 @@ export const VoltageAdornment = {
 export const filledTextField = {
     variant: 'filled',
 };
+export const outlinedTextField = {
+    variant: 'outlined',
+};
 export const percentageTextField = {
     position: 'end',
     text: '%',
