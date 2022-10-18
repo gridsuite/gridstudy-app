@@ -81,7 +81,7 @@ export const NetworkModificationTreePane = ({
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
-    const { snackError, snackInfo } = useSnackMessage();
+    const { snackError } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
 

@@ -55,8 +55,6 @@ const SubstationCreationDialog = ({
 
     const equipmentPath = 'substations';
 
-    const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
-
     const toFormValues = (substation) => {
         return {
             equipmentId: substation.id + '(1)',
@@ -109,28 +107,6 @@ const SubstationCreationDialog = ({
         defaultCodeValue: formValues?.substationCountry ?? null,
         defaultLabelValue: formValues?.substationCountryLabel ?? null,
     });
-
-    function isEmpty(value) {
-        return value === '';
-    }
-
-    useEffect(() => {
-        if (
-            substationId !== formValues?.equipmentId ||
-            (formValues?.equipmentName !== undefined &&
-                substationName !== formValues?.equipmentName) ||
-            (formValues?.equipmentName === undefined &&
-                !isEmpty(substationName)) ||
-            (formValues?.substationCountry !== undefined &&
-                substationCountry !== formValues?.substationCountry) ||
-            (formValues?.substationCountry === undefined &&
-                substationCountry !== null)
-        ) {
-            setBtnSaveListDisabled(false);
-        } else {
-            setBtnSaveListDisabled(true);
-        }
-    }, [formValues, substationCountry, substationId, substationName]);
 
     const handleSave = () => {
         if (inputForm.validate()) {
@@ -199,7 +175,10 @@ const SubstationCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave} disabled={btnSaveListDisabled}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

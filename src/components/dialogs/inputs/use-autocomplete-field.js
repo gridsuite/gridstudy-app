@@ -95,7 +95,7 @@ export const useAutocompleteField = ({
     const [userStr, setUserStr] = useState('');
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState();
-
+    const [hasChanged, setHasChanged] = useState(false);
     const validationRef = useRef();
 
     const prevValues = useRef();
@@ -117,9 +117,13 @@ export const useAutocompleteField = ({
         }
     }, [label, validation, inputForm, value, selectedValue, id]);
 
-    const handleChangeValue = useCallback((value) => {
-        setValue(value);
-    }, []);
+    const handleChangeValue = useCallback(
+        (value) => {
+            setValue(value);
+            inputForm.setHasChanged(true);
+        },
+        [inputForm]
+    );
 
     useEffect(() => {
         if (selectedValue) setValue(selectedValue);
@@ -322,5 +326,5 @@ export const useAutocompleteField = ({
         userStr,
     ]);
 
-    return [value, field, setValue];
+    return [value, field, setValue, hasChanged, setHasChanged];
 };

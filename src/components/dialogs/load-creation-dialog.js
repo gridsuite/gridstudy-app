@@ -67,8 +67,6 @@ const LoadCreationDialog = ({
 
     const equipmentPath = 'loads';
 
-    const [btnSaveListDisabled, setBtnSaveListDisabled] = useState(true);
-
     const toFormValues = (load) => {
         return {
             equipmentId: load.id + '(1)',
@@ -162,38 +160,6 @@ const LoadCreationDialog = ({
         withPosition: true,
     });
 
-    function isEmpty(value) {
-        return value === '';
-    }
-
-    useEffect(() => {
-        if (
-            loadId !== formValues?.equipmentId ||
-            loadType !== formValues?.loadType ||
-            (formValues?.equipmentName !== undefined &&
-                loadName !== formValues?.equipmentName) ||
-            (formValues?.equipmentName === undefined && !isEmpty(loadName)) ||
-            activePower !== String(formValues?.activePower) ||
-            reactivePower !== String(formValues?.reactivePower) ||
-            connectivity?.voltageLevel?.id !== formValues?.voltageLevelId ||
-            connectivity?.busOrBusbarSection?.id !==
-                formValues?.busOrBusbarSectionId
-        ) {
-            setBtnSaveListDisabled(false);
-        } else {
-            setBtnSaveListDisabled(true);
-        }
-    }, [
-        activePower,
-        loadName,
-        connectivity?.voltageLevel,
-        connectivity?.busOrBusbarSection,
-        formValues,
-        loadId,
-        loadType,
-        reactivePower,
-    ]);
-
     const handleSave = () => {
         if (inputForm.validate()) {
             createLoad(
@@ -277,7 +243,10 @@ const LoadCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave} disabled={btnSaveListDisabled}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
