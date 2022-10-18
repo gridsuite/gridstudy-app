@@ -504,6 +504,12 @@
     "Ratio":"Rapport",
     "Alpha":"Déphasage (°)",
 
+    "ImportFileResistance":"Resistance",
+    "ImportFileReactance":"Reactance",
+    "ImportFileConductance":"Conductance",
+    "ImportFileSusceptance":"Susceptance",
+    "ImportFileAlpha":"Dephasage",
+
     "RegulationMode": "Mode de réglage",
     "FixedTap": "Déphasage constant",
     "CurrentLimiter": "Limitation de courant",

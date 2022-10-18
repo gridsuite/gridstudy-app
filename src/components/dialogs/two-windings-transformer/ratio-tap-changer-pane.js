@@ -44,18 +44,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ImportRegulationRuleDialog = (props) => {
+    const intl = useIntl();
+
     const handleCloseDialog = () => {
         props.setOpenImportRegulationRule(false);
     };
 
     const getCSVColumnNames = () => {
         return [
-            'Tap',
-            'Resistance',
-            'Reactance',
-            'Conductance',
-            'Susceptance',
-            'Ratio',
+            intl.formatMessage({ id: 'Tap' }),
+            intl.formatMessage({ id: 'ImportFileResistance' }),
+            intl.formatMessage({ id: 'ImportFileReactance' }),
+            intl.formatMessage({ id: 'ImportFileConductance' }),
+            intl.formatMessage({ id: 'ImportFileSusceptance' }),
+            intl.formatMessage({ id: 'Ratio' }),
         ];
     };
 
@@ -70,6 +72,10 @@ const ImportRegulationRuleDialog = (props) => {
         header: getCSVColumnNames(),
     });
 
+    const parseIntData = (data, defaultValue) => {
+        return isNaN(parseInt(data), 10) ? defaultValue : parseInt(data);
+    };
+
     const handleSave = () => {
         if (isSelectedFileOk) {
             Papa.parse(selectedFile, {
@@ -79,12 +85,48 @@ const ImportRegulationRuleDialog = (props) => {
                     let rows = results.data.map((val) => {
                         return {
                             key: results.data.indexOf(val),
-                            tap: val.Tap,
-                            resistance: parseInt(val.Resistance, 10),
-                            reactance: parseInt(val.Reactance, 10),
-                            conductance: parseInt(val.Conductance, 10),
-                            susceptance: parseInt(val.Susceptance, 10),
-                            ratio: parseFloat(val.Ratio),
+                            tap: val[intl.formatMessage({ id: 'Tap' })],
+                            resistance: parseIntData(
+                                val[
+                                    intl.formatMessage({
+                                        id: 'ImportFileResistance',
+                                    })
+                                ],
+                                0
+                            ),
+                            reactance: parseIntData(
+                                val[
+                                    intl.formatMessage({
+                                        id: 'ImportFileReactance',
+                                    })
+                                ],
+                                0
+                            ),
+                            conductance: parseIntData(
+                                val[
+                                    intl.formatMessage({
+                                        id: 'ImportFileConductance',
+                                    })
+                                ],
+                                0
+                            ),
+                            susceptance: parseIntData(
+                                val[
+                                    intl.formatMessage({
+                                        id: 'ImportFileSusceptance',
+                                    })
+                                ],
+                                0
+                            ),
+                            ratio: isNaN(
+                                parseFloat(
+                                    val[intl.formatMessage({ id: 'Ratio' })]
+                                )
+                            )
+                                ? 1
+                                : parseFloat(
+                                      val[intl.formatMessage({ id: 'Ratio' })]
+                                  ),
                             isEdited: true,
                         };
                     });

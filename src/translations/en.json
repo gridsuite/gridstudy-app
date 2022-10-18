@@ -502,6 +502,12 @@
     "Ratio":"Ratio",
     "Alpha":"Shift angle (°)",
 
+    "ImportFileResistance":"Resistance",
+    "ImportFileReactance":"Reactance",
+    "ImportFileConductance":"Conductance",
+    "ImportFileSusceptance":"Susceptance",
+    "ImportFileAlpha":"ShiftAngle",
+
     "RegulationMode": "Regulation mode",
     "FixedTap": "Fixed tap",
     "CurrentLimiter": "Current limiter",

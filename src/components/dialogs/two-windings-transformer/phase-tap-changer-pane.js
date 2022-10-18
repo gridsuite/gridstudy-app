@@ -45,19 +45,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ImportDephasingRuleDialog = (props) => {
+    const intl = useIntl();
+
     const handleCloseDialog = () => {
         props.setOpenImportDephasingRule(false);
     };
 
     const getCSVColumnNames = () => {
         return [
-            'Tap',
-            'Resistance',
-            'Reactance',
-            'Conductance',
-            'Susceptance',
-            'Ratio',
-            'Alpha',
+            intl.formatMessage({ id: 'Tap' }),
+            intl.formatMessage({ id: 'ImportFileResistance' }),
+            intl.formatMessage({ id: 'ImportFileReactance' }),
+            intl.formatMessage({ id: 'ImportFileConductance' }),
+            intl.formatMessage({ id: 'ImportFileSusceptance' }),
+            intl.formatMessage({ id: 'Ratio' }),
+            intl.formatMessage({ id: 'ImportFileAlpha' }),
         ];
     };
 
@@ -85,17 +87,65 @@ const ImportDephasingRuleDialog = (props) => {
                     let rows = results.data.map((val) => {
                         return {
                             key: results.data.indexOf(val),
-                            tap: val.Tap,
-                            resistance: parseIntData(val.Resistance, 0),
-                            reactance: parseIntData(val.Reactance, 0),
-                            conductance: parseIntData(val.Conductance, 0),
-                            susceptance: parseIntData(val.Susceptance, 0),
-                            ratio: isNaN(parseFloat(val.Ratio))
+                            tap: val[intl.formatMessage({ id: 'Tap' })],
+                            resistance: parseIntData(
+                                val[
+                                    intl.formatMessage({
+                                        id: 'ImportFileResistance',
+                                    })
+                                ],
+                                0
+                            ),
+                            reactance: parseIntData(
+                                val[
+                                    intl.formatMessage({
+                                        id: 'ImportFileReactance',
+                                    })
+                                ],
+                                0
+                            ),
+                            conductance: parseIntData(
+                                val[
+                                    intl.formatMessage({
+                                        id: 'ImportFileConductance',
+                                    })
+                                ],
+                                0
+                            ),
+                            susceptance: parseIntData(
+                                val[
+                                    intl.formatMessage({
+                                        id: 'ImportFileSusceptance',
+                                    })
+                                ],
+                                0
+                            ),
+                            ratio: isNaN(
+                                parseFloat(
+                                    val[intl.formatMessage({ id: 'Ratio' })]
+                                )
+                            )
                                 ? 1
-                                : parseFloat(val.Ratio),
-                            alpha: isNaN(parseFloat(val.Alpha))
+                                : parseFloat(
+                                      val[intl.formatMessage({ id: 'Ratio' })]
+                                  ),
+                            alpha: isNaN(
+                                parseFloat(
+                                    val[
+                                        intl.formatMessage({
+                                            id: 'ImportFileAlpha',
+                                        })
+                                    ]
+                                )
+                            )
                                 ? 1
-                                : parseFloat(val.Alpha),
+                                : parseFloat(
+                                      val[
+                                          intl.formatMessage({
+                                              id: 'ImportFileAlpha',
+                                          })
+                                      ]
+                                  ),
                             isEdited: true,
                         };
                     });
