@@ -57,8 +57,6 @@ export const CreateRuleDialog = (props) => {
         handleCloseDialog();
     };
 
-    console.log(lowTapValueField);
-
     return (
         <Dialog open={props.openCreateRuleDialog} fullWidth={true}>
             <DialogTitle>
