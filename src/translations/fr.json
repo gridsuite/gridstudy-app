@@ -534,7 +534,7 @@
     "UploadCSV": "Télécharger le CSV",
     "InvalidRuleUploadType": "Le fichier doit être de type CSV",
     "InvalidRuleHeader": "Le fichier n'a pas le bon header, veuillez vous référer au squelette",
-    "uploadMessage": "Aucun fichier sélectionné",
+    "uploadMessage": " Aucun fichier sélectionné",
 
     "MagnetizingConductance": "Conductance magnétisante",
     "MagnetizingSusceptance": "Susceptance magnétisante",

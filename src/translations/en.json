@@ -532,7 +532,7 @@
     "UploadCSV": "Uploadd CSV",
     "InvalidRuleUploadType": "The selected file must be a CSV",
     "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the skeleton",
-    "uploadMessage": "No file selected",
+    "uploadMessage": " No file selected",
 
     "MagnetizingConductance": "Magnetizing conductance",
     "MagnetizingSusceptance": "Magnetizing susceptance",

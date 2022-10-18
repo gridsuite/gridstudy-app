@@ -74,7 +74,7 @@ export const CreateRuleDialog = (props) => {
                     spacing={2}
                     direction={'column'}
                     style={{
-                        paddingTop: '2px',
+                        paddingTop: '5px',
                     }}
                 >
                     {gridItem(lowTapValueField)}
