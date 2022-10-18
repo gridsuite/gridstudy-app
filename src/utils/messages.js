@@ -31,7 +31,7 @@ function displayMessageWithSnackbar({
     level,
     persistent,
 }) {
-    let message = intlRef.current.formatMessage({ id: errorMessage });
+    let message;
     if (headerMessageId) {
         let messageHeader = intlRef.current.formatMessage(
             {
@@ -39,7 +39,10 @@ function displayMessageWithSnackbar({
             },
             headerMessageValues
         );
-        message = messageHeader + (!message.empty ? '\n\n' + message : '');
+        message =
+            messageHeader + (!errorMessage.empty ? '\n\n' + errorMessage : '');
+    } else {
+        message = errorMessage;
     }
     enqueueSnackbar(message, {
         variant: level,
