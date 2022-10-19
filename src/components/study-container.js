@@ -162,6 +162,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const prevStudyName = usePrevious(studyName);
     const [studyPath, setStudyPath] = useState();
     const prevStudyPath = usePrevious(studyPath);
+    const [isNetworkInitialized, setIsNetworkInitialized] = useState(false);
 
     const network = useSelector((state) => state.network);
 
@@ -297,6 +298,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // lazy loading will do the job (no glitches to avoid)
                 dispatch(networkCreated(network));
             }
+            setIsNetworkInitialized(true);
         },
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
@@ -360,10 +362,10 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
     useEffect(() => {
-        if (mapManualRefresh && !reloadMapNeeded) {
+        if ((mapManualRefresh && !reloadMapNeeded) || !isNetworkInitialized) {
             loadNetwork(true);
         }
-    }, [loadNetwork, mapManualRefresh, reloadMapNeeded]);
+    }, [isNetworkInitialized, loadNetwork, mapManualRefresh, reloadMapNeeded]);
 
     useEffect(() => {
         if (studyUuid) {
