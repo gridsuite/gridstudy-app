@@ -24,6 +24,7 @@ import {
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
     PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -188,6 +189,15 @@ export const FLUX_CONVENTION = 'FLUX_CONVENTION';
 
 export function selectFluxConvention(fluxConvention) {
     return { type: FLUX_CONVENTION, [PARAM_FLUX_CONVENTION]: fluxConvention };
+}
+
+export const ENABLE_DEVELOPER_MODE = 'ENABLE_DEVELOPER_MODE';
+
+export function selectEnableDeveloperMode(enableDeveloperMode) {
+    return {
+        type: ENABLE_DEVELOPER_MODE,
+        [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
+    };
 }
 
 export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';
