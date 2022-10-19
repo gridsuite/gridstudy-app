@@ -194,8 +194,15 @@
     "descLfAllCountries": "All countries",
     "descLfCountriesToBalance": "Countries participating in balancing: ",
 
+    "descWithVoltageMap": "Display voltage drop",
+    "descWithFeederResult": "With feeder results",
+    "descMinVoltageDropProportionalThreshold": "Voltage drop display threshold (%)",
+    "descStudyType": "Study type",
+    "descTransient": "Transient",
+    "descSubTransient": "Sub-transient",
+
     "securityAnalysisResults": "Security analysis results",
-    "securityAnalysisError": "An error occured when executing security analysis",
+    "securityAnalysisError": "An error occurred while executing the security analysis",
     "loadFlowResults": "Loadflow results",
     "startLoadFlowError": "An error occurred while starting the load flow",
 

@@ -195,6 +195,13 @@
     "descLfAllCountries": "Tous les pays",
     "descLfCountriesToBalance": "Pays participant à la compensation\u00a0:",
 
+    "descWithVoltageMap": "Calculer les chutes de tension",
+    "descWithFeederResult": "Avec apports",
+    "descMinVoltageDropProportionalThreshold": "Seuil d'affichage des chutes de tension (%)",
+    "descStudyType": "Type d'étude",
+    "descTransient": "Transitoire",
+    "descSubTransient": "Sub-transitoire",
+
     "securityAnalysisResults": "Résultats de l'analyse de sécurité",
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
