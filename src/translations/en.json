@@ -132,7 +132,6 @@
     "LoadFlow": "LoadFlow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
-    "ShortCircuit": "Short-circuit analysis",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
@@ -204,8 +203,6 @@
     "securityAnalysisError": "An error occurred while executing the security analysis",
     "loadFlowResults": "Loadflow results",
     "startLoadFlowError": "An error occurred while starting the load flow",
-    "shortCircuitsError": "An error occurred while executing the short-circuit analysis",
-    "shortCircuitsResults": "Short-circuit analysis results",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",

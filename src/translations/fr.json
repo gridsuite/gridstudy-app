@@ -133,7 +133,6 @@
     "LoadFlow": "Calcul de répartition",
     "Network": "Réseau",
     "SecurityAnalysis": "Analyse de sécurité",
-    "ShortCircuit": "Analyse de courts-circuits systématique",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
@@ -205,8 +204,6 @@
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
     "startLoadFlowError": "Une erreur est survenue lors du lancement du load flow",
-    "shortCircuitsError": "Une erreur est survenue lors de l'exécution de l'analyse de courts-circuits systématique",
-    "shortCircuitsResults": "Résultats du l'analyse de courts-circuits systématique",
 
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",
