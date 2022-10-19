@@ -201,7 +201,7 @@ export function SingleLineDiagramPane({
             } else
                 views.forEach((sld) => {
                     if (sld.svgUrl.indexOf(currentNode?.id) !== -1) {
-                        sld?.ref?.current?.reloadSvg();
+                        sld.ref?.current?.reloadSvg();
                     }
                 });
         },
