@@ -243,6 +243,30 @@ export function selectDisplayOverloadTableState(displayOverloadTable) {
     };
 }
 
+export const SET_FORCE_NETWORK_RELOAD = 'SET_FORCE_NETWORK_RELOAD';
+
+export function setForceNetworkReload() {
+    return {
+        type: SET_FORCE_NETWORK_RELOAD,
+    };
+}
+
+export const SET_NETWORK_RELOAD_NEEDED = 'SET_NETWORK_RELOAD_NEEDED';
+
+export function setNetworkReloadNeeded() {
+    return {
+        type: SET_NETWORK_RELOAD_NEEDED,
+    };
+}
+
+export const RESET_NETWORK_RELOAD = 'RESET_NETWORK_RELOAD';
+
+export function resetNetworkReload() {
+    return {
+        type: RESET_NETWORK_RELOAD,
+    };
+}
+
 export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
 
 export function selectMapManualRefresh(mapManualRefresh) {

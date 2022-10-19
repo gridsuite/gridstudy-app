@@ -35,6 +35,9 @@ import {
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
+    setNetworkReloadNeeded,
+    resetForceNetworkReload,
+    resetNetworkReload,
 } from '../redux/actions';
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
@@ -162,7 +165,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const prevStudyName = usePrevious(studyName);
     const [studyPath, setStudyPath] = useState();
     const prevStudyPath = usePrevious(studyPath);
-    const [isNetworkInitialized, setIsNetworkInitialized] = useState(false);
 
     const network = useSelector((state) => state.network);
 
@@ -213,6 +215,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const [updatedLines, setUpdatedLines] = useState([]);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+
+    const forceReloadNetwork = useSelector((state) => state.forceReloadNetwork);
 
     const loadNetworkRef = useRef();
 
@@ -298,7 +302,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // lazy loading will do the job (no glitches to avoid)
                 dispatch(networkCreated(network));
             }
-            setIsNetworkInitialized(true);
+            dispatch(resetNetworkReload());
         },
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
@@ -362,10 +366,16 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
     useEffect(() => {
-        if ((mapManualRefresh && !reloadMapNeeded) || !isNetworkInitialized) {
+        if (forceReloadNetwork || (mapManualRefresh && !reloadMapNeeded)) {
             loadNetwork(true);
         }
-    }, [isNetworkInitialized, loadNetwork, mapManualRefresh, reloadMapNeeded]);
+    }, [
+        dispatch,
+        forceReloadNetwork,
+        loadNetwork,
+        mapManualRefresh,
+        reloadMapNeeded,
+    ]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -558,15 +568,16 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [intl]);
 
     useEffect(() => {
-        if (!mapManualRefresh || !reloadMapNeeded) {
-            if (studyUpdatedForce.eventData.headers) {
-                if (
-                    studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                    'study'
-                ) {
-                    // study partial update :
-                    // loading equipments involved in the study modification and updating the network
-
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
+                'study'
+            ) {
+                // study partial update :
+                // loading equipments involved in the study modification and updating the network
+                if (mapManualRefresh) {
+                    dispatch(setNetworkReloadNeeded());
+                } else {
                     const substationsIds =
                         studyUpdatedForce.eventData.headers['substationsIds'];
                     const tmp = substationsIds.substring(
@@ -608,6 +619,7 @@ export function StudyContainer({ view, onChangeTab }) {
         network,
         mapManualRefresh,
         reloadMapNeeded,
+        dispatch,
     ]);
 
     return (

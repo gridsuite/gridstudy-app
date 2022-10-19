@@ -63,6 +63,9 @@ import {
     SET_STUDY_DISPLAY_MODE,
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
+    SET_NETWORK_RELOAD_NEEDED,
+    SET_FORCE_NETWORK_RELOAD,
+    RESET_NETWORK_RELOAD,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -147,6 +150,8 @@ const initialState = {
     isModificationsInProgress: false,
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     reloadMap: true,
+    networkReloadNeeded: false,
+    forceReloadNetwork: true,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -339,6 +344,19 @@ export const reducer = createReducer(initialState, {
 
     [MAP_MANUAL_REFRESH]: (state, action) => {
         state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
+    },
+
+    [SET_FORCE_NETWORK_RELOAD]: (state) => {
+        state.forceReloadNetwork = true;
+    },
+
+    [SET_NETWORK_RELOAD_NEEDED]: (state) => {
+        state.networkReloadNeeded = true;
+    },
+
+    [RESET_NETWORK_RELOAD]: (state) => {
+        state.networkReloadNeeded = false;
+        state.forceReloadNetwork = false;
     },
 
     [RESET_MAP_RELOADED]: (state) => {
