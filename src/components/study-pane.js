@@ -397,21 +397,7 @@ const StudyPane = ({
                         props.view === StudyView.SPREADSHEET ? null : 'none',
                 }}
             >
-                <Paper className={clsx('singlestretch-child', classes.table)}>
-                    <NetworkTable
-                        network={network}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        equipmentId={tableEquipment.id}
-                        equipmentType={tableEquipment.type}
-                        equipmentChanged={tableEquipment.changed}
-                        loadFlowStatus={getLoadFlowRunningStatus(
-                            loadFlowInfos?.loadFlowStatus
-                        )}
-                        disabled={disabled || reloadNetworkNeeded}
-                        visible={props.view === StudyView.SPREADSHEET}
-                    />
-                </Paper>
+                {renderTableView()}
             </div>
             <div
                 className="singlestretch-child"

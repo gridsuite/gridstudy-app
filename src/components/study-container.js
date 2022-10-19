@@ -36,7 +36,6 @@ import {
     studyUpdated,
     setCurrentTreeNode,
     setNetworkReloadNeeded,
-    resetForceNetworkReload,
     resetNetworkReload,
 } from '../redux/actions';
 import Network from './network/network';
