@@ -237,6 +237,7 @@ export const NetworkMapTab = ({
         currentNodeRef.current = currentNode;
         // if only renaming, do not reload geo data
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
+        if (disabled) return;
         if (mapManualRefresh && isInitialized) return;
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
