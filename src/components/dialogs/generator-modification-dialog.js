@@ -20,6 +20,8 @@ import {
     useDoubleValue,
     useEnumValue,
     useInputForm,
+    useRegulatingTerminalValue,
+    useTableValues,
     useTextValue,
 } from './inputs/input-hooks';
 import {
@@ -30,14 +32,18 @@ import {
     gridItem,
     gridItemWithTooltip,
     MVAPowerAdornment,
+    OhmAdornment,
+    percentageTextField,
     ReactivePowerAdornment,
+    sanitizeString,
     VoltageAdornment,
 } from './dialogUtils';
 import { Box } from '@mui/system';
 import { ENERGY_SOURCES, getEnergySourceLabel } from '../network/constants';
-import { useNullableBooleanValue } from './inputs/boolean';
+import { useBooleanValue, useNullableBooleanValue } from './inputs/boolean';
 import { modifyGenerator } from '../../utils/rest-api';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import { ReactiveCapabilityCurveTable } from './reactive-capability-curve-table';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -86,9 +92,14 @@ const GeneratorModificationDialog = ({
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
+    const headerIds = [
+        'ActivePower',
+        'MinimumReactivePower',
+        'MaximumReactivePower',
+    ];
+
+    const fieldRequired = { isFieldRequired: true };
+    const fieldDisabled = { disabled: true };
 
     useEffect(() => {
         if (!equipmentOptionsPromise) return;
@@ -112,7 +123,7 @@ const GeneratorModificationDialog = ({
 
     const [generatorInfos, generatorIdField] = useAutocompleteField({
         label: 'ID',
-        validation: { isFieldRequired: true },
+        validation: fieldRequired,
         inputForm: inputForm,
         formProps: filledTextField,
         values: equipmentOptions?.sort(compareById),
@@ -248,13 +259,109 @@ const GeneratorModificationDialog = ({
         clearable: true,
     });
 
+    const [isReactiveCapabilityCurveOn, isReactiveCapabilityCurveOnField] =
+        useBooleanValue({
+            label: 'ReactiveCapabilityCurve',
+            validation: fieldRequired,
+            inputForm: inputForm,
+            defaultValue: !generatorInfos?.minMaxReactiveLimits,
+            formProps: fieldDisabled,
+        });
+
+    const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
+        label: 'MinimumReactivePower',
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue:
+            generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
+        formProps: fieldDisabled,
+    });
+
+    const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
+        label: 'MaximumReactivePower',
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue:
+            generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
+        formProps: fieldDisabled,
+    });
+
+    const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
+        useTableValues({
+            id: 'ReactiveCapabilityCurveOn',
+            tableHeadersIds: headerIds,
+            inputForm: inputForm,
+            Field: ReactiveCapabilityCurveTable,
+            defaultValues: generatorInfos?.reactiveCapabilityCurvePoints,
+            isRequired: false,
+            isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
+            disabled: true,
+        });
+
+    const [regulatingTerminal, regulatingTerminalField] =
+        useRegulatingTerminalValue({
+            label: 'RegulatingTerminalGenerator',
+            inputForm: inputForm,
+            disabled: true,
+            voltageLevelOptionsPromise: null,
+            voltageLevelIdDefaultValue:
+                generatorInfos?.regulatingTerminalVlId || null,
+            equipmentSectionTypeDefaultValue:
+                generatorInfos?.regulatingTerminalConnectableType || null,
+            equipmentSectionIdDefaultValue:
+                generatorInfos?.regulatingTerminalConnectableId || null,
+        });
+
+    const [frequencyRegulation, frequencyRegulationField] = useBooleanValue({
+        label: 'FrequencyRegulation',
+        validation: fieldRequired,
+        inputForm: inputForm,
+        defaultValue: generatorInfos?.activePowerControlOn ?? false,
+        formProps: fieldDisabled,
+    });
+
+    const [droop, droopField] = useDoubleValue({
+        label: 'Droop',
+        validation: { isFieldRequired: frequencyRegulation },
+        adornment: percentageTextField,
+        inputForm: inputForm,
+        formProps: fieldDisabled,
+        defaultValue: generatorInfos?.droop,
+    });
+
+    const [transientReactance, transientReactanceField] = useDoubleValue({
+        label: 'TransientReactance',
+        validation: { isFieldRequired: false },
+        adornment: OhmAdornment,
+        inputForm: inputForm,
+        defaultValue: generatorInfos?.transientReactance,
+        formProps: fieldDisabled,
+    });
+
+    const [transformerReactance, transformerReactanceField] = useDoubleValue({
+        label: 'TransformerReactance',
+        validation: { isFieldRequired: false },
+        adornment: OhmAdornment,
+        inputForm: inputForm,
+        defaultValue: generatorInfos?.stepUpTransformerReactance,
+        formProps: fieldDisabled,
+    });
+
+    const [marginalCost, marginalCostField] = useDoubleValue({
+        label: 'MarginalCost',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        defaultValue: generatorInfos?.marginalCost,
+        formProps: fieldDisabled,
+    });
+
     const handleSave = () => {
         if (inputForm.validate()) {
             modifyGenerator(
                 studyUuid,
                 currentNodeUuid,
                 generatorInfos?.id,
-                generatorName,
+                sanitizeString(generatorName),
                 energySource,
                 minimumActivePower,
                 maximumActivePower,
@@ -265,7 +372,18 @@ const GeneratorModificationDialog = ({
                 voltageSetpoint,
                 undefined,
                 undefined,
-                editData?.uuid
+                editData?.uuid,
+                marginalCost,
+                maximumReactivePower,
+                minimumReactivePower,
+                frequencyRegulation,
+                droop,
+                regulatingTerminal?.voltageLevel?.id,
+                regulatingTerminal?.equipmentSection?.id,
+                regulatingTerminal?.equipmentSection?.type,
+                transformerReactance,
+                reactiveCapabilityCurve,
+                transientReactance
             ).catch((errorMessage) => {
                 snackError(errorMessage, 'GeneratorModificationError');
             });
@@ -284,7 +402,7 @@ const GeneratorModificationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 
@@ -322,6 +440,16 @@ const GeneratorModificationDialog = ({
                             {gridItem(minimumActivePowerField, 4)}
                             {gridItem(maximumActivePowerField, 4)}
                             {gridItem(ratedNominalPowerField, 4)}
+                            <Box sx={{ width: '100%' }} />
+                            {gridItem(isReactiveCapabilityCurveOnField, 8)}
+                            <Box sx={{ width: '100%' }} />
+                            <Box sx={{ width: '100%' }} />
+                            {!isReactiveCapabilityCurveOn &&
+                                gridItem(minimumReactivePowerField, 4)}
+                            {!isReactiveCapabilityCurveOn &&
+                                gridItem(maximumReactivePowerField, 4)}
+                            {isReactiveCapabilityCurveOn &&
+                                reactiveCapabilityCurveField}
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -344,6 +472,37 @@ const GeneratorModificationDialog = ({
                                 4
                             )}
                             {gridItem(voltageSetpointField, 4)}
+                            <Box sx={{ width: '100%' }} />
+                            <Grid item xs={4} justifySelf={'end'}>
+                                <FormattedMessage id="RegulatingTerminalGenerator" />
+                            </Grid>
+                            {gridItem(regulatingTerminalField, 8)}
+                            <Box sx={{ width: '100%' }} />
+                            {gridItem(frequencyRegulationField, 4)}
+                            {gridItem(droopField, 4)}
+                        </Grid>
+                        {/*Short-circuit part*/}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="ShortCircuit" />
+                                </h3>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            {gridItem(transientReactanceField, 4)}
+                            {gridItem(transformerReactanceField, 4)}
+                        </Grid>
+                        {/* Coast of start part*/}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="MarginalCost" />
+                                </h3>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            {gridItem(marginalCostField, 4)}
                         </Grid>
                     </div>
                 </DialogContent>

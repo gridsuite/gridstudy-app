@@ -33,6 +33,7 @@ import {
     filledTextField,
     gridItem,
     OhmAdornment,
+    sanitizeString,
     SusceptanceAdornment,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
@@ -109,17 +110,12 @@ const LineCreationDialog = ({
 
     const equipmentPath = 'lines';
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -261,7 +257,7 @@ const LineCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 lineId,
-                lineName,
+                sanitizeString(lineName),
                 seriesResistance,
                 seriesReactance,
                 shuntConductance1,
@@ -302,7 +298,7 @@ const LineCreationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

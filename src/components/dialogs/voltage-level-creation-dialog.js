@@ -35,6 +35,7 @@ import {
     VoltageAdornment,
     compareById,
     getIdOrSelf,
+    sanitizeString,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
@@ -97,7 +98,12 @@ const BusBarSection = ({
     });
 
     useEffect(() => {
-        onChange(index, { id: idSjb, name, horizPos, vertPos });
+        onChange(index, {
+            id: idSjb,
+            name: sanitizeString(name),
+            horizPos,
+            vertPos,
+        });
     }, [index, onChange, horizPos, idSjb, name, vertPos]);
 
     return (
@@ -273,10 +279,6 @@ const VoltageLevelCreationDialog = ({
     const [loadingSubstationOptions, setLoadingSubstationOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (voltageLevel) => {
         return {
             equipmentId: voltageLevel.id + '(1)',
@@ -294,7 +296,6 @@ const VoltageLevelCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -399,7 +400,7 @@ const VoltageLevelCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 voltageLevelId,
-                voltageLevelName: voltageLevelName ? voltageLevelName : null,
+                voltageLevelName: sanitizeString(voltageLevelName),
                 nominalVoltage,
                 substationId: getIdOrSelf(substation),
                 busbarSections: busBarSections,
@@ -423,7 +424,7 @@ const VoltageLevelCreationDialog = ({
     };
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

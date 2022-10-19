@@ -27,7 +27,12 @@ import {
     useInputForm,
     useTextValue,
 } from './inputs/input-hooks';
-import { gridItem, GridSection, compareById } from './dialogUtils';
+import {
+    gridItem,
+    GridSection,
+    compareById,
+    sanitizeString,
+} from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -86,10 +91,6 @@ const LineSplitWithVoltageLevelDialog = ({
     const [loadingVoltageLevelOptions, setLoadingVoltageLevelOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (lineSplit) => {
         return {
             lineToSplitId: lineSplit.id + '(1)',
@@ -105,7 +106,6 @@ const LineSplitWithVoltageLevelDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -336,9 +336,9 @@ const LineSplitWithVoltageLevelDialog = ({
                     : voltageLevelOrId?.id || voltageLevelOrId,
                 bbsOrNodeId?.id || bbsOrNodeId,
                 newLine1Id,
-                newLine1Name || null,
+                sanitizeString(newLine1Name),
                 newLine2Id,
-                newLine2Name || null
+                sanitizeString(newLine2Name)
             ).catch((errorMessage) => {
                 snackError(errorMessage, 'LineDivisionError');
             });
@@ -358,7 +358,7 @@ const LineSplitWithVoltageLevelDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 
