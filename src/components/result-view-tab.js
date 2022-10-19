@@ -16,6 +16,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
+import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './util/alert-invalid-node';
 
 const useStyles = makeStyles((theme) => ({
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         flexGrow: 1,
     },
-    sensitivityResult: {
+    analysisResult: {
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
@@ -83,8 +84,19 @@ export const ResultViewTab = ({
 
     function renderSensitivityAnalysisResult() {
         return (
-            <Paper className={classes.sensitivityResult}>
+            <Paper className={classes.analysisResult}>
                 <SensitivityAnalysisResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                />
+            </Paper>
+        );
+    }
+
+    function renderShortCircuitAnalysisResult() {
+        return (
+            <Paper className={classes.analysisResult}>
+                <ShortCircuitAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                 />
@@ -117,12 +129,19 @@ export const ResultViewTab = ({
                         })}
                         disabled={disabled}
                     />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'ShortCircuitAnalysisResults',
+                        })}
+                        disabled={disabled}
+                    />
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
             {tabIndex === 0 && !disabled && renderLoadFlowResult()}
             {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
             {tabIndex === 2 && !disabled && renderSensitivityAnalysisResult()}
+            {tabIndex === 3 && !disabled && renderShortCircuitAnalysisResult()}
         </Paper>
     );
 };
