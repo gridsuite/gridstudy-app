@@ -22,7 +22,6 @@ import { useSnackbar } from 'notistack';
 import {
     useButtonWithTooltip,
     useDoubleValue,
-    useEnumValue,
     useInputForm,
     useIntegerValue,
     useTextValue,
@@ -40,8 +39,6 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
-import { CONNECTION_DIRECTION } from '../network/constants';
-import { Box } from '@mui/material';
 
 const disabledChecked = { disabled: true };
 
@@ -170,8 +167,10 @@ const ShuntCompensatorCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
-        connectionDirection: formValues ? formValues.connectionDirection : '',
-        connectionName: formValues?.connectionName,
+        connectionDirectionValue: formValues
+            ? formValues.connectionDirection
+            : '',
+        connectionNameValue: formValues?.connectionName,
         withPosition: true,
     });
 
