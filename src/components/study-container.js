@@ -572,11 +572,12 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
             ) {
-                // study partial update :
-                // loading equipments involved in the study modification and updating the network
+                //when in manuel refresh mode the network is not partially updated
                 if (mapManualRefresh) {
                     dispatch(setNetworkReloadNeeded());
                 } else {
+                    // study partial update :
+                    // loading equipments involved in the study modification and updating the network
                     const substationsIds =
                         studyUpdatedForce.eventData.headers['substationsIds'];
                     const tmp = substationsIds.substring(
