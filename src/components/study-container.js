@@ -364,6 +364,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
+    //handles map manual mode network reload
     useEffect(() => {
         if (mapManualRefresh && forceReloadNetwork) {
             loadNetwork(true);
@@ -376,6 +377,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUuid, loadTree]);
 
+    //handles map automatic mode network reload
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
