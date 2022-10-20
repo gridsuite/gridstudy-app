@@ -57,7 +57,11 @@ export function fetchValidateUser(user) {
         },
     }).then((response) => {
         if (response.status === 200) return true;
-        else if (response.status === 204 || response.status === 403)
+        else if (
+            response.status === 204 ||
+            response.status === 403 ||
+            response.status === 401
+        )
             return false;
         else throw new Error(response.status + ' ' + response.statusText);
     });
