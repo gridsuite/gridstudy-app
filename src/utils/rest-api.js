@@ -1491,7 +1491,9 @@ export function createGenerator(
     droop,
     maximumReactivePower,
     minimumReactivePower,
-    reactiveCapabilityCurve
+    reactiveCapabilityCurve,
+    connectionDirection,
+    connectionName
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1538,6 +1540,8 @@ export function createGenerator(
             droop: droop,
             maximumReactivePower: maximumReactivePower,
             minimumReactivePower: minimumReactivePower,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
         }),
     }).then((response) => {
