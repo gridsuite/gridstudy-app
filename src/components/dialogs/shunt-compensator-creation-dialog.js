@@ -32,6 +32,7 @@ import {
     filledTextField,
     gridItem,
     GridSection,
+    sanitizeString,
     SusceptanceAdornment,
     toPositiveIntValue,
 } from './dialogUtils';
@@ -180,14 +181,16 @@ const ShuntCompensatorCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 shuntCompensatorId,
-                shuntCompensatorName ? shuntCompensatorName : null,
+                sanitizeString(shuntCompensatorName),
                 maximumNumberOfSections,
                 currentNumberOfSections,
                 identicalSections,
                 susceptancePerSection,
                 connectivity,
                 editData ? true : false,
-                editData ? editData.uuid : undefined
+                editData ? editData.uuid : undefined,
+                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,

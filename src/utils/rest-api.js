@@ -1195,6 +1195,39 @@ export function getLoadFlowParameters(studyUuid) {
     );
 }
 
+export function setShortCircuitParameters(studyUuid, newParams) {
+    console.info('set short-circuit parameters');
+    const setShortCircuitParametersUrl =
+        getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(setShortCircuitParametersUrl);
+    return backendFetch(setShortCircuitParametersUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function getShortCircuitParameters(studyUuid) {
+    console.info('get short-circuit parameters');
+    const getShortCircuitParams =
+        getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(getShortCircuitParams);
+    return backendFetch(getShortCircuitParams, {
+        method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
     const changeLineStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1245,7 +1278,9 @@ export function createLoad(
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    connectionDirection,
+    connectionName
 ) {
     let createLoadUrl;
     if (isUpdate) {
@@ -1276,6 +1311,8 @@ export function createLoad(
             reactivePower: reactivePower,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
         }),
     }).then((response) => {
         return response.ok
@@ -1472,7 +1509,7 @@ export function createGenerator(
             droop: droop,
             maximumReactivePower: maximumReactivePower,
             minimumReactivePower: minimumReactivePower,
-            points: reactiveCapabilityCurve,
+            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
         }),
     }).then((response) => {
         return response.ok

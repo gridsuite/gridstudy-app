@@ -603,7 +603,7 @@ export const useTableValues = ({
                                 className={classes.icon}
                                 key={id + idx}
                                 onClick={() => handleDeleteItem(idx)}
-                                disabled={disabled}
+                                disabled={disabled || idx === 0}
                             >
                                 <DeleteIcon />
                             </IconButton>

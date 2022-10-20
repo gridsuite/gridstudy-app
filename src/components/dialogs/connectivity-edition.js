@@ -16,7 +16,6 @@ import { useSelector } from 'react-redux';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { CONNECTION_DIRECTION } from '../network/constants';
 import { useEnumValue, useTextValue } from './inputs/input-hooks';
-import { filledTextField } from './dialogUtils';
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
  * Usable firstly for giving to hereunder ConnectivityEdition.
@@ -91,7 +90,7 @@ export const useConnectivityValue = ({
     busOrBusbarSectionIdDefaultValue,
     connectionDirectionValue,
     connectionNameValue,
-    withPosition,
+    withPosition = false,
 }) => {
     const [bbsIdInitOver, setBbsIdInitOver] = useState(null);
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -138,7 +137,6 @@ export const useConnectivityValue = ({
         label: 'ConnectionDirection',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        formProps: filledTextField,
         enumValues: CONNECTION_DIRECTION,
         defaultValue: connectionDirectionValue,
     });
@@ -147,7 +145,6 @@ export const useConnectivityValue = ({
         label: 'ConnectionName',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: connectionNameValue,
     });
 
@@ -185,7 +182,12 @@ export const useConnectivityValue = ({
 
     const connectivity = useMemo(() => {
         if (!voltageLevelObjOrId)
-            return { voltageLevel: null, busOrBusbarSection: null };
+            return {
+                voltageLevel: null,
+                busOrBusbarSection: null,
+                connectionDirection: null,
+                connectionName: null,
+            };
 
         const ret = {
             voltageLevel: ided(voltageLevelObjOrId),

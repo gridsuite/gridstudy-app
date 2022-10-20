@@ -37,6 +37,7 @@ import {
     OhmAdornment,
     percentageTextField,
     ReactivePowerAdornment,
+    sanitizeString,
     VoltageAdornment,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
@@ -245,7 +246,7 @@ const GeneratorCreationDialog = ({
             tableHeadersIds: headerIds,
             inputForm: inputForm,
             Field: ReactiveCapabilityCurveTable,
-            defaultValues: formValues?.points,
+            defaultValues: formValues?.reactiveCapabilityCurvePoints,
             isRequired: false,
             isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
         });
@@ -375,13 +376,13 @@ const GeneratorCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 generatorId,
-                generatorName ? generatorName : null,
+                sanitizeString(generatorName),
                 !energySource ? 'OTHER' : energySource,
                 minimumActivePower,
                 maximumActivePower,
                 ratedNominalPower ? ratedNominalPower : null,
                 activePowerSetpoint,
-                reactivePowerSetpoint ? reactivePowerSetpoint : null,
+                reactivePowerSetpoint ?? null,
                 voltageRegulation,
                 voltageSetpoint ? voltageSetpoint : null,
                 connectivity.voltageLevel.id,
