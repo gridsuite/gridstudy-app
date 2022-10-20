@@ -1562,7 +1562,9 @@ export function createShuntCompensator(
     susceptancePerSection,
     connectivity,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    connectionDirection,
+    connectionName
 ) {
     let createShuntUrl;
     if (isUpdate) {
@@ -1594,6 +1596,8 @@ export function createShuntCompensator(
             susceptancePerSection: susceptancePerSection,
             voltageLevelId: connectivity.voltageLevel.id,
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
         }),
     }).then((response) => {
         return response.ok
