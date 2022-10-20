@@ -81,12 +81,15 @@ export const NetworkModificationTreePane = ({
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
     const [selectedNodeIdForCopy, setSelectedNodeIdForCopy] = useState(null);
+    const selectedNodeIdForCopyRef = useRef();
+    selectedNodeIdForCopyRef.current = selectedNodeIdForCopy;
+
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
@@ -152,9 +155,27 @@ export const NetworkModificationTreePane = ({
                         removeNotificationByNode(currentNodeRef.current?.id)
                     );
                 }
+                if (
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) => nodeId === selectedNodeIdForCopyRef.current
+                    )
+                ) {
+                    setSelectedNodeIdForCopy(null);
+                    let message = intlRef.current.formatMessage({
+                        id: 'CopiedNodeInvalidationMessage',
+                    });
+                    snackInfo(message);
+                }
             }
         }
-    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
+    }, [
+        studyUuid,
+        studyUpdatedForce,
+        updateNodes,
+        dispatch,
+        snackInfo,
+        intlRef,
+    ]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
