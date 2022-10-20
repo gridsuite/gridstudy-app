@@ -188,6 +188,15 @@ export function selectFluxConvention(fluxConvention) {
     return { type: FLUX_CONVENTION, [PARAM_FLUX_CONVENTION]: fluxConvention };
 }
 
+export const ENABLE_DEVELOPER_MODE = 'ENABLE_DEVELOPER_MODE';
+
+export function selectEnableDeveloperMode(enableDeveloperMode) {
+    return {
+        type: ENABLE_DEVELOPER_MODE,
+        [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
+    };
+}
+
 export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';
 
 export function selectLineFlowColorMode(lineFlowColorMode) {
