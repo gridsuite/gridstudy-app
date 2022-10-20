@@ -387,7 +387,7 @@
     "ReactiveCapabilityCurve": "Reactive capability curve",
     "MinimumReactivePower": "Minimum reactive power",
     "MaximumReactivePower": "Maximum reactive power",
-    "ActivePowerLabel": "Active power",
+    "ActivePower": "Active power",
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",
