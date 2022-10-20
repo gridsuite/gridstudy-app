@@ -40,9 +40,11 @@ function backendFetch(url, init) {
 }
 
 export function fetchValidateUser(user) {
-    if (!user)
+    if (!user?.profile?.sub)
         return Promise.reject(
-            new Error('Error : Fetching access for missing user : ' + user)
+            new Error(
+                'Error : Fetching access for missing user.profile.sub : ' + user
+            )
         );
 
     console.info(`Fetching access for user...`);
