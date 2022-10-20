@@ -21,6 +21,7 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
+    PARAM_MAP_MANUAL_REFRESH,
     PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 
@@ -236,6 +237,47 @@ export function selectDisplayOverloadTableState(displayOverloadTable) {
     return {
         type: DISPLAY_OVERLOAD_TABLE,
         [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
+    };
+}
+
+export const SET_FORCE_NETWORK_RELOAD = 'SET_FORCE_NETWORK_RELOAD';
+
+export function setForceNetworkReload() {
+    return {
+        type: SET_FORCE_NETWORK_RELOAD,
+    };
+}
+
+export const SET_NETWORK_RELOAD_NEEDED = 'SET_NETWORK_RELOAD_NEEDED';
+
+export function setNetworkReloadNeeded() {
+    return {
+        type: SET_NETWORK_RELOAD_NEEDED,
+    };
+}
+
+export const RESET_NETWORK_RELOAD = 'RESET_NETWORK_RELOAD';
+
+export function resetNetworkReload() {
+    return {
+        type: RESET_NETWORK_RELOAD,
+    };
+}
+
+export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
+
+export function selectMapManualRefresh(mapManualRefresh) {
+    return {
+        type: MAP_MANUAL_REFRESH,
+        [PARAM_MAP_MANUAL_REFRESH]: mapManualRefresh,
+    };
+}
+
+export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
+
+export function resetMapReloaded() {
+    return {
+        type: RESET_MAP_RELOADED,
     };
 }
 

@@ -84,6 +84,8 @@
     "Limit": "Limit",
     "load": "load",
     "Load": "Load",
+    "MapManualRefresh": "Manual update of geographical view:",
+    "ManuallyRefreshGeoData": "Update map", 
 
     "PageNotFound": "Page not found",
 
@@ -494,6 +496,7 @@
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
+    "InvalidData": "Data has been invalidated",
 
     "depth": "Depth",
 

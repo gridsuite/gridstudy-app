@@ -39,6 +39,7 @@ import {
     selectTheme,
     selectUseName,
     selectFluxConvention,
+    selectMapManualRefresh,
     selectEnableDeveloperMode,
 } from '../redux/actions';
 
@@ -78,6 +79,7 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FLUX_CONVENTION,
+    PARAM_MAP_MANUAL_REFRESH,
     PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import {
@@ -199,6 +201,11 @@ const App = () => {
                             selectDisplayOverloadTableState(
                                 param.value === 'true'
                             )
+                        );
+                        break;
+                    case PARAM_MAP_MANUAL_REFRESH:
+                        dispatch(
+                            selectMapManualRefresh(param.value === 'true')
                         );
                         break;
                     case PARAM_USE_NAME:
