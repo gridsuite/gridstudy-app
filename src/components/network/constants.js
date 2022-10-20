@@ -26,16 +26,16 @@ export const ENERGY_SOURCES = [
     { id: 'OTHER', label: 'Other' },
 ];
 
-export const CONNECTION_DIRECTION = [
-    { id: '', label: 'None' },
-    { id: 'TOP', label: 'Top' },
-    { id: 'BOTTOM', label: 'Bottom' },
-];
-
 export const UPDATE_TYPE = [
     'creatingInProgress',
     'updatingInProgress',
     'deletingInProgress',
+];
+
+export const CONNECTION_DIRECTION = [
+    { id: '', label: 'None' },
+    { id: 'TOP', label: 'Top' },
+    { id: 'BOTTOM', label: 'Bottom' },
 ];
 
 export function getEnergySourceLabel(energySourceId) {
