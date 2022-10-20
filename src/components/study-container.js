@@ -365,16 +365,10 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
     useEffect(() => {
-        if (forceReloadNetwork || (mapManualRefresh && !reloadMapNeeded)) {
+        if (mapManualRefresh && forceReloadNetwork) {
             loadNetwork(true);
         }
-    }, [
-        dispatch,
-        forceReloadNetwork,
-        loadNetwork,
-        mapManualRefresh,
-        reloadMapNeeded,
-    ]);
+    }, [forceReloadNetwork, loadNetwork, mapManualRefresh]);
 
     useEffect(() => {
         if (studyUuid) {

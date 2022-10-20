@@ -35,7 +35,7 @@ import {
     isNodeRenamed,
 } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import { resetMapReloaded } from '../redux/actions';
+import { resetMapReloaded, setForceNetworkReload } from '../redux/actions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -232,6 +232,11 @@ export const NetworkMapTab = ({
         studyUuid,
     ]);
 
+    const handleReloadMap = useCallback(() => {
+        reloadMapGeoData();
+        dispatch(setForceNetworkReload());
+    }, [dispatch, reloadMapGeoData]);
+
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
@@ -350,7 +355,7 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
-            onReloadMapClick={reloadMapGeoData}
+            onReloadMapClick={handleReloadMap}
         />
     );
 
