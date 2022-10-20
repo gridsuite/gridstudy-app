@@ -8,6 +8,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 
 import {
+    USER,
+    SIGNIN_CALLBACK_ERROR,
+    UNAUTHORIZED_USER_INFO,
+    SHOW_AUTH_INFO_LOGIN,
+} from '@gridsuite/commons-ui';
+
+import {
     CENTER_LABEL,
     CLOSE_STUDY,
     DIAGONAL_LABEL,
@@ -24,8 +31,6 @@ import {
     USE_NAME,
     SELECT_LANGUAGE,
     SELECT_COMPUTED_LANGUAGE,
-    USER,
-    SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
     DISPLAY_OVERLOAD_TABLE,
     MAP_MANUAL_REFRESH,
@@ -132,6 +137,8 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
+    unauthorizedUserInfo: null,
+    showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
     loadflowNotif: false,
     saNotif: false,
@@ -335,6 +342,15 @@ export const reducer = createReducer(initialState, {
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
         state.signInCallbackError = action.signInCallbackError;
+    },
+
+    [UNAUTHORIZED_USER_INFO]: (state, action) => {
+        state.unauthorizedUserInfo = action.unauthorizedUserInfo;
+    },
+
+    [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
+        state.showAuthenticationRouterLogin =
+            action.showAuthenticationRouterLogin;
     },
 
     [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
