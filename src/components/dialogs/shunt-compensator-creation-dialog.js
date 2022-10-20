@@ -31,6 +31,7 @@ import {
     filledTextField,
     gridItem,
     GridSection,
+    sanitizeString,
     SusceptanceAdornment,
     toPositiveIntValue,
 } from './dialogUtils';
@@ -68,10 +69,6 @@ const ShuntCompensatorCreationDialog = ({
 
     const equipmentPath = 'shunt-compensators';
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (shuntCompensator) => {
         return {
             equipmentId: shuntCompensator.id + '(1)',
@@ -90,7 +87,6 @@ const ShuntCompensatorCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -179,7 +175,7 @@ const ShuntCompensatorCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 shuntCompensatorId,
-                shuntCompensatorName ? shuntCompensatorName : null,
+                sanitizeString(shuntCompensatorName),
                 maximumNumberOfSections,
                 currentNumberOfSections,
                 identicalSections,
@@ -213,7 +209,7 @@ const ShuntCompensatorCreationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

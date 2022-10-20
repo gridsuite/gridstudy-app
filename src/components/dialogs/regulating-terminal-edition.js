@@ -245,7 +245,7 @@ const RegulatingTerminalEdition = ({
                                 {...params}
                                 fullWidth
                                 label={intl.formatMessage({
-                                    id: 'Equipments',
+                                    id: 'Equipment',
                                 })}
                                 FormHelperTextProps={{
                                     className: classes.helperText,

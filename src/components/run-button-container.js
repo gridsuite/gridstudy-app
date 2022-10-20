@@ -5,13 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import SensiParametersSelector from './dialogs/sensi-parameters-selector';
 import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     startLoadFlow,
     startSecurityAnalysis,
+    startSensitivityAnalysis,
     stopSecurityAnalysis,
+    stopSensitivityAnalysis,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
 import LoopIcon from '@mui/icons-material/Loop';
@@ -20,7 +23,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import ContingencyListSelector from './dialogs/contingency-list-selector';
 import makeStyles from '@mui/styles/makeStyles';
-import { addLoadflowNotif, addSANotif } from '../redux/actions';
+import { addLoadflowNotif, addSANotif, addSensiNotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '../utils/messages';
@@ -36,6 +39,7 @@ export function RunButtonContainer({
     currentNode,
     loadFlowStatus,
     securityAnalysisStatus,
+    sensiStatus,
     setIsComputationRunning,
     runnable,
     disabled,
@@ -44,11 +48,17 @@ export function RunButtonContainer({
 
     const [showContingencyListSelector, setShowContingencyListSelector] =
         useState(false);
+
+    const [showSensiParametersSelector, setShowSensiParametersSelector] =
+        useState(false);
+
     const [computationStopped, setComputationStopped] = useState(false);
 
     const [ranLoadflow, setRanLoadflow] = useState(false);
 
     const [ranSA, setRanSA] = useState(false);
+
+    const [ranSensi, setRanSensi] = useState(false);
 
     const intl = useIntl();
 
@@ -73,14 +83,23 @@ export function RunButtonContainer({
                 'securityAnalysisResult'
         ) {
             dispatch(addSANotif());
+        } else if (
+            ranSensi &&
+            studyUpdatedForce?.eventData?.headers?.updateType ===
+                'sensitivityAnalysisResult'
+        ) {
+            dispatch(addSensiNotif());
         }
-    }, [dispatch, studyUpdatedForce, ranSA, ranLoadflow]);
+    }, [dispatch, studyUpdatedForce, ranSA, ranLoadflow, ranSensi]);
 
     const ACTION_ON_RUNNABLES = {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
             if (action === runnable.SECURITY_ANALYSIS) {
                 stopSecurityAnalysis(studyUuid, currentNode?.id);
+                setComputationStopped(!computationStopped);
+            } else if (action === runnable.SENSITIVITY_ANALYSIS) {
+                stopSensitivityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -96,6 +115,26 @@ export function RunButtonContainer({
         startSecurityAnalysis(studyUuid, currentNode?.id, contingencyListNames);
     };
 
+    const handleStartSensi = (
+        variablesFiltersUuids,
+        contingencyListUuids,
+        branchFiltersUuids
+    ) => {
+        // close the contingency list selection window
+        setShowSensiParametersSelector(false);
+
+        setComputationStopped(false);
+
+        // start server side security analysis
+        startSensitivityAnalysis(
+            studyUuid,
+            currentNode?.id,
+            variablesFiltersUuids,
+            contingencyListUuids,
+            branchFiltersUuids
+        );
+    };
+
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
             startLoadFlow(studyUuid, currentNode?.id)
@@ -106,6 +145,9 @@ export function RunButtonContainer({
         } else if (action === runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
             setRanSA(true);
+        } else if (action === runnable.SENSITIVITY_ANALYSIS) {
+            setShowSensiParametersSelector(true);
+            setRanSensi(true);
         }
     };
 
@@ -115,9 +157,11 @@ export function RunButtonContainer({
                 return loadFlowStatus;
             } else if (runnableType === runnable.SECURITY_ANALYSIS) {
                 return securityAnalysisStatus;
+            } else if (runnableType === runnable.SENSITIVITY_ANALYSIS) {
+                return sensiStatus;
             }
         },
-        [loadFlowStatus, securityAnalysisStatus, runnable]
+        [loadFlowStatus, securityAnalysisStatus, sensiStatus, runnable]
     );
 
     const getRunningText = (runnable, status) => {
@@ -139,7 +183,11 @@ export function RunButtonContainer({
     };
 
     const RUNNABLES = useMemo(
-        () => [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS],
+        () => [
+            runnable.LOADFLOW,
+            runnable.SECURITY_ANALYSIS,
+            runnable.SENSITIVITY_ANALYSIS,
+        ],
         [runnable]
     );
 
@@ -164,12 +212,20 @@ export function RunButtonContainer({
                 disabled={isModificationsInProgress || disabled}
             />
             {!disabled && (
-                <ContingencyListSelector
-                    open={showContingencyListSelector}
-                    onClose={() => setShowContingencyListSelector(false)}
-                    onStart={handleStartSecurityAnalysis}
-                    currentNodeUuid={currentNode?.id}
-                />
+                <div>
+                    <ContingencyListSelector
+                        open={showContingencyListSelector}
+                        onClose={() => setShowContingencyListSelector(false)}
+                        onStart={handleStartSecurityAnalysis}
+                        currentNodeUuid={currentNode?.id}
+                    />
+                    <SensiParametersSelector
+                        open={showSensiParametersSelector}
+                        onClose={() => setShowSensiParametersSelector(false)}
+                        onStart={handleStartSensi}
+                        currentNodeUuid={currentNode?.id}
+                    />
+                </div>
             )}
         </>
     );

@@ -167,12 +167,8 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
         }
     };
 
-    const clearValues = () => {
-        setEquipmentType('LINE');
-    };
-
     const handleCloseAndClear = () => {
-        clearValues();
+        setEquipmentType('LINE');
         setErrors(new Map());
         onClose();
     };

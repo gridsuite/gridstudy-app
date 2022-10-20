@@ -32,6 +32,12 @@ export const UPDATE_TYPE = [
     'deletingInProgress',
 ];
 
+export const CONNECTION_DIRECTION = [
+    { id: '', label: 'None' },
+    { id: 'TOP', label: 'Top' },
+    { id: 'BOTTOM', label: 'Bottom' },
+];
+
 export function getEnergySourceLabel(energySourceId) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }

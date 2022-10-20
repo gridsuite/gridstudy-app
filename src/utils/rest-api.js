@@ -8,6 +8,8 @@ import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
 
+const PREFIX_USER_ADMIN_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/user-admin';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
@@ -37,6 +39,33 @@ function backendFetch(url, init) {
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
 
     return fetch(url, initCopy);
+}
+
+export function fetchValidateUser(user) {
+    const sub = user?.profile?.sub;
+    if (!sub)
+        return Promise.reject(
+            new Error(
+                'Error : Fetching access for missing user.profile.sub : ' + user
+            )
+        );
+
+    console.info(`Fetching access for user...`);
+    const CheckAccessUrl =
+        PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${sub}`;
+    console.debug(CheckAccessUrl);
+
+    return fetch(CheckAccessUrl, {
+        method: 'head',
+        headers: {
+            Authorization: 'Bearer ' + user?.id_token,
+        },
+    }).then((response) => {
+        if (response.status === 200) return true;
+        else if (response.status === 204 || response.status === 403)
+            return false;
+        else throw new Error(response.status + ' ' + response.statusText);
+    });
 }
 
 export function fetchDefaultParametersValues() {
@@ -778,8 +807,116 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     });
 }
 
-export function fetchContingencyLists(listIds) {
-    console.info('Fetching contingency lists');
+function getSensitivityAnalysisQueryParams(
+    variablesFiltersUuids,
+    contingencyListUuids,
+    branchFiltersUuids
+) {
+    if (
+        variablesFiltersUuids.length > 0 ||
+        contingencyListUuids.length > 0 ||
+        branchFiltersUuids.length > 0
+    ) {
+        const urlSearchParams = new URLSearchParams();
+        variablesFiltersUuids.forEach((variablesFiltersUuid) =>
+            urlSearchParams.append(
+                'variablesFiltersListUuid',
+                variablesFiltersUuid
+            )
+        );
+        contingencyListUuids.forEach((contingencyListUuid) =>
+            urlSearchParams.append('contingencyListUuid', contingencyListUuid)
+        );
+        branchFiltersUuids.forEach((branchFiltersUuid) =>
+            urlSearchParams.append('branchFiltersListUuid', branchFiltersUuid)
+        );
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
+export function startSensitivityAnalysis(
+    studyUuid,
+    currentNodeUuid,
+    variablesFiltersUuids,
+    contingencyListUuids,
+    branchFiltersUuids
+) {
+    console.info(
+        'Running sensi on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/run' +
+        getSensitivityAnalysisQueryParams(
+            variablesFiltersUuids,
+            contingencyListUuids,
+            branchFiltersUuids
+        );
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+}
+
+export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        'Stopping sensitivity analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const stopSensitivityAnalysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/stop';
+    console.debug(stopSensitivityAnalysisUrl);
+    return backendFetch(stopSensitivityAnalysisUrl, { method: 'put' });
+}
+
+export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        'Fetching sensitivity analysis status on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return Promise.resolve(0);
+        }
+    });
+}
+
+export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
+    console.info(
+        'Fetching sensitivity analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/result';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) return response.json();
+        throw new Error(response.status + ' ' + response.statusText);
+    });
+}
+
+export function fetchContingencyAndFiltersLists(listIds) {
+    console.info('Fetching contingency and filters lists');
     const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         '/v1/elements?strictMode=false&ids=' +
@@ -1113,6 +1250,39 @@ export function getLoadFlowParameters(studyUuid) {
     );
 }
 
+export function setShortCircuitParameters(studyUuid, newParams) {
+    console.info('set short-circuit parameters');
+    const setShortCircuitParametersUrl =
+        getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(setShortCircuitParametersUrl);
+    return backendFetch(setShortCircuitParametersUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function getShortCircuitParameters(studyUuid) {
+    console.info('get short-circuit parameters');
+    const getShortCircuitParams =
+        getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(getShortCircuitParams);
+    return backendFetch(getShortCircuitParams, {
+        method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
     const changeLineStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1163,7 +1333,9 @@ export function createLoad(
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    connectionDirection,
+    connectionName
 ) {
     let createLoadUrl;
     if (isUpdate) {
@@ -1194,6 +1366,8 @@ export function createLoad(
             reactivePower: reactivePower,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
         }),
     }).then((response) => {
         return response.ok
@@ -1390,7 +1564,7 @@ export function createGenerator(
             droop: droop,
             maximumReactivePower: maximumReactivePower,
             minimumReactivePower: minimumReactivePower,
-            points: reactiveCapabilityCurve,
+            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
         }),
     }).then((response) => {
         return response.ok
@@ -1769,6 +1943,61 @@ export function attachLine(
         lineAttachUrl =
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/line-attach';
+    }
+
+    return backendFetch(lineAttachUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function linesAttachToSplitLines(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    attachedLineId,
+    voltageLevelId,
+    bbsBusId,
+    replacingLine1Id,
+    replacingLine1Name,
+    replacingLine2Id,
+    replacingLine2Name
+) {
+    const body = JSON.stringify({
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        attachedLineId,
+        voltageLevelId,
+        bbsBusId,
+        replacingLine1Id,
+        replacingLine1Name,
+        replacingLine2Id,
+        replacingLine2Name,
+    });
+
+    let lineAttachUrl;
+    if (modificationUuid) {
+        console.info('Attaching lines to splitting lines update', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/lines-attach-to-split-lines';
+    } else {
+        console.info('Attaching lines to splitting lines', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/lines-attach-to-split-lines';
     }
 
     return backendFetch(lineAttachUrl, {

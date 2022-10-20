@@ -17,6 +17,7 @@
 
     "moveStudyNotification": "The study has been moved from {oldStudyPath} to {studyPath}",
 
+    "CopiedNodeInvalidationMessage": "As a result of node modification, the contents of the clipboard have been deleted",
     "exportNetwork": "Export the network",
     "export": "Export",
     "format": "Format",
@@ -137,8 +138,19 @@
     "Execute": "Execute",
     "AddContingencyList": "Add",
     "DeleteContingencyList": "Delete",
-    "getContingencyListError": "can't fetch contingencies lists",
+    "getContingencyListError": "Can't fetch contingencies lists",
     "xContingenciesWillBeSimulated": "{x} contingencies will be simulated",
+
+    "SensitivityAnalysis": "Sensitivity analysis",
+    "SensibilityAnalysisParameters": "Sensitivity analysis parameters",
+    "VariablesToSimulate": "Variables to simulate",
+    "SimulatedContingencies": "Simulated contingencies",
+    "SupervisedBranches": "Supervised branches",
+    "getVariablesFiltersListError": "Can't fetch simulated variables lists",
+    "getBranchFiltersListError": "Can't fetch supervised branches filters lists",
+    "FiltersListsSelection": "Filters lists selection",
+    "sensitivityAnalysisResults": "Sensitivity analysis results",
+    "sensitivityAnalysisError": "An error occured when executing sensitivity analysis",
 
     "LimitType": "Limit type",
     "Value": "Value",
@@ -181,8 +193,15 @@
     "descLfAllCountries": "All countries",
     "descLfCountriesToBalance": "Countries participating in balancing: ",
 
+    "descWithVoltageMap": "Display voltage drop",
+    "descWithFeederResult": "With feeder results",
+    "descMinVoltageDropProportionalThreshold": "Voltage drop display threshold (%)",
+    "descStudyType": "Study type",
+    "descTransient": "Transient",
+    "descSubTransient": "Sub-transient",
+
     "securityAnalysisResults": "Security analysis results",
-    "securityAnalysisError": "An error occured when executing security analysis",
+    "securityAnalysisError": "An error occurred while executing the security analysis",
     "loadFlowResults": "Loadflow results",
     "startLoadFlowError": "An error occurred while starting the load flow",
 
@@ -217,8 +236,8 @@
     "LccConverterStations": "LCC Converter Stations",
     "VscConverterStations": "VSC Converter Stations",
     "LoadType": "Type",
-    "ConstantActivePower": "Constant p (MW)",
-    "ConstantReactivePower": "Constant q (MVar)",
+    "ConstantActivePower": "Target p (MW)",
+    "ConstantReactivePower": "Target q (MVar)",
     "DanglingLines": "Dangling Lines",
     "UcteXnodeCode": "UCTE Xnode",
     "HvdcLines": "HVDC Lines",
@@ -285,6 +304,9 @@
     "FluxConvention": "Active and reactive flux convention used in spreadsheets: ",
     "FluxConvention.iidm": "IIDM",
     "FluxConvention.target": "Target",
+    "Advanced": "Advanced",
+    "EnableDeveloperMode": "Enable developer mode",
+    "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
 
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
@@ -371,8 +393,7 @@
     "QminP": "QminP",
     "QmaxP": "QmaxP",
     "RegulatingTerminalGenerator": "Regulating Terminal",
-    "Equipments": "Equipments",
-    "CourtCircuit": "Court-circuit",
+    "ShortCircuit": "Short-circuit",
     "TransientReactance": "Transient reactance",
     "TransformerReactance": "Transformer reactance",
     "FrequencyRegulation": "Frequency Regulation",
@@ -423,6 +444,7 @@
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
     "LineToSplit": "Existing line",
     "LineAttachToVoltageLevel": "Attach a line to another line",
+    "LinesAttachToSplitLines": "Attaching lines to splitting lines",
     "LineToAttachTo": "Existing line",
     "Percentage": "% long",
     "OutOfBoundsPercentage": "Percentage out of bounds",
@@ -442,7 +464,9 @@
     "AttachmentPointId": "Attachment point ID",
     "AttachmentPointName": "Attachment point name",
     "AttachedLine": "Create attached line",
+    "LineAttached": "Attached line",
     "AttachedLineId": "Attached line ID",
+    "ReplacingLines": "Replacing lines",
     "LineDivisionError": "Error while puting a voltage level amidst a line",
     "LineAttachmentError": "Error while attaching a voltage level to a line",
 
@@ -506,5 +530,9 @@
     "EmptyList/bbs": "Bus Bar list is empty",
     "EmptyList/connections": "Connections list is empty",
 
-    "UnsupportedView": "Search is unavailable in tree view"
+    "UnsupportedView": "Search is unavailable in tree view",
+    "ConnectionName": "Connection name",
+    "ConnectionDirection": "Connection direction",
+    "Top": "Top",
+    "Bottom": "Bottom"
 }

@@ -8,6 +8,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 
 import {
+    USER,
+    SIGNIN_CALLBACK_ERROR,
+    UNAUTHORIZED_USER_INFO,
+    SHOW_AUTH_INFO_LOGIN,
+} from '@gridsuite/commons-ui';
+
+import {
     CENTER_LABEL,
     CLOSE_STUDY,
     DIAGONAL_LABEL,
@@ -24,8 +31,6 @@ import {
     USE_NAME,
     SELECT_LANGUAGE,
     SELECT_COMPUTED_LANGUAGE,
-    USER,
-    SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
     DISPLAY_OVERLOAD_TABLE,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
@@ -38,6 +43,8 @@ import {
     RESET_LOADFLOW_NOTIF,
     ADD_SA_NOTIF,
     RESET_SA_NOTIF,
+    ADD_SENSI_NOTIF,
+    RESET_SENSI_NOTIF,
     COMPONENT_LIBRARY,
     FAVORITE_CONTINGENCY_LISTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
@@ -53,8 +60,12 @@ import {
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
     SET_MODIFICATIONS_IN_PROGRESS,
+    FAVORITE_SENSI_CONTINGENCY_LISTS,
+    FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
+    FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
+    ENABLE_DEVELOPER_MODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -80,6 +91,10 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
+    PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
+    PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
+    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -99,7 +114,11 @@ const paramsInitialState = {
     [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
     [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
+    [PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS]: [],
+    [PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS]: [],
+    [PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
+    [PARAM_DEVELOPER_MODE]: false,
 };
 
 const initialState = {
@@ -111,9 +130,12 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
+    unauthorizedUserInfo: null,
+    showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
     loadflowNotif: false,
     saNotif: false,
+    sensiNotif: false,
     filteredNominalVoltages: null,
     fullScreenSldId: null,
     fullScreenNadId: null,
@@ -296,6 +318,10 @@ export const reducer = createReducer(initialState, {
         state[PARAM_FLUX_CONVENTION] = action[PARAM_FLUX_CONVENTION];
     },
 
+    [ENABLE_DEVELOPER_MODE]: (state, action) => {
+        state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
+    },
+
     [LINE_FLOW_COLOR_MODE]: (state, action) => {
         state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
     },
@@ -307,6 +333,15 @@ export const reducer = createReducer(initialState, {
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
         state.signInCallbackError = action.signInCallbackError;
+    },
+
+    [UNAUTHORIZED_USER_INFO]: (state, action) => {
+        state.unauthorizedUserInfo = action.unauthorizedUserInfo;
+    },
+
+    [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
+        state.showAuthenticationRouterLogin =
+            action.showAuthenticationRouterLogin;
     },
 
     [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
@@ -328,6 +363,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SA_NOTIF]: (state) => {
         state.saNotif = false;
+    },
+
+    [ADD_SENSI_NOTIF]: (state) => {
+        state.sensiNotif = true;
+    },
+
+    [RESET_SENSI_NOTIF]: (state) => {
+        state.sensiNotif = false;
     },
 
     [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {
@@ -380,6 +423,18 @@ export const reducer = createReducer(initialState, {
     [FAVORITE_CONTINGENCY_LISTS]: (state, action) => {
         state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
             action[PARAM_FAVORITE_CONTINGENCY_LISTS];
+    },
+    [FAVORITE_SENSI_VARIABLES_FILTERS_LISTS]: (state, action) => {
+        state[PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS] =
+            action[PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS];
+    },
+    [FAVORITE_SENSI_CONTINGENCY_LISTS]: (state, action) => {
+        state[PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS] =
+            action[PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS];
+    },
+    [FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: (state, action) => {
+        state[PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS] =
+            action[PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS];
     },
     [CURRENT_TREE_NODE]: (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
