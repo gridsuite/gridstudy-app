@@ -918,13 +918,13 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
-                id: 'ConstantActivePower',
+                id: 'TargetP',
                 dataKey: 'p0',
                 numeric: true,
                 fractionDigits: 1,
             },
             {
-                id: 'ConstantReactivePower',
+                id: 'TargetQ',
                 dataKey: 'q0',
                 numeric: true,
                 fractionDigits: 1,
