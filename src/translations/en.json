@@ -533,7 +533,5 @@
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
-    "Bottom": "Bottom",
-    "Direction": "Direction"
-
+    "Bottom": "Bottom"
 }

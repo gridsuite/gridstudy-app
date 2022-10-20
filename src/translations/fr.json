@@ -534,6 +534,5 @@
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
-    "Bottom": "Bas",
-    "Direction": "Direction"
+    "Bottom": "Bas"
 }
