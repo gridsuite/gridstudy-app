@@ -146,12 +146,6 @@ export function selectUseName(useName) {
     return { type: USE_NAME, [PARAM_USE_NAME]: useName };
 }
 
-export const USER = 'USER';
-
-export function setLoggedUser(user) {
-    return { type: USER, user: user };
-}
-
 export const CENTER_LABEL = 'CENTER_LABEL';
 
 export function selectCenterLabelState(centerLabel) {
@@ -215,15 +209,6 @@ export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
     return {
         type: LINE_FLOW_ALERT_THRESHOLD,
         [PARAM_LINE_FLOW_ALERT_THRESHOLD]: lineFlowAlertThreshold,
-    };
-}
-
-export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
-
-export function setSignInCallbackError(signInCallbackError) {
-    return {
-        type: SIGNIN_CALLBACK_ERROR,
-        signInCallbackError: signInCallbackError,
     };
 }
 
