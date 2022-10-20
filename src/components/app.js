@@ -50,6 +50,7 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
+    setShowAuthenticationRouterLogin,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -60,6 +61,7 @@ import {
     fetchConfigParameter,
     fetchConfigParameters,
     fetchDefaultParametersValues,
+    fetchValidateUser,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -114,6 +116,12 @@ const App = () => {
 
     const signInCallbackError = useSelector(
         (state) => state.signInCallbackError
+    );
+    const unauthorizedUserInfo = useSelector(
+        (state) => state.unauthorizedUserInfo
+    );
+    const showAuthenticationRouterLogin = useSelector(
+        (state) => state.showAuthenticationRouterLogin
     );
 
     const [userManager, setUserManager] = useState(noUserManager);
@@ -342,16 +350,18 @@ const App = () => {
         initializeAuthenticationProd(
             dispatch,
             initialMatchSilentRenewCallbackUrl != null,
-            fetch('idpSettings.json')
+            fetch('idpSettings.json'),
+            fetchValidateUser
         )
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
-                userManager.getUser().then((user) => {
+                return userManager.getUser().then((user) => {
                     if (
                         user == null &&
                         initialMatchSilentRenewCallbackUrl == null
                     ) {
-                        userManager.signinSilent().catch((error) => {
+                        return userManager.signinSilent().catch((error) => {
+                            dispatch(setShowAuthenticationRouterLogin(true));
                             const oidcHackReloaded =
                                 'gridsuite-oidc-hack-reloaded';
                             if (
@@ -375,6 +385,7 @@ const App = () => {
             .catch(function (error) {
                 setUserManager({ instance: null, error: error.message });
                 console.debug('error when importing the idp settings');
+                dispatch(setShowAuthenticationRouterLogin(true));
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
     }, [initialMatchSilentRenewCallbackUrl, dispatch]);
@@ -532,6 +543,10 @@ const App = () => {
                         <AuthenticationRouter
                             userManager={userManager}
                             signInCallbackError={signInCallbackError}
+                            unauthorizedUserInfo={unauthorizedUserInfo}
+                            showAuthenticationRouterLogin={
+                                showAuthenticationRouterLogin
+                            }
                             dispatch={dispatch}
                             navigate={navigate}
                             location={location}
