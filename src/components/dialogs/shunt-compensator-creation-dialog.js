@@ -31,6 +31,7 @@ import {
     filledTextField,
     gridItem,
     GridSection,
+    sanitizeString,
     SusceptanceAdornment,
     toPositiveIntValue,
 } from './dialogUtils';
@@ -174,7 +175,7 @@ const ShuntCompensatorCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 shuntCompensatorId,
-                shuntCompensatorName ? shuntCompensatorName : null,
+                sanitizeString(shuntCompensatorName),
                 maximumNumberOfSections,
                 currentNumberOfSections,
                 identicalSections,

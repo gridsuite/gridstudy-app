@@ -31,6 +31,7 @@ import {
     gridItemWithTooltip,
     MVAPowerAdornment,
     ReactivePowerAdornment,
+    sanitizeString,
     VoltageAdornment,
 } from './dialogUtils';
 import { Box } from '@mui/system';
@@ -86,6 +87,8 @@ const GeneratorModificationDialog = ({
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
+    const fieldRequired = { isFieldRequired: true };
+
     useEffect(() => {
         if (!equipmentOptionsPromise) return;
         equipmentOptionsPromise.then((values) => {
@@ -108,7 +111,7 @@ const GeneratorModificationDialog = ({
 
     const [generatorInfos, generatorIdField] = useAutocompleteField({
         label: 'ID',
-        validation: { isFieldRequired: true },
+        validation: fieldRequired,
         inputForm: inputForm,
         formProps: filledTextField,
         values: equipmentOptions?.sort(compareById),
@@ -250,7 +253,7 @@ const GeneratorModificationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 generatorInfos?.id,
-                generatorName,
+                sanitizeString(generatorName),
                 energySource,
                 minimumActivePower,
                 maximumActivePower,

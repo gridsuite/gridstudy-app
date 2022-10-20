@@ -335,7 +335,7 @@ const StudyPane = ({
                                 )}
                                 onClose={closeNetworkAreaDiagram}
                                 disabled={disabled}
-                                align="left"
+                                align="right"
                                 visible={
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE

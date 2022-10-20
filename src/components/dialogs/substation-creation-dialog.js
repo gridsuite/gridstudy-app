@@ -26,7 +26,7 @@ import {
     useInputForm,
     useTextValue,
 } from './inputs/input-hooks';
-import { filledTextField, gridItem } from './dialogUtils';
+import { filledTextField, gridItem, sanitizeString } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 
@@ -104,10 +104,8 @@ const SubstationCreationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         validation: { isFieldRequired: false },
-        defaultCodeValue: formValues ? formValues.substationCountry : null,
-        defaultLabelValue: formValues
-            ? formValues.substationCountryLabel
-            : null,
+        defaultCodeValue: formValues?.substationCountry ?? null,
+        defaultLabelValue: formValues?.substationCountryLabel ?? null,
     });
 
     const handleSave = () => {
@@ -116,7 +114,7 @@ const SubstationCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 substationId,
-                substationName,
+                sanitizeString(substationName),
                 substationCountry,
                 editData ? true : false,
                 editData ? editData.uuid : undefined

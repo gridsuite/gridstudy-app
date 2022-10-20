@@ -194,6 +194,13 @@
     "descLfAllCountries": "Tous les pays",
     "descLfCountriesToBalance": "Pays participant à la compensation\u00a0:",
 
+    "descWithVoltageMap": "Calculer les chutes de tension",
+    "descWithFeederResult": "Avec apports",
+    "descMinVoltageDropProportionalThreshold": "Seuil d'affichage des chutes de tension (%)",
+    "descStudyType": "Type d'étude",
+    "descTransient": "Transitoire",
+    "descSubTransient": "Sub-transitoire",
+
     "securityAnalysisResults": "Résultats de l'analyse de sécurité",
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
@@ -230,8 +237,8 @@
     "LccConverterStations": "Stations conversion LCC",
     "VscConverterStations": "Stations conversion VSC",
     "LoadType": "Type",
-    "ConstantActivePower": "P constant (MW)",
-    "ConstantReactivePower": "Q constant (MVar)",
+    "ConstantActivePower": "P consigne (MW)",
+    "ConstantReactivePower": "Q consigne (MVar)",
     "DanglingLines": "Lignes frontières",
     "UcteXnodeCode": "Xnode UCTE",
     "HvdcLines": "Lignes HVDC",
@@ -279,7 +286,7 @@
     "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
 
     "SubstationList": "Liste des postes",
-    "NetworkModificationTree": "Arbre de modification de réseau",
+    "NetworkModificationTree": "Arbre décisionnel",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
     "OnlyMin": "Min:\u202F{min}",
@@ -298,6 +305,9 @@
     "FluxConvention": "Convention des flux actifs et réactifs dans les tableurs\u00a0:",
     "FluxConvention.iidm": "IIDM",
     "FluxConvention.target": "Métier",
+    "Advanced": "Avancé",
+    "EnableDeveloperMode": "Activer mode développeur",
+    "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
@@ -384,8 +394,7 @@
     "QminP": "QminP",
     "QmaxP": "QmaxP",
     "RegulatingTerminalGenerator": "Terminal distant réglé",
-    "Equipments": "Ouvrages",
-    "CourtCircuit": "Court-circuit",
+    "ShortCircuit": "Court-circuit",
     "TransientReactance": "Réactance transitoire",
     "TransformerReactance": "Réactance du transformateur",
     "FrequencyRegulation": "Compensation",
@@ -436,6 +445,7 @@
     "LineSplitWithVoltageLevel": "Créer une coupure",
     "LineToSplit": "Liaison coupée",
     "LineAttachToVoltageLevel": "Créer un piquage",
+    "LinesAttachToSplitLines": "Piquage en coupure",
     "LineToAttachTo": "Liaison piquée",
     "LengthPercentage": "% long.",
     "OutOfBoundsPercentage": "Pourcentage en dehors des limites",
@@ -455,7 +465,9 @@
     "AttachmentPointId": "ID point de piquage",
     "AttachmentPointName": "Nom point de piquage",
     "AttachedLine": "Créer liaison de piquage",
-    "AttachedLineId": "ID liaison de piquage",
+    "LineAttached": "Liaison de piquage",
+    "AttachedLineId": "ID Liaison de piquage",
+    "ReplacingLines": "Liaisons de remplacement",
     "LineDivisionError": "Erreur lors de la création d'une coupure",
     "LineAttachmentError": "Erreur lors de la création d'un piquage",
 
@@ -519,5 +531,9 @@
     "EmptyList/bbs": "La liste de jeux de barres est vide",
     "EmptyList/connections": "La liste de connexions est vide",
 
-    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre"
+    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
+    "ConnectionName": "Nom départ",
+    "ConnectionDirection": "Sens départ",
+    "Top": "Haut",
+    "Bottom": "Bas"
 }
