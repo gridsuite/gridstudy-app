@@ -21,6 +21,7 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
+    PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';

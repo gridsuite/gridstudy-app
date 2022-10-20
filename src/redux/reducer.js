@@ -8,6 +8,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 
 import {
+    USER,
+    SIGNIN_CALLBACK_ERROR,
+    UNAUTHORIZED_USER_INFO,
+    SHOW_AUTH_INFO_LOGIN,
+} from '@gridsuite/commons-ui';
+
+import {
     CENTER_LABEL,
     CLOSE_STUDY,
     DIAGONAL_LABEL,
@@ -24,8 +31,6 @@ import {
     USE_NAME,
     SELECT_LANGUAGE,
     SELECT_COMPUTED_LANGUAGE,
-    USER,
-    SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
     DISPLAY_OVERLOAD_TABLE,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
@@ -57,6 +62,7 @@ import {
     SET_MODIFICATIONS_IN_PROGRESS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
+    ENABLE_DEVELOPER_MODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -82,6 +88,7 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
+    PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -102,6 +109,7 @@ const paramsInitialState = {
     [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
+    [PARAM_DEVELOPER_MODE]: false,
 };
 
 const initialState = {
@@ -113,6 +121,8 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
+    unauthorizedUserInfo: null,
+    showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
     loadflowNotif: false,
     saNotif: false,
@@ -299,6 +309,10 @@ export const reducer = createReducer(initialState, {
         state[PARAM_FLUX_CONVENTION] = action[PARAM_FLUX_CONVENTION];
     },
 
+    [ENABLE_DEVELOPER_MODE]: (state, action) => {
+        state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
+    },
+
     [LINE_FLOW_COLOR_MODE]: (state, action) => {
         state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
     },
@@ -310,6 +324,15 @@ export const reducer = createReducer(initialState, {
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
         state.signInCallbackError = action.signInCallbackError;
+    },
+
+    [UNAUTHORIZED_USER_INFO]: (state, action) => {
+        state.unauthorizedUserInfo = action.unauthorizedUserInfo;
+    },
+
+    [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
+        state.showAuthenticationRouterLogin =
+            action.showAuthenticationRouterLogin;
     },
 
     [DISPLAY_OVERLOAD_TABLE]: (state, action) => {

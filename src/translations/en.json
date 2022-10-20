@@ -17,6 +17,7 @@
 
     "moveStudyNotification": "The study has been moved from {oldStudyPath} to {studyPath}",
 
+    "CopiedNodeInvalidationMessage": "As a result of node modification, the contents of the clipboard have been deleted",
     "exportNetwork": "Export the network",
     "export": "Export",
     "format": "Format",
@@ -192,8 +193,15 @@
     "descLfAllCountries": "All countries",
     "descLfCountriesToBalance": "Countries participating in balancing: ",
 
+    "descWithVoltageMap": "Display voltage drop",
+    "descWithFeederResult": "With feeder results",
+    "descMinVoltageDropProportionalThreshold": "Voltage drop display threshold (%)",
+    "descStudyType": "Study type",
+    "descTransient": "Transient",
+    "descSubTransient": "Sub-transient",
+
     "securityAnalysisResults": "Security analysis results",
-    "securityAnalysisError": "An error occured when executing security analysis",
+    "securityAnalysisError": "An error occurred while executing the security analysis",
     "loadFlowResults": "Loadflow results",
     "startLoadFlowError": "An error occurred while starting the load flow",
 
@@ -296,6 +304,9 @@
     "FluxConvention": "Active and reactive flux convention used in spreadsheets: ",
     "FluxConvention.iidm": "IIDM",
     "FluxConvention.target": "Target",
+    "Advanced": "Advanced",
+    "EnableDeveloperMode": "Enable developer mode",
+    "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
 
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
@@ -523,10 +534,10 @@
 
     "resultsThreshold": "Minimum sensitivity threshold",
     "SensitivityBranches": "Branch sensitivity",
-    "SensitivityInjectionsSet" : "Relatively to injections set :",
-    "SensitivityInjection" : "Relatively to each injection :",
+    "SensitivityInjectionsSet": "Relatively to injections set :",
+    "SensitivityInjection": "Relatively to each injection :",
     "SensitivityHvdc": "Relatively to each HVDC :",
-    "SensitivityTD":  "Relatively to each PST :",
+    "SensitivityTD": "Relatively to each PST :",
     "SensitivityNodes": "Node sensitivity",
     "Proportional": "Proportional",
     "ProportionalMaxP": "Proportional to maxP",
@@ -540,7 +551,12 @@
     "ContingencyLists": "Contingencies",
     "Injections": "Injections",
     "SupervisedVoltageLevels": "Supervised voltage levels",
-    "EquipmentsInVoltageRegulation" : "Equipments in voltage regulation",
-    "PSTS" : "PSTs",
-    "ElementAlreadyUsed": "This element is already used"
+    "EquipmentsInVoltageRegulation": "Equipments in voltage regulation",
+    "PSTS": "PSTs",
+    "ElementAlreadyUsed": "This element is already used",
+
+    "ConnectionName": "Connection name",
+    "ConnectionDirection": "Connection direction",
+    "Top": "Top",
+    "Bottom": "Bottom"
 }

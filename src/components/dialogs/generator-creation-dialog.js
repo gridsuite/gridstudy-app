@@ -37,6 +37,7 @@ import {
     OhmAdornment,
     percentageTextField,
     ReactivePowerAdornment,
+    sanitizeString,
     VoltageAdornment,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
@@ -375,7 +376,7 @@ const GeneratorCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 generatorId,
-                generatorName ? generatorName : null,
+                sanitizeString(generatorName),
                 !energySource ? 'OTHER' : energySource,
                 minimumActivePower,
                 maximumActivePower,

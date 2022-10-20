@@ -17,6 +17,7 @@
 
     "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
+    "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "format": "Format",
@@ -193,6 +194,13 @@
     "descLfAllCountries": "Tous les pays",
     "descLfCountriesToBalance": "Pays participant à la compensation\u00a0:",
 
+    "descWithVoltageMap": "Calculer les chutes de tension",
+    "descWithFeederResult": "Avec apports",
+    "descMinVoltageDropProportionalThreshold": "Seuil d'affichage des chutes de tension (%)",
+    "descStudyType": "Type d'étude",
+    "descTransient": "Transitoire",
+    "descSubTransient": "Sub-transitoire",
+
     "securityAnalysisResults": "Résultats de l'analyse de sécurité",
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
@@ -278,7 +286,7 @@
     "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
 
     "SubstationList": "Liste des postes",
-    "NetworkModificationTree": "Arbre de modification de réseau",
+    "NetworkModificationTree": "Arbre décisionnel",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
     "OnlyMin": "Min:\u202F{min}",
@@ -297,6 +305,9 @@
     "FluxConvention": "Convention des flux actifs et réactifs dans les tableurs\u00a0:",
     "FluxConvention.iidm": "IIDM",
     "FluxConvention.target": "Métier",
+    "Advanced": "Avancés",
+    "EnableDeveloperMode": "Activer mode développeur",
+    "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
@@ -524,10 +535,10 @@
 
     "resultsThreshold": "Seuil minimal de sensibilité",
     "SensitivityBranches": "Sensibilité au niveau des quadripôles",
-    "SensitivityInjectionsSet" : "Par rapport à un ensemble d'injections :",
-    "SensitivityInjection" : "Par rapport à chaque injection :",
+    "SensitivityInjectionsSet": "Par rapport à un ensemble d'injections :",
+    "SensitivityInjection": "Par rapport à chaque injection :",
     "SensitivityHvdc": "Par rapport à chaque HVDC :",
-    "SensitivityTD":  "Par rapport à chaque TD :",
+    "SensitivityTD": "Par rapport à chaque TD :",
     "SensitivityNodes": "Sensibilité au niveau des nœuds",
     "Proportional": "Proportionnel",
     "ProportionalMaxP": "Proportionnel à Pmax",
@@ -541,7 +552,12 @@
     "ContingencyLists": "Aléas",
     "Injections": "Injections",
     "SupervisedVoltageLevels": "Postes surveillés",
-    "EquipmentsInVoltageRegulation" : "Ouvrages en réglage tension",
+    "EquipmentsInVoltageRegulation": "Ouvrages en réglage tension",
     "PSTS": "TDs",
-    "ElementAlreadyUsed": "Cet élément est déjà utilisé"
+    "ElementAlreadyUsed": "Cet élément est déjà utilisé",
+
+    "ConnectionName": "Nom départ",
+    "ConnectionDirection": "Sens départ",
+    "Top": "Haut",
+    "Bottom": "Bas"
 }
