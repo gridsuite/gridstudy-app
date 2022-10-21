@@ -886,12 +886,9 @@ export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
     console.info(
-        'Running short circuit analysis on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            '...'
+        `Running short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
+
     const startShortCircuitAnanysisUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/run';
@@ -906,11 +903,7 @@ export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
 
 export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
     console.info(
-        'Stopping short circuit analysis on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            ' ...'
+        `Stopping short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
     const stopShortCircuitAnalysisUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
