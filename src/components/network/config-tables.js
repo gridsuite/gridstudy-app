@@ -751,7 +751,7 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
-                id: 'ConstantActivePower', 
+                id: 'ConstantActivePower',
                 dataKey: 'p0',
                 numeric: true,
                 fractionDigits: 1,
