@@ -751,7 +751,7 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
-                id: 'ConstantActivePower',
+                id: 'ConstantActivePower', 
                 dataKey: 'p0',
                 numeric: true,
                 fractionDigits: 1,
@@ -918,13 +918,13 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
-                id: 'TargetP',
+                id: 'ConsigneActivePower',
                 dataKey: 'p0',
                 numeric: true,
                 fractionDigits: 1,
             },
             {
-                id: 'TargetQ',
+                id: 'ConsigneReactivePower',
                 dataKey: 'q0',
                 numeric: true,
                 fractionDigits: 1,
