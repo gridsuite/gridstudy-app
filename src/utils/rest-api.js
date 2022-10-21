@@ -943,11 +943,7 @@ export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
 
 export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
-        'Fetching short circuit analysis status on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            ' ...'
+        `Fetching short circuit analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -964,11 +960,7 @@ export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
 
 export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     console.info(
-        'Fetching short circuit analysis result on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            ' ...'
+        `Fetching short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
