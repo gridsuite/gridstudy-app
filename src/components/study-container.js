@@ -209,7 +209,9 @@ export function StudyContainer({ view, onChangeTab }) {
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
 
-    const reloadMapNeeded = useSelector((state) => state.reloadMap);
+    const refIsNetworkRefreshNeeded = useRef();
+    refIsNetworkRefreshNeeded.current =
+        mapManualRefresh && view === StudyView.MAP;
 
     const [updatedLines, setUpdatedLines] = useState([]);
 
@@ -569,7 +571,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 'study'
             ) {
                 //when in manuel refresh mode the network is not partially updated
-                if (view === StudyView.MAP && mapManualRefresh) {
+                if (refIsNetworkRefreshNeeded.current) {
                     dispatch(setNetworkReloadNeeded());
                 } else {
                     // study partial update :
@@ -609,15 +611,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         }
-    }, [
-        studyUpdatedForce,
-        updateNetwork,
-        network,
-        mapManualRefresh,
-        reloadMapNeeded,
-        dispatch,
-        view,
-    ]);
+    }, [studyUpdatedForce, updateNetwork, network, dispatch]);
 
     return (
         <WaitingLoader
