@@ -236,7 +236,6 @@
     "LccConverterStations": "LCC Converter Stations",
     "VscConverterStations": "VSC Converter Stations",
     "LoadType": "Type",
-    "ConsigneReactivePower": "Target q (MVar)",
     "ConstantP": "Constant p (MW)",
     "ConstantQ": "Constant q (MVar)",
     "DanglingLines": "Dangling Lines",
