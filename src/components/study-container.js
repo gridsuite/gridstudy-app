@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import StudyPane from './study-pane';
+import StudyPane, { StudyView } from './study-pane';
 import React, {
     useCallback,
     useEffect,
@@ -569,7 +569,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 'study'
             ) {
                 //when in manuel refresh mode the network is not partially updated
-                if (mapManualRefresh) {
+                if (view === StudyView.MAP && mapManualRefresh) {
                     dispatch(setNetworkReloadNeeded());
                 } else {
                     // study partial update :
@@ -616,6 +616,7 @@ export function StudyContainer({ view, onChangeTab }) {
         mapManualRefresh,
         reloadMapNeeded,
         dispatch,
+        view,
     ]);
 
     return (
