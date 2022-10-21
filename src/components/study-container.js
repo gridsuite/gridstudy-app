@@ -441,6 +441,7 @@ export function StudyContainer({ view, onChangeTab }) {
         wsRef.current.onmessage = function (event) {
             const eventData = JSON.parse(event.data);
             if (eventData.headers) {
+                console.log('Anas', eventData.headers['notificationType']);
                 if (
                     eventData.headers['notificationType'] ===
                     directoriesNotificationType.UPDATE_DIRECTORY

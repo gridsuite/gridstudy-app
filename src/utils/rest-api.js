@@ -59,7 +59,7 @@ export function connectNotificationsWsUpdateDirectories() {
     );
     reconnectingWebSocket.onopen = function (event) {
         console.info(
-            'Connected Websocket update studies ' + webSocketUrl + ' ...'
+            'Connected Websocket update directories ' + webSocketUrl + ' ...'
         );
     };
     return reconnectingWebSocket;
