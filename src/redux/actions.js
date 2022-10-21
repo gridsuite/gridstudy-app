@@ -24,6 +24,7 @@ import {
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
     PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_MAP_MANUAL_REFRESH,
     PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 
@@ -146,12 +147,6 @@ export function selectUseName(useName) {
     return { type: USE_NAME, [PARAM_USE_NAME]: useName };
 }
 
-export const USER = 'USER';
-
-export function setLoggedUser(user) {
-    return { type: USER, user: user };
-}
-
 export const CENTER_LABEL = 'CENTER_LABEL';
 
 export function selectCenterLabelState(centerLabel) {
@@ -218,15 +213,6 @@ export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
     };
 }
 
-export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
-
-export function setSignInCallbackError(signInCallbackError) {
-    return {
-        type: SIGNIN_CALLBACK_ERROR,
-        signInCallbackError: signInCallbackError,
-    };
-}
-
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 
 export function studyUpdated(eventData) {
@@ -239,6 +225,47 @@ export function selectDisplayOverloadTableState(displayOverloadTable) {
     return {
         type: DISPLAY_OVERLOAD_TABLE,
         [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
+    };
+}
+
+export const SET_FORCE_NETWORK_RELOAD = 'SET_FORCE_NETWORK_RELOAD';
+
+export function setForceNetworkReload() {
+    return {
+        type: SET_FORCE_NETWORK_RELOAD,
+    };
+}
+
+export const SET_NETWORK_RELOAD_NEEDED = 'SET_NETWORK_RELOAD_NEEDED';
+
+export function setNetworkReloadNeeded() {
+    return {
+        type: SET_NETWORK_RELOAD_NEEDED,
+    };
+}
+
+export const RESET_NETWORK_RELOAD = 'RESET_NETWORK_RELOAD';
+
+export function resetNetworkReload() {
+    return {
+        type: RESET_NETWORK_RELOAD,
+    };
+}
+
+export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
+
+export function selectMapManualRefresh(mapManualRefresh) {
+    return {
+        type: MAP_MANUAL_REFRESH,
+        [PARAM_MAP_MANUAL_REFRESH]: mapManualRefresh,
+    };
+}
+
+export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
+
+export function resetMapReloaded() {
+    return {
+        type: RESET_MAP_RELOADED,
     };
 }
 
