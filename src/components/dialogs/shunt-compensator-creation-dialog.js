@@ -167,6 +167,11 @@ const ShuntCompensatorCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
+        connectionDirectionValue: formValues
+            ? formValues.connectionDirection
+            : '',
+        connectionNameValue: formValues?.connectionName,
+        withPosition: true,
     });
 
     const handleSave = () => {
@@ -182,7 +187,9 @@ const ShuntCompensatorCreationDialog = ({
                 susceptancePerSection,
                 connectivity,
                 editData ? true : false,
-                editData ? editData.uuid : undefined
+                editData ? editData.uuid : undefined,
+                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -234,16 +241,16 @@ const ShuntCompensatorCreationDialog = ({
                         {gridItem(shuntCompensatorIdField)}
                         {gridItem(shuntCompensatorNameField)}
                     </Grid>
+                    <GridSection title="Connectivity" />
+                    <Grid container spacing={2}>
+                        {gridItem(connectivityField, 12)}
+                    </Grid>
                     <GridSection title="Characteristics" />
                     <Grid container spacing={2}>
                         {gridItem(maximumNumberOfSectionsField)}
                         {gridItem(currentNumberOfSectionsField)}
                         {gridItem(identicalSectionsField)}
                         {gridItem(susceptancePerSectionField)}
-                    </Grid>
-                    <GridSection title="Connectivity" />
-                    <Grid container spacing={2}>
-                        {gridItem(connectivityField, 12)}
                     </Grid>
                 </DialogContent>
                 <DialogActions>

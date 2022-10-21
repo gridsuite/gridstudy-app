@@ -751,7 +751,7 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
-                id: 'ConstantActivePower',
+                id: 'ConstantP',
                 dataKey: 'p0',
                 numeric: true,
                 fractionDigits: 1,
@@ -759,7 +759,7 @@ export const TABLES_DEFINITIONS = {
                 editor: NumericalField,
             },
             {
-                id: 'ConstantReactivePower',
+                id: 'ConstantQ',
                 dataKey: 'q0',
                 numeric: true,
                 fractionDigits: 1,

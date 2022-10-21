@@ -84,6 +84,8 @@
     "Limit": "Limite",
     "load": "transit",
     "Load": "Transit",
+    "MapManualRefresh": "Mise à jour manuelle de l'image réseau géographique\u00a0:",
+    "ManuallyRefreshGeoData": "Mettre à jour la carte",
 
     "PageNotFound": "Page introuvable",
 
@@ -243,8 +245,8 @@
     "LccConverterStations": "Stations conversion LCC",
     "VscConverterStations": "Stations conversion VSC",
     "LoadType": "Type",
-    "ConstantActivePower": "P consigne (MW)",
-    "ConstantReactivePower": "Q consigne (MVar)",
+    "ConstantP": "P constant (MW)",
+    "ConstantQ": "Q constant (MVar)",
     "DanglingLines": "Lignes frontières",
     "UcteXnodeCode": "Xnode UCTE",
     "HvdcLines": "Lignes HVDC",
@@ -501,6 +503,7 @@
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
+    "InvalidData": "Les données ont été invalidées",
 
     "depth": "Profondeur",
 

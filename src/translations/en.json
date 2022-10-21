@@ -84,6 +84,8 @@
     "Limit": "Limit",
     "load": "load",
     "Load": "Load",
+    "MapManualRefresh": "Manual update of geographical view:",
+    "ManuallyRefreshGeoData": "Update map", 
 
     "PageNotFound": "Page not found",
 
@@ -242,8 +244,8 @@
     "LccConverterStations": "LCC Converter Stations",
     "VscConverterStations": "VSC Converter Stations",
     "LoadType": "Type",
-    "ConstantActivePower": "Target p (MW)",
-    "ConstantReactivePower": "Target q (MVar)",
+    "ConstantP": "Constant p (MW)",
+    "ConstantQ": "Constant q (MVar)",
     "DanglingLines": "Dangling Lines",
     "UcteXnodeCode": "UCTE Xnode",
     "HvdcLines": "HVDC Lines",
@@ -500,6 +502,7 @@
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
+    "InvalidData": "Data has been invalidated",
 
     "depth": "Depth",
 
