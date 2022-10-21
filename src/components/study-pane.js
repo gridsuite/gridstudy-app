@@ -15,6 +15,7 @@ import {
     filteredNominalVoltagesUpdated,
     fullScreenNetworkAreaDiagramId,
     openNetworkAreaDiagram,
+    setForceNetworkReload,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { equipments } from './network/network-equipments';
@@ -132,6 +133,10 @@ const StudyPane = ({
         changed: false,
     });
 
+    const reloadNetworkNeeded = useSelector(
+        (state) => state.networkReloadNeeded
+    );
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -173,6 +178,12 @@ const StudyPane = ({
         },
         [network, showVoltageLevelDiagram]
     );
+
+    useEffect(() => {
+        if (props.view === StudyView.SPREADSHEET) {
+            dispatch(setForceNetworkReload());
+        }
+    }, [dispatch, props.view]);
 
     useEffect(() => {
         if (!network) return;
@@ -361,7 +372,7 @@ const StudyPane = ({
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
-                    disabled={disabled}
+                    disabled={disabled || reloadNetworkNeeded}
                     visible={props.view === StudyView.SPREADSHEET}
                 />
             </Paper>
