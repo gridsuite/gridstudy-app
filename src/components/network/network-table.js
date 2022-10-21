@@ -13,7 +13,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
-import { IconButton, TextField, Tooltip, Grid } from '@mui/material';
+import { IconButton, TextField, Tooltip, Grid, Alert } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {
     requestNetworkChange,
@@ -63,7 +63,6 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
-import AlertInvalidNode from '../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 
@@ -247,6 +246,11 @@ const useStyles = makeStyles((theme) => ({
     },
     disabledLabel: {
         color: theme.palette.text.disabled,
+    },
+    invalidData: {
+        position: 'absolute',
+        top: '30%',
+        left: '43%',
     },
 }));
 
@@ -648,214 +652,191 @@ const NetworkTable = (props) => {
         ]
     );
 
-    const editCellRender = useCallback(
-        (rowData, columnDefinition, key, style, rowIndex) => {
-            function resetChanges(rowData) {
-                Object.entries(lineEdit.oldValues).forEach(
-                    ([key, oldValue]) => {
-                        rowData[key] = oldValue;
-                    }
-                );
-                setLineEdit({});
+    const editCellRender = (
+        rowData,
+        columnDefinition,
+        key,
+        style,
+        rowIndex
+    ) => {
+        function resetChanges(rowData) {
+            Object.entries(lineEdit.oldValues).forEach(([key, oldValue]) => {
+                rowData[key] = oldValue;
+            });
+            setLineEdit({});
+        }
+        function commitChanges(rowData) {
+            function capitaliseFirst(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
             }
-            function commitChanges(rowData) {
-                function capitaliseFirst(str) {
-                    return str.charAt(0).toUpperCase() + str.slice(1);
-                }
 
-                if (Object.values(lineEdit.newValues).length === 0) {
-                    // nothing to commit => abort
-                    resetChanges();
-                    return;
-                }
-                // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
-                // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
-                let groovyCr =
-                    'equipment = network.get' +
-                    capitaliseFirst(
-                        TABLES_DEFINITION_INDEXES.get(tabIndex)
-                            .modifiableEquipmentType
-                    ) +
-                    "('" +
-                    lineEdit.id.replace(/'/g, "\\'") +
-                    "')\n";
-                Object.values(lineEdit.newValues).forEach((cr) => {
-                    groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
-                });
+            if (Object.values(lineEdit.newValues).length === 0) {
+                // nothing to commit => abort
+                resetChanges();
+                return;
+            }
+            // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
+            // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
+            let groovyCr =
+                'equipment = network.get' +
+                capitaliseFirst(
+                    TABLES_DEFINITION_INDEXES.get(tabIndex)
+                        .modifiableEquipmentType
+                ) +
+                "('" +
+                lineEdit.id.replace(/'/g, "\\'") +
+                "')\n";
+            Object.values(lineEdit.newValues).forEach((cr) => {
+                groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
+            });
 
-                Promise.resolve(
-                    lineEdit.equipmentType === 'load'
-                        ? modifyLoad(
-                              props.studyUuid,
-                              props.currentNode?.id,
-                              lineEdit.id,
-                              lineEdit.newValues.name?.value,
-                              lineEdit.newValues.type?.value,
-                              lineEdit.newValues.p0?.value,
-                              lineEdit.newValues.q0?.value,
-                              undefined,
-                              undefined,
-                              false,
-                              undefined
-                          )
-                        : lineEdit.equipmentType === 'generator'
-                        ? modifyGenerator(
-                              props.studyUuid,
-                              props.currentNode?.id,
-                              lineEdit.id,
-                              lineEdit.newValues.name?.value,
-                              lineEdit.newValues.energySource?.value,
-                              lineEdit.newValues.minP?.value,
-                              lineEdit.newValues.maxP?.value,
-                              undefined,
-                              lineEdit.newValues.targetP?.value,
-                              lineEdit.newValues.targetQ?.value,
-                              lineEdit.newValues.voltageRegulatorOn?.value,
-                              lineEdit.newValues.targetV?.value,
-                              undefined,
-                              undefined,
-                              undefined
-                          )
-                        : requestNetworkChange(
-                              props.studyUuid,
-                              props.currentNode?.id,
-                              groovyCr
-                          )
-                )
-                    .then(() => {
-                        Object.entries(lineEdit.newValues).forEach(
-                            ([key, cr]) => {
-                                rowData[key] = cr.value;
-                            }
-                        );
-                        // TODO When the data is saved, we should force an update of the table's data. As is, it takes too long to update.
-                        // And maybe add a visual clue that the save was successful ?
-                    })
-                    .catch((promiseErrorMsg) => {
-                        console.error(promiseErrorMsg);
-                        Object.entries(lineEdit.oldValues).forEach(
-                            ([key, oldValue]) => {
-                                rowData[key] = oldValue;
-                            }
-                        );
-                        let message = intl.formatMessage({
-                            id: 'paramsChangingDenied',
-                        });
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: message,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'paramsChangingError',
-                                intlRef: intlRef,
-                            },
-                        });
+            Promise.resolve(
+                lineEdit.equipmentType === 'load'
+                    ? modifyLoad(
+                          props.studyUuid,
+                          props.currentNode?.id,
+                          lineEdit.id,
+                          lineEdit.newValues.name?.value,
+                          lineEdit.newValues.type?.value,
+                          lineEdit.newValues.p0?.value,
+                          lineEdit.newValues.q0?.value,
+                          undefined,
+                          undefined,
+                          false,
+                          undefined
+                      )
+                    : lineEdit.equipmentType === 'generator'
+                    ? modifyGenerator(
+                          props.studyUuid,
+                          props.currentNode?.id,
+                          lineEdit.id,
+                          lineEdit.newValues.name?.value,
+                          lineEdit.newValues.energySource?.value,
+                          lineEdit.newValues.minP?.value,
+                          lineEdit.newValues.maxP?.value,
+                          undefined,
+                          lineEdit.newValues.targetP?.value,
+                          lineEdit.newValues.targetQ?.value,
+                          lineEdit.newValues.voltageRegulatorOn?.value,
+                          lineEdit.newValues.targetV?.value,
+                          undefined,
+                          undefined,
+                          undefined
+                      )
+                    : requestNetworkChange(
+                          props.studyUuid,
+                          props.currentNode?.id,
+                          groovyCr
+                      )
+            )
+                .then(() => {
+                    Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
+                        rowData[key] = cr.value;
                     });
-                setLineEdit({});
-            }
-
-            if (isLineOnEditMode(rowData)) {
-                if (rowIndex === 1) {
-                    // The current line is in edit mode and is the top one.
-                    return (
-                        <div
-                            key={key}
-                            style={style}
-                            className={clsx(
-                                classes.topEditRow,
-                                classes.leftFade
-                            )}
-                        >
-                            <div className={classes.editCell}>
-                                {lineEdit.errors.size === 0 && (
-                                    <IconButton
-                                        size={'small'}
-                                        onClick={() => commitChanges(rowData)}
-                                    >
-                                        <CheckIcon />
-                                    </IconButton>
-                                )}
-                                <IconButton
-                                    size={'small'}
-                                    onClick={() => resetChanges(rowData)}
-                                >
-                                    <ClearIcon />
-                                </IconButton>
-                            </div>
-                        </div>
+                    // TODO When the data is saved, we should force an update of the table's data. As is, it takes too long to update.
+                    // And maybe add a visual clue that the save was successful ?
+                })
+                .catch((promiseErrorMsg) => {
+                    console.error(promiseErrorMsg);
+                    Object.entries(lineEdit.oldValues).forEach(
+                        ([key, oldValue]) => {
+                            rowData[key] = oldValue;
+                        }
                     );
-                }
-                // The current line is in edit mode, but is not the top one.
+                    let message = intl.formatMessage({
+                        id: 'paramsChangingDenied',
+                    });
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: message,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'paramsChangingError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
+            setLineEdit({});
+        }
+
+        if (isLineOnEditMode(rowData)) {
+            if (rowIndex === 1) {
+                // The current line is in edit mode and is the top one.
                 return (
                     <div
                         key={key}
                         style={style}
-                        className={clsx(
-                            classes.referenceEditRow,
-                            classes.leftFade
-                        )}
+                        className={clsx(classes.topEditRow, classes.leftFade)}
                     >
                         <div className={classes.editCell}>
+                            {lineEdit.errors.size === 0 && (
+                                <IconButton
+                                    size={'small'}
+                                    onClick={() => commitChanges(rowData)}
+                                >
+                                    <CheckIcon />
+                                </IconButton>
+                            )}
                             <IconButton
                                 size={'small'}
-                                style={{ backgroundColor: 'transparent' }}
-                                disableRipple
+                                onClick={() => resetChanges(rowData)}
                             >
-                                <MoreHorizIcon />
-                            </IconButton>
-                        </div>
-                    </div>
-                );
-            } else {
-                return (
-                    <div key={key} style={style}>
-                        <div className={classes.editCell}>
-                            <IconButton
-                                size={'small'}
-                                disabled={
-                                    isModifyingRow() &&
-                                    !isAnyNodeBuilding &&
-                                    !isNodeReadOnly(props.currentNode)
-                                }
-                                onClick={() => {
-                                    setLineEdit({
-                                        oldValues: {},
-                                        newValues: {},
-                                        id: rowData.id,
-                                        errors: new Map(),
-                                        equipmentType:
-                                            TABLES_DEFINITION_INDEXES.get(
-                                                tabIndex
-                                            ).modifiableEquipmentType,
-                                    });
-                                }}
-                            >
-                                {!isAnyNodeBuilding &&
-                                    !isNodeReadOnly(props.currentNode) && (
-                                        <EditIcon />
-                                    )}
+                                <ClearIcon />
                             </IconButton>
                         </div>
                     </div>
                 );
             }
-        },
-        [
-            isLineOnEditMode,
-            lineEdit,
-            tabIndex,
-            props.studyUuid,
-            intl,
-            enqueueSnackbar,
-            intlRef,
-            isAnyNodeBuilding,
-            classes.editCell,
-            isModifyingRow,
-            props.currentNode,
-            classes.topEditRow,
-            classes.referenceEditRow,
-            classes.leftFade,
-        ]
-    );
+            // The current line is in edit mode, but is not the top one.
+            return (
+                <div
+                    key={key}
+                    style={style}
+                    className={clsx(classes.referenceEditRow, classes.leftFade)}
+                >
+                    <div className={classes.editCell}>
+                        <IconButton
+                            size={'small'}
+                            style={{ backgroundColor: 'transparent' }}
+                            disableRipple
+                        >
+                            <MoreHorizIcon />
+                        </IconButton>
+                    </div>
+                </div>
+            );
+        } else {
+            return (
+                <div key={key} style={style}>
+                    <div className={classes.editCell}>
+                        <IconButton
+                            size={'small'}
+                            disabled={
+                                isModifyingRow() &&
+                                !isAnyNodeBuilding &&
+                                !isNodeReadOnly(props.currentNode)
+                            }
+                            onClick={() => {
+                                setLineEdit({
+                                    oldValues: {},
+                                    newValues: {},
+                                    id: rowData.id,
+                                    errors: new Map(),
+                                    equipmentType:
+                                        TABLES_DEFINITION_INDEXES.get(tabIndex)
+                                            .modifiableEquipmentType,
+                                });
+                            }}
+                        >
+                            {!isAnyNodeBuilding &&
+                                !isNodeReadOnly(props.currentNode) && (
+                                    <EditIcon />
+                                )}
+                        </IconButton>
+                    </div>
+                </div>
+            );
+        }
+    };
 
     const defaultCellRender = useCallback(
         (rowData, columnDefinition, key, style, rowIndex) => {
@@ -1588,7 +1569,14 @@ const NetworkTable = (props) => {
                                     <ViewColumnIcon />
                                 </IconButton>
                             </Grid>
-                            {props.disabled && <AlertInvalidNode />}
+                            {props.disabled && (
+                                <Alert
+                                    className={classes.invalidData}
+                                    severity="warning"
+                                >
+                                    <FormattedMessage id="InvalidData" />
+                                </Alert>
+                            )}
                             <Grid item className={classes.exportCsv}>
                                 <span
                                     className={clsx({

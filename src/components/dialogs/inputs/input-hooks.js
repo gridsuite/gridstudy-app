@@ -79,13 +79,16 @@ export const useInputForm = () => {
     const reset = useCallback((label, validate) => {
         validationMap.current = new Map();
     }, []);
-    return {
-        toggleClear,
-        clear,
-        validate,
-        addValidation,
-        reset,
-    };
+
+    return useMemo(() => {
+        return {
+            toggleClear,
+            clear,
+            validate,
+            addValidation,
+            reset,
+        };
+    }, [toggleClear, clear, validate, addValidation, reset]);
 };
 
 export const useTextValue = ({
@@ -252,7 +255,11 @@ export const useCountryValue = (props) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [code, setCode] = useState(props.defaultCodeValue);
 
-    const countriesList = useMemo(() => {
+    // supposed cached by node.js
+    const englishCountriesModule = require('localized-countries')(
+        require('localized-countries/data/en')
+    );
+    const localizedCountriesModule = useMemo(() => {
         try {
             return require('localized-countries')(
                 require('localized-countries/data/' +
@@ -260,19 +267,15 @@ export const useCountryValue = (props) => {
             );
         } catch (error) {
             // fallback to english if no localised list found
-            return require('localized-countries')(
-                require('localized-countries/data/en')
-            );
+            return englishCountriesModule;
         }
-    }, [languageLocal]);
+    }, [languageLocal, englishCountriesModule]);
 
     useEffect(() => {
         //We only need to search for the code if we only have the label
-        if (
-            props.defaultLabelValue !== null &&
-            props.defaultCodeValue === null
-        ) {
-            let res = countriesList
+        if (props.defaultLabelValue && !props.defaultCodeValue) {
+            // code -> name is currently done in NetworkMapService::toDataMap and gives english
+            let res = englishCountriesModule
                 .array()
                 .filter(
                     (obj) =>
@@ -285,15 +288,22 @@ export const useCountryValue = (props) => {
         } else {
             setCode(null);
         }
-    }, [countriesList, props.defaultLabelValue, props.defaultCodeValue]);
+    }, [
+        englishCountriesModule,
+        props.defaultLabelValue,
+        props.defaultCodeValue,
+    ]);
 
     const values = useMemo(
-        () => (countriesList ? Object.keys(countriesList.object()) : []),
-        [countriesList]
+        () =>
+            localizedCountriesModule
+                ? Object.keys(localizedCountriesModule.object())
+                : [],
+        [localizedCountriesModule]
     );
     const getOptionLabel = useCallback(
-        (code) => countriesList.get(code),
-        [countriesList]
+        (code) => localizedCountriesModule.get(code),
+        [localizedCountriesModule]
     );
 
     return useAutocompleteField({
@@ -326,7 +336,6 @@ export const useEnumValue = ({
         function validate() {
             return true;
         }
-
         inputForm.addValidation(label, validate);
     }, [label, validation, inputForm, value]);
 
@@ -510,6 +519,7 @@ export const useTableValues = ({
     inputForm,
     defaultValues,
     isReactiveCapabilityCurveOn,
+    disabled = false,
 }) => {
     const [values, setValues] = useState([]);
     const classes = useStyles();
@@ -586,12 +596,14 @@ export const useTableValues = ({
                             index={idx}
                             inputForm={inputForm}
                             isFieldRequired={isReactiveCapabilityCurveOn}
+                            disabled={disabled}
                         />
                         <Grid item xs={1}>
                             <IconButton
                                 className={classes.icon}
                                 key={id + idx}
                                 onClick={() => handleDeleteItem(idx)}
+                                disabled={disabled || idx === 0}
                             >
                                 <DeleteIcon />
                             </IconButton>
@@ -602,6 +614,7 @@ export const useTableValues = ({
                                     className={classes.icon}
                                     key={id + idx}
                                     onClick={() => handleAddValue()}
+                                    disabled={disabled}
                                 >
                                     <AddIcon />
                                 </IconButton>
@@ -621,6 +634,7 @@ export const useTableValues = ({
         inputForm,
         tableHeadersIds,
         isReactiveCapabilityCurveOn,
+        disabled,
     ]);
 
     return [values, field];

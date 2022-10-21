@@ -35,11 +35,14 @@ import {
     VoltageAdornment,
     compareById,
     getIdOrSelf,
+    sanitizeString,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { useExpandableValues } from './inputs/use-expandable-values';
+
+const validationObj = { isFieldRequired: true };
 
 const numericalWithButton = {
     type: 'number',
@@ -95,7 +98,12 @@ const BusBarSection = ({
     });
 
     useEffect(() => {
-        onChange(index, { id: idSjb, name, horizPos, vertPos });
+        onChange(index, {
+            id: idSjb,
+            name: sanitizeString(name),
+            horizPos,
+            vertPos,
+        });
     }, [index, onChange, horizPos, idSjb, name, vertPos]);
 
     return (
@@ -113,8 +121,6 @@ const SWITCH_TYPE = [
     { id: 'DISCONNECTOR', label: 'Disconnector' },
 ];
 
-const getId = (e) => e?.id || '';
-
 const getBusbarSectionById = (busbars, id) => {
     if (id) {
         return busbars.find((bbs) => bbs?.id === id || bbs?.id === id?.id);
@@ -130,19 +136,21 @@ const BusBarConnexion = ({
     fieldProps,
     errors,
 }) => {
+    const filteredValues = useMemo(
+        () => fieldProps.filter((val) => val?.id !== ''),
+        [fieldProps]
+    );
     const [fromBBS, fromBBSField] = useAutocompleteField({
         id: 'sjbFrom' + index,
         label: 'BusBarSection',
         inputForm: inputForm,
-        validation: {
-            isFieldRequired: true,
-        },
+        validation: validationObj,
         defaultValue:
             defaultValue && defaultValue.fromBBS
                 ? getBusbarSectionById(fieldProps, defaultValue?.fromBBS)
                 : '',
-        values: fieldProps.filter((val) => val?.id !== ''),
-        getLabel: getId,
+        values: filteredValues,
+        getLabel: getIdOrSelf,
         errorMsg: errors?.sjbFrom,
         allowNewValue: true,
     });
@@ -150,15 +158,13 @@ const BusBarConnexion = ({
         id: 'sjbTo' + index,
         label: 'BusBarSection',
         inputForm: inputForm,
-        validation: {
-            isFieldRequired: true,
-        },
+        validation: validationObj,
         defaultValue:
             defaultValue && defaultValue.toBBS
                 ? getBusbarSectionById(fieldProps, defaultValue?.toBBS)
                 : '',
-        values: fieldProps.filter((val) => val?.id !== ''),
-        getLabel: getId,
+        values: filteredValues,
+        getLabel: getIdOrSelf,
         errorMsg: errors?.sjbTo,
         allowNewValue: true,
     });
@@ -273,10 +279,6 @@ const VoltageLevelCreationDialog = ({
     const [loadingSubstationOptions, setLoadingSubstationOptions] =
         useState(true);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const toFormValues = (voltageLevel) => {
         return {
             equipmentId: voltageLevel.id + '(1)',
@@ -294,7 +296,6 @@ const VoltageLevelCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
     });
 
     const copyEquipmentButton = useButtonWithTooltip({
@@ -348,8 +349,9 @@ const VoltageLevelCreationDialog = ({
     }, [formValues]);
 
     const [substation, substationField] = useAutocompleteField({
+        id: 'optSubstation',
         label: 'Substation',
-        validation: { isFieldRequired: true },
+        validation: validationObj,
         inputForm: inputForm,
         formProps: filledTextField,
         values: substationOptions?.sort(compareById),
@@ -398,9 +400,9 @@ const VoltageLevelCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 voltageLevelId,
-                voltageLevelName: voltageLevelName ? voltageLevelName : null,
+                voltageLevelName: sanitizeString(voltageLevelName),
                 nominalVoltage,
-                substationId: substation.id,
+                substationId: getIdOrSelf(substation),
                 busbarSections: busBarSections,
                 busbarConnections: busbarConnections,
                 isUpdate: editData ? true : false,
@@ -422,7 +424,7 @@ const VoltageLevelCreationDialog = ({
     };
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

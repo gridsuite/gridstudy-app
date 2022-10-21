@@ -22,8 +22,11 @@ import NominalVoltageFilter from './network/nominal-voltage-filter';
 import makeStyles from '@mui/styles/makeStyles';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
-import { useSelector } from 'react-redux';
-import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_MAP_MANUAL_REFRESH,
+} from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
 import {
@@ -32,6 +35,7 @@ import {
     isNodeRenamed,
 } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
+import { resetMapReloaded, setForceNetworkReload } from '../redux/actions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -70,6 +74,7 @@ export const NetworkMapTab = ({
     securityAnalysisStatus,
     runnable,
     loadFlowStatus,
+    sensiStatus,
     /* visual*/
     visible,
     useName,
@@ -86,13 +91,19 @@ export const NetworkMapTab = ({
     showInSpreadsheet,
     setErrorMessage,
 }) => {
+    const dispatch = useDispatch();
+
     const intlRef = useIntlRef();
+    const [isInitialized, setInitialized] = useState(false);
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
-    const reloadGeoDataNeeded = useSelector((state) => state.reloadGeoData);
+    const mapManualRefresh = useSelector(
+        (state) => state[PARAM_MAP_MANUAL_REFRESH]
+    );
+    const reloadMapNeeded = useSelector((state) => state.reloadMap);
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -182,16 +193,7 @@ export const NetworkMapTab = ({
         []
     );
 
-    useEffect(() => {
-        let previousCurrentNode = currentNodeRef.current;
-        currentNodeRef.current = currentNode;
-        // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
-        if (disabled) return;
-        // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
-        // TODO REMOVE LATER
-        if (!reloadGeoDataNeeded) return;
-
+    const reloadMapGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         const substationPositions = fetchSubstationPositions(
             studyUuid,
@@ -220,10 +222,38 @@ export const NetworkMapTab = ({
                     )
                 );
             });
+        dispatch(resetMapReloaded());
+    }, [
+        currentNode?.id,
+        dispatch,
+        intlRef,
+        lineFullPath,
+        setErrorMessage,
+        studyUuid,
+    ]);
+
+    const handleReloadMap = useCallback(() => {
+        reloadMapGeoData();
+        dispatch(setForceNetworkReload());
+    }, [dispatch, reloadMapGeoData]);
+
+    useEffect(() => {
+        let previousCurrentNode = currentNodeRef.current;
+        currentNodeRef.current = currentNode;
+        // if only renaming, do not reload geo data
+        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
+        if (disabled) return;
+        if (mapManualRefresh && isInitialized) return;
+        // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
+        // TODO REMOVE LATER
+        if (!reloadMapNeeded) return;
+
+        reloadMapGeoData();
+        setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
         disabled,
-        reloadGeoDataNeeded,
+        reloadMapNeeded,
         studyUuid,
         currentNode,
         lineFullPath,
@@ -231,6 +261,9 @@ export const NetworkMapTab = ({
         setErrorMessage,
         setGeoData,
         intlRef,
+        mapManualRefresh,
+        isInitialized,
+        reloadMapGeoData,
     ]);
 
     let choiceVoltageLevelsSubstation = null;
@@ -322,6 +355,7 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
+            onReloadMapClick={handleReloadMap}
         />
     );
 
@@ -356,6 +390,7 @@ export const NetworkMapTab = ({
                     currentNode={currentNode}
                     loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
+                    sensiStatus={sensiStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}

@@ -104,6 +104,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
         inputForm: inputForm,
         onSearchTermChange: searchMatchingEquipments,
         values: equipmentsFound,
+        resetsWhenValuesChange: true,
         defaultValue: '',
         renderElement: (props) => (
             <EquipmentItem
@@ -166,12 +167,8 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
         }
     };
 
-    const clearValues = () => {
-        setEquipmentType('LINE');
-    };
-
     const handleCloseAndClear = () => {
-        clearValues();
+        setEquipmentType('LINE');
         setErrors(new Map());
         onClose();
     };

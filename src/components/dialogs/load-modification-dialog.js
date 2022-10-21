@@ -35,6 +35,7 @@ import {
     gridItem,
     GridSection,
     ReactivePowerAdornment,
+    sanitizeString,
 } from './dialogUtils';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
@@ -67,10 +68,6 @@ const LoadModificationDialog = ({
 
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
-
-    const clearValues = () => {
-        setFormValues(null);
-    };
 
     useEffect(() => {
         if (!equipmentOptionsPromise) return;
@@ -163,7 +160,7 @@ const LoadModificationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 loadInfos?.id,
-                loadName,
+                sanitizeString(loadName),
                 loadType,
                 activePower,
                 reactivePower,
@@ -197,7 +194,7 @@ const LoadModificationDialog = ({
     );
 
     const handleCloseAndClear = () => {
-        clearValues();
+        setFormValues(null);
         handleClose();
     };
 

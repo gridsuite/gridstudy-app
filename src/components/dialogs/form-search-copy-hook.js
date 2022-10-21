@@ -17,7 +17,6 @@ export const useFormSearchCopy = ({
     equipmentPath,
     toFormValues,
     setFormValues,
-    clearValues,
 }) => {
     const intl = useIntl();
 
@@ -36,7 +35,6 @@ export const useFormSearchCopy = ({
         ).then((response) => {
             if (response.status === 200) {
                 response.json().then((equipment) => {
-                    clearValues();
                     const equipmentFormValues = toFormValues(equipment);
                     setFormValues(equipmentFormValues);
 

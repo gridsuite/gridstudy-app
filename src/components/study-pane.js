@@ -15,6 +15,7 @@ import {
     filteredNominalVoltagesUpdated,
     fullScreenNetworkAreaDiagramId,
     openNetworkAreaDiagram,
+    setForceNetworkReload,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { equipments } from './network/network-equipments';
@@ -94,6 +95,7 @@ const StudyPane = ({
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
+    sensiStatus,
     runnable,
     setUpdateSwitchMsg,
     setErrorMessage,
@@ -130,6 +132,10 @@ const StudyPane = ({
         type: null,
         changed: false,
     });
+
+    const reloadNetworkNeeded = useSelector(
+        (state) => state.networkReloadNeeded
+    );
 
     const dispatch = useDispatch();
 
@@ -172,6 +178,12 @@ const StudyPane = ({
         },
         [network, showVoltageLevelDiagram]
     );
+
+    useEffect(() => {
+        if (props.view === StudyView.SPREADSHEET) {
+            dispatch(setForceNetworkReload());
+        }
+    }, [dispatch, props.view]);
 
     useEffect(() => {
         if (!network) return;
@@ -294,6 +306,7 @@ const StudyPane = ({
                                     securityAnalysisStatus={
                                         securityAnalysisStatus
                                     }
+                                    sensiStatus={sensiStatus}
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
@@ -333,7 +346,7 @@ const StudyPane = ({
                                 )}
                                 onClose={closeNetworkAreaDiagram}
                                 disabled={disabled}
-                                align="left"
+                                align="right"
                                 visible={
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
@@ -359,7 +372,7 @@ const StudyPane = ({
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
-                    disabled={disabled}
+                    disabled={disabled || reloadNetworkNeeded}
                     visible={props.view === StudyView.SPREADSHEET}
                 />
             </Paper>

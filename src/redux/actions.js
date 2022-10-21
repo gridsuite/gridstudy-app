@@ -21,6 +21,11 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
+    PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
+    PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
+    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_MAP_MANUAL_REFRESH,
+    PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -142,12 +147,6 @@ export function selectUseName(useName) {
     return { type: USE_NAME, [PARAM_USE_NAME]: useName };
 }
 
-export const USER = 'USER';
-
-export function setLoggedUser(user) {
-    return { type: USER, user: user };
-}
-
 export const CENTER_LABEL = 'CENTER_LABEL';
 
 export function selectCenterLabelState(centerLabel) {
@@ -187,6 +186,15 @@ export function selectFluxConvention(fluxConvention) {
     return { type: FLUX_CONVENTION, [PARAM_FLUX_CONVENTION]: fluxConvention };
 }
 
+export const ENABLE_DEVELOPER_MODE = 'ENABLE_DEVELOPER_MODE';
+
+export function selectEnableDeveloperMode(enableDeveloperMode) {
+    return {
+        type: ENABLE_DEVELOPER_MODE,
+        [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
+    };
+}
+
 export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';
 
 export function selectLineFlowColorMode(lineFlowColorMode) {
@@ -205,15 +213,6 @@ export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
     };
 }
 
-export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
-
-export function setSignInCallbackError(signInCallbackError) {
-    return {
-        type: SIGNIN_CALLBACK_ERROR,
-        signInCallbackError: signInCallbackError,
-    };
-}
-
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 
 export function studyUpdated(eventData) {
@@ -226,6 +225,47 @@ export function selectDisplayOverloadTableState(displayOverloadTable) {
     return {
         type: DISPLAY_OVERLOAD_TABLE,
         [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
+    };
+}
+
+export const SET_FORCE_NETWORK_RELOAD = 'SET_FORCE_NETWORK_RELOAD';
+
+export function setForceNetworkReload() {
+    return {
+        type: SET_FORCE_NETWORK_RELOAD,
+    };
+}
+
+export const SET_NETWORK_RELOAD_NEEDED = 'SET_NETWORK_RELOAD_NEEDED';
+
+export function setNetworkReloadNeeded() {
+    return {
+        type: SET_NETWORK_RELOAD_NEEDED,
+    };
+}
+
+export const RESET_NETWORK_RELOAD = 'RESET_NETWORK_RELOAD';
+
+export function resetNetworkReload() {
+    return {
+        type: RESET_NETWORK_RELOAD,
+    };
+}
+
+export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
+
+export function selectMapManualRefresh(mapManualRefresh) {
+    return {
+        type: MAP_MANUAL_REFRESH,
+        [PARAM_MAP_MANUAL_REFRESH]: mapManualRefresh,
+    };
+}
+
+export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
+
+export function resetMapReloaded() {
+    return {
+        type: RESET_MAP_RELOADED,
     };
 }
 
@@ -251,6 +291,18 @@ export const RESET_SA_NOTIF = 'RESET_SA_NOTIF';
 
 export function resetSANotif() {
     return { type: RESET_SA_NOTIF };
+}
+
+export const ADD_SENSI_NOTIF = 'ADD_SENSI_NOTIF';
+
+export function addSensiNotif() {
+    return { type: ADD_SENSI_NOTIF };
+}
+
+export const RESET_SENSI_NOTIF = 'RESET_SENSI_NOTIF';
+
+export function resetSensiNotif() {
+    return { type: RESET_SENSI_NOTIF };
 }
 
 export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
@@ -334,6 +386,44 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists) {
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
+    };
+}
+
+export const FAVORITE_SENSI_VARIABLES_FILTERS_LISTS =
+    'FAVORITE_SENSI_VARIABLES_FILTERS_LISTS';
+
+export function selectFavoriteSensiVariablesFiltersLists(
+    favoriteSensiVariablesFiltersLists
+) {
+    return {
+        type: FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
+        [PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS]:
+            favoriteSensiVariablesFiltersLists,
+    };
+}
+
+export const FAVORITE_SENSI_CONTINGENCY_LISTS =
+    'FAVORITE_SENSI_CONTINGENCY_LISTS';
+
+export function selectFavoriteSensiContingencyLists(
+    favoriteSensiContingencyLists
+) {
+    return {
+        type: FAVORITE_SENSI_CONTINGENCY_LISTS,
+        [PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS]: favoriteSensiContingencyLists,
+    };
+}
+
+export const FAVORITE_SENSI_BRANCH_FILTERS_LISTS =
+    'FAVORITE_SENSI_BRANCH_FILTERS_LISTS';
+
+export function selectFavoriteSensiBranchFiltersLists(
+    favoriteSensiBranchFiltersLists
+) {
+    return {
+        type: FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+        [PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS]:
+            favoriteSensiBranchFiltersLists,
     };
 }
 

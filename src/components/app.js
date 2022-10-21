@@ -29,6 +29,7 @@ import {
     selectDiagonalLabelState,
     selectDisplayOverloadTableState,
     selectFavoriteContingencyLists,
+    selectFavoriteSensiContingencyLists,
     selectLanguage,
     selectLineFlowAlertThreshold,
     selectLineFlowColorMode,
@@ -39,6 +40,10 @@ import {
     selectTheme,
     selectUseName,
     selectFluxConvention,
+    selectFavoriteSensiVariablesFiltersLists,
+    selectFavoriteSensiBranchFiltersLists,
+    selectMapManualRefresh,
+    selectEnableDeveloperMode,
 } from '../redux/actions';
 
 import {
@@ -46,6 +51,7 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
+    setShowAuthenticationRouterLogin,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -56,6 +62,7 @@ import {
     fetchConfigParameter,
     fetchConfigParameters,
     fetchDefaultParametersValues,
+    fetchValidateUser,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -75,6 +82,11 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FLUX_CONVENTION,
+    PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
+    PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
+    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_MAP_MANUAL_REFRESH,
+    PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -106,6 +118,12 @@ const App = () => {
 
     const signInCallbackError = useSelector(
         (state) => state.signInCallbackError
+    );
+    const unauthorizedUserInfo = useSelector(
+        (state) => state.unauthorizedUserInfo
+    );
+    const showAuthenticationRouterLogin = useSelector(
+        (state) => state.showAuthenticationRouterLogin
     );
 
     const [userManager, setUserManager] = useState(noUserManager);
@@ -163,6 +181,11 @@ const App = () => {
                     case PARAM_FLUX_CONVENTION:
                         dispatch(selectFluxConvention(param.value));
                         break;
+                    case PARAM_DEVELOPER_MODE:
+                        dispatch(
+                            selectEnableDeveloperMode(param.value === 'true')
+                        );
+                        break;
                     case PARAM_LINE_FULL_PATH:
                         dispatch(
                             selectLineFullPathState(param.value === 'true')
@@ -186,12 +209,38 @@ const App = () => {
                             )
                         );
                         break;
+                    case PARAM_MAP_MANUAL_REFRESH:
+                        dispatch(
+                            selectMapManualRefresh(param.value === 'true')
+                        );
+                        break;
                     case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));
                         break;
                     case PARAM_FAVORITE_CONTINGENCY_LISTS:
                         dispatch(
                             selectFavoriteContingencyLists(
+                                param.value.split(',')
+                            )
+                        );
+                        break;
+                    case PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS:
+                        dispatch(
+                            selectFavoriteSensiVariablesFiltersLists(
+                                param.value.split(',')
+                            )
+                        );
+                        break;
+                    case PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS:
+                        dispatch(
+                            selectFavoriteSensiContingencyLists(
+                                param.value.split(',')
+                            )
+                        );
+                        break;
+                    case PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS:
+                        dispatch(
+                            selectFavoriteSensiBranchFiltersLists(
                                 param.value.split(',')
                             )
                         );
@@ -308,16 +357,18 @@ const App = () => {
         initializeAuthenticationProd(
             dispatch,
             initialMatchSilentRenewCallbackUrl != null,
-            fetch('idpSettings.json')
+            fetch('idpSettings.json'),
+            fetchValidateUser
         )
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
-                userManager.getUser().then((user) => {
+                return userManager.getUser().then((user) => {
                     if (
                         user == null &&
                         initialMatchSilentRenewCallbackUrl == null
                     ) {
-                        userManager.signinSilent().catch((error) => {
+                        return userManager.signinSilent().catch((error) => {
+                            dispatch(setShowAuthenticationRouterLogin(true));
                             const oidcHackReloaded =
                                 'gridsuite-oidc-hack-reloaded';
                             if (
@@ -341,6 +392,7 @@ const App = () => {
             .catch(function (error) {
                 setUserManager({ instance: null, error: error.message });
                 console.debug('error when importing the idp settings');
+                dispatch(setShowAuthenticationRouterLogin(true));
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
     }, [initialMatchSilentRenewCallbackUrl, dispatch]);
@@ -498,6 +550,10 @@ const App = () => {
                         <AuthenticationRouter
                             userManager={userManager}
                             signInCallbackError={signInCallbackError}
+                            unauthorizedUserInfo={unauthorizedUserInfo}
+                            showAuthenticationRouterLogin={
+                                showAuthenticationRouterLogin
+                            }
                             dispatch={dispatch}
                             navigate={navigate}
                             location={location}

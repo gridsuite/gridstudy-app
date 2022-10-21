@@ -129,6 +129,7 @@ const useStyles = makeStyles((theme) => ({
         padding: 5,
         display: 'flex',
         flexDirection: 'row',
+        wordBreak: 'break-all',
         backgroundColor: theme.palette.background.default,
     },
     fullScreenIcon: {
@@ -203,8 +204,7 @@ const computePaperAndSvgSizesIfReady = (
     totalHeight,
     svgPreferredWidth,
     svgPreferredHeight,
-    headerPreferredHeight,
-    numberToDisplay
+    headerPreferredHeight
 ) => {
     if (
         typeof svgPreferredWidth != 'undefined' &&
@@ -235,9 +235,6 @@ const computePaperAndSvgSizesIfReady = (
                 totalHeight - mapBottomOffset - headerPreferredHeight,
                 maxHeight
             );
-            if (numberToDisplay > 1) {
-                svgWidth = totalWidth - borders;
-            }
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
         }
@@ -245,7 +242,7 @@ const computePaperAndSvgSizesIfReady = (
     }
 };
 
-const SizedSingleLineDiagram = forwardRef((props, ref) => {
+const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgUrl = useRef('');
     const svgDraw = useRef();
@@ -274,6 +271,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [forceState, updateState] = useState(false);
 
     const [loadingState, updateLoadingState] = useState(false);
+
+    const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState();
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
@@ -346,14 +345,30 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
-            headerPreferredHeight,
-            numberToDisplay
+            headerPreferredHeight
         );
         if (typeof sizes != 'undefined') {
-            setSvgFinalWidth(sizes.svgWidth);
-            setSvgFinalHeight(sizes.svgHeight);
-            setFinalPaperWidth(sizes.paperWidth);
-            setFinalPaperHeight(sizes.paperHeight);
+            if (
+                !fullScreenSldId &&
+                sizes.svgWidth * numberToDisplay > totalWidth
+            ) {
+                setSvgFinalWidth(totalWidth / numberToDisplay);
+                setFinalPaperWidth(totalWidth / numberToDisplay);
+
+                const adjustedHeight =
+                    sizes.svgHeight *
+                    (totalWidth / numberToDisplay / sizes.svgWidth);
+
+                setSvgFinalHeight(adjustedHeight);
+                setFinalPaperHeight(
+                    adjustedHeight + (sizes.paperHeight - sizes.svgHeight)
+                );
+            } else {
+                setSvgFinalWidth(sizes.svgWidth);
+                setFinalPaperWidth(sizes.paperWidth);
+                setSvgFinalHeight(sizes.svgHeight);
+                setFinalPaperHeight(sizes.paperHeight);
+            }
         }
     }, [
         fullScreenSldId,
@@ -381,6 +396,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         svgUrl: props.svgUrl,
                     });
                     updateLoadingState(false);
+                    setLocallySwitchedBreaker();
                 })
                 .catch((errorMessage) => {
                     console.error(errorMessage);
@@ -392,6 +408,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     });
                     snackError(errorMessage);
                     updateLoadingState(false);
+                    setLocallySwitchedBreaker();
                 });
         } else {
             setSvg(noSvg);
@@ -746,6 +763,26 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             });
             addNavigationArrow(svg);
 
+            //Rotate clicked switch while waiting for updated sld data
+            if (locallySwitchedBreaker) {
+                const breakerToSwitchDom = document.getElementById(
+                    locallySwitchedBreaker.id
+                );
+                if (breakerToSwitchDom.classList.value.includes('sld-closed')) {
+                    breakerToSwitchDom.classList.replace(
+                        'sld-closed',
+                        'sld-open'
+                    );
+                } else if (
+                    breakerToSwitchDom.classList.value.includes('sld-open')
+                ) {
+                    breakerToSwitchDom.classList.replace(
+                        'sld-open',
+                        'sld-closed'
+                    );
+                }
+            }
+
             // handling the right click on a feeder (menus)
             if (
                 !isComputationRunning &&
@@ -823,6 +860,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
                         if (!modificationInProgress) {
                             setModificationInProgress(true);
+                            updateLoadingState(true);
+                            setLocallySwitchedBreaker(event.currentTarget);
                             onBreakerClick(
                                 switchId,
                                 !open,
@@ -865,6 +904,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         svgFinalWidth,
         disabled,
         modificationInProgress,
+        loadingState,
+        locallySwitchedBreaker,
     ]);
 
     useLayoutEffect(() => {
@@ -905,13 +946,15 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         }
     };
 
-    const showFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagramId(sldId));
-    };
+    const showFullScreen = useCallback(
+        () => dispatch(fullScreenSingleLineDiagramId(sldId)),
+        [dispatch, sldId]
+    );
 
-    const hideFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagramId(undefined));
-    };
+    const hideFullScreen = useCallback(
+        () => dispatch(fullScreenSingleLineDiagramId(undefined)),
+        [dispatch]
+    );
 
     function displayMenuLine() {
         return (
@@ -978,10 +1021,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         () => toggleState(sldId, svgType, ViewState.PINNED),
         [sldId, svgType, toggleState]
     );
-    const minimizeSld = useCallback(
-        () => toggleState(sldId, svgType, ViewState.MINIMIZED),
-        [toggleState, sldId, svgType]
-    );
+
+    const minimizeSld = useCallback(() => {
+        toggleState(sldId, svgType, ViewState.MINIMIZED);
+        hideFullScreen();
+    }, [toggleState, sldId, svgType, hideFullScreen]);
 
     return !svg.error ? (
         <Paper
@@ -996,6 +1040,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 height: sizeHeight,
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
                 overflow: 'hidden',
+                display:
+                    !fullScreenSldId || sldId === fullScreenSldId ? '' : 'none',
             }}
         >
             <Box>
@@ -1011,26 +1057,36 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     <Box flexGrow={1}>
                         <Typography>{props.diagramTitle}</Typography>
                     </Box>
-                    <IconButton
-                        className={classes.actionIcon}
-                        onClick={minimizeSld}
-                    >
-                        <MinimizeIcon />
-                    </IconButton>
-                    <IconButton
-                        className={
-                            pinned ? classes.actionIcon : classes.pinRotate
-                        }
-                        onClick={pinSld}
-                    >
-                        {pinned ? <PushPinIcon /> : <PushPinOutlinedIcon />}
-                    </IconButton>
-                    <IconButton
-                        className={classes.close}
-                        onClick={onCloseHandler}
-                    >
-                        <CloseIcon />
-                    </IconButton>
+                    <Box>
+                        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                            <IconButton
+                                className={classes.actionIcon}
+                                onClick={minimizeSld}
+                            >
+                                <MinimizeIcon />
+                            </IconButton>
+                            <IconButton
+                                className={
+                                    pinned
+                                        ? classes.actionIcon
+                                        : classes.pinRotate
+                                }
+                                onClick={pinSld}
+                            >
+                                {pinned ? (
+                                    <PushPinIcon />
+                                ) : (
+                                    <PushPinOutlinedIcon />
+                                )}
+                            </IconButton>
+                            <IconButton
+                                className={classes.close}
+                                onClick={onCloseHandler}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Box>
+                    </Box>
                 </Box>
             </Box>
             {loadingState && (
@@ -1108,21 +1164,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         </Paper>
     ) : (
         <></>
-    );
-});
-
-const SingleLineDiagram = forwardRef((props, ref) => {
-    return (
-        <AutoSizer>
-            {({ width, height }) => (
-                <SizedSingleLineDiagram
-                    ref={ref}
-                    totalWidth={width}
-                    totalHeight={height}
-                    {...props}
-                />
-            )}
-        </AutoSizer>
     );
 });
 
