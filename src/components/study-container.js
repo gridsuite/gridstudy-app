@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import StudyPane from './study-pane';
+import StudyPane, { StudyView } from './study-pane';
 import React, {
     useCallback,
     useEffect,
@@ -210,7 +210,9 @@ export function StudyContainer({ view, onChangeTab }) {
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
 
-    const reloadMapNeeded = useSelector((state) => state.reloadMap);
+    const refIsNetworkRefreshNeeded = useRef();
+    refIsNetworkRefreshNeeded.current =
+        mapManualRefresh && view === StudyView.MAP;
 
     const [updatedLines, setUpdatedLines] = useState([]);
 
@@ -596,7 +598,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 'study'
             ) {
                 //when in manuel refresh mode the network is not partially updated
-                if (mapManualRefresh) {
+                if (refIsNetworkRefreshNeeded.current) {
                     dispatch(setNetworkReloadNeeded());
                 } else {
                     // study partial update :
@@ -636,14 +638,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         }
-    }, [
-        studyUpdatedForce,
-        updateNetwork,
-        network,
-        mapManualRefresh,
-        reloadMapNeeded,
-        dispatch,
-    ]);
+    }, [studyUpdatedForce, updateNetwork, network, dispatch]);
 
     return (
         <WaitingLoader
