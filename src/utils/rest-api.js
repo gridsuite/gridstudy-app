@@ -8,6 +8,8 @@ import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
 
+const PREFIX_USER_ADMIN_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/user-admin';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
@@ -35,6 +37,33 @@ function backendFetch(url, init) {
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
 
     return fetch(url, initCopy);
+}
+
+export function fetchValidateUser(user) {
+    const sub = user?.profile?.sub;
+    if (!sub)
+        return Promise.reject(
+            new Error(
+                'Error : Fetching access for missing user.profile.sub : ' + user
+            )
+        );
+
+    console.info(`Fetching access for user...`);
+    const CheckAccessUrl =
+        PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${sub}`;
+    console.debug(CheckAccessUrl);
+
+    return fetch(CheckAccessUrl, {
+        method: 'head',
+        headers: {
+            Authorization: 'Bearer ' + user?.id_token,
+        },
+    }).then((response) => {
+        if (response.status === 200) return true;
+        else if (response.status === 204 || response.status === 403)
+            return false;
+        else throw new Error(response.status + ' ' + response.statusText);
+    });
 }
 
 export function fetchDefaultParametersValues() {
@@ -1195,6 +1224,39 @@ export function getLoadFlowParameters(studyUuid) {
     );
 }
 
+export function setShortCircuitParameters(studyUuid, newParams) {
+    console.info('set short-circuit parameters');
+    const setShortCircuitParametersUrl =
+        getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(setShortCircuitParametersUrl);
+    return backendFetch(setShortCircuitParametersUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function getShortCircuitParameters(studyUuid) {
+    console.info('get short-circuit parameters');
+    const getShortCircuitParams =
+        getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
+    console.debug(getShortCircuitParams);
+    return backendFetch(getShortCircuitParams, {
+        method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
     const changeLineStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1429,7 +1491,9 @@ export function createGenerator(
     droop,
     maximumReactivePower,
     minimumReactivePower,
-    reactiveCapabilityCurve
+    reactiveCapabilityCurve,
+    connectionDirection,
+    connectionName
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1476,6 +1540,8 @@ export function createGenerator(
             droop: droop,
             maximumReactivePower: maximumReactivePower,
             minimumReactivePower: minimumReactivePower,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
         }),
     }).then((response) => {
@@ -1496,7 +1562,9 @@ export function createShuntCompensator(
     susceptancePerSection,
     connectivity,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    connectionDirection,
+    connectionName
 ) {
     let createShuntUrl;
     if (isUpdate) {
@@ -1528,6 +1596,8 @@ export function createShuntCompensator(
             susceptancePerSection: susceptancePerSection,
             voltageLevelId: connectivity.voltageLevel.id,
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
         }),
     }).then((response) => {
         return response.ok

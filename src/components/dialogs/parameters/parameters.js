@@ -42,6 +42,7 @@ import {
 } from './load-flow-parameters';
 import { MapParameters } from './map-parameters';
 import { NetworkParameters } from './network-parameters';
+import { ShortCircuitParameters } from './short-circuit-parameters';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -214,7 +215,11 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
-                        <Tab label={<FormattedMessage id="Network" />} />
+                        <Tab
+                            disabled={!studyUuid}
+                            label={<FormattedMessage id="ShortCircuit" />}
+                        />
+                        <Tab label={<FormattedMessage id="Advanced" />} />
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
@@ -239,6 +244,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         )}
                     </TabPanel>
                     <TabPanel value={tabIndex} index={3}>
+                        {studyUuid && (
+                            <ShortCircuitParameters
+                                hideParameters={hideParameters}
+                            />
+                        )}
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={4}>
                         <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
                 </Container>
