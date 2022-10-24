@@ -1466,7 +1466,9 @@ export function createGenerator(
     droop,
     maximumReactivePower,
     minimumReactivePower,
-    reactiveCapabilityCurve
+    reactiveCapabilityCurve,
+    connectionDirection,
+    connectionName
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1513,6 +1515,8 @@ export function createGenerator(
             droop: droop,
             maximumReactivePower: maximumReactivePower,
             minimumReactivePower: minimumReactivePower,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
         }),
     }).then((response) => {
@@ -1533,7 +1537,9 @@ export function createShuntCompensator(
     susceptancePerSection,
     connectivity,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    connectionDirection,
+    connectionName
 ) {
     let createShuntUrl;
     if (isUpdate) {
@@ -1565,6 +1571,8 @@ export function createShuntCompensator(
             susceptancePerSection: susceptancePerSection,
             voltageLevelId: connectivity.voltageLevel.id,
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
         }),
     }).then((response) => {
         return response.ok
