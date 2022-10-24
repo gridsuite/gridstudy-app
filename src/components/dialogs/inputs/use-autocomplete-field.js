@@ -161,14 +161,7 @@ export const useAutocompleteField = ({
             setIsLoading(false);
             if (values?.length === 0) setExpanded(false);
         });
-    }, [
-        values,
-        id,
-        defaultValue,
-        getLabel,
-        presentedOptions,
-        value,
-    ]);
+    }, [values, id, defaultValue, getLabel, presentedOptions, value]);
 
     const handleForcedSearch = useCallback(
         (term) => {

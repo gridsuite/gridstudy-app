@@ -62,7 +62,12 @@ const makeItems = (eqpts, usesNames) => {
  * @param currentNodeUuid : the currently selected tree node
  * @param editData the data to edit
  */
-const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid, editData }) => {
+const EquipmentDeletionDialog = ({
+    open,
+    onClose,
+    currentNodeUuid,
+    editData,
+}) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { snackError } = useSnackMessage();
@@ -70,7 +75,9 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid, editData }) =
     const intl = useIntl();
     const inputForm = useInputForm();
 
-    const [equipmentType, setEquipmentType] = useState(editData?.equipmentType || 'LINE');
+    const [equipmentType, setEquipmentType] = useState(
+        editData?.equipmentType || 'LINE'
+    );
 
     const [errors, setErrors] = useState(new Map());
 
@@ -83,19 +90,20 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid, editData }) =
             makeItems
         );
 
-    const [equipmentOrId, equipmentField, setEquipmentOrId] = useAutocompleteField({
-        allowNewValue: true,
-        label: intl.formatMessage({
-            id: 'ID',
-        }),
-        getLabel: getIdOrSelf,
-        validation: { isFieldRequired: true },
-        formProps: filledTextField,
-        inputForm: inputForm,
-        onSearchTermChange: searchMatchingEquipments,
-        values: equipmentsFound,
-        defaultValue: editData?.equipmentId || '',
-    });
+    const [equipmentOrId, equipmentField, setEquipmentOrId] =
+        useAutocompleteField({
+            allowNewValue: true,
+            label: intl.formatMessage({
+                id: 'ID',
+            }),
+            getLabel: getIdOrSelf,
+            validation: { isFieldRequired: true },
+            formProps: filledTextField,
+            inputForm: inputForm,
+            onSearchTermChange: searchMatchingEquipments,
+            values: equipmentsFound,
+            defaultValue: editData?.equipmentId || '',
+        });
 
     const handleChangeEquipmentType = (event) => {
         const nextEquipmentType = event.target.value;
