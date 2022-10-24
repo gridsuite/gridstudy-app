@@ -27,6 +27,8 @@ import { addLoadflowNotif, addSANotif, addSensiNotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '../utils/messages';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { useParameterState } from './dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -67,6 +69,8 @@ export function RunButtonContainer({
     const classes = useStyles();
 
     const dispatch = useDispatch();
+
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
@@ -182,14 +186,14 @@ export function RunButtonContainer({
         }
     };
 
-    const RUNNABLES = useMemo(
-        () => [
-            runnable.LOADFLOW,
-            runnable.SECURITY_ANALYSIS,
-            runnable.SENSITIVITY_ANALYSIS,
-        ],
-        [runnable]
-    );
+    const RUNNABLES = useMemo(() => {
+        let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
+        if (enableDeveloperMode) {
+            // SENSI is currently a dev feature
+            runnables.push(runnable.SENSITIVITY_ANALYSIS);
+        }
+        return runnables;
+    }, [runnable, enableDeveloperMode]);
 
     useEffect(() => {
         setIsComputationRunning(
