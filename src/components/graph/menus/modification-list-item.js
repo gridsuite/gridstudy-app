@@ -73,7 +73,7 @@ export const ModificationListItem = ({
             return modif.equipmentId;
         }
         return '';
-    }, [modif, useName]);
+    }, [modif]);
 
     const toggle = useCallback(
         () => handleToggle(modif),

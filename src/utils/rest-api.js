@@ -2079,7 +2079,9 @@ export function deleteEquipment(
             '/id/' +
             encodeURIComponent(equipmentId);
     }
-    return backendFetch(deleteEquipmentUrl, { method: modificationUuid ? 'PUT' : 'DELETE' });
+    return backendFetch(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'DELETE',
+    });
 }
 
 export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
