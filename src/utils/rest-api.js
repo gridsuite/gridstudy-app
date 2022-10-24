@@ -20,6 +20,8 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
+const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES =
+  process.env.REACT_APP_API_GATEWAY + '/sensitivity-analysis';
 
 function getToken() {
     const state = store.getState();
