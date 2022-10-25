@@ -18,6 +18,8 @@ import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './util/alert-invalid-node';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { useParameterState } from './dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -60,6 +62,8 @@ export const ResultViewTab = ({
     const classes = useStyles();
 
     const intl = useIntl();
+
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     function renderLoadFlowResult() {
         return (
@@ -123,18 +127,22 @@ export const ResultViewTab = ({
                         })}
                         disabled={disabled}
                     />
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'sensitivityAnalysisResults',
-                        })}
-                        disabled={disabled}
-                    />
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'ShortCircuitAnalysisResults',
-                        })}
-                        disabled={disabled}
-                    />
+                    {enableDeveloperMode && (
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'sensitivityAnalysisResults',
+                            })}
+                            disabled={disabled}
+                        />
+                    )}
+                    {enableDeveloperMode && (
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'ShortCircuitAnalysisResults',
+                            })}
+                            disabled={disabled}
+                        />
+                    )}
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
