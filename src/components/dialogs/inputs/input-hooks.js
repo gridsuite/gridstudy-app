@@ -255,6 +255,32 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
     }, [label, handleClick, classes.tooltip]);
 };
 
+export const useOptionalEnumValue = (props) => {
+    const intl = useIntl();
+
+    const getEnumTranslation = useCallback(
+        (enumValue) => {
+            // translate the label of enumValue
+            const enumTranslation = props.enumObjects
+                .filter((e) => e.id === enumValue)
+                .map((e) => intl.formatMessage({ id: e.label }));
+            return enumTranslation.length === 1
+                ? enumTranslation.at(0)
+                : enumValue;
+        },
+        [intl, props.enumObjects]
+    );
+
+    return useAutocompleteField({
+        values: props.enumObjects.map((enumObject) => enumObject.id),
+        selectedValue: props.defaultValue,
+        defaultValue: props.defaultValue,
+        previousValue: props.previousValue,
+        getLabel: getEnumTranslation,
+        ...props,
+    });
+};
+
 export const useCountryValue = (props) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [code, setCode] = useState(props.defaultCodeValue);
