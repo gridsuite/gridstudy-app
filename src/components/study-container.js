@@ -24,7 +24,7 @@ import {
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchPath,
-    connectNotificationsWsUpdateStudies,
+    connectNotificationsWsUpdateDirectories,
     fetchCaseName,
     fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
@@ -289,7 +289,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         // create ws at mount event
-        wsRef.current = connectNotificationsWsUpdateStudies();
+        wsRef.current = connectNotificationsWsUpdateDirectories();
 
         wsRef.current.onmessage = function (event) {
             const eventData = JSON.parse(event.data);
