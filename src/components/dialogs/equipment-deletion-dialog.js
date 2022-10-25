@@ -76,7 +76,7 @@ const EquipmentDeletionDialog = ({
     const inputForm = useInputForm();
 
     const [equipmentType, setEquipmentType] = useState(
-        editData?.equipmentType || 'LINE'
+        editData?.equipmentType ?? 'LINE'
     );
 
     const [errors, setErrors] = useState(new Map());

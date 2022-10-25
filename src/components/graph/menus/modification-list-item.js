@@ -18,11 +18,6 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-const equipmentModificationModificationsType = new Set([
-    'LOAD_MODIFICATION',
-    'GENERATOR_MODIFICATION',
-]);
-
 const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
@@ -67,8 +62,6 @@ export const ModificationListItem = ({
             return modif.lineToAttachToId;
         } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
             return modif.attachedLineId;
-        } else if (equipmentModificationModificationsType.has(modif.type)) {
-            return modif.equipmentId;
         } else if (modif.equipmentId) {
             return modif.equipmentId;
         }
