@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import StudyPane from './study-pane';
+import StudyPane, { StudyView } from './study-pane';
 import React, {
     useCallback,
     useEffect,
@@ -27,6 +27,7 @@ import {
     fetchCaseName,
     connectNotificationsWsUpdateDirectories,
     fetchSensitivityAnalysisStatus,
+    fetchShortCircuitAnalysisStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -52,6 +53,7 @@ import {
 import {
     getSecurityAnalysisRunningStatus,
     getSensiRunningStatus,
+    getShortCircuitRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
@@ -153,6 +155,10 @@ const sensiStatusInvalidations = [
     'sensitivityAnalysis_status',
     'sensitivityAnalysis_failed',
 ];
+const shortCircuitStatusInvalidations = [
+    'shortCircuitAnalysis_status',
+    'shortCircuitAnalysis_failed',
+];
 const UPDATE_TYPE_HEADER = 'updateType';
 
 export function StudyContainer({ view, onChangeTab }) {
@@ -207,11 +213,22 @@ export function StudyContainer({ view, onChangeTab }) {
         getSensiRunningStatus
     );
 
+    const [shortCircuitStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchShortCircuitAnalysisStatus,
+        shortCircuitStatusInvalidations,
+        RunningStatus.IDLE,
+        getShortCircuitRunningStatus
+    );
+
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
 
-    const reloadMapNeeded = useSelector((state) => state.reloadMap);
+    const refIsNetworkRefreshNeeded = useRef();
+    refIsNetworkRefreshNeeded.current =
+        mapManualRefresh && view === StudyView.MAP;
 
     const [updatedLines, setUpdatedLines] = useState([]);
 
@@ -238,6 +255,9 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             if (updateTypeHeader === 'sensitivityAnalysis_failed') {
                 snackError('', 'sensitivityAnalysisError');
+            }
+            if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
+                snackError('', 'shortCircuitAnalysisError');
             }
         },
         [snackError]
@@ -596,6 +616,9 @@ export function StudyContainer({ view, onChangeTab }) {
             SENSITIVITY_ANALYSIS: intl.formatMessage({
                 id: 'SensitivityAnalysis',
             }),
+            SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
+                id: 'ShortCircuitAnalysis',
+            }),
         };
     }, [intl]);
 
@@ -606,7 +629,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 'study'
             ) {
                 //when in manuel refresh mode the network is not partially updated
-                if (mapManualRefresh) {
+                if (refIsNetworkRefreshNeeded.current) {
                     dispatch(setNetworkReloadNeeded());
                 } else {
                     // study partial update :
@@ -646,14 +669,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         }
-    }, [
-        studyUpdatedForce,
-        updateNetwork,
-        network,
-        mapManualRefresh,
-        reloadMapNeeded,
-        dispatch,
-    ]);
+    }, [studyUpdatedForce, updateNetwork, network, dispatch]);
 
     return (
         <WaitingLoader
@@ -673,6 +689,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 loadFlowInfos={loadFlowInfos}
                 securityAnalysisStatus={securityAnalysisStatus}
                 sensiStatus={sensiStatus}
+                shortCircuitStatus={shortCircuitStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />
