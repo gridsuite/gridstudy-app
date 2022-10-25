@@ -75,6 +75,7 @@ export const NetworkMapTab = ({
     runnable,
     loadFlowStatus,
     sensiStatus,
+    shortCircuitStatus,
     /* visual*/
     visible,
     useName,
@@ -391,6 +392,7 @@ export const NetworkMapTab = ({
                     loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
                     sensiStatus={sensiStatus}
+                    shortCircuitStatus={shortCircuitStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}
