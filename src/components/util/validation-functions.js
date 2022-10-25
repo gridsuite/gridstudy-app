@@ -56,6 +56,21 @@ export function validateField(value, toValidate) {
         }
     }
 
+    if (toValidate.isValueGreaterOrEqualThan !== undefined) {
+        if (value && toValidate.isValueGreaterOrEqualThan) {
+            // TODO: remove replace when parsing behaviour will be made according to locale
+            const minValue = toNumber(toValidate.isValueGreaterOrEqualThan);
+
+            if (!isNaN(minValue)) {
+                // TODO: remove replace when parsing behaviour will be made according to locale
+                const valueNumericVal = toNumber(value);
+                if (valueNumericVal < minValue) {
+                    return makeErrorRecord(toValidate.errorMsgId);
+                }
+            }
+        }
+    }
+
     if (toValidate.function) return makeErrorRecord(toValidate.function(value));
 
     return makeErrorRecord(null);

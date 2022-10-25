@@ -562,5 +562,6 @@
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
-    "Bottom": "Bas"
+    "Bottom": "Bas",
+    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut"
 }

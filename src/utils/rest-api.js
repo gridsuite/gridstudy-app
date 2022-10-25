@@ -21,7 +21,7 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
 const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES =
-  process.env.REACT_APP_API_GATEWAY + '/sensitivity-analysis';
+    process.env.REACT_APP_API_GATEWAY + '/sensitivity-analysis';
 
 function getToken() {
     const state = store.getState();
@@ -2182,4 +2182,22 @@ export function getUniqueNodeName(studyUuid) {
             ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
+}
+
+function getSensiUrl() {
+    return PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES + '/v1/';
+}
+
+export function getSensiDefaultResultsThreshold() {
+    console.info('get sensi default results threshold');
+    const getSensiDefaultResultsThresholdUrl =
+        getSensiUrl() + 'results-threshold-default-value';
+    console.debug(getSensiDefaultResultsThresholdUrl);
+    return backendFetch(getSensiDefaultResultsThresholdUrl, {
+        method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
 }

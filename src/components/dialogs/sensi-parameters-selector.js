@@ -22,14 +22,21 @@ import {
     useTextValue,
     useDirectoryElements,
     useEnumValue,
+    useDoubleValue,
 } from './inputs/input-hooks';
-import { filledTextField, gridItem, GridSection } from './dialogUtils';
+import {
+    ActivePowerAdornment,
+    filledTextField,
+    gridItem,
+    GridSection,
+} from './dialogUtils';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import {
     fetchConfigParameter,
     updateConfigParameter,
+    getSensiDefaultResultsThreshold,
 } from '../../utils/rest-api';
 import {
     displayErrorMessageWithSnackbar,
@@ -38,6 +45,7 @@ import {
 import { useSnackbar } from 'notistack';
 import DialogActions from '@mui/material/DialogActions';
 import makeStyles from '@mui/styles/makeStyles';
+import { Box } from '@mui/system';
 
 export const GENERATOR_DISTRIBUTION_TYPES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
@@ -631,7 +639,9 @@ const SensiParametersSelector = (props) => {
 
     const inputForm = useInputForm();
 
-    const [paramResultsThreshold, setParamResultsThreshold] = useState(0);
+    const [defaultResultsThreshold, setDefaultResultsThreshold] =
+        useState(0.01);
+    const [paramResultsThreshold, setParamResultsThreshold] = useState(0.01);
     const [paramSensiInjectionsSet, setParamSensiInjectionsSet] =
         useState(null);
     const [paramSensiInjections, setParamSensiInjections] = useState(null);
@@ -639,12 +649,17 @@ const SensiParametersSelector = (props) => {
     const [paramSensiPSTs, setParamSensiPSTs] = useState(null);
     const [paramSensiNodes, setParamSensiNodes] = useState(null);
 
-    const [resultsThreshold, resultsThresholdField] = useTextValue({
+    const [resultsThreshold, resultsThresholdField] = useDoubleValue({
         label: 'resultsThreshold',
-        validation: { isFieldRequired: true },
+        validation: {
+            isFieldRequired: true,
+            isFieldNumeric: true,
+            isValueGreaterOrEqualThan: defaultResultsThreshold,
+            errorMsgId: 'ResultsThresholdGreaterOrEqualDefaultValue',
+        },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: paramResultsThreshold,
+        formProps: filledTextField,
     });
 
     const [sensiInjectionsSet, SensiInjectionsSetsField] =
@@ -683,32 +698,40 @@ const SensiParametersSelector = (props) => {
     };
 
     const handleStart = () => {
-        // TODO : remove 'name' property when storing the parameters in config-server
-        // fetch name from uuid when fetching parameters from config-server
+        if (inputForm.validate()) {
+            // TODO : remove 'name' property when storing the parameters in config-server
+            // fetch name from uuid when fetching parameters from config-server
 
-        handleSaveSensiConfigurationParam('resultsThreshold', resultsThreshold);
-        handleSaveSensiConfigurationParam(
-            'sensiInjectionsSet',
-            sensiInjectionsSet
-        );
-        handleSaveSensiConfigurationParam('sensiInjections', sensiInjections);
-        handleSaveSensiConfigurationParam('sensiHVDCs', sensiHVDCs);
-        handleSaveSensiConfigurationParam('sensiPSTs', sensiPSTs);
-        handleSaveSensiConfigurationParam('sensiNodes', sensiNodes);
+            handleSaveSensiConfigurationParam(
+                'resultsThreshold',
+                resultsThreshold
+            );
+            handleSaveSensiConfigurationParam(
+                'sensiInjectionsSet',
+                sensiInjectionsSet
+            );
+            handleSaveSensiConfigurationParam(
+                'sensiInjections',
+                sensiInjections
+            );
+            handleSaveSensiConfigurationParam('sensiHVDCs', sensiHVDCs);
+            handleSaveSensiConfigurationParam('sensiPSTs', sensiPSTs);
+            handleSaveSensiConfigurationParam('sensiNodes', sensiNodes);
 
-        // we provide to the sensitivity analysis service only the checked items in the configuration
-        const sensiConfiguration = {
-            resultsThreshold: resultsThreshold,
-            sensitivityInjectionsSets: sensiInjectionsSet.filter(
-                (e) => e.checked
-            ),
-            sensitivityInjections: sensiInjections.filter((e) => e.checked),
-            sensitivityHVDCs: sensiHVDCs.filter((e) => e.checked),
-            sensitivityPSTs: sensiPSTs.filter((e) => e.checked),
-            sensitivityNodes: sensiNodes.filter((e) => e.checked),
-        };
+            // we provide to the sensitivity analysis service only the checked items in the configuration
+            const sensiConfiguration = {
+                resultsThreshold: resultsThreshold,
+                sensitivityInjectionsSets: sensiInjectionsSet.filter(
+                    (e) => e.checked
+                ),
+                sensitivityInjections: sensiInjections.filter((e) => e.checked),
+                sensitivityHVDCs: sensiHVDCs.filter((e) => e.checked),
+                sensitivityPSTs: sensiPSTs.filter((e) => e.checked),
+                sensitivityNodes: sensiNodes.filter((e) => e.checked),
+            };
 
-        props.onStart(sensiConfiguration);
+            props.onStart(sensiConfiguration);
+        }
     };
 
     const handleSaveSensiConfigurationParam = useCallback(
@@ -750,6 +773,11 @@ const SensiParametersSelector = (props) => {
     );
 
     useEffect(() => {
+        // get default results threshold value
+        getSensiDefaultResultsThreshold()
+            .then((value) => setDefaultResultsThreshold(value))
+            .catch((errorMessage) => displayError(errorMessage));
+
         // fetch configuration in config database
         fetchSensiConfigurationParam('resultsThreshold')
             .then((p) => {
