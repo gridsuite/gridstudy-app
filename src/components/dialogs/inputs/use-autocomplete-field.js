@@ -48,7 +48,7 @@ function arraysMismatchIndex(a1, a2) {
 
 const filter = createFilterOptions();
 
-const isWorthLoading = (term, elements, old, minLen) => {
+const isWorthLoading = (term, elements, old, minLen, initValues) => {
     const idx = elements.findIndex((e) => e.label === term || e.id === term);
     if (idx >= 0) {
         return false;
@@ -59,7 +59,13 @@ const isWorthLoading = (term, elements, old, minLen) => {
     if (!term.startsWith(old)) {
         return true;
     }
-    if (old.length < minLen || minLen === 0) {
+    if (!initValues && !elements.length && !old && term) {
+        return false;
+    }
+    if (minLen === 0) {
+        return true;
+    }
+    if (old.length < minLen && (old.length > 0 || elements.length > 0)) {
         return true;
     }
     if (elements.length === QUESTIONABLE_SIZE) {
@@ -98,6 +104,17 @@ export const useAutocompleteField = ({
     const validationRef = useRef();
 
     const prevValues = useRef();
+
+    console.debug(
+        `autoc id:${id} userStr:'${userStr}'`,
+        previousValue,
+        defaultValue,
+        selectedValue,
+        value,
+        values,
+        isLoading,
+        presentedOptions
+    );
     validationRef.current = validation;
 
     useEffect(() => {
@@ -130,6 +147,15 @@ export const useAutocompleteField = ({
             mismatchIdx >= 0 &&
             prevValues.current.length > mismatchIdx &&
             value === prevValues.current[mismatchIdx];
+
+        console.log(
+            'upd options',
+            prevValues.current,
+            values,
+            mismatchIdx,
+            value,
+            shouldUpdateValueToo
+        );
         const valuesChanged = prevValues.current !== values;
         prevValues.current = values;
 
@@ -177,27 +203,38 @@ export const useAutocompleteField = ({
         setExpanded(true);
 
         if (!onSearchTermChange) return;
-        if (isWorthLoading(userStr, presentedOptions, userStr, 0)) {
+        if (isWorthLoading(userStr, presentedOptions, userStr, 0, values)) {
             setIsLoading(true);
-            onSearchTermChange(userStr, false);
+            console.log('why 1', values, value, presentedOptions, userStr);
+            const term =
+                !values && !presentedOptions.length && userStr === value
+                    ? ''
+                    : userStr;
+            onSearchTermChange(term, false);
         }
-    }, [presentedOptions, userStr, onSearchTermChange]);
+    }, [presentedOptions, userStr, onSearchTermChange, values, value]);
 
     const handleSearchTermChange = useCallback(
-        (term) => {
+        (term, evt) => {
             if (!onSearchTermChange) return;
 
             const min = minCharsBeforeSearch;
 
             setUserStr((old) => {
-                if (isWorthLoading(term, values, old, min)) {
+                console.log(
+                    `supposed user str change to '${term}'`,
+                    old,
+                    values,
+                    evt
+                );
+                if (isWorthLoading(term, presentedOptions, old, min, values)) {
                     setIsLoading(true);
                     onSearchTermChange(term, false);
                 }
                 return term;
             });
         },
-        [values, minCharsBeforeSearch, onSearchTermChange]
+        [values, minCharsBeforeSearch, onSearchTermChange, presentedOptions]
     );
 
     const field = useMemo(() => {
@@ -256,7 +293,7 @@ export const useAutocompleteField = ({
                     getLabel === getId && {
                         filterOptions: filterOptionsFunc,
                     })}
-                onInputChange={(_event, value) => handleSearchTermChange(value)}
+                onInputChange={(ev, value) => handleSearchTermChange(value, ev)}
                 noOptionsText={intl.formatMessage({
                     id: 'element_search/noResult',
                 })}

@@ -2061,7 +2061,9 @@ export function deleteEquipment(
 ) {
     let deleteEquipmentUrl;
     if (modificationUuid) {
-        console.info('Updating equipment deletion');
+        console.info(
+            `Updating equipment deletion type:${equipmentType} id:${equipmentId}`
+        );
         deleteEquipmentUrl =
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/modifications/' +

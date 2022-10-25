@@ -89,6 +89,7 @@ const EquipmentDeletionDialog = ({
             equipmentType,
             makeItems
         );
+    console.log('equipmentsFound', equipmentsFound);
 
     const [equipmentOrId, equipmentField, setEquipmentOrId] =
         useAutocompleteField({
@@ -101,7 +102,10 @@ const EquipmentDeletionDialog = ({
             formProps: filledTextField,
             inputForm: inputForm,
             onSearchTermChange: searchMatchingEquipments,
-            values: equipmentsFound,
+            values:
+                !editData?.equipmentId || equipmentsFound.length
+                    ? equipmentsFound
+                    : undefined,
             defaultValue: editData?.equipmentId || '',
         });
 
