@@ -63,6 +63,8 @@ import {
     SET_MODIFICATIONS_IN_PROGRESS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
+    ADD_SHORT_CIRCUIT_NOTIF,
+    RESET_SHORT_CIRCUIT_NOTIF,
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
     SET_NETWORK_RELOAD_NEEDED,
@@ -134,6 +136,7 @@ const initialState = {
     loadflowNotif: false,
     saNotif: false,
     sensiNotif: false,
+    shortCircuitNotif: false,
     filteredNominalVoltages: null,
     fullScreenSldId: null,
     fullScreenNadId: null,
@@ -392,6 +395,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SENSI_NOTIF]: (state) => {
         state.sensiNotif = false;
+    },
+
+    [ADD_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.shortCircuitNotif = true;
+    },
+
+    [RESET_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.shortCircuitNotif = false;
     },
 
     [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {
