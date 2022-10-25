@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -122,9 +122,15 @@ const RunButton = (props) => {
         }
     };
 
-    function getRunnable() {
-        return props.runnables[selectedIndex];
-    }
+    const getRunnable = useCallback(() => {
+        if (selectedIndex < props.runnables.length) {
+            return props.runnables[selectedIndex];
+        }
+        // selectedIndex out of range, then switch to first runnable
+        // (possible cause: developer mode is disabled and runnable list is now smaller)
+        setSelectedIndex(0);
+        return props.runnables[0];
+    }, [props.runnables, selectedIndex]);
 
     function getRunningStatus() {
         return props.getStatus(getRunnable());
