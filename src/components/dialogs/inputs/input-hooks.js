@@ -333,6 +333,7 @@ export const useEnumValue = ({
     doTranslation = true,
     getId = getObjectId,
     getEnumLabel = getLabel,
+    className = {},
 }) => {
     const [value, setValue] = useState(defaultValue);
 
@@ -349,7 +350,7 @@ export const useEnumValue = ({
 
     const field = useMemo(() => {
         return (
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" className={className}>
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                 <InputLabel id="enum-type-label" {...formProps}>
@@ -393,6 +394,7 @@ export const useEnumValue = ({
         enumValues,
         doTranslation,
         validation.isFieldRequired,
+        className,
     ]);
 
     useEffect(() => {
