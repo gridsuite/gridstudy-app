@@ -752,52 +752,37 @@ const SensiParametersSelector = (props) => {
         );
     }
 
-    const displayError = useCallback(
-        (errorMessage) =>
-            displayErrorMessageWithSnackbar({
-                errorMessage: errorMessage,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'paramsRetrievingError',
-                    intlRef: intlRef,
-                },
-            }),
-        [enqueueSnackbar, intlRef]
-    );
-
     useEffect(() => {
         // get default results threshold value
-        getSensiDefaultResultsThreshold()
-            .then((value) => setDefaultResultsThreshold(value))
-            .catch((errorMessage) => displayError(errorMessage));
+        getSensiDefaultResultsThreshold().then((value) =>
+            setDefaultResultsThreshold(value)
+        );
 
         // fetch configuration in config database
-        fetchSensiConfigurationParam('resultsThreshold')
-            .then((p) => {
-                setParamResultsThreshold(parseFloat(JSON.parse(p.value)));
-            })
-            .catch((errorMessage) => displayError(errorMessage));
+        fetchSensiConfigurationParam('resultsThreshold').then((p) =>
+            setParamResultsThreshold(parseFloat(JSON.parse(p.value)))
+        );
 
-        fetchSensiConfigurationParam('sensiInjectionsSet')
-            .then((p) => setParamSensiInjectionsSet(JSON.parse(p.value)))
-            .catch((errorMessage) => displayError(errorMessage));
+        fetchSensiConfigurationParam('sensiInjectionsSet').then((p) =>
+            setParamSensiInjectionsSet(JSON.parse(p.value))
+        );
 
-        fetchSensiConfigurationParam('sensiInjections')
-            .then((p) => setParamSensiInjections(JSON.parse(p.value)))
-            .catch((errorMessage) => displayError(errorMessage));
+        fetchSensiConfigurationParam('sensiInjections').then((p) =>
+            setParamSensiInjections(JSON.parse(p.value))
+        );
 
-        fetchSensiConfigurationParam('sensiHVDCs')
-            .then((p) => setParamSensiHVDCs(JSON.parse(p.value)))
-            .catch((errorMessage) => displayError(errorMessage));
+        fetchSensiConfigurationParam('sensiHVDCs').then((p) =>
+            setParamSensiHVDCs(JSON.parse(p.value))
+        );
 
-        fetchSensiConfigurationParam('sensiPSTs')
-            .then((p) => setParamSensiPSTs(JSON.parse(p.value)))
-            .catch((errorMessage) => displayError(errorMessage));
+        fetchSensiConfigurationParam('sensiPSTs').then((p) =>
+            setParamSensiPSTs(JSON.parse(p.value))
+        );
 
-        fetchSensiConfigurationParam('sensiNodes')
-            .then((p) => setParamSensiNodes(JSON.parse(p.value)))
-            .catch((errorMessage) => displayError(errorMessage));
-    }, [displayError]);
+        fetchSensiConfigurationParam('sensiNodes').then((p) =>
+            setParamSensiNodes(JSON.parse(p.value))
+        );
+    }, []);
 
     return (
         <>
