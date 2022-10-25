@@ -135,6 +135,7 @@
     "LoadFlow": "LoadFlow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
+    "ShortCircuit": "Short-circuit analysis",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
@@ -153,6 +154,11 @@
     "FiltersListsSelection": "Filters lists selection",
     "sensitivityAnalysisResults": "Sensitivity analysis results",
     "sensitivityAnalysisError": "An error occured when executing sensitivity analysis",
+
+    "ShortCircuitAnalysis": "Short circuit analysis",
+    "ShortCircuitAnalysisParameters": "Short circuit analysis parameters",
+    "ShortCircuitAnalysisResults": "Short circuit analysis results",
+    "ShortCircuitError": "An error occured when executing short circuit analysis",
 
     "LimitType": "Limit type",
     "Value": "Value",
