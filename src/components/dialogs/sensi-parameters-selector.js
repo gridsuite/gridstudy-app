@@ -19,17 +19,11 @@ import Checkbox from '@mui/material/Checkbox';
 import { elementType } from '@gridsuite/commons-ui';
 import {
     useInputForm,
-    useTextValue,
     useDirectoryElements,
     useEnumValue,
     useDoubleValue,
 } from './inputs/input-hooks';
-import {
-    ActivePowerAdornment,
-    filledTextField,
-    gridItem,
-    GridSection,
-} from './dialogUtils';
+import { filledTextField, gridItem, GridSection } from './dialogUtils';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -45,7 +39,6 @@ import {
 import { useSnackbar } from 'notistack';
 import DialogActions from '@mui/material/DialogActions';
 import makeStyles from '@mui/styles/makeStyles';
-import { Box } from '@mui/system';
 
 export const GENERATOR_DISTRIBUTION_TYPES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
