@@ -26,6 +26,7 @@ import {
     fetchPath,
     fetchCaseName,
     fetchSensitivityAnalysisStatus,
+    fetchShortCircuitAnalysisStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -51,6 +52,7 @@ import {
 import {
     getSecurityAnalysisRunningStatus,
     getSensiRunningStatus,
+    getShortCircuitRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
@@ -151,6 +153,10 @@ const sensiStatusInvalidations = [
     'sensitivityAnalysis_status',
     'sensitivityAnalysis_failed',
 ];
+const shortCircuitStatusInvalidations = [
+    'shortCircuitAnalysis_status',
+    'shortCircuitAnalysis_failed',
+];
 const UPDATE_TYPE_HEADER = 'updateType';
 
 export function StudyContainer({ view, onChangeTab }) {
@@ -205,6 +211,15 @@ export function StudyContainer({ view, onChangeTab }) {
         getSensiRunningStatus
     );
 
+    const [shortCircuitStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchShortCircuitAnalysisStatus,
+        shortCircuitStatusInvalidations,
+        RunningStatus.IDLE,
+        getShortCircuitRunningStatus
+    );
+
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
@@ -236,6 +251,9 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             if (updateTypeHeader === 'sensitivityAnalysis_failed') {
                 snackError('', 'sensitivityAnalysisError');
+            }
+            if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
+                snackError('', 'shortCircuitAnalysisError');
             }
         },
         [snackError]
@@ -561,6 +579,9 @@ export function StudyContainer({ view, onChangeTab }) {
             SENSITIVITY_ANALYSIS: intl.formatMessage({
                 id: 'SensitivityAnalysis',
             }),
+            SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
+                id: 'ShortCircuitAnalysis',
+            }),
         };
     }, [intl]);
 
@@ -631,6 +652,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 loadFlowInfos={loadFlowInfos}
                 securityAnalysisStatus={securityAnalysisStatus}
                 sensiStatus={sensiStatus}
+                shortCircuitStatus={shortCircuitStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />
