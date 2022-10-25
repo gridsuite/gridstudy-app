@@ -51,27 +51,35 @@ const filter = createFilterOptions();
 const isWorthLoading = (term, elements, old, minLen, initValues) => {
     const idx = elements.findIndex((e) => e.label === term || e.id === term);
     if (idx >= 0) {
-        return false;
+        console.debug('found -> no need');
+        return false; // if found no need to search
     }
     if (term.length < minLen) {
+        console.debug('under limit');
         return false;
     }
     if (!term.startsWith(old)) {
+        console.debug('not incremental', old, term);
         return true;
     }
     if (!initValues && !elements.length && !old && term) {
+        console.debug('no better values & empty to !empty -> no need');
         return false;
     }
-    if (minLen === 0) {
+    if (minLen === 0 && (elements.length === 0 || term.length === 0)) {
+        console.debug('min 0 and', initValues, elements, old, term);
         return true;
     }
-    if (old.length < minLen && (old.length > 0 || elements.length > 0)) {
-        return true;
+    if (old.length < minLen && !(elements.length === 0 && old.length === 0)) {
+        console.debug('transit over minLen and', old, elements);
+        return true; // transit over minLen except not found in non-empty options while initing value
     }
     if (elements.length === QUESTIONABLE_SIZE) {
-        return true;
+        console.debug('may be page size');
+        return true; // page size, may be worth asking next step
     }
 
+    console.debug('not worth');
     return false;
 };
 export const useAutocompleteField = ({
@@ -105,16 +113,15 @@ export const useAutocompleteField = ({
 
     const prevValues = useRef();
 
-    console.debug(
-        `autoc id:${id} userStr:'${userStr}'`,
+    console.debug(`autoc userStr:'${userStr}'`, {
         previousValue,
         defaultValue,
         selectedValue,
         value,
         values,
         isLoading,
-        presentedOptions
-    );
+        presentedOptions,
+    });
     validationRef.current = validation;
 
     useEffect(() => {
@@ -154,12 +161,16 @@ export const useAutocompleteField = ({
             values,
             mismatchIdx,
             value,
-            shouldUpdateValueToo
+            shouldUpdateValueToo,
+            prevValues.current !== values
         );
         const valuesChanged = prevValues.current !== values;
         prevValues.current = values;
 
-        if (mismatchIdx === -1) {
+        if (
+            mismatchIdx === -1 ||
+            (mismatchIdx === 0 && presentedOptions.length > 0)
+        ) {
             if (valuesChanged) setIsLoading(false);
 
             if (!getLabel) return;
@@ -167,6 +178,8 @@ export const useAutocompleteField = ({
             const inOps = presentedOptions.find((o) => getLabel(o) === value);
             if (inOps) {
                 setValue(inOps);
+            } else if (!values?.length) {
+                setExpanded(false);
             }
 
             return;
@@ -205,9 +218,18 @@ export const useAutocompleteField = ({
         if (!onSearchTermChange) return;
         if (isWorthLoading(userStr, presentedOptions, userStr, 0, values)) {
             setIsLoading(true);
-            console.log('why 1', values, value, presentedOptions, userStr);
+            console.log(
+                'why 1',
+                values,
+                value,
+                presentedOptions,
+                userStr,
+                values === presentedOptions
+            );
             const term =
-                !values && !presentedOptions.length && userStr === value
+                !values?.length &&
+                values?.length === presentedOptions.length &&
+                userStr === value
                     ? ''
                     : userStr;
             onSearchTermChange(term, false);
@@ -221,15 +243,12 @@ export const useAutocompleteField = ({
             const min = minCharsBeforeSearch;
 
             setUserStr((old) => {
-                console.log(
-                    `supposed user str change to '${term}'`,
-                    old,
-                    values,
-                    evt
-                );
+                console.log(`supposed user str change to '${term}'`);
                 if (isWorthLoading(term, presentedOptions, old, min, values)) {
                     setIsLoading(true);
                     onSearchTermChange(term, false);
+                } else if (!values?.length) {
+                    setExpanded(false);
                 }
                 return term;
             });
