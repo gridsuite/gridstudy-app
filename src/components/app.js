@@ -42,7 +42,6 @@ import {
     selectFluxConvention,
     selectFavoriteSensiVariablesFiltersLists,
     selectFavoriteSensiBranchFiltersLists,
-    setCurrentTreeNode,
     selectEnableDeveloperMode,
 } from '../redux/actions';
 
@@ -338,11 +337,6 @@ const App = () => {
             event.preventDefault();
         });
     });
-
-    // Manage user (both manual and auto) disconnection
-    useEffect(() => {
-        if (user == null) dispatch(setCurrentTreeNode(null));
-    }, [user, dispatch]);
 
     useEffect(() => {
         initializeAuthenticationProd(

@@ -345,7 +345,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     justifyContent="center"
                     borderColor={'#123456'}
                 >
-                    {currentNode && (
+                    {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
+                    {currentNode && user && (
                         <OverflowableText
                             className={classes.label}
                             text={
