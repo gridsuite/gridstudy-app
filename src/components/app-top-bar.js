@@ -33,6 +33,7 @@ import {
     fetchLoadFlowInfos,
     fetchSecurityAnalysisStatus,
     fetchSensitivityAnalysisStatus,
+    fetchShortCircuitAnalysisStatus,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
@@ -40,11 +41,13 @@ import {
     addLoadflowNotif,
     addSANotif,
     addSensiNotif,
+    addShortCircuitNotif,
     centerOnSubstation,
     openNetworkAreaDiagram,
     resetLoadflowNotif,
     resetSANotif,
     resetSensiNotif,
+    resetShortCircuitNotif,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
@@ -160,6 +163,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const sensiNotif = useSelector((state) => state.sensiNotif);
 
+    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+
     const theme = useSelector((state) => state[PARAM_THEME]);
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
@@ -188,6 +193,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         'sensitivityAnalysis_status',
         'sensitivityAnalysis_failed',
     ];
+    const shortCircuitAnalysisStatusInvalidations = [
+        'shortCircuitAnalysis_status',
+        'shortCircuitAnalysis_failed',
+    ];
     const [loadFlowInfosNode] = useNodeData(
         studyUuid,
         currentNode?.id,
@@ -207,6 +216,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         currentNode?.id,
         fetchSensitivityAnalysisStatus,
         sensitivityAnalysisStatusInvalidations
+    );
+
+    const [shortCircuitAnalysisStatusNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchShortCircuitAnalysisStatus,
+        shortCircuitAnalysisStatusInvalidations
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
@@ -274,6 +290,17 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             dispatch(resetSensiNotif());
         }
     }, [currentNode, dispatch, sensitivityAnalysisStatusNode, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            shortCircuitAnalysisStatusNode === 'COMPLETED'
+        ) {
+            dispatch(addShortCircuitNotif());
+        } else {
+            dispatch(resetShortCircuitNotif());
+        }
+    }, [currentNode, dispatch, shortCircuitAnalysisStatusNode, tabIndex, user]);
 
     function showParameters() {
         setParametersOpen(true);
@@ -373,12 +400,18 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             let label;
                             if (
                                 tabName === StudyView.RESULTS &&
-                                (loadflowNotif || saNotif || sensiNotif)
+                                (loadflowNotif ||
+                                    saNotif ||
+                                    sensiNotif ||
+                                    shortCircuitNotif)
                             ) {
                                 label = (
                                     <Badge
                                         badgeContent={
-                                            loadflowNotif + saNotif + sensiNotif
+                                            loadflowNotif +
+                                            saNotif +
+                                            sensiNotif +
+                                            shortCircuitNotif
                                         }
                                         color="secondary"
                                     >

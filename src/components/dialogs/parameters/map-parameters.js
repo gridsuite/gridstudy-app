@@ -17,6 +17,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
+    PARAM_MAP_MANUAL_REFRESH,
 } from '../../../utils/config-params';
 import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
@@ -42,6 +43,9 @@ export const MapParameters = ({ hideParameters }) => {
 
     const [displayOverloadTableLocal, handleChangeDisplayOverloadTable] =
         useParameterState(PARAM_DISPLAY_OVERLOAD_TABLE);
+
+    const [mapManualRefreshLocal, handleChangeMapManualRefresh] =
+        useParameterState(PARAM_MAP_MANUAL_REFRESH);
 
     const [disabledFlowAlertThreshold, setDisabledFlowAlertThreshold] =
         useState(
@@ -155,6 +159,14 @@ export const MapParameters = ({ hideParameters }) => {
                     handleChangeDisplayOverloadTable(
                         !displayOverloadTableLocal
                     );
+                }}
+            />
+            <LineSeparator />
+            <SwitchWithLabel
+                value={mapManualRefreshLocal}
+                label="MapManualRefresh"
+                callback={() => {
+                    handleChangeMapManualRefresh(!mapManualRefreshLocal);
                 }}
             />
             <Grid
