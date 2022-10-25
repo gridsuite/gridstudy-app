@@ -231,6 +231,7 @@ export function RunButtonContainer({
         if (enableDeveloperMode) {
             // SENSI is currently a dev feature
             runnables.push(runnable.SENSITIVITY_ANALYSIS);
+            // SHORTCIRCUIT is currently a dev feature
             runnables.push(runnable.SHORT_CIRCUIT_ANALYSIS);
         }
         return runnables;
