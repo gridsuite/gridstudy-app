@@ -79,13 +79,8 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(0.5),
     },
     chipElement: {
+        margin: 3,
         maxWidth: 200,
-    },
-    distributionType: {
-        marginTop: 20,
-    },
-    sensitivityType: {
-        marginTop: 20,
     },
 }));
 
@@ -266,7 +261,6 @@ const SensiInjectionsSet = ({ index, onChange, defaultValue, inputForm }) => {
         defaultValue: defaultValue.distributionType
             ? defaultValue.distributionType
             : 'PROPORTIONAL',
-        className: classes.distributionType,
     });
 
     const [contingencies, contingenciesField] = useDirectoryElements({
@@ -409,7 +403,6 @@ const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
             ? defaultValue.sensitivityType
             : 'DELTA_MW',
         enumValues: SENSITIVITY_TYPES,
-        className: classes.sensitivityType,
     });
 
     const [contingencies, contingenciesField] = useDirectoryElements({
@@ -488,7 +481,6 @@ const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
             ? defaultValue.sensitivityType
             : 'DELTA_MW',
         enumValues: SENSITIVITY_TYPES,
-        className: classes.sensitivityType,
     });
 
     const [contingencies, contingenciesField] = useDirectoryElements({

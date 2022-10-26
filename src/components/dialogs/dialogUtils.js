@@ -40,7 +40,7 @@ export const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         margin: theme.spacing(0.5),
     },
-    formDirectoryElements: {
+    formDirectoryElements1: {
         display: 'flex',
         gap: '8px',
         flexWrap: 'wrap',
@@ -49,6 +49,18 @@ export const useStyles = makeStyles((theme) => ({
         padding: 4,
         borderRadius: '4px',
         overflow: 'hidden',
+    },
+    formDirectoryElements2: {
+        display: 'flex',
+        gap: '8px',
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        marginTop: 25,
+        padding: 4,
+        overflow: 'hidden',
+    },
+    labelDirectoryElements: {
+        marginTop: -10,
     },
 }));
 

@@ -333,7 +333,6 @@ export const useEnumValue = ({
     doTranslation = true,
     getId = getObjectId,
     getEnumLabel = getLabel,
-    className = {},
 }) => {
     const [value, setValue] = useState(defaultValue);
 
@@ -350,7 +349,7 @@ export const useEnumValue = ({
 
     const field = useMemo(() => {
         return (
-            <FormControl fullWidth size="small" className={className}>
+            <FormControl fullWidth size="small">
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                 <InputLabel id="enum-type-label" {...formProps}>
@@ -394,7 +393,6 @@ export const useEnumValue = ({
         enumValues,
         doTranslation,
         validation.isFieldRequired,
-        className,
     ]);
 
     useEffect(() => {
@@ -821,32 +819,37 @@ export const useDirectoryElements = ({
     const field = useMemo(() => {
         return (
             <>
-                <InputLabel id="elements">
-                    <FieldLabel label={label} optional={false} />
-                </InputLabel>
-                <FormControl className={classes.formDirectoryElements}>
-                    <div>
-                        {values.map((item, index) => (
-                            <Chip
-                                className={elementClassName}
-                                key={label + '_' + index}
-                                size="small"
-                                onDelete={() => handleDelete(item, index)}
-                                label={
-                                    <OverflowableText
-                                        text={item.name}
-                                        style={{ width: '100%' }}
-                                    />
-                                }
-                            />
-                        ))}
-                    </div>
-                    <IconButton
-                        size={'small'}
-                        onClick={() => setDirectoryItemSelectorOpen(true)}
+                <FormControl className={classes.formDirectoryElements1}>
+                    <InputLabel
+                        id="elements"
+                        className={classes.labelDirectoryElements}
                     >
-                        <FolderIcon />
-                    </IconButton>
+                        <FieldLabel label={label} optional={false} />
+                    </InputLabel>
+                    <FormControl className={classes.formDirectoryElements2}>
+                        <div>
+                            {values.map((item, index) => (
+                                <Chip
+                                    className={elementClassName}
+                                    key={label + '_' + index}
+                                    size="small"
+                                    onDelete={() => handleDelete(item, index)}
+                                    label={
+                                        <OverflowableText
+                                            text={item.name}
+                                            style={{ width: '100%' }}
+                                        />
+                                    }
+                                />
+                            ))}
+                        </div>
+                        <IconButton
+                            size={'small'}
+                            onClick={() => setDirectoryItemSelectorOpen(true)}
+                        >
+                            <FolderIcon />
+                        </IconButton>
+                    </FormControl>
                 </FormControl>
                 <DirectoryItemSelector
                     open={directoryItemSelectorOpen}
@@ -858,7 +861,9 @@ export const useDirectoryElements = ({
             </>
         );
     }, [
-        classes.formDirectoryElements,
+        classes.formDirectoryElements1,
+        classes.formDirectoryElements2,
+        classes.labelDirectoryElements,
         values,
         addElements,
         handleDelete,
