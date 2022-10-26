@@ -18,24 +18,4 @@ module.exports = function (app) {
             ws: true,
         })
     );
-
-    app.use(
-        createProxyMiddleware(
-            'http://localhost:9000/ws/gateway/directory-notification',
-            {
-                pathRewrite: { '^/ws/gateway/': '/' },
-                ws: true,
-            }
-        )
-    );
-
-    app.use(
-        createProxyMiddleware(
-            'http://localhost:5024/ws/config-notification-server',
-            {
-                pathRewrite: { '^/ws/config-notification-server': '/' },
-                ws: true,
-            }
-        )
-    );
 };

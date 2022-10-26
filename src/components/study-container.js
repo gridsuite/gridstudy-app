@@ -287,6 +287,33 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, checkFailNotifications]
     );
 
+    const fetchStudyPath = useCallback(
+        (studyUuid) => {
+            fetchPath(studyUuid)
+                .then((response) => {
+                    const parents = response
+                        .slice(1)
+                        .map((parent) => parent.elementName);
+
+                    const studyName = response[0]?.elementName;
+                    const path = computeFullPath(parents);
+                    setStudyName(studyName);
+                    setStudyPath(path);
+
+                    document.title = computePageTitle(
+                        initialTitle,
+                        studyName,
+                        parents
+                    );
+                })
+                .catch((errorMessage) => {
+                    document.title = initialTitle;
+                    snackError(errorMessage, 'LoadStudyAndParentsInfoError');
+                });
+        },
+        [initialTitle, snackError]
+    );
+
     useEffect(() => {
         // create ws at mount event
         wsRef.current = connectNotificationsWsUpdateDirectories();
@@ -294,6 +321,14 @@ export function StudyContainer({ view, onChangeTab }) {
         wsRef.current.onmessage = function (event) {
             const eventData = JSON.parse(event.data);
             dispatch(studyUpdated(eventData));
+            if (eventData.headers) {
+                if (
+                    eventData.headers['notificationType'] ===
+                    directoriesNotificationType.UPDATE_DIRECTORY
+                ) {
+                    fetchStudyPath(studyUuid);
+                }
+            }
         };
 
         wsRef.current.onclose = function () {
@@ -309,7 +344,7 @@ export function StudyContainer({ view, onChangeTab }) {
         return () => {
             wsToClose.close();
         };
-    }, [dispatch]);
+    }, [dispatch, fetchStudyPath, studyUuid]);
 
     const displayNetworkLoadingFailMessage = useCallback((error) => {
         console.error(error.message);
@@ -450,64 +485,6 @@ export function StudyContainer({ view, onChangeTab }) {
             });
         }
     }, [snackInfo, studyName, studyPath, prevStudyPath, prevStudyName]);
-
-    const fetchStudyPath = useCallback(
-        (studyUuid) => {
-            fetchPath(studyUuid)
-                .then((response) => {
-                    const parents = response
-                        .slice(1)
-                        .map((parent) => parent.elementName);
-
-                    const studyName = response[0]?.elementName;
-                    const path = computeFullPath(parents);
-                    setStudyName(studyName);
-                    setStudyPath(path);
-
-                    document.title = computePageTitle(
-                        initialTitle,
-                        studyName,
-                        parents
-                    );
-                })
-                .catch((errorMessage) => {
-                    document.title = initialTitle;
-                    snackError(errorMessage, 'LoadStudyAndParentsInfoError');
-                });
-        },
-        [initialTitle, snackError]
-    );
-
-    useEffect(() => {
-        // create ws at mount event
-        wsRef.current = connectNotificationsWsUpdateDirectories();
-
-        wsRef.current.onmessage = function (event) {
-            const eventData = JSON.parse(event.data);
-            if (eventData.headers) {
-                if (
-                    eventData.headers['notificationType'] ===
-                    directoriesNotificationType.UPDATE_DIRECTORY
-                ) {
-                    fetchStudyPath(studyUuid);
-                }
-            }
-        };
-
-        wsRef.current.onclose = function () {
-            console.error('Unexpected Notification WebSocket closed');
-        };
-        wsRef.current.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
-        // That's because wsRef.current could be modify outside of this scope.
-        const wsToClose = wsRef.current;
-        // cleanup at unmount event
-        return () => {
-            wsToClose.close();
-        };
-    });
 
     useEffect(() => {
         if (!studyUuid) {
