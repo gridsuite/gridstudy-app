@@ -31,6 +31,7 @@ import {
     filledTextField,
     gridItem,
     OhmAdornment,
+    sanitizeString,
     SusceptanceAdornment,
     VoltageAdornment,
 } from './dialogUtils';
@@ -210,7 +211,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 twoWindingsTransformerId,
-                twoWindingsTransformerName,
+                sanitizeString(twoWindingsTransformerName),
                 seriesResistance,
                 seriesReactance,
                 magnetizingConductance,

@@ -33,6 +33,7 @@ import {
     filledTextField,
     gridItem,
     OhmAdornment,
+    sanitizeString,
     SusceptanceAdornment,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
@@ -256,7 +257,7 @@ const LineCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 lineId,
-                lineName,
+                sanitizeString(lineName),
                 seriesResistance,
                 seriesReactance,
                 shuntConductance1,
