@@ -335,7 +335,6 @@ export const useEnumValue = ({
     getEnumLabel = getLabel,
 }) => {
     const [value, setValue] = useState(defaultValue);
-    const [hasChanged, setHasChanged] = useState(false);
     useEffect(() => {
         function validate() {
             return true;
@@ -407,7 +406,7 @@ export const useEnumValue = ({
         setValue(defaultValue || '');
     }, [defaultValue]);
 
-    return [value, field, hasChanged, setHasChanged];
+    return [value, field];
 };
 export const useRegulatingTerminalValue = ({
     label,
