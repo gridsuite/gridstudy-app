@@ -48,7 +48,7 @@ const DirectoryItemSelector = (props) => {
 
     const convertChildren = useCallback(
         (children) => {
-            let formattedChildren = children.map((e) => {
+            return children.map((e) => {
                 return {
                     id: e.elementUuid,
                     name: e.elementName,
@@ -63,8 +63,6 @@ const DirectoryItemSelector = (props) => {
                             : undefined,
                 };
             });
-
-            return formattedChildren;
         },
         [classes.icon]
     );
@@ -122,10 +120,10 @@ const DirectoryItemSelector = (props) => {
     }, [convertRoots]);
 
     useEffect(() => {
-        if (props.open && data.length === 0) {
+        if (props.open) {
             updateRootDirectories();
         }
-    }, [props.open, data, updateRootDirectories]);
+    }, [props.open, updateRootDirectories]);
 
     const fetchDirectory = useCallback(
         (nodeId) => {
