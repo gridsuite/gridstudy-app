@@ -37,12 +37,7 @@ const DirectoryItemSelector = (props) => {
     const openRef = useRef();
     openRef.current = props.open;
     const contentFilter = useCallback(
-        () =>
-            new Set([
-                elementType.DIRECTORY,
-                elementType.CONTINGENCY_LIST,
-                ...props.types,
-            ]),
+        () => new Set([elementType.DIRECTORY, ...props.types]),
         [props.types]
     );
 
