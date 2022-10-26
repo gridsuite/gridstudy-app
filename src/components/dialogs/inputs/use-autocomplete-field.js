@@ -49,7 +49,7 @@ function arraysMismatchIndex(a1, a2) {
 const filter = createFilterOptions();
 
 const isWorthLoading = (term, elements, old, minLen) => {
-    const idx = elements.findIndex((e) => e.label === term);
+    const idx = elements.findIndex((e) => e.label === term || e.id === term);
     if (idx >= 0) {
         return false;
     }
@@ -77,7 +77,6 @@ export const useAutocompleteField = ({
     onSearchTermChange,
     minCharsBeforeSearch = 3,
     values,
-    resetsWhenValuesChange = false,
     renderElement,
     getLabel = func_identity,
     allowNewValue = false,
@@ -158,21 +157,11 @@ export const useAutocompleteField = ({
             setPresentedOptions(vals);
             if (vals?.length > mismatchIdx && shouldUpdateValueToo) {
                 setValue(vals[mismatchIdx]);
-            } else if (resetsWhenValuesChange) {
-                setValue(null);
             }
             setIsLoading(false);
             if (values?.length === 0) setExpanded(false);
         });
-    }, [
-        values,
-        id,
-        defaultValue,
-        getLabel,
-        presentedOptions,
-        value,
-        resetsWhenValuesChange,
-    ]);
+    }, [values, id, defaultValue, getLabel, presentedOptions, value]);
 
     const handleForcedSearch = useCallback(
         (term) => {
@@ -203,7 +192,6 @@ export const useAutocompleteField = ({
             setUserStr((old) => {
                 if (isWorthLoading(term, values, old, min)) {
                     setIsLoading(true);
-                    setExpanded(true);
                     onSearchTermChange(term, false);
                 }
                 return term;

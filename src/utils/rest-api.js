@@ -22,6 +22,8 @@ const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
 const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/sensitivity-analysis';
+const PREFIX_DIRECTORY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 
 function getToken() {
     const state = store.getState();
@@ -1164,6 +1166,30 @@ export function connectNotificationsWebsocket(studyUuid) {
     return rws;
 }
 
+/**
+ * Function will be called to connect with notification websocket to update the studies list
+ * @returns {ReconnectingWebSocket}
+ */
+export function connectNotificationsWsUpdateDirectories() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl +
+        PREFIX_DIRECTORY_NOTIFICATION_WS +
+        '/notify?updateType=directories';
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        () => webSocketUrl + '&access_token=' + getToken()
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update directories ' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
+}
+
 export function connectNotificationsWsUpdateConfig() {
     const webSocketBaseUrl = document.baseURI
         .replace(/^http:\/\//, 'ws://')
@@ -2092,22 +2118,32 @@ export function deleteEquipment(
     studyUuid,
     currentNodeUuid,
     equipmentType,
-    equipmentId
+    equipmentId,
+    modificationUuid
 ) {
-    console.info(
-        'deleting equipment ' +
-            equipmentId +
-            ' with type ' +
-            equipmentType +
-            ' ...'
-    );
-    const deleteEquipmentUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/equipments/type/' +
-        encodeURIComponent(equipmentType) +
-        '/id/' +
-        encodeURIComponent(equipmentId);
-    return backendFetch(deleteEquipmentUrl, { method: 'delete' });
+    let deleteEquipmentUrl;
+    if (modificationUuid) {
+        console.info('Updating equipment deletion');
+        deleteEquipmentUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/equipments-deletion/type/' +
+            encodeURIComponent(equipmentType) +
+            '/id/' +
+            encodeURIComponent(equipmentId);
+    } else {
+        console.info('Creating equipment deletion');
+        deleteEquipmentUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/equipments/type/' +
+            encodeURIComponent(equipmentType) +
+            '/id/' +
+            encodeURIComponent(equipmentId);
+    }
+    return backendFetch(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'DELETE',
+    });
 }
 
 export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
