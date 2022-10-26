@@ -26,7 +26,6 @@ import {
     fetchPath,
     connectNotificationsWsUpdateDirectories,
     fetchCaseName,
-    connectNotificationsWsUpdateDirectories,
     fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
 } from '../utils/rest-api';

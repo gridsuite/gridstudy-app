@@ -41,30 +41,6 @@ function backendFetch(url, init) {
     return fetch(url, initCopy);
 }
 
-/**
- * Function will be called to connect with notification websocket when directories is (updated/deleted/created)
- * @returns {ReconnectingWebSocket}
- */
-export function connectNotificationsWsUpdateDirectories() {
-    const webSocketBaseUrl = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
-    const webSocketUrl =
-        webSocketBaseUrl +
-        PREFIX_DIRECTORY_NOTIFICATION_WS +
-        '/notify?updateType=directories';
-
-    const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
-    );
-    reconnectingWebSocket.onopen = function (event) {
-        console.info(
-            'Connected Websocket update directories ' + webSocketUrl + ' ...'
-        );
-    };
-    return reconnectingWebSocket;
-}
-
 export function fetchValidateUser(user) {
     const sub = user?.profile?.sub;
     if (!sub)
