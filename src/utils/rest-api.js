@@ -2206,3 +2206,26 @@ export function getUniqueNodeName(studyUuid) {
             : response.text().then((text) => Promise.reject(text));
     });
 }
+
+export function fetchMapEquipments(
+    studyUuid,
+    currentNodeUuid,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching map equipments data of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
+    const fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/map-equipments-data';
+    console.debug(fetchEquipmentsUrl);
+    return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
+}

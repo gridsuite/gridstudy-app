@@ -34,6 +34,12 @@ export function networkCreated(network) {
     return { type: NETWORK_CREATED, network: network };
 }
 
+export const MAP_DATA_CREATED = 'MAP_DATA_CREATED';
+
+export function mapDataCreated(mapData) {
+    return { type: MAP_DATA_CREATED, mapData: mapData };
+}
+
 export const NETWORK_EQUIPMENT_LOADED = 'NETWORK_EQUIPMENT_LOADED';
 
 export function networkEquipmentLoaded(equipmentsName, values) {

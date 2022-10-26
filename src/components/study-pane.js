@@ -185,6 +185,7 @@ const StudyPane = ({
         }
     }, [dispatch, props.view]);
 
+    //RECHARGEMENT DE LA CARTE
     useEffect(() => {
         if (!network) return;
         network.useEquipment(equipments.substations);
@@ -277,7 +278,7 @@ const StudyPane = ({
                                 <NetworkMapTab
                                     /* TODO do we move redux param to container */
                                     studyUuid={studyUuid}
-                                    network={network}
+                                    //network={network}
                                     visible={
                                         props.view === StudyView.MAP &&
                                         studyDisplayMode !==

@@ -35,7 +35,12 @@ import {
     isNodeRenamed,
 } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import { resetMapReloaded, setForceNetworkReload } from '../redux/actions';
+import {
+    mapDataCreated,
+    resetMapReloaded,
+    setForceNetworkReload,
+} from '../redux/actions';
+import MapData from './network/map-equipments-cache';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -68,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
-    network,
+    //network,
     currentNode,
     /* results*/
     securityAnalysisStatus,
@@ -91,6 +96,7 @@ export const NetworkMapTab = ({
     showInSpreadsheet,
     setErrorMessage,
 }) => {
+    const network = useSelector((state) => state.mapData);
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
@@ -105,6 +111,22 @@ export const NetworkMapTab = ({
     );
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
     const [geoData, setGeoData] = useState();
+
+    const loadMapData = useCallback(() => {
+        if (!isNodeBuilt(currentNode) || !studyUuid) {
+            return;
+        }
+        console.info(`Loading map data of study '${studyUuid}'...`);
+        const mapData = new MapData(
+            studyUuid,
+            currentNode?.id,
+            undefined,
+            dispatch
+        );
+        // For initial network loading, no need to initialize lines and substations at first,
+        // lazy loading will do the job (no glitches to avoid)
+        dispatch(mapDataCreated(mapData));
+    }, [currentNode, studyUuid, dispatch]);
 
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
@@ -248,6 +270,7 @@ export const NetworkMapTab = ({
         // TODO REMOVE LATER
         if (!reloadMapNeeded) return;
 
+        loadMapData();
         reloadMapGeoData();
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
@@ -264,6 +287,7 @@ export const NetworkMapTab = ({
         mapManualRefresh,
         isInitialized,
         reloadMapGeoData,
+        loadMapData,
     ]);
 
     let choiceVoltageLevelsSubstation = null;
@@ -322,11 +346,12 @@ export const NetworkMapTab = ({
         return loadFlowStatus === RunningStatus.SUCCEED;
     };
 
+    console.log(network);
     const renderMap = () => (
         <NetworkMap
             network={network}
-            substations={network ? network.substations : []}
-            lines={network ? network.lines : []}
+            substations={network?.substations}
+            lines={network?.lines}
             updatedLines={updatedLines}
             geoData={geoData}
             waitingLoadGeoData={waitingLoadGeoData}

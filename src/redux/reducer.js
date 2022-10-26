@@ -71,6 +71,7 @@ import {
     SET_NETWORK_RELOAD_NEEDED,
     SET_FORCE_NETWORK_RELOAD,
     RESET_NETWORK_RELOAD,
+    MAP_DATA_CREATED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -132,6 +133,7 @@ const initialState = {
     studyUuid: null,
     currentTreeNode: null,
     network: null,
+    mapData: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
     computedLanguage: getLocalStorageComputedLanguage(),
@@ -179,6 +181,10 @@ export const reducer = createReducer(initialState, {
 
     [NETWORK_CREATED]: (state, action) => {
         state.network = action.network;
+    },
+
+    [MAP_DATA_CREATED]: (state, action) => {
+        state.mapData = action.mapData;
     },
 
     [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
