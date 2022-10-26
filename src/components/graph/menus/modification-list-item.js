@@ -18,26 +18,6 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-const editableModificationTypes = new Set([
-    'GENERATOR_CREATION',
-    'LINE_CREATION',
-    'LOAD_MODIFICATION',
-    'LOAD_CREATION',
-    'SHUNT_COMPENSATOR_CREATION',
-    'SUBSTATION_CREATION',
-    'TWO_WINDINGS_TRANSFORMER_CREATION',
-    'VOLTAGE_LEVEL_CREATION',
-    'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
-    'LINE_ATTACH_TO_VOLTAGE_LEVEL',
-    'GENERATOR_MODIFICATION',
-    'LINES_ATTACH_TO_SPLIT_LINES',
-]);
-
-const equipmentModificationModificationsType = new Set([
-    'LOAD_MODIFICATION',
-    'GENERATOR_MODIFICATION',
-]);
-
 const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
@@ -82,15 +62,11 @@ export const ModificationListItem = ({
             return modif.lineToAttachToId;
         } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
             return modif.attachedLineId;
-        } else if (equipmentModificationModificationsType.has(modif.type)) {
-            return modif.equipmentId;
-        } else if (useName && modif.equipmentName) {
-            return modif.equipmentName;
         } else if (modif.equipmentId) {
             return modif.equipmentId;
         }
         return '';
-    }, [modif, useName]);
+    }, [modif]);
 
     const toggle = useCallback(
         () => handleToggle(modif),
@@ -178,18 +154,15 @@ export const ModificationListItem = ({
                             className={classes.label}
                             text={getLabel()}
                         />
-                        {editableModificationTypes.has(modif.type) &&
-                            !isOneNodeBuilding &&
-                            hover &&
-                            !isDragging && (
-                                <IconButton
-                                    onClick={() => onEdit(modif.uuid)}
-                                    size={'small'}
-                                    className={classes.iconEdit}
-                                >
-                                    <EditIcon />
-                                </IconButton>
-                            )}
+                        {!isOneNodeBuilding && hover && !isDragging && (
+                            <IconButton
+                                onClick={() => onEdit(modif.uuid)}
+                                size={'small'}
+                                className={classes.iconEdit}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        )}
                     </ListItem>
                     <Divider />
                 </div>
