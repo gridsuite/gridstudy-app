@@ -24,6 +24,7 @@ import {
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchPath,
+    connectNotificationsWsUpdateDirectories,
     fetchCaseName,
     connectNotificationsWsUpdateDirectories,
     fetchSensitivityAnalysisStatus,
@@ -286,6 +287,30 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: dispatch doesn't change
         [dispatch, checkFailNotifications]
     );
+
+    useEffect(() => {
+        // create ws at mount event
+        wsRef.current = connectNotificationsWsUpdateDirectories();
+
+        wsRef.current.onmessage = function (event) {
+            const eventData = JSON.parse(event.data);
+            dispatch(studyUpdated(eventData));
+        };
+
+        wsRef.current.onclose = function () {
+            console.error('Unexpected Notification WebSocket closed');
+        };
+        wsRef.current.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
+        // That's because wsRef.current could be modify outside of this scope.
+        const wsToClose = wsRef.current;
+        // cleanup at unmount event
+        return () => {
+            wsToClose.close();
+        };
+    }, [dispatch]);
 
     const displayNetworkLoadingFailMessage = useCallback((error) => {
         console.error(error.message);
