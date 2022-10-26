@@ -820,12 +820,28 @@ export const useDirectoryElements = ({
         return (
             <>
                 <FormControl className={classes.formDirectoryElements1}>
-                    <InputLabel
-                        id="elements"
-                        className={classes.labelDirectoryElements}
-                    >
-                        <FieldLabel label={label} optional={false} />
-                    </InputLabel>
+                    <Grid container>
+                        <Grid item>
+                            <InputLabel
+                                id="elements"
+                                className={classes.labelDirectoryElements}
+                            >
+                                <FieldLabel label={label} optional={false} />
+                            </InputLabel>
+                        </Grid>
+                        <Grid item xs>
+                            <Grid container direction="row-reverse">
+                                <IconButton
+                                    size={'small'}
+                                    onClick={() =>
+                                        setDirectoryItemSelectorOpen(true)
+                                    }
+                                >
+                                    <FolderIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    </Grid>
                     <FormControl className={classes.formDirectoryElements2}>
                         <div>
                             {values.map((item, index) => (
@@ -843,12 +859,6 @@ export const useDirectoryElements = ({
                                 />
                             ))}
                         </div>
-                        <IconButton
-                            size={'small'}
-                            onClick={() => setDirectoryItemSelectorOpen(true)}
-                        >
-                            <FolderIcon />
-                        </IconButton>
                     </FormControl>
                 </FormControl>
                 <DirectoryItemSelector
