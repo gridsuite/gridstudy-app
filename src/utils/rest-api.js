@@ -2141,22 +2141,32 @@ export function deleteEquipment(
     studyUuid,
     currentNodeUuid,
     equipmentType,
-    equipmentId
+    equipmentId,
+    modificationUuid
 ) {
-    console.info(
-        'deleting equipment ' +
-            equipmentId +
-            ' with type ' +
-            equipmentType +
-            ' ...'
-    );
-    const deleteEquipmentUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/equipments/type/' +
-        encodeURIComponent(equipmentType) +
-        '/id/' +
-        encodeURIComponent(equipmentId);
-    return backendFetch(deleteEquipmentUrl, { method: 'delete' });
+    let deleteEquipmentUrl;
+    if (modificationUuid) {
+        console.info('Updating equipment deletion');
+        deleteEquipmentUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/equipments-deletion/type/' +
+            encodeURIComponent(equipmentType) +
+            '/id/' +
+            encodeURIComponent(equipmentId);
+    } else {
+        console.info('Creating equipment deletion');
+        deleteEquipmentUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/equipments/type/' +
+            encodeURIComponent(equipmentType) +
+            '/id/' +
+            encodeURIComponent(equipmentId);
+    }
+    return backendFetch(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'DELETE',
+    });
 }
 
 export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
