@@ -590,7 +590,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 loadTapChangingCapabilities:
                     twt.ratioTapChanger?.loadTapChangingCapabilities,
                 targetV: twt.ratioTapChanger?.targetVoltage,
-                targetDeadband: twt.ratioTapChanger?.targetDeadBand,
+                targetDeadband: isNaN(twt.ratioTapChanger?.targetDeadBand)
+                    ? ''
+                    : twt.ratioTapChanger?.targetDeadBand,
                 regulatingTerminalVlId:
                     twt.ratioTapChanger?.regulatingTerminalVlId,
                 regulatingTerminalType:
@@ -606,7 +608,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 loadTapChangingCapabilities:
                     twt.phaseTapChanger?.loadTapChangingCapabilities,
                 regulationValue: twt.phaseTapChanger?.regulationValue,
-                targetDeadband: twt.phaseTapChanger?.targetDeadBand,
+                targetDeadband: isNaN(twt.phaseTapChanger?.targetDeadBand)
+                    ? ''
+                    : twt.phaseTapChanger?.targetDeadBand,
                 regulatingTerminalVlId:
                     twt.phaseTapChanger?.regulatingTerminalVlId,
                 regulatingTerminalType:
