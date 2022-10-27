@@ -135,7 +135,6 @@
     "LoadFlow": "LoadFlow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
-    "ShortCircuit": "Short-circuit analysis",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
@@ -396,7 +395,6 @@
     "ReactiveCapabilityCurve": "Reactive capability curve",
     "MinimumReactivePower": "Minimum reactive power",
     "MaximumReactivePower": "Maximum reactive power",
-    "ActivePower": "Active power",
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",
