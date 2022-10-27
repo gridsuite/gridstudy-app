@@ -919,13 +919,13 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'TargetP',
-                dataKey: 'p0',
+                dataKey: 'targetP',
                 numeric: true,
                 fractionDigits: 1,
             },
             {
                 id: 'TargetQ',
-                dataKey: 'q0',
+                dataKey: 'targetQ',
                 numeric: true,
                 fractionDigits: 1,
             },
