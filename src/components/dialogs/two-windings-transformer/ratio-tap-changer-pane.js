@@ -92,8 +92,6 @@ const RatioTapChangerPane = (props) => {
 
         if (
             ratioTapRows.length !== rowNumber &&
-            parseInt(lowTapPosition) >= 0 &&
-            parseInt(highTapPosition) >= 0 &&
             !isNaN(parseInt(lowTapPosition)) &&
             !isNaN(parseInt(highTapPosition))
         ) {

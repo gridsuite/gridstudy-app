@@ -96,8 +96,6 @@ const PhaseTapChangerPane = (props) => {
 
         if (
             phaseTapRows.length !== rowNumber &&
-            parseInt(lowTapPosition) >= 0 &&
-            parseInt(highTapPosition) >= 0 &&
             !isNaN(parseInt(lowTapPosition)) &&
             !isNaN(parseInt(highTapPosition))
         ) {

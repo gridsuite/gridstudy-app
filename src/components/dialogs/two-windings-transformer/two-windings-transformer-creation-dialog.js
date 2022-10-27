@@ -380,7 +380,7 @@ const TwoWindingsTransformerCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: phaseTapInputForm,
         formProps: { ...filledTextField, disabled: !phaseTapChangerEnabled },
-        enumValues: REGULATION_MODES,
+        enumValues: Object.values(REGULATION_MODES),
         defaultValue: formValues?.phaseTapChanger?.regulationMode,
         clearable: true,
     });
