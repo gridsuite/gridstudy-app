@@ -728,7 +728,7 @@ const TwoWindingsTransformerCreationDialog = ({
             isFormValid = false;
         }
 
-        let ratioTap = {};
+        let ratioTap = undefined;
         if (ratioTapChangerEnabled && !ratioTapInputForm.validate()) {
             isFormValid = false;
         } else if (ratioTapChangerEnabled && ratioTapInputForm.validate()) {
@@ -778,7 +778,7 @@ const TwoWindingsTransformerCreationDialog = ({
             };
         }
 
-        let phaseTap = {};
+        let phaseTap = undefined;
         if (phaseTapChangerEnabled && !phaseTapInputForm.validate()) {
             isFormValid = false;
         } else if (phaseTapChangerEnabled && phaseTapInputForm.validate()) {
