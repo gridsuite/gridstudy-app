@@ -662,13 +662,12 @@ const TwoWindingsTransformerCreationDialog = ({
                     id: 'GenerateRatioTapRowsError',
                 });
             } else {
-                let tapValues = Object.values(
-                    ratioTapRows.map((row) => {
-                        return parseInt(row.tap, 10);
-                    })
-                );
+                let tapValues = ratioTapRows.map((row) => {
+                        return parseInt(row.tap);
+                    });
                 let minTap = Math.min(...tapValues);
-                if (minTap !== ratioLowTapPosition) {
+
+                if (minTap !== parseInt(ratioLowTapPosition)) {
                     creationError = intl.formatMessage({
                         id: 'IncoherentRatioLowTapPositionError',
                     });
@@ -687,13 +686,12 @@ const TwoWindingsTransformerCreationDialog = ({
                     id: 'GeneratePhaseTapRowsError',
                 });
             } else {
-                let tapValues = Object.values(
-                    phaseTapRows.map((row) => {
-                        return parseInt(row.tap, 10);
-                    })
-                );
+                let tapValues = phaseTapRows.map((row) => {
+                        return parseInt(row.tap);
+                    });
                 let minTap = Math.min(...tapValues);
-                if (minTap !== phaseLowTapPosition) {
+
+                if (minTap !== parseInt(phaseLowTapPosition)) {
                     creationError = intl.formatMessage({
                         id: 'IncoherentPhaseLowTapPositionError',
                     });
