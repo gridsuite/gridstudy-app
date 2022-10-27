@@ -20,10 +20,8 @@ import { deleteEquipment } from '../../utils/rest-api';
 import { useSnackMessage } from '../../utils/messages';
 import { validateField } from '../util/validation-functions';
 import { useInputForm } from './inputs/input-hooks';
-import { EquipmentItem, equipmentStyles } from '@gridsuite/commons-ui';
 import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
-import makeStyles from '@mui/styles/makeStyles';
-import { filledTextField } from './dialogUtils';
+import { filledTextField, getIdOrSelf } from './dialogUtils';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
 const equipmentTypes = [
@@ -56,16 +54,20 @@ const makeItems = (eqpts, usesNames) => {
         .sort((a, b) => a.label.localeCompare(b.label));
 };
 
-const useEquipmentStyles = makeStyles(equipmentStyles);
-
 /**
  * Dialog to delete an equipment in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param {String} title Title of the dialog
  * @param currentNodeUuid : the currently selected tree node
+ * @param editData the data to edit
  */
-const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
+const EquipmentDeletionDialog = ({
+    open,
+    onClose,
+    currentNodeUuid,
+    editData,
+}) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { snackError } = useSnackMessage();
@@ -73,16 +75,11 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     const intl = useIntl();
     const inputForm = useInputForm();
 
-    const equipmentClasses = useEquipmentStyles();
-
-    const [equipmentType, setEquipmentType] = useState('LINE');
+    const [equipmentType, setEquipmentType] = useState(
+        editData?.equipmentType ?? 'LINE'
+    );
 
     const [errors, setErrors] = useState(new Map());
-
-    const handleChangeEquipmentType = (event) => {
-        const nextEquipmentType = event.target.value;
-        setEquipmentType(nextEquipmentType);
-    };
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(
@@ -93,28 +90,26 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
             makeItems
         );
 
-    const [equipmentOrId, equipmentField] = useAutocompleteField({
-        allowNewValue: true,
-        label: intl.formatMessage({
-            id: 'ID',
-        }),
-        getLabel: (option) => option?.label || option?.id || option,
-        validation: { isFieldRequired: true },
-        formProps: filledTextField,
-        inputForm: inputForm,
-        onSearchTermChange: searchMatchingEquipments,
-        values: equipmentsFound,
-        resetsWhenValuesChange: true,
-        defaultValue: '',
-        renderElement: (props) => (
-            <EquipmentItem
-                classes={equipmentClasses}
-                {...props}
-                key={props.element.key}
-                showsJustText={true}
-            />
-        ),
-    });
+    const [equipmentOrId, equipmentField, setEquipmentOrId] =
+        useAutocompleteField({
+            allowNewValue: true,
+            label: intl.formatMessage({
+                id: 'ID',
+            }),
+            getLabel: getIdOrSelf,
+            validation: { isFieldRequired: true },
+            formProps: filledTextField,
+            inputForm: inputForm,
+            onSearchTermChange: searchMatchingEquipments,
+            values: equipmentsFound,
+            defaultValue: editData?.equipmentId || '',
+        });
+
+    const handleChangeEquipmentType = (event) => {
+        const nextEquipmentType = event.target.value;
+        setEquipmentType(nextEquipmentType);
+        setEquipmentOrId(null);
+    };
 
     function handleDeleteEquipmentError(response, messsageId) {
         const utf8Decoder = new TextDecoder('utf-8');
@@ -153,7 +148,8 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                 equipmentType.endsWith('CONVERTER_STATION')
                     ? 'HVDC_CONVERTER_STATION'
                     : equipmentType,
-                equipmentOrId?.id || equipmentOrId
+                equipmentOrId?.id || equipmentOrId,
+                editData?.uuid
             ).then((response) => {
                 if (response.status !== 200) {
                     handleDeleteEquipmentError(
@@ -228,7 +224,7 @@ const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
                 <Button onClick={handleCloseAndClear}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleSave}>
+                <Button onClick={handleSave} disabled={!inputForm.hasChanged}>
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
@@ -240,6 +236,7 @@ EquipmentDeletionDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     currentNodeUuid: PropTypes.string,
+    editData: PropTypes.object,
 };
 
 export default EquipmentDeletionDialog;

@@ -12,11 +12,14 @@ import Paper from '@mui/material/Paper';
 import LoadFlowResult from './loadflow-result';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
+import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './util/alert-invalid-node';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { useParameterState } from './dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -27,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         flexGrow: 1,
     },
-    sensitivityResult: {
+    analysisResult: {
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
@@ -60,6 +63,8 @@ export const ResultViewTab = ({
 
     const intl = useIntl();
 
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.table}>
@@ -83,7 +88,7 @@ export const ResultViewTab = ({
 
     function renderSensitivityAnalysisResult() {
         return (
-            <Paper className={classes.sensitivityResult}>
+            <Paper className={classes.analysisResult}>
                 <SensitivityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
@@ -91,6 +96,24 @@ export const ResultViewTab = ({
             </Paper>
         );
     }
+
+    function renderShortCircuitAnalysisResult() {
+        return (
+            <Paper className={classes.analysisResult}>
+                <ShortCircuitAnalysisResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                />
+            </Paper>
+        );
+    }
+
+    useEffect(() => {
+        if (!enableDeveloperMode) {
+            // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
+            setTabIndex(0);
+        }
+    }, [enableDeveloperMode]);
 
     return (
         <Paper className={clsx('singlestretch-child', classes.table)}>
@@ -111,18 +134,29 @@ export const ResultViewTab = ({
                         })}
                         disabled={disabled}
                     />
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'sensitivityAnalysisResults',
-                        })}
-                        disabled={disabled}
-                    />
+                    {enableDeveloperMode && (
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'sensitivityAnalysisResults',
+                            })}
+                            disabled={disabled}
+                        />
+                    )}
+                    {enableDeveloperMode && (
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'ShortCircuitAnalysisResults',
+                            })}
+                            disabled={disabled}
+                        />
+                    )}
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
             {tabIndex === 0 && !disabled && renderLoadFlowResult()}
             {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
             {tabIndex === 2 && !disabled && renderSensitivityAnalysisResult()}
+            {tabIndex === 3 && !disabled && renderShortCircuitAnalysisResult()}
         </Paper>
     );
 };

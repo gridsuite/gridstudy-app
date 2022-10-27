@@ -230,7 +230,11 @@ const LoadModificationDialog = ({
                     <Button onClick={handleCloseAndClear} variant="text">
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave} variant="text">
+                    <Button
+                        onClick={handleSave}
+                        variant="text"
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

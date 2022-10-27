@@ -13,8 +13,10 @@ import {
     startLoadFlow,
     startSecurityAnalysis,
     startSensitivityAnalysis,
+    startShortCircuitAnalysis,
     stopSecurityAnalysis,
     stopSensitivityAnalysis,
+    stopShortCircuitAnalysis,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
 import LoopIcon from '@mui/icons-material/Loop';
@@ -23,10 +25,17 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import ContingencyListSelector from './dialogs/contingency-list-selector';
 import makeStyles from '@mui/styles/makeStyles';
-import { addLoadflowNotif, addSANotif, addSensiNotif } from '../redux/actions';
+import {
+    addLoadflowNotif,
+    addSANotif,
+    addSensiNotif,
+    addShortCircuitNotif,
+} from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '../utils/messages';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { useParameterState } from './dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -40,6 +49,7 @@ export function RunButtonContainer({
     loadFlowStatus,
     securityAnalysisStatus,
     sensiStatus,
+    shortCircuitStatus,
     setIsComputationRunning,
     runnable,
     disabled,
@@ -60,6 +70,8 @@ export function RunButtonContainer({
 
     const [ranSensi, setRanSensi] = useState(false);
 
+    const [ranShortCircuit, setRanShortCircuit] = useState(false);
+
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
@@ -67,6 +79,8 @@ export function RunButtonContainer({
     const classes = useStyles();
 
     const dispatch = useDispatch();
+
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
@@ -89,8 +103,21 @@ export function RunButtonContainer({
                 'sensitivityAnalysisResult'
         ) {
             dispatch(addSensiNotif());
+        } else if (
+            ranShortCircuit &&
+            studyUpdatedForce?.eventData?.headers?.updateType ===
+                'shortCircuitAnalysisResult'
+        ) {
+            dispatch(addShortCircuitNotif());
         }
-    }, [dispatch, studyUpdatedForce, ranSA, ranLoadflow, ranSensi]);
+    }, [
+        dispatch,
+        studyUpdatedForce,
+        ranSA,
+        ranLoadflow,
+        ranSensi,
+        ranShortCircuit,
+    ]);
 
     const ACTION_ON_RUNNABLES = {
         text: intl.formatMessage({ id: 'StopComputation' }),
@@ -100,6 +127,9 @@ export function RunButtonContainer({
                 setComputationStopped(!computationStopped);
             } else if (action === runnable.SENSITIVITY_ANALYSIS) {
                 stopSensitivityAnalysis(studyUuid, currentNode?.id);
+                setComputationStopped(!computationStopped);
+            } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
+                stopShortCircuitAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -148,6 +178,12 @@ export function RunButtonContainer({
         } else if (action === runnable.SENSITIVITY_ANALYSIS) {
             setShowSensiParametersSelector(true);
             setRanSensi(true);
+        } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
+            startShortCircuitAnalysis(studyUuid, currentNode?.id)
+                .then(setRanShortCircuit(true))
+                .catch((errorMessage) => {
+                    snackError(errorMessage, 'ShortCircuitError');
+                });
         }
     };
 
@@ -159,13 +195,21 @@ export function RunButtonContainer({
                 return securityAnalysisStatus;
             } else if (runnableType === runnable.SENSITIVITY_ANALYSIS) {
                 return sensiStatus;
+            } else if (runnableType === runnable.SHORT_CIRCUIT_ANALYSIS) {
+                return shortCircuitStatus;
             }
         },
-        [loadFlowStatus, securityAnalysisStatus, sensiStatus, runnable]
+        [
+            loadFlowStatus,
+            securityAnalysisStatus,
+            sensiStatus,
+            shortCircuitStatus,
+            runnable,
+        ]
     );
 
-    const getRunningText = (runnable, status) => {
-        return runnable;
+    const getRunningText = (runnableName, runnableStatus) => {
+        return runnableName;
     };
 
     const getRunningIcon = (status) => {
@@ -182,14 +226,16 @@ export function RunButtonContainer({
         }
     };
 
-    const RUNNABLES = useMemo(
-        () => [
-            runnable.LOADFLOW,
-            runnable.SECURITY_ANALYSIS,
-            runnable.SENSITIVITY_ANALYSIS,
-        ],
-        [runnable]
-    );
+    const RUNNABLES = useMemo(() => {
+        let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
+        if (enableDeveloperMode) {
+            // SENSI is currently a dev feature
+            runnables.push(runnable.SENSITIVITY_ANALYSIS);
+            // SHORTCIRCUIT is currently a dev feature
+            runnables.push(runnable.SHORT_CIRCUIT_ANALYSIS);
+        }
+        return runnables;
+    }, [runnable, enableDeveloperMode]);
 
     useEffect(() => {
         setIsComputationRunning(

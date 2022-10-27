@@ -20,6 +20,8 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
+const PREFIX_DIRECTORY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 
 function getToken() {
     const state = store.getState();
@@ -913,6 +915,65 @@ export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
     });
 }
 
+export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        `Running short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const startShortCircuitAnanysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/run';
+    console.debug(startShortCircuitAnanysisUrl);
+    return backendFetch(startShortCircuitAnanysisUrl, { method: 'put' }).then(
+        (response) =>
+            response.ok
+                ? response
+                : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopShortCircuitAnalysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/stop';
+    console.debug(stopShortCircuitAnalysisUrl);
+    return backendFetch(stopShortCircuitAnalysisUrl, { method: 'put' });
+}
+
+export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching short circuit analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return Promise.resolve(0);
+        }
+    });
+}
+
+export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/result';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) return response.json();
+        throw new Error(response.status + ' ' + response.statusText);
+    });
+}
+
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');
     const url =
@@ -1126,6 +1187,30 @@ export function connectNotificationsWebsocket(studyUuid) {
         console.info('Connected Websocket ' + wsadress + ' ...');
     };
     return rws;
+}
+
+/**
+ * Function will be called to connect with notification websocket to update the studies list
+ * @returns {ReconnectingWebSocket}
+ */
+export function connectNotificationsWsUpdateDirectories() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl +
+        PREFIX_DIRECTORY_NOTIFICATION_WS +
+        '/notify?updateType=directories';
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        () => webSocketUrl + '&access_token=' + getToken()
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update directories ' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
 }
 
 export function connectNotificationsWsUpdateConfig() {
@@ -2072,22 +2157,32 @@ export function deleteEquipment(
     studyUuid,
     currentNodeUuid,
     equipmentType,
-    equipmentId
+    equipmentId,
+    modificationUuid
 ) {
-    console.info(
-        'deleting equipment ' +
-            equipmentId +
-            ' with type ' +
-            equipmentType +
-            ' ...'
-    );
-    const deleteEquipmentUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/equipments/type/' +
-        encodeURIComponent(equipmentType) +
-        '/id/' +
-        encodeURIComponent(equipmentId);
-    return backendFetch(deleteEquipmentUrl, { method: 'delete' });
+    let deleteEquipmentUrl;
+    if (modificationUuid) {
+        console.info('Updating equipment deletion');
+        deleteEquipmentUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/equipments-deletion/type/' +
+            encodeURIComponent(equipmentType) +
+            '/id/' +
+            encodeURIComponent(equipmentId);
+    } else {
+        console.info('Creating equipment deletion');
+        deleteEquipmentUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/equipments/type/' +
+            encodeURIComponent(equipmentType) +
+            '/id/' +
+            encodeURIComponent(equipmentId);
+    }
+    return backendFetch(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'DELETE',
+    });
 }
 
 export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {

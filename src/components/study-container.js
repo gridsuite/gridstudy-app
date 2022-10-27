@@ -24,8 +24,10 @@ import {
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchPath,
+    connectNotificationsWsUpdateDirectories,
     fetchCaseName,
     fetchSensitivityAnalysisStatus,
+    fetchShortCircuitAnalysisStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -51,6 +53,7 @@ import {
 import {
     getSecurityAnalysisRunningStatus,
     getSensiRunningStatus,
+    getShortCircuitRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
@@ -151,6 +154,10 @@ const sensiStatusInvalidations = [
     'sensitivityAnalysis_status',
     'sensitivityAnalysis_failed',
 ];
+const shortCircuitStatusInvalidations = [
+    'shortCircuitAnalysis_status',
+    'shortCircuitAnalysis_failed',
+];
 const UPDATE_TYPE_HEADER = 'updateType';
 
 export function StudyContainer({ view, onChangeTab }) {
@@ -205,6 +212,15 @@ export function StudyContainer({ view, onChangeTab }) {
         getSensiRunningStatus
     );
 
+    const [shortCircuitStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchShortCircuitAnalysisStatus,
+        shortCircuitStatusInvalidations,
+        RunningStatus.IDLE,
+        getShortCircuitRunningStatus
+    );
+
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
@@ -225,6 +241,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const intl = useIntl();
 
+    const wsRef = useRef();
+
     const checkFailNotifications = useCallback(
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
@@ -236,6 +254,9 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             if (updateTypeHeader === 'sensitivityAnalysis_failed') {
                 snackError('', 'sensitivityAnalysisError');
+            }
+            if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
+                snackError('', 'shortCircuitAnalysisError');
             }
         },
         [snackError]
@@ -265,6 +286,30 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: dispatch doesn't change
         [dispatch, checkFailNotifications]
     );
+
+    useEffect(() => {
+        // create ws at mount event
+        wsRef.current = connectNotificationsWsUpdateDirectories();
+
+        wsRef.current.onmessage = function (event) {
+            const eventData = JSON.parse(event.data);
+            dispatch(studyUpdated(eventData));
+        };
+
+        wsRef.current.onclose = function () {
+            console.error('Unexpected Notification WebSocket closed');
+        };
+        wsRef.current.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
+        // That's because wsRef.current could be modify outside of this scope.
+        const wsToClose = wsRef.current;
+        // cleanup at unmount event
+        return () => {
+            wsToClose.close();
+        };
+    }, [dispatch]);
 
     const displayNetworkLoadingFailMessage = useCallback((error) => {
         console.error(error.message);
@@ -561,6 +606,9 @@ export function StudyContainer({ view, onChangeTab }) {
             SENSITIVITY_ANALYSIS: intl.formatMessage({
                 id: 'SensitivityAnalysis',
             }),
+            SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
+                id: 'ShortCircuitAnalysis',
+            }),
         };
     }, [intl]);
 
@@ -631,6 +679,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 loadFlowInfos={loadFlowInfos}
                 securityAnalysisStatus={securityAnalysisStatus}
                 sensiStatus={sensiStatus}
+                shortCircuitStatus={shortCircuitStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />
