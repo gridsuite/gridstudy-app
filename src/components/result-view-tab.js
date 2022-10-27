@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import LoadFlowResult from './loadflow-result';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
@@ -107,6 +107,13 @@ export const ResultViewTab = ({
             </Paper>
         );
     }
+
+    useEffect(() => {
+        if (!enableDeveloperMode) {
+            // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
+            setTabIndex(0);
+        }
+    }, [enableDeveloperMode]);
 
     return (
         <Paper className={clsx('singlestretch-child', classes.table)}>
