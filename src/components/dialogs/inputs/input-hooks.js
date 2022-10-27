@@ -63,6 +63,7 @@ import RegulatingTerminalEdition, {
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
+    const [hasChanged, setHasChanged] = useState(false);
     const validate = useCallback(() => {
         // Check if error list contains an error
         return Array.from(validationMap.current.values())
@@ -87,8 +88,10 @@ export const useInputForm = () => {
             validate,
             addValidation,
             reset,
+            hasChanged,
+            setHasChanged,
         };
-    }, [toggleClear, clear, validate, addValidation, reset]);
+    }, [toggleClear, clear, validate, addValidation, reset, hasChanged]);
 };
 
 export const useTextValue = ({
@@ -127,8 +130,9 @@ export const useTextValue = ({
         (event) => {
             if (acceptValue === undefined || acceptValue(event.target.value))
                 setValue(transformValue(event.target.value));
+            inputForm.setHasChanged(true);
         },
-        [acceptValue, transformValue]
+        [acceptValue, inputForm, transformValue]
     );
 
     const handleClearValue = useCallback(() => {
@@ -331,7 +335,6 @@ export const useEnumValue = ({
     getEnumLabel = getLabel,
 }) => {
     const [value, setValue] = useState(defaultValue);
-
     useEffect(() => {
         function validate() {
             return true;
@@ -339,9 +342,13 @@ export const useEnumValue = ({
         inputForm.addValidation(label, validate);
     }, [label, validation, inputForm, value]);
 
-    const handleChangeValue = useCallback((event) => {
-        setValue(event.target.value);
-    }, []);
+    const handleChangeValue = useCallback(
+        (event) => {
+            setValue(event.target.value);
+            inputForm.setHasChanged(true);
+        },
+        [inputForm]
+    );
 
     const field = useMemo(() => {
         return (
