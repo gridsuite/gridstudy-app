@@ -117,7 +117,7 @@ const RegulatingTerminalEdition = ({
         //To refactor in order to simplify it :
         //If the user select an existing equipement from the list it is set as the current value
         //Otherwise if nothing have been typed in Equipment field the value is an empty string
-        //If something has been typed the value will be the combination of what the user typed and default typed passed as prop
+        //If something has been typed but it does not match with an existing equipment, it is allowed in order to specify the equipment currently being created, the value will be the combination of what the user typed and default type passed as prop
         setCurrentEquipment(
             regulatingTerminalValue?.equipmentSection &&
                 selectedExistingEquipment
