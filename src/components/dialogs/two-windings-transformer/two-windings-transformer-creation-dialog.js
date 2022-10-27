@@ -392,8 +392,8 @@ const TwoWindingsTransformerCreationDialog = ({
         formProps: {
             disabled:
                 !(
-                    regulationMode === REGULATION_MODES[1].id ||
-                    regulationMode === REGULATION_MODES[2].id
+                    regulationMode === REGULATION_MODES.CURRENT_LIMITER.id ||
+                    regulationMode === REGULATION_MODES.ACTIVE_POWER_CONTROL.id
                 ) || !phaseTapChangerEnabled,
         },
         defaultValue: formValues?.phaseTapChanger?.regulating ?? false,
@@ -408,7 +408,7 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired:
-                    regulationMode === REGULATION_MODES[1].id &&
+                    regulationMode === REGULATION_MODES.CURRENT_LIMITER.id &&
                     phaseTapRegulating,
                 isValueGreaterThan: '0',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
@@ -427,7 +427,8 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired:
-                    regulationMode === REGULATION_MODES[2].id &&
+                    regulationMode ===
+                        REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                     phaseTapRegulating,
                 isValueGreaterThan: '0',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
@@ -812,9 +813,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 regulating: phaseTapRegulating,
                 regulationMode: regulationMode,
                 regulationValue:
-                    regulationMode === REGULATION_MODES[2].id
+                    regulationMode === REGULATION_MODES.ACTIVE_POWER_CONTROL.id
                         ? flowSetPointRegulatingValue
-                        : regulationMode === REGULATION_MODES[1].id
+                        : regulationMode === REGULATION_MODES.CURRENT_LIMITER.id
                         ? currentLimiterRegulatingValue
                         : undefined,
                 targetDeadband: phaseTapTargetDeadband,

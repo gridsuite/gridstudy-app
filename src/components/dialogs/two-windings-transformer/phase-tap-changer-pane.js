@@ -451,9 +451,11 @@ const PhaseTapChangerPane = (props) => {
                     </Grid>
 
                     <Grid item xs={4}>
-                        {regulationMode !== REGULATION_MODES[2].id &&
+                        {regulationMode !==
+                            REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                             currentLimiterRegulatingValueField}
-                        {regulationMode === REGULATION_MODES[2].id &&
+                        {regulationMode ===
+                            REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                             flowSetPointRegulatingValueField}
                     </Grid>
                     <Grid item xs={4}>

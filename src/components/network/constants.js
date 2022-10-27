@@ -32,11 +32,14 @@ export const UPDATE_TYPE = [
     'deletingInProgress',
 ];
 
-export const REGULATION_MODES = [
-    { id: 'FIXED_TAP', label: 'FixedTap' },
-    { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
-    { id: 'ACTIVE_POWER_CONTROL', label: 'ActivePowerControl' },
-];
+export const REGULATION_MODES = {
+    FIXED_TAP: { id: 'FIXED_TAP', label: 'FixedTap' },
+    CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
+    ACTIVE_POWER_CONTROL: {
+        id: 'ACTIVE_POWER_CONTROL',
+        label: 'ActivePowerControl',
+    },
+};
 
 export const CONNECTION_DIRECTION = [
     { id: '', label: 'None' },

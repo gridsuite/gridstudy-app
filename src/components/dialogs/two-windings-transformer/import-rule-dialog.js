@@ -86,9 +86,7 @@ export const ImportRuleDialog = (props) => {
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
-                    disabled={
-                        selectedFileError && selectedFileError.length !== 0
-                    }
+                    disabled={selectedFileError?.length !== 0}
                     onClick={handleSave}
                 >
                     <FormattedMessage id="validate" />
