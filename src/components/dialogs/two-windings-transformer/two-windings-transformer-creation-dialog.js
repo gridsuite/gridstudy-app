@@ -101,6 +101,8 @@ const TwoWindingsTransformerCreationDialog = ({
         setFormValues(null);
     };
 
+    const [isCopy, setIsCopy] = useState(false);
+
     const [creationError, setCreationError] = useState(undefined);
 
     /**
@@ -256,7 +258,9 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true },
             inputForm: ratioTapInputForm,
             defaultValue:
-                formValues?.hasOwnProperty('ratioTapChanger') ?? false,
+                formValues?.ratioTapChanger?.tapPosition !== undefined
+                    ? true
+                    : false,
         });
 
     const [ratioTapRegulating, ratioTapRegulatingField] = useBooleanValue({
@@ -348,7 +352,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const [ratioHighTapPosition, ratioHighTapPositionField] = useDoubleValue({
         label: 'HighTapPosition',
         validation: {
-            isFieldRequired: ratioTapChangerEnabled && !editData,
+            isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
             isFieldNumeric: true,
         },
         inputForm: ratioTapInputForm,
@@ -385,7 +389,9 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true },
             inputForm: phaseTapInputForm,
             defaultValue:
-                formValues?.hasOwnProperty('phaseTapChanger') ?? false,
+                formValues?.phaseTapChanger?.tapPosition !== undefined
+                    ? true
+                    : false,
         });
 
     const [regulationMode, regulationModeField] = useEnumValue({
@@ -498,7 +504,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const [phaseHighTapPosition, phaseHighTapPositionField] = useDoubleValue({
         label: 'HighTapPosition',
         validation: {
-            isFieldRequired: phaseTapChangerEnabled && !editData,
+            isFieldRequired: phaseTapChangerEnabled && !editData && !isCopy,
             isFieldNumeric: true,
         },
         inputForm: phaseTapInputForm,
@@ -557,6 +563,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 )
             );
         }
+
+        setIsCopy(true);
         return {
             equipmentId: twt.id + '(1)',
             equipmentName: twt.name,
