@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchReport } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../utils/messages';
 import Paper from '@mui/material/Paper';
@@ -18,6 +18,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -27,8 +28,6 @@ const useStyles = makeStyles(() => ({
         margin: 5,
     },
 }));
-
-const NETWORK_MODIFICATION = 'NetworkModification';
 
 /**
  * control the ReportViewer (fetch and waiting)
@@ -48,6 +47,10 @@ export const ReportViewerTab = ({
     const intl = useIntl();
     const classes = useStyles();
 
+    const treeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
+
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
@@ -57,25 +60,22 @@ export const ReportViewerTab = ({
         setNodeOnlyReport(event.target.checked);
     }, []);
 
-    function condenseReport(report) {
-        let newReport = {
-            taskKey: report.taskKey,
-            defaultName: report.defaultName,
-            taskValues: report.taskValues,
-            reports: report.reports,
-            subReporters: [],
-        };
-        report.subReporters.forEach((subReport1) => {
-            if (subReport1.taskKey === NETWORK_MODIFICATION) {
-                // we group all network modifications together
-                newReport.subReporters.push(...subReport1.subReporters);
-                newReport.reports.push(...subReport1.reports);
-            } else {
-                newReport.subReporters.push(subReport1);
-            }
-        });
-        return newReport;
-    }
+    const nodesNames = useMemo(() => {
+        return new Map(
+            treeModel.treeNodes.map((node) => [node.id, node.data.label])
+        );
+    }, [treeModel]);
+
+    const setNodeName = useCallback(
+        (report) => {
+            report.defaultName =
+                report.taskKey === 'Root'
+                    ? report.taskKey
+                    : nodesNames.get(report.taskKey);
+            return report;
+        },
+        [nodesNames]
+    );
 
     useEffect(() => {
         if (visible && !disabled) {
@@ -83,7 +83,7 @@ export const ReportViewerTab = ({
             fetchReport(studyId, currentNode.id, nodeOnlyReport)
                 .then((fetchedReport) => {
                     if (fetchedReport.length === 1) {
-                        setReport(condenseReport(fetchedReport[0]));
+                        setReport(setNodeName(fetchedReport[0]));
                     } else {
                         let globalReport = {
                             taskKey: 'root',
@@ -91,7 +91,7 @@ export const ReportViewerTab = ({
                             taskValues: {},
                             reports: [],
                             subReporters: fetchedReport.map((r) =>
-                                condenseReport(r)
+                                setNodeName(r)
                             ),
                         };
                         setReport(globalReport);
@@ -111,6 +111,8 @@ export const ReportViewerTab = ({
         visible,
         studyId,
         currentNode,
+        nodesNames,
+        setNodeName,
         nodeOnlyReport,
         enqueueSnackbar,
         disabled,

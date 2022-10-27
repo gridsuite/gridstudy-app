@@ -14,42 +14,32 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { createLine } from '../../utils/rest-api';
+import { createTwoWindingsTransformer } from '../../utils/rest-api';
 import {
+    useButtonWithTooltip,
     useDoubleValue,
     useInputForm,
     useTextValue,
-    useButtonWithTooltip,
 } from './inputs/input-hooks';
 import {
-    AmpereAdornment,
     filledTextField,
     gridItem,
     OhmAdornment,
     sanitizeString,
     SusceptanceAdornment,
+    VoltageAdornment,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useConnectivityValue } from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
-    },
     h3: {
         marginBottom: 0,
         paddingBottom: 1,
@@ -57,21 +47,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /**
- * Dialog to create a line in the network
+ * Dialog to create a two windings transformer in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
-const LineCreationDialog = ({
+const TwoWindingsTransformerCreationDialog = ({
     editData,
     open,
     onClose,
     voltageLevelOptionsPromise,
     currentNodeUuid,
-    onCreateLine = createLine,
-    displayConnectivity = true,
 }) => {
     const classes = useStyles();
 
@@ -85,30 +73,24 @@ const LineCreationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const toFormValues = (line) => {
+    const equipmentPath = '2-windings-transformers';
+
+    const toFormValues = (twt) => {
         return {
-            equipmentId: line.id + '(1)',
-            equipmentName: line.name,
-            seriesResistance: line.r,
-            seriesReactance: line.x,
-            shuntConductance1: line.g1,
-            shuntSusceptance1: line.b1,
-            shuntConductance2: line.g2,
-            shuntSusceptance2: line.b2,
-            voltageLevelId1: line.voltageLevelId1,
+            equipmentId: twt.id + '(1)',
+            equipmentName: twt.name,
+            seriesResistance: twt.r,
+            seriesReactance: twt.x,
+            magnetizingConductance: twt.g,
+            magnetizingSusceptance: twt.b,
+            ratedVoltage1: twt.ratedU1,
+            ratedVoltage2: twt.ratedU2,
+            voltageLevelId1: twt.voltageLevelId1,
             busOrBusbarSectionId1: null,
-            voltageLevelId2: line.voltageLevelId2,
+            voltageLevelId2: twt.voltageLevelId2,
             busOrBusbarSectionId2: null,
-            currentLimits1: {
-                permanentLimit: line.permanentLimit1,
-            },
-            currentLimits2: {
-                permanentLimit: line.permanentLimit2,
-            },
         };
     };
-
-    const equipmentPath = 'lines';
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
@@ -129,21 +111,23 @@ const LineCreationDialog = ({
         }
     }, [editData]);
 
-    const [lineId, lineIdField] = useTextValue({
-        label: 'ID',
-        validation: { isFieldRequired: true },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        defaultValue: formValues?.equipmentId,
-    });
+    const [twoWindingsTransformerId, twoWindingsTransformerIdField] =
+        useTextValue({
+            label: 'ID',
+            validation: { isFieldRequired: true },
+            inputForm: inputForm,
+            formProps: filledTextField,
+            defaultValue: formValues?.equipmentId,
+        });
 
-    const [lineName, lineNameField] = useTextValue({
-        label: 'Name',
-        validation: { isFieldRequired: false },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        defaultValue: formValues?.equipmentName,
-    });
+    const [twoWindingsTransformerName, twoWindingsTransformerNameField] =
+        useTextValue({
+            label: 'Name',
+            validation: { isFieldRequired: false },
+            inputForm: inputForm,
+            formProps: filledTextField,
+            defaultValue: formValues?.equipmentName,
+        });
 
     const [seriesResistance, seriesResistanceField] = useDoubleValue({
         label: 'SeriesResistanceText',
@@ -161,46 +145,45 @@ const LineCreationDialog = ({
         defaultValue: formValues?.seriesReactance,
     });
 
-    const [shuntConductance1, shuntConductance1Field] = useDoubleValue({
-        label: 'ShuntConductanceText',
-        id: 'ShuntConductance1',
-        validation: { isFieldRequired: false, isFieldNumeric: true },
-        adornment: SusceptanceAdornment,
+    const [magnetizingConductance, magnetizingConductanceField] =
+        useDoubleValue({
+            label: 'MagnetizingConductance',
+            validation: { isFieldRequired: true, isFieldNumeric: true },
+            adornment: SusceptanceAdornment,
+            inputForm: inputForm,
+            defaultValue: formValues?.magnetizingConductance,
+        });
+
+    const [magnetizingSusceptance, magnetizingSusceptanceField] =
+        useDoubleValue({
+            label: 'MagnetizingSusceptance',
+            validation: { isFieldRequired: true, isFieldNumeric: true },
+            adornment: SusceptanceAdornment,
+            inputForm: inputForm,
+            defaultValue: formValues?.magnetizingSusceptance,
+        });
+
+    const [ratedVoltage1, ratedVoltage1Field] = useDoubleValue({
+        label: 'RatedVoltage',
+        id: 'RatedVoltage1',
+        validation: { isFieldRequired: true, isFieldNumeric: true },
+        adornment: VoltageAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.shuntConductance1,
+        defaultValue: formValues?.ratedVoltage1,
     });
 
-    const [shuntSusceptance1, shuntSusceptance1Field] = useDoubleValue({
-        label: 'ShuntSusceptanceText',
-        id: 'ShuntSusceptance1',
-        validation: { isFieldRequired: false, isFieldNumeric: true },
-        adornment: SusceptanceAdornment,
+    const [ratedVoltage2, ratedVoltage2Field] = useDoubleValue({
+        label: 'RatedVoltage',
+        id: 'RatedVoltage2',
+        validation: { isFieldRequired: true, isFieldNumeric: true },
+        adornment: VoltageAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.shuntSusceptance1,
-    });
-
-    const [shuntConductance2, shuntConductance2Field] = useDoubleValue({
-        label: 'ShuntConductanceText',
-        id: 'ShuntConductance2',
-        validation: { isFieldRequired: false, isFieldNumeric: true },
-        adornment: SusceptanceAdornment,
-        inputForm: inputForm,
-        defaultValue: formValues?.shuntConductance2,
-    });
-
-    const [shuntSusceptance2, shuntSusceptance2Field] = useDoubleValue({
-        label: 'ShuntSusceptanceText',
-        id: 'ShuntSusceptance2',
-        validation: { isFieldRequired: false, isFieldNumeric: true },
-        adornment: SusceptanceAdornment,
-        inputForm: inputForm,
-        defaultValue: formValues?.shuntSusceptance2,
+        defaultValue: formValues?.ratedVoltage2,
     });
 
     const [connectivity1, connectivity1Field] = useConnectivityValue({
         label: 'Connectivity',
         id: 'Connectivity1',
-        validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
         voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
@@ -213,7 +196,6 @@ const LineCreationDialog = ({
     const [connectivity2, connectivity2Field] = useConnectivityValue({
         label: 'Connectivity',
         id: 'Connectivity2',
-        validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
         voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
@@ -223,53 +205,23 @@ const LineCreationDialog = ({
             formValues?.busOrBusbarSectionId2 || null,
     });
 
-    const [permanentCurrentLimit1, permanentCurrentLimit1Field] =
-        useDoubleValue({
-            label: 'PermanentCurrentLimitText',
-            validation: {
-                isFieldRequired: false,
-                isFieldNumeric: true,
-                isValueGreaterThan: '0',
-                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
-            },
-            adornment: AmpereAdornment,
-            inputForm: inputForm,
-            defaultValue: formValues?.currentLimits1?.permanentLimit,
-        });
-
-    const [permanentCurrentLimit2, permanentCurrentLimit2Field] =
-        useDoubleValue({
-            label: 'PermanentCurrentLimitText',
-            validation: {
-                isFieldRequired: false,
-                isFieldNumeric: true,
-                isValueGreaterThan: '0',
-                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
-            },
-            adornment: AmpereAdornment,
-            inputForm: inputForm,
-            defaultValue: formValues?.currentLimits2?.permanentLimit,
-        });
-
     const handleSave = () => {
         if (inputForm.validate()) {
-            onCreateLine(
+            createTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,
-                lineId,
-                sanitizeString(lineName),
+                twoWindingsTransformerId,
+                sanitizeString(twoWindingsTransformerName),
                 seriesResistance,
                 seriesReactance,
-                shuntConductance1,
-                shuntSusceptance1,
-                shuntConductance2,
-                shuntSusceptance2,
-                connectivity1?.voltageLevel?.id,
-                connectivity1?.busOrBusbarSection?.id,
-                connectivity2?.voltageLevel?.id,
-                connectivity2?.busOrBusbarSection?.id,
-                permanentCurrentLimit1,
-                permanentCurrentLimit2,
+                magnetizingConductance,
+                magnetizingSusceptance,
+                ratedVoltage1,
+                ratedVoltage2,
+                connectivity1.voltageLevel.id,
+                connectivity1.busOrBusbarSection.id,
+                connectivity2.voltageLevel.id,
+                connectivity2.busOrBusbarSection.id,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
@@ -277,7 +229,7 @@ const LineCreationDialog = ({
                     errorMessage: errorMessage,
                     enqueueSnackbar: enqueueSnackbar,
                     headerMessage: {
-                        headerMessageId: 'LineCreationError',
+                        headerMessageId: 'TwoWindingsTransformerCreationError',
                         intlRef: intlRef,
                     },
                 });
@@ -307,21 +259,21 @@ const LineCreationDialog = ({
             <Dialog
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="dialog-create-line"
+                aria-labelledby="dialog-create-two-windings-transformer"
                 fullWidth={true}
             >
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
                         <Grid item xs={11}>
-                            <FormattedMessage id="CreateLine" />
+                            <FormattedMessage id="CreateTwoWindingsTransformer" />
                         </Grid>
                         <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
-                        {gridItem(lineIdField)}
-                        {gridItem(lineNameField)}
+                        {gridItem(twoWindingsTransformerIdField)}
+                        {gridItem(twoWindingsTransformerNameField)}
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -333,29 +285,10 @@ const LineCreationDialog = ({
                     <Grid container spacing={2}>
                         {gridItem(seriesResistanceField)}
                         {gridItem(seriesReactanceField)}
+                        {gridItem(magnetizingConductanceField)}
+                        {gridItem(magnetizingSusceptanceField)}
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <h4 className={classes.h4}>
-                                <FormattedMessage id="Side1" />
-                            </h4>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <h4 className={classes.h4}>
-                                <FormattedMessage id="Side2" />
-                            </h4>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item container xs={6} spacing={2}>
-                            {gridItem(shuntConductance1Field, 12)}
-                            {gridItem(shuntSusceptance1Field, 12)}
-                        </Grid>
-                        <Grid item container xs={6} spacing={2}>
-                            {gridItem(shuntConductance2Field, 12)}
-                            {gridItem(shuntSusceptance2Field, 12)}
-                        </Grid>
-                    </Grid>
+                    {/* <br /> */}
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <h3 className={classes.h3}>
@@ -376,57 +309,41 @@ const LineCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item container xs={6} direction="column">
-                            {gridItem(permanentCurrentLimit1Field, 12)}
-                        </Grid>
-                        <Grid item container direction="column" xs={6}>
-                            {gridItem(permanentCurrentLimit2Field, 12)}
+                        {gridItem(ratedVoltage1Field)}
+                        {gridItem(ratedVoltage2Field)}
+                    </Grid>
+                    {/* <br /> */}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <h3 className={classes.h3}>
+                                <FormattedMessage id="Connectivity" />
+                            </h3>
                         </Grid>
                     </Grid>
-                    {displayConnectivity && (
-                        <>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <h3 className={classes.h3}>
-                                        <FormattedMessage id="Connectivity" />
-                                    </h3>
-                                </Grid>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <h4 className={classes.h4}>
+                                <FormattedMessage id="Side1" />
+                            </h4>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <h4 className={classes.h4}>
+                                <FormattedMessage id="Side2" />
+                            </h4>
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={2}>
+                        <Grid item container xs={6} direction="column">
+                            <Grid container direction="column" spacing={2}>
+                                {gridItem(connectivity1Field, 12)}
                             </Grid>
-                            <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    <h4 className={classes.h4}>
-                                        <FormattedMessage id="Side1" />
-                                    </h4>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <h4 className={classes.h4}>
-                                        <FormattedMessage id="Side2" />
-                                    </h4>
-                                </Grid>
+                        </Grid>
+                        <Grid item container direction="column" xs={6}>
+                            <Grid container direction="column" spacing={2}>
+                                {gridItem(connectivity2Field, 12)}
                             </Grid>
-
-                            <Grid container spacing={2}>
-                                <Grid item container xs={6} direction="column">
-                                    <Grid
-                                        container
-                                        direction="column"
-                                        spacing={2}
-                                    >
-                                        {gridItem(connectivity1Field, 12)}
-                                    </Grid>
-                                </Grid>
-                                <Grid item container direction="column" xs={6}>
-                                    <Grid
-                                        container
-                                        direction="column"
-                                        spacing={2}
-                                    >
-                                        {gridItem(connectivity2Field, 12)}
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </>
-                    )}
+                        </Grid>
+                    </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
@@ -443,7 +360,7 @@ const LineCreationDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'LINE'}
+                equipmentType={'TWO_WINDINGS_TRANSFORMER'}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />
@@ -451,7 +368,7 @@ const LineCreationDialog = ({
     );
 };
 
-LineCreationDialog.propTypes = {
+TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -462,4 +379,4 @@ LineCreationDialog.propTypes = {
     currentNodeUuid: PropTypes.string,
 };
 
-export default LineCreationDialog;
+export default TwoWindingsTransformerCreationDialog;
