@@ -55,12 +55,15 @@ export const useStyles = makeStyles((theme) => ({
         gap: '8px',
         flexWrap: 'wrap',
         flexDirection: 'row',
-        marginTop: 4,
+        marginTop: -15,
         padding: 4,
         overflow: 'hidden',
     },
     labelDirectoryElements: {
         marginTop: -10,
+    },
+    addDirectoryElements: {
+        marginTop: -5,
     },
 }));
 

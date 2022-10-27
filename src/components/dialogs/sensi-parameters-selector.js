@@ -62,10 +62,10 @@ export const SENSI_PARAMETER_PREFIX_IN_DATABASE = 'sensi.';
 
 const useStyles = makeStyles((theme) => ({
     checkedButton: {
-        marginTop: 30,
+        marginTop: 20,
     },
     deleteButton: {
-        marginTop: 20,
+        marginTop: 10,
     },
     button: {
         justifyContent: 'flex-start',

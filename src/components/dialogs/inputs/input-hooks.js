@@ -839,6 +839,7 @@ export const useDirectoryElements = ({
                         <Grid item xs>
                             <Grid container direction="row-reverse">
                                 <IconButton
+                                    className={classes.addDirectoryElements}
                                     size={'small'}
                                     onClick={() =>
                                         setDirectoryItemSelectorOpen(true)
@@ -881,6 +882,7 @@ export const useDirectoryElements = ({
         classes.formDirectoryElements1,
         classes.formDirectoryElements2,
         classes.labelDirectoryElements,
+        classes.addDirectoryElements,
         values,
         addElements,
         handleDelete,
