@@ -663,8 +663,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 });
             } else {
                 let tapValues = ratioTapRows.map((row) => {
-                        return parseInt(row.tap);
-                    });
+                    return parseInt(row.tap);
+                });
                 let minTap = Math.min(...tapValues);
 
                 if (minTap !== parseInt(ratioLowTapPosition)) {
@@ -687,8 +687,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 });
             } else {
                 let tapValues = phaseTapRows.map((row) => {
-                        return parseInt(row.tap);
-                    });
+                    return parseInt(row.tap);
+                });
                 let minTap = Math.min(...tapValues);
 
                 if (minTap !== parseInt(phaseLowTapPosition)) {
