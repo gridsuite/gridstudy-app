@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { gridItem } from '../dialogUtils';
-import { useInputForm, useTextValue } from '../inputs/input-hooks';
+import { useDoubleValue, useInputForm } from '../inputs/input-hooks';
 import {
     PHASE_TAP,
     RATIO_TAP,
@@ -23,14 +23,14 @@ import {
 export const CreateRuleDialog = (props) => {
     const inputForm = useInputForm();
 
-    const [lowTapValue, lowTapValueField] = useTextValue({
+    const [lowTapValue, lowTapValueField] = useDoubleValue({
         ...(props.ruleType === PHASE_TAP && { label: 'LowTapAlpha' }),
         ...(props.ruleType === RATIO_TAP && { label: 'LowTapRatio' }),
         validation: { isFieldRequired: true },
         inputForm: inputForm,
     });
 
-    const [highTapValue, highTapValueField] = useTextValue({
+    const [highTapValue, highTapValueField] = useDoubleValue({
         ...(props.ruleType === PHASE_TAP && { label: 'HighTapAlpha' }),
         ...(props.ruleType === RATIO_TAP && { label: 'HighTapRatio' }),
         validation: { isFieldRequired: true },

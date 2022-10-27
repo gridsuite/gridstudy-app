@@ -358,7 +358,7 @@ export const useEnumValue = ({
 
     const field = useMemo(() => {
         return (
-            <FormControl fullWidth size="small" error={error && error !== ''}>
+            <FormControl fullWidth size="small" error={!!error}>
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                 <InputLabel id="enum-type-label" {...formProps}>
@@ -775,9 +775,9 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
 };
 
 export const useCSVReader = ({ label, header }) => {
-    const [selectedFile, setSelectedFile] = useState();
     const intl = useIntl();
-    const [isFileOk, setIsFileOk] = useState(false);
+
+    const [selectedFile, setSelectedFile] = useState();
     const [fileError, setFileError] = useState();
 
     const equals = (a, b) =>
@@ -814,21 +814,19 @@ export const useCSVReader = ({ label, header }) => {
     }, [handleFileUpload, label, selectedFile?.name]);
 
     useEffect(() => {
-        if (selectedFile && selectedFile.type === 'text/csv') {
+        if (selectedFile?.type === 'text/csv') {
             Papa.parse(selectedFile, {
                 header: true,
                 skipEmptyLines: true,
                 complete: function (results) {
                     if (equals(header, results.meta.fields)) {
                         setFileError();
-                        setIsFileOk(true);
                     } else {
                         setFileError(
                             intl.formatMessage({
                                 id: 'InvalidRuleHeader',
                             })
                         );
-                        setIsFileOk(false);
                     }
                 },
             });
@@ -838,10 +836,9 @@ export const useCSVReader = ({ label, header }) => {
                     id: 'InvalidRuleUploadType',
                 })
             );
-            setIsFileOk(false);
         } else {
             setFileError();
         }
     }, [selectedFile, intl, header]);
-    return [selectedFile, setSelectedFile, field, fileError, isFileOk];
+    return [selectedFile, setSelectedFile, field, fileError];
 };

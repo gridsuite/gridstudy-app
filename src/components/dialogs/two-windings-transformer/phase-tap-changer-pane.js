@@ -96,10 +96,10 @@ const PhaseTapChangerPane = (props) => {
 
         if (
             phaseTapRows.length !== rowNumber &&
-            parseInt(lowTapPosition, 10) >= 0 &&
-            parseInt(highTapPosition, 10) >= 0 &&
-            !isNaN(parseInt(lowTapPosition, 10)) &&
-            !isNaN(parseInt(highTapPosition, 10))
+            parseInt(lowTapPosition) >= 0 &&
+            parseInt(highTapPosition) >= 0 &&
+            !isNaN(parseInt(lowTapPosition)) &&
+            !isNaN(parseInt(highTapPosition))
         ) {
             for (let i = lowTapPosition; i <= highTapPosition; i++) {
                 tempRows.push(generateNewTapData(i));
@@ -236,7 +236,7 @@ const PhaseTapChangerPane = (props) => {
 
     const handleEditCell = useCallback(
         (rowData, newVal) => {
-            const parsedVal = parseInt(newVal, 10);
+            const parsedVal = parseInt(newVal);
 
             if (!isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100) {
                 let tempRows = phaseTapRows;
@@ -325,7 +325,8 @@ const PhaseTapChangerPane = (props) => {
     };
 
     const parseIntData = (data, defaultValue) => {
-        return isNaN(parseInt(data), 10) ? defaultValue : parseInt(data);
+        const intValue = parseInt(data);
+        return isNaN(intValue) ? defaultValue : intValue;
     };
 
     const handleImportTapRule = (selectedFile) => {
@@ -396,11 +397,9 @@ const PhaseTapChangerPane = (props) => {
                         isEdited: true,
                     };
                 });
-                let tapValues = Object.values(
-                    rows.map((row) => {
-                        return parseInt(row.tap, 10);
-                    })
-                );
+                let tapValues = rows.map((row) => {
+                    return parseInt(row.tap);
+                });
                 let tempLowTapPosition = Math.min(...tapValues);
                 let tempHighTapPosition = Math.max(...tapValues);
 

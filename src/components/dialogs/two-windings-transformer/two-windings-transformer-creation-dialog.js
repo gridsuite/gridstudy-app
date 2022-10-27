@@ -105,11 +105,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [creationError, setCreationError] = useState(undefined);
 
-    /**
-     *
-     * CHARACTERISTICS TAP PANE
-     *
-     */
+    // CHARACTERISTICS TAP PANE
 
     const [twoWindingsTransformerId, twoWindingsTransformerIdField] =
         useTextValue({
@@ -131,7 +127,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [seriesResistance, seriesResistanceField] = useDoubleValue({
         label: 'SeriesResistanceText',
-        validation: { isFieldRequired: true, isFieldNumeric: true },
+        validation: { isFieldRequired: true },
         adornment: OhmAdornment,
         inputForm: characteristicsInputForm,
         defaultValue: formValues?.seriesResistance,
@@ -139,7 +135,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [seriesReactance, seriesReactanceField] = useDoubleValue({
         label: 'SeriesReactanceText',
-        validation: { isFieldRequired: true, isFieldNumeric: true },
+        validation: { isFieldRequired: true },
         adornment: OhmAdornment,
         inputForm: characteristicsInputForm,
         defaultValue: formValues?.seriesReactance,
@@ -148,7 +144,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const [magnetizingConductance, magnetizingConductanceField] =
         useDoubleValue({
             label: 'MagnetizingConductance',
-            validation: { isFieldRequired: true, isFieldNumeric: true },
+            validation: { isFieldRequired: true },
             adornment: MicroSusceptanceAdornment,
             inputForm: characteristicsInputForm,
             defaultValue: formValues?.magnetizingConductance,
@@ -170,7 +166,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const [magnetizingSusceptance, magnetizingSusceptanceField] =
         useDoubleValue({
             label: 'MagnetizingSusceptance',
-            validation: { isFieldRequired: true, isFieldNumeric: true },
+            validation: { isFieldRequired: true },
             adornment: MicroSusceptanceAdornment,
             inputForm: characteristicsInputForm,
             defaultValue: formValues?.magnetizingSusceptance,
@@ -179,7 +175,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const [ratedVoltage1, ratedVoltage1Field] = useDoubleValue({
         label: 'RatedVoltage',
         id: 'RatedVoltage1',
-        validation: { isFieldRequired: true, isFieldNumeric: true },
+        validation: { isFieldRequired: true },
         adornment: VoltageAdornment,
         inputForm: characteristicsInputForm,
         defaultValue: formValues?.ratedVoltage1,
@@ -188,7 +184,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const [ratedVoltage2, ratedVoltage2Field] = useDoubleValue({
         label: 'RatedVoltage',
         id: 'RatedVoltage2',
-        validation: { isFieldRequired: true, isFieldNumeric: true },
+        validation: { isFieldRequired: true },
         adornment: VoltageAdornment,
         inputForm: characteristicsInputForm,
         defaultValue: formValues?.ratedVoltage2,
@@ -199,7 +195,6 @@ const TwoWindingsTransformerCreationDialog = ({
             label: 'PermanentCurrentLimitText1',
             validation: {
                 isFieldRequired: false,
-                isFieldNumeric: true,
                 isValueGreaterThan: '0',
                 errorMsgId: 'permanentCurrentLimitGreaterThanZero',
             },
@@ -213,7 +208,6 @@ const TwoWindingsTransformerCreationDialog = ({
             label: 'PermanentCurrentLimitText2',
             validation: {
                 isFieldRequired: false,
-                isFieldNumeric: true,
                 isValueGreaterThan: '0',
                 errorMsgId: 'permanentCurrentLimitGreaterThanZero',
             },
@@ -246,11 +240,7 @@ const TwoWindingsTransformerCreationDialog = ({
             formValues?.busOrBusbarSectionId2 || null,
     });
 
-    /**
-     *
-     * RATIO TAP PANE
-     *
-     */
+    // RATIO TAP PANE
 
     const [ratioTapChangerEnabled, ratioTapChangerEnabledField] =
         useBooleanValue({
@@ -295,7 +285,6 @@ const TwoWindingsTransformerCreationDialog = ({
         },
         validation: {
             isFieldRequired: ratioTapRegulating && ratioTapChangerEnabled,
-            isFieldNumeric: true,
             isValueGreaterThan: '0',
             errorMsgId: 'TargetVoltageGreaterThanZero',
         },
@@ -313,7 +302,6 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isFieldNumeric: true,
                 isValueGreaterThan: '-1',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
@@ -340,7 +328,6 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
-            isFieldNumeric: true,
         },
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.lowTapPosition,
@@ -353,7 +340,6 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
-            isFieldNumeric: true,
         },
         inputForm: ratioTapInputForm,
         formProps: {
@@ -365,7 +351,6 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
-            isFieldNumeric: true,
             isValueGreaterThan: ratioLowTapPosition - 1,
             isValueLessOrEqualTo: ratioHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
@@ -377,11 +362,7 @@ const TwoWindingsTransformerCreationDialog = ({
         },
     });
 
-    /**
-     *
-     * PHASE TAP PANE
-     *
-     */
+    // PHASE TAP PANE
 
     const [phaseTapChangerEnabled, phaseTapChangerEnabledField] =
         useBooleanValue({
@@ -429,7 +410,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 isFieldRequired:
                     regulationMode === REGULATION_MODES[1].id &&
                     phaseTapRegulating,
-                isFieldNumeric: true,
                 isValueGreaterThan: '0',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
@@ -449,7 +429,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 isFieldRequired:
                     regulationMode === REGULATION_MODES[2].id &&
                     phaseTapRegulating,
-                isFieldNumeric: true,
                 isValueGreaterThan: '0',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
@@ -467,7 +446,6 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isFieldNumeric: true,
                 isValueGreaterThan: '-1',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
@@ -494,7 +472,6 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
-            isFieldNumeric: true,
         },
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.lowTapPosition,
@@ -505,7 +482,6 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled && !editData && !isCopy,
-            isFieldNumeric: true,
         },
         inputForm: phaseTapInputForm,
         formProps: { disabled: !phaseTapChangerEnabled },
@@ -515,7 +491,6 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
-            isFieldNumeric: true,
             isValueGreaterThan: phaseLowTapPosition - 1,
             isValueLessOrEqualTo: phaseHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',

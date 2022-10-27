@@ -92,10 +92,10 @@ const RatioTapChangerPane = (props) => {
 
         if (
             ratioTapRows.length !== rowNumber &&
-            parseInt(lowTapPosition, 10) >= 0 &&
-            parseInt(highTapPosition, 10) >= 0 &&
-            !isNaN(parseInt(lowTapPosition, 10)) &&
-            !isNaN(parseInt(highTapPosition, 10))
+            parseInt(lowTapPosition) >= 0 &&
+            parseInt(highTapPosition) >= 0 &&
+            !isNaN(parseInt(lowTapPosition)) &&
+            !isNaN(parseInt(highTapPosition))
         ) {
             for (let i = lowTapPosition; i <= highTapPosition; i++) {
                 tempRows.push(generateNewTapData(i));
@@ -108,7 +108,7 @@ const RatioTapChangerPane = (props) => {
                 let editedRowIndex = ratioTapRows.indexOf(row);
                 if (
                     tempRows.length > editedRowIndex &&
-                    parseInt(row.tap, 10) === tempRows[editedRowIndex].tap
+                    parseInt(row.tap) === tempRows[editedRowIndex].tap
                 ) {
                     tempRows[editedRowIndex] = row;
                 }
@@ -237,7 +237,7 @@ const RatioTapChangerPane = (props) => {
 
     const handleEditCell = useCallback(
         (rowData, newVal) => {
-            const parsedVal = parseInt(newVal, 10);
+            const parsedVal = parseInt(newVal);
 
             if (!isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100) {
                 let tempRows = ratioTapRows;
@@ -316,7 +316,8 @@ const RatioTapChangerPane = (props) => {
     };
 
     const parseIntData = (data, defaultValue) => {
-        return isNaN(parseInt(data), 10) ? defaultValue : parseInt(data);
+        const intValue = parseInt(data);
+        return isNaN(intValue) ? defaultValue : intValue;
     };
 
     const handleImportTapRule = (selectedFile) => {
@@ -370,11 +371,9 @@ const RatioTapChangerPane = (props) => {
                         isEdited: true,
                     };
                 });
-                let tapValues = Object.values(
-                    rows.map((row) => {
-                        return parseInt(row.tap, 10);
-                    })
-                );
+                let tapValues = rows.map((row) => {
+                    return parseInt(row.tap);
+                });
                 let tempLowTapPosition = Math.min(...tapValues);
                 let tempHighTapPosition = Math.max(...tapValues);
 

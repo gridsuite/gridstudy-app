@@ -24,22 +24,17 @@ export const ImportRuleDialog = (props) => {
         props.setOpenImportRuleDialog(false);
     };
 
-    const [
-        selectedFile,
-        setSelectedFile,
-        FileField,
-        selectedFileError,
-        isSelectedFileOk,
-    ] = useCSVReader({
-        label:
-            props.ruleType === PHASE_TAP
-                ? 'ImportDephasingRule'
-                : 'ImportRegulationRule',
-        header: props.csvColumns,
-    });
+    const [selectedFile, setSelectedFile, FileField, selectedFileError] =
+        useCSVReader({
+            label:
+                props.ruleType === PHASE_TAP
+                    ? 'ImportDephasingRule'
+                    : 'ImportRegulationRule',
+            header: props.csvColumns,
+        });
 
     const handleSave = () => {
-        if (isSelectedFileOk) {
+        if (!selectedFileError) {
             props.handleImportTapRule(selectedFile);
             handleCloseDialog();
         }

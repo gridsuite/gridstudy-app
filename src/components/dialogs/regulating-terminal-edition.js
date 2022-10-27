@@ -121,7 +121,7 @@ const RegulatingTerminalEdition = ({
                 : regulatingTerminalValue?.equipmentSection === null
                 ? ''
                 : {
-                      id: regulatingTerminalValue?.equipmentSection.id,
+                      id: regulatingTerminalValue.equipmentSection.id,
                       type: equipmentSectionTypeDefaultValue,
                   }
         );
