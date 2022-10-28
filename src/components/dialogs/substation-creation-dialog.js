@@ -175,7 +175,10 @@ const SubstationCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

@@ -305,6 +305,18 @@ export function resetSensiNotif() {
     return { type: RESET_SENSI_NOTIF };
 }
 
+export const ADD_SHORT_CIRCUIT_NOTIF = 'ADD_SHORT_CIRCUIT_NOTIF';
+
+export function addShortCircuitNotif() {
+    return { type: ADD_SHORT_CIRCUIT_NOTIF };
+}
+
+export const RESET_SHORT_CIRCUIT_NOTIF = 'RESET_SHORT_CIRCUIT_NOTIF';
+
+export function resetShortCircuitNotif() {
+    return { type: RESET_SHORT_CIRCUIT_NOTIF };
+}
+
 export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
     'FILTERED_NOMINAL_VOLTAGES_UPDATED';
 

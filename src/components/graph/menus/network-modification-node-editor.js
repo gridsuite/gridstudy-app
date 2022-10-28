@@ -334,7 +334,7 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
-        deleteEquipment: {
+        EQUIPMENT_DELETION: {
             label: 'DeleteEquipment',
             dialog: () => withDefaultParams(EquipmentDeletionDialog),
             icon: <DeleteIcon />,
