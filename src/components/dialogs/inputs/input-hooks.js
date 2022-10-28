@@ -271,12 +271,15 @@ export const useOptionalEnumValue = (props) => {
         [intl, props.enumObjects]
     );
 
+    // because we want to have the clear icon to possibly reset the optional enum value to null,
+    // we use an Autocomplete without the ability to enter some letters in the text field (readonly then).
     return useAutocompleteField({
         values: props.enumObjects.map((enumObject) => enumObject.id),
         selectedValue: props.defaultValue,
         defaultValue: props.defaultValue,
         previousValue: props.previousValue,
         getLabel: getEnumTranslation,
+        readOnlyTextField: true,
         ...props,
     });
 };
