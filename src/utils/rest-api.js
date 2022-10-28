@@ -11,8 +11,8 @@ import { APP_NAME, getAppName } from './config-params';
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-const PREFIX_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/notification';
+const PREFIX_STUDY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/study-notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
@@ -1177,7 +1177,7 @@ export function connectNotificationsWebsocket(studyUuid) {
         .replace(/^https:\/\//, 'wss://');
     const wsadress =
         wsbase +
-        PREFIX_NOTIFICATION_WS +
+        PREFIX_STUDY_NOTIFICATION_WS +
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
 
