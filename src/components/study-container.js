@@ -289,27 +289,23 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, checkFailNotifications]
     );
 
-    const connectDeletedStudyNotifications = useCallback(
-        (studyUuid) => {
-            console.info(`Connecting to directory notifications ...`);
+    const connectDeletedStudyNotifications = useCallback((studyUuid) => {
+        console.info(`Connecting to directory notifications ...`);
 
-            const ws = connectDeletedStudyNotificationsWebsocket(studyUuid);
-            ws.onmessage = function () {
-                window.close();
-            };
-            ws.onclose = function (event) {
-                if (!websocketExpectedCloseRef.current) {
-                    console.error('Unexpected Notification WebSocket closed');
-                }
-            };
-            ws.onerror = function (event) {
-                console.error('Unexpected Notification WebSocket error', event);
-            };
-            return ws;
-        },
-        // Note: dispatch doesn't change
-        [dispatch]
-    );
+        const ws = connectDeletedStudyNotificationsWebsocket(studyUuid);
+        ws.onmessage = function () {
+            window.close();
+        };
+        ws.onclose = function (event) {
+            if (!websocketExpectedCloseRef.current) {
+                console.error('Unexpected Notification WebSocket closed');
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, []);
 
     useEffect(() => {
         // create ws at mount event
@@ -540,7 +536,12 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         // Note: dispach, loadNetworkRef, loadGeoData
         // connectNotifications don't change
-    }, [dispatch, studyUuid, connectNotifications]);
+    }, [
+        dispatch,
+        studyUuid,
+        connectNotifications,
+        connectDeletedStudyNotifications,
+    ]);
 
     function checkAndGetValues(values) {
         return values ? values : [];

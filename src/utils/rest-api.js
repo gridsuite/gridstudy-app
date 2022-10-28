@@ -22,8 +22,6 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
-const PREFIX_DIRECTORY_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 
 function getToken() {
     const state = store.getState();
@@ -1199,7 +1197,8 @@ export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
     const wsadress =
         wsbase +
         PREFIX_DIRECTORY_NOTIFICATION_WS +
-        '/notify?updateType=deleteStudy&studyUuid=' + studyUuid;
+        '/notify?updateType=deleteStudy&studyUuid=' +
+        studyUuid;
 
     const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
     // don't log the token, it's private
