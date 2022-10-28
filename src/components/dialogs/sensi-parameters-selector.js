@@ -124,6 +124,10 @@ const SensiParametersSelector = (props) => {
                                     setSelectedBranchFiltersListUuids
                                 }
                                 elementTypes={[elementType.FILTER]}
+                                equipmentTypes={[
+                                    'LINE',
+                                    'TWO_WINDINGS_TRANSFORMER',
+                                ]}
                                 selectorTitleId={'FiltersListsSelection'}
                                 fetchErrorMsgId={'getBranchFiltersListError'}
                             />

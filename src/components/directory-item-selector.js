@@ -8,7 +8,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TreeViewFinder } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
-import { fetchDirectoryContent, fetchRootFolders } from '../utils/rest-api';
+import {
+    fetchDirectoryContent,
+    fetchElementsMetadata,
+    fetchRootFolders,
+} from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
@@ -123,14 +127,28 @@ const DirectoryItemSelector = (props) => {
     const fetchDirectory = useCallback(
         (nodeId) => {
             fetchDirectoryContent(nodeId)
-                .then((childrenToBeInserted) => {
-                    // update directory Content
-                    addToDirectory(
-                        nodeId,
-                        childrenToBeInserted.filter((item) =>
-                            contentFilter().has(item.type)
-                        )
+                .then((children) => {
+                    let childrenMatchedTypes = children.filter((item) =>
+                        contentFilter().has(item.type)
                     );
+                    if (props.equipmentTypes) {
+                        // filtering also with equipment types
+                        fetchElementsMetadata(
+                            childrenMatchedTypes.map((e) => e.elementUuid)
+                        ).then((childrenWithMetada) => {
+                            let childrenToBeInserted =
+                                childrenWithMetada.filter((e) => {
+                                    return props.equipmentTypes.includes(
+                                        e.specificMetadata.equipmentType
+                                    );
+                                });
+                            // update directory content
+                            addToDirectory(nodeId, childrenToBeInserted);
+                        });
+                    } else {
+                        // update directory content
+                        addToDirectory(nodeId, childrenMatchedTypes);
+                    }
                 })
                 .catch((reason) => {
                     console.warn(
@@ -141,7 +159,7 @@ const DirectoryItemSelector = (props) => {
                     );
                 });
         },
-        [addToDirectory, contentFilter]
+        [addToDirectory, contentFilter, props.equipmentTypes]
     );
 
     useEffect(() => {
@@ -188,6 +206,7 @@ DirectoryItemSelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     types: PropTypes.array.isRequired,
+    equipmentTypes: PropTypes.array,
     title: PropTypes.string.isRequired,
 };
 
