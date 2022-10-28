@@ -24,25 +24,24 @@ import {
     useButtonWithTooltip,
     useDoubleValue,
     useEnumValue,
-    useInputForm,
+    useInputForm, useRadioValue,
     useRegulatingTerminalValue,
     useTableValues,
-    useTextValue,
-} from './inputs/input-hooks';
+    useTextValue
+} from "./inputs/input-hooks";
 import {
     ActivePowerAdornment,
     filledTextField,
-    gridItem,
+    gridItem, GridSection, GridSubSection,
     MVAPowerAdornment,
     OhmAdornment,
     percentageTextField,
     ReactivePowerAdornment,
     sanitizeString,
-    VoltageAdornment,
-} from './dialogUtils';
+    VoltageAdornment
+} from "./dialogUtils";
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
-import { Box } from '@mui/system';
 import { ENERGY_SOURCES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
@@ -91,6 +90,8 @@ const GeneratorCreationDialog = ({
     const [formValues, setFormValues] = useState(undefined);
 
     const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
+
+    const [isReactiveCapabilityCurveOn, setReactiveCapabilityCurveOn] = useState(true);
 
     const [rCCurveError, setRCCurveError] = useState();
 
@@ -216,13 +217,16 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.ratedNominalPower,
     });
 
-    const [isReactiveCapabilityCurveOn, isReactiveCapabilityCurveOnField] =
-        useBooleanValue({
-            label: 'ReactiveCapabilityCurve',
-            validation: fieldRequired,
-            inputForm: inputForm,
-            defaultValue: formValues?.reactiveCapabilityCurve ?? true,
-        });
+    const [reactiveCapabilityCurveChoice, isReactiveCapabilityCurveOnField] = useRadioValue({
+        validation: fieldRequired,
+        inputForm: inputForm,
+        defaultValue: formValues?.reactiveCapabilityCurve == false ? "ReactiveLimitsKindMinMax" : "ReactiveLimitsKindCurve",
+        possibleValues: ["ReactiveLimitsKindMinMax", "ReactiveLimitsKindCurve"]
+    });
+
+    useEffect(() => {
+        setReactiveCapabilityCurveOn(reactiveCapabilityCurveChoice === "ReactiveLimitsKindCurve");
+    }, [reactiveCapabilityCurveChoice]);
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
         label: 'MinimumReactivePower',
@@ -467,37 +471,32 @@ const GeneratorCreationDialog = ({
                             {gridItem(generatorNameField, 4)}
                             {gridItem(energySourceField, 4)}
                         </Grid>
+
                         {/* Connectivity part */}
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Connectivity" />
-                                </h3>
-                            </Grid>
-                        </Grid>
+                        <GridSection title="Connectivity" />
                         <Grid container spacing={2}>
                             {gridItem(connectivityField, 8)}
                         </Grid>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Limits" />
-                                </h3>
-                            </Grid>
-                        </Grid>
+
+                        {/* Limits part */}
+                        <GridSection title="Limits" />
+                        <GridSubSection title="ActiveLimits" />
                         <Grid container spacing={2}>
                             {gridItem(minimumActivePowerField, 4)}
                             {gridItem(maximumActivePowerField, 4)}
                             {gridItem(ratedNominalPowerField, 4)}
-                            <Box sx={{ width: '100%' }} />
-                            {gridItem(isReactiveCapabilityCurveOnField, 8)}
-                            <Box sx={{ width: '100%' }} />
+                        </Grid>
+                        <GridSubSection title="ReactiveLimits" />
+                        <Grid container spacing={2}>
+
+                            {gridItem(isReactiveCapabilityCurveOnField, 12)}
+
                             {rCCurveError && (
                                 <div className={classes.rccError}>
                                     <FormattedMessage id="ReactiveCapabilityCurveCreationError" />
                                 </div>
                             )}
-                            <Box sx={{ width: '100%' }} />
+
                             {!isReactiveCapabilityCurveOn &&
                                 gridItem(minimumReactivePowerField, 4)}
                             {!isReactiveCapabilityCurveOn &&
@@ -505,48 +504,34 @@ const GeneratorCreationDialog = ({
                             {isReactiveCapabilityCurveOn &&
                                 reactiveCapabilityCurveField}
                         </Grid>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Setpoints" />
-                                </h3>
-                            </Grid>
-                        </Grid>
+
+                        {/* Setpoints part */}
+                        <GridSection title="Setpoints" />
                         <Grid container spacing={2}>
                             {gridItem(activePowerSetpointField, 4)}
                             {gridItem(reactivePowerSetpointField, 4)}
-                            <Box sx={{ width: '100%' }} />
+
                             {gridItem(voltageRegulationField, 4)}
                             {gridItem(voltageSetpointField, 4)}
-                            <Box sx={{ width: '100%' }} />
+
                             <Grid item xs={4} justifySelf={'end'}>
                                 <FormattedMessage id="RegulatingTerminalGenerator" />
                             </Grid>
                             {gridItem(regulatingTerminalField, 8)}
-                            <Box sx={{ width: '100%' }} />
+
                             {gridItem(frequencyRegulationField, 4)}
                             {gridItem(droopField, 4)}
                         </Grid>
-                        {/*Short-circuit part*/}
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="ShortCircuit" />
-                                </h3>
-                            </Grid>
-                        </Grid>
+
+                        {/* Short-circuit part */}
+                        <GridSection title="ShortCircuit" />
                         <Grid container spacing={2}>
                             {gridItem(transientReactanceField, 4)}
                             {gridItem(transformerReactanceField, 4)}
                         </Grid>
-                        {/* Coast of start part*/}
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="MarginalCost" />
-                                </h3>
-                            </Grid>
-                        </Grid>
+
+                        {/* Cost of start part */}
+                        <GridSection title="MarginalCost" />
                         <Grid container spacing={2}>
                             {gridItem(marginalCostField, 4)}
                         </Grid>
