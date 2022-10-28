@@ -191,9 +191,7 @@ const TwoWindingsTransformerCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId1 || null,
-        connectionDirectionValue: formValues
-            ? formValues.connectionDirection1
-            : '',
+        connectionDirectionValue: formValues?.connectionDirection1 ?? '',
         connectionNameValue: formValues?.connectionName1,
         withPosition: true,
     });
@@ -208,9 +206,7 @@ const TwoWindingsTransformerCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId2 || null,
-        connectionDirectionValue: formValues
-            ? formValues.connectionDirection2
-            : '',
+        connectionDirectionValue: formValues?.connectionDirection2 ?? '',
         connectionNameValue: formValues?.connectionName2,
         withPosition: true,
     });
