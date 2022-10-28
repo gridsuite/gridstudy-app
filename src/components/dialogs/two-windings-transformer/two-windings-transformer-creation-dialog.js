@@ -226,6 +226,9 @@ const TwoWindingsTransformerCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId1 || null,
+        connectionDirectionValue: formValues?.connectionDirection1 ?? '',
+        connectionNameValue: formValues?.connectionName1,
+        withPosition: true,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -238,6 +241,9 @@ const TwoWindingsTransformerCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId2 || null,
+        connectionDirectionValue: formValues?.connectionDirection2 ?? '',
+        connectionNameValue: formValues?.connectionName2,
+        withPosition: true,
     });
 
     // RATIO TAP PANE
@@ -859,7 +865,11 @@ const TwoWindingsTransformerCreationDialog = ({
                 ratioTap,
                 phaseTap,
                 editData ? true : false,
-                editData ? editData.uuid : undefined
+                editData ? editData.uuid : undefined,
+                connectivity1?.connectionName?.id ?? null,
+                connectivity1?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity2?.connectionName?.id ?? null,
+                connectivity2?.connectionDirection?.id ?? 'UNDEFINED'
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,

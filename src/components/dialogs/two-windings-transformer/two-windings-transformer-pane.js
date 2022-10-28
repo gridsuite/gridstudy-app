@@ -37,6 +37,37 @@ const TwoWindingsTransformerPane = (props) => {
             </Grid>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
+                    <h3 className={classes.h3}>
+                        <FormattedMessage id="Connectivity" />
+                    </h3>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={6}>
+                    <h4 className={classes.h4}>
+                        <FormattedMessage id="OriginSide" />
+                    </h4>
+                </Grid>
+                <Grid item xs={6}>
+                    <h4 className={classes.h4}>
+                        <FormattedMessage id="ExtrimitySide" />
+                    </h4>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item container xs={6} direction="column">
+                    <Grid container direction="column" spacing={2}>
+                        {gridItem(connectivity1Field, 12)}
+                    </Grid>
+                </Grid>
+                <Grid item container direction="column" xs={6}>
+                    <Grid container direction="column" spacing={2}>
+                        {gridItem(connectivity2Field, 12)}
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
                     <h3>
                         <FormattedMessage id="Characteristics" />
                     </h3>
@@ -88,38 +119,6 @@ const TwoWindingsTransformerPane = (props) => {
             <Grid container spacing={2}>
                 {gridItem(permanentCurrentLimit1Field)}
                 {gridItem(permanentCurrentLimit2Field)}
-            </Grid>
-            {/* <br /> */}
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h3 className={classes.h3}>
-                        <FormattedMessage id="Connectivity" />
-                    </h3>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                <Grid item xs={6}>
-                    <h4 className={classes.h4}>
-                        <FormattedMessage id="OriginSide" />
-                    </h4>
-                </Grid>
-                <Grid item xs={6}>
-                    <h4 className={classes.h4}>
-                        <FormattedMessage id="ExtrimitySide" />
-                    </h4>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                <Grid item container xs={6} direction="column">
-                    <Grid container direction="column" spacing={2}>
-                        {gridItem(connectivity1Field, 12)}
-                    </Grid>
-                </Grid>
-                <Grid item container direction="column" xs={6}>
-                    <Grid container direction="column" spacing={2}>
-                        {gridItem(connectivity2Field, 12)}
-                    </Grid>
-                </Grid>
             </Grid>
         </>
     );

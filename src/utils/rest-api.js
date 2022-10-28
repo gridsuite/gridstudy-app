@@ -1709,7 +1709,11 @@ export function createLine(
     permanentCurrentLimit1,
     permanentCurrentLimit2,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    connectionName1,
+    connectionDirection1,
+    connectionName2,
+    connectionDirection2
 ) {
     let createLineUrl;
     if (isUpdate) {
@@ -1750,6 +1754,10 @@ export function createLine(
             currentLimits2: {
                 permanentLimit: permanentCurrentLimit2,
             },
+            connectionName1: connectionName1,
+            connectionDirection1: connectionDirection1,
+            connectionName2: connectionName2,
+            connectionDirection2: connectionDirection2,
         }),
     }).then((response) => {
         return response.ok
@@ -1779,7 +1787,11 @@ export function createTwoWindingsTransformer(
     ratioTapChanger,
     phaseTapChanger,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    connectionName1,
+    connectionDirection1,
+    connectionName2,
+    connectionDirection2
 ) {
     let createTwoWindingsTransformerUrl;
     if (isUpdate) {
@@ -1820,6 +1832,10 @@ export function createTwoWindingsTransformer(
             busOrBusbarSectionId2: busOrBusbarSectionId2,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
+            connectionName1: connectionName1,
+            connectionDirection1: connectionDirection1,
+            connectionName2: connectionName2,
+            connectionDirection2: connectionDirection2,
         }),
     }).then((response) => {
         return response.ok
