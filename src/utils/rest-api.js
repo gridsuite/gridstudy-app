@@ -15,6 +15,8 @@ const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
+const PREFIX_DIRECTORY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
@@ -1119,6 +1121,24 @@ export function connectNotificationsWebsocket(studyUuid) {
         PREFIX_NOTIFICATION_WS +
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
+
+    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
+    // don't log the token, it's private
+    rws.onopen = function (event) {
+        console.info('Connected Websocket ' + wsadress + ' ...');
+    };
+    return rws;
+}
+
+export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
+    // The websocket API doesn't allow relative urls
+    const wsbase = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const wsadress =
+        wsbase +
+        PREFIX_DIRECTORY_NOTIFICATION_WS +
+        '/notify?updateType=deleteStudy&studyUuid=' + studyUuid;
 
     const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
     // don't log the token, it's private

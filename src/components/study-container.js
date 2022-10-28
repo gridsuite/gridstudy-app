@@ -26,6 +26,7 @@ import {
     fetchPath,
     fetchCaseName,
     fetchSensitivityAnalysisStatus,
+    connectDeletedStudyNotificationsWebsocket
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -56,6 +57,7 @@ import {
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
+import { window } from 'mjolnir.js/dist/es5/utils/globals';
 
 export function useNodeData(
     studyUuid,
@@ -266,6 +268,28 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, checkFailNotifications]
     );
 
+    const connectDeletedStudyNotifications = useCallback(
+        (studyUuid) => {
+            console.info(`Connecting to directory notifications ...`);
+
+            const ws = connectDeletedStudyNotificationsWebsocket(studyUuid);
+            ws.onmessage = function () {
+                window.close();
+            };
+            ws.onclose = function (event) {
+                if (!websocketExpectedCloseRef.current) {
+                    console.error('Unexpected Notification WebSocket closed');
+                }
+            };
+            ws.onerror = function (event) {
+                console.error('Unexpected Notification WebSocket error', event);
+            };
+            return ws;
+        },
+        // Note: dispatch doesn't change
+        [dispatch]
+    );
+
     const displayNetworkLoadingFailMessage = useCallback((error) => {
         console.error(error.message);
         setNetworkLoadingFailMessage(error.message);
@@ -456,6 +480,7 @@ export function StudyContainer({ view, onChangeTab }) {
             dispatch(openStudy(studyUuid));
 
             const ws = connectNotifications(studyUuid);
+            const wsDirectory = connectDeletedStudyNotifications(studyUuid);
 
             loadNetworkRef.current();
 
@@ -463,6 +488,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return function () {
                 websocketExpectedCloseRef.current = true;
                 ws.close();
+                wsDirectory.close();
                 dispatch(closeStudy());
                 dispatch(filteredNominalVoltagesUpdated(null));
             };
