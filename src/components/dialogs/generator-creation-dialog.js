@@ -26,9 +26,10 @@ import {
     useEnumValue,
     useInputForm, useRadioValue,
     useRegulatingTerminalValue,
-    useTableValues,
+    useTableValues, // TODO CHARLY Remove
     useTextValue
 } from "./inputs/input-hooks";
+import { useReactiveCapabilityCurveTableValues } from "./inputs/reactive-capability-curve-table";
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -245,7 +246,8 @@ const GeneratorCreationDialog = ({
     });
 
     const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
-        useTableValues({
+        useReactiveCapabilityCurveTableValues({
+        //useTableValues({
             id: 'ReactiveCapabilityCurveOn',
             tableHeadersIds: headerIds,
             inputForm: inputForm,
@@ -375,7 +377,7 @@ const GeneratorCreationDialog = ({
 
     const handleSave = () => {
         const isRCCNotValid =
-            isReactiveCapabilityCurveOn && reactiveCapabilityCurve.length < 2;
+            isReactiveCapabilityCurveOn && reactiveCapabilityCurve.length < 2; // TODO CHARLY set la verif formulaire ici
         setRCCurveError(
             isRCCNotValid ? 'ReactiveCapabilityCurveCreationError' : null
         );
@@ -497,12 +499,9 @@ const GeneratorCreationDialog = ({
                                 </div>
                             )}
 
-                            {!isReactiveCapabilityCurveOn &&
-                                gridItem(minimumReactivePowerField, 4)}
-                            {!isReactiveCapabilityCurveOn &&
-                                gridItem(maximumReactivePowerField, 4)}
-                            {isReactiveCapabilityCurveOn &&
-                                reactiveCapabilityCurveField}
+                            {!isReactiveCapabilityCurveOn && gridItem(minimumReactivePowerField, 4)}
+                            {!isReactiveCapabilityCurveOn && gridItem(maximumReactivePowerField, 4)}
+                            {!!isReactiveCapabilityCurveOn && gridItem(reactiveCapabilityCurveField, 12)}
                         </Grid>
 
                         {/* Setpoints part */}

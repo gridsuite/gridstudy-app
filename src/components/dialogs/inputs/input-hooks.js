@@ -513,6 +513,7 @@ export const useRegulatingTerminalValue = ({
     return [regulatingTerminal, render];
 };
 
+// TODO CHARLY remove below
 export const useTableValues = ({
     id,
     tableHeadersIds,
@@ -640,6 +641,7 @@ export const useTableValues = ({
 
     return [values, field];
 };
+// TODO CHARLY remove above
 
 export const useSimpleTextValue = ({
     defaultValue,
