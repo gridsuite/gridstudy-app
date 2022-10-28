@@ -503,40 +503,36 @@ const TwoWindingsTransformerCreationDialog = ({
 
     //Copy data from existing equipment to form fields
     const toFormValues = (twt) => {
-        if (twt.ratioTapChanger?.ratioTapSteps) {
+        if (twt.ratioTapChanger?.steps) {
             setRatioTapRows(
-                Object.values(twt.ratioTapChanger?.ratioTapSteps).map(
-                    (step) => {
-                        return {
-                            key: step.index,
-                            tap: step.index,
-                            resistance: step.r,
-                            reactance: step.x,
-                            conductance: step.g,
-                            susceptance: step.b,
-                            ratio: step.rho,
-                        };
-                    }
-                )
+                Object.values(twt.ratioTapChanger?.steps).map((step) => {
+                    return {
+                        key: step.index,
+                        tap: step.index,
+                        resistance: step.r,
+                        reactance: step.x,
+                        conductance: step.g,
+                        susceptance: step.b,
+                        ratio: step.rho,
+                    };
+                })
             );
         }
 
-        if (twt.phaseTapChanger?.phaseTapSteps) {
+        if (twt.phaseTapChanger?.steps) {
             setPhaseTapRows(
-                Object.values(twt.phaseTapChanger?.phaseTapSteps).map(
-                    (step) => {
-                        return {
-                            key: step.index,
-                            tap: step.index,
-                            resistance: step.r,
-                            reactance: step.x,
-                            conductance: step.g,
-                            susceptance: step.b,
-                            ratio: step.rho,
-                            alpha: step.alpha,
-                        };
-                    }
-                )
+                Object.values(twt.phaseTapChanger?.steps).map((step) => {
+                    return {
+                        key: step.index,
+                        tap: step.index,
+                        resistance: step.r,
+                        reactance: step.x,
+                        conductance: step.g,
+                        susceptance: step.b,
+                        ratio: step.rho,
+                        alpha: step.alpha,
+                    };
+                })
             );
         }
 
@@ -565,7 +561,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 regulating: twt.ratioTapChanger?.voltageRegulation,
                 loadTapChangingCapabilities:
                     twt.ratioTapChanger?.loadTapChangingCapabilities,
-                targetV: twt.ratioTapChanger?.targetVoltage,
+                targetV: twt.ratioTapChanger?.targetV,
                 targetDeadband: isNaN(twt.ratioTapChanger?.targetDeadBand)
                     ? ''
                     : twt.ratioTapChanger?.targetDeadBand,
@@ -575,7 +571,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     twt.ratioTapChanger?.regulatingTerminalConnectableType,
                 regulatingTerminalId:
                     twt.ratioTapChanger?.regulatingTerminalConnectableId,
-                lowTapPosition: twt.ratioTapChanger?.lowTap,
+                lowTapPosition: twt.ratioTapChanger?.lowTapPosition,
                 tapPosition: twt.ratioTapChanger?.tapPosition,
             },
             phaseTapChanger: {
@@ -593,7 +589,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     twt.phaseTapChanger?.regulatingTerminalConnectableType,
                 regulatingTerminalId:
                     twt.phaseTapChanger?.regulatingTerminalConnectableId,
-                lowTapPosition: twt.phaseTapChanger?.lowTap,
+                lowTapPosition: twt.phaseTapChanger?.lowTapPosition,
                 tapPosition: twt.phaseTapChanger?.tapPosition,
             },
         };
