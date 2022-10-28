@@ -95,7 +95,7 @@ const GeneratorCreationDialog = ({
     const [rCCurveError, setRCCurveError] = useState();
 
     const headerIds = [
-        'ActivePower',
+        'ActivePowerText',
         'MinimumReactivePower',
         'MaximumReactivePower',
     ];
