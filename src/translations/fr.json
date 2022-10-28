@@ -136,7 +136,6 @@
     "LoadFlow": "Calcul de répartition",
     "Network": "Réseau",
     "SecurityAnalysis": "Analyse de sécurité",
-    "ShortCircuit": "Analyse de courts-circuits systématique",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
@@ -397,7 +396,6 @@
     "ReactiveCapabilityCurve": "Limites de réactif par diagramme",
     "MinimumReactivePower": "Puissance réactive minimale",
     "MaximumReactivePower": "Puissance réactive maximale",
-    "ActivePower": "Puissance active",
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",
