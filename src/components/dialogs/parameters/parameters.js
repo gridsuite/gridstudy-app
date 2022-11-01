@@ -42,7 +42,10 @@ import {
 } from './load-flow-parameters';
 import { MapParameters } from './map-parameters';
 import { NetworkParameters } from './network-parameters';
-import { ShortCircuitParameters } from './short-circuit-parameters';
+import {
+    ShortCircuitParameters,
+    useGetShortCircuitParameters,
+} from './short-circuit-parameters';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -162,6 +165,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const lfParamsAndLfProvider = useGetLfParamsAndProvider();
 
+    const shortCircuitParameters = useGetShortCircuitParameters();
+
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
@@ -247,6 +252,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         {studyUuid && (
                             <ShortCircuitParameters
                                 hideParameters={hideParameters}
+                                shortCircuitParameters={shortCircuitParameters}
                             />
                         )}
                     </TabPanel>

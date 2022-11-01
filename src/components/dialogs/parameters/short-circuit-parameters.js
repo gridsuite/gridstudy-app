@@ -22,6 +22,24 @@ import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import { LabelledSilder, LineSeparator } from '../dialogUtils';
 
+export const useGetShortCircuitParameters = () => {
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const { snackError } = useSnackMessage();
+    const [shortCircuitParams, setShortCircuitParams] = useState(null);
+
+    useEffect(() => {
+        if (studyUuid) {
+            getShortCircuitParameters(studyUuid)
+                .then((params) => setShortCircuitParams(params))
+                .catch((errorMessage) =>
+                    snackError(errorMessage, 'paramsRetrievingError')
+                );
+        }
+    }, [studyUuid, snackError]);
+
+    return [shortCircuitParams, setShortCircuitParams];
+};
+
 function getValue(param, key) {
     if (!param || param[key] === undefined) return null;
     return param[key];
@@ -147,14 +165,17 @@ const BasicShortCircuitParameters = ({
     );
 };
 
-export const ShortCircuitParameters = ({ hideParameters }) => {
+export const ShortCircuitParameters = ({
+    hideParameters,
+    shortCircuitParameters,
+}) => {
     const classes = useStyles();
 
     const { snackError } = useSnackMessage();
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const [shortCircuitParams, setShortCircuitParams] = useState(null);
+    const [shortCircuitParams, setShortCircuitParams] = shortCircuitParameters;
 
     const commitShortCircuitParameter = useCallback(
         (newParams) => {
@@ -167,7 +188,7 @@ export const ShortCircuitParameters = ({ hideParameters }) => {
                 }
             );
         },
-        [shortCircuitParams, snackError, studyUuid]
+        [snackError, studyUuid]
     );
 
     //Forced to do the following for now because on the backend we use a (de)serializer coming from powsybl-core that ignore parameters with the default value
