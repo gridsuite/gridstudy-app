@@ -27,6 +27,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useSingleLineDiagram, ViewState } from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
+import { resetSldState } from '../../../redux/actions';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -179,6 +180,9 @@ export function SingleLineDiagramPane({
 
     const sldState = useSelector((state) => state.sldState);
 
+    const viewsRef = useRef();
+    viewsRef.current = views;
+
     const [
         closeView,
         openVoltageLevel,
@@ -190,22 +194,18 @@ export function SingleLineDiagramPane({
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
 
-    useEffect(() => {
-        setViews(sldState.map(createView));
-    }, [sldState, createView, disabled, visible]);
-
     const updateSld = useCallback(
         (id) => {
             if (id) {
                 views.find((sld) => sld.id === id)?.ref?.current?.reloadSvg();
             } else
                 views.forEach((sld) => {
-                    if (sld.svgUrl.indexOf(currentNode?.id) !== -1) {
+                    if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
                         sld.ref?.current?.reloadSvg();
                     }
                 });
         },
-        [currentNode?.id, views]
+        [views]
     );
 
     const classes = useStyles();
@@ -248,9 +248,18 @@ export function SingleLineDiagramPane({
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
         if (isNodeBuilt(currentNodeRef.current) && visible) {
-            setViews(sldState.map(createView));
+            try {
+                setViews(sldState.map(createView));
+            } catch (error) {
+                // if sld state from session storage is corrupted or provoke an error, we empty it to avoid user to be locked on error screen
+                console.error(
+                    'Error when trying to set views from sld state. Removing the sld state from session storage.',
+                    error
+                );
+                dispatch(resetSldState());
+            }
         }
-    }, [sldState, visible, createView]);
+    }, [sldState, visible, disabled, createView, dispatch]);
 
     const handleCloseSLD = useCallback(
         (id) => {
@@ -268,7 +277,7 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers && views) {
+        if (studyUpdatedForce.eventData.headers && viewsRef.current) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
@@ -283,7 +292,7 @@ export function SingleLineDiagramPane({
                         studyUpdatedForce.eventData.headers[
                             'deletedEquipmentId'
                         ];
-                    const vlToClose = views.filter(
+                    const vlToClose = viewsRef.current.filter(
                         (vl) =>
                             vl.substationId === deletedId || vl.id === deletedId
                     );
@@ -292,7 +301,7 @@ export function SingleLineDiagramPane({
 
                     const substationsIds =
                         studyUpdatedForce.eventData.headers['substationsIds'];
-                    views.forEach((v) => {
+                    viewsRef.current.forEach((v) => {
                         const vl = network.getVoltageLevel(v.id);
                         if (vl && substationsIds.includes(vl.substationId)) {
                             updateSld(vl.id);
@@ -314,15 +323,7 @@ export function SingleLineDiagramPane({
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [
-        studyUpdatedForce,
-        views,
-        dispatch,
-        studyUuid,
-        updateSld,
-        closeView,
-        network,
-    ]);
+    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView, network]);
 
     useEffect(() => {
         setDisplayedSld(

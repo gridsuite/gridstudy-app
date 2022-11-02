@@ -510,3 +510,11 @@ export function closeSld(idsToClose) {
         ids: idsToClose,
     };
 }
+
+export const RESET_SLD_STATE = 'RESET_SLD_STATE';
+
+export function resetSldState() {
+    return {
+        type: RESET_SLD_STATE,
+    };
+}

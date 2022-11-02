@@ -65,6 +65,7 @@ import {
     TOGGLE_PIN_SLD,
     CLOSE_SLD,
     ViewState,
+    RESET_SLD_STATE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -545,6 +546,9 @@ export const reducer = createReducer(initialState, {
         state.sldState = state.sldState.filter(
             (sld) => !action.ids.includes(sld.id)
         );
+    },
+    [RESET_SLD_STATE]: (state) => {
+        state.sldState = [];
     },
 });
 
