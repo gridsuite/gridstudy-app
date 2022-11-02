@@ -165,7 +165,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const lfParamsAndLfProvider = useGetLfParamsAndProvider();
 
-    const shortCircuitParameters = useGetShortCircuitParameters();
+    const useShortCircuitParameters = useGetShortCircuitParameters();
 
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
@@ -252,7 +252,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         {studyUuid && (
                             <ShortCircuitParameters
                                 hideParameters={hideParameters}
-                                shortCircuitParameters={shortCircuitParameters}
+                                shortCircuitParameters={
+                                    useShortCircuitParameters
+                                }
                             />
                         )}
                     </TabPanel>

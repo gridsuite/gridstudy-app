@@ -188,21 +188,24 @@ export const ShortCircuitParameters = ({
                 }
             );
         },
-        [snackError, studyUuid]
+        [snackError, studyUuid, shortCircuitParams, setShortCircuitParams]
     );
 
     //Forced to do the following for now because on the backend we use a (de)serializer coming from powsybl-core that ignore parameters with the default value
     //we need to make a PR in powsybl core to not ignore parameters with default value before we can remove this
     //withVoltageMap and withFeederResult are equal to false if they are not present in the json
-    const setMissingParametersAndSet = function (params) {
-        if (params['withVoltageMap'] === undefined) {
-            params['withVoltageMap'] = false;
-        }
-        if (params['withFeederResult'] === undefined) {
-            params['withFeederResult'] = false;
-        }
-        setShortCircuitParams(params);
-    };
+    const setMissingParametersAndSet = useCallback(
+        (params) => {
+            if (params['withVoltageMap'] === undefined) {
+                params['withVoltageMap'] = false;
+            }
+            if (params['withFeederResult'] === undefined) {
+                params['withFeederResult'] = false;
+            }
+            setShortCircuitParams(params);
+        },
+        [setShortCircuitParams]
+    );
 
     const resetShortCircuitParameters = useCallback(() => {
         setShortCircuitParameters(studyUuid, null)
@@ -216,17 +219,7 @@ export const ShortCircuitParameters = ({
             .catch((errorMessage) =>
                 snackError(errorMessage, 'paramsChangingError')
             );
-    }, [studyUuid, snackError]);
-
-    useEffect(() => {
-        if (studyUuid) {
-            getShortCircuitParameters(studyUuid)
-                .then((params) => setMissingParametersAndSet(params))
-                .catch((errorMessage) =>
-                    snackError(errorMessage, 'paramsRetrievingError')
-                );
-        }
-    }, [studyUuid, snackError]);
+    }, [studyUuid, snackError, setMissingParametersAndSet]);
 
     return (
         <Grid container className={classes.grid}>
