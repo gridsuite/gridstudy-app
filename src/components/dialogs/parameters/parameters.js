@@ -185,7 +185,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         );
     }
 
-    //To be removed when ShortCircuit is not in developer mode any more.
+    //To be removed when ShortCircuit is not in developer mode only.
     useEffect(() => {
         setTabIndex(enableDeveloperMode ? 4 : 3);
     }, [enableDeveloperMode]);
@@ -255,7 +255,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                     </TabPanel>
 
                     {
-                        //To be removed when ShortCircuit is not in developer mode any more.
+                        //To be removed when ShortCircuit is not in developer mode only.
                         enableDeveloperMode && (
                             <TabPanel value={tabIndex} index={3}>
                                 {studyUuid && (
@@ -268,7 +268,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                     }
                     <TabPanel
                         value={tabIndex}
-                        //Ternary to be removed when ShortCircuit is not in developer mode any more.
+                        //Ternary to be removed when ShortCircuit is not in developer mode only.
                         index={enableDeveloperMode ? 4 : 3}
                     >
                         <NetworkParameters hideParameters={hideParameters} />
