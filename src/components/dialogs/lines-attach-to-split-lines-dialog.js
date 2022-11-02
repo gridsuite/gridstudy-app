@@ -23,7 +23,12 @@ import { Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
-import { gridItem, GridSection, compareById } from './dialogUtils';
+import {
+    gridItem,
+    GridSection,
+    compareById,
+    sanitizeString,
+} from './dialogUtils';
 import { linesAttachToSplitLines } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
@@ -300,9 +305,9 @@ const LinesAttachToSplitLinesDialog = ({
                 voltageLevelOrId?.id || voltageLevelOrId,
                 bbsOrNodeId?.id || bbsOrNodeId,
                 newLine1Id,
-                newLine1Name || null,
+                sanitizeString(newLine1Name),
                 newLine2Id,
-                newLine2Name || null
+                sanitizeString(newLine2Name)
             ).catch((errorMessage) => {
                 snackError(errorMessage, 'LineAttachmentError');
             });
@@ -373,7 +378,11 @@ const LinesAttachToSplitLinesDialog = ({
                     <Button onClick={handleCloseAndClear} variant="text">
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave} variant="text">
+                    <Button
+                        onClick={handleSave}
+                        variant="text"
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

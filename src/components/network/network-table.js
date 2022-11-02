@@ -13,7 +13,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
-import { IconButton, TextField, Tooltip, Grid } from '@mui/material';
+import { IconButton, TextField, Tooltip, Grid, Alert } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {
     requestNetworkChange,
@@ -63,7 +63,6 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
-import AlertInvalidNode from '../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 
@@ -247,6 +246,11 @@ const useStyles = makeStyles((theme) => ({
     },
     disabledLabel: {
         color: theme.palette.text.disabled,
+    },
+    invalidData: {
+        position: 'absolute',
+        top: '30%',
+        left: '43%',
     },
 }));
 
@@ -1565,7 +1569,14 @@ const NetworkTable = (props) => {
                                     <ViewColumnIcon />
                                 </IconButton>
                             </Grid>
-                            {props.disabled && <AlertInvalidNode />}
+                            {props.disabled && (
+                                <Alert
+                                    className={classes.invalidData}
+                                    severity="warning"
+                                >
+                                    <FormattedMessage id="InvalidData" />
+                                </Alert>
+                            )}
                             <Grid item className={classes.exportCsv}>
                                 <span
                                     className={clsx({
