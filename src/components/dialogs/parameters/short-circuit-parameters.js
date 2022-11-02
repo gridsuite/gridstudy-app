@@ -167,7 +167,7 @@ const BasicShortCircuitParameters = ({
 
 export const ShortCircuitParameters = ({
     hideParameters,
-    shortCircuitParameters,
+    useShortCircuitParameters,
 }) => {
     const classes = useStyles();
 
@@ -175,7 +175,8 @@ export const ShortCircuitParameters = ({
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const [shortCircuitParams, setShortCircuitParams] = shortCircuitParameters;
+    const [shortCircuitParams, setShortCircuitParams] =
+        useShortCircuitParameters;
 
     const commitShortCircuitParameter = useCallback(
         (newParams) => {
@@ -191,27 +192,11 @@ export const ShortCircuitParameters = ({
         [snackError, studyUuid, shortCircuitParams, setShortCircuitParams]
     );
 
-    //Forced to do the following for now because on the backend we use a (de)serializer coming from powsybl-core that ignore parameters with the default value
-    //we need to make a PR in powsybl core to not ignore parameters with default value before we can remove this
-    //withVoltageMap and withFeederResult are equal to false if they are not present in the json
-    const setMissingParametersAndSet = useCallback(
-        (params) => {
-            if (params['withVoltageMap'] === undefined) {
-                params['withVoltageMap'] = false;
-            }
-            if (params['withFeederResult'] === undefined) {
-                params['withFeederResult'] = false;
-            }
-            setShortCircuitParams(params);
-        },
-        [setShortCircuitParams]
-    );
-
     const resetShortCircuitParameters = useCallback(() => {
         setShortCircuitParameters(studyUuid, null)
             .then(() => {
                 return getShortCircuitParameters(studyUuid)
-                    .then((params) => setMissingParametersAndSet(params))
+                    .then((params) => setShortCircuitParams(params))
                     .catch((errorMessage) =>
                         snackError(errorMessage, 'paramsRetrievingError')
                     );
@@ -219,7 +204,7 @@ export const ShortCircuitParameters = ({
             .catch((errorMessage) =>
                 snackError(errorMessage, 'paramsChangingError')
             );
-    }, [studyUuid, snackError, setMissingParametersAndSet]);
+    }, [studyUuid, snackError, setShortCircuitParams]);
 
     return (
         <Grid container className={classes.grid}>
