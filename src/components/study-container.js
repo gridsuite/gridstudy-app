@@ -60,7 +60,6 @@ import {
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
-import { window } from 'mjolnir.js/dist/es5/utils/globals';
 
 export function useNodeData(
     studyUuid,
@@ -613,12 +612,6 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(true);
-            } else if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'deleteStudy'
-            ) {
-                // closing window on study deletion
-                window.close();
             }
         }
         // Note: studyUuid, and loadNetwork don't change
