@@ -131,7 +131,10 @@ const DirectoryItemSelector = (props) => {
                     let childrenMatchedTypes = children.filter((item) =>
                         contentFilter().has(item.type)
                     );
-                    if (props.equipmentTypes) {
+                    if (
+                        props.equipmentTypes &&
+                        props.equipmentTypes.length > 0
+                    ) {
                         // filtering also with equipment types
                         fetchElementsMetadata(
                             childrenMatchedTypes.map((e) => e.elementUuid)
