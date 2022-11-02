@@ -94,6 +94,12 @@ const SensiParametersSelector = (props) => {
                                     setSelectedVariablesFiltersListUuids
                                 }
                                 elementTypes={[elementType.FILTER]}
+                                equipmentTypes={[
+                                    'GENERATOR',
+                                    'LOAD',
+                                    'HVDC_LINE',
+                                    'TWO_WINDINGS_TRANSFORMER',
+                                ]}
                                 selectorTitleId={'FiltersListsSelection'}
                                 fetchErrorMsgId={'getVariablesFiltersListError'}
                             />
