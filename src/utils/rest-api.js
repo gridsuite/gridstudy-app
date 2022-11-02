@@ -24,8 +24,6 @@ const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
 const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/sensitivity-analysis';
-const PREFIX_DIRECTORY_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 
 function getToken() {
     const state = store.getState();
