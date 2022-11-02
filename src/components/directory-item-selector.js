@@ -128,7 +128,7 @@ const DirectoryItemSelector = (props) => {
         (nodeId) => {
             fetchDirectoryContent(nodeId)
                 .then((children) => {
-                    let childrenMatchedTypes = children.filter((item) =>
+                    const childrenMatchedTypes = children.filter((item) =>
                         contentFilter().has(item.type)
                     );
                     if (
@@ -139,7 +139,7 @@ const DirectoryItemSelector = (props) => {
                         fetchElementsMetadata(
                             childrenMatchedTypes.map((e) => e.elementUuid)
                         ).then((childrenWithMetada) => {
-                            let childrenToBeInserted =
+                            const childrenToBeInserted =
                                 childrenWithMetada.filter((e) => {
                                     return props.equipmentTypes.includes(
                                         e.specificMetadata.equipmentType

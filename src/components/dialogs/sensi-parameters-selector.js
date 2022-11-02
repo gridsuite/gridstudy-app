@@ -23,6 +23,24 @@ import {
 import { elementType } from '@gridsuite/commons-ui';
 import ContingenciesFiltersSelector from './contingencies-filters-selector';
 
+const EquipmentType = {
+    LINE: 'LINE',
+    GENERATOR: 'GENERATOR',
+    LOAD: 'LOAD',
+    SHUNT_COMPENSATOR: 'SHUNT_COMPENSATOR',
+    STATIC_VAR_COMPENSATOR: 'STATIC_VAR_COMPENSATOR',
+    BATTERY: 'BATTERY',
+    BUSBAR_SECTION: 'BUSBAR_SECTION',
+    DANGLING_LINE: 'DANGLING_LINE',
+    LCC_CONVERTER_STATION: 'LCC_CONVERTER_STATION',
+    VSC_CONVERTER_STATION: 'VSC_CONVERTER_STATION',
+    TWO_WINDINGS_TRANSFORMER: 'TWO_WINDINGS_TRANSFORMER',
+    THREE_WINDINGS_TRANSFORMER: 'THREE_WINDINGS_TRANSFORMER',
+    HVDC_LINE: 'HVDC_LINE',
+    VOLTAGE_LEVEL: 'VOLTAGE_LEVEL',
+    SUBSTATION: 'SUBSTATION',
+};
+
 function makeButton(onClick, message, disabled) {
     return (
         <Grid item>
@@ -95,10 +113,10 @@ const SensiParametersSelector = (props) => {
                                 }
                                 elementTypes={[elementType.FILTER]}
                                 equipmentTypes={[
-                                    'GENERATOR',
-                                    'LOAD',
-                                    'HVDC_LINE',
-                                    'TWO_WINDINGS_TRANSFORMER',
+                                    EquipmentType.GENERATOR,
+                                    EquipmentType.LOAD,
+                                    EquipmentType.HVDC_LINE,
+                                    EquipmentType.TWO_WINDINGS_TRANSFORMER,
                                 ]}
                                 selectorTitleId={'FiltersListsSelection'}
                                 fetchErrorMsgId={'getVariablesFiltersListError'}
@@ -131,8 +149,8 @@ const SensiParametersSelector = (props) => {
                                 }
                                 elementTypes={[elementType.FILTER]}
                                 equipmentTypes={[
-                                    'LINE',
-                                    'TWO_WINDINGS_TRANSFORMER',
+                                    EquipmentType.LINE,
+                                    EquipmentType.TWO_WINDINGS_TRANSFORMER,
                                 ]}
                                 selectorTitleId={'FiltersListsSelection'}
                                 fetchErrorMsgId={'getBranchFiltersListError'}
