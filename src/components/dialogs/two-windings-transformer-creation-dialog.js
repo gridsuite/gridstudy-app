@@ -78,7 +78,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const toFormValues = (twt) => {
         return {
             equipmentId: twt.id + '(1)',
-            equipmentName: twt.name,
+            equipmentName: twt.name ?? '',
             seriesResistance: twt.r,
             seriesReactance: twt.x,
             magnetizingConductance: twt.g,
