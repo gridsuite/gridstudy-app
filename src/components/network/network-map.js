@@ -32,6 +32,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import { Button } from '@mui/material';
 import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
+import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -365,7 +366,7 @@ const NetworkMap = (props) => {
                     setTooltip({
                         message: object
                             ? props.useName
-                                ? object.name
+                                ? getNameOrId(object)
                                 : object.id
                             : null,
                         pointerX: x,
