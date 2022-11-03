@@ -26,7 +26,12 @@ import { parse } from 'qs';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import { getArray, useSingleLineDiagram, ViewState } from './utils';
+import {
+    getArray,
+    getNameOrId,
+    useSingleLineDiagram,
+    ViewState,
+} from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 
@@ -420,7 +425,7 @@ export function SingleLineDiagramPane({
                             onClose={handleCloseSLD}
                             onNextVoltageLevelClick={handleOpenView}
                             onBreakerClick={handleUpdateSwitchState}
-                            diagramTitle={sld.name}
+                            diagramTitle={getNameOrId(sld)}
                             svgUrl={sld.svgUrl}
                             sldId={sld.id}
                             ref={sld.ref}
@@ -449,7 +454,7 @@ export function SingleLineDiagramPane({
                             <Chip
                                 key={view.id}
                                 icon={<ArrowUpwardIcon />}
-                                label={view.name}
+                                label={getNameOrId(view)}
                                 onClick={() =>
                                     handleOpenView(view.id, view.type)
                                 }
