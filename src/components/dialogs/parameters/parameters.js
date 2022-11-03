@@ -42,7 +42,10 @@ import {
 } from './load-flow-parameters';
 import { MapParameters } from './map-parameters';
 import { NetworkParameters } from './network-parameters';
-import { ShortCircuitParameters } from './short-circuit-parameters';
+import {
+    ShortCircuitParameters,
+    useGetShortCircuitParameters,
+} from './short-circuit-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
@@ -169,6 +172,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const lfParamsAndLfProvider = useGetLfParamsAndProvider();
 
+    const useShortCircuitParameters = useGetShortCircuitParameters();
+
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
@@ -263,7 +268,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                     </TabPanel>
-
                     {
                         //To be removed when ShortCircuit is not in developer mode only.
                         enableDeveloperMode && (
@@ -274,6 +278,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 {studyUuid && (
                                     <ShortCircuitParameters
                                         hideParameters={hideParameters}
+                                        useShortCircuitParameters={
+                                            useShortCircuitParameters
+                                        }
                                     />
                                 )}
                             </TabPanel>
