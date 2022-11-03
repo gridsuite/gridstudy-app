@@ -613,8 +613,8 @@ const SensiNodes = ({ index, onChange, defaultValue }) => {
     return (
         <>
             <SensiChecked checked={checked} onClick={onClickChecked} />
-            {gridItem(monitoredVoltageLevelsField, 2.5)}
-            {gridItem(equipmentsInVoltageRegulationField, 2.5)}
+            {gridItem(monitoredVoltageLevelsField, 3)}
+            {gridItem(equipmentsInVoltageRegulationField, 3.5)}
             {gridItem(contingenciesField, 2.5)}
         </>
     );
