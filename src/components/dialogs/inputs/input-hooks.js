@@ -762,8 +762,6 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     return [error, field, isValidName, name];
 };
 
-// TODO : when metadata will be available, add metadata to filter the element selection
-//  (if elementType is FILTER : filtering by equipment type or type: MANUAL or FORM ...)
 export const useDirectoryElements = ({
     label,
     initialValues,
@@ -873,7 +871,7 @@ export const useDirectoryElements = ({
                     open={directoryItemSelectorOpen}
                     onClose={addElements}
                     types={[elementType]}
-                    // equipmentTypes={{equipmentTypes}}   TODO : to use when filtering with equipmentTypes will be available
+                    equipmentTypes={equipmentTypes}
                     title={intl.formatMessage({ id: titleId })}
                 />
             </>
@@ -888,6 +886,7 @@ export const useDirectoryElements = ({
         handleDelete,
         directoryItemSelectorOpen,
         elementType,
+        equipmentTypes,
         intl,
         titleId,
         label,

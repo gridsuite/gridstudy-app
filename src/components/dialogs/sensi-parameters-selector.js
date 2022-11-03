@@ -398,7 +398,10 @@ const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
             ? defaultValue.monitoredBranches
             : [],
         elementType: elementType.FILTER,
-        equipmentTypes: ['LINE', 'TWO_WINDINGS_TRANSFORMER'],
+        equipmentTypes: [
+            EquipmentType.LINE,
+            EquipmentType.TWO_WINDINGS_TRANSFORMER,
+        ],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -407,7 +410,7 @@ const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
         label: 'HvdcLines',
         initialValues: defaultValue.hvdcs ? defaultValue.hvdcs : [],
         elementType: elementType.FILTER,
-        equipmentTypes: ['HVDC_LINE'],
+        equipmentTypes: [EquipmentType.HVDC_LINE],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -476,7 +479,10 @@ const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
             ? defaultValue.monitoredBranches
             : [],
         elementType: elementType.FILTER,
-        equipmentTypes: ['LINE', 'TWO_WINDINGS_TRANSFORMER'],
+        equipmentTypes: [
+            EquipmentType.LINE,
+            EquipmentType.TWO_WINDINGS_TRANSFORMER,
+        ],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -485,7 +491,7 @@ const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
         label: 'PSTS',
         initialValues: defaultValue.psts ? defaultValue.psts : [],
         elementType: elementType.FILTER,
-        equipmentTypes: ['TWO_WINDINGS_TRANSFORMER'],
+        equipmentTypes: [EquipmentType.TWO_WINDINGS_TRANSFORMER],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -555,7 +561,7 @@ const SensiNodes = ({ index, onChange, defaultValue }) => {
                 ? defaultValue.monitoredVoltageLevels
                 : [],
             elementType: elementType.FILTER,
-            equipmentTypes: ['VOLTAGE_LEVEL'],
+            equipmentTypes: [EquipmentType.VOLTAGE_LEVEL],
             titleId: 'FiltersListsSelection',
             elementClassName: classes.chipElement,
         });
@@ -568,11 +574,11 @@ const SensiNodes = ({ index, onChange, defaultValue }) => {
                 : [],
             elementType: elementType.FILTER,
             equipmentTypes: [
-                'GENERATOR',
-                'TWO_WINDINGS_TRANSFORMER',
-                'VSC_CONVERTER_STATION',
-                'STATIC_VAR_COMPENSATOR',
-                'SHUNT_COMPENSATOR',
+                EquipmentType.GENERATOR,
+                EquipmentType.TWO_WINDINGS_TRANSFORMER,
+                EquipmentType.VSC_CONVERTER_STATION,
+                EquipmentType.STATIC_VAR_COMPENSATOR,
+                EquipmentType.SHUNT_COMPENSATOR,
             ],
             titleId: 'FiltersListsSelection',
             elementClassName: classes.chipElement,
