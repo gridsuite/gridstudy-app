@@ -15,11 +15,15 @@ const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
+const PREFIX_DIRECTORY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
+const PREFIX_EXPLORE_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/explore';
 
 function getToken() {
     const state = store.getState();
@@ -913,6 +917,65 @@ export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
     });
 }
 
+export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        `Running short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const startShortCircuitAnanysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/run';
+    console.debug(startShortCircuitAnanysisUrl);
+    return backendFetch(startShortCircuitAnanysisUrl, { method: 'put' }).then(
+        (response) =>
+            response.ok
+                ? response
+                : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopShortCircuitAnalysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/stop';
+    console.debug(stopShortCircuitAnalysisUrl);
+    return backendFetch(stopShortCircuitAnalysisUrl, { method: 'put' });
+}
+
+export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching short circuit analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            return Promise.resolve(0);
+        }
+    });
+}
+
+export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/result';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        if (response.ok) return response.json();
+        throw new Error(response.status + ' ' + response.statusText);
+    });
+}
+
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');
     const url =
@@ -1126,6 +1189,49 @@ export function connectNotificationsWebsocket(studyUuid) {
         console.info('Connected Websocket ' + wsadress + ' ...');
     };
     return rws;
+}
+
+export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
+    // The websocket API doesn't allow relative urls
+    const wsbase = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const wsadress =
+        wsbase +
+        PREFIX_DIRECTORY_NOTIFICATION_WS +
+        '/notify?updateType=deleteStudy&studyUuid=' +
+        studyUuid;
+
+    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
+    // don't log the token, it's private
+    rws.onopen = function (event) {
+        console.info('Connected Websocket ' + wsadress + ' ...');
+    };
+    return rws;
+}
+
+/**
+ * Function will be called to connect with notification websocket to update the studies list
+ * @returns {ReconnectingWebSocket}
+ */
+export function connectNotificationsWsUpdateDirectories() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl +
+        PREFIX_DIRECTORY_NOTIFICATION_WS +
+        '/notify?updateType=directories';
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        () => webSocketUrl + '&access_token=' + getToken()
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update directories ' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
 }
 
 export function connectNotificationsWsUpdateConfig() {
@@ -1624,7 +1730,11 @@ export function createLine(
     permanentCurrentLimit1,
     permanentCurrentLimit2,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    connectionName1,
+    connectionDirection1,
+    connectionName2,
+    connectionDirection2
 ) {
     let createLineUrl;
     if (isUpdate) {
@@ -1665,6 +1775,10 @@ export function createLine(
             currentLimits2: {
                 permanentLimit: permanentCurrentLimit2,
             },
+            connectionName1: connectionName1,
+            connectionDirection1: connectionDirection1,
+            connectionName2: connectionName2,
+            connectionDirection2: connectionDirection2,
         }),
     }).then((response) => {
         return response.ok
@@ -1689,7 +1803,11 @@ export function createTwoWindingsTransformer(
     voltageLevelId2,
     busOrBusbarSectionId2,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    connectionName1,
+    connectionDirection1,
+    connectionName2,
+    connectionDirection2
 ) {
     let createTwoWindingsTransformerUrl;
     if (isUpdate) {
@@ -1724,6 +1842,10 @@ export function createTwoWindingsTransformer(
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
+            connectionName1: connectionName1,
+            connectionDirection1: connectionDirection1,
+            connectionName2: connectionName2,
+            connectionDirection2: connectionDirection2,
         }),
     }).then((response) => {
         return response.ok
@@ -2056,22 +2178,32 @@ export function deleteEquipment(
     studyUuid,
     currentNodeUuid,
     equipmentType,
-    equipmentId
+    equipmentId,
+    modificationUuid
 ) {
-    console.info(
-        'deleting equipment ' +
-            equipmentId +
-            ' with type ' +
-            equipmentType +
-            ' ...'
-    );
-    const deleteEquipmentUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/equipments/type/' +
-        encodeURIComponent(equipmentType) +
-        '/id/' +
-        encodeURIComponent(equipmentId);
-    return backendFetch(deleteEquipmentUrl, { method: 'delete' });
+    let deleteEquipmentUrl;
+    if (modificationUuid) {
+        console.info('Updating equipment deletion');
+        deleteEquipmentUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/equipments-deletion/type/' +
+            encodeURIComponent(equipmentType) +
+            '/id/' +
+            encodeURIComponent(equipmentId);
+    } else {
+        console.info('Creating equipment deletion');
+        deleteEquipmentUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/equipments/type/' +
+            encodeURIComponent(equipmentType) +
+            '/id/' +
+            encodeURIComponent(equipmentId);
+    }
+    return backendFetch(deleteEquipmentUrl, {
+        method: modificationUuid ? 'PUT' : 'DELETE',
+    });
 }
 
 export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
@@ -2228,4 +2360,18 @@ export function fetchMapEquipments(
         '/network-map/map-equipments-data';
     console.debug(fetchEquipmentsUrl);
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
+}
+
+export function fetchElementsMetadata(ids) {
+    console.info('Fetching elements metadata');
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/elements/metadata?ids=' +
+        ids
+            .filter((e) => e != null && e !== '') // filter empty element
+            .join('&ids=');
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
 }

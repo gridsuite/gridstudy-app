@@ -155,6 +155,11 @@
     "sensitivityAnalysisResults": "Résultats de l'analyse de sensibilité",
     "sensitivityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibilité",
 
+    "ShortCircuitAnalysis": "Analyse de court-circuit",
+    "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
+    "ShortCircuitAnalysisResults": "Résultats de l'analyse de court-circuit",
+    "ShortCircuitError": "Une erreur est survenue lors de l'exécution de l'analyse de court-circuit",
+
     "LimitType": "Type de limite",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
@@ -391,7 +396,6 @@
     "ReactiveCapabilityCurve": "Limites de réactif par diagramme",
     "MinimumReactivePower": "Puissance réactive minimale",
     "MaximumReactivePower": "Puissance réactive maximale",
-    "ActivePower": "Puissance active",
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",

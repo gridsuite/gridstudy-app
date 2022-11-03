@@ -4,12 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 
 import SplitButton from './util/split-button';
 import { RunningStatus } from './util/running-status';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import { useParameterState } from './dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     succeed: {
@@ -84,6 +86,7 @@ const RunButton = (props) => {
     const classes = useStyles();
 
     const [selectedIndex, setSelectedIndex] = React.useState(0);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     function getStyle(runningStatus) {
         switch (runningStatus) {
@@ -122,9 +125,21 @@ const RunButton = (props) => {
         }
     };
 
-    function getRunnable() {
-        return props.runnables[selectedIndex];
-    }
+    const getRunnable = useCallback(() => {
+        if (selectedIndex < props.runnables.length) {
+            return props.runnables[selectedIndex];
+        }
+        // selectedIndex out of range, then return first runnable
+        // (possible cause: developer mode is disabled and runnable list is now smaller)
+        return props.runnables[0];
+    }, [props.runnables, selectedIndex]);
+
+    useEffect(() => {
+        if (!enableDeveloperMode) {
+            // a computation may become unavailable when developer mode is disabled, then switch on first one
+            setSelectedIndex(0);
+        }
+    }, [enableDeveloperMode, setSelectedIndex]);
 
     function getRunningStatus() {
         return props.getStatus(getRunnable());
