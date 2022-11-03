@@ -238,6 +238,9 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
+    // workaround to fetch network data when WS connection is lost
+    const [wsConnected, setWsConnected] = useState(false);
+
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     const intl = useIntl();
@@ -277,10 +280,15 @@ export function StudyContainer({ view, onChangeTab }) {
             ws.onclose = function (event) {
                 if (!websocketExpectedCloseRef.current) {
                     console.error('Unexpected Notification WebSocket closed');
+                    setWsConnected(false);
                 }
             };
             ws.onerror = function (event) {
                 console.error('Unexpected Notification WebSocket error', event);
+            };
+            ws.onopen = function (event) {
+                console.log('Notification WebSocket opened');
+                setWsConnected(true);
             };
             return ws;
         },
@@ -445,6 +453,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     //handles map automatic mode network reload
     useEffect(() => {
+        if (!wsConnected) return;
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only node renaming, do not reload network
@@ -452,7 +461,7 @@ export function StudyContainer({ view, onChangeTab }) {
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
         loadNetwork(true);
-    }, [loadNetwork, currentNode, mapManualRefresh]);
+    }, [loadNetwork, currentNode, mapManualRefresh, wsConnected]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
