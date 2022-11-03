@@ -190,6 +190,7 @@ export const LabelledSilder = ({
     const handleValueChanged = (event, newValue) => {
         setSliderValue(newValue);
     };
+
     const classes = useStyles();
 
     return (

@@ -31,6 +31,7 @@ const ContingenciesFiltersSelector = ({
     selectedValues,
     setSelectedValues,
     elementTypes,
+    equipmentTypes,
     selectorTitleId,
     fetchErrorMsgId,
 }) => {
@@ -181,6 +182,7 @@ const ContingenciesFiltersSelector = ({
                 open={directoryItemSelectorOpen}
                 onClose={addFavorites}
                 types={elementTypes}
+                equipmentTypes={equipmentTypes}
                 title={intl.formatMessage({ id: selectorTitleId })}
             />
         </>
@@ -193,6 +195,7 @@ ContingenciesFiltersSelector.propTypes = {
     selectedValues: PropTypes.array.isRequired,
     setSelectedValues: PropTypes.func.isRequired,
     elementTypes: PropTypes.array.isRequired,
+    equipmentTypes: PropTypes.array,
     selectorTitleId: PropTypes.string.isRequired,
     fetchErrorMsgId: PropTypes.string.isRequired,
 };
