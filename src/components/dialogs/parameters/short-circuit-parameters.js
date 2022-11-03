@@ -22,6 +22,24 @@ import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import { LabelledSilder, LineSeparator } from '../dialogUtils';
 
+export const useGetShortCircuitParameters = () => {
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const { snackError } = useSnackMessage();
+    const [shortCircuitParams, setShortCircuitParams] = useState(null);
+
+    useEffect(() => {
+        if (studyUuid) {
+            getShortCircuitParameters(studyUuid)
+                .then((params) => setShortCircuitParams(params))
+                .catch((errorMessage) =>
+                    snackError(errorMessage, 'paramsRetrievingError')
+                );
+        }
+    }, [studyUuid, snackError]);
+
+    return [shortCircuitParams, setShortCircuitParams];
+};
+
 function getValue(param, key) {
     if (!param || param[key] === undefined) return null;
     return param[key];
@@ -147,14 +165,18 @@ const BasicShortCircuitParameters = ({
     );
 };
 
-export const ShortCircuitParameters = ({ hideParameters }) => {
+export const ShortCircuitParameters = ({
+    hideParameters,
+    useShortCircuitParameters,
+}) => {
     const classes = useStyles();
 
     const { snackError } = useSnackMessage();
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const [shortCircuitParams, setShortCircuitParams] = useState(null);
+    const [shortCircuitParams, setShortCircuitParams] =
+        useShortCircuitParameters;
 
     const commitShortCircuitParameter = useCallback(
         (newParams) => {
@@ -167,27 +189,14 @@ export const ShortCircuitParameters = ({ hideParameters }) => {
                 }
             );
         },
-        [shortCircuitParams, snackError, studyUuid]
+        [snackError, studyUuid, shortCircuitParams, setShortCircuitParams]
     );
-
-    //Forced to do the following for now because on the backend we use a (de)serializer coming from powsybl-core that ignore parameters with the default value
-    //we need to make a PR in powsybl core to not ignore parameters with default value before we can remove this
-    //withVoltageMap and withFeederResult are equal to false if they are not present in the json
-    const setMissingParametersAndSet = function (params) {
-        if (params['withVoltageMap'] === undefined) {
-            params['withVoltageMap'] = false;
-        }
-        if (params['withFeederResult'] === undefined) {
-            params['withFeederResult'] = false;
-        }
-        setShortCircuitParams(params);
-    };
 
     const resetShortCircuitParameters = useCallback(() => {
         setShortCircuitParameters(studyUuid, null)
             .then(() => {
                 return getShortCircuitParameters(studyUuid)
-                    .then((params) => setMissingParametersAndSet(params))
+                    .then((params) => setShortCircuitParams(params))
                     .catch((errorMessage) =>
                         snackError(errorMessage, 'paramsRetrievingError')
                     );
@@ -195,17 +204,7 @@ export const ShortCircuitParameters = ({ hideParameters }) => {
             .catch((errorMessage) =>
                 snackError(errorMessage, 'paramsChangingError')
             );
-    }, [studyUuid, snackError]);
-
-    useEffect(() => {
-        if (studyUuid) {
-            getShortCircuitParameters(studyUuid)
-                .then((params) => setMissingParametersAndSet(params))
-                .catch((errorMessage) =>
-                    snackError(errorMessage, 'paramsRetrievingError')
-                );
-        }
-    }, [studyUuid, snackError]);
+    }, [studyUuid, snackError, setShortCircuitParams]);
 
     return (
         <Grid container className={classes.grid}>
