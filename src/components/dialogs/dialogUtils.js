@@ -8,7 +8,7 @@
 import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
+import React, { useState } from 'react';
 import { Divider, Slider, Tooltip, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 
@@ -160,6 +160,12 @@ export const LabelledSilder = ({
     onCommitCallback,
     marks,
 }) => {
+    const [sliderValue, setSliderValue] = useState(value);
+
+    const handleValueChanged = (event, newValue) => {
+        setSliderValue(newValue);
+    };
+
     const classes = useStyles();
 
     return (
@@ -176,8 +182,9 @@ export const LabelledSilder = ({
                     min={0}
                     max={100}
                     valueLabelDisplay="auto"
+                    onChange={handleValueChanged}
                     onChangeCommitted={onCommitCallback}
-                    value={value}
+                    value={sliderValue}
                     disabled={disabled}
                     marks={marks}
                 />
