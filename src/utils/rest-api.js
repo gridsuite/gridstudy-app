@@ -22,6 +22,8 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
+const PREFIX_EXPLORE_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/explore';
 
 function getToken() {
     const state = store.getState();
@@ -2335,4 +2337,18 @@ export function getUniqueNodeName(studyUuid) {
             ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
+}
+
+export function fetchElementsMetadata(ids) {
+    console.info('Fetching elements metadata');
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/elements/metadata?ids=' +
+        ids
+            .filter((e) => e != null && e !== '') // filter empty element
+            .join('&ids=');
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
 }
