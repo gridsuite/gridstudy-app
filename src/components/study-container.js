@@ -160,6 +160,8 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_failed',
 ];
 const UPDATE_TYPE_HEADER = 'updateType';
+// the minimum number of millis between 2 calls of loadNetwork
+const DELAY_BETWEEN_LOAD_NETWORK = 15000;
 
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
@@ -343,11 +345,18 @@ export function StudyContainer({ view, onChangeTab }) {
         setNetworkLoadingFailMessage(error.message);
     }, []);
 
+    let lastNetworkLoad = 0;
     const loadNetwork = useCallback(
         (isUpdate) => {
             if (!isNodeBuilt(currentNode) || !studyUuid) {
                 return;
             }
+            const currentDateTime = Date.now();
+            // delay between 2 network loading
+            if (lastNetworkLoad > (currentDateTime - DELAY_BETWEEN_LOAD_NETWORK)) {
+                return;
+            }
+            lastNetworkLoad = currentDateTime;
             console.info(`Loading network of study '${studyUuid}'...`);
 
             if (isUpdate) {
