@@ -353,7 +353,10 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             const currentDateTime = Date.now();
             // delay between 2 network loading
-            if (lastNetworkLoad > (currentDateTime - DELAY_BETWEEN_LOAD_NETWORK)) {
+            if (
+                lastNetworkLoad >
+                currentDateTime - DELAY_BETWEEN_LOAD_NETWORK
+            ) {
                 return;
             }
             lastNetworkLoad = currentDateTime;
