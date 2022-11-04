@@ -508,8 +508,8 @@
     "GeneratePhaseTapRowsError": "Please generate the phase changer steps",
     "IncoherentPhaseLowTapPositionError": "The Low tap position value is not consistent with the phase tap changer steps data",
     "IncoherentRatioTapPositionError": "The Tap position value is not consistent with the ratio tap changer steps data",
-    "IncoherentRatioRegulatingTerminalError": "The phase tap Regulating terminal value must be filled",
-    "IncoherentPhaseRegulatingTerminalError": "The ratio tap Regulating terminal value must be filled",
+    "IncoherentRatioRegulatingTerminalError": "The ratio tap Regulating terminal value must be filled",
+    "IncoherentPhaseRegulatingTerminalError": "The phase tap Regulating terminal value must be filled",
 
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",
