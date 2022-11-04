@@ -15,13 +15,15 @@ const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
+const PREFIX_DIRECTORY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
-const PREFIX_DIRECTORY_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
+const PREFIX_EXPLORE_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/explore';
 
 function getToken() {
     const state = store.getState();
@@ -1189,6 +1191,25 @@ export function connectNotificationsWebsocket(studyUuid) {
     return rws;
 }
 
+export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
+    // The websocket API doesn't allow relative urls
+    const wsbase = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const wsadress =
+        wsbase +
+        PREFIX_DIRECTORY_NOTIFICATION_WS +
+        '/notify?updateType=deleteStudy&studyUuid=' +
+        studyUuid;
+
+    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
+    // don't log the token, it's private
+    rws.onopen = function (event) {
+        console.info('Connected Websocket ' + wsadress + ' ...');
+    };
+    return rws;
+}
+
 /**
  * Function will be called to connect with notification websocket to update the studies list
  * @returns {ReconnectingWebSocket}
@@ -2316,4 +2337,18 @@ export function getUniqueNodeName(studyUuid) {
             ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
+}
+
+export function fetchElementsMetadata(ids) {
+    console.info('Fetching elements metadata');
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/elements/metadata?ids=' +
+        ids
+            .filter((e) => e != null && e !== '') // filter empty element
+            .join('&ids=');
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
 }

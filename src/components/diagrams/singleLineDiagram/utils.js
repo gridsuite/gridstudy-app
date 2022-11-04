@@ -92,3 +92,7 @@ export const useSingleLineDiagram = () => {
         minimizeSldView,
     ];
 };
+
+export function getNameOrId(value) {
+    return value?.name ?? value?.id;
+}
