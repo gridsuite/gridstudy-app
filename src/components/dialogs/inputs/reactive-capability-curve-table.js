@@ -18,6 +18,8 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 
+const minimalValue = {p:"", qminP:"", qmaxP:""};
+
 function hasValueCorrectFormat(valueToTest, index) {
     return !!(valueToTest
         && valueToTest[index]
@@ -27,71 +29,72 @@ function hasValueCorrectFormat(valueToTest, index) {
 }
 
 function enforceMinimumValues(valueToTest) {
-    const minimalValue = {p:"", qminP:"", qmaxP:""};
     let returnValue = [];
     returnValue[0] = hasValueCorrectFormat(valueToTest, 0) ? valueToTest[0] : minimalValue;
     returnValue[1] = hasValueCorrectFormat(valueToTest, 1) ? valueToTest[1] : minimalValue;
     if (valueToTest?.length > 2) {
         for (let i=2; i<valueToTest.length; i++) {
-            if (!hasValueCorrectFormat(valueToTest, i)) {
-                returnValue[i] = minimalValue;
-            } else {
-                returnValue[i] = valueToTest;
-            }
+            returnValue[i] = hasValueCorrectFormat(valueToTest, i) ? valueToTest[i] : minimalValue;
         }
     }
     return returnValue;
 };
 
 export const useReactiveCapabilityCurveTableValues = ({
-    id,
+    //id,
     tableHeadersIds,
     Field,
     inputForm,
-    defaultValues, // format : [{p:"", qminP:"", qmaxP:""}, {p:"", qminP:"", qmaxP:""}]
+    defaultValues, // format : either undefined or [{p:"", qminP:"", qmaxP:""}, {p:"", qminP:"", qmaxP:""}]
     isReactiveCapabilityCurveOn,
     disabled = false,
 }) => {
 
-    const [values, setValues] = useState(enforceMinimumValues(defaultValues));
     const classes = useStyles();
 
-    /*const checkValues = useCallback(() => {
-        console.error("defaultValues = ", defaultValues);
-        if (defaultValues !== undefined && defaultValues.length > 0) {
-            setValues([...defaultValues]);
-        } else {
-            setValues([]);
-            handleAddValue();
-        }
-    }, [defaultValues, handleAddValue]);
+    // Values sent back to the parent component.
+    const [values, setValues] = useState(enforceMinimumValues(defaultValues));
 
+    // Values displayed in the form. When updated, they also updates "values".
+    const [displayedValues, setDisplayedValues] = useState(enforceMinimumValues(defaultValues));
     useEffect(() => {
-        checkValues();
-    }, [checkValues]);*/
+        // Updates the component when the correct default values are given by the parent component.
+        if (defaultValues !== undefined && defaultValues.length > 0) {
+            const enforcedMinimumDefaultValues = enforceMinimumValues(defaultValues);
+            setValues(enforcedMinimumDefaultValues);
+            setDisplayedValues(enforcedMinimumDefaultValues);
+        }
+    }, [defaultValues]);
 
-    const handleDeleteItem = useCallback(
-        (index) => {
-            setValues((oldValues) => {
-                let newValues = [...oldValues];
-                newValues.splice(index, 1);
-                return newValues;
-            });
-            inputForm.reset();
-        },
-        [inputForm]
-    );
+    const handleDeleteItem = useCallback((index) => {
+
+        const innerDeleteItem = (oldValues) => {
+            let newValues = [...oldValues];
+            newValues.splice(index, 1);
+            return newValues;
+        };
+        setValues(innerDeleteItem);
+        setDisplayedValues(innerDeleteItem);
+        inputForm.reset();
+    }, [inputForm]);
 
     const handleAddValue = useCallback(() => {
-        setValues((oldValues) => [...oldValues, {}]);
-    }, []);
+        const newPosition = values.length - 1;
+        const newValues = [...values.slice(0, newPosition), minimalValue, ...values.slice(newPosition)];
+
+        setValues(newValues);
+
+        // Adds a unique ID on each displayed line, to prevent a bad rendering effect
+        let newValuesForDisplay = [];
+        for (let i = 0; i< newValues.length; i++) {
+            newValuesForDisplay[i] = newValues[i];
+            newValuesForDisplay[i].id = Math.random();
+        }
+        setDisplayedValues(newValuesForDisplay);
+    }, [values, displayedValues]);
 
     const handleSetValue = useCallback((index, newValue) => {
-        setValues((oldValues) => {
-            let newValues = [...oldValues];
-            newValues[index] = newValue;
-            return newValues;
-        });
+        setValues(oldValues => [...oldValues.slice(0, index), newValue, ...oldValues.slice(index+1)]);
     }, []);
 
     /*useEffect(() => { // TODO CHARLY Surveiller cette fonction
@@ -121,12 +124,15 @@ export const useReactiveCapabilityCurveTableValues = ({
                     </Grid>
                 ))}
 
-                {values.map((value, idx) => (
-                    <Grid key={id + idx} container spacing={3} item>
+                {displayedValues.map((value, index) => {
+
+                    const id = value?.id ? value.id : "defaultId";
+                    return (
+                    <Grid key={id + index} container spacing={3} item>
                         <Field
                             defaultValue={value}
                             onChange={handleSetValue}
-                            index={idx}
+                            index={index}
                             inputForm={inputForm}
                             isFieldRequired={isReactiveCapabilityCurveOn}
                             disabled={disabled}
@@ -134,32 +140,35 @@ export const useReactiveCapabilityCurveTableValues = ({
                         <Grid item xs={1}>
                             <IconButton
                                 className={classes.icon}
-                                key={id + idx}
-                                onClick={() => handleDeleteItem(idx)}
-                                disabled={disabled || idx === 0}
+                                key={id + index}
+                                onClick={() => handleDeleteItem(index)}
+                                disabled={ disabled ||
+                                    index === 0 ||
+                                    index === displayedValues.length - 1 }
                             >
                                 <DeleteIcon />
                             </IconButton>
                         </Grid>
-                        {idx === values.length - 1 && (
+                        {index === displayedValues.length - 1 && (
                             <Grid item xs={1}>
                                 <IconButton
                                     className={classes.icon}
-                                    key={id + idx}
-                                    onClick={() => handleAddValue()}
+                                    key={id + index}
+                                    onClick={handleAddValue}
                                     disabled={disabled}
+                                    style={{ top: '-1em' }}
                                 >
                                     <AddIcon />
                                 </IconButton>
                             </Grid>
                         )}
                     </Grid>
-                ))}
+                );
+                })}
             </Grid>
         );
     }, [
-        values,
-        id,
+        displayedValues,
         classes.icon,
         handleAddValue,
         handleDeleteItem,

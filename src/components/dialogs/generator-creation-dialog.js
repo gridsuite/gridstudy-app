@@ -247,8 +247,6 @@ const GeneratorCreationDialog = ({
 
     const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
         useReactiveCapabilityCurveTableValues({
-        //useTableValues({
-            id: 'ReactiveCapabilityCurveOn',
             tableHeadersIds: headerIds,
             inputForm: inputForm,
             Field: ReactiveCapabilityCurveTable,
