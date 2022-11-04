@@ -71,7 +71,6 @@ import {
     TOGGLE_PIN_SLD,
     CLOSE_SLD,
     ViewState,
-    RESET_SLD_STATE,
     ADD_SHORT_CIRCUIT_NOTIF,
     RESET_SHORT_CIRCUIT_NOTIF,
     RESET_MAP_RELOADED,
@@ -610,9 +609,6 @@ export const reducer = createReducer(initialState, {
         state.sldState = state.sldState.filter(
             (sld) => !action.ids.includes(sld.id)
         );
-    },
-    [RESET_SLD_STATE]: (state) => {
-        state.sldState = [];
     },
 });
 

@@ -24,15 +24,9 @@ import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import {
-    getArray,
-    getNameOrId,
-    useSingleLineDiagram,
-    ViewState,
-} from './utils';
+import { getNameOrId, useSingleLineDiagram, ViewState } from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
-import { resetSldState } from '../../../redux/actions';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -235,18 +229,20 @@ export function SingleLineDiagramPane({
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
         if (isNodeBuilt(currentNodeRef.current) && visible) {
-            try {
-                setViews(sldState.map(createView));
-            } catch (error) {
-                // if sld state from session storage is corrupted or provoke an error, we empty it to avoid user to be locked on error screen
-                console.error(
-                    'Error when trying to set views from sld state. Removing the sld state from session storage.',
-                    error
-                );
-                dispatch(resetSldState());
-            }
+            setViews(
+                sldState.reduce((acc, curr) => {
+                    let currentView = createView(curr);
+                    // if current view cannot be found, it return undefined
+                    // in this case, we remove it from SLD state
+                    if (currentView) acc.push(currentView);
+                    else {
+                        closeView(curr.id);
+                    }
+                    return acc;
+                }, [])
+            );
         }
-    }, [sldState, visible, disabled, createView, dispatch]);
+    }, [sldState, visible, disabled, closeView, createView, dispatch]);
 
     const handleCloseSLD = useCallback(
         (id) => {
