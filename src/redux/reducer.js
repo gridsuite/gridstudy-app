@@ -70,7 +70,6 @@ import {
     MINIMIZE_SLD,
     TOGGLE_PIN_SLD,
     CLOSE_SLD,
-    ViewState,
     ADD_SHORT_CIRCUIT_NOTIF,
     RESET_SHORT_CIRCUIT_NOTIF,
     RESET_MAP_RELOADED,
@@ -112,6 +111,7 @@ import {
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadSldStateFromSessionStorage } from './session-storage';
+import { ViewState } from '../components/diagrams/singleLineDiagram/utils';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),

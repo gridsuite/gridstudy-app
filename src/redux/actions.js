@@ -517,12 +517,6 @@ export function setStudyDisplayMode(studyDisplayMode) {
     };
 }
 
-export const ViewState = {
-    PINNED: 'pinned',
-    MINIMIZED: 'minimized',
-    OPENED: 'opened',
-};
-
 export const OPEN_SLD = 'OPEN_SLD';
 
 export function openSld(id, svgType) {
