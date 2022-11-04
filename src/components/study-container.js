@@ -345,7 +345,7 @@ export function StudyContainer({ view, onChangeTab }) {
         setNetworkLoadingFailMessage(error.message);
     }, []);
 
-    let lastNetworkLoad = 0;
+    const lastNetworkLoad = useRef(0);
     const loadNetwork = useCallback(
         (isUpdate) => {
             if (!isNodeBuilt(currentNode) || !studyUuid) {
@@ -354,12 +354,12 @@ export function StudyContainer({ view, onChangeTab }) {
             const currentDateTime = Date.now();
             // delay between 2 network loading
             if (
-                lastNetworkLoad >
+                lastNetworkLoad.current >
                 currentDateTime - DELAY_BETWEEN_LOAD_NETWORK
             ) {
                 return;
             }
-            lastNetworkLoad = currentDateTime;
+            lastNetworkLoad.current = currentDateTime;
             console.info(`Loading network of study '${studyUuid}'...`);
 
             if (isUpdate) {
