@@ -92,6 +92,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (view) => {
             function createSubstationSLD(substationId, state) {
                 const substation = network.getSubstation(substationId);
+                if (!substation) return;
                 let name = useName ? substation.name : substationId;
                 const countryName = substation?.countryName;
                 if (countryName) {
@@ -193,19 +194,18 @@ export function SingleLineDiagramPane({
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
 
-    const updateSld = useCallback(
-        (id) => {
-            if (id) {
-                views.find((sld) => sld.id === id)?.ref?.current?.reloadSvg();
-            } else
-                views.forEach((sld) => {
-                    if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
-                        sld.ref?.current?.reloadSvg();
-                    }
-                });
-        },
-        [views]
-    );
+    const updateSld = useCallback((id) => {
+        if (id) {
+            viewsRef.current
+                .find((sld) => sld.id === id)
+                ?.ref?.current?.reloadSvg();
+        } else
+            viewsRef.current.forEach((sld) => {
+                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+                    sld.ref?.current?.reloadSvg();
+                }
+            });
+    }, []);
 
     const classes = useStyles();
 
