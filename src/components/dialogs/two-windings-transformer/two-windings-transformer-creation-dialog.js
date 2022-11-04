@@ -564,7 +564,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 permanentLimit: twt.permanentLimit2,
             },
             ratioTapChanger: {
-                regulating: twt.ratioTapChanger?.voltageRegulation,
+                regulating: twt.ratioTapChanger?.regulating,
                 loadTapChangingCapabilities:
                     twt.ratioTapChanger?.loadTapChangingCapabilities,
                 targetV: twt.ratioTapChanger?.targetV,
@@ -582,7 +582,7 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             phaseTapChanger: {
                 regulationMode: twt.phaseTapChanger?.regulationMode,
-                regulating: twt.phaseTapChanger?.voltageRegulation,
+                regulating: twt.phaseTapChanger?.regulating,
                 loadTapChangingCapabilities:
                     twt.phaseTapChanger?.loadTapChangingCapabilities,
                 regulationValue: twt.phaseTapChanger?.regulationValue,

@@ -234,7 +234,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingRatio',
                 dataKey: 'regulatingRatio',
                 cellDataGetter: (cellData) => {
-                    return cellData?.ratioTapChanger?.voltageRegulation;
+                    return cellData?.ratioTapChanger?.regulating;
                 },
                 boolean: true,
             },
@@ -274,7 +274,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingPhase',
                 dataKey: 'regulatingPhase',
                 cellDataGetter: (cellData) => {
-                    return cellData?.phaseTapChanger?.voltageRegulation;
+                    return cellData?.phaseTapChanger?.regulating;
                 },
                 boolean: true,
             },
