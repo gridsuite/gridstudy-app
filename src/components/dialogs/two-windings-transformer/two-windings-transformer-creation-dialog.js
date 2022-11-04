@@ -545,7 +545,7 @@ const TwoWindingsTransformerCreationDialog = ({
         setIsCopy(true);
         return {
             equipmentId: twt.id + '(1)',
-            equipmentName: twt.name,
+            equipmentName: twt.name ?? '',
             seriesResistance: twt.r,
             seriesReactance: twt.x,
             magnetizingConductance: twt.g,
