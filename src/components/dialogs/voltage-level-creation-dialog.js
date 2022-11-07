@@ -282,7 +282,7 @@ const VoltageLevelCreationDialog = ({
     const toFormValues = (voltageLevel) => {
         return {
             equipmentId: voltageLevel.id + '(1)',
-            equipmentName: voltageLevel.name,
+            equipmentName: voltageLevel.name ?? '',
             nominalVoltage: voltageLevel.nominalVoltage,
             substationId: voltageLevel.substationId,
             busbarSections: voltageLevel.busbarSections,
