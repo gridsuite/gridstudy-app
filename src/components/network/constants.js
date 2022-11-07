@@ -24,6 +24,11 @@ export const ENERGY_SOURCES = [
     { id: 'OTHER', label: 'Other' },
 ];
 
+export const REGULATION_TYPES = [
+    { id: 'DISTANT', label: 'Distant' },
+    { id: 'LOCAL', label: 'Local' },
+];
+
 export const UPDATE_TYPE = [
     'creatingInProgress',
     'updatingInProgress',

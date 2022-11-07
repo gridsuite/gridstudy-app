@@ -390,6 +390,9 @@
     "MaximumActivePowerText": "Maximum active power",
     "RatedNominalPowerText": "Rated nominal power",
     "VoltageRegulationText": "Voltage regulation",
+    "RegulationTypeText": "Regulation type",
+    "Local": "Local",
+    "Distant": "Remote",
     "VoltageText": "Voltage",
     "Limits": "Limits",
     "ReactiveCapabilityCurve": "Reactive capability curve",
@@ -410,6 +413,7 @@
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "GeneratorModificationError": "Error while modifying generator",
     "ReactiveCapabilityCurveCreationError": "The table of reactive capability curve must have at least four points",
+    "VoltageBetweenMaxAndMin": "The voltage setpoint must be between minimum active power and maximum active power values",
 
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",

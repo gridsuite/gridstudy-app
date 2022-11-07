@@ -28,11 +28,13 @@ import {
     useRegulatingTerminalValue,
     useTableValues,
     useTextValue,
+    useEnumValue,
 } from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
     filledTextField,
     gridItem,
+    GridSection,
     MVAPowerAdornment,
     OhmAdornment,
     percentageTextField,
@@ -43,7 +45,7 @@ import {
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { Box } from '@mui/system';
-import { ENERGY_SOURCES } from '../network/constants';
+import { ENERGY_SOURCES, REGULATION_TYPES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
@@ -112,6 +114,7 @@ const GeneratorCreationDialog = ({
             activePowerSetpoint: generator.targetP,
             voltageRegulatorOn: generator.voltageRegulatorOn,
             voltageSetpoint: generator.targetV,
+            gPercent: generator.gPercent,
             reactivePowerSetpoint: generator.targetQ,
             voltageLevelId: generator.voltageLevelId,
             busOrBusbarSectionId: null,
@@ -274,11 +277,12 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
-            errorMsgId: 'VoltageGreaterThanZero',
+            isValueGreaterThan: minimumActivePower,
+            isValueLessOrEqualTo: maximumActivePower,
+            errorMsgId: 'VoltageBetweenMaxAndMin',
         },
         adornment: VoltageAdornment,
-        formProps: { disabled: !voltageRegulation },
+        // formProps: { disabled: !voltageRegulation },
         inputForm: inputForm,
         defaultValue: formValues?.voltageSetpoint,
     });
@@ -293,6 +297,30 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
         formProps: { disabled: voltageRegulation },
         defaultValue: formValues?.reactivePowerSetpoint,
+    });
+
+    const [regulationType, regulationTypeField] = useEnumValue({
+        label: 'RegulationTypeText',
+        inputForm: inputForm,
+        formProps: filledTextField,
+        enumValues: REGULATION_TYPES,
+        validation: {
+            isFieldRequired: voltageRegulation,
+        },
+        defaultValue: 'LOCAL',
+    });
+
+    const [gPercent, gPercentField] = useDoubleValue({
+        label: 'GPercentText',
+        validation: {
+            isFieldRequired: false,
+            isFieldNumeric: true,
+            isValueGreaterThan: '0',
+            isValueLessOrEqualTo: '100',
+        },
+        adornment: percentageTextField,
+        inputForm: inputForm,
+        defaultValue: formValues?.gPercent,
     });
 
     const [regulatingTerminal, regulatingTerminalField] =
@@ -390,6 +418,7 @@ const GeneratorCreationDialog = ({
                 reactivePowerSetpoint ?? null,
                 voltageRegulation,
                 voltageSetpoint ? voltageSetpoint : null,
+                gPercent,
                 connectivity.voltageLevel.id,
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
@@ -441,6 +470,28 @@ const GeneratorCreationDialog = ({
     const handleCloseAndClear = () => {
         setFormValues(null);
         handleClose();
+    };
+
+    const withVoltageRegulationInputs = () => {
+        return (
+            <>
+                {gridItem(regulationTypeField, 4)}
+                <Box sx={{ width: '100%' }} />
+                <Grid item xs={4} justifySelf={'end'}></Grid>
+                {gridItem(voltageSetpointField, 4)}
+                <Box sx={{ width: '100%' }} />
+                {regulationType === 'DISTANT' && (
+                    <>
+                        <Grid item xs={4} justifySelf={'end'}>
+                            <FormattedMessage id="RegulatingTerminalGenerator" />
+                        </Grid>
+                        {gridItem(regulatingTerminalField, 8)}
+                        <Grid item xs={4} justifySelf={'end'}></Grid>
+                        {gridItem(gPercentField, 4)}
+                    </>
+                )}
+            </>
+        );
     };
 
     return (
@@ -505,24 +556,16 @@ const GeneratorCreationDialog = ({
                             {isReactiveCapabilityCurveOn &&
                                 reactiveCapabilityCurveField}
                         </Grid>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Setpoints" />
-                                </h3>
-                            </Grid>
-                        </Grid>
+                        {/* Setpoints part */}
+                        <GridSection title="Setpoints" />
                         <Grid container spacing={2}>
                             {gridItem(activePowerSetpointField, 4)}
-                            {gridItem(reactivePowerSetpointField, 4)}
                             <Box sx={{ width: '100%' }} />
+
                             {gridItem(voltageRegulationField, 4)}
-                            {gridItem(voltageSetpointField, 4)}
-                            <Box sx={{ width: '100%' }} />
-                            <Grid item xs={4} justifySelf={'end'}>
-                                <FormattedMessage id="RegulatingTerminalGenerator" />
-                            </Grid>
-                            {gridItem(regulatingTerminalField, 8)}
+                            {voltageRegulation
+                                ? withVoltageRegulationInputs()
+                                : gridItem(reactivePowerSetpointField, 4)}
                             <Box sx={{ width: '100%' }} />
                             {gridItem(frequencyRegulationField, 4)}
                             {gridItem(droopField, 4)}

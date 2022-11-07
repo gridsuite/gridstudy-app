@@ -391,6 +391,9 @@
     "MaximumActivePowerText": "Puissance active max",
     "RatedNominalPowerText": "Puissance nominale",
     "VoltageRegulationText": "Réglage tension",
+    "RegulationTypeText": "Type de réglage",
+    "Local": "Local",
+    "Distant": "Distant",
     "VoltageText": "Tension",
     "Limits": "Limites",
     "ReactiveCapabilityCurve": "Limites de réactif par diagramme",
@@ -411,6 +414,7 @@
     "VoltageGreaterThanZero": "La valeur de la tension doit être strictement positive",
     "GeneratorModificationError": "Erreur lors de la modification d'un générateur ",
     "ReactiveCapabilityCurveCreationError": "Le tableau des limites de réactifs par diagramme doit comporter au moins quatre points",
+    "VoltageBetweenMaxAndMin": "La consigne de tension doit être comprise en les puissances actives minumum et maximale",
 
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
