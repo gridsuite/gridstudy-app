@@ -351,15 +351,6 @@ export function StudyContainer({ view, onChangeTab }) {
             if (!isNodeBuilt(currentNode) || !studyUuid) {
                 return;
             }
-            const currentDateTime = Date.now();
-            // delay between 2 network loading
-            if (
-                lastNetworkLoad.current >
-                currentDateTime - DELAY_BETWEEN_LOAD_NETWORK
-            ) {
-                return;
-            }
-            lastNetworkLoad.current = currentDateTime;
             console.info(`Loading network of study '${studyUuid}'...`);
 
             if (isUpdate) {
@@ -388,6 +379,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(networkCreated(network));
             }
             dispatch(resetNetworkReload());
+            lastNetworkLoad.current = Date.now();
         },
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
@@ -466,6 +458,8 @@ export function StudyContainer({ view, onChangeTab }) {
     //handles map automatic mode network reload
     useEffect(() => {
         if (!wsConnected) return;
+        if (lastNetworkLoad.current > Date.now() - DELAY_BETWEEN_LOAD_NETWORK)
+            return;
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only node renaming, do not reload network
