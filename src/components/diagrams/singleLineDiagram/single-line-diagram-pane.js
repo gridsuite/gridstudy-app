@@ -26,7 +26,12 @@ import { parse } from 'qs';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import { getArray, useSingleLineDiagram, ViewState } from './utils';
+import {
+    getArray,
+    getNameOrId,
+    useSingleLineDiagram,
+    ViewState,
+} from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 
@@ -256,28 +261,10 @@ export function SingleLineDiagramPane({
 
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            if (open) {
-                switchElement.classList.replace('sld-closed', 'sld-open');
-            } else {
-                switchElement.classList.replace('sld-open', 'sld-closed');
-            }
-
             updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
                 (response) => {
                     if (!response.ok) {
                         console.error(response);
-                        // revert switch position change
-                        if (open) {
-                            switchElement.classList.replace(
-                                'sld-open',
-                                'sld-closed'
-                            );
-                        } else {
-                            switchElement.classList.replace(
-                                'sld-closed',
-                                'sld-open'
-                            );
-                        }
                         setUpdateSwitchMsg(
                             response.status + ' : ' + response.statusText
                         );
@@ -438,7 +425,7 @@ export function SingleLineDiagramPane({
                             onClose={handleCloseSLD}
                             onNextVoltageLevelClick={handleOpenView}
                             onBreakerClick={handleUpdateSwitchState}
-                            diagramTitle={sld.name}
+                            diagramTitle={getNameOrId(sld)}
                             svgUrl={sld.svgUrl}
                             sldId={sld.id}
                             ref={sld.ref}
@@ -467,7 +454,7 @@ export function SingleLineDiagramPane({
                             <Chip
                                 key={view.id}
                                 icon={<ArrowUpwardIcon />}
-                                label={view.name}
+                                label={getNameOrId(view)}
                                 onClick={() =>
                                     handleOpenView(view.id, view.type)
                                 }

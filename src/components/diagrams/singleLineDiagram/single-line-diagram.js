@@ -261,6 +261,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
+    const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState();
+
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const MenuLine = withLineMenu(BaseEquipmentMenu);
@@ -383,6 +385,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         svgUrl: props.svgUrl,
                     });
                     updateLoadingState(false);
+                    setLocallySwitchedBreaker();
                 })
                 .catch((errorMessage) => {
                     console.error(errorMessage);
@@ -394,6 +397,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     });
                     snackError(errorMessage);
                     updateLoadingState(false);
+                    setLocallySwitchedBreaker();
                 });
         } else {
             setSvg(noSvg);
@@ -444,18 +448,41 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 svgType === SvgType.VOLTAGE_LEVEL
                     ? maxHeightVoltageLevel
                     : maxHeightSubstation;
-
-            let onBreakerClickParam =
+            let onNextVoltageCallback =
                 !isComputationRunning &&
                 !isAnyNodeBuilding &&
-                !isNodeReadOnly(currentNode)
-                    ? onBreakerClick
+                !modificationInProgress &&
+                !loadingState
+                    ? onNextVoltageLevelClick
                     : null;
-            let onEquipmentMenu =
-                !isComputationRunning && !isAnyNodeBuilding
+            let onBreakerCallback =
+                !isComputationRunning &&
+                !isAnyNodeBuilding &&
+                !isNodeReadOnly(currentNode) &&
+                !modificationInProgress
+                    ? (breakerId, newSwitchState, switchElement) => {
+                          if (!modificationInProgress) {
+                              setModificationInProgress(true);
+                              updateLoadingState(true);
+                              setLocallySwitchedBreaker(switchElement);
+                              onBreakerClick(
+                                  breakerId,
+                                  newSwitchState,
+                                  switchElement
+                              );
+                          }
+                      }
+                    : null;
+            let onEquipmentMenuCallback =
+                !isComputationRunning &&
+                !isAnyNodeBuilding &&
+                !modificationInProgress &&
+                !loadingState
                     ? showEquipmentMenu
                     : null;
+
             let selectionBackColor = theme.palette.background.paper;
+
             const sldViewer = new SingleLineDiagramViewer(
                 svgRef.current, //container
                 svg.svg, //svgContent
@@ -465,15 +492,35 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 minHeight,
                 viewboxMaxWidth,
                 viewboxMaxHeight,
-                onNextVoltageLevelClick, //callback on the next voltage arrows
-                onBreakerClickParam, // callback on the breakers
-                onEquipmentMenu, //callback on the feeders
+                onNextVoltageCallback, //callback on the next voltage arrows
+                onBreakerCallback, // callback on the breakers
+                onEquipmentMenuCallback, //callback on the feeders
                 selectionBackColor //arrows color
             );
 
             if (shouldResetPreferredSizes.current) {
                 setSvgPreferredHeight(sldViewer.getHeight());
                 setSvgPreferredWidth(sldViewer.getWidth());
+            }
+
+            //Rotate clicked switch while waiting for updated sld data
+            if (locallySwitchedBreaker) {
+                const breakerToSwitchDom = document.getElementById(
+                    locallySwitchedBreaker.id
+                );
+                if (breakerToSwitchDom.classList.value.includes('sld-closed')) {
+                    breakerToSwitchDom.classList.replace(
+                        'sld-closed',
+                        'sld-open'
+                    );
+                } else if (
+                    breakerToSwitchDom.classList.value.includes('sld-open')
+                ) {
+                    breakerToSwitchDom.classList.replace(
+                        'sld-open',
+                        'sld-closed'
+                    );
+                }
             }
 
             if (svgDraw.current && svgUrl.current === svg.svgUrl) {
@@ -506,6 +553,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgFinalWidth,
         disabled,
         modificationInProgress,
+        loadingState,
+        locallySwitchedBreaker,
     ]);
 
     useLayoutEffect(() => {
@@ -535,6 +584,14 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         isComputationRunning,
         svgType,
         theme,
+        equipmentMenu,
+        showEquipmentMenu,
+        locallySwitchedBreaker,
+        loadingState,
+        modificationInProgress,
+        isAnyNodeBuilding,
+        network,
+        ref,
     ]);
 
     const classes = useStyles();

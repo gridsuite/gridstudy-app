@@ -89,6 +89,10 @@ export function toPositiveIntValue(val) {
     return parseInt(val) || 0;
 }
 
+export function sanitizeString(val) {
+    return val.trim() === '' ? null : val.trim();
+}
+
 export const toFloatValue = (val) => {
     if (val === '-') return val;
     if (val === '') return '';
@@ -161,6 +165,7 @@ export const LabelledSilder = ({
     const handleValueChanged = (event, newValue) => {
         setSliderValue(newValue);
     };
+
     const classes = useStyles();
 
     return (

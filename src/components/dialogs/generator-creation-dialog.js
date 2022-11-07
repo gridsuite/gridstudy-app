@@ -37,6 +37,7 @@ import {
     OhmAdornment,
     percentageTextField,
     ReactivePowerAdornment,
+    sanitizeString,
     VoltageAdornment,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
@@ -94,7 +95,7 @@ const GeneratorCreationDialog = ({
     const [rCCurveError, setRCCurveError] = useState();
 
     const headerIds = [
-        'ActivePower',
+        'ActivePowerText',
         'MinimumReactivePower',
         'MaximumReactivePower',
     ];
@@ -355,6 +356,11 @@ const GeneratorCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
+        connectionDirectionValue: formValues
+            ? formValues.connectionDirection
+            : '',
+        connectionNameValue: formValues?.connectionName,
+        withPosition: true,
     });
 
     useEffect(() => {
@@ -375,7 +381,7 @@ const GeneratorCreationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 generatorId,
-                generatorName ? generatorName : null,
+                sanitizeString(generatorName),
                 !energySource ? 'OTHER' : energySource,
                 minimumActivePower,
                 maximumActivePower,
@@ -404,7 +410,9 @@ const GeneratorCreationDialog = ({
                 frequencyRegulation ? droop : null,
                 isReactiveCapabilityCurveOn ? null : maximumReactivePower,
                 isReactiveCapabilityCurveOn ? null : minimumReactivePower,
-                isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null
+                isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null,
+                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -458,6 +466,17 @@ const GeneratorCreationDialog = ({
                             {gridItem(generatorIdField, 4)}
                             {gridItem(generatorNameField, 4)}
                             {gridItem(energySourceField, 4)}
+                        </Grid>
+                        {/* Connectivity part */}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="Connectivity" />
+                                </h3>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            {gridItem(connectivityField, 8)}
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -531,24 +550,16 @@ const GeneratorCreationDialog = ({
                         <Grid container spacing={2}>
                             {gridItem(marginalCostField, 4)}
                         </Grid>
-                        {/* Connectivity part */}
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Connectivity" />
-                                </h3>
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                            {gridItem(connectivityField, 8)}
-                        </Grid>
                     </div>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

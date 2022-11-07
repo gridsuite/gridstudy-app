@@ -8,6 +8,13 @@
 import { createReducer } from '@reduxjs/toolkit';
 
 import {
+    USER,
+    SIGNIN_CALLBACK_ERROR,
+    UNAUTHORIZED_USER_INFO,
+    SHOW_AUTH_INFO_LOGIN,
+} from '@gridsuite/commons-ui';
+
+import {
     CENTER_LABEL,
     CLOSE_STUDY,
     DIAGONAL_LABEL,
@@ -24,10 +31,9 @@ import {
     USE_NAME,
     SELECT_LANGUAGE,
     SELECT_COMPUTED_LANGUAGE,
-    USER,
-    SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
     DISPLAY_OVERLOAD_TABLE,
+    MAP_MANUAL_REFRESH,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
     FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
@@ -60,6 +66,13 @@ import {
     FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
+    ADD_SHORT_CIRCUIT_NOTIF,
+    RESET_SHORT_CIRCUIT_NOTIF,
+    RESET_MAP_RELOADED,
+    ENABLE_DEVELOPER_MODE,
+    SET_NETWORK_RELOAD_NEEDED,
+    SET_FORCE_NETWORK_RELOAD,
+    RESET_NETWORK_RELOAD,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -73,6 +86,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
     PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_MAP_MANUAL_REFRESH,
     PARAM_LANGUAGE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
@@ -88,6 +102,7 @@ import {
     PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
     PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
     PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
+    PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -100,6 +115,7 @@ const paramsInitialState = {
     [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
+    [PARAM_MAP_MANUAL_REFRESH]: false,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
     [PARAM_CENTER_LABEL]: false,
@@ -111,6 +127,7 @@ const paramsInitialState = {
     [PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS]: [],
     [PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
+    [PARAM_DEVELOPER_MODE]: false,
 };
 
 const initialState = {
@@ -122,10 +139,13 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
+    unauthorizedUserInfo: null,
+    showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
     loadflowNotif: false,
     saNotif: false,
     sensiNotif: false,
+    shortCircuitNotif: false,
     filteredNominalVoltages: null,
     fullScreenSldId: null,
     fullScreenNadId: null,
@@ -139,11 +159,13 @@ const initialState = {
     notificationIdList: [],
     isModificationsInProgress: false,
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
+    reloadMap: true,
+    networkReloadNeeded: false,
+    forceReloadNetwork: true,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
-    reloadGeoData: true,
 };
 
 export const reducer = createReducer(initialState, {
@@ -250,7 +272,7 @@ export const reducer = createReducer(initialState, {
             ) {
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
                 // current node has changed, then will need to reload Geo Data
-                state.reloadGeoData = true;
+                state.reloadMap = true;
             }
         }
     },
@@ -308,6 +330,10 @@ export const reducer = createReducer(initialState, {
         state[PARAM_FLUX_CONVENTION] = action[PARAM_FLUX_CONVENTION];
     },
 
+    [ENABLE_DEVELOPER_MODE]: (state, action) => {
+        state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
+    },
+
     [LINE_FLOW_COLOR_MODE]: (state, action) => {
         state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
     },
@@ -321,9 +347,39 @@ export const reducer = createReducer(initialState, {
         state.signInCallbackError = action.signInCallbackError;
     },
 
+    [UNAUTHORIZED_USER_INFO]: (state, action) => {
+        state.unauthorizedUserInfo = action.unauthorizedUserInfo;
+    },
+
+    [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
+        state.showAuthenticationRouterLogin =
+            action.showAuthenticationRouterLogin;
+    },
+
     [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
         state[PARAM_DISPLAY_OVERLOAD_TABLE] =
             action[PARAM_DISPLAY_OVERLOAD_TABLE];
+    },
+
+    [MAP_MANUAL_REFRESH]: (state, action) => {
+        state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
+    },
+
+    [SET_FORCE_NETWORK_RELOAD]: (state) => {
+        state.forceReloadNetwork = true;
+    },
+
+    [SET_NETWORK_RELOAD_NEEDED]: (state) => {
+        state.networkReloadNeeded = true;
+    },
+
+    [RESET_NETWORK_RELOAD]: (state) => {
+        state.networkReloadNeeded = false;
+        state.forceReloadNetwork = false;
+    },
+
+    [RESET_MAP_RELOADED]: (state) => {
+        state.reloadMap = false;
     },
 
     [ADD_LOADFLOW_NOTIF]: (state) => {
@@ -348,6 +404,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SENSI_NOTIF]: (state) => {
         state.sensiNotif = false;
+    },
+
+    [ADD_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.shortCircuitNotif = true;
+    },
+
+    [RESET_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.shortCircuitNotif = false;
     },
 
     [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {
@@ -416,7 +480,7 @@ export const reducer = createReducer(initialState, {
     [CURRENT_TREE_NODE]: (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
         // current node has changed, then will need to reload Geo Data
-        state.reloadGeoData = true;
+        state.reloadMap = true;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
@@ -451,7 +515,7 @@ export const reducer = createReducer(initialState, {
             // Some actions in the TREE display mode could change this value after that
             // ex: change current Node, current Node updated ...
             if (action.studyDisplayMode === STUDY_DISPLAY_MODE.TREE)
-                state.reloadGeoData = false;
+                state.reloadMap = false;
 
             state.studyDisplayMode = action.studyDisplayMode;
         }

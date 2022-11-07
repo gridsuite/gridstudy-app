@@ -42,6 +42,11 @@ import {
 } from './load-flow-parameters';
 import { MapParameters } from './map-parameters';
 import { NetworkParameters } from './network-parameters';
+import {
+    ShortCircuitParameters,
+    useGetShortCircuitParameters,
+} from './short-circuit-parameters';
+import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -152,6 +157,12 @@ export function useParameterState(paramName) {
     return [paramLocalState, handleChangeParamLocalState];
 }
 
+const sldParamsTabIndex = 0;
+const mapParamsTabIndex = 1;
+const lfParamsTabIndex = 2;
+const shortCircuitParamsTabIndex = 3;
+const advancedParamsTabIndex = 4;
+
 const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const classes = useStyles();
 
@@ -161,9 +172,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const lfParamsAndLfProvider = useGetLfParamsAndProvider();
 
+    const useShortCircuitParameters = useGetShortCircuitParameters();
+
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
+
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -180,6 +195,15 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             </Typography>
         );
     }
+
+    //To be removed when ShortCircuit is not in developer mode only.
+    useEffect(() => {
+        setTabIndex(
+            enableDeveloperMode
+                ? advancedParamsTabIndex
+                : advancedParamsTabIndex - 1
+        );
+    }, [enableDeveloperMode]);
 
     return (
         <Dialog
@@ -214,19 +238,25 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
-                        <Tab label={<FormattedMessage id="Network" />} />
+                        {enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={<FormattedMessage id="ShortCircuit" />}
+                            />
+                        )}
+                        <Tab label={<FormattedMessage id="Advanced" />} />
                     </Tabs>
 
-                    <TabPanel value={tabIndex} index={0}>
+                    <TabPanel value={tabIndex} index={sldParamsTabIndex}>
                         <SingleLineDiagramParameters
                             hideParameters={hideParameters}
                             componentLibraries={componentLibraries}
                         />
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={1}>
+                    <TabPanel value={tabIndex} index={mapParamsTabIndex}>
                         <MapParameters hideParameters={hideParameters} />
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={2}>
+                    <TabPanel value={tabIndex} index={lfParamsTabIndex}>
                         {studyUuid && (
                             <LoadFlowParameters
                                 hideParameters={hideParameters}
@@ -238,7 +268,33 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={3}>
+                    {
+                        //To be removed when ShortCircuit is not in developer mode only.
+                        enableDeveloperMode && (
+                            <TabPanel
+                                value={tabIndex}
+                                index={shortCircuitParamsTabIndex}
+                            >
+                                {studyUuid && (
+                                    <ShortCircuitParameters
+                                        hideParameters={hideParameters}
+                                        useShortCircuitParameters={
+                                            useShortCircuitParameters
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )
+                    }
+                    <TabPanel
+                        value={tabIndex}
+                        //Ternary to be removed when ShortCircuit is not in developer mode only.
+                        index={
+                            enableDeveloperMode
+                                ? advancedParamsTabIndex
+                                : advancedParamsTabIndex - 1
+                        }
+                    >
                         <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
                 </Container>

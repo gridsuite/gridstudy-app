@@ -17,6 +17,7 @@
 
     "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
+    "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "format": "Format",
@@ -83,6 +84,8 @@
     "Limit": "Limite",
     "load": "transit",
     "Load": "Transit",
+    "MapManualRefresh": "Mise à jour manuelle de l'image réseau géographique\u00a0:",
+    "ManuallyRefreshGeoData": "Mettre à jour la carte",
 
     "PageNotFound": "Page introuvable",
 
@@ -152,6 +155,11 @@
     "sensitivityAnalysisResults": "Résultats de l'analyse de sensibilité",
     "sensitivityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sensibilité",
 
+    "ShortCircuitAnalysis": "Analyse de court-circuit",
+    "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
+    "ShortCircuitAnalysisResults": "Résultats de l'analyse de court-circuit",
+    "ShortCircuitError": "Une erreur est survenue lors de l'exécution de l'analyse de court-circuit",
+
     "LimitType": "Type de limite",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
@@ -193,6 +201,13 @@
     "descLfAllCountries": "Tous les pays",
     "descLfCountriesToBalance": "Pays participant à la compensation\u00a0:",
 
+    "descWithVoltageMap": "Calculer les chutes de tension",
+    "descWithFeederResult": "Avec apports",
+    "descMinVoltageDropProportionalThreshold": "Seuil d'affichage des chutes de tension (%)",
+    "descStudyType": "Type d'étude",
+    "descTransient": "Transitoire",
+    "descSubTransient": "Sub-transitoire",
+
     "securityAnalysisResults": "Résultats de l'analyse de sécurité",
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
@@ -229,8 +244,8 @@
     "LccConverterStations": "Stations conversion LCC",
     "VscConverterStations": "Stations conversion VSC",
     "LoadType": "Type",
-    "ConstantActivePower": "P consigne (MW)",
-    "ConstantReactivePower": "Q consigne (MVar)",
+    "ConstantP": "P constant (MW)",
+    "ConstantQ": "Q constant (MVar)",
     "DanglingLines": "Lignes frontières",
     "UcteXnodeCode": "Xnode UCTE",
     "HvdcLines": "Lignes HVDC",
@@ -278,7 +293,7 @@
     "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
 
     "SubstationList": "Liste des postes",
-    "NetworkModificationTree": "Arbre de modification de réseau",
+    "NetworkModificationTree": "Arbre décisionnel",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
     "OnlyMin": "Min:\u202F{min}",
@@ -297,6 +312,9 @@
     "FluxConvention": "Convention des flux actifs et réactifs dans les tableurs\u00a0:",
     "FluxConvention.iidm": "IIDM",
     "FluxConvention.target": "Métier",
+    "Advanced": "Avancés",
+    "EnableDeveloperMode": "Activer mode développeur",
+    "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
@@ -378,7 +396,6 @@
     "ReactiveCapabilityCurve": "Limites de réactif par diagramme",
     "MinimumReactivePower": "Puissance réactive minimale",
     "MaximumReactivePower": "Puissance réactive maximale",
-    "ActivePower": "Puissance active",
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",
@@ -484,6 +501,7 @@
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
+    "InvalidData": "Les données ont été invalidées",
 
     "depth": "Profondeur",
 
@@ -520,5 +538,9 @@
     "EmptyList/bbs": "La liste de jeux de barres est vide",
     "EmptyList/connections": "La liste de connexions est vide",
 
-    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre"
+    "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
+    "ConnectionName": "Nom départ",
+    "ConnectionDirection": "Sens départ",
+    "Top": "Haut",
+    "Bottom": "Bas"
 }
