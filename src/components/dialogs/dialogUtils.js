@@ -42,6 +42,11 @@ export const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export const MicroSusceptanceAdornment = {
+    position: 'end',
+    text: 'µS',
+};
+
 export const SusceptanceAdornment = {
     position: 'end',
     text: 'S',
@@ -165,6 +170,7 @@ export const LabelledSilder = ({
     const handleValueChanged = (event, newValue) => {
         setSliderValue(newValue);
     };
+
     const classes = useStyles();
 
     return (

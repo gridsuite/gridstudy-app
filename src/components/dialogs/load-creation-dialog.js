@@ -71,7 +71,7 @@ const LoadCreationDialog = ({
     const toFormValues = (load) => {
         return {
             equipmentId: load.id + '(1)',
-            equipmentName: load.name,
+            equipmentName: load.name ?? '',
             loadType: load.type,
             activePower: load.p0,
             reactivePower: load.q0,

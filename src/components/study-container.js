@@ -27,6 +27,7 @@ import {
     connectNotificationsWsUpdateDirectories,
     fetchCaseName,
     fetchSensitivityAnalysisStatus,
+    connectDeletedStudyNotificationsWebsocket,
     fetchShortCircuitAnalysisStatus,
 } from '../utils/rest-api';
 import {
@@ -287,6 +288,24 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, checkFailNotifications]
     );
 
+    const connectDeletedStudyNotifications = useCallback((studyUuid) => {
+        console.info(`Connecting to directory notifications ...`);
+
+        const ws = connectDeletedStudyNotificationsWebsocket(studyUuid);
+        ws.onmessage = function () {
+            window.close();
+        };
+        ws.onclose = function (event) {
+            if (!websocketExpectedCloseRef.current) {
+                console.error('Unexpected Notification WebSocket closed');
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, []);
+
     useEffect(() => {
         // create ws at mount event
         wsRef.current = connectNotificationsWsUpdateDirectories();
@@ -501,6 +520,7 @@ export function StudyContainer({ view, onChangeTab }) {
             dispatch(openStudy(studyUuid));
 
             const ws = connectNotifications(studyUuid);
+            const wsDirectory = connectDeletedStudyNotifications(studyUuid);
 
             loadNetworkRef.current();
 
@@ -508,13 +528,19 @@ export function StudyContainer({ view, onChangeTab }) {
             return function () {
                 websocketExpectedCloseRef.current = true;
                 ws.close();
+                wsDirectory.close();
                 dispatch(closeStudy());
                 dispatch(filteredNominalVoltagesUpdated(null));
             };
         }
         // Note: dispach, loadNetworkRef, loadGeoData
         // connectNotifications don't change
-    }, [dispatch, studyUuid, connectNotifications]);
+    }, [
+        dispatch,
+        studyUuid,
+        connectNotifications,
+        connectDeletedStudyNotifications,
+    ]);
 
     function checkAndGetValues(values) {
         return values ? values : [];
@@ -586,12 +612,6 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(true);
-            } else if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'deleteStudy'
-            ) {
-                // closing window on study deletion
-                window.close();
             }
         }
         // Note: studyUuid, and loadNetwork don't change

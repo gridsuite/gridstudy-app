@@ -88,7 +88,7 @@ const LineCreationDialog = ({
     const toFormValues = (line) => {
         return {
             equipmentId: line.id + '(1)',
-            equipmentName: line.name,
+            equipmentName: line.name ?? '',
             seriesResistance: line.r,
             seriesReactance: line.x,
             shuntConductance1: line.g1,

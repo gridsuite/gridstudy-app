@@ -6,7 +6,7 @@
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
-        "@gridsuite/commons-ui": "0.27.1",
+        "@gridsuite/commons-ui": "0.27.2",
         "@powsybl/diagram-viewer": "0.1.3",
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
@@ -34,6 +34,7 @@
         "react-flow-renderer": "^10.0.0",
         "react-intl": "^6.0.0",
         "react-map-gl": "^6.0.0",
+        "react-papaparse": "^4.1.0",
         "react-redux": "^8.0.0",
         "react-router-dom": "^6.0.0",
         "react-scripts": "^5.0.0",

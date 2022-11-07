@@ -97,3 +97,7 @@ export const useSingleLineDiagram = () => {
 
     return [closeDiagram, showVoltageLevelDiagram, showSubstationDiagram];
 };
+
+export function getNameOrId(value) {
+    return value?.name ?? value?.id;
+}

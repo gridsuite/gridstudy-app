@@ -104,7 +104,7 @@ const GeneratorCreationDialog = ({
     const toFormValues = (generator) => {
         return {
             equipmentId: generator.id + '(1)',
-            equipmentName: generator.name,
+            equipmentName: generator.name ?? '',
             energySource: generator.energySource,
             maxActivePower: generator.maxP,
             minActivePower: generator.minP,
