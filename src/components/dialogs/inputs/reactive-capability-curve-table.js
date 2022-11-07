@@ -67,16 +67,13 @@ export const useReactiveCapabilityCurveTableValues = ({
     }, [defaultValues]);
 
     const handleDeleteItem = useCallback((index) => {
+        const newValues = [...values.slice(0, index), ...values.slice(index+1)];
 
-        const innerDeleteItem = (oldValues) => {
-            let newValues = [...oldValues];
-            newValues.splice(index, 1);
-            return newValues;
-        };
-        setValues(innerDeleteItem);
-        setDisplayedValues(innerDeleteItem);
+        setValues(newValues);
+        setDisplayedValues(newValues);
+
         inputForm.reset();
-    }, [inputForm]);
+    }, [values, displayedValues, inputForm]);
 
     const handleAddValue = useCallback(() => {
         const newPosition = values.length - 1;
