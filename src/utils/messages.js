@@ -25,45 +25,26 @@ export function useIntlRef() {
 }
 
 function displayMessageWithSnackbar({
-    errorMessage,
+    message,
+    header,
     enqueueSnackbar,
-    headerMessage: { headerMessageId, headerMessageValues, intlRef } = {},
     level,
     persistent,
 }) {
-    let message;
-    if (headerMessageId) {
-        let messageHeader = intlRef.current.formatMessage(
-            {
-                id: headerMessageId,
-            },
-            headerMessageValues
-        );
-        message =
-            messageHeader + (!errorMessage.empty ? '\n\n' + errorMessage : '');
-    } else {
-        message = errorMessage;
+    let fullMessage = '';
+    if (header && !header.empty) {
+        fullMessage += header;
     }
-    enqueueSnackbar(message, {
+    if (message && !message.empty) {
+        if (header) {
+            fullMessage += '\n\n';
+        }
+        fullMessage += message;
+    }
+    enqueueSnackbar(fullMessage, {
         variant: level,
         persist: persistent,
         style: { whiteSpace: 'pre-line' },
-    });
-}
-
-export function displayErrorMessageWithSnackbar({ ...args }) {
-    displayMessageWithSnackbar({ ...args, level: 'error', persistent: true });
-}
-
-export function displayInfoMessageWithSnackbar({ ...args }) {
-    displayMessageWithSnackbar({ ...args, level: 'info', persistent: false });
-}
-
-export function displayWarningMessageWithSnackbar({ ...args }) {
-    displayMessageWithSnackbar({
-        ...args,
-        level: 'warning',
-        persistent: true,
     });
 }
 
@@ -72,49 +53,121 @@ export function useSnackMessage() {
     const { enqueueSnackbar } = useSnackbar();
 
     const snackError = useCallback(
-        (msg, headerMessageId, headerValues) =>
-            displayErrorMessageWithSnackbar({
-                errorMessage: msg,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: headerMessageId,
-                    intlRef: intlRef,
-                    headerMessageValues: headerValues,
-                },
-            }),
-
+        ({
+            messageTxt,
+            messageId,
+            messageValues,
+            headerTxt,
+            headerId,
+            headerValues,
+        }) => {
+            const message = checkAndTranslateIfNecessary(
+                messageTxt,
+                messageId,
+                messageValues,
+                intlRef
+            );
+            const header = checkAndTranslateIfNecessary(
+                headerTxt,
+                headerId,
+                headerValues,
+                intlRef
+            );
+            displayMessageWithSnackbar({
+                message,
+                header,
+                enqueueSnackbar,
+                level: 'error',
+                persistent: true,
+            });
+        },
         [enqueueSnackbar, intlRef]
     );
 
     const snackInfo = useCallback(
-        (msg, headerMessageId, headerValues) =>
-            displayInfoMessageWithSnackbar({
-                errorMessage: msg,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: headerMessageId,
-                    intlRef: intlRef,
-                    headerMessageValues: headerValues,
-                },
-            }),
-
+        ({
+            messageTxt,
+            messageId,
+            messageValues,
+            headerTxt,
+            headerId,
+            headerValues,
+        }) => {
+            const message = checkAndTranslateIfNecessary(
+                messageTxt,
+                messageId,
+                messageValues,
+                intlRef
+            );
+            const header = checkAndTranslateIfNecessary(
+                headerTxt,
+                headerId,
+                headerValues,
+                intlRef
+            );
+            displayMessageWithSnackbar({
+                message,
+                header,
+                enqueueSnackbar,
+                level: 'info',
+                persistent: false,
+            });
+        },
         [enqueueSnackbar, intlRef]
     );
 
     const snackWarning = useCallback(
-        (msg, headerMessageId, headerValues) =>
-            displayWarningMessageWithSnackbar({
-                errorMessage: msg,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: headerMessageId,
-                    intlRef: intlRef,
-                    headerMessageValues: headerValues,
-                },
-            }),
-
+        ({
+            messageTxt,
+            messageId,
+            messageValues,
+            headerTxt,
+            headerId,
+            headerValues,
+        }) => {
+            const message = checkAndTranslateIfNecessary(
+                messageTxt,
+                messageId,
+                messageValues,
+                intlRef
+            );
+            const header = checkAndTranslateIfNecessary(
+                headerTxt,
+                headerId,
+                headerValues,
+                intlRef
+            );
+            displayMessageWithSnackbar({
+                message,
+                header,
+                enqueueSnackbar,
+                level: 'warning',
+                persistent: true,
+            });
+        },
         [enqueueSnackbar, intlRef]
     );
 
     return { snackError, snackInfo, snackWarning };
+}
+
+function checkAndTranslateIfNecessary(txt, id, values, intlRef) {
+    checkInputs(txt, id, values);
+    return (
+        txt ??
+        (id
+            ? intlRef.current.formatMessage(
+                  {
+                      id: id,
+                  },
+                  values
+              )
+            : null)
+    );
+}
+
+function checkInputs(txt, id, values) {
+    if (txt && (id || values)) {
+        console.warn('Snack inputs should be [*Txt] OR [*Id, *Values]');
+    }
 }

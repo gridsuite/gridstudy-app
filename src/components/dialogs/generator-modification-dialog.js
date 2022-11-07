@@ -266,7 +266,10 @@ const GeneratorModificationDialog = ({
                 undefined,
                 editData?.uuid
             ).catch((errorMessage) => {
-                snackError(errorMessage, 'GeneratorModificationError');
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'GeneratorModificationError',
+                });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();

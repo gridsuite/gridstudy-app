@@ -387,7 +387,11 @@ const NetworkModificationNodeEditor = () => {
                     setModifications(res);
                 }
             })
-            .catch((errorMessage) => snackError(errorMessage))
+            .catch((errorMessage) => {
+                snackError({
+                    messageTxt: errorMessage,
+                });
+            })
             .finally(() => {
                 setPendingState(false);
                 setLaunchLoader(false);
@@ -478,7 +482,10 @@ const NetworkModificationNodeEditor = () => {
         )
             .then()
             .catch((errmsg) => {
-                snackError(errmsg, 'errDeleteModificationMsg');
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errDeleteModificationMsg',
+                });
             });
     }, [currentTreeNode?.id, selectedItems, snackError, studyUuid]);
 
@@ -501,14 +508,17 @@ const NetworkModificationNodeEditor = () => {
                         'Modifications not pasted:',
                         modificationsInFailure
                     );
-                    snackWarning(
-                        modificationsInFailure.length,
-                        'warnDuplicateModificationMsg'
-                    );
+                    snackWarning({
+                        messageTxt: modificationsInFailure.length,
+                        headerId: 'warnDuplicateModificationMsg',
+                    });
                 }
             })
             .catch((errmsg) => {
-                snackError(errmsg, 'errDuplicateModificationMsg');
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errDuplicateModificationMsg',
+                });
             });
     }, [
         copiedModifications,
@@ -547,7 +557,11 @@ const NetworkModificationNodeEditor = () => {
                     setEditData(removeNullFields(data[0]));
                 });
             })
-            .catch((errorMessage) => snackError(errorMessage));
+            .catch((errorMessage) => {
+                snackError({
+                    messageTxt: errorMessage,
+                });
+            });
     };
 
     const toggleSelectAllModifications = useCallback(() => {
@@ -580,7 +594,10 @@ const NetworkModificationNodeEditor = () => {
                 item.uuid,
                 before
             ).catch((errorMessage) => {
-                snackError(errorMessage, 'errReorderModificationMsg');
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'errReorderModificationMsg',
+                });
                 setModifications(modifications); // rollback
             });
         },
