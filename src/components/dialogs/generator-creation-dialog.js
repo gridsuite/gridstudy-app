@@ -102,11 +102,9 @@ const GeneratorCreationDialog = ({
     const fieldRequired = { isFieldRequired: true };
 
     const toFormValues = (generator) => {
-        console.log("load", generator);
-
         return {
             equipmentId: generator.id + '(1)',
-            equipmentName: generator.name,
+            equipmentName: generator.name ?? '',
             energySource: generator.energySource,
             maxActivePower: generator.maxP,
             minActivePower: generator.minP,

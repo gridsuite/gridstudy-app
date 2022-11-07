@@ -58,7 +58,7 @@ const SubstationCreationDialog = ({
     const toFormValues = (substation) => {
         return {
             equipmentId: substation.id + '(1)',
-            equipmentName: substation.name,
+            equipmentName: substation.name ?? '',
             substationCountryLabel: substation.countryName,
             substationCountry: null,
         };
