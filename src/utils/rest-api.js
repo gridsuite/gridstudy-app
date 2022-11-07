@@ -1773,12 +1773,17 @@ export function createTwoWindingsTransformer(
     seriesReactance,
     magnetizingConductance,
     magnetizingSusceptance,
+    ratedS,
     ratedVoltage1,
     ratedVoltage2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
+    ratioTapChanger,
+    phaseTapChanger,
     isUpdate,
     modificationUuid,
     connectionName1,
@@ -1800,6 +1805,7 @@ export function createTwoWindingsTransformer(
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/two-windings-transformers';
     }
+
     return backendFetch(createTwoWindingsTransformerUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1813,12 +1819,17 @@ export function createTwoWindingsTransformer(
             seriesReactance: seriesReactance,
             magnetizingConductance: magnetizingConductance,
             magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
             ratedVoltage1: ratedVoltage1,
             ratedVoltage2: ratedVoltage2,
+            currentLimits1: permanentCurrentLimit1,
+            currentLimits2: permanentCurrentLimit2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
+            ratioTapChanger: ratioTapChanger,
+            phaseTapChanger: phaseTapChanger,
             connectionName1: connectionName1,
             connectionDirection1: connectionDirection1,
             connectionName2: connectionName2,

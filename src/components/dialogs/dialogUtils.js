@@ -67,6 +67,11 @@ export const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export const MicroSusceptanceAdornment = {
+    position: 'end',
+    text: 'µS',
+};
+
 export const SusceptanceAdornment = {
     position: 'end',
     text: 'S',
