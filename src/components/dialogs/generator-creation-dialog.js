@@ -102,6 +102,8 @@ const GeneratorCreationDialog = ({
     const fieldRequired = { isFieldRequired: true };
 
     const toFormValues = (generator) => {
+        console.log("load", generator);
+
         return {
             equipmentId: generator.id + '(1)',
             equipmentName: generator.name,
@@ -128,6 +130,8 @@ const GeneratorCreationDialog = ({
             regulatingTerminalConnectableType:
                 generator.regulatingTerminalConnectableType,
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
+            connectionDirection: generator.connectionDirection,
+            connectionName: generator.connectionName,
         };
     };
 
