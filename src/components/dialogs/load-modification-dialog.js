@@ -119,7 +119,7 @@ const LoadModificationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumObjects: LOAD_TYPES,
-        defaultValue: formValues?.loadType ? formValues.loadType.value : null,
+        defaultValue: formValues?.loadType?.value ?? null,
         previousValue: loadInfos?.type
             ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)?.label
             : undefined,

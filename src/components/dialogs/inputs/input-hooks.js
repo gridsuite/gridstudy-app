@@ -264,8 +264,10 @@ export const useOptionalEnumValue = (props) => {
         (enumValue) => {
             // translate the label of enumValue
             const enumTranslation = props.enumObjects
-                .filter((e) => e.id === enumValue)
-                .map((e) => intl.formatMessage({ id: e.label }));
+                .filter((enumObject) => enumObject.id === enumValue)
+                .map((enumObject) =>
+                    intl.formatMessage({ id: enumObject.label })
+                );
             return enumTranslation.length === 1
                 ? enumTranslation.at(0)
                 : enumValue;

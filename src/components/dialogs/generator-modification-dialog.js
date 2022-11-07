@@ -146,9 +146,7 @@ const GeneratorModificationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumObjects: ENERGY_SOURCES,
-        defaultValue: formValues?.energySource
-            ? formValues.energySource.value
-            : null,
+        defaultValue: formValues?.energySource?.value ?? null,
         previousValue: previousEnergySourceLabel,
     });
 
