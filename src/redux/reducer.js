@@ -11,6 +11,8 @@ import {
     USER,
     SIGNIN_CALLBACK_ERROR,
     UNAUTHORIZED_USER_INFO,
+    LOGOUT_ERROR,
+    USER_VALIDATION_ERROR,
     SHOW_AUTH_INFO_LOGIN,
 } from '@gridsuite/commons-ui';
 
@@ -139,7 +141,7 @@ const initialState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
-    unauthorizedUserInfo: null,
+    authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
     loadflowNotif: false,
@@ -348,7 +350,15 @@ export const reducer = createReducer(initialState, {
     },
 
     [UNAUTHORIZED_USER_INFO]: (state, action) => {
-        state.unauthorizedUserInfo = action.unauthorizedUserInfo;
+        state.authenticationRouterError = action.authenticationRouterError;
+    },
+
+    [LOGOUT_ERROR]: (state, action) => {
+        state.authenticationRouterError = action.authenticationRouterError;
+    },
+
+    [USER_VALIDATION_ERROR]: (state, action) => {
+        state.authenticationRouterError = action.authenticationRouterError;
     },
 
     [SHOW_AUTH_INFO_LOGIN]: (state, action) => {

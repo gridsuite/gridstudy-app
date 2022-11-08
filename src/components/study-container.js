@@ -601,7 +601,7 @@ export function StudyContainer({ view, onChangeTab }) {
             //.finally(() => setIsNetworkPending(false));
             // Note: studyUuid don't change
         },
-        [studyUuid, currentNode?.id, network]
+        [studyUuid, currentNode, network]
     );
 
     useEffect(() => {
