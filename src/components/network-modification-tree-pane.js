@@ -13,6 +13,7 @@ import {
     getUniqueNodeName,
     buildNode,
     copyTreeNode,
+    cutTreeNode,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -74,6 +75,11 @@ const usePreviousTreeDisplay = (display, width) => {
     return ref.current;
 };
 
+const CopyType = {
+    COPY: 'COPY',
+    CUT: 'CUT',
+};
+
 export const NetworkModificationTreePane = ({
     studyUuid,
     studyMapTreeDisplay,
@@ -87,6 +93,7 @@ export const NetworkModificationTreePane = ({
 
     const [activeNode, setActiveNode] = useState(null);
     const [selectedNodeIdForCopy, setSelectedNodeIdForCopy] = useState(null);
+    const [copyType, setCopyType] = useState(null);
     const selectedNodeIdForCopyRef = useRef();
     selectedNodeIdForCopyRef.current = selectedNodeIdForCopy;
 
@@ -161,6 +168,7 @@ export const NetworkModificationTreePane = ({
                     )
                 ) {
                     setSelectedNodeIdForCopy(null);
+                    setCopyType(null);
                     let message = intlRef.current.formatMessage({
                         id: 'CopiedNodeInvalidationMessage',
                     });
@@ -210,18 +218,50 @@ export const NetworkModificationTreePane = ({
         [studyUuid, enqueueSnackbar, intlRef]
     );
 
+    const handleCopyNode = useCallback(
+        (referenceNodeId) => {
+            setSelectedNodeIdForCopy(referenceNodeId);
+            setCopyType(CopyType.COPY);
+        },
+        [setSelectedNodeIdForCopy, setCopyType]
+    );
+
+    const handleCutNode = useCallback(
+        (referenceNodeId) => {
+            setSelectedNodeIdForCopy(referenceNodeId);
+            setCopyType(CopyType.CUT);
+        },
+        [setSelectedNodeIdForCopy, setCopyType]
+    );
+
     const handlePasteNode = useCallback(
         (referenceNodeId, insertMode) => {
-            copyTreeNode(
-                studyUuid,
-                selectedNodeIdForCopy,
-                referenceNodeId,
-                insertMode
-            ).catch((errorMessage) => {
-                snackError(errorMessage, 'NodeCreateError');
-            });
+            if (CopyType.CUT === copyType) {
+                cutTreeNode(
+                    studyUuid,
+                    selectedNodeIdForCopy,
+                    referenceNodeId,
+                    insertMode
+                )
+                    .then(() => {
+                        //After the first CUT / PASTE operation, it becomes a COPY / PASTE operation
+                        setCopyType(CopyType.COPY);
+                    })
+                    .catch((errorMessage) => {
+                        snackError(errorMessage, 'NodeCreateError');
+                    });
+            } else {
+                copyTreeNode(
+                    studyUuid,
+                    selectedNodeIdForCopy,
+                    referenceNodeId,
+                    insertMode
+                ).catch((errorMessage) => {
+                    snackError(errorMessage, 'NodeCreateError');
+                });
+            }
         },
-        [studyUuid, selectedNodeIdForCopy, snackError]
+        [studyUuid, copyType, selectedNodeIdForCopy, snackError]
     );
 
     const handleRemoveNode = useCallback(
@@ -327,7 +367,8 @@ export const NetworkModificationTreePane = ({
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
                     selectedNodeForCopy={selectedNodeIdForCopy}
-                    handleCopyNode={setSelectedNodeIdForCopy}
+                    handleCopyNode={handleCopyNode}
+                    handleCutNode={handleCutNode}
                     handlePasteNode={handlePasteNode}
                 />
             )}
