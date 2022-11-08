@@ -236,8 +236,12 @@ export const BooleanListField = ({
             const val = ev.target.value;
             setValue(val);
             setter(val === 1);
+
+            if (columnDefinition.forceUpdateOnChange) {
+                forceLineUpdate();
+            }
         },
-        [setter]
+        [setter, forceLineUpdate, columnDefinition.forceUpdateOnChange]
     );
 
     return (

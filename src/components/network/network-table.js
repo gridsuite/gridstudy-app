@@ -1004,7 +1004,12 @@ const NetworkTable = (props) => {
         (rowData, columnDefinition, key, style, rowIndex) => {
             if (
                 isLineOnEditMode(rowData) &&
-                rowData[columnDefinition.dataKey] !== undefined &&
+                (rowData[columnDefinition.dataKey] !== undefined ||
+                    (columnDefinition.editableCondition !== undefined &&
+                        rowData[
+                            columnDefinition.editableCondition.dependencyColumn
+                        ] ===
+                            columnDefinition.editableCondition.columnValue)) &&
                 rowIndex === 1
             ) {
                 // when we edit a numeric field, we display the original un-rounded value
