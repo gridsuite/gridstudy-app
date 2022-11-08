@@ -1183,7 +1183,11 @@ export function connectNotificationsWebsocket(studyUuid, options) {
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
 
-    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress), [], options);
+    const rws = new ReconnectingWebSocket(
+        () => getUrlWithToken(wsadress),
+        [],
+        options
+    );
     // don't log the token, it's private
     rws.onopen = function (event) {
         console.info('Connected Websocket ' + wsadress + ' ...');
