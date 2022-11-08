@@ -73,7 +73,6 @@ export const ModificationListItem = ({
         [modif, handleToggle]
     );
 
-
     // hack to avoid the capture of network by closures, which leads to memory leaks
     let computedValues;
     const networkCopy = network;
