@@ -60,27 +60,19 @@ export function useSnackMessage() {
             headerTxt,
             headerId,
             headerValues,
-        }) => {
-            const message = checkAndTranslateIfNecessary(
+        }) =>
+            makeSnackCallBack({
                 messageTxt,
                 messageId,
                 messageValues,
-                intlRef
-            );
-            const header = checkAndTranslateIfNecessary(
                 headerTxt,
                 headerId,
                 headerValues,
-                intlRef
-            );
-            displayMessageWithSnackbar({
-                message,
-                header,
+                intlRef,
                 enqueueSnackbar,
                 level: 'error',
                 persistent: true,
-            });
-        },
+            }),
         [enqueueSnackbar, intlRef]
     );
 
@@ -92,27 +84,19 @@ export function useSnackMessage() {
             headerTxt,
             headerId,
             headerValues,
-        }) => {
-            const message = checkAndTranslateIfNecessary(
+        }) =>
+            makeSnackCallBack({
                 messageTxt,
                 messageId,
                 messageValues,
-                intlRef
-            );
-            const header = checkAndTranslateIfNecessary(
                 headerTxt,
                 headerId,
                 headerValues,
-                intlRef
-            );
-            displayMessageWithSnackbar({
-                message,
-                header,
+                intlRef,
                 enqueueSnackbar,
                 level: 'info',
                 persistent: false,
-            });
-        },
+            }),
         [enqueueSnackbar, intlRef]
     );
 
@@ -124,31 +108,56 @@ export function useSnackMessage() {
             headerTxt,
             headerId,
             headerValues,
-        }) => {
-            const message = checkAndTranslateIfNecessary(
+        }) =>
+            makeSnackCallBack({
                 messageTxt,
                 messageId,
                 messageValues,
-                intlRef
-            );
-            const header = checkAndTranslateIfNecessary(
                 headerTxt,
                 headerId,
                 headerValues,
-                intlRef
-            );
-            displayMessageWithSnackbar({
-                message,
-                header,
+                intlRef,
                 enqueueSnackbar,
                 level: 'warning',
                 persistent: true,
-            });
-        },
+            }),
         [enqueueSnackbar, intlRef]
     );
 
     return { snackError, snackInfo, snackWarning };
+}
+
+function makeSnackCallBack({
+    messageTxt,
+    messageId,
+    messageValues,
+    headerTxt,
+    headerId,
+    headerValues,
+    intlRef,
+    enqueueSnackbar,
+    level,
+    persistent,
+}) {
+    const message = checkAndTranslateIfNecessary(
+        messageTxt,
+        messageId,
+        messageValues,
+        intlRef
+    );
+    const header = checkAndTranslateIfNecessary(
+        headerTxt,
+        headerId,
+        headerValues,
+        intlRef
+    );
+    displayMessageWithSnackbar({
+        message,
+        header,
+        enqueueSnackbar,
+        level,
+        persistent,
+    });
 }
 
 function checkAndTranslateIfNecessary(txt, id, values, intlRef) {
