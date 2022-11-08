@@ -842,27 +842,23 @@ export const useDirectoryElements = ({
 
     const addElements = useCallback(
         (elements) => {
-            if (elements.length > 0) {
-                elements.forEach((element) => {
-                    const { icon, children, ...elementRest } = element;
-                    // check if element is already present
-                    if (
-                        values.find((v) => v.id === elementRest.id) !==
-                        undefined
-                    ) {
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: '',
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'ElementAlreadyUsed',
-                                intlRef: intlRef,
-                            },
-                        });
-                    } else {
-                        setValues(values.concat(elementRest));
-                    }
-                });
-            }
+            elements.forEach((element) => {
+                const { icon, children, ...elementRest } = element;
+                // check if element is already present
+                if (values.find((v) => v.id === elementRest.id) !== undefined) {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: '',
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'ElementAlreadyUsed',
+                            intlRef: intlRef,
+                        },
+                    });
+                } else {
+                    setValues(values.concat(elementRest));
+                }
+            });
+
             setDirectoryItemSelectorOpen(false);
         },
         [values, enqueueSnackbar, intlRef]
