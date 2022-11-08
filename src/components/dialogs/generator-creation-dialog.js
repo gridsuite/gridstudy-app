@@ -23,7 +23,7 @@ import { useSnackbar } from 'notistack';
 import {
     useButtonWithTooltip,
     useDoubleValue,
-    useEnumValue,
+    useOptionalEnumValue,
     useInputForm,
     useRegulatingTerminalValue,
     useTableValues,
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid : the currently selected tree node
+ * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  */
 const GeneratorCreationDialog = ({
@@ -170,15 +170,15 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.equipmentName,
     });
 
-    const [energySource, energySourceField] = useEnumValue({
+    const [energySource, energySourceField] = useOptionalEnumValue({
         label: 'EnergySourceText',
         inputForm: inputForm,
         formProps: filledTextField,
-        enumValues: ENERGY_SOURCES,
+        enumObjects: ENERGY_SOURCES,
         validation: {
             isFieldRequired: false,
         },
-        defaultValue: formValues?.energySource,
+        defaultValue: formValues?.energySource ?? null,
     });
 
     const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
@@ -384,7 +384,7 @@ const GeneratorCreationDialog = ({
                 currentNodeUuid,
                 generatorId,
                 sanitizeString(generatorName),
-                !energySource ? 'OTHER' : energySource,
+                energySource,
                 minimumActivePower,
                 maximumActivePower,
                 ratedNominalPower ? ratedNominalPower : null,
