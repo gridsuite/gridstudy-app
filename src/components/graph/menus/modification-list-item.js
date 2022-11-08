@@ -73,27 +73,33 @@ export const ModificationListItem = ({
         [modif, handleToggle]
     );
 
-    const computedValues = useMemo(() => {
-        function getVoltageLevelLabel(vlID) {
-            if (!vlID) return '';
-            const vl = network.getVoltageLevel(vlID);
-            if (vl) return vl[useName ? 'name' : 'id'] || vlID;
-            return vlID;
-        }
-        let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
-        if (modif.type === 'BRANCH_STATUS') {
-            if (modif.action === 'ENERGISE_END_ONE') {
-                res.energizedEnd = getVoltageLevelLabel(
-                    network.getLine(modif.equipmentId)?.voltageLevelId1
-                );
-            } else if (modif.action === 'ENERGISE_END_TWO') {
-                res.energizedEnd = getVoltageLevelLabel(
-                    network.getLine(modif.equipmentId)?.voltageLevelId2
-                );
+    // hack to avoid the capture of network by closures, which leads to memory leaks
+    let computedValues;
+    const networkCopy = network;
+    {
+        const network = networkCopy;
+        computedValues = useMemo(() => {
+            function getVoltageLevelLabel(vlID) {
+                if (!vlID) return '';
+                const vl = network.getVoltageLevel(vlID);
+                if (vl) return vl[useName ? 'name' : 'id'] || vlID;
+                return vlID;
             }
-        }
-        return res;
-    }, [modif, network, getComputedLabel, useName]);
+            let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
+            if (modif.type === 'BRANCH_STATUS') {
+                if (modif.action === 'ENERGISE_END_ONE') {
+                    res.energizedEnd = getVoltageLevelLabel(
+                        network.getLine(modif.equipmentId)?.voltageLevelId1
+                    );
+                } else if (modif.action === 'ENERGISE_END_TWO') {
+                    res.energizedEnd = getVoltageLevelLabel(
+                        network.getLine(modif.equipmentId)?.voltageLevelId2
+                    );
+                }
+            }
+            return res;
+        }, [modif, network, getComputedLabel, useName]);
+    }
 
     const getLabel = useCallback(
         () =>
