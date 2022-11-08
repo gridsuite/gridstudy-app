@@ -1172,7 +1172,7 @@ function getUrlWithToken(baseUrl) {
     }
 }
 
-export function connectNotificationsWebsocket(studyUuid) {
+export function connectNotificationsWebsocket(studyUuid, options) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI
         .replace(/^http:\/\//, 'ws://')
@@ -1183,7 +1183,7 @@ export function connectNotificationsWebsocket(studyUuid) {
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
 
-    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
+    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress), [], options);
     // don't log the token, it's private
     rws.onopen = function (event) {
         console.info('Connected Websocket ' + wsadress + ' ...');
