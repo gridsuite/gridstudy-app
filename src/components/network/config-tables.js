@@ -629,7 +629,7 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editor: ({ equipment, ...props }) =>
                     EnumField({
-                        enumList: ENERGY_SOURCES.slice(1), // dont use/display the first empty entry
+                        enumList: ENERGY_SOURCES,
                         ...props,
                     }),
             },
@@ -752,7 +752,7 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editor: ({ equipment, ...props }) =>
                     EnumField({
-                        enumList: LOAD_TYPES.slice(1), // dont use/display the first empty entry
+                        enumList: LOAD_TYPES,
                         ...props,
                     }),
             },
