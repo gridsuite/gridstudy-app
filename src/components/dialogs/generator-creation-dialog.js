@@ -128,6 +128,8 @@ const GeneratorCreationDialog = ({
             regulatingTerminalConnectableType:
                 generator.regulatingTerminalConnectableType,
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
+            connectionDirection: generator.connectionDirection,
+            connectionName: generator.connectionName,
         };
     };
 
