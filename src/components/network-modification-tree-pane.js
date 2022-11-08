@@ -245,7 +245,8 @@ export const NetworkModificationTreePane = ({
                 )
                     .then(() => {
                         //After the first CUT / PASTE operation, it becomes a COPY / PASTE operation
-                        setCopyType(CopyType.COPY);
+                        setSelectedNodeIdForCopy(null);
+                        setCopyType(null);
                     })
                     .catch((errorMessage) => {
                         snackError(errorMessage, 'NodeCreateError');
