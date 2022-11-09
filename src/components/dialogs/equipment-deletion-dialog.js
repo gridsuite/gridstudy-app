@@ -117,7 +117,10 @@ const EquipmentDeletionDialog = ({
             .getReader()
             .read()
             .then((value) => {
-                snackError(utf8Decoder.decode(value.value), messsageId);
+                snackError({
+                    messageTxt: utf8Decoder.decode(value.value),
+                    headerId: messsageId,
+                });
             });
     }
 

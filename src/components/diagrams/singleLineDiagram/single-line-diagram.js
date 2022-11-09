@@ -406,7 +406,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         error: errorMessage,
                         svgUrl: props.svgUrl,
                     });
-                    snackError(errorMessage);
+                    snackError({
+                        messageTxt: errorMessage,
+                    });
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
                 });

@@ -358,7 +358,10 @@ const LineAttachToVoltageLevelDialog = ({
                 newLine2Id,
                 newLine2Name || null
             ).catch((errorMessage) => {
-                snackError(errorMessage, 'LineAttachmentError');
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LineAttachmentError',
+                });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();

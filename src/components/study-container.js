@@ -252,16 +252,24 @@ export function StudyContainer({ view, onChangeTab }) {
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             if (updateTypeHeader === 'buildFailed') {
-                snackError('', 'NodeBuildingError');
+                snackError({
+                    headerId: 'NodeBuildingError',
+                });
             }
             if (updateTypeHeader === 'securityAnalysis_failed') {
-                snackError('', 'securityAnalysisError');
+                snackError({
+                    headerId: 'securityAnalysisError',
+                });
             }
             if (updateTypeHeader === 'sensitivityAnalysis_failed') {
-                snackError('', 'sensitivityAnalysisError');
+                snackError({
+                    headerId: 'sensitivityAnalysisError',
+                });
             }
             if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
-                snackError('', 'shortCircuitAnalysisError');
+                snackError({
+                    headerId: 'shortCircuitAnalysisError',
+                });
             }
         },
         [snackError]
@@ -418,7 +426,9 @@ export function StudyContainer({ view, onChangeTab }) {
                         }
                     })
                     .catch((err) => {
-                        snackWarning('', 'CaseNameLoadError');
+                        snackWarning({
+                            headerId: 'CaseNameLoadError',
+                        });
                     });
 
                 const firstSelectedNode =
@@ -440,13 +450,16 @@ export function StudyContainer({ view, onChangeTab }) {
                 );
             })
             .catch((errorMessage) => {
-                if (errorMessage.status === 404)
-                    snackError('', 'StudyUnrecoverableStateRecreate');
-                else
-                    snackError(
-                        errorMessage,
-                        'NetworkModificationTreeLoadError'
-                    );
+                if (errorMessage.status === 404) {
+                    snackError({
+                        headerId: 'StudyUnrecoverableStateRecreate',
+                    });
+                } else {
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'NetworkModificationTreeLoadError',
+                    });
+                }
             })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
@@ -481,16 +494,22 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
-            snackInfo('', 'moveStudyNotification', {
-                oldStudyPath: prevStudyPath,
-                studyPath: studyPath,
+            snackInfo({
+                headerId: 'moveStudyNotification',
+                headerValues: {
+                    oldStudyPath: prevStudyPath,
+                    studyPath: studyPath,
+                },
             });
         }
 
         if (prevStudyName && prevStudyName !== studyName) {
-            snackInfo('', 'renameStudyNotification', {
-                oldStudyName: prevStudyName,
-                studyName: studyName,
+            snackInfo({
+                headerId: 'renameStudyNotification',
+                headerValues: {
+                    oldStudyPath: prevStudyPath,
+                    studyPath: studyPath,
+                },
             });
         }
     }, [snackInfo, studyName, studyPath, prevStudyPath, prevStudyName]);
@@ -515,7 +534,10 @@ export function StudyContainer({ view, onChangeTab }) {
             })
             .catch((errorMessage) => {
                 document.title = initialTitle;
-                snackError(errorMessage, 'LoadStudyAndParentsInfoError');
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LoadStudyAndParentsInfoError',
+                });
             });
     }, [studyUuid, initialTitle, snackError]);
 
