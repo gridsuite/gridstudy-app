@@ -176,10 +176,9 @@ export function StudyContainer({ view, onChangeTab }) {
     const [studyPath, setStudyPath] = useState();
     const prevStudyPath = usePrevious(studyPath);
 
-    const [studyParentDirectoriesUuids, setStudyParentDirectoriesUuids] =
-        useState([]);
-    const studyParentDirectoriesUuidsRef = useRef();
-    studyParentDirectoriesUuidsRef.current = studyParentDirectoriesUuids;
+    // using a ref because this is not used for rendering, it is used in the websocket onMessage()
+    const studyParentDirectoriesUuidsRef = useRef([]);
+
     const network = useSelector((state) => state.network);
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
@@ -316,36 +315,33 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, checkFailNotifications]
     );
 
-    const fetchStudyPath = useCallback(
-        (studyUuid) => {
-            fetchPath(studyUuid)
-                .then((response) => {
-                    const parentDirectoriesNames = response
-                        .slice(1)
-                        .map((parent) => parent.elementName);
-                    const parentDirectoriesUuid = response
-                        .slice(1)
-                        .map((parent) => parent.elementUuid);
-                    setStudyParentDirectoriesUuids(parentDirectoriesUuid);
+    const fetchStudyPath = useCallback(() => {
+        fetchPath(studyUuid)
+            .then((response) => {
+                const parentDirectoriesNames = response
+                    .slice(1)
+                    .map((parent) => parent.elementName);
+                const parentDirectoriesUuid = response
+                    .slice(1)
+                    .map((parent) => parent.elementUuid);
+                studyParentDirectoriesUuidsRef.current = parentDirectoriesUuid;
 
-                    const studyName = response[0]?.elementName;
-                    const path = computeFullPath(parentDirectoriesNames);
-                    setStudyName(studyName);
-                    setStudyPath(path);
+                const studyName = response[0]?.elementName;
+                const path = computeFullPath(parentDirectoriesNames);
+                setStudyName(studyName);
+                setStudyPath(path);
 
-                    document.title = computePageTitle(
-                        initialTitle,
-                        studyName,
-                        parentDirectoriesNames
-                    );
-                })
-                .catch((errorMessage) => {
-                    document.title = initialTitle;
-                    snackError(errorMessage, 'LoadStudyAndParentsInfoError');
-                });
-        },
-        [initialTitle, snackError]
-    );
+                document.title = computePageTitle(
+                    initialTitle,
+                    studyName,
+                    parentDirectoriesNames
+                );
+            })
+            .catch((errorMessage) => {
+                document.title = initialTitle;
+                snackError(errorMessage, 'LoadStudyAndParentsInfoError');
+            });
+    }, [initialTitle, snackError, studyUuid]);
 
     const connectDeletedStudyNotifications = useCallback((studyUuid) => {
         console.info(`Connecting to directory notifications ...`);
@@ -382,11 +378,7 @@ export function StudyContainer({ view, onChangeTab }) {
                             eventData.headers['directoryUuid']
                         )
                     ) {
-                        console.log(
-                            'SBO will fetch',
-                            eventData.headers['directoryUuid']
-                        );
-                        fetchStudyPath(studyUuid);
+                        fetchStudyPath();
                     }
                 }
             }
@@ -553,7 +545,7 @@ export function StudyContainer({ view, onChangeTab }) {
             document.title = initialTitle;
             return;
         }
-        fetchStudyPath(studyUuid);
+        fetchStudyPath();
     }, [studyUuid, initialTitle, fetchStudyPath]);
 
     useEffect(() => {
@@ -563,7 +555,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                     'metadata_updated'
             ) {
-                fetchStudyPath(studyUuid);
+                fetchStudyPath();
             }
         }
     }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
