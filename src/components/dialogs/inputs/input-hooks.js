@@ -17,13 +17,16 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { validateField } from '../../util/validation-functions';
 import {
     CircularProgress,
-    FormHelperText, FormLabel,
+    FormHelperText,
+    FormLabel,
     InputLabel,
-    MenuItem, Radio, RadioGroup,
+    MenuItem,
+    Radio,
+    RadioGroup,
     Select,
     TextField,
-    Tooltip
-} from "@mui/material";
+    Tooltip,
+} from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import FormControl from '@mui/material/FormControl';
@@ -59,7 +62,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import RegulatingTerminalEdition, {
     makeRefreshRegulatingTerminalSectionsCallback,
 } from '../regulating-terminal-edition';
-import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -563,7 +566,8 @@ export const useTableValues = ({
         });
     }, []);
 
-    useEffect(() => { // TODO CHARLY Surveiller cette fonction
+    useEffect(() => {
+        // TODO CHARLY Surveiller cette fonction
         if (!isReactiveCapabilityCurveOn) {
             //TODO When isReactiveCapabilityCurveOn is false, the reactive capability curve component does not change
             // the validation of its values and they still required.
@@ -755,15 +759,15 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
 };
 
 export const useRadioValue = ({
-                                label,
-                                possibleValues = [],
-                                defaultValue,
-                                id,
-                                validation = {},
-                                inputForm,
-                                formProps,
-                                doTranslation = true,
-                                }) => {
+    label,
+    possibleValues = [],
+    defaultValue,
+    id,
+    validation = {},
+    inputForm,
+    formProps,
+    doTranslation = true,
+}) => {
     const [value, setValue] = useState(defaultValue);
     const intl = useIntl();
 
@@ -783,7 +787,9 @@ export const useRadioValue = ({
         return (
             <FormControl>
                 {label && (
-                    <FormLabel id={id ? id : label}>{intl.formatMessage({id: label})}</FormLabel>
+                    <FormLabel id={id ? id : label}>
+                        {intl.formatMessage({ id: label })}
+                    </FormLabel>
                 )}
                 <RadioGroup
                     row
@@ -792,9 +798,15 @@ export const useRadioValue = ({
                     onChange={(e) => handleChangeValue(e)}
                 >
                     {possibleValues.map((value) => (
-                        <FormControlLabel value={value}
-                                          control={<Radio />}
-                                          label={doTranslation ? intl.formatMessage({id: value}) : value} />
+                        <FormControlLabel
+                            value={value}
+                            control={<Radio />}
+                            label={
+                                doTranslation
+                                    ? intl.formatMessage({ id: value })
+                                    : value
+                            }
+                        />
                     ))}
                 </RadioGroup>
             </FormControl>

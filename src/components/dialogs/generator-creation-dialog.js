@@ -24,23 +24,26 @@ import {
     useButtonWithTooltip,
     useDoubleValue,
     useEnumValue,
-    useInputForm, useRadioValue,
+    useInputForm,
+    useRadioValue,
     useRegulatingTerminalValue,
     useTableValues, // TODO CHARLY Remove
-    useTextValue
-} from "./inputs/input-hooks";
-import { useReactiveCapabilityCurveTableValues } from "./inputs/reactive-capability-curve-table";
+    useTextValue,
+} from './inputs/input-hooks';
+import { useReactiveCapabilityCurveTableValues } from './inputs/reactive-capability-curve-table';
 import {
     ActivePowerAdornment,
     filledTextField,
-    gridItem, GridSection, GridSubSection,
+    gridItem,
+    GridSection,
+    GridSubSection,
     MVAPowerAdornment,
     OhmAdornment,
     percentageTextField,
     ReactivePowerAdornment,
     sanitizeString,
-    VoltageAdornment
-} from "./dialogUtils";
+    VoltageAdornment,
+} from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { ENERGY_SOURCES } from '../network/constants';
@@ -48,7 +51,10 @@ import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve-table';
-import { validateValueIsANumber, validateValueIsLessOrEqualThan } from "../util/validation-functions";
+import {
+    validateValueIsANumber,
+    validateValueIsLessOrEqualThan,
+} from '../util/validation-functions';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -93,7 +99,8 @@ const GeneratorCreationDialog = ({
 
     const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
 
-    const [isReactiveCapabilityCurveOn, setReactiveCapabilityCurveOn] = useState(true);
+    const [isReactiveCapabilityCurveOn, setReactiveCapabilityCurveOn] =
+        useState(true);
 
     const [rCCurveError, setRCCurveError] = useState([]);
 
@@ -219,15 +226,24 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.ratedNominalPower,
     });
 
-    const [reactiveCapabilityCurveChoice, isReactiveCapabilityCurveOnField] = useRadioValue({
-        validation: fieldRequired,
-        inputForm: inputForm,
-        defaultValue: formValues?.reactiveCapabilityCurve == false ? "ReactiveLimitsKindMinMax" : "ReactiveLimitsKindCurve",
-        possibleValues: ["ReactiveLimitsKindMinMax", "ReactiveLimitsKindCurve"]
-    });
+    const [reactiveCapabilityCurveChoice, isReactiveCapabilityCurveOnField] =
+        useRadioValue({
+            validation: fieldRequired,
+            inputForm: inputForm,
+            defaultValue:
+                formValues?.reactiveCapabilityCurve == false
+                    ? 'ReactiveLimitsKindMinMax'
+                    : 'ReactiveLimitsKindCurve',
+            possibleValues: [
+                'ReactiveLimitsKindMinMax',
+                'ReactiveLimitsKindCurve',
+            ],
+        });
 
     useEffect(() => {
-        setReactiveCapabilityCurveOn(reactiveCapabilityCurveChoice === "ReactiveLimitsKindCurve");
+        setReactiveCapabilityCurveOn(
+            reactiveCapabilityCurveChoice === 'ReactiveLimitsKindCurve'
+        );
     }, [reactiveCapabilityCurveChoice]);
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
@@ -375,44 +391,60 @@ const GeneratorCreationDialog = ({
     }, [minimumReactivePower, maximumReactivePower]);
 
     const handleSave = () => {
-
         // ReactiveCapabilityCurveCreation validation
         let isRCCValid = true;
         if (isReactiveCapabilityCurveOn) {
-
             let errorMessages = [];
 
             // At least four points must be set
             if (reactiveCapabilityCurve.length < 2) {
-                errorMessages.push('ReactiveCapabilityCurveCreationErrorMissingPoints');
+                errorMessages.push(
+                    'ReactiveCapabilityCurveCreationErrorMissingPoints'
+                );
             }
 
             // Each P must be a unique valid number
             const everyValidP = reactiveCapabilityCurve
-                .map((element) => validateValueIsANumber(element.p) ? element.p : null)
-                .filter(p => p !== null);
+                .map((element) =>
+                    validateValueIsANumber(element.p) ? element.p : null
+                )
+                .filter((p) => p !== null);
             const setOfPs = [...new Set(everyValidP)];
 
             if (setOfPs.length !== everyValidP.length) {
-                errorMessages.push('ReactiveCapabilityCurveCreationErrorPInvalid');
+                errorMessages.push(
+                    'ReactiveCapabilityCurveCreationErrorPInvalid'
+                );
             } else {
-
                 // The first P must be the lowest value
                 // The last P must be the highest value
                 // The P in between must be in the range defined by the first and last P
                 const minP = everyValidP[0];
-                const maxP = everyValidP[everyValidP.length-1];
-                const pAreInRange = everyValidP.filter(p => validateValueIsLessOrEqualThan(minP, p) && validateValueIsLessOrEqualThan(p, maxP));
+                const maxP = everyValidP[everyValidP.length - 1];
+                const pAreInRange = everyValidP.filter(
+                    (p) =>
+                        validateValueIsLessOrEqualThan(minP, p) &&
+                        validateValueIsLessOrEqualThan(p, maxP)
+                );
                 if (pAreInRange.length !== everyValidP.length) {
-                    errorMessages.push('ReactiveCapabilityCurveCreationErrorPOutOfRange');
+                    errorMessages.push(
+                        'ReactiveCapabilityCurveCreationErrorPOutOfRange'
+                    );
                 }
             }
 
             // Each qMin must be inferior or equal to qMax
             for (let element of reactiveCapabilityCurve) {
-                if (!validateValueIsLessOrEqualThan(element.qminP, element.qmaxP)) {
+                if (
+                    !validateValueIsLessOrEqualThan(
+                        element.qminP,
+                        element.qmaxP
+                    )
+                ) {
                     console.error(element);
-                    errorMessages.push('ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence');
+                    errorMessages.push(
+                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
+                    );
                     break;
                 }
             }
@@ -423,7 +455,10 @@ const GeneratorCreationDialog = ({
             setRCCurveError([]);
         }
 
-        if (inputForm.validate() && (!isReactiveCapabilityCurveOn || isRCCValid)) {
+        if (
+            inputForm.validate() &&
+            (!isReactiveCapabilityCurveOn || isRCCValid)
+        ) {
             createGenerator(
                 studyUuid,
                 currentNodeUuid,
@@ -531,18 +566,21 @@ const GeneratorCreationDialog = ({
                         </Grid>
                         <GridSubSection title="ReactiveLimits" />
                         <Grid container spacing={2}>
-
                             {gridItem(isReactiveCapabilityCurveOnField, 12)}
 
-                            {isReactiveCapabilityCurveOn && rCCurveError.map((value) => (
-                                <div className={classes.rccError}>
-                                    <FormattedMessage id={value} />
-                                </div>
-                            ))}
+                            {isReactiveCapabilityCurveOn &&
+                                rCCurveError.map((value) => (
+                                    <div className={classes.rccError}>
+                                        <FormattedMessage id={value} />
+                                    </div>
+                                ))}
 
-                            {!isReactiveCapabilityCurveOn && gridItem(minimumReactivePowerField, 4)}
-                            {!isReactiveCapabilityCurveOn && gridItem(maximumReactivePowerField, 4)}
-                            {!!isReactiveCapabilityCurveOn && gridItem(reactiveCapabilityCurveField, 12)}
+                            {!isReactiveCapabilityCurveOn &&
+                                gridItem(minimumReactivePowerField, 4)}
+                            {!isReactiveCapabilityCurveOn &&
+                                gridItem(maximumReactivePowerField, 4)}
+                            {!!isReactiveCapabilityCurveOn &&
+                                gridItem(reactiveCapabilityCurveField, 12)}
                         </Grid>
 
                         {/* Setpoints part */}
