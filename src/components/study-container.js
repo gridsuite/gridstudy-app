@@ -176,6 +176,10 @@ export function StudyContainer({ view, onChangeTab }) {
     const [studyPath, setStudyPath] = useState();
     const prevStudyPath = usePrevious(studyPath);
 
+    const [studyParentDirectoriesUuids, setStudyParentDirectoriesUuids] =
+        useState([]);
+    const studyParentDirectoriesUuidsRef = useRef();
+    studyParentDirectoriesUuidsRef.current = studyParentDirectoriesUuids;
     const network = useSelector((state) => state.network);
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
@@ -316,19 +320,23 @@ export function StudyContainer({ view, onChangeTab }) {
         (studyUuid) => {
             fetchPath(studyUuid)
                 .then((response) => {
-                    const parents = response
+                    const parentDirectoriesNames = response
                         .slice(1)
                         .map((parent) => parent.elementName);
+                    const parentDirectoriesUuid = response
+                        .slice(1)
+                        .map((parent) => parent.elementUuid);
+                    setStudyParentDirectoriesUuids(parentDirectoriesUuid);
 
                     const studyName = response[0]?.elementName;
-                    const path = computeFullPath(parents);
+                    const path = computeFullPath(parentDirectoriesNames);
                     setStudyName(studyName);
                     setStudyPath(path);
 
                     document.title = computePageTitle(
                         initialTitle,
                         studyName,
-                        parents
+                        parentDirectoriesNames
                     );
                 })
                 .catch((errorMessage) => {
@@ -369,7 +377,17 @@ export function StudyContainer({ view, onChangeTab }) {
                     eventData.headers['notificationType'] ===
                     directoriesNotificationType.UPDATE_DIRECTORY
                 ) {
-                    fetchStudyPath(studyUuid);
+                    if (
+                        studyParentDirectoriesUuidsRef.current.includes(
+                            eventData.headers['directoryUuid']
+                        )
+                    ) {
+                        console.log(
+                            'SBO will fetch',
+                            eventData.headers['directoryUuid']
+                        );
+                        fetchStudyPath(studyUuid);
+                    }
                 }
             }
         };
