@@ -598,6 +598,10 @@ const TwoWindingsTransformerCreationDialog = ({
                 lowTapPosition: twt.phaseTapChanger?.lowTapPosition,
                 tapPosition: twt.phaseTapChanger?.tapPosition,
             },
+            connectionDirection1: twt.connectionDirection1,
+            connectionName1: twt.connectionName1,
+            connectionDirection2: twt.connectionDirection2,
+            connectionName2: twt.connectionName2,
         };
     };
 
