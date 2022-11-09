@@ -22,6 +22,8 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
+const PREFIX_EXPLORE_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/explore';
 
 function getToken() {
     const state = store.getState();
@@ -1794,12 +1796,17 @@ export function createTwoWindingsTransformer(
     seriesReactance,
     magnetizingConductance,
     magnetizingSusceptance,
+    ratedS,
     ratedVoltage1,
     ratedVoltage2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
+    ratioTapChanger,
+    phaseTapChanger,
     isUpdate,
     modificationUuid,
     connectionName1,
@@ -1821,6 +1828,7 @@ export function createTwoWindingsTransformer(
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/two-windings-transformers';
     }
+
     return backendFetch(createTwoWindingsTransformerUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1834,12 +1842,17 @@ export function createTwoWindingsTransformer(
             seriesReactance: seriesReactance,
             magnetizingConductance: magnetizingConductance,
             magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
             ratedVoltage1: ratedVoltage1,
             ratedVoltage2: ratedVoltage2,
+            currentLimits1: permanentCurrentLimit1,
+            currentLimits2: permanentCurrentLimit2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
+            ratioTapChanger: ratioTapChanger,
+            phaseTapChanger: phaseTapChanger,
             connectionName1: connectionName1,
             connectionDirection1: connectionDirection1,
             connectionName2: connectionName2,
@@ -2335,4 +2348,18 @@ export function getUniqueNodeName(studyUuid) {
             ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
+}
+
+export function fetchElementsMetadata(ids) {
+    console.info('Fetching elements metadata');
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/elements/metadata?ids=' +
+        ids
+            .filter((e) => e != null && e !== '') // filter empty element
+            .join('&ids=');
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
 }

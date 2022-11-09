@@ -23,6 +23,7 @@ import {
     Select,
     TextField,
     Tooltip,
+    Button,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
@@ -59,6 +60,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import RegulatingTerminalEdition, {
     makeRefreshRegulatingTerminalSectionsCallback,
 } from '../regulating-terminal-edition';
+import Papa from 'papaparse';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -255,6 +257,37 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
     }, [label, handleClick, classes.tooltip]);
 };
 
+export const useOptionalEnumValue = (props) => {
+    const intl = useIntl();
+
+    const getEnumTranslation = useCallback(
+        (enumValue) => {
+            // translate the label of enumValue
+            const enumTranslation = props.enumObjects
+                .filter((enumObject) => enumObject.id === enumValue)
+                .map((enumObject) =>
+                    intl.formatMessage({ id: enumObject.label })
+                );
+            return enumTranslation.length === 1
+                ? enumTranslation.at(0)
+                : enumValue;
+        },
+        [intl, props.enumObjects]
+    );
+
+    // because we want to have the clear icon to possibly reset the optional enum value to null,
+    // we use an Autocomplete without the ability to enter some letters in the text field (readonly then).
+    return useAutocompleteField({
+        values: props.enumObjects.map((enumObject) => enumObject.id),
+        selectedValue: props.defaultValue,
+        defaultValue: props.defaultValue,
+        previousValue: props.previousValue,
+        getLabel: getEnumTranslation,
+        readOnlyTextField: true,
+        ...props,
+    });
+};
+
 export const useCountryValue = (props) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [code, setCode] = useState(props.defaultCodeValue);
@@ -335,9 +368,13 @@ export const useEnumValue = ({
     getEnumLabel = getLabel,
 }) => {
     const [value, setValue] = useState(defaultValue);
+    const [error, setError] = useState();
+
     useEffect(() => {
         function validate() {
-            return true;
+            const res = validateField(value, validation);
+            setError(res?.errorMsgId);
+            return !res.error;
         }
         inputForm.addValidation(label, validate);
     }, [label, validation, inputForm, value]);
@@ -352,7 +389,7 @@ export const useEnumValue = ({
 
     const field = useMemo(() => {
         return (
-            <FormControl fullWidth size="small">
+            <FormControl fullWidth size="small" error={!!error}>
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                 <InputLabel id="enum-type-label" {...formProps}>
@@ -383,19 +420,25 @@ export const useEnumValue = ({
                 {previousValue && (
                     <FormHelperText>{previousValue}</FormHelperText>
                 )}
+                {error && (
+                    <FormHelperText>
+                        <FormattedMessage id={error} />
+                    </FormHelperText>
+                )}
             </FormControl>
         );
     }, [
-        getId,
-        getEnumLabel,
-        label,
-        value,
-        previousValue,
-        handleChangeValue,
+        error,
         formProps,
-        enumValues,
-        doTranslation,
+        label,
         validation.isFieldRequired,
+        value,
+        handleChangeValue,
+        enumValues,
+        previousValue,
+        getId,
+        doTranslation,
+        getEnumLabel,
     ]);
 
     useEffect(() => {
@@ -504,16 +547,20 @@ export const useRegulatingTerminalValue = ({
                 }
                 direction={direction}
                 voltageLevelEquipmentsCallback={makeRefreshRegulatingTerminalSectionsCallback()}
+                equipmentSectionTypeDefaultValue={
+                    equipmentSectionTypeDefaultValue
+                }
             />
         );
     }, [
-        regulatingTerminal,
         disabled,
-        direction,
-        setEquipmentSection,
-        setVoltageLevel,
         voltageLevelOptions,
+        regulatingTerminal,
         voltageLevelsEquipments,
+        direction,
+        equipmentSectionTypeDefaultValue,
+        setVoltageLevel,
+        setEquipmentSection,
     ]);
 
     return [regulatingTerminal, render];
@@ -756,4 +803,73 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     }, [studyUuid, name, validName, triggerReset]);
 
     return [error, field, isValidName, name];
+};
+
+export const useCSVReader = ({ label, header }) => {
+    const intl = useIntl();
+
+    const [selectedFile, setSelectedFile] = useState();
+    const [fileError, setFileError] = useState();
+
+    const equals = (a, b) =>
+        a.length === b.length && a.every((v, i) => v === b[i]);
+
+    const handleFileUpload = useCallback((e) => {
+        let files = e.target.files;
+        if (files.size === 0) {
+            setSelectedFile();
+        } else {
+            setSelectedFile(files[0]);
+        }
+    }, []);
+
+    const field = useMemo(() => {
+        return (
+            <>
+                <Button variant="contained" color="primary" component="label">
+                    <FormattedMessage id={label} />
+                    <input
+                        type="file"
+                        name="file"
+                        onChange={(e) => handleFileUpload(e)}
+                        style={{ display: 'none' }}
+                    />
+                </Button>
+                {selectedFile?.name === undefined ? (
+                    <FormattedMessage id="uploadMessage" />
+                ) : (
+                    selectedFile.name
+                )}
+            </>
+        );
+    }, [handleFileUpload, label, selectedFile?.name]);
+
+    useEffect(() => {
+        if (selectedFile?.type === 'text/csv') {
+            Papa.parse(selectedFile, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function (results) {
+                    if (equals(header, results.meta.fields)) {
+                        setFileError();
+                    } else {
+                        setFileError(
+                            intl.formatMessage({
+                                id: 'InvalidRuleHeader',
+                            })
+                        );
+                    }
+                },
+            });
+        } else if (selectedFile) {
+            setFileError(
+                intl.formatMessage({
+                    id: 'InvalidRuleUploadType',
+                })
+            );
+        } else {
+            setFileError();
+        }
+    }, [selectedFile, intl, header]);
+    return [selectedFile, setSelectedFile, field, fileError];
 };

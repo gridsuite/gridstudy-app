@@ -85,6 +85,7 @@ export const useAutocompleteField = ({
     defaultValue,
     previousValue,
     loading = false,
+    readOnlyTextField = false,
 }) => {
     const intl = useIntl();
 
@@ -284,6 +285,10 @@ export const useAutocompleteField = ({
                             />
                         }
                         value={value}
+                        inputProps={{
+                            ...props.inputProps,
+                            readOnly: readOnlyTextField,
+                        }}
                         {...genHelperPreviousValue(previousValue)}
                         {...genHelperError(error, errorMsg)}
                     />
@@ -311,6 +316,7 @@ export const useAutocompleteField = ({
         renderElement,
         onOpen,
         userStr,
+        readOnlyTextField,
     ]);
 
     return [value, field, setValue];
