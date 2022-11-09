@@ -939,6 +939,7 @@ export const useRadioValue = ({
         defaultValue,
         doTranslation,
         possibleValues,
+        value,
     ]);
 
     useEffect(
