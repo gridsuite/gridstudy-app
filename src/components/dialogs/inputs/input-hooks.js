@@ -811,7 +811,17 @@ export const useRadioValue = ({
                 </RadioGroup>
             </FormControl>
         );
-    }, [intl, label, value, handleChangeValue, formProps, id]);
+    }, [
+        intl,
+        label,
+        value,
+        handleChangeValue,
+        formProps,
+        id,
+        defaultValue,
+        doTranslation,
+        possibleValues,
+    ]);
 
     useEffect(
         () => setValue(defaultValue),

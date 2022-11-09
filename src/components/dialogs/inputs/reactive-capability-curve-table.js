@@ -91,7 +91,7 @@ export const useReactiveCapabilityCurveTableValues = ({
 
             inputForm.reset();
         },
-        [values, displayedValues, inputForm]
+        [values, inputForm]
     );
 
     const handleAddValue = useCallback(() => {
@@ -111,7 +111,7 @@ export const useReactiveCapabilityCurveTableValues = ({
             newValuesForDisplay[i].id = getNewId();
         }
         setDisplayedValues(newValuesForDisplay);
-    }, [values, displayedValues]);
+    }, [values]);
 
     const handleSetValue = useCallback((index, newValue) => {
         setValues((oldValues) => [

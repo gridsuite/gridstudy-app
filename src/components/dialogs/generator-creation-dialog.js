@@ -27,7 +27,6 @@ import {
     useInputForm,
     useRadioValue,
     useRegulatingTerminalValue,
-    useTableValues, // TODO CHARLY Remove
     useTextValue,
 } from './inputs/input-hooks';
 import { useReactiveCapabilityCurveTableValues } from './inputs/reactive-capability-curve-table';
@@ -65,8 +64,8 @@ const useStyles = makeStyles((theme) => ({
     rccError: {
         color: theme.palette.error.main,
         fontSize: 'small',
-        textAlign: 'center',
-        margin: theme.spacing(2),
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
     },
 }));
 
@@ -231,7 +230,7 @@ const GeneratorCreationDialog = ({
             validation: fieldRequired,
             inputForm: inputForm,
             defaultValue:
-                formValues?.reactiveCapabilityCurve == false
+                formValues?.reactiveCapabilityCurve === false
                     ? 'ReactiveLimitsKindMinMax'
                     : 'ReactiveLimitsKindCurve',
             possibleValues: [
@@ -450,7 +449,7 @@ const GeneratorCreationDialog = ({
             }
 
             setRCCurveError(errorMessages);
-            isRCCValid = errorMessages.length == 0;
+            isRCCValid = errorMessages.length === 0;
         } else {
             setRCCurveError([]);
         }
@@ -567,18 +566,27 @@ const GeneratorCreationDialog = ({
                         <GridSubSection title="ReactiveLimits" />
                         <Grid container spacing={2}>
                             {gridItem(isReactiveCapabilityCurveOnField, 12)}
-
-                            {isReactiveCapabilityCurveOn &&
-                                rCCurveError.map((value) => (
-                                    <div className={classes.rccError}>
-                                        <FormattedMessage id={value} />
-                                    </div>
-                                ))}
-
                             {!isReactiveCapabilityCurveOn &&
                                 gridItem(minimumReactivePowerField, 4)}
                             {!isReactiveCapabilityCurveOn &&
                                 gridItem(maximumReactivePowerField, 4)}
+
+                            {!!isReactiveCapabilityCurveOn &&
+                                rCCurveError.length > 0 && (
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12}>
+                                            {rCCurveError.map((value) => (
+                                                <div
+                                                    className={classes.rccError}
+                                                >
+                                                    <FormattedMessage
+                                                        id={value}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </Grid>
+                                    </Grid>
+                                )}
                             {!!isReactiveCapabilityCurveOn &&
                                 gridItem(reactiveCapabilityCurveField, 12)}
                         </Grid>
