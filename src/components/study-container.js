@@ -408,7 +408,7 @@ export function StudyContainer({ view, onChangeTab }) {
         return () => {
             wsToClose.close();
         };
-    }, [dispatch, fetchStudyPath, studyUuid]);
+    }, [dispatch, fetchStudyPath]);
 
     const displayNetworkLoadingFailMessage = useCallback((error) => {
         console.error(error.message);
