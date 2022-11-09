@@ -77,6 +77,8 @@ const LoadCreationDialog = ({
             reactivePower: load.q0,
             voltageLevelId: load.voltageLevelId,
             busOrBusbarSectionId: null,
+            connectionDirection: load.connectionDirection,
+            connectionName: load.connectionName,
         };
     };
 
