@@ -229,18 +229,17 @@ export function SingleLineDiagramPane({
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
         if (isNodeBuilt(currentNodeRef.current) && visible) {
-            setViews(
-                sldState.reduce((acc, curr) => {
-                    let currentView = createView(curr);
-                    // if current view cannot be found, it return undefined
-                    // in this case, we remove it from SLD state
-                    if (currentView) acc.push(currentView);
-                    else {
-                        closeView(curr.id);
-                    }
-                    return acc;
-                }, [])
-            );
+            const viewsFromSldState = [];
+            sldState.forEach((currentState) => {
+                let currentView = createView(currentState);
+                // if current view cannot be found, it return undefined
+                // in this case, we remove it from SLD state
+                if (currentView) viewsFromSldState.push(currentView);
+                else {
+                    closeView(currentState.id);
+                }
+            });
+            setViews(viewsFromSldState);
         }
     }, [sldState, visible, disabled, closeView, createView, dispatch]);
 
