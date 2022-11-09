@@ -240,7 +240,7 @@ const GeneratorCreationDialog = ({
         setReactiveCapabilityCurveOn(
             reactiveCapabilityCurveChoice === 'ReactiveLimitsKindCurve'
         );
-    }, [reactiveCapabilityCurveChoice]);
+    }, [reactiveCapabilityCurveChoice, formValues?.reactiveCapabilityCurve]);
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
         label: 'MinimumReactivePower',

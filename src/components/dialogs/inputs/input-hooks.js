@@ -879,11 +879,17 @@ export const useRadioValue = ({
     id,
     validation = {},
     inputForm,
-    formProps,
     doTranslation = true,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const intl = useIntl();
+
+    useEffect(() => {
+        // Updates the component when the correct default value is given by the parent component.
+        if (defaultValue !== undefined && defaultValue.length > 0) {
+            setValue(defaultValue);
+        }
+    }, [defaultValue]);
 
     useEffect(() => {
         function validate() {
@@ -908,8 +914,8 @@ export const useRadioValue = ({
                 <RadioGroup
                     row
                     aria-labelledby={id ? id : label}
-                    defaultValue={defaultValue}
-                    onChange={(e) => handleChangeValue(e)}
+                    value={value ?? defaultValue}
+                    onChange={handleChangeValue}
                 >
                     {possibleValues.map((value) => (
                         <FormControlLabel
@@ -928,9 +934,7 @@ export const useRadioValue = ({
     }, [
         intl,
         label,
-        value,
         handleChangeValue,
-        formProps,
         id,
         defaultValue,
         doTranslation,

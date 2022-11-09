@@ -69,6 +69,7 @@ export const useReactiveCapabilityCurveTableValues = ({
     const [displayedValues, setDisplayedValues] = useState(
         enforceMinimumValues(defaultValues)
     );
+
     useEffect(() => {
         // Updates the component when the correct default values are given by the parent component.
         if (defaultValues !== undefined && defaultValues.length > 0) {
