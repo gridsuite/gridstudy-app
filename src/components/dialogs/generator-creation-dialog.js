@@ -26,7 +26,6 @@ import {
     useEnumValue,
     useInputForm, useRadioValue,
     useRegulatingTerminalValue,
-    useTableValues, // TODO CHARLY Remove
     useTextValue
 } from "./inputs/input-hooks";
 import { useReactiveCapabilityCurveTableValues } from "./inputs/reactive-capability-curve-table";
@@ -47,7 +46,6 @@ import { ENERGY_SOURCES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
-import { ReactiveCapabilityCurveTable } from './reactive-capability-curve-table';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -249,7 +247,6 @@ const GeneratorCreationDialog = ({
         useReactiveCapabilityCurveTableValues({
             tableHeadersIds: headerIds,
             inputForm: inputForm,
-            Field: ReactiveCapabilityCurveTable,
             defaultValues: formValues?.reactiveCapabilityCurvePoints,
             isRequired: false,
             isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
@@ -374,8 +371,15 @@ const GeneratorCreationDialog = ({
     }, [minimumReactivePower, maximumReactivePower]);
 
     const handleSave = () => {
-        const isRCCNotValid =
-            isReactiveCapabilityCurveOn && reactiveCapabilityCurve.length < 2; // TODO CHARLY set la verif formulaire ici
+        const isRCCNotValid = isReactiveCapabilityCurveOn && reactiveCapabilityCurve.length < 2; // TODO CHARLY set la verif formulaire ici
+
+        // TODO Jon
+        // TODO Jon
+        // TODO Jon
+        // Au final, la solution qui fonctionne sur laquelle je me base aujourd'hui,
+        // c'est d'implémenter les tests ici.
+        // Plus tard, je regarderai pour injecter les résultats de ces tests ici, à l'intérieur
+        // du composant du tableau, pour afficher aux bon endroits les bonnes erreures.
         setRCCurveError(
             isRCCNotValid ? 'ReactiveCapabilityCurveCreationError' : null
         );

@@ -56,6 +56,10 @@ export function validateField(value, toValidate) {
         }
     }
 
+    if (toValidate.customValidation?.error) {
+        return makeErrorRecord(toValidate.customValidation?.errorMsgId);
+    }
+
     if (toValidate.function) return makeErrorRecord(toValidate.function(value));
 
     return makeErrorRecord(null);

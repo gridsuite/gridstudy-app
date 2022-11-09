@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useDoubleValue } from './inputs/input-hooks';
+import { useDoubleValue, useTextValue } from "./inputs/input-hooks";
 import {
     ActivePowerAdornment,
     gridItem,
@@ -21,11 +21,23 @@ export const ReactiveCapabilityCurveTable = ({
     inputForm,
     isFieldRequired,
     disabled = false,
+    pError = undefined,
+    pErrorMsgId = undefined,
+    qminPError = undefined,
+    qminPErrorMsgId = undefined,
+    qmaxPError = undefined,
+    qmaxPErrorMsgId = undefined,
 }) => {
     const [p, pField] = useDoubleValue({
         label: 'P',
         id: 'P' + index,
-        validation: { isFieldRequired: isFieldRequired },
+        validation: {
+            isFieldRequired: isFieldRequired,
+            customValidation: {
+                error: !!pError,
+                errorMsgId: pErrorMsgId,
+            },
+        },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.p ?? '',
@@ -34,7 +46,13 @@ export const ReactiveCapabilityCurveTable = ({
     const [qminP, qminPField] = useDoubleValue({
         label: 'QminP',
         id: 'QminP' + index,
-        validation: { isFieldRequired: isFieldRequired },
+        validation: {
+            isFieldRequired: isFieldRequired,
+            customValidation: {
+                error: !!qminPError,
+                errorMsgId: qminPErrorMsgId,
+            },
+        },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qminP ?? '',
@@ -44,7 +62,13 @@ export const ReactiveCapabilityCurveTable = ({
     const [qmaxP, qmaxPField] = useDoubleValue({
         label: 'QmaxP',
         id: 'QmaxP' + index,
-        validation: { isFieldRequired: isFieldRequired },
+        validation: {
+            isFieldRequired: isFieldRequired,
+            customValidation: {
+                error: !!qmaxPError,
+                errorMsgId: qmaxPErrorMsgId,
+            }
+        },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: defaultValue?.qmaxP ?? '',

@@ -17,8 +17,19 @@ import { useStyles } from '../dialogUtils';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
+import { validateField, makeErrorRecord } from '../../util/validation-functions';
+import { genHelperError } from './hooks-helpers';
+import ReactiveCapabilityCurveTable from "../reactive-capability-curve-table";
 
 const minimalValue = {p:"", qminP:"", qmaxP:""};
+
+function getId(value) {
+    return value?.id ? value.id : "defaultId";
+}
+
+function getNewId() {
+    return Math.random().toString(36).substring(2);
+}
 
 function hasValueCorrectFormat(valueToTest, index) {
     return !!(valueToTest
@@ -43,7 +54,7 @@ function enforceMinimumValues(valueToTest) {
 export const useReactiveCapabilityCurveTableValues = ({
     //id,
     tableHeadersIds,
-    Field,
+    //Field,
     inputForm,
     defaultValues, // format : either undefined or [{p:"", qminP:"", qmaxP:""}, {p:"", qminP:"", qmaxP:""}]
     isReactiveCapabilityCurveOn,
@@ -85,7 +96,7 @@ export const useReactiveCapabilityCurveTableValues = ({
         let newValuesForDisplay = [];
         for (let i = 0; i< newValues.length; i++) {
             newValuesForDisplay[i] = newValues[i];
-            newValuesForDisplay[i].id = Math.random();
+            newValuesForDisplay[i].id = getNewId();
         }
         setDisplayedValues(newValuesForDisplay);
     }, [values, displayedValues]);
@@ -112,9 +123,35 @@ export const useReactiveCapabilityCurveTableValues = ({
         }
     }, [inputForm, values, isReactiveCapabilityCurveOn]);*/
 
+    useEffect(() => {
+
+        // TODO Jon
+        // TODO Jon
+        // TODO Jon
+        // L'idée était de reprendre l'ancien useEffect de validation au dessus (actuellement commenté)
+        // et d'ajouter les validations custom à l'interieur.
+
+        function validate(value) {
+            // validation custom ici
+        }
+        values.forEach((value, index) => {
+
+            // Ne fonctionne pas parce que la fonction validate n'a pas de notion du contexte qui permet de fait de la validation
+            let displayedValueId = getId(displayedValues[index]) + index;
+            inputForm.addValidation(displayedValueId, validate);
+
+            // Ne fonctionne pas parce que le useEffect ne se trigger pas au bon moment
+            if(index === 0) {
+                value.pError = true;
+                value.pErrorMsgId = "Erreur P première ligne";
+            }
+        });
+
+    }, [inputForm, values, displayedValues]);
+
     const field = useMemo(() => {
         return (
-            <Grid item container spacing={2} style={{backgroundColor: "#4d4751"}}>
+            <Grid item container spacing={2}>
                 {tableHeadersIds.map((header) => (
                     <Grid key={header} item xs={3}>
                         <FormattedMessage id={header} />
@@ -123,16 +160,36 @@ export const useReactiveCapabilityCurveTableValues = ({
 
                 {displayedValues.map((value, index) => {
 
-                    const id = value?.id ? value.id : "defaultId";
+                    const id = getId(value);
                     return (
                     <Grid key={id + index} container spacing={3} item>
-                        <Field
+                        <ReactiveCapabilityCurveTable
                             defaultValue={value}
                             onChange={handleSetValue}
                             index={index}
                             inputForm={inputForm}
                             isFieldRequired={isReactiveCapabilityCurveOn}
                             disabled={disabled}
+
+                            // TODO Jon
+                            // TODO Jon
+                            // TODO Jon
+                            // Ci-dessous code qui devait être utilisé après avoir garni "value" avec les résultats de tests
+                            // pError={value.pError}
+                            // pErrorMsg={value.pErrorMsgId}
+                            // qminPError={value.qminPError}
+                            // qminPErrorMsg={value.qminPErrorMsgId}
+                            // qmaxPError={value.qmaxPError}
+                            // qmaxPErrorMsg={value.qmaxPErrorMsgId}
+
+                            // Ci-dessous code bidon qui permet d'afficher de façon arbitraire des erreurs au bon endroit
+                            pError={Math.random() < 0.5}
+                            pErrorMsgId={"Pas de chance, P est trop petit"}
+                            qminPError={Math.random() < 0.5}
+                            qminPErrorMsgId={"Random"}
+                            qmaxPError={Math.random() < 0.5}
+                            qmaxPErrorMsgId={"Message pour qMaxP"}
+
                         />
                         <Grid item xs={1}>
                             <IconButton
