@@ -130,7 +130,8 @@ const GeneratorCreationDialog = ({
             regulatingTerminalConnectableType:
                 generator.regulatingTerminalConnectableType,
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
-            remoteReactivePowerControlEnabled: generator.remoteReactivePowerControlEnabled,
+            remoteReactivePowerControlEnabled:
+                generator.remoteReactivePowerControlEnabled,
             qPercent: generator.qPercent,
         };
     };
@@ -300,7 +301,10 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
-    const [remoteReactivePowerControlEnabled, remoteReactivePowerControlEnabledField] = useEnumValue({
+    const [
+        remoteReactivePowerControlEnabled,
+        remoteReactivePowerControlEnabledField,
+    ] = useEnumValue({
         label: 'RegulationTypeText',
         inputForm: inputForm,
         formProps: filledTextField,
@@ -308,7 +312,9 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
         },
-        defaultValue: formValues?.remoteReactivePowerControlEnabled ? 'DISTANT' : 'LOCAL',
+        defaultValue: formValues?.remoteReactivePowerControlEnabled
+            ? 'DISTANT'
+            : 'LOCAL',
     });
 
     const [qPercent, qPercentField] = useDoubleValue({
