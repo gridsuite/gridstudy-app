@@ -395,6 +395,7 @@
     "Local": "Local",
     "Distant": "Distant",
     "VoltageText": "Tension",
+    "QPercentText": "Coefficient de participation",
     "Limits": "Limites",
     "ReactiveCapabilityCurve": "Limites de réactif par diagramme",
     "MinimumReactivePower": "Puissance réactive minimale",

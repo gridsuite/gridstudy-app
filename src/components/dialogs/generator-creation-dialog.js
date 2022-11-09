@@ -114,7 +114,6 @@ const GeneratorCreationDialog = ({
             activePowerSetpoint: generator.targetP,
             voltageRegulatorOn: generator.voltageRegulatorOn,
             voltageSetpoint: generator.targetV,
-            gPercent: generator.gPercent,
             reactivePowerSetpoint: generator.targetQ,
             voltageLevelId: generator.voltageLevelId,
             busOrBusbarSectionId: null,
@@ -131,6 +130,8 @@ const GeneratorCreationDialog = ({
             regulatingTerminalConnectableType:
                 generator.regulatingTerminalConnectableType,
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
+            remoteReactivePowerControlEnabled: generator.remoteReactivePowerControlEnabled,
+            qPercent: generator.qPercent,
         };
     };
 
@@ -299,7 +300,7 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
-    const [regulationType, regulationTypeField] = useEnumValue({
+    const [remoteReactivePowerControlEnabled, remoteReactivePowerControlEnabledField] = useEnumValue({
         label: 'RegulationTypeText',
         inputForm: inputForm,
         formProps: filledTextField,
@@ -307,11 +308,11 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
         },
-        defaultValue: 'LOCAL',
+        defaultValue: formValues?.remoteReactivePowerControlEnabled ? 'DISTANT' : 'LOCAL',
     });
 
-    const [gPercent, gPercentField] = useDoubleValue({
-        label: 'GPercentText',
+    const [qPercent, qPercentField] = useDoubleValue({
+        label: 'QPercentText',
         validation: {
             isFieldRequired: false,
             isFieldNumeric: true,
@@ -320,7 +321,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: percentageTextField,
         inputForm: inputForm,
-        defaultValue: formValues?.gPercent,
+        defaultValue: formValues?.qPercent,
     });
 
     const [regulatingTerminal, regulatingTerminalField] =
@@ -418,7 +419,8 @@ const GeneratorCreationDialog = ({
                 reactivePowerSetpoint ?? null,
                 voltageRegulation,
                 voltageSetpoint ? voltageSetpoint : null,
-                gPercent,
+                qPercent,
+                remoteReactivePowerControlEnabled === 'DISTANT',
                 connectivity.voltageLevel.id,
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
@@ -475,19 +477,19 @@ const GeneratorCreationDialog = ({
     const withVoltageRegulationInputs = () => {
         return (
             <>
-                {gridItem(regulationTypeField, 4)}
+                {gridItem(remoteReactivePowerControlEnabledField, 4)}
                 <Box sx={{ width: '100%' }} />
-                <Grid item xs={4} justifySelf={'end'}></Grid>
+                <Grid item xs={4} justifySelf={'end'} />
                 {gridItem(voltageSetpointField, 4)}
                 <Box sx={{ width: '100%' }} />
-                {regulationType === 'DISTANT' && (
+                {remoteReactivePowerControlEnabled === 'DISTANT' && (
                     <>
                         <Grid item xs={4} justifySelf={'end'}>
                             <FormattedMessage id="RegulatingTerminalGenerator" />
                         </Grid>
                         {gridItem(regulatingTerminalField, 8)}
-                        <Grid item xs={4} justifySelf={'end'}></Grid>
-                        {gridItem(gPercentField, 4)}
+                        <Grid item xs={4} justifySelf={'end'} />
+                        {gridItem(qPercentField, 4)}
                     </>
                 )}
             </>
@@ -568,7 +570,7 @@ const GeneratorCreationDialog = ({
                                 : gridItem(reactivePowerSetpointField, 4)}
                             <Box sx={{ width: '100%' }} />
                             {gridItem(frequencyRegulationField, 4)}
-                            {gridItem(droopField, 4)}
+                            {frequencyRegulation && gridItem(droopField, 4)}
                         </Grid>
                         {/*Short-circuit part*/}
                         <Grid container spacing={2}>
