@@ -27,11 +27,7 @@ import DirectoryItemSelector from '../directory-item-selector';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { elementType } from '@gridsuite/commons-ui';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import ListItemWithDeleteButton from '../util/list-item-with-delete-button';
 
 function makeButton(onClick, message, disabled) {
@@ -61,9 +57,8 @@ const ContingencyListSelector = (props) => {
 
     const [favoriteSelectorOpen, setFavoriteSelectorOpen] = useState(false);
 
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
-    const intlRef = useIntlRef();
     const intl = useIntl();
 
     const handleClose = () => {
@@ -82,13 +77,9 @@ const ContingencyListSelector = (props) => {
         updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
             .then()
             .catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'paramsChangingError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'paramsChangingError',
                 });
             });
     };
@@ -139,24 +130,14 @@ const ContingencyListSelector = (props) => {
                     );
                 })
                 .catch(() => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: '',
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'getContingencyListError',
-                            intlRef: intlRef,
-                        },
+                    snackError({
+                        headerId: 'getContingencyListError',
                     });
                 });
         } else {
             setContingencyList([]);
         }
-    }, [
-        favoriteContingencyListUuids,
-        setContingencyList,
-        intlRef,
-        enqueueSnackbar,
-    ]);
+    }, [favoriteContingencyListUuids, setContingencyList, snackError]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null

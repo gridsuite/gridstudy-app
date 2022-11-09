@@ -10,15 +10,11 @@ import DialogActions from '@mui/material//DialogActions';
 import DialogContent from '@mui/material//DialogContent';
 import DialogTitle from '@mui/material//DialogTitle';
 import Grid from '@mui/material/Grid';
-import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackMessage } from '../../utils/messages';
 import { modifyLoad } from '../../utils/rest-api';
 import { LOAD_TYPES } from '../network/constants';
 import {
@@ -56,9 +52,7 @@ const LoadModificationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -168,13 +162,9 @@ const LoadModificationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'LoadModificationError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LoadModificationError',
                 });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
