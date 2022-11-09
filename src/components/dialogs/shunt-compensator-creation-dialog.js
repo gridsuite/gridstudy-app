@@ -72,12 +72,14 @@ const ShuntCompensatorCreationDialog = ({
     const toFormValues = (shuntCompensator) => {
         return {
             equipmentId: shuntCompensator.id + '(1)',
-            equipmentName: shuntCompensator.name,
+            equipmentName: shuntCompensator.name ?? '',
             maximumNumberOfSections: shuntCompensator.maximumSectionCount,
             currentNumberOfSections: shuntCompensator.sectionCount,
             susceptancePerSection: shuntCompensator.bperSection,
             voltageLevelId: shuntCompensator.voltageLevelId,
             busOrBusbarSectionId: null,
+            connectionDirection: shuntCompensator.connectionDirection,
+            connectionName: shuntCompensator.connectionName,
         };
     };
 
@@ -257,7 +259,10 @@ const ShuntCompensatorCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

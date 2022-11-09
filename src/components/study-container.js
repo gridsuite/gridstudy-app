@@ -27,6 +27,7 @@ import {
     connectNotificationsWsUpdateDirectories,
     fetchCaseName,
     fetchSensitivityAnalysisStatus,
+    connectDeletedStudyNotificationsWebsocket,
     fetchShortCircuitAnalysisStatus,
 } from '../utils/rest-api';
 import {
@@ -160,6 +161,8 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_failed',
 ];
 const UPDATE_TYPE_HEADER = 'updateType';
+// the delay before we consider the WS truly connected
+const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
@@ -238,6 +241,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
+    const [wsConnected, setWsConnected] = useState(false);
+
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     const intl = useIntl();
@@ -267,7 +272,10 @@ export function StudyContainer({ view, onChangeTab }) {
         (studyUuid) => {
             console.info(`Connecting to notifications '${studyUuid}'...`);
 
-            const ws = connectNotificationsWebsocket(studyUuid);
+            const ws = connectNotificationsWebsocket(studyUuid, {
+                // this option set the minimum duration being connected before reset the retry count to 0
+                minUptime: DELAY_BEFORE_WEBSOCKET_CONNECTED,
+            });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
                 checkFailNotifications(eventData);
@@ -276,10 +284,27 @@ export function StudyContainer({ view, onChangeTab }) {
             ws.onclose = function (event) {
                 if (!websocketExpectedCloseRef.current) {
                     console.error('Unexpected Notification WebSocket closed');
+                    setWsConnected(false);
                 }
             };
             ws.onerror = function (event) {
                 console.error('Unexpected Notification WebSocket error', event);
+            };
+            ws.onopen = function (event) {
+                console.log('Notification WebSocket opened');
+                // we want to reload the network when the websocket is (re)connected after loosing connection
+                // but to prevent reload network loop, we added a delay before considering the WS truly connected
+                if (ws.retryCount === 0) {
+                    // first connection at startup
+                    setWsConnected(true);
+                } else {
+                    setTimeout(() => {
+                        if (ws.retryCount === 0) {
+                            // we enter here only if the WS is up for more than DELAY_BEFORE_WEBSOCKET_CONNECTED
+                            setWsConnected(true);
+                        }
+                    }, DELAY_BEFORE_WEBSOCKET_CONNECTED);
+                }
             };
             return ws;
         },
@@ -313,6 +338,24 @@ export function StudyContainer({ view, onChangeTab }) {
         },
         [initialTitle, snackError]
     );
+
+    const connectDeletedStudyNotifications = useCallback((studyUuid) => {
+        console.info(`Connecting to directory notifications ...`);
+
+        const ws = connectDeletedStudyNotificationsWebsocket(studyUuid);
+        ws.onmessage = function () {
+            window.close();
+        };
+        ws.onclose = function (event) {
+            if (!websocketExpectedCloseRef.current) {
+                console.error('Unexpected Notification WebSocket closed');
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, []);
 
     useEffect(() => {
         // create ws at mount event
@@ -461,6 +504,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     //handles map automatic mode network reload
     useEffect(() => {
+        if (!wsConnected) return;
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only node renaming, do not reload network
@@ -468,7 +512,7 @@ export function StudyContainer({ view, onChangeTab }) {
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
         loadNetwork(true);
-    }, [loadNetwork, currentNode, mapManualRefresh]);
+    }, [loadNetwork, currentNode, mapManualRefresh, wsConnected]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
@@ -512,6 +556,7 @@ export function StudyContainer({ view, onChangeTab }) {
             dispatch(openStudy(studyUuid));
 
             const ws = connectNotifications(studyUuid);
+            const wsDirectory = connectDeletedStudyNotifications(studyUuid);
 
             loadNetworkRef.current();
 
@@ -519,13 +564,19 @@ export function StudyContainer({ view, onChangeTab }) {
             return function () {
                 websocketExpectedCloseRef.current = true;
                 ws.close();
+                wsDirectory.close();
                 dispatch(closeStudy());
                 dispatch(filteredNominalVoltagesUpdated(null));
             };
         }
         // Note: dispach, loadNetworkRef, loadGeoData
         // connectNotifications don't change
-    }, [dispatch, studyUuid, connectNotifications]);
+    }, [
+        dispatch,
+        studyUuid,
+        connectNotifications,
+        connectDeletedStudyNotifications,
+    ]);
 
     function checkAndGetValues(values) {
         return values ? values : [];
@@ -586,7 +637,7 @@ export function StudyContainer({ view, onChangeTab }) {
             //.finally(() => setIsNetworkPending(false));
             // Note: studyUuid don't change
         },
-        [studyUuid, currentNode?.id, network]
+        [studyUuid, currentNode, network]
     );
 
     useEffect(() => {
@@ -597,12 +648,6 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(true);
-            } else if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'deleteStudy'
-            ) {
-                // closing window on study deletion
-                window.close();
             }
         }
         // Note: studyUuid, and loadNetwork don't change

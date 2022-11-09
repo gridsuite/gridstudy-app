@@ -22,7 +22,7 @@ import {
 import { LOAD_TYPES } from '../network/constants';
 import {
     useDoubleValue,
-    useEnumValue,
+    useOptionalEnumValue,
     useInputForm,
     useButtonWithTooltip,
     useTextValue,
@@ -46,7 +46,7 @@ import { useConnectivityValue } from './connectivity-edition';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid : the node we are currently working on
+ * @param currentNodeUuid The node we are currently working on
  * @param editData the data to edit
  */
 const LoadCreationDialog = ({
@@ -71,12 +71,14 @@ const LoadCreationDialog = ({
     const toFormValues = (load) => {
         return {
             equipmentId: load.id + '(1)',
-            equipmentName: load.name,
+            equipmentName: load.name ?? '',
             loadType: load.type,
             activePower: load.p0,
             reactivePower: load.q0,
             voltageLevelId: load.voltageLevelId,
             busOrBusbarSectionId: null,
+            connectionDirection: load.connectionDirection,
+            connectionName: load.connectionName,
         };
     };
 
@@ -115,13 +117,13 @@ const LoadCreationDialog = ({
         defaultValue: formValues?.equipmentName,
     });
 
-    const [loadType, loadTypeField] = useEnumValue({
+    const [loadType, loadTypeField] = useOptionalEnumValue({
         label: 'Type',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
-        enumValues: LOAD_TYPES,
-        defaultValue: formValues ? formValues.loadType : '',
+        enumObjects: LOAD_TYPES,
+        defaultValue: formValues?.loadType ?? null,
     });
 
     const [activePower, activePowerField] = useDoubleValue({
@@ -168,7 +170,7 @@ const LoadCreationDialog = ({
                 currentNodeUuid,
                 loadId,
                 sanitizeString(loadName),
-                !loadType ? 'UNDEFINED' : loadType,
+                loadType,
                 activePower,
                 reactivePower,
                 connectivity.voltageLevel.id,
@@ -244,7 +246,10 @@ const LoadCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

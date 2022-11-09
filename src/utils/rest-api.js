@@ -11,17 +11,19 @@ import { APP_NAME, getAppName } from './config-params';
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-const PREFIX_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/notification';
+const PREFIX_STUDY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/study-notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
+const PREFIX_DIRECTORY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
-const PREFIX_DIRECTORY_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
+const PREFIX_EXPLORE_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/explore';
 
 function getToken() {
     const state = store.getState();
@@ -1170,16 +1172,39 @@ function getUrlWithToken(baseUrl) {
     }
 }
 
-export function connectNotificationsWebsocket(studyUuid) {
+export function connectNotificationsWebsocket(studyUuid, options) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');
     const wsadress =
         wsbase +
-        PREFIX_NOTIFICATION_WS +
+        PREFIX_STUDY_NOTIFICATION_WS +
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
+
+    const rws = new ReconnectingWebSocket(
+        () => getUrlWithToken(wsadress),
+        [],
+        options
+    );
+    // don't log the token, it's private
+    rws.onopen = function (event) {
+        console.info('Connected Websocket ' + wsadress + ' ...');
+    };
+    return rws;
+}
+
+export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
+    // The websocket API doesn't allow relative urls
+    const wsbase = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const wsadress =
+        wsbase +
+        PREFIX_DIRECTORY_NOTIFICATION_WS +
+        '/notify?updateType=deleteStudy&studyUuid=' +
+        studyUuid;
 
     const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
     // don't log the token, it's private
@@ -1709,7 +1734,11 @@ export function createLine(
     permanentCurrentLimit1,
     permanentCurrentLimit2,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    connectionName1,
+    connectionDirection1,
+    connectionName2,
+    connectionDirection2
 ) {
     let createLineUrl;
     if (isUpdate) {
@@ -1750,6 +1779,10 @@ export function createLine(
             currentLimits2: {
                 permanentLimit: permanentCurrentLimit2,
             },
+            connectionName1: connectionName1,
+            connectionDirection1: connectionDirection1,
+            connectionName2: connectionName2,
+            connectionDirection2: connectionDirection2,
         }),
     }).then((response) => {
         return response.ok
@@ -1767,14 +1800,23 @@ export function createTwoWindingsTransformer(
     seriesReactance,
     magnetizingConductance,
     magnetizingSusceptance,
+    ratedS,
     ratedVoltage1,
     ratedVoltage2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
+    ratioTapChanger,
+    phaseTapChanger,
     isUpdate,
-    modificationUuid
+    modificationUuid,
+    connectionName1,
+    connectionDirection1,
+    connectionName2,
+    connectionDirection2
 ) {
     let createTwoWindingsTransformerUrl;
     if (isUpdate) {
@@ -1790,6 +1832,7 @@ export function createTwoWindingsTransformer(
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/two-windings-transformers';
     }
+
     return backendFetch(createTwoWindingsTransformerUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1803,12 +1846,21 @@ export function createTwoWindingsTransformer(
             seriesReactance: seriesReactance,
             magnetizingConductance: magnetizingConductance,
             magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
             ratedVoltage1: ratedVoltage1,
             ratedVoltage2: ratedVoltage2,
+            currentLimits1: permanentCurrentLimit1,
+            currentLimits2: permanentCurrentLimit2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
+            ratioTapChanger: ratioTapChanger,
+            phaseTapChanger: phaseTapChanger,
+            connectionName1: connectionName1,
+            connectionDirection1: connectionDirection1,
+            connectionName2: connectionName2,
+            connectionDirection2: connectionDirection2,
         }),
     }).then((response) => {
         return response.ok
@@ -2300,4 +2352,18 @@ export function getUniqueNodeName(studyUuid) {
             ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
+}
+
+export function fetchElementsMetadata(ids) {
+    console.info('Fetching elements metadata');
+    const url =
+        PREFIX_EXPLORE_SERVER_QUERIES +
+        '/v1/explore/elements/metadata?ids=' +
+        ids
+            .filter((e) => e != null && e !== '') // filter empty element
+            .join('&ids=');
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
 }

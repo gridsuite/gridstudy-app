@@ -208,8 +208,8 @@ export function RunButtonContainer({
         ]
     );
 
-    const getRunningText = (runnable, status) => {
-        return runnable;
+    const getRunningText = (runnableName, runnableStatus) => {
+        return runnableName;
     };
 
     const getRunningIcon = (status) => {

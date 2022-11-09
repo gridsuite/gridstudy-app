@@ -40,16 +40,18 @@ export const TapChangerSelector = ({
             }}
             {...props}
         >
-            {[...Array(tapChanger.highTap - tapChanger.lowTap + 1)].map(
-                (step, index) => (
-                    <MenuItem
-                        key={'tapChanger' + index}
-                        value={index + tapChanger.lowTap}
-                    >
-                        {index + tapChanger.lowTap}
-                    </MenuItem>
-                )
-            )}
+            {[
+                ...Array(
+                    tapChanger.highTapPosition - tapChanger.lowTapPosition + 1
+                ),
+            ].map((step, index) => (
+                <MenuItem
+                    key={'tapChanger' + index}
+                    value={index + tapChanger.lowTapPosition}
+                >
+                    {index + tapChanger.lowTapPosition}
+                </MenuItem>
+            ))}
         </Select>
     );
 };
@@ -234,8 +236,12 @@ export const BooleanListField = ({
             const val = ev.target.value;
             setValue(val);
             setter(val === 1);
+
+            if (columnDefinition.forceUpdateOnChange) {
+                forceLineUpdate();
+            }
         },
-        [setter]
+        [setter, forceLineUpdate, columnDefinition.forceUpdateOnChange]
     );
 
     return (

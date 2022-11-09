@@ -88,7 +88,7 @@ const LineCreationDialog = ({
     const toFormValues = (line) => {
         return {
             equipmentId: line.id + '(1)',
-            equipmentName: line.name,
+            equipmentName: line.name ?? '',
             seriesResistance: line.r,
             seriesReactance: line.x,
             shuntConductance1: line.g1,
@@ -105,6 +105,10 @@ const LineCreationDialog = ({
             currentLimits2: {
                 permanentLimit: line.permanentLimit2,
             },
+            connectionDirection1: line.connectionDirection1,
+            connectionName1: line.connectionName1,
+            connectionDirection2: line.connectionDirection2,
+            connectionName2: line.connectionName2,
         };
     };
 
@@ -208,6 +212,9 @@ const LineCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId1 || null,
+        connectionDirectionValue: formValues?.connectionDirection1 ?? '',
+        connectionNameValue: formValues?.connectionName1,
+        withPosition: true,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -221,6 +228,9 @@ const LineCreationDialog = ({
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId2 || null,
+        connectionDirectionValue: formValues?.connectionDirection2 ?? '',
+        connectionNameValue: formValues?.connectionName2,
+        withPosition: true,
     });
 
     const [permanentCurrentLimit1, permanentCurrentLimit1Field] =
@@ -271,7 +281,11 @@ const LineCreationDialog = ({
                 permanentCurrentLimit1,
                 permanentCurrentLimit2,
                 editData ? true : false,
-                editData ? editData.uuid : undefined
+                editData ? editData.uuid : undefined,
+                connectivity1?.connectionName?.id ?? null,
+                connectivity1?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity2?.connectionName?.id ?? null,
+                connectivity2?.connectionDirection?.id ?? 'UNDEFINED'
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -323,6 +337,50 @@ const LineCreationDialog = ({
                         {gridItem(lineIdField)}
                         {gridItem(lineNameField)}
                     </Grid>
+                    {displayConnectivity && (
+                        <>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <h3 className={classes.h3}>
+                                        <FormattedMessage id="Connectivity" />
+                                    </h3>
+                                </Grid>
+                            </Grid>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <h4 className={classes.h4}>
+                                        <FormattedMessage id="Side1" />
+                                    </h4>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <h4 className={classes.h4}>
+                                        <FormattedMessage id="Side2" />
+                                    </h4>
+                                </Grid>
+                            </Grid>
+
+                            <Grid container spacing={2}>
+                                <Grid item container xs={6} direction="column">
+                                    <Grid
+                                        container
+                                        direction="column"
+                                        spacing={2}
+                                    >
+                                        {gridItem(connectivity1Field, 12)}
+                                    </Grid>
+                                </Grid>
+                                <Grid item container direction="column" xs={6}>
+                                    <Grid
+                                        container
+                                        direction="column"
+                                        spacing={2}
+                                    >
+                                        {gridItem(connectivity2Field, 12)}
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </>
+                    )}
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <h3>
@@ -383,56 +441,15 @@ const LineCreationDialog = ({
                             {gridItem(permanentCurrentLimit2Field, 12)}
                         </Grid>
                     </Grid>
-                    {displayConnectivity && (
-                        <>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <h3 className={classes.h3}>
-                                        <FormattedMessage id="Connectivity" />
-                                    </h3>
-                                </Grid>
-                            </Grid>
-                            <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    <h4 className={classes.h4}>
-                                        <FormattedMessage id="Side1" />
-                                    </h4>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <h4 className={classes.h4}>
-                                        <FormattedMessage id="Side2" />
-                                    </h4>
-                                </Grid>
-                            </Grid>
-
-                            <Grid container spacing={2}>
-                                <Grid item container xs={6} direction="column">
-                                    <Grid
-                                        container
-                                        direction="column"
-                                        spacing={2}
-                                    >
-                                        {gridItem(connectivity1Field, 12)}
-                                    </Grid>
-                                </Grid>
-                                <Grid item container direction="column" xs={6}>
-                                    <Grid
-                                        container
-                                        direction="column"
-                                        spacing={2}
-                                    >
-                                        {gridItem(connectivity2Field, 12)}
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </>
-                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

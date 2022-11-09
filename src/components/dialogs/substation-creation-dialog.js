@@ -58,7 +58,7 @@ const SubstationCreationDialog = ({
     const toFormValues = (substation) => {
         return {
             equipmentId: substation.id + '(1)',
-            equipmentName: substation.name,
+            equipmentName: substation.name ?? '',
             substationCountryLabel: substation.countryName,
             substationCountry: null,
         };
@@ -175,7 +175,10 @@ const SubstationCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
