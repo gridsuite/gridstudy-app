@@ -990,11 +990,20 @@ const NetworkTable = (props) => {
         [lineEdit]
     );
 
+    const isColumnEditable = useCallback((rowData, columnDefinition) => {
+        return (
+            rowData[columnDefinition.dataKey] !== undefined ||
+            (columnDefinition.editableCondition !== undefined &&
+                rowData[columnDefinition.editableCondition.dependencyColumn] ===
+                    columnDefinition.editableCondition.columnValue)
+        );
+    }, []);
+
     const editableCellRender = useCallback(
         (rowData, columnDefinition, key, style, rowIndex) => {
             if (
                 isLineOnEditMode(rowData) &&
-                rowData[columnDefinition.dataKey] !== undefined &&
+                isColumnEditable(rowData, columnDefinition) &&
                 rowIndex === 1
             ) {
                 // when we edit a numeric field, we display the original un-rounded value
@@ -1044,6 +1053,7 @@ const NetworkTable = (props) => {
         },
         [
             isLineOnEditMode,
+            isColumnEditable,
             booleanCellRender,
             defaultCellRender,
             formatCell,
