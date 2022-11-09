@@ -339,8 +339,8 @@ export function SingleLineDiagramPane({
                             showInSpreadsheet={showInSpreadsheet}
                             loadFlowStatus={loadFlowStatus}
                             numberToDisplay={displayedSLD.length}
-                            togglePin={togglePinSld}
-                            minimize={minimizeSld}
+                            onTogglePin={togglePinSld}
+                            onMinimize={minimizeSld}
                             pinned={sld.state === ViewState.PINNED}
                             disabled={disabled}
                             totalWidth={width}

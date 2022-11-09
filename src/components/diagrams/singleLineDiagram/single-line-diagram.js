@@ -257,8 +257,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         numberToDisplay,
         sldId,
         pinned,
-        togglePin,
-        minimize,
+        onTogglePin,
+        onMinimize,
         disabled,
     } = props;
 
@@ -1017,12 +1017,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         initialHeight = sizeHeight; // setting initial height for the next SLD.
     }
 
-    const pinSld = useCallback(() => togglePin(sldId), [sldId, togglePin]);
+    const pinSld = useCallback(() => onTogglePin(sldId), [sldId, onTogglePin]);
 
     const minimizeSld = useCallback(() => {
-        minimize(sldId);
+        onMinimize(sldId);
         hideFullScreen();
-    }, [minimize, sldId, hideFullScreen]);
+    }, [onMinimize, sldId, hideFullScreen]);
 
     return !svg.error ? (
         <Paper
