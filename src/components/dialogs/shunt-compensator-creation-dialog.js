@@ -72,12 +72,14 @@ const ShuntCompensatorCreationDialog = ({
     const toFormValues = (shuntCompensator) => {
         return {
             equipmentId: shuntCompensator.id + '(1)',
-            equipmentName: shuntCompensator.name,
+            equipmentName: shuntCompensator.name ?? '',
             maximumNumberOfSections: shuntCompensator.maximumSectionCount,
             currentNumberOfSections: shuntCompensator.sectionCount,
             susceptancePerSection: shuntCompensator.bperSection,
             voltageLevelId: shuntCompensator.voltageLevelId,
             busOrBusbarSectionId: null,
+            connectionDirection: shuntCompensator.connectionDirection,
+            connectionName: shuntCompensator.connectionName,
         };
     };
 
