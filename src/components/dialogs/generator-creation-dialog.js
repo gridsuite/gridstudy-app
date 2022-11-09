@@ -15,15 +15,11 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { createGenerator } from '../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import {
     useButtonWithTooltip,
     useDoubleValue,
-    useEnumValue,
+    useOptionalEnumValue,
     useInputForm,
     useRadioValue,
     useRegulatingTerminalValue,
@@ -74,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid : the currently selected tree node
+ * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  */
 const GeneratorCreationDialog = ({
@@ -88,9 +84,8 @@ const GeneratorCreationDialog = ({
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const classes = useStyles();
-    const intlRef = useIntlRef();
 
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -104,7 +99,7 @@ const GeneratorCreationDialog = ({
     const [rCCurveError, setRCCurveError] = useState([]);
 
     const headerIds = [
-        'ActivePower',
+        'ActivePowerText',
         'MinimumReactivePower',
         'MaximumReactivePower',
     ];
@@ -113,7 +108,7 @@ const GeneratorCreationDialog = ({
     const toFormValues = (generator) => {
         return {
             equipmentId: generator.id + '(1)',
-            equipmentName: generator.name,
+            equipmentName: generator.name ?? '',
             energySource: generator.energySource,
             maxActivePower: generator.maxP,
             minActivePower: generator.minP,
@@ -137,6 +132,8 @@ const GeneratorCreationDialog = ({
             regulatingTerminalConnectableType:
                 generator.regulatingTerminalConnectableType,
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
+            connectionDirection: generator.connectionDirection,
+            connectionName: generator.connectionName,
         };
     };
 
@@ -177,15 +174,15 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.equipmentName,
     });
 
-    const [energySource, energySourceField] = useEnumValue({
+    const [energySource, energySourceField] = useOptionalEnumValue({
         label: 'EnergySourceText',
         inputForm: inputForm,
         formProps: filledTextField,
-        enumValues: ENERGY_SOURCES,
+        enumObjects: ENERGY_SOURCES,
         validation: {
             isFieldRequired: false,
         },
-        defaultValue: formValues?.energySource,
+        defaultValue: formValues?.energySource ?? null,
     });
 
     const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
@@ -463,7 +460,7 @@ const GeneratorCreationDialog = ({
                 currentNodeUuid,
                 generatorId,
                 sanitizeString(generatorName),
-                !energySource ? 'OTHER' : energySource,
+                energySource,
                 minimumActivePower,
                 maximumActivePower,
                 ratedNominalPower ? ratedNominalPower : null,
@@ -495,13 +492,9 @@ const GeneratorCreationDialog = ({
                 connectivity?.connectionDirection?.id ?? 'UNDEFINED',
                 connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'GeneratorCreationError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'GeneratorCreationError',
                 });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
@@ -627,7 +620,10 @@ const GeneratorCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

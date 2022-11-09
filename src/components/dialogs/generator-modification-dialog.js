@@ -18,7 +18,7 @@ import { useSnackMessage } from '../../utils/messages';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     useDoubleValue,
-    useEnumValue,
+    useOptionalEnumValue,
     useInputForm,
     useTextValue,
 } from './inputs/input-hooks';
@@ -59,7 +59,7 @@ function getValueOrNull(val) {
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param currentNodeUuid : the currently selected tree node
+ * @param currentNodeUuid the currently selected tree node
  * @param equipmentOptionsPromise Promise handling list of generator options
  * @param editData the data to edit
  */
@@ -141,14 +141,13 @@ const GeneratorModificationDialog = ({
           })
         : undefined;
 
-    const [energySource, energySourceField] = useEnumValue({
+    const [energySource, energySourceField] = useOptionalEnumValue({
         label: 'EnergySourceText',
         inputForm: inputForm,
         formProps: filledTextField,
-        enumValues: ENERGY_SOURCES,
-        defaultValue: getValue(formValues?.energySource),
+        enumObjects: ENERGY_SOURCES,
+        defaultValue: formValues?.energySource?.value ?? null,
         previousValue: previousEnergySourceLabel,
-        clearable: true,
     });
 
     const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
@@ -266,7 +265,10 @@ const GeneratorModificationDialog = ({
                 undefined,
                 editData?.uuid
             ).catch((errorMessage) => {
-                snackError(errorMessage, 'GeneratorModificationError');
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'GeneratorModificationError',
+                });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
@@ -350,7 +352,10 @@ const GeneratorModificationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

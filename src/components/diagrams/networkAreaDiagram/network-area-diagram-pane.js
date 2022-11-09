@@ -47,7 +47,7 @@ export function NetworkAreaDiagramPane({
             }
         }
 
-        if (displayedVoltageLevels) {
+        if (displayedVoltageLevels.length > 0) {
             displayedVoltageLevels.forEach((vl) => {
                 const name = vl?.name;
                 if (name !== undefined) {

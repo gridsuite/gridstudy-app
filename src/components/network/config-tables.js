@@ -224,30 +224,38 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'LoadTapChangingCapabilities',
                 dataKey: 'loadTapChangingCapabilities',
+                cellDataGetter: (cellData) => {
+                    return cellData?.ratioTapChanger
+                        ?.loadTapChangingCapabilities;
+                },
                 boolean: true,
             },
             {
                 id: 'RegulatingRatio',
                 dataKey: 'regulatingRatio',
                 cellDataGetter: (cellData) => {
-                    return cellData.ratioTapChanger
-                        ? cellData.regulating
-                        : undefined;
+                    return cellData?.ratioTapChanger?.regulating;
                 },
                 boolean: true,
             },
             {
                 id: 'TargetVPoint',
                 dataKey: 'targetV',
+                cellDataGetter: (cellData) => {
+                    return cellData?.ratioTapChanger?.targetV;
+                },
                 numeric: true,
                 fractionDigits: 1,
             },
             {
                 id: 'RatioTap',
-                dataKey: 'ratioTapChangerPosition',
+                dataKey: 'ratioTapChanger',
                 numeric: true,
                 changeCmd: generateTapRequest('Ratio'),
                 fractionDigits: 0,
+                cellDataGetter: (cellData) => {
+                    return cellData?.ratioTapChanger?.tapPosition;
+                },
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger: equipment.ratioTapChanger,
@@ -256,25 +264,29 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingMode',
-                dataKey: 'regulatingMode',
+                dataKey: 'regulationMode',
+                cellDataGetter: (cellData) => {
+                    return cellData?.phaseTapChanger?.regulationMode;
+                },
                 columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'RegulatingPhase',
                 dataKey: 'regulatingPhase',
                 cellDataGetter: (cellData) => {
-                    return cellData.phaseTapChanger
-                        ? cellData.regulating
-                        : undefined;
+                    return cellData?.phaseTapChanger?.regulating;
                 },
                 boolean: true,
             },
             {
                 id: 'PhaseTap',
-                dataKey: 'phaseTapChangerPosition',
+                dataKey: 'phaseTapChanger',
                 numeric: true,
                 changeCmd: generateTapRequest('Phase'),
                 fractionDigits: 0,
+                cellDataGetter: (cellData) => {
+                    return cellData?.phaseTapChanger?.tapPosition;
+                },
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger: equipment.phaseTapChanger,
@@ -287,6 +299,9 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
+                cellDataGetter: (cellData) => {
+                    return cellData?.phaseTapChanger?.regulatingValue;
+                },
             },
         ],
     },
@@ -404,10 +419,13 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RatioTap1',
-                dataKey: 'ratioTapChanger1Position',
+                dataKey: 'ratioTapChanger1',
                 numeric: true,
                 changeCmd: generateTapRequest('Ratio', 1),
                 fractionDigits: 0,
+                cellDataGetter: (cellData) => {
+                    return cellData?.ratioTapChanger1?.tapPosition;
+                },
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger: equipment.ratioTapChanger1,
@@ -432,10 +450,13 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RatioTap2',
-                dataKey: 'ratioTapChanger2Position',
+                dataKey: 'ratioTapChanger2',
                 numeric: true,
                 changeCmd: generateTapRequest('Ratio', 2),
                 fractionDigits: 0,
+                cellDataGetter: (cellData) => {
+                    return cellData?.ratioTapChanger2?.tapPosition;
+                },
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger: equipment.ratioTapChanger2,
@@ -460,10 +481,13 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RatioTap3',
-                dataKey: 'ratioTapChanger3Position',
+                dataKey: 'ratioTapChanger3',
                 numeric: true,
                 changeCmd: generateTapRequest('Ratio', 3),
                 fractionDigits: 0,
+                cellDataGetter: (cellData) => {
+                    return cellData?.ratioTapChanger3?.tapPosition;
+                },
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger: equipment.ratioTapChanger3,
@@ -482,10 +506,13 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'PhaseTap1',
-                dataKey: 'phaseTapChanger1Position',
+                dataKey: 'phaseTapChanger1',
                 numeric: true,
                 changeCmd: generateTapRequest('Phase', 1),
                 fractionDigits: 0,
+                cellDataGetter: (cellData) => {
+                    return cellData?.phaseTapChanger1?.tapPosition;
+                },
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger: equipment.phaseTapChanger1,
@@ -511,10 +538,13 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'PhaseTap2',
-                dataKey: 'phaseTapChanger2Position',
+                dataKey: 'phaseTapChanger2',
                 numeric: true,
                 changeCmd: generateTapRequest('Phase', 2),
                 fractionDigits: 0,
+                cellDataGetter: (cellData) => {
+                    return cellData?.phaseTapChanger2?.tapPosition;
+                },
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger: equipment.phaseTapChanger2,
@@ -540,10 +570,13 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'PhaseTap3',
-                dataKey: 'phaseTapChanger3Position',
+                dataKey: 'phaseTapChanger3',
                 numeric: true,
                 changeCmd: generateTapRequest('Phase', 3),
                 fractionDigits: 0,
+                cellDataGetter: (cellData) => {
+                    return cellData?.phaseTapChanger3?.tapPosition;
+                },
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger: equipment.phaseTapChanger3,
@@ -596,7 +629,7 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editor: ({ equipment, ...props }) =>
                     EnumField({
-                        enumList: ENERGY_SOURCES.slice(1), // dont use/display the first empty entry
+                        enumList: ENERGY_SOURCES,
                         ...props,
                     }),
             },
@@ -672,11 +705,16 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetQ({})\n',
                 editor: NumericalField,
+                editableCondition: {
+                    dependencyColumn: 'voltageRegulatorOn',
+                    columnValue: false,
+                },
             },
             {
                 id: 'VoltageRegulatorOn',
                 dataKey: 'voltageRegulatorOn',
                 boolean: true,
+                forceUpdateOnChange: true,
                 changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
                 editor: BooleanListField,
             },
@@ -687,6 +725,10 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetV({})\n',
                 editor: NumericalField,
+                editableCondition: {
+                    dependencyColumn: 'voltageRegulatorOn',
+                    columnValue: true,
+                },
             },
             {
                 id: 'RegulatingTerminal',
@@ -719,7 +761,7 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editor: ({ equipment, ...props }) =>
                     EnumField({
-                        enumList: LOAD_TYPES.slice(1), // dont use/display the first empty entry
+                        enumList: LOAD_TYPES,
                         ...props,
                     }),
             },
@@ -919,13 +961,13 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'TargetP',
-                dataKey: 'p0',
+                dataKey: 'targetP',
                 numeric: true,
                 fractionDigits: 1,
             },
             {
                 id: 'TargetQ',
-                dataKey: 'q0',
+                dataKey: 'targetQ',
                 numeric: true,
                 fractionDigits: 1,
             },

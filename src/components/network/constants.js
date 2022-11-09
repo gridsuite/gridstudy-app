@@ -10,14 +10,12 @@ export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
 
 export const LOAD_TYPES = [
-    { id: '', label: 'None' },
     { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },
 ];
 
 export const ENERGY_SOURCES = [
-    { id: '', label: 'None' },
     { id: 'HYDRO', label: 'Hydro' },
     { id: 'NUCLEAR', label: 'Nuclear' },
     { id: 'WIND', label: 'Wind' },
@@ -31,6 +29,15 @@ export const UPDATE_TYPE = [
     'updatingInProgress',
     'deletingInProgress',
 ];
+
+export const REGULATION_MODES = {
+    FIXED_TAP: { id: 'FIXED_TAP', label: 'FixedTap' },
+    CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
+    ACTIVE_POWER_CONTROL: {
+        id: 'ACTIVE_POWER_CONTROL',
+        label: 'ActivePowerControl',
+    },
+};
 
 export const CONNECTION_DIRECTION = [
     { id: '', label: 'None' },

@@ -10,20 +10,16 @@ import DialogActions from '@mui/material//DialogActions';
 import DialogContent from '@mui/material//DialogContent';
 import DialogTitle from '@mui/material//DialogTitle';
 import Grid from '@mui/material/Grid';
-import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackMessage } from '../../utils/messages';
 import { modifyLoad } from '../../utils/rest-api';
 import { LOAD_TYPES } from '../network/constants';
 import {
     useDoubleValue,
-    useEnumValue,
+    useOptionalEnumValue,
     useInputForm,
     useTextValue,
 } from './inputs/input-hooks';
@@ -44,7 +40,7 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param equipmentOptionsPromise Promise handling list of loads that can be modified
- * @param currentNodeUuid : the node we are currently working on
+ * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
  */
 const LoadModificationDialog = ({
@@ -56,9 +52,7 @@ const LoadModificationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -114,13 +108,12 @@ const LoadModificationDialog = ({
         clearable: true,
     });
 
-    const [loadType, loadTypeField] = useEnumValue({
+    const [loadType, loadTypeField] = useOptionalEnumValue({
         label: 'Type',
         inputForm: inputForm,
         formProps: filledTextField,
-        enumValues: LOAD_TYPES,
-        defaultValue: formValues?.loadType ? formValues.loadType.value : '',
-        doTranslation: true,
+        enumObjects: LOAD_TYPES,
+        defaultValue: formValues?.loadType?.value ?? null,
         previousValue: loadInfos?.type
             ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)?.label
             : undefined,
@@ -169,13 +162,9 @@ const LoadModificationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'LoadModificationError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LoadModificationError',
                 });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
@@ -230,7 +219,11 @@ const LoadModificationDialog = ({
                     <Button onClick={handleCloseAndClear} variant="text">
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave} variant="text">
+                    <Button
+                        onClick={handleSave}
+                        variant="text"
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

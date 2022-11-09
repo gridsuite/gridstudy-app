@@ -117,7 +117,10 @@ const EquipmentDeletionDialog = ({
             .getReader()
             .read()
             .then((value) => {
-                snackError(utf8Decoder.decode(value.value), messsageId);
+                snackError({
+                    messageTxt: utf8Decoder.decode(value.value),
+                    headerId: messsageId,
+                });
             });
     }
 
@@ -224,7 +227,7 @@ const EquipmentDeletionDialog = ({
                 <Button onClick={handleCloseAndClear}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleSave}>
+                <Button onClick={handleSave} disabled={!inputForm.hasChanged}>
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>

@@ -24,8 +24,10 @@ import {
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchPath,
+    connectNotificationsWsUpdateDirectories,
     fetchCaseName,
     fetchSensitivityAnalysisStatus,
+    connectDeletedStudyNotificationsWebsocket,
     fetchShortCircuitAnalysisStatus,
 } from '../utils/rest-api';
 import {
@@ -158,6 +160,8 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_failed',
 ];
 const UPDATE_TYPE_HEADER = 'updateType';
+// the delay before we consider the WS truly connected
+const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
@@ -236,24 +240,36 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
+    const [wsConnected, setWsConnected] = useState(false);
+
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     const intl = useIntl();
+
+    const wsRef = useRef();
 
     const checkFailNotifications = useCallback(
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             if (updateTypeHeader === 'buildFailed') {
-                snackError('', 'NodeBuildingError');
+                snackError({
+                    headerId: 'NodeBuildingError',
+                });
             }
             if (updateTypeHeader === 'securityAnalysis_failed') {
-                snackError('', 'securityAnalysisError');
+                snackError({
+                    headerId: 'securityAnalysisError',
+                });
             }
             if (updateTypeHeader === 'sensitivityAnalysis_failed') {
-                snackError('', 'sensitivityAnalysisError');
+                snackError({
+                    headerId: 'sensitivityAnalysisError',
+                });
             }
             if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
-                snackError('', 'shortCircuitAnalysisError');
+                snackError({
+                    headerId: 'shortCircuitAnalysisError',
+                });
             }
         },
         [snackError]
@@ -263,7 +279,10 @@ export function StudyContainer({ view, onChangeTab }) {
         (studyUuid) => {
             console.info(`Connecting to notifications '${studyUuid}'...`);
 
-            const ws = connectNotificationsWebsocket(studyUuid);
+            const ws = connectNotificationsWebsocket(studyUuid, {
+                // this option set the minimum duration being connected before reset the retry count to 0
+                minUptime: DELAY_BEFORE_WEBSOCKET_CONNECTED,
+            });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
 
@@ -273,16 +292,75 @@ export function StudyContainer({ view, onChangeTab }) {
             ws.onclose = function (event) {
                 if (!websocketExpectedCloseRef.current) {
                     console.error('Unexpected Notification WebSocket closed');
+                    setWsConnected(false);
                 }
             };
             ws.onerror = function (event) {
                 console.error('Unexpected Notification WebSocket error', event);
+            };
+            ws.onopen = function (event) {
+                console.log('Notification WebSocket opened');
+                // we want to reload the network when the websocket is (re)connected after loosing connection
+                // but to prevent reload network loop, we added a delay before considering the WS truly connected
+                if (ws.retryCount === 0) {
+                    // first connection at startup
+                    setWsConnected(true);
+                } else {
+                    setTimeout(() => {
+                        if (ws.retryCount === 0) {
+                            // we enter here only if the WS is up for more than DELAY_BEFORE_WEBSOCKET_CONNECTED
+                            setWsConnected(true);
+                        }
+                    }, DELAY_BEFORE_WEBSOCKET_CONNECTED);
+                }
             };
             return ws;
         },
         // Note: dispatch doesn't change
         [dispatch, checkFailNotifications]
     );
+
+    const connectDeletedStudyNotifications = useCallback((studyUuid) => {
+        console.info(`Connecting to directory notifications ...`);
+
+        const ws = connectDeletedStudyNotificationsWebsocket(studyUuid);
+        ws.onmessage = function () {
+            window.close();
+        };
+        ws.onclose = function (event) {
+            if (!websocketExpectedCloseRef.current) {
+                console.error('Unexpected Notification WebSocket closed');
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, []);
+
+    useEffect(() => {
+        // create ws at mount event
+        wsRef.current = connectNotificationsWsUpdateDirectories();
+
+        wsRef.current.onmessage = function (event) {
+            const eventData = JSON.parse(event.data);
+            dispatch(studyUpdated(eventData));
+        };
+
+        wsRef.current.onclose = function () {
+            console.error('Unexpected Notification WebSocket closed');
+        };
+        wsRef.current.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
+        // That's because wsRef.current could be modify outside of this scope.
+        const wsToClose = wsRef.current;
+        // cleanup at unmount event
+        return () => {
+            wsToClose.close();
+        };
+    }, [dispatch]);
 
     const displayNetworkLoadingFailMessage = useCallback((error) => {
         console.error(error.message);
@@ -348,7 +426,9 @@ export function StudyContainer({ view, onChangeTab }) {
                         }
                     })
                     .catch((err) => {
-                        snackWarning('', 'CaseNameLoadError');
+                        snackWarning({
+                            headerId: 'CaseNameLoadError',
+                        });
                     });
 
                 const firstSelectedNode =
@@ -370,13 +450,16 @@ export function StudyContainer({ view, onChangeTab }) {
                 );
             })
             .catch((errorMessage) => {
-                if (errorMessage.status === 404)
-                    snackError('', 'StudyUnrecoverableStateRecreate');
-                else
-                    snackError(
-                        errorMessage,
-                        'NetworkModificationTreeLoadError'
-                    );
+                if (errorMessage.status === 404) {
+                    snackError({
+                        headerId: 'StudyUnrecoverableStateRecreate',
+                    });
+                } else {
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'NetworkModificationTreeLoadError',
+                    });
+                }
             })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
@@ -399,6 +482,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     //handles map automatic mode network reload
     useEffect(() => {
+        if (!wsConnected) return;
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only node renaming, do not reload network
@@ -406,20 +490,26 @@ export function StudyContainer({ view, onChangeTab }) {
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
         loadNetwork(true);
-    }, [loadNetwork, currentNode, mapManualRefresh]);
+    }, [loadNetwork, currentNode, mapManualRefresh, wsConnected]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
-            snackInfo('', 'moveStudyNotification', {
-                oldStudyPath: prevStudyPath,
-                studyPath: studyPath,
+            snackInfo({
+                headerId: 'moveStudyNotification',
+                headerValues: {
+                    oldStudyPath: prevStudyPath,
+                    studyPath: studyPath,
+                },
             });
         }
 
         if (prevStudyName && prevStudyName !== studyName) {
-            snackInfo('', 'renameStudyNotification', {
-                oldStudyName: prevStudyName,
-                studyName: studyName,
+            snackInfo({
+                headerId: 'renameStudyNotification',
+                headerValues: {
+                    oldStudyPath: prevStudyPath,
+                    studyPath: studyPath,
+                },
             });
         }
     }, [snackInfo, studyName, studyPath, prevStudyPath, prevStudyName]);
@@ -444,7 +534,10 @@ export function StudyContainer({ view, onChangeTab }) {
             })
             .catch((errorMessage) => {
                 document.title = initialTitle;
-                snackError(errorMessage, 'LoadStudyAndParentsInfoError');
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LoadStudyAndParentsInfoError',
+                });
             });
     }, [studyUuid, initialTitle, snackError]);
 
@@ -474,6 +567,7 @@ export function StudyContainer({ view, onChangeTab }) {
             dispatch(openStudy(studyUuid));
 
             const ws = connectNotifications(studyUuid);
+            const wsDirectory = connectDeletedStudyNotifications(studyUuid);
 
             loadNetworkRef.current();
 
@@ -481,13 +575,19 @@ export function StudyContainer({ view, onChangeTab }) {
             return function () {
                 websocketExpectedCloseRef.current = true;
                 ws.close();
+                wsDirectory.close();
                 dispatch(closeStudy());
                 dispatch(filteredNominalVoltagesUpdated(null));
             };
         }
         // Note: dispach, loadNetworkRef, loadGeoData
         // connectNotifications don't change
-    }, [dispatch, studyUuid, connectNotifications]);
+    }, [
+        dispatch,
+        studyUuid,
+        connectNotifications,
+        connectDeletedStudyNotifications,
+    ]);
 
     function checkAndGetValues(values) {
         return values ? values : [];
@@ -548,7 +648,7 @@ export function StudyContainer({ view, onChangeTab }) {
             //.finally(() => setIsNetworkPending(false));
             // Note: studyUuid don't change
         },
-        [studyUuid, currentNode?.id, network]
+        [studyUuid, currentNode, network]
     );
 
     useEffect(() => {
@@ -559,12 +659,6 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(true);
-            } else if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'deleteStudy'
-            ) {
-                // closing window on study deletion
-                window.close();
             }
         }
         // Note: studyUuid, and loadNetwork don't change

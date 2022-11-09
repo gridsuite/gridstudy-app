@@ -15,11 +15,7 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { createVoltageLevel } from '../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import {
     useButtonWithTooltip,
     useDoubleValue,
@@ -264,9 +260,7 @@ const VoltageLevelCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -282,7 +276,7 @@ const VoltageLevelCreationDialog = ({
     const toFormValues = (voltageLevel) => {
         return {
             equipmentId: voltageLevel.id + '(1)',
-            equipmentName: voltageLevel.name,
+            equipmentName: voltageLevel.name ?? '',
             nominalVoltage: voltageLevel.nominalVoltage,
             substationId: voltageLevel.substationId,
             busbarSections: voltageLevel.busbarSections,
@@ -409,13 +403,9 @@ const VoltageLevelCreationDialog = ({
                 modificationUuid: editData ? editData.uuid : undefined,
             }).catch((errorMessage) => {
                 console.error('while edit/create VL', errorMessage);
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'VoltageLevelCreationError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'VoltageLevelCreationError',
                 });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
@@ -471,7 +461,10 @@ const VoltageLevelCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

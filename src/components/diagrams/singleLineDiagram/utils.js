@@ -5,14 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNavigate, useLocation } from 'react-router-dom';
 import { useCallback } from 'react';
-import { parse, stringify } from 'qs';
 import { SvgType } from './single-line-diagram';
+import { useDispatch } from 'react-redux';
+import {
+    closeSld,
+    minimizeSld,
+    openSld,
+    togglePinSld,
+} from '../../../redux/actions';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { syncSldStateWithSessionStorage } from '../../../redux/session-storage';
 
 export const ViewState = {
     PINNED: 'pinned',
     MINIMIZED: 'minimized',
+    OPENED: 'opened',
 };
 
 export function getArray(value) {
@@ -20,80 +29,70 @@ export function getArray(value) {
     return !Array.isArray(value) ? [value] : value;
 }
 
-const arrayFormat = 'indices';
-
 export const useSingleLineDiagram = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
+    const dispatch = useDispatch();
+    const sldState = useSelector((state) => state.sldState);
+    const studyUuid = useSelector((state) => state.studyUuid);
 
-    const addToSearchParams = useCallback(
+    useEffect(() => {
+        syncSldStateWithSessionStorage(sldState, studyUuid);
+    }, [sldState, studyUuid]);
+
+    const openSldView = useCallback(
         (type, id) => {
-            const queryParams = parse(location.search, {
-                ignoreQueryPrefix: true,
-                arrayFormat,
-            });
-            const current = getArray(queryParams['views'])
-                .filter((item) => item.id !== id)
-                .map(({ id, type }) => {
-                    return { id, type }; // filter to only id, type
-                });
-            current.push({ id, type, lastOpen: true });
-            navigate(
-                location.pathname +
-                    stringify(
-                        { views: current },
-                        { arrayFormat, addQueryPrefix: true }
-                    ),
-                { replace: true }
-            );
+            dispatch(openSld(id, type));
         },
-        [location.search, location.pathname, navigate]
+        [dispatch]
+    );
+
+    const togglePinSldView = useCallback(
+        (id) => {
+            dispatch(togglePinSld(id));
+        },
+        [dispatch]
+    );
+
+    const minimizeSldView = useCallback(
+        (id) => {
+            dispatch(minimizeSld(id));
+        },
+        [dispatch]
     );
 
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
-            addToSearchParams(SvgType.VOLTAGE_LEVEL, voltageLevelId);
+            openSldView(SvgType.VOLTAGE_LEVEL, voltageLevelId);
         },
-        [addToSearchParams]
+        [openSldView]
     );
 
     const showSubstationDiagram = useCallback(
         (substationId) => {
-            addToSearchParams(SvgType.SUBSTATION, substationId);
+            openSldView(SvgType.SUBSTATION, substationId);
         },
-        [addToSearchParams]
+        [openSldView]
     );
 
     const closeDiagram = useCallback(
         (idsToRemove) => {
-            const toRemove = new Set(
-                Array.isArray(idsToRemove) ? idsToRemove : [idsToRemove]
-            );
-            const queryParams = parse(location.search, {
-                ignoreQueryPrefix: true,
-                arrayFormat,
-            });
-            if (idsToRemove === undefined) {
-                navigate(location.pathname, { replace: true });
-            } else {
-                const views = getArray(queryParams['views']).filter(
-                    ({ id }) => !toRemove.has(id)
-                );
-                navigate(
-                    location.pathname +
-                        stringify(
-                            { views },
-                            {
-                                addQueryPrefix: true,
-                                arrayFormat,
-                            }
-                        ),
-                    { replace: true }
-                );
-            }
+            const toRemove = Array.isArray(idsToRemove)
+                ? idsToRemove
+                : [idsToRemove];
+
+            dispatch(closeSld(toRemove));
         },
-        [navigate, location.search, location.pathname]
+        [dispatch]
     );
 
-    return [closeDiagram, showVoltageLevelDiagram, showSubstationDiagram];
+    return [
+        closeDiagram,
+        showVoltageLevelDiagram,
+        showSubstationDiagram,
+        togglePinSldView,
+        minimizeSldView,
+    ];
 };
+
+export function getNameOrId(value) {
+    return value?.name ?? value?.id;
+}

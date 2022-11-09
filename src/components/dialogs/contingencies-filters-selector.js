@@ -8,15 +8,11 @@ import { AddCircle } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackMessage } from '../../utils/messages';
 import {
     fetchContingencyAndFiltersLists,
     updateConfigParameter,
@@ -31,10 +27,10 @@ const ContingenciesFiltersSelector = ({
     selectedValues,
     setSelectedValues,
     elementTypes,
+    equipmentTypes,
     selectorTitleId,
     fetchErrorMsgId,
 }) => {
-    const intlRef = useIntlRef();
     const intl = useIntl();
 
     const [values, setValues] = useState([]);
@@ -42,7 +38,7 @@ const ContingenciesFiltersSelector = ({
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] =
         useState(false);
 
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const favoriteListUuids = useSelector((state) => state[paramName]);
 
@@ -57,13 +53,9 @@ const ContingenciesFiltersSelector = ({
         updateConfigParameter(paramName, newList)
             .then()
             .catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'paramsChangingError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'paramsChangingError',
                 });
             });
     };
@@ -116,25 +108,14 @@ const ContingenciesFiltersSelector = ({
                     );
                 })
                 .catch(() => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: '',
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: fetchErrorMsgId,
-                            intlRef: intlRef,
-                        },
+                    snackError({
+                        headerId: fetchErrorMsgId,
                     });
                 });
         } else {
             setValues([]);
         }
-    }, [
-        favoriteListUuids,
-        setValues,
-        intlRef,
-        fetchErrorMsgId,
-        enqueueSnackbar,
-    ]);
+    }, [favoriteListUuids, setValues, fetchErrorMsgId, snackError]);
 
     return (
         <>
@@ -181,6 +162,7 @@ const ContingenciesFiltersSelector = ({
                 open={directoryItemSelectorOpen}
                 onClose={addFavorites}
                 types={elementTypes}
+                equipmentTypes={equipmentTypes}
                 title={intl.formatMessage({ id: selectorTitleId })}
             />
         </>
@@ -193,6 +175,7 @@ ContingenciesFiltersSelector.propTypes = {
     selectedValues: PropTypes.array.isRequired,
     setSelectedValues: PropTypes.func.isRequired,
     elementTypes: PropTypes.array.isRequired,
+    equipmentTypes: PropTypes.array,
     selectorTitleId: PropTypes.string.isRequired,
     fetchErrorMsgId: PropTypes.string.isRequired,
 };

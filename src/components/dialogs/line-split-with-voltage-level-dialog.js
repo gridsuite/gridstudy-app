@@ -340,7 +340,10 @@ const LineSplitWithVoltageLevelDialog = ({
                 newLine2Id,
                 sanitizeString(newLine2Name)
             ).catch((errorMessage) => {
-                snackError(errorMessage, 'LineDivisionError');
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LineDivisionError',
+                });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
@@ -492,7 +495,11 @@ const LineSplitWithVoltageLevelDialog = ({
                     <Button onClick={handleCloseAndClear} variant="text">
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave} variant="text">
+                    <Button
+                        onClick={handleSave}
+                        variant="text"
+                        disabled={!inputForm.hasChanged}
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

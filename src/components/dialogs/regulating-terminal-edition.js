@@ -48,6 +48,7 @@ const RegulatingTerminalEdition = ({
     direction,
     disabled = false,
     voltageLevelEquipmentsCallback,
+    equipmentSectionTypeDefaultValue,
 }) => {
     const classes = useStyles();
 
@@ -99,26 +100,41 @@ const RegulatingTerminalEdition = ({
             );
         }
     }, [
-        regulatingTerminalValue.voltageLevel,
+        regulatingTerminalValue?.voltageLevel?.id,
         setEquipmentsOptions,
         voltageLevelEquipmentsCallback,
         voltageLevelsEquipments,
     ]);
 
     useEffect(() => {
+        let selectedExistingEquipment;
+        if (regulatingTerminalValue?.equipmentSection) {
+            selectedExistingEquipment = equipmentsOptions.find(
+                (value) =>
+                    value.id === regulatingTerminalValue.equipmentSection.id
+            );
+        }
+        //To refactor in order to simplify it :
+        //If the user select an existing equipement from the list it is set as the current value
+        //Otherwise if nothing have been typed in Equipment field the value is an empty string
+        //If something has been typed but it does not match with an existing equipment, it is allowed in order to specify the equipment currently being created, the value will be the combination of what the user typed and default type passed as prop
         setCurrentEquipment(
             regulatingTerminalValue?.equipmentSection &&
-                equipmentsOptions.length
-                ? equipmentsOptions.find(
-                      (value) =>
-                          value.id ===
-                          regulatingTerminalValue.equipmentSection.id
-                  )
+                selectedExistingEquipment
+                ? selectedExistingEquipment
                 : regulatingTerminalValue?.equipmentSection === null
                 ? ''
-                : regulatingTerminalValue.equipmentSection
+                : {
+                      id: regulatingTerminalValue.equipmentSection.id,
+                      type: equipmentSectionTypeDefaultValue,
+                  }
         );
-    }, [equipmentsOptions, regulatingTerminalValue.equipmentSection]);
+    }, [
+        equipmentSectionTypeDefaultValue,
+        equipmentsOptions,
+        regulatingTerminalValue,
+        regulatingTerminalValue.equipmentSection,
+    ]);
 
     return (
         <>
@@ -153,7 +169,6 @@ const RegulatingTerminalEdition = ({
                         */
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
-
                             if (
                                 params.inputValue !== '' &&
                                 !options.find(
@@ -217,7 +232,10 @@ const RegulatingTerminalEdition = ({
                         getOptionLabel={(equipment) => {
                             return equipment === ''
                                 ? '' // to clear field
-                                : equipment?.type + ' : ' + equipment?.id || '';
+                                : (equipment?.type ??
+                                      equipmentSectionTypeDefaultValue) +
+                                      ' : ' +
+                                      equipment?.id || '';
                         }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value

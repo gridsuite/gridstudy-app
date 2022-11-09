@@ -85,6 +85,7 @@ export const useAutocompleteField = ({
     defaultValue,
     previousValue,
     loading = false,
+    readOnlyTextField = false,
 }) => {
     const intl = useIntl();
 
@@ -94,7 +95,6 @@ export const useAutocompleteField = ({
     const [userStr, setUserStr] = useState('');
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState();
-
     const validationRef = useRef();
 
     const prevValues = useRef();
@@ -116,9 +116,13 @@ export const useAutocompleteField = ({
         }
     }, [label, validation, inputForm, value, selectedValue, id]);
 
-    const handleChangeValue = useCallback((value) => {
-        setValue(value);
-    }, []);
+    const handleChangeValue = useCallback(
+        (value) => {
+            setValue(value);
+            inputForm.setHasChanged(true);
+        },
+        [inputForm]
+    );
 
     useEffect(() => {
         if (selectedValue) setValue(selectedValue);
@@ -281,6 +285,10 @@ export const useAutocompleteField = ({
                             />
                         }
                         value={value}
+                        inputProps={{
+                            ...props.inputProps,
+                            readOnly: readOnlyTextField,
+                        }}
                         {...genHelperPreviousValue(previousValue)}
                         {...genHelperError(error, errorMsg)}
                     />
@@ -308,6 +316,7 @@ export const useAutocompleteField = ({
         renderElement,
         onOpen,
         userStr,
+        readOnlyTextField,
     ]);
 
     return [value, field, setValue];
