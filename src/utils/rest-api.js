@@ -11,8 +11,8 @@ import { APP_NAME, getAppName } from './config-params';
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-const PREFIX_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/notification';
+const PREFIX_STUDY_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/study-notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_DIRECTORY_NOTIFICATION_WS =
@@ -1172,18 +1172,22 @@ function getUrlWithToken(baseUrl) {
     }
 }
 
-export function connectNotificationsWebsocket(studyUuid) {
+export function connectNotificationsWebsocket(studyUuid, options) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');
     const wsadress =
         wsbase +
-        PREFIX_NOTIFICATION_WS +
+        PREFIX_STUDY_NOTIFICATION_WS +
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
 
-    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
+    const rws = new ReconnectingWebSocket(
+        () => getUrlWithToken(wsadress),
+        [],
+        options
+    );
     // don't log the token, it's private
     rws.onopen = function (event) {
         console.info('Connected Websocket ' + wsadress + ' ...');
