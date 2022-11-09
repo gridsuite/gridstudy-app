@@ -24,18 +24,18 @@ export function useIntlRef() {
     return intlRef;
 }
 
-function displayMessageWithSnackbar({
+function displayMessageWithSnackbar(
     message,
     header,
     enqueueSnackbar,
     level,
-    persistent,
-}) {
+    persistent
+) {
     let fullMessage = '';
-    if (header && !header.empty) {
+    if (header) {
         fullMessage += header;
     }
-    if (message && !message.empty) {
+    if (message) {
         if (header) {
             fullMessage += '\n\n';
         }
@@ -52,112 +52,69 @@ export function useSnackMessage() {
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
 
+    /*
+    snackInputs: {
+        messageTxt,
+        messageId,
+        messageValues,
+        headerTxt,
+        headerId,
+        headerValues,
+    }
+     */
     const snackError = useCallback(
-        ({
-            messageTxt,
-            messageId,
-            messageValues,
-            headerTxt,
-            headerId,
-            headerValues,
-        }) =>
-            makeSnackCallBack({
-                messageTxt,
-                messageId,
-                messageValues,
-                headerTxt,
-                headerId,
-                headerValues,
-                intlRef,
-                enqueueSnackbar,
-                level: 'error',
-                persistent: true,
-            }),
+        (snackInputs) =>
+            makeCallBack(snackInputs, intlRef, enqueueSnackbar, 'error', true),
         [enqueueSnackbar, intlRef]
     );
 
     const snackInfo = useCallback(
-        ({
-            messageTxt,
-            messageId,
-            messageValues,
-            headerTxt,
-            headerId,
-            headerValues,
-        }) =>
-            makeSnackCallBack({
-                messageTxt,
-                messageId,
-                messageValues,
-                headerTxt,
-                headerId,
-                headerValues,
-                intlRef,
-                enqueueSnackbar,
-                level: 'info',
-                persistent: false,
-            }),
+        (snackInputs) =>
+            makeCallBack(snackInputs, intlRef, enqueueSnackbar, 'info', false),
         [enqueueSnackbar, intlRef]
     );
 
     const snackWarning = useCallback(
-        ({
-            messageTxt,
-            messageId,
-            messageValues,
-            headerTxt,
-            headerId,
-            headerValues,
-        }) =>
-            makeSnackCallBack({
-                messageTxt,
-                messageId,
-                messageValues,
-                headerTxt,
-                headerId,
-                headerValues,
+        (snackInputs) =>
+            makeCallBack(
+                snackInputs,
                 intlRef,
                 enqueueSnackbar,
-                level: 'warning',
-                persistent: true,
-            }),
+                'warning',
+                true
+            ),
         [enqueueSnackbar, intlRef]
     );
 
     return { snackError, snackInfo, snackWarning };
 }
 
-function makeSnackCallBack({
-    messageTxt,
-    messageId,
-    messageValues,
-    headerTxt,
-    headerId,
-    headerValues,
+function makeCallBack(
+    snackInputs,
     intlRef,
     enqueueSnackbar,
     level,
-    persistent,
-}) {
+    persistent
+) {
     const message = checkAndTranslateIfNecessary(
-        messageTxt,
-        messageId,
-        messageValues,
+        snackInputs.messageTxt,
+        snackInputs.messageId,
+        snackInputs.messageValues,
         intlRef
     );
     const header = checkAndTranslateIfNecessary(
-        headerTxt,
-        headerId,
-        headerValues,
+        snackInputs.headerTxt,
+        snackInputs.headerId,
+        snackInputs.headerValues,
         intlRef
     );
-    displayMessageWithSnackbar({
+    displayMessageWithSnackbar(
         message,
         header,
         enqueueSnackbar,
         level,
-        persistent,
-    });
+        persistent
+    );
 }
 
 function checkAndTranslateIfNecessary(txt, id, values, intlRef) {
