@@ -240,7 +240,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
-    // workaround to fetch network data when WS connection is lost
     const [wsConnected, setWsConnected] = useState(false);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
@@ -296,7 +295,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // we want to reload the network when the websocket is (re)connected after loosing connection
                 // but to prevent reload network loop, we added a delay before considering the WS truly connected
                 if (ws.retryCount === 0) {
-                    // first connection
+                    // first connection at startup
                     setWsConnected(true);
                 } else {
                     setTimeout(() => {
@@ -360,7 +359,6 @@ export function StudyContainer({ view, onChangeTab }) {
         setNetworkLoadingFailMessage(error.message);
     }, []);
 
-    const lastNetworkLoad = useRef(0);
     const loadNetwork = useCallback(
         (isUpdate) => {
             if (!isNodeBuilt(currentNode) || !studyUuid) {
@@ -394,7 +392,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(networkCreated(network));
             }
             dispatch(resetNetworkReload());
-            lastNetworkLoad.current = Date.now();
         },
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
