@@ -47,7 +47,6 @@ import { useIntlRef, useSnackMessage } from '../../../utils/messages';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import MinimizeIcon from '@mui/icons-material/Minimize';
-import { ViewState } from './utils';
 import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
@@ -247,7 +246,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         numberToDisplay,
         sldId,
         pinned,
-        toggleState,
+        onTogglePin,
+        onMinimize,
         disabled,
     } = props;
 
@@ -395,7 +395,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         error: errorMessage,
                         svgUrl: props.svgUrl,
                     });
-                    snackError(errorMessage);
+                    snackError({
+                        messageTxt: errorMessage,
+                    });
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
                 });
@@ -675,15 +677,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         initialHeight = sizeHeight; // setting initial height for the next SLD.
     }
 
-    const pinSld = useCallback(
-        () => toggleState(sldId, svgType, ViewState.PINNED),
-        [sldId, svgType, toggleState]
-    );
+    const pinSld = useCallback(() => onTogglePin(sldId), [sldId, onTogglePin]);
 
     const minimizeSld = useCallback(() => {
-        toggleState(sldId, svgType, ViewState.MINIMIZED);
+        onMinimize(sldId);
         hideFullScreen();
-    }, [toggleState, sldId, svgType, hideFullScreen]);
+    }, [onMinimize, sldId, hideFullScreen]);
 
     return !svg.error ? (
         <Paper

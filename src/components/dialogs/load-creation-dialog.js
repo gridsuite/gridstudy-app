@@ -10,15 +10,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
-import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackMessage } from '../../utils/messages';
 import { LOAD_TYPES } from '../network/constants';
 import {
     useDoubleValue,
@@ -58,9 +54,7 @@ const LoadCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -77,6 +71,8 @@ const LoadCreationDialog = ({
             reactivePower: load.q0,
             voltageLevelId: load.voltageLevelId,
             busOrBusbarSectionId: null,
+            connectionDirection: load.connectionDirection,
+            connectionName: load.connectionName,
         };
     };
 
@@ -178,13 +174,9 @@ const LoadCreationDialog = ({
                 connectivity?.connectionDirection?.id ?? 'UNDEFINED',
                 connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'LoadCreationError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LoadCreationError',
                 });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
