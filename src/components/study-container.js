@@ -160,6 +160,8 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_failed',
 ];
 const UPDATE_TYPE_HEADER = 'updateType';
+// the delay before we consider the WS truly connected
+const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
@@ -238,6 +240,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetworkRef = useRef();
 
+    const [wsConnected, setWsConnected] = useState(false);
+
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
     const intl = useIntl();
@@ -267,7 +271,10 @@ export function StudyContainer({ view, onChangeTab }) {
         (studyUuid) => {
             console.info(`Connecting to notifications '${studyUuid}'...`);
 
-            const ws = connectNotificationsWebsocket(studyUuid);
+            const ws = connectNotificationsWebsocket(studyUuid, {
+                // this option set the minimum duration being connected before reset the retry count to 0
+                minUptime: DELAY_BEFORE_WEBSOCKET_CONNECTED,
+            });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
 
@@ -277,10 +284,27 @@ export function StudyContainer({ view, onChangeTab }) {
             ws.onclose = function (event) {
                 if (!websocketExpectedCloseRef.current) {
                     console.error('Unexpected Notification WebSocket closed');
+                    setWsConnected(false);
                 }
             };
             ws.onerror = function (event) {
                 console.error('Unexpected Notification WebSocket error', event);
+            };
+            ws.onopen = function (event) {
+                console.log('Notification WebSocket opened');
+                // we want to reload the network when the websocket is (re)connected after loosing connection
+                // but to prevent reload network loop, we added a delay before considering the WS truly connected
+                if (ws.retryCount === 0) {
+                    // first connection at startup
+                    setWsConnected(true);
+                } else {
+                    setTimeout(() => {
+                        if (ws.retryCount === 0) {
+                            // we enter here only if the WS is up for more than DELAY_BEFORE_WEBSOCKET_CONNECTED
+                            setWsConnected(true);
+                        }
+                    }, DELAY_BEFORE_WEBSOCKET_CONNECTED);
+                }
             };
             return ws;
         },
@@ -445,6 +469,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     //handles map automatic mode network reload
     useEffect(() => {
+        if (!wsConnected) return;
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only node renaming, do not reload network
@@ -452,7 +477,7 @@ export function StudyContainer({ view, onChangeTab }) {
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
         loadNetwork(true);
-    }, [loadNetwork, currentNode, mapManualRefresh]);
+    }, [loadNetwork, currentNode, mapManualRefresh, wsConnected]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
