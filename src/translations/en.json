@@ -415,7 +415,10 @@
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "GeneratorModificationError": "Error while modifying generator",
-    "ReactiveCapabilityCurveCreationError": "The table of reactive capability curve must have at least four points",
+    "ReactiveCapabilityCurveCreationErrorMissingPoints": "The table of reactive capability curve must have at least four points",
+    "ReactiveCapabilityCurveCreationErrorPInvalid": "Each active power value must be a valid unique number",
+    "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the P min and P max values",
+    "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Each minimum reactive power value must be inferior or equal to the corresponding maximum reactive power value",
 
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",

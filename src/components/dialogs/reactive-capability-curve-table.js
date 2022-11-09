@@ -21,9 +21,10 @@ export const ReactiveCapabilityCurveTable = ({
     inputForm,
     isFieldRequired,
     disabled = false,
+    customPLabel = undefined,
 }) => {
     const [p, pField] = useDoubleValue({
-        label: 'P',
+        label: customPLabel !== undefined ? customPLabel : 'P',
         id: 'P' + index,
         validation: { isFieldRequired: isFieldRequired },
         adornment: ActivePowerAdornment,

@@ -20,6 +20,14 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 
 const minimalValue = {p:"", qminP:"", qmaxP:""};
 
+function getId(value) {
+    return value?.id ? value.id : "defaultId";
+}
+
+function getNewId() {
+    return Math.random().toString(36).substring(2);
+}
+
 function hasValueCorrectFormat(valueToTest, index) {
     return !!(valueToTest
         && valueToTest[index]
@@ -85,7 +93,7 @@ export const useReactiveCapabilityCurveTableValues = ({
         let newValuesForDisplay = [];
         for (let i = 0; i< newValues.length; i++) {
             newValuesForDisplay[i] = newValues[i];
-            newValuesForDisplay[i].id = Math.random();
+            newValuesForDisplay[i].id = getNewId();
         }
         setDisplayedValues(newValuesForDisplay);
     }, [values, displayedValues]);
@@ -94,7 +102,7 @@ export const useReactiveCapabilityCurveTableValues = ({
         setValues(oldValues => [...oldValues.slice(0, index), newValue, ...oldValues.slice(index+1)]);
     }, []);
 
-    /*useEffect(() => { // TODO CHARLY Surveiller cette fonction
+    useEffect(() => {
         if (!isReactiveCapabilityCurveOn) {
             //TODO When isReactiveCapabilityCurveOn is false, the reactive capability curve component does not change
             // the validation of its values and they still required.
@@ -110,20 +118,22 @@ export const useReactiveCapabilityCurveTableValues = ({
                 inputForm.addValidation('QminP' + index, validate);
             });
         }
-    }, [inputForm, values, isReactiveCapabilityCurveOn]);*/
+    }, [inputForm, values, isReactiveCapabilityCurveOn]);
 
     const field = useMemo(() => {
         return (
-            <Grid item container spacing={2} style={{backgroundColor: "#4d4751"}}>
+            <Grid item container spacing={2}>
                 {tableHeadersIds.map((header) => (
                     <Grid key={header} item xs={3}>
                         <FormattedMessage id={header} />
                     </Grid>
                 ))}
 
-                {displayedValues.map((value, index) => {
+                {displayedValues.map((value, index, displayedValues) => {
 
-                    const id = value?.id ? value.id : "defaultId";
+                    const id = getId(value);
+                    // We change the P label on the first and last lines of the array
+                    const customPLabel = index === 0 ? 'MinP' : index === displayedValues.length - 1 ? 'MaxP' : undefined;
                     return (
                     <Grid key={id + index} container spacing={3} item>
                         <Field
@@ -133,6 +143,7 @@ export const useReactiveCapabilityCurveTableValues = ({
                             inputForm={inputForm}
                             isFieldRequired={isReactiveCapabilityCurveOn}
                             disabled={disabled}
+                            customPLabel={customPLabel}
                         />
                         <Grid item xs={1}>
                             <IconButton

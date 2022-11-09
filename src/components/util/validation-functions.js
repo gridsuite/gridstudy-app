@@ -5,11 +5,37 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export function validateField(value, toValidate) {
-    function toNumber(val) {
-        return typeof val === 'number' ? val : Number(val.replace(',', '.'));
-    }
+function toNumber(val) {
+    // Watch out, this will convert an empty string to zero.
+    return typeof val === 'number' ? val : Number(val.replace(',', '.'));
+}
 
+/*
+ * Returns true if the value is a valid number, per Gridsuite's standard (allows coma instead of dots for decimal).
+ */
+export function validateValueIsANumber(value) {
+    if (value === undefined || value === '') {
+        return false;
+    }
+    return !isNaN(toNumber(value));
+}
+
+/*
+ * Returns true IF and ONLY IF :
+ * - the first parameter value is a valid number
+ * - the second parameter valueToCompareTo is a valid number
+ * - the first parameter's value is lower or equal than the second's
+ */
+export function validateValueIsLessOrEqualThan(value, valueToCompareTo) {
+    return (
+        validateValueIsANumber(value) &&
+        validateValueIsANumber(valueToCompareTo) &&
+        toNumber(value) <= toNumber(valueToCompareTo)
+    );
+}
+
+export function validateField(value, toValidate) {
+    // TODO: maybe update this function with the help of the new ones just above.
     if (toValidate.isFieldRequired) {
         if (
             (!toValidate.isFieldNumeric && !value) ||
@@ -21,6 +47,7 @@ export function validateField(value, toValidate) {
 
     if (toValidate.isFieldNumeric) {
         // TODO: remove replace when parsing behaviour will be made according to locale
+        // TODO EDIT : are these comments still up to date ? The replace call was transfered to the toNumber function above. Maybe add a (clearer) comment in the toNumber function above ?
         const valueNumericVal = toNumber(value);
         if (isNaN(valueNumericVal)) {
             return makeErrorRecord('FieldAcceptNumeric');
