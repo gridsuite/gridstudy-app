@@ -19,7 +19,7 @@ import { modifyLoad } from '../../utils/rest-api';
 import { LOAD_TYPES } from '../network/constants';
 import {
     useDoubleValue,
-    useEnumValue,
+    useOptionalEnumValue,
     useInputForm,
     useTextValue,
 } from './inputs/input-hooks';
@@ -40,7 +40,7 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param equipmentOptionsPromise Promise handling list of loads that can be modified
- * @param currentNodeUuid : the node we are currently working on
+ * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
  */
 const LoadModificationDialog = ({
@@ -108,13 +108,12 @@ const LoadModificationDialog = ({
         clearable: true,
     });
 
-    const [loadType, loadTypeField] = useEnumValue({
+    const [loadType, loadTypeField] = useOptionalEnumValue({
         label: 'Type',
         inputForm: inputForm,
         formProps: filledTextField,
-        enumValues: LOAD_TYPES,
-        defaultValue: formValues?.loadType ? formValues.loadType.value : '',
-        doTranslation: true,
+        enumObjects: LOAD_TYPES,
+        defaultValue: formValues?.loadType?.value ?? null,
         previousValue: loadInfos?.type
             ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)?.label
             : undefined,

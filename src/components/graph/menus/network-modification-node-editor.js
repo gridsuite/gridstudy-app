@@ -612,7 +612,7 @@ const NetworkModificationNodeEditor = () => {
         );
     };
 
-    const renderNetworkModificationsList = () => {
+    const renderNetworkModificationsList = (network) => {
         return (
             <DragDropContext
                 onDragEnd={commit}
@@ -778,7 +778,7 @@ const NetworkModificationNodeEditor = () => {
             </Toolbar>
             {renderPaneSubtitle()}
 
-            {renderNetworkModificationsList()}
+            {renderNetworkModificationsList(network)}
             <Fab
                 className={classes.addButton}
                 color="primary"

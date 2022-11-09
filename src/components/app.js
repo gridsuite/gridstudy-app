@@ -116,8 +116,8 @@ const App = () => {
     const signInCallbackError = useSelector(
         (state) => state.signInCallbackError
     );
-    const unauthorizedUserInfo = useSelector(
-        (state) => state.unauthorizedUserInfo
+    const authenticationRouterError = useSelector(
+        (state) => state.authenticationRouterError
     );
     const showAuthenticationRouterLogin = useSelector(
         (state) => state.showAuthenticationRouterLogin
@@ -530,7 +530,9 @@ const App = () => {
                         <AuthenticationRouter
                             userManager={userManager}
                             signInCallbackError={signInCallbackError}
-                            unauthorizedUserInfo={unauthorizedUserInfo}
+                            authenticationRouterError={
+                                authenticationRouterError
+                            }
                             showAuthenticationRouterLogin={
                                 showAuthenticationRouterLogin
                             }

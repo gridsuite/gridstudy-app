@@ -253,6 +253,37 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
     }, [label, handleClick, classes.tooltip]);
 };
 
+export const useOptionalEnumValue = (props) => {
+    const intl = useIntl();
+
+    const getEnumTranslation = useCallback(
+        (enumValue) => {
+            // translate the label of enumValue
+            const enumTranslation = props.enumObjects
+                .filter((enumObject) => enumObject.id === enumValue)
+                .map((enumObject) =>
+                    intl.formatMessage({ id: enumObject.label })
+                );
+            return enumTranslation.length === 1
+                ? enumTranslation.at(0)
+                : enumValue;
+        },
+        [intl, props.enumObjects]
+    );
+
+    // because we want to have the clear icon to possibly reset the optional enum value to null,
+    // we use an Autocomplete without the ability to enter some letters in the text field (readonly then).
+    return useAutocompleteField({
+        values: props.enumObjects.map((enumObject) => enumObject.id),
+        selectedValue: props.defaultValue,
+        defaultValue: props.defaultValue,
+        previousValue: props.previousValue,
+        getLabel: getEnumTranslation,
+        readOnlyTextField: true,
+        ...props,
+    });
+};
+
 export const useCountryValue = (props) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [code, setCode] = useState(props.defaultCodeValue);

@@ -72,6 +72,8 @@ const ShuntCompensatorCreationDialog = ({
             susceptancePerSection: shuntCompensator.bperSection,
             voltageLevelId: shuntCompensator.voltageLevelId,
             busOrBusbarSectionId: null,
+            connectionDirection: shuntCompensator.connectionDirection,
+            connectionName: shuntCompensator.connectionName,
         };
     };
 

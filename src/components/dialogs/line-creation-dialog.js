@@ -99,6 +99,10 @@ const LineCreationDialog = ({
             currentLimits2: {
                 permanentLimit: line.permanentLimit2,
             },
+            connectionDirection1: line.connectionDirection1,
+            connectionName1: line.connectionName1,
+            connectionDirection2: line.connectionDirection2,
+            connectionName2: line.connectionName2,
         };
     };
 
