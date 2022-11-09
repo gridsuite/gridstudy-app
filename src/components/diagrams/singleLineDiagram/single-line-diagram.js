@@ -459,7 +459,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 !isComputationRunning &&
                 !isAnyNodeBuilding &&
                 !isNodeReadOnly(currentNode) &&
-                !modificationInProgress
+                !modificationInProgress &&
+                !loadingState
                     ? (breakerId, newSwitchState, switchElement) => {
                           if (!modificationInProgress) {
                               setModificationInProgress(true);
