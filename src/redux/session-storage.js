@@ -7,9 +7,13 @@
 
 import { APP_NAME } from '../utils/config-params';
 
-export const SESSION_STORAGE_SLD_STATE_KEY = (
-    APP_NAME + '_SLD_STATE'
+export const SESSION_STORAGE_SLD_STATE_KEY_PREFIX = (
+    APP_NAME + '_SLD_STATE_'
 ).toUpperCase();
+
+const getSldStateKeyPrefixFromStudyUuid = (studyUuid) => {
+    return SESSION_STORAGE_SLD_STATE_KEY_PREFIX + studyUuid;
+};
 
 export const syncSldStateWithSessionStorage = (sldState, studyUuid) => {
     if (studyUuid == null) {
@@ -17,23 +21,19 @@ export const syncSldStateWithSessionStorage = (sldState, studyUuid) => {
     }
 
     sessionStorage.setItem(
-        SESSION_STORAGE_SLD_STATE_KEY,
-        JSON.stringify({
-            studyUuid: studyUuid,
-            sldtate: sldState,
-        })
+        getSldStateKeyPrefixFromStudyUuid(studyUuid),
+        JSON.stringify(sldState)
     );
 };
 
 export const loadSldStateFromSessionStorage = (studyUuid) => {
     const sldState = JSON.parse(
-        sessionStorage.getItem(SESSION_STORAGE_SLD_STATE_KEY)
+        sessionStorage.getItem(getSldStateKeyPrefixFromStudyUuid(studyUuid))
     );
 
-    if (sldState?.studyUuid === studyUuid) {
-        return sldState.sldtate;
+    if (sldState === null) {
+        return [];
     }
 
-    // if state from session storage was for another study, it is reseted
-    return [];
+    return sldState;
 };
