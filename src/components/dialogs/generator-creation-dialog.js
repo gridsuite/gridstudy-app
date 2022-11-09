@@ -46,10 +46,7 @@ import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve-table';
-import {
-    validateValueIsANumber,
-    validateValueIsLessOrEqualThan,
-} from '../util/validation-functions';
+import { checkReactiveCapabilityCurve } from '../util/validation-functions';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -64,6 +61,9 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
     },
 }));
+
+export const REACTIVE_LIMIT_TYPE_MIN_MAX = 'ReactiveLimitsKindMinMax';
+export const REACTIVE_LIMIT_TYPE_CURVE = 'ReactiveLimitsKindCurve';
 
 /**
  * Dialog to create a generator in the network
@@ -228,17 +228,17 @@ const GeneratorCreationDialog = ({
             inputForm: inputForm,
             defaultValue:
                 formValues?.reactiveCapabilityCurve === false
-                    ? 'ReactiveLimitsKindMinMax'
-                    : 'ReactiveLimitsKindCurve',
+                    ? REACTIVE_LIMIT_TYPE_MIN_MAX
+                    : REACTIVE_LIMIT_TYPE_CURVE,
             possibleValues: [
-                'ReactiveLimitsKindMinMax',
-                'ReactiveLimitsKindCurve',
+                REACTIVE_LIMIT_TYPE_MIN_MAX,
+                REACTIVE_LIMIT_TYPE_CURVE,
             ],
         });
 
     useEffect(() => {
         setReactiveCapabilityCurveOn(
-            reactiveCapabilityCurveChoice === 'ReactiveLimitsKindCurve'
+            reactiveCapabilityCurveChoice === REACTIVE_LIMIT_TYPE_CURVE
         );
     }, [reactiveCapabilityCurveChoice, formValues?.reactiveCapabilityCurve]);
 
@@ -263,7 +263,7 @@ const GeneratorCreationDialog = ({
             tableHeadersIds: headerIds,
             inputForm: inputForm,
             Field: ReactiveCapabilityCurveTable,
-            defaultValues: formValues?.reactiveCapabilityCurvePoints, // TODO CHARLY si P null, default P = puissance active min, same pour max
+            defaultValues: formValues?.reactiveCapabilityCurvePoints,
             isRequired: false,
             isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
         });
@@ -390,63 +390,11 @@ const GeneratorCreationDialog = ({
         // ReactiveCapabilityCurveCreation validation
         let isRCCValid = true;
         if (isReactiveCapabilityCurveOn) {
-            let errorMessages = [];
-
-            // At least four points must be set
-            if (reactiveCapabilityCurve.length < 2) {
-                errorMessages.push(
-                    'ReactiveCapabilityCurveCreationErrorMissingPoints'
-                );
-            }
-
-            // Each P must be a unique valid number
-            const everyValidP = reactiveCapabilityCurve
-                .map((element) =>
-                    validateValueIsANumber(element.p) ? element.p : null
-                )
-                .filter((p) => p !== null);
-            const setOfPs = [...new Set(everyValidP)];
-
-            if (setOfPs.length !== everyValidP.length) {
-                errorMessages.push(
-                    'ReactiveCapabilityCurveCreationErrorPInvalid'
-                );
-            } else {
-                // The first P must be the lowest value
-                // The last P must be the highest value
-                // The P in between must be in the range defined by the first and last P
-                const minP = everyValidP[0];
-                const maxP = everyValidP[everyValidP.length - 1];
-                const pAreInRange = everyValidP.filter(
-                    (p) =>
-                        validateValueIsLessOrEqualThan(minP, p) &&
-                        validateValueIsLessOrEqualThan(p, maxP)
-                );
-                if (pAreInRange.length !== everyValidP.length) {
-                    errorMessages.push(
-                        'ReactiveCapabilityCurveCreationErrorPOutOfRange'
-                    );
-                }
-            }
-
-            // Each qMin must be inferior or equal to qMax
-            for (let element of reactiveCapabilityCurve) {
-                if (
-                    !validateValueIsLessOrEqualThan(
-                        element.qminP,
-                        element.qmaxP
-                    )
-                ) {
-                    console.error(element);
-                    errorMessages.push(
-                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
-                    );
-                    break;
-                }
-            }
-
-            setRCCurveError(errorMessages);
+            const errorMessages = checkReactiveCapabilityCurve(
+                reactiveCapabilityCurve
+            );
             isRCCValid = errorMessages.length === 0;
+            setRCCurveError(errorMessages);
         } else {
             setRCCurveError([]);
         }

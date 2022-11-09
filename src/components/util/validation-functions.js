@@ -47,7 +47,7 @@ export function validateField(value, toValidate) {
 
     if (toValidate.isFieldNumeric) {
         // TODO: remove replace when parsing behaviour will be made according to locale
-        // TODO EDIT : are these comments still up to date ? The replace call was transfered to the toNumber function above. Maybe add a (clearer) comment in the toNumber function above ?
+        // TODO EDIT: are these comments still up to date ? The replace call was transfered to the toNumber function above. Maybe add a (clearer) comment in the toNumber function above ?
         const valueNumericVal = toNumber(value);
         if (isNaN(valueNumericVal)) {
             return makeErrorRecord('FieldAcceptNumeric');
@@ -86,6 +86,61 @@ export function validateField(value, toValidate) {
     if (toValidate.function) return makeErrorRecord(toValidate.function(value));
 
     return makeErrorRecord(null);
+}
+
+/**
+ * Checks if the provided reactive capabilty curve is valid. Returns a list of
+ * errors if any, or an empty array otherwise.
+ * @param reactiveCapabilityCurve an array of reactive capability curve points of
+ * this format : [{ p: '', qminP: '', qmaxP: '' }, { p: '', qminP: '', qmaxP: '' }]
+ * @returns An array of error messages. If there is no error, returns an empty array.
+ */
+export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
+    let errorMessages = [];
+
+    // At least four points must be set
+    if (reactiveCapabilityCurve.length < 2) {
+        errorMessages.push('ReactiveCapabilityCurveCreationErrorMissingPoints');
+    }
+
+    // Each P must be a unique valid number
+    const everyValidP = reactiveCapabilityCurve
+        .map((element) =>
+            validateValueIsANumber(element.p) ? element.p : null
+        )
+        .filter((p) => p !== null);
+    const setOfPs = [...new Set(everyValidP)];
+
+    if (setOfPs.length !== everyValidP.length) {
+        errorMessages.push('ReactiveCapabilityCurveCreationErrorPInvalid');
+    } else {
+        // The first P must be the lowest value
+        // The last P must be the highest value
+        // The P in between must be in the range defined by the first and last P
+        const minP = everyValidP[0];
+        const maxP = everyValidP[everyValidP.length - 1];
+        const pAreInRange = everyValidP.filter(
+            (p) =>
+                validateValueIsLessOrEqualThan(minP, p) &&
+                validateValueIsLessOrEqualThan(p, maxP)
+        );
+        if (pAreInRange.length !== everyValidP.length) {
+            errorMessages.push(
+                'ReactiveCapabilityCurveCreationErrorPOutOfRange'
+            );
+        }
+    }
+
+    // Each qMin must be inferior or equal to qMax
+    for (let element of reactiveCapabilityCurve) {
+        if (!validateValueIsLessOrEqualThan(element.qminP, element.qmaxP)) {
+            errorMessages.push(
+                'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
+            );
+            break;
+        }
+    }
+    return errorMessages;
 }
 
 export function makeErrorRecord(msgId) {

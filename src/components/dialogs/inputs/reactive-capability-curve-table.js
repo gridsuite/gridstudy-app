@@ -52,11 +52,10 @@ function enforceMinimumValues(valueToTest) {
 }
 
 export const useReactiveCapabilityCurveTableValues = ({
-    //id,
     tableHeadersIds,
     Field,
     inputForm,
-    defaultValues, // format : either undefined or [{p:"", qminP:"", qmaxP:""}, {p:"", qminP:"", qmaxP:""}]
+    defaultValues, // format : either undefined or [{ p: '', qminP: '', qmaxP: '' }, { p: '', qminP: '', qmaxP: '' }]
     isReactiveCapabilityCurveOn,
     disabled = false,
 }) => {
@@ -124,18 +123,14 @@ export const useReactiveCapabilityCurveTableValues = ({
 
     useEffect(() => {
         if (!isReactiveCapabilityCurveOn) {
-            //TODO When isReactiveCapabilityCurveOn is false, the reactive capability curve component does not change
-            // the validation of its values and they still required.
+            // When isReactiveCapabilityCurveOn is false, the reactive capability curve
+            // component (ReactiveCapabilityCurveTable in file dialogs/reactive-capability-curve-table.js) does
+            // not change the validation of its values and they are still required.
             // we update the validations of reactive capability curve values so they are not required any more.
-            // is there a better way to do it ?
-            function validate() {
-                return !isReactiveCapabilityCurveOn;
-            }
-
             values.forEach((value, index) => {
-                inputForm.addValidation('P' + index, validate);
-                inputForm.addValidation('QmaxP' + index, validate);
-                inputForm.addValidation('QminP' + index, validate);
+                inputForm.addValidation('P' + index, () => true);
+                inputForm.addValidation('QmaxP' + index, () => true);
+                inputForm.addValidation('QminP' + index, () => true);
             });
         }
     }, [inputForm, values, isReactiveCapabilityCurveOn]);
