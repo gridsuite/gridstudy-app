@@ -96,8 +96,7 @@ import {
 } from './network/config-tables';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
-import { useSnackbar } from 'notistack';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackMessage } from '../utils/messages';
 import { StudyContainer } from './study-container';
 
 const noUserManager = { instance: null, error: null };
@@ -110,9 +109,7 @@ const STUDY_VIEWS = [
 ];
 
 const App = () => {
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const user = useSelector((state) => state.user);
 
@@ -318,13 +315,9 @@ const App = () => {
                 fetchConfigParameter(eventData.headers['parameterName'])
                     .then((param) => updateParams([param]))
                     .catch((errorMessage) =>
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'paramsRetrievingError',
-                                intlRef: intlRef,
-                            },
+                        snackError({
+                            messageTxt: errorMessage,
+                            headerId: 'paramsRetrievingError',
                         })
                     );
             }
@@ -333,7 +326,7 @@ const App = () => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [updateParams, enqueueSnackbar, intlRef]);
+    }, [updateParams, snackError]);
 
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
@@ -402,13 +395,9 @@ const App = () => {
             fetchConfigParameters(COMMON_APP_NAME)
                 .then((params) => updateParams(params))
                 .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'paramsRetrievingError',
-                            intlRef: intlRef,
-                        },
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'paramsRetrievingError',
                     })
                 );
 
@@ -436,24 +425,16 @@ const App = () => {
                             updateParams(params);
                         })
                         .catch((errorMessage) => {
-                            displayErrorMessageWithSnackbar({
-                                errorMessage: errorMessage,
-                                enqueueSnackbar: enqueueSnackbar,
-                                headerMessage: {
-                                    headerMessageId: 'paramsRetrievingError',
-                                    intlRef: intlRef,
-                                },
+                            snackError({
+                                messageTxt: errorMessage,
+                                headerId: 'paramsRetrievingError',
                             });
                         });
                 })
                 .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'paramsRetrievingError',
-                            intlRef: intlRef,
-                        },
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'paramsRetrievingError',
                     })
                 );
 
@@ -466,9 +447,8 @@ const App = () => {
         user,
         dispatch,
         updateParams,
-        enqueueSnackbar,
-        intlRef,
         connectNotificationsUpdateConfig,
+        snackError,
     ]);
 
     const onChangeTab = useCallback((newTabIndex) => {

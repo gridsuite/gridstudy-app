@@ -11,12 +11,8 @@ import makeStyles from '@mui/styles/makeStyles';
 import { lighten, darken } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { updateTreeNode } from '../../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../../utils/messages';
+import { useSnackMessage } from '../../../utils/messages';
 import { EditableTitle } from './editable-title';
-import { useSnackbar } from 'notistack';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { setModificationsDrawerOpen } from '../../../redux/actions';
@@ -36,9 +32,8 @@ const useStyles = makeStyles((theme) => ({
 
 const NodeEditor = () => {
     const classes = useStyles();
-    const intlRef = useIntlRef();
     const dispatch = useDispatch();
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const currentTreeNode = useSelector((state) => state.currentTreeNode);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -52,13 +47,9 @@ const NodeEditor = () => {
             type: currentTreeNode?.type,
             name: newName,
         }).catch((errorMessage) => {
-            displayErrorMessageWithSnackbar({
-                errorMessage: errorMessage,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'NodeUpdateError',
-                    intlRef: intlRef,
-                },
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'NodeUpdateError',
             });
         });
     };

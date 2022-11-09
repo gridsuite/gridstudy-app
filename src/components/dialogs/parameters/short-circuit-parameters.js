@@ -31,9 +31,12 @@ export const useGetShortCircuitParameters = () => {
         if (studyUuid) {
             getShortCircuitParameters(studyUuid)
                 .then((params) => setShortCircuitParams(params))
-                .catch((errorMessage) =>
-                    snackError(errorMessage, 'paramsRetrievingError')
-                );
+                .catch((errorMessage) => {
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'paramsRetrievingError',
+                    });
+                });
         }
     }, [studyUuid, snackError]);
 
@@ -185,7 +188,10 @@ export const ShortCircuitParameters = ({
             setShortCircuitParameters(studyUuid, newParams).catch(
                 (errorMessage) => {
                     setShortCircuitParams(oldParams);
-                    snackError(errorMessage, 'paramsChangingError');
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'paramsChangingError',
+                    });
                 }
             );
         },
@@ -197,13 +203,19 @@ export const ShortCircuitParameters = ({
             .then(() => {
                 return getShortCircuitParameters(studyUuid)
                     .then((params) => setShortCircuitParams(params))
-                    .catch((errorMessage) =>
-                        snackError(errorMessage, 'paramsRetrievingError')
-                    );
+                    .catch((errorMessage) => {
+                        snackError({
+                            messageTxt: errorMessage,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
             })
-            .catch((errorMessage) =>
-                snackError(errorMessage, 'paramsChangingError')
-            );
+            .catch((errorMessage) => {
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'paramsChangingError',
+                });
+            });
     }, [studyUuid, snackError, setShortCircuitParams]);
 
     return (
