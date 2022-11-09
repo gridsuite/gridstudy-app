@@ -490,3 +490,40 @@ export function setStudyDisplayMode(studyDisplayMode) {
         studyDisplayMode: studyDisplayMode,
     };
 }
+
+export const OPEN_SLD = 'OPEN_SLD';
+
+export function openSld(id, svgType) {
+    return {
+        type: OPEN_SLD,
+        id: id,
+        svgType: svgType,
+    };
+}
+
+export const MINIMIZE_SLD = 'MINIMIZE_SLD';
+
+export function minimizeSld(id) {
+    return {
+        type: MINIMIZE_SLD,
+        id: id,
+    };
+}
+
+export const TOGGLE_PIN_SLD = 'TOGGLE_PIN_SLD';
+
+export function togglePinSld(id) {
+    return {
+        type: TOGGLE_PIN_SLD,
+        id: id,
+    };
+}
+
+export const CLOSE_SLD = 'CLOSE_SLD';
+
+export function closeSld(idsToClose) {
+    return {
+        type: CLOSE_SLD,
+        ids: idsToClose,
+    };
+}
