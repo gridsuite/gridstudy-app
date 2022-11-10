@@ -125,8 +125,6 @@ const GeneratorCreationDialog = ({
             regulatingTerminalConnectableType:
                 generator.regulatingTerminalConnectableType,
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
-            remoteReactivePowerControlEnabled:
-                generator.remoteReactivePowerControlEnabled,
             qPercent: generator.qPercent,
             connectionDirection: generator.connectionDirection,
             connectionName: generator.connectionName,
@@ -258,6 +256,8 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
+            isValueGreaterThan: minimumActivePower,
+            isValueLessOrEqualTo: maximumActivePower,
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
@@ -276,8 +276,6 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
-            isValueGreaterThan: minimumActivePower,
-            isValueLessOrEqualTo: maximumActivePower,
             errorMsgId: 'VoltageBetweenMaxAndMin',
         },
         adornment: VoltageAdornment,
@@ -298,10 +296,7 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
-    const [
-        remoteReactivePowerControlEnabled,
-        remoteReactivePowerControlEnabledField,
-    ] = useEnumValue({
+    const [voltageRegulationType, voltageRegulationTypeField] = useEnumValue({
         label: 'RegulationTypeText',
         inputForm: inputForm,
         formProps: filledTextField,
@@ -309,7 +304,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
         },
-        defaultValue: formValues?.remoteReactivePowerControlEnabled
+        defaultValue: formValues?.regulatingTerminalConnectableId
             ? 'DISTANT'
             : 'LOCAL',
     });
@@ -330,6 +325,9 @@ const GeneratorCreationDialog = ({
     const [regulatingTerminal, regulatingTerminalField] =
         useRegulatingTerminalValue({
             label: 'RegulatingTerminalGenerator',
+            validation: {
+                isFieldRequired: voltageRegulationType === 'DISTANT',
+            },
             inputForm: inputForm,
             disabled: !voltageRegulation,
             voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
@@ -423,7 +421,6 @@ const GeneratorCreationDialog = ({
                 voltageRegulation,
                 voltageSetpoint ? voltageSetpoint : null,
                 qPercent,
-                remoteReactivePowerControlEnabled === 'DISTANT',
                 connectivity.voltageLevel.id,
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
@@ -476,12 +473,12 @@ const GeneratorCreationDialog = ({
     const withVoltageRegulationInputs = () => {
         return (
             <>
-                {gridItem(remoteReactivePowerControlEnabledField, 4)}
+                {gridItem(voltageRegulationTypeField, 4)}
                 <Box sx={{ width: '100%' }} />
                 <Grid item xs={4} justifySelf={'end'} />
                 {gridItem(voltageSetpointField, 4)}
                 <Box sx={{ width: '100%' }} />
-                {remoteReactivePowerControlEnabled === 'DISTANT' && (
+                {voltageRegulationType === 'DISTANT' && (
                     <>
                         <Grid item xs={4} justifySelf={'end'}>
                             <FormattedMessage id="RegulatingTerminalGenerator" />
