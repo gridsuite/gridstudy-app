@@ -384,6 +384,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     eventData.headers['notificationType'] ===
                     directoriesNotificationType.UPDATE_DIRECTORY
                 ) {
+                    // TODO: this receives notifications for all the public directories and all the user's private directories
+                    // At least we don't fetch everytime a notification is received, but we should instead limit the
+                    // number of notifications (they are sent to all the clients every time). Here we are only
+                    // interested in changes in parent directories of the study (study is moved, or any parent is moved
+                    // or renamed)
                     if (
                         studyParentDirectoriesUuidsRef.current.includes(
                             eventData.headers['directoryUuid']
