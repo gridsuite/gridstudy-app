@@ -305,7 +305,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
         },
-        defaultValue: formValues?.regulatingTerminalConnectableId
+        defaultValue: formValues?.regulatingTerminalId
             ? 'DISTANT'
             : 'LOCAL',
     });
