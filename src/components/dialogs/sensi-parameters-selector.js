@@ -32,11 +32,7 @@ import {
     updateConfigParameter,
     getSensiDefaultResultsThreshold,
 } from '../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import DialogActions from '@mui/material/DialogActions';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -652,8 +648,7 @@ export const useSensitivityFactors = ({ id, Field, initialValues }) => {
 };
 
 const SensiParametersSelector = (props) => {
-    const { enqueueSnackbar } = useSnackbar();
-    const intlRef = useIntlRef();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -758,17 +753,13 @@ const SensiParametersSelector = (props) => {
                 SENSI_PARAMETER_PREFIX_IN_DATABASE + paramName,
                 JSON.stringify(paramValue)
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'paramsChangingError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'paramsChangingError',
                 });
             });
         },
-        [enqueueSnackbar, intlRef]
+        [snackError]
     );
 
     function fetchSensiConfigurationParam(paramName) {

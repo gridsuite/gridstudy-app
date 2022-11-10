@@ -813,8 +813,7 @@ export const useDirectoryElements = ({
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] =
         useState(false);
     const intl = useIntl();
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     useEffect(() => {
         if (initialValues !== null) {
@@ -837,13 +836,9 @@ export const useDirectoryElements = ({
                 const { icon, children, ...elementRest } = element;
                 // check if element is already present
                 if (values.find((v) => v.id === elementRest.id) !== undefined) {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: '',
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'ElementAlreadyUsed',
-                            intlRef: intlRef,
-                        },
+                    snackError({
+                        messageTxt: '',
+                        headerId: 'ElementAlreadyUsed',
                     });
                 } else {
                     setValues(values.concat(elementRest));
@@ -852,7 +847,7 @@ export const useDirectoryElements = ({
 
             setDirectoryItemSelectorOpen(false);
         },
-        [values, enqueueSnackbar, intlRef]
+        [values, snackError]
     );
 
     const field = useMemo(() => {
