@@ -304,7 +304,11 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
         },
-        defaultValue: (formValues?.regulatingTerminalId || formValues?.regulatingTerminalConnectableId) ? 'DISTANT' : 'LOCAL',
+        defaultValue:
+            formValues?.regulatingTerminalId ||
+            formValues?.regulatingTerminalConnectableId
+                ? 'DISTANT'
+                : 'LOCAL',
     });
 
     const [qPercent, qPercentField] = useDoubleValue({
