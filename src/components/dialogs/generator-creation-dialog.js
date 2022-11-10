@@ -107,7 +107,7 @@ const GeneratorCreationDialog = ({
             minActivePower: generator.minP,
             ratedNominalPower: generator.ratedS,
             activePowerSetpoint: generator.targetP,
-            voltageRegulatorOn: generator.voltageRegulatorOn,
+            voltageRegulationOn: generator.voltageRegulatorOn,
             voltageSetpoint: generator.targetV,
             reactivePowerSetpoint: generator.targetQ,
             voltageLevelId: generator.voltageLevelId,
@@ -280,7 +280,6 @@ const GeneratorCreationDialog = ({
             errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
-        // formProps: { disabled: !voltageRegulation },
         inputForm: inputForm,
         defaultValue: formValues?.voltageSetpoint,
     });
@@ -296,11 +295,7 @@ const GeneratorCreationDialog = ({
         formProps: { disabled: voltageRegulation },
         defaultValue: formValues?.reactivePowerSetpoint,
     });
-    console.info('formValues', formValues);
-    console.info(
-        'formValues?.regulatingTerminalId',
-        formValues?.regulatingTerminalId
-    );
+
     const [voltageRegulationType, voltageRegulationTypeField] = useEnumValue({
         label: 'RegulationTypeText',
         inputForm: inputForm,
@@ -309,7 +304,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
         },
-        defaultValue: formValues?.regulatingTerminalId ? 'DISTANT' : 'LOCAL',
+        defaultValue: (formValues?.regulatingTerminalId || formValues?.regulatingTerminalConnectableId) ? 'DISTANT' : 'LOCAL',
     });
 
     const [qPercent, qPercentField] = useDoubleValue({
