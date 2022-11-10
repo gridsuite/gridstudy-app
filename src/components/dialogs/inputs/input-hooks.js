@@ -27,6 +27,7 @@ import {
     TextField,
     Tooltip,
     Button,
+    FormControlLabel,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
@@ -56,7 +57,6 @@ import RegulatingTerminalEdition, {
     makeRefreshRegulatingTerminalSectionsCallback,
 } from '../regulating-terminal-edition';
 import Papa from 'papaparse';
-import FormControlLabel from '@mui/material/FormControlLabel';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -751,7 +751,7 @@ export const useRadioValue = ({
 
     useEffect(() => {
         // Updates the component when the correct default value is given by the parent component.
-        if (defaultValue !== undefined && defaultValue.length > 0) {
+        if (defaultValue?.length > 0) {
             setValue(defaultValue);
         }
     }, [defaultValue]);
@@ -764,23 +764,19 @@ export const useRadioValue = ({
         inputForm.addValidation(id ? id : label, validate);
     }, [label, validation, inputForm, value, id]);
 
-    const handleChangeValue = useCallback((event) => {
-        setValue(event.target.value);
-    }, []);
-
     const field = useMemo(() => {
         return (
             <FormControl>
                 {label && (
                     <FormLabel id={id ? id : label}>
-                        {intl.formatMessage({ id: label })}
+                        <FormattedMessage id={label} />
                     </FormLabel>
                 )}
                 <RadioGroup
                     row
                     aria-labelledby={id ? id : label}
                     value={value ?? defaultValue}
-                    onChange={handleChangeValue}
+                    onChange={(e) => setValue(e.target.value)}
                 >
                     {possibleValues.map((value) => (
                         <FormControlLabel
@@ -796,21 +792,12 @@ export const useRadioValue = ({
                 </RadioGroup>
             </FormControl>
         );
-    }, [
-        intl,
-        label,
-        handleChangeValue,
-        id,
-        defaultValue,
-        doTranslation,
-        possibleValues,
-        value,
-    ]);
+    }, [intl, label, id, defaultValue, doTranslation, possibleValues, value]);
 
-    useEffect(
+    /*useEffect(
         () => setValue(defaultValue),
         [defaultValue, inputForm.toggleClear]
-    );
+    );*/
 
     return [value, field];
 };

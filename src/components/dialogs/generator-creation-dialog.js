@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 4,
     },
 
-    rccError: {
+    midFormErrorMessage: {
         color: theme.palette.error.main,
         fontSize: 'small',
         marginLeft: theme.spacing(2),
@@ -62,8 +62,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const REACTIVE_LIMIT_TYPE_MIN_MAX = 'ReactiveLimitsKindMinMax';
-export const REACTIVE_LIMIT_TYPE_CURVE = 'ReactiveLimitsKindCurve';
+const REACTIVE_LIMIT_TYPE_MIN_MAX = 'ReactiveLimitsKindMinMax';
+const REACTIVE_LIMIT_TYPE_CURVE = 'ReactiveLimitsKindCurve';
 
 /**
  * Dialog to create a generator in the network
@@ -93,10 +93,8 @@ const GeneratorCreationDialog = ({
 
     const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
 
-    const [isReactiveCapabilityCurveOn, setReactiveCapabilityCurveOn] =
-        useState(true);
-
-    const [rCCurveError, setRCCurveError] = useState([]);
+    const [reactiveCapabilityCurveErrors, setReactiveCapabilityCurveErrors] =
+        useState([]);
 
     const headerIds = [
         'ActivePowerText',
@@ -236,10 +234,8 @@ const GeneratorCreationDialog = ({
             ],
         });
 
-    useEffect(() => {
-        setReactiveCapabilityCurveOn(
-            reactiveCapabilityCurveChoice === REACTIVE_LIMIT_TYPE_CURVE
-        );
+    const isReactiveCapabilityCurveOn = useCallback(() => {
+        return reactiveCapabilityCurveChoice === REACTIVE_LIMIT_TYPE_CURVE;
     }, [reactiveCapabilityCurveChoice, formValues?.reactiveCapabilityCurve]);
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
@@ -265,7 +261,7 @@ const GeneratorCreationDialog = ({
             Field: ReactiveCapabilityCurveTable,
             defaultValues: formValues?.reactiveCapabilityCurvePoints,
             isRequired: false,
-            isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
+            isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn(),
         });
 
     const [activePowerSetpoint, activePowerSetpointField] = useDoubleValue({
@@ -388,20 +384,20 @@ const GeneratorCreationDialog = ({
 
     const handleSave = () => {
         // ReactiveCapabilityCurveCreation validation
-        let isRCCValid = true;
-        if (isReactiveCapabilityCurveOn) {
+        let isReactiveCapabilityCurveValid = true;
+        if (isReactiveCapabilityCurveOn()) {
             const errorMessages = checkReactiveCapabilityCurve(
                 reactiveCapabilityCurve
             );
-            isRCCValid = errorMessages.length === 0;
-            setRCCurveError(errorMessages);
+            isReactiveCapabilityCurveValid = errorMessages.length === 0;
+            setReactiveCapabilityCurveErrors(errorMessages);
         } else {
-            setRCCurveError([]);
+            setReactiveCapabilityCurveErrors([]);
         }
 
         if (
             inputForm.validate() &&
-            (!isReactiveCapabilityCurveOn || isRCCValid)
+            (!isReactiveCapabilityCurveOn() || isReactiveCapabilityCurveValid)
         ) {
             createGenerator(
                 studyUuid,
@@ -431,12 +427,12 @@ const GeneratorCreationDialog = ({
                     null,
                 (voltageRegulation && regulatingTerminal?.voltageLevel?.id) ||
                     null,
-                isReactiveCapabilityCurveOn,
+                isReactiveCapabilityCurveOn(),
                 frequencyRegulation,
                 frequencyRegulation ? droop : null,
-                isReactiveCapabilityCurveOn ? null : maximumReactivePower,
-                isReactiveCapabilityCurveOn ? null : minimumReactivePower,
-                isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null,
+                isReactiveCapabilityCurveOn() ? null : maximumReactivePower,
+                isReactiveCapabilityCurveOn() ? null : minimumReactivePower,
+                isReactiveCapabilityCurveOn() ? reactiveCapabilityCurve : null,
                 connectivity?.connectionDirection?.id ?? 'UNDEFINED',
                 connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
@@ -507,28 +503,34 @@ const GeneratorCreationDialog = ({
                         <GridSubSection title="ReactiveLimits" />
                         <Grid container spacing={2}>
                             {gridItem(isReactiveCapabilityCurveOnField, 12)}
-                            {!isReactiveCapabilityCurveOn &&
+                            {!isReactiveCapabilityCurveOn() &&
                                 gridItem(minimumReactivePowerField, 4)}
-                            {!isReactiveCapabilityCurveOn &&
+                            {!isReactiveCapabilityCurveOn() &&
                                 gridItem(maximumReactivePowerField, 4)}
 
-                            {!!isReactiveCapabilityCurveOn &&
-                                rCCurveError.length > 0 && (
+                            {isReactiveCapabilityCurveOn() &&
+                                reactiveCapabilityCurveErrors.length > 0 && (
                                     <Grid container spacing={2}>
                                         <Grid item xs={12}>
-                                            {rCCurveError.map((value) => (
-                                                <div
-                                                    className={classes.rccError}
-                                                >
-                                                    <FormattedMessage
-                                                        id={value}
-                                                    />
-                                                </div>
-                                            ))}
+                                            {reactiveCapabilityCurveErrors.map(
+                                                (messageDescriptorId) => (
+                                                    <div
+                                                        className={
+                                                            classes.midFormErrorMessage
+                                                        }
+                                                    >
+                                                        <FormattedMessage
+                                                            id={
+                                                                messageDescriptorId
+                                                            }
+                                                        />
+                                                    </div>
+                                                )
+                                            )}
                                         </Grid>
                                     </Grid>
                                 )}
-                            {!!isReactiveCapabilityCurveOn &&
+                            {isReactiveCapabilityCurveOn() &&
                                 gridItem(reactiveCapabilityCurveField, 12)}
                         </Grid>
 

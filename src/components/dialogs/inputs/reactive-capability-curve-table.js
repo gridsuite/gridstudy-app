@@ -81,10 +81,8 @@ export const useReactiveCapabilityCurveTableValues = ({
 
     const handleDeleteItem = useCallback(
         (index) => {
-            const newValues = [
-                ...values.slice(0, index),
-                ...values.slice(index + 1),
-            ];
+            const newValues = [...values];
+            newValues.splice(index, 1);
 
             setValues(newValues);
             setDisplayedValues(newValues);
@@ -95,21 +93,16 @@ export const useReactiveCapabilityCurveTableValues = ({
     );
 
     const handleAddValue = useCallback(() => {
-        const newPosition = values.length - 1;
-        const newValues = [
-            ...values.slice(0, newPosition),
-            minimalValue,
-            ...values.slice(newPosition),
-        ];
+        const newValues = [...values];
+        newValues.splice(values.length - 1, 0, minimalValue);
 
         setValues(newValues);
 
         // Adds a unique ID on each displayed line, to prevent a bad rendering effect
-        let newValuesForDisplay = [];
-        for (let i = 0; i < newValues.length; i++) {
-            newValuesForDisplay[i] = newValues[i];
-            newValuesForDisplay[i].id = getNewId();
-        }
+        const newValuesForDisplay = newValues.map((v) => {
+            v.id = getNewId();
+            return v;
+        });
         setDisplayedValues(newValuesForDisplay);
     }, [values]);
 
