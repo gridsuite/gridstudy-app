@@ -523,12 +523,21 @@ const NetworkModificationNodeEditor = () => {
                         if (data[0][key] === null) {
                             delete data[0][key];
                         }
+                        for (var i = 0; i < copiedModifications.length; i++) {
+                            if (modificationUuid === copiedModifications[i]) {
+                                setCopiedModifications([]);
+                            }
+                        }
                     });
                     setEditData(data[0]);
                 });
             })
             .catch((errorMessage) => snackError(errorMessage));
     };
+
+    useEffect(() => {
+        console.log('Liste hypothèese copié', copiedModifications);
+    }, [copiedModifications]);
 
     const toggleSelectAllModifications = useCallback(() => {
         setToggleSelectAll((oldVal) => !oldVal);
