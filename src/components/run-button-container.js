@@ -164,7 +164,10 @@ export function RunButtonContainer({
             startLoadFlow(studyUuid, currentNode?.id)
                 .then(setRanLoadflow(true))
                 .catch((errorMessage) => {
-                    snackError(errorMessage, 'startLoadFlowError');
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'startLoadFlowError',
+                    });
                 });
         } else if (action === runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
@@ -176,7 +179,10 @@ export function RunButtonContainer({
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(setRanShortCircuit(true))
                 .catch((errorMessage) => {
-                    snackError(errorMessage, 'ShortCircuitError');
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'ShortCircuitError',
+                    });
                 });
         }
     };

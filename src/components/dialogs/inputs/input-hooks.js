@@ -40,11 +40,7 @@ import {
 import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../../utils/messages';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useParameterState } from '../parameters/parameters';
@@ -736,8 +732,7 @@ const inputAdornment = (content) => {
 
 export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     const intl = useIntl();
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const [isValidName, setIsValidName] = useState(false);
     const [error, setError] = useState();
     const timer = useRef();
@@ -768,20 +763,16 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
                         setChecking(false);
                     })
                     .catch((errorMessage) => {
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'NodeUpdateError',
-                                intlRef: intlRef,
-                            },
+                        snackError({
+                            messageTxt: errorMessage,
+                            headerId: 'NodeUpdateError',
                         });
                     });
             } else {
                 setChecking(undefined);
             }
         },
-        [studyUuid, intl, defaultValue, enqueueSnackbar, intlRef]
+        [studyUuid, intl, defaultValue, snackError]
     );
 
     useEffect(() => {

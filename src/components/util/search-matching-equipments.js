@@ -48,9 +48,12 @@ export const useSearchMatchingEquipments = (
                                 );
                             } // else ignore results of outdated fetch
                         })
-                        .catch((errorMessage) =>
-                            snackError(errorMessage, 'equipmentsSearchingError')
-                        );
+                        .catch((errorMessage) => {
+                            snackError({
+                                messageTxt: errorMessage,
+                                headerId: 'equipmentsSearchingError',
+                            });
+                        });
                 },
                 sooner ? 10 : SEARCH_FETCH_TIMEOUT_MILLIS
             );

@@ -6,11 +6,10 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchReport } from '../utils/rest-api';
-import { displayErrorMessageWithSnackbar } from '../utils/messages';
 import Paper from '@mui/material/Paper';
 import clsx from 'clsx';
 import { ReportViewer } from '@gridsuite/commons-ui';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../utils/messages';
 import PropTypes from 'prop-types';
 import WaitingLoader from './util/waiting-loader';
 import AlertInvalidNode from './util/alert-invalid-node';
@@ -53,7 +52,7 @@ export const ReportViewerTab = ({
 
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
 
     const handleChangeValue = useCallback((event) => {
@@ -98,9 +97,8 @@ export const ReportViewerTab = ({
                     }
                 })
                 .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
+                    snackError({
+                        messageTxt: errorMessage,
                     })
                 )
                 .finally(() => {
@@ -114,8 +112,8 @@ export const ReportViewerTab = ({
         nodesNames,
         setNodeName,
         nodeOnlyReport,
-        enqueueSnackbar,
         disabled,
+        snackError,
     ]);
 
     return (
