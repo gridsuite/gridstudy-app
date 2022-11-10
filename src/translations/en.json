@@ -414,7 +414,7 @@
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "GeneratorModificationError": "Error while modifying generator",
     "ReactiveCapabilityCurveCreationError": "The table of reactive capability curve must have at least four points",
-    "VoltageBetweenMaxAndMin": "The voltage setpoint must be between minimum active power and maximum active power values",
+    "ActivePowerBetweenMaxAndMin": "The active powet setpoint must be between minimum active power and maximum active power values",
 
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",

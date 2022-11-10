@@ -258,6 +258,7 @@ const GeneratorCreationDialog = ({
             isFieldNumeric: true,
             isValueGreaterThan: minimumActivePower,
             isValueLessOrEqualTo: maximumActivePower,
+            errorMsgId: 'ActivePowerBetweenMaxAndMin',
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
@@ -276,7 +277,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
-            errorMsgId: 'VoltageBetweenMaxAndMin',
+            errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
         // formProps: { disabled: !voltageRegulation },
