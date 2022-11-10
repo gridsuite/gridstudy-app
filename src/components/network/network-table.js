@@ -42,11 +42,7 @@ import {
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSnackbar } from 'notistack';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackMessage } from '../../utils/messages';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import SearchIcon from '@mui/icons-material/Search';
@@ -257,7 +253,7 @@ const useStyles = makeStyles((theme) => ({
 const NetworkTable = (props) => {
     const classes = useStyles();
 
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
@@ -298,8 +294,6 @@ const NetworkTable = (props) => {
     );
 
     const intl = useIntl();
-
-    const intlRef = useIntlRef();
 
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
@@ -746,13 +740,9 @@ const NetworkTable = (props) => {
                     let message = intl.formatMessage({
                         id: 'paramsChangingDenied',
                     });
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: message,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'paramsChangingError',
-                            intlRef: intlRef,
-                        },
+                    snackError({
+                        messageTxt: message,
+                        headerId: 'paramsChangingError',
                     });
                 });
             setLineEdit({});
@@ -1000,11 +990,20 @@ const NetworkTable = (props) => {
         [lineEdit]
     );
 
+    const isColumnEditable = useCallback((rowData, columnDefinition) => {
+        return (
+            rowData[columnDefinition.dataKey] !== undefined ||
+            (columnDefinition.editableCondition !== undefined &&
+                rowData[columnDefinition.editableCondition.dependencyColumn] ===
+                    columnDefinition.editableCondition.columnValue)
+        );
+    }, []);
+
     const editableCellRender = useCallback(
         (rowData, columnDefinition, key, style, rowIndex) => {
             if (
                 isLineOnEditMode(rowData) &&
-                rowData[columnDefinition.dataKey] !== undefined &&
+                isColumnEditable(rowData, columnDefinition) &&
                 rowIndex === 1
             ) {
                 // when we edit a numeric field, we display the original un-rounded value
@@ -1054,6 +1053,7 @@ const NetworkTable = (props) => {
         },
         [
             isLineOnEditMode,
+            isColumnEditable,
             booleanCellRender,
             defaultCellRender,
             formatCell,
@@ -1216,13 +1216,9 @@ const NetworkTable = (props) => {
             setSelectedColumnsNames(
                 new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
             );
-            displayErrorMessageWithSnackbar({
-                errorMessage: errorMessage,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'paramsChangingError',
-                    intlRef: intlRef,
-                },
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'paramsChangingError',
             });
         });
         let lockedColumnsToSave = [...lockedColumnsNames].filter((name) =>
@@ -1237,13 +1233,9 @@ const NetworkTable = (props) => {
             setLockedColumnsNames(
                 new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
             );
-            displayErrorMessageWithSnackbar({
-                errorMessage: errorMessage,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'paramsChangingError',
-                    intlRef: intlRef,
-                },
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'paramsChangingError',
             });
         });
         setPopupSelectColumnNames(false);
@@ -1253,13 +1245,9 @@ const NetworkTable = (props) => {
                 TABLES_NAMES[tabIndex],
             JSON.stringify(reorderedTableDefinitionIndexes)
         ).catch((errorMessage) => {
-            displayErrorMessageWithSnackbar({
-                errorMessage: errorMessage,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'paramsChangingError',
-                    intlRef: intlRef,
-                },
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'paramsChangingError',
             });
         });
     }, [
@@ -1268,9 +1256,8 @@ const NetworkTable = (props) => {
         lockedColumnsNames,
         reorderedTableDefinitionIndexes,
         allDisplayedColumnsNames,
-        enqueueSnackbar,
-        intlRef,
         allLockedColumnsNames,
+        snackError,
     ]);
 
     const handleToggle = (value) => () => {

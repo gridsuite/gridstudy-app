@@ -705,11 +705,16 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetQ({})\n',
                 editor: NumericalField,
+                editableCondition: {
+                    dependencyColumn: 'voltageRegulatorOn',
+                    columnValue: false,
+                },
             },
             {
                 id: 'VoltageRegulatorOn',
                 dataKey: 'voltageRegulatorOn',
                 boolean: true,
+                forceUpdateOnChange: true,
                 changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
                 editor: BooleanListField,
             },
@@ -720,6 +725,10 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetV({})\n',
                 editor: NumericalField,
+                editableCondition: {
+                    dependencyColumn: 'voltageRegulatorOn',
+                    columnValue: true,
+                },
             },
             {
                 id: 'RegulatingTerminal',

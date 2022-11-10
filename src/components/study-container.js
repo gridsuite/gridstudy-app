@@ -59,6 +59,7 @@ import {
 } from './util/running-status';
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
+import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
 
 export function useNodeData(
@@ -175,6 +176,9 @@ export function StudyContainer({ view, onChangeTab }) {
     const [studyPath, setStudyPath] = useState();
     const prevStudyPath = usePrevious(studyPath);
 
+    // using a ref because this is not used for rendering, it is used in the websocket onMessage()
+    const studyParentDirectoriesUuidsRef = useRef([]);
+
     const network = useSelector((state) => state.network);
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
@@ -252,16 +256,24 @@ export function StudyContainer({ view, onChangeTab }) {
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             if (updateTypeHeader === 'buildFailed') {
-                snackError('', 'NodeBuildingError');
+                snackError({
+                    headerId: 'NodeBuildingError',
+                });
             }
             if (updateTypeHeader === 'securityAnalysis_failed') {
-                snackError('', 'securityAnalysisError');
+                snackError({
+                    headerId: 'securityAnalysisError',
+                });
             }
             if (updateTypeHeader === 'sensitivityAnalysis_failed') {
-                snackError('', 'sensitivityAnalysisError');
+                snackError({
+                    headerId: 'sensitivityAnalysisError',
+                });
             }
             if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
-                snackError('', 'shortCircuitAnalysisError');
+                snackError({
+                    headerId: 'shortCircuitAnalysisError',
+                });
             }
         },
         [snackError]
@@ -277,7 +289,6 @@ export function StudyContainer({ view, onChangeTab }) {
             });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
-
                 checkFailNotifications(eventData);
                 dispatch(studyUpdated(eventData));
             };
@@ -312,6 +323,37 @@ export function StudyContainer({ view, onChangeTab }) {
         [dispatch, checkFailNotifications]
     );
 
+    const fetchStudyPath = useCallback(() => {
+        fetchPath(studyUuid)
+            .then((response) => {
+                const parentDirectoriesNames = response
+                    .slice(1)
+                    .map((parent) => parent.elementName);
+                const parentDirectoriesUuid = response
+                    .slice(1)
+                    .map((parent) => parent.elementUuid);
+                studyParentDirectoriesUuidsRef.current = parentDirectoriesUuid;
+
+                const studyName = response[0]?.elementName;
+                const path = computeFullPath(parentDirectoriesNames);
+                setStudyName(studyName);
+                setStudyPath(path);
+
+                document.title = computePageTitle(
+                    initialTitle,
+                    studyName,
+                    parentDirectoriesNames
+                );
+            })
+            .catch((errorMessage) => {
+                document.title = initialTitle;
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LoadStudyAndParentsInfoError',
+                });
+            });
+    }, [initialTitle, snackError, studyUuid]);
+
     const connectDeletedStudyNotifications = useCallback((studyUuid) => {
         console.info(`Connecting to directory notifications ...`);
 
@@ -337,6 +379,25 @@ export function StudyContainer({ view, onChangeTab }) {
         wsRef.current.onmessage = function (event) {
             const eventData = JSON.parse(event.data);
             dispatch(studyUpdated(eventData));
+            if (eventData.headers) {
+                if (
+                    eventData.headers['notificationType'] ===
+                    directoriesNotificationType.UPDATE_DIRECTORY
+                ) {
+                    // TODO: this receives notifications for all the public directories and all the user's private directories
+                    // At least we don't fetch everytime a notification is received, but we should instead limit the
+                    // number of notifications (they are sent to all the clients every time). Here we are only
+                    // interested in changes in parent directories of the study (study is moved, or any parent is moved
+                    // or renamed)
+                    if (
+                        studyParentDirectoriesUuidsRef.current.includes(
+                            eventData.headers['directoryUuid']
+                        )
+                    ) {
+                        fetchStudyPath();
+                    }
+                }
+            }
         };
 
         wsRef.current.onclose = function () {
@@ -352,7 +413,7 @@ export function StudyContainer({ view, onChangeTab }) {
         return () => {
             wsToClose.close();
         };
-    }, [dispatch]);
+    }, [dispatch, fetchStudyPath]);
 
     const displayNetworkLoadingFailMessage = useCallback((error) => {
         console.error(error.message);
@@ -418,7 +479,9 @@ export function StudyContainer({ view, onChangeTab }) {
                         }
                     })
                     .catch((err) => {
-                        snackWarning('', 'CaseNameLoadError');
+                        snackWarning({
+                            headerId: 'CaseNameLoadError',
+                        });
                     });
 
                 const firstSelectedNode =
@@ -440,13 +503,16 @@ export function StudyContainer({ view, onChangeTab }) {
                 );
             })
             .catch((errorMessage) => {
-                if (errorMessage.status === 404)
-                    snackError('', 'StudyUnrecoverableStateRecreate');
-                else
-                    snackError(
-                        errorMessage,
-                        'NetworkModificationTreeLoadError'
-                    );
+                if (errorMessage.status === 404) {
+                    snackError({
+                        headerId: 'StudyUnrecoverableStateRecreate',
+                    });
+                } else {
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'NetworkModificationTreeLoadError',
+                    });
+                }
             })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
@@ -481,43 +547,25 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
-            snackInfo('', 'moveStudyNotification', {
-                oldStudyPath: prevStudyPath,
-                studyPath: studyPath,
+            snackInfo({
+                headerId: 'moveStudyNotification',
+                headerValues: {
+                    oldStudyPath: prevStudyPath,
+                    studyPath: studyPath,
+                },
             });
         }
 
         if (prevStudyName && prevStudyName !== studyName) {
-            snackInfo('', 'renameStudyNotification', {
-                oldStudyName: prevStudyName,
-                studyName: studyName,
+            snackInfo({
+                headerId: 'renameStudyNotification',
+                headerValues: {
+                    oldStudyPath: prevStudyPath,
+                    studyPath: studyPath,
+                },
             });
         }
     }, [snackInfo, studyName, studyPath, prevStudyPath, prevStudyName]);
-
-    const fetchStudyPath = useCallback(() => {
-        fetchPath(studyUuid)
-            .then((response) => {
-                const parents = response
-                    .slice(1)
-                    .map((parent) => parent.elementName);
-
-                const studyName = response[0]?.elementName;
-                const path = computeFullPath(parents);
-                setStudyName(studyName);
-                setStudyPath(path);
-
-                document.title = computePageTitle(
-                    initialTitle,
-                    studyName,
-                    parents
-                );
-            })
-            .catch((errorMessage) => {
-                document.title = initialTitle;
-                snackError(errorMessage, 'LoadStudyAndParentsInfoError');
-            });
-    }, [studyUuid, initialTitle, snackError]);
 
     useEffect(() => {
         if (!studyUuid) {
