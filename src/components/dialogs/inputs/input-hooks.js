@@ -794,10 +794,5 @@ export const useRadioValue = ({
         );
     }, [intl, label, id, defaultValue, doTranslation, possibleValues, value]);
 
-    /*useEffect(
-        () => setValue(defaultValue),
-        [defaultValue, inputForm.toggleClear]
-    );*/
-
     return [value, field];
 };

@@ -124,7 +124,13 @@ const GeneratorCreationDialog = ({
             stepUpTransformerReactance: generator.stepUpTransformerReactance,
             reactiveCapabilityCurvePoints:
                 generator.reactiveCapabilityCurvePoints,
-            minMaxReactiveLimits: generator?.minMaxReactiveLimits,
+            minMaxReactiveLimits: generator.minMaxReactiveLimits,
+            reactiveCapabilityCurve:
+                generator.minMaxReactiveLimits === undefined,
+            minimumReactivePower:
+                generator?.minMaxReactiveLimits?.minimumReactivePower,
+            maximumReactivePower:
+                generator?.minMaxReactiveLimits?.maximumReactivePower,
             regulatingTerminalConnectableId:
                 generator.regulatingTerminalConnectableId,
             regulatingTerminalConnectableType:
@@ -220,19 +226,21 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.ratedNominalPower,
     });
 
-    const [reactiveCapabilityCurveChoice, isReactiveCapabilityCurveOnField] =
-        useRadioValue({
-            validation: fieldRequired,
-            inputForm: inputForm,
-            defaultValue:
-                formValues?.reactiveCapabilityCurve === false
-                    ? REACTIVE_LIMIT_TYPE_MIN_MAX
-                    : REACTIVE_LIMIT_TYPE_CURVE,
-            possibleValues: [
-                REACTIVE_LIMIT_TYPE_MIN_MAX,
-                REACTIVE_LIMIT_TYPE_CURVE,
-            ],
-        });
+    const [
+        reactiveCapabilityCurveChoice,
+        reactiveCapabilityCurveChoiceRadioButton,
+    ] = useRadioValue({
+        validation: fieldRequired,
+        inputForm: inputForm,
+        defaultValue:
+            formValues?.reactiveCapabilityCurve === false
+                ? REACTIVE_LIMIT_TYPE_MIN_MAX
+                : REACTIVE_LIMIT_TYPE_CURVE,
+        possibleValues: [
+            REACTIVE_LIMIT_TYPE_MIN_MAX,
+            REACTIVE_LIMIT_TYPE_CURVE,
+        ],
+    });
 
     const isReactiveCapabilityCurveOn = useCallback(() => {
         return reactiveCapabilityCurveChoice === REACTIVE_LIMIT_TYPE_CURVE;
@@ -502,7 +510,10 @@ const GeneratorCreationDialog = ({
                         </Grid>
                         <GridSubSection title="ReactiveLimits" />
                         <Grid container spacing={2}>
-                            {gridItem(isReactiveCapabilityCurveOnField, 12)}
+                            {gridItem(
+                                reactiveCapabilityCurveChoiceRadioButton,
+                                12
+                            )}
                             {!isReactiveCapabilityCurveOn() &&
                                 gridItem(minimumReactivePowerField, 4)}
                             {!isReactiveCapabilityCurveOn() &&
