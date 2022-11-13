@@ -780,12 +780,12 @@ export const useRadioValue = ({
                 >
                     {possibleValues.map((value) => (
                         <FormControlLabel
-                            value={value}
+                            value={value.id}
                             control={<Radio />}
                             label={
                                 doTranslation
-                                    ? intl.formatMessage({ id: value })
-                                    : value
+                                    ? intl.formatMessage({ id: value.label })
+                                    : value.label
                             }
                         />
                     ))}

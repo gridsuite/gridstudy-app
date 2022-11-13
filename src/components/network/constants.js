@@ -48,3 +48,8 @@ export const CONNECTION_DIRECTION = [
 export function getEnergySourceLabel(energySourceId) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
+
+export const REACTIVE_LIMIT_TYPES = [
+    { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
+    { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
+];

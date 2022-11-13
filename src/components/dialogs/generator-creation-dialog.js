@@ -41,7 +41,7 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
-import { ENERGY_SOURCES } from '../network/constants';
+import { ENERGY_SOURCES, REACTIVE_LIMIT_TYPES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
@@ -61,9 +61,6 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
     },
 }));
-
-const REACTIVE_LIMIT_TYPE_MIN_MAX = 'ReactiveLimitsKindMinMax';
-const REACTIVE_LIMIT_TYPE_CURVE = 'ReactiveLimitsKindCurve';
 
 /**
  * Dialog to create a generator in the network
@@ -233,17 +230,12 @@ const GeneratorCreationDialog = ({
         validation: fieldRequired,
         inputForm: inputForm,
         defaultValue:
-            formValues?.reactiveCapabilityCurve === false
-                ? REACTIVE_LIMIT_TYPE_MIN_MAX
-                : REACTIVE_LIMIT_TYPE_CURVE,
-        possibleValues: [
-            REACTIVE_LIMIT_TYPE_MIN_MAX,
-            REACTIVE_LIMIT_TYPE_CURVE,
-        ],
+            formValues?.reactiveCapabilityCurve === false ? 'MINMAX' : 'CURVE',
+        possibleValues: REACTIVE_LIMIT_TYPES,
     });
 
     const isReactiveCapabilityCurveOn = useCallback(() => {
-        return reactiveCapabilityCurveChoice === REACTIVE_LIMIT_TYPE_CURVE;
+        return reactiveCapabilityCurveChoice === 'CURVE';
     }, [reactiveCapabilityCurveChoice, formValues?.reactiveCapabilityCurve]);
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
