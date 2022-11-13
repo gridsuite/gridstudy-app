@@ -29,10 +29,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { fetchSvg } from '../../../utils/rest-api';
 
-import { SVG } from '@svgdotjs/svg.js';
-import '@svgdotjs/svg.panzoom.js';
-import Arrow from '../../../images/arrow.svg';
-import ArrowHover from '../../../images/arrow_hover.svg';
 import { fullScreenSingleLineDiagramId } from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -56,6 +52,7 @@ import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
+import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -69,8 +66,6 @@ export const SvgType = {
     VOLTAGE_LEVEL: 'voltage-level',
     SUBSTATION: 'substation',
 };
-
-const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const loadingWidth = 150;
 const maxWidthVoltageLevel = 800;
@@ -144,50 +139,44 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function getEquipmentTypeFromFeederType(feederType) {
+    switch (feederType) {
+        case 'LINE':
+            return equipments.lines;
+        case 'LOAD':
+            return equipments.loads;
+        case 'BATTERY':
+            return equipments.batteries;
+        case 'DANGLING_LINE':
+            return equipments.danglingLines;
+        case 'GENERATOR':
+            return equipments.generators;
+        case 'VSC_CONVERTER_STATION':
+            return equipments.vscConverterStations;
+        case 'LCC_CONVERTER_STATION':
+            return equipments.lccConverterStations;
+        case 'HVDC_LINE':
+            return equipments.hvdcLines;
+        case 'CAPACITOR':
+        case 'INDUCTOR':
+            return equipments.shuntCompensators;
+        case 'STATIC_VAR_COMPENSATOR':
+            return equipments.staticVarCompensators;
+        case 'TWO_WINDINGS_TRANSFORMER':
+        case 'TWO_WINDINGS_TRANSFORMER_LEG':
+        case 'PHASE_SHIFT_TRANSFORMER':
+            return equipments.twoWindingsTransformers;
+        case 'THREE_WINDINGS_TRANSFORMER':
+        case 'THREE_WINDINGS_TRANSFORMER_LEG':
+            return equipments.threeWindingsTransformers;
+        default: {
+            console.log('bad feeder type ', feederType);
+            return null;
+        }
+    }
+}
+
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
-
-const SWITCH_COMPONENT_TYPES = new Set([
-    'BREAKER',
-    'DISCONNECTOR',
-    'LOAD_BREAK_SWITCH',
-]);
-const FEEDER_COMPONENT_TYPES = new Set([
-    'LINE',
-    'LOAD',
-    'BATTERY',
-    'DANGLING_LINE',
-    'GENERATOR',
-    'VSC_CONVERTER_STATION',
-    'LCC_CONVERTER_STATION',
-    'HVDC_LINE',
-    'CAPACITOR',
-    'INDUCTOR',
-    'STATIC_VAR_COMPENSATOR',
-    'TWO_WINDINGS_TRANSFORMER',
-    'TWO_WINDINGS_TRANSFORMER_LEG',
-    'THREE_WINDINGS_TRANSFORMER',
-    'THREE_WINDINGS_TRANSFORMER_LEG',
-    'PHASE_SHIFT_TRANSFORMER',
-]);
-
-let arrowSvg;
-let arrowHoverSvg;
-
-fetch(Arrow)
-    .then((data) => {
-        return data.text();
-    })
-    .then((data) => {
-        arrowSvg = data;
-    });
-
-fetch(ArrowHover)
-    .then((data) => {
-        return data.text();
-    })
-    .then((data) => {
-        arrowHoverSvg = data;
-    });
 
 let initialWidth, initialHeight;
 // To allow controls that are in the corners of the map to not be hidden in normal mode
@@ -299,7 +288,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             setEquipmentMenu({
                 position: [x, y],
                 equipmentId: equipmentId,
-                equipmentType: equipmentType,
+                equipmentType: getEquipmentTypeFromFeederType(equipmentType),
                 svgId: svgId,
                 display: true,
             });
@@ -420,86 +409,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
 
-    function addFeederSelectionRect(svgText, theme) {
-        svgText.style.setProperty('fill', theme.palette.background.paper);
-        const selectionBackgroundColor = 'currentColor';
-        const selectionPadding = 4;
-        const bounds = svgText.getBBox();
-        const selectionRect = document.createElementNS(SVG_NS, 'rect');
-        selectionRect.setAttribute('class', 'sld-label-selection');
-        const style = getComputedStyle(svgText);
-        const padding_top = parseInt(style['padding-top']);
-        const padding_left = parseInt(style['padding-left']);
-        const padding_right = parseInt(style['padding-right']);
-        const padding_bottom = parseInt(style['padding-bottom']);
-        selectionRect.setAttribute('stroke-width', '0');
-        selectionRect.setAttribute(
-            'x',
-            (
-                bounds.x -
-                parseInt(style['padding-left']) -
-                selectionPadding
-            ).toString()
-        );
-        selectionRect.setAttribute(
-            'y',
-            (
-                bounds.y -
-                parseInt(style['padding-top']) -
-                selectionPadding
-            ).toString()
-        );
-        selectionRect.setAttribute(
-            'width',
-            (
-                bounds.width +
-                padding_left +
-                padding_right +
-                2 * selectionPadding
-            ).toString()
-        );
-        selectionRect.setAttribute(
-            'height',
-            (
-                bounds.height +
-                padding_top +
-                padding_bottom +
-                2 * selectionPadding
-            ).toString()
-        );
-        selectionRect.setAttribute('fill', selectionBackgroundColor);
-        selectionRect.setAttribute('rx', selectionPadding.toString());
-        if (svgText.hasAttribute('transform')) {
-            selectionRect.setAttribute(
-                'transform',
-                svgText.getAttribute('transform')
-            );
-        }
-        svgText.parentNode.insertBefore(selectionRect, svgText);
-    }
-
-    const showFeederSelection = useCallback(
-        (svgText) => {
-            if (
-                svgText.parentNode.getElementsByClassName('sld-label-selection')
-                    .length === 0
-            ) {
-                addFeederSelectionRect(svgText, theme);
-            }
-        },
-        [theme]
-    );
-
-    const hideFeederSelection = useCallback((svgText) => {
-        svgText.style.removeProperty('fill');
-        const selectionRect = svgText.parentNode.getElementsByClassName(
-            'sld-label-selection'
-        );
-        if (selectionRect.length !== 0) {
-            svgText.parentNode.removeChild(selectionRect[0]);
-        }
-    }, []);
-
     // shouldResetPreferredSizes doesn't need to be a ref, but it makes the static checks happy
     const shouldResetPreferredSizes = useRef();
     shouldResetPreferredSizes.current = false;
@@ -519,8 +428,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
-        showFeederSelection,
-        hideFeederSelection,
         svgType,
         theme,
         sldId,
@@ -530,179 +437,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         if (disabled) return;
-        function createSvgArrow(element, position, x, highestY, lowestY) {
-            let svgInsert = document.getElementById(element.id).parentElement;
-            let group = document.createElementNS(SVG_NS, 'g');
-
-            let y;
-            if (position === 'TOP') {
-                y = lowestY - 65;
-                x = x - 22;
-            } else {
-                y = highestY + 65;
-                x = x + 22;
-            }
-
-            if (position === 'BOTTOM') {
-                group.setAttribute(
-                    'transform',
-                    'translate(' + x + ',' + y + ') rotate(180)'
-                );
-            } else {
-                group.setAttribute(
-                    'transform',
-                    'translate(' + x + ',' + y + ')'
-                );
-            }
-
-            group.innerHTML = arrowSvg + arrowHoverSvg;
-
-            svgInsert.appendChild(group);
-
-            // handling the navigation between voltage levels
-            group.style.cursor = 'pointer';
-            let dragged = false;
-            group.addEventListener('mousedown', function (event) {
-                dragged = false;
-            });
-            group.addEventListener('mousemove', function (event) {
-                dragged = true;
-            });
-            group.addEventListener('mouseup', function (event) {
-                if (dragged || event.button !== 0) {
-                    return;
-                }
-                const id = document.getElementById(element.id).id;
-                const meta = svg.metadata.nodes.find(
-                    (other) => other.id === id
-                );
-                onNextVoltageLevelClick(meta.nextVId);
-            });
-
-            //handling the color changes when hovering
-            group.addEventListener('mouseenter', function (e) {
-                e.target.querySelector('.arrow').style.fill =
-                    theme.palette.background.paper;
-                e.target.querySelector('.arrow-hover').style.fill =
-                    'currentColor';
-            });
-
-            group.addEventListener('mouseleave', function (e) {
-                e.target.querySelector('.arrow').style.fill = 'currentColor';
-                e.target.querySelector('.arrow-hover').style.fill =
-                    theme.palette.background.paper;
-            });
-        }
-
-        function addNavigationArrow(svg) {
-            let navigable = svg.metadata.nodes.filter((el) => el.nextVId);
-
-            let vlList = svg.metadata.nodes.map((element) => element.vid);
-            vlList = vlList.filter(
-                (element, index) =>
-                    element !== '' && vlList.indexOf(element) === index
-            );
-
-            //remove arrows if the arrow points to the current svg
-            navigable = navigable.filter((element) => {
-                return vlList.indexOf(element.nextVId) === -1;
-            });
-
-            let highestY = new Map();
-            let lowestY = new Map();
-            let y;
-
-            navigable.forEach((element) => {
-                let transform = document
-                    .getElementById(element.id)
-                    .getAttribute('transform')
-                    .split(',');
-
-                y = parseInt(transform[1].match(/\d+/));
-                if (
-                    highestY.get(element.vid) === undefined ||
-                    y > highestY.get(element.vid)
-                ) {
-                    highestY.set(element.vid, y);
-                }
-                if (
-                    lowestY.get(element.vid) === undefined ||
-                    y < lowestY.get(element.vid)
-                ) {
-                    lowestY.set(element.vid, y);
-                }
-            });
-
-            navigable.forEach((element) => {
-                let transform = document
-                    .getElementById(element.id)
-                    .getAttribute('transform')
-                    .split(',');
-                let x = parseInt(transform[0].match(/\d+/));
-                createSvgArrow(
-                    element,
-                    element.direction,
-                    x,
-                    highestY.get(element.vid),
-                    lowestY.get(element.vid)
-                );
-            });
-        }
-
-        function getEquipmentTypeFromFeederType(feederType) {
-            switch (feederType) {
-                case 'LINE':
-                    return equipments.lines;
-                case 'LOAD':
-                    return equipments.loads;
-                case 'BATTERY':
-                    return equipments.batteries;
-                case 'DANGLING_LINE':
-                    return equipments.danglingLines;
-                case 'GENERATOR':
-                    return equipments.generators;
-                case 'VSC_CONVERTER_STATION':
-                    return equipments.vscConverterStations;
-                case 'LCC_CONVERTER_STATION':
-                    return equipments.lccConverterStations;
-                case 'HVDC_LINE':
-                    return equipments.hvdcLines;
-                case 'CAPACITOR':
-                case 'INDUCTOR':
-                    return equipments.shuntCompensators;
-                case 'STATIC_VAR_COMPENSATOR':
-                    return equipments.staticVarCompensators;
-                case 'TWO_WINDINGS_TRANSFORMER':
-                case 'TWO_WINDINGS_TRANSFORMER_LEG':
-                case 'PHASE_SHIFT_TRANSFORMER':
-                    return equipments.twoWindingsTransformers;
-                case 'THREE_WINDINGS_TRANSFORMER':
-                case 'THREE_WINDINGS_TRANSFORMER_LEG':
-                    return equipments.threeWindingsTransformers;
-                default: {
-                    console.log('bad feeder type ', feederType);
-                    return null;
-                }
-            }
-        }
 
         if (svg.svg) {
-            const divElt = svgRef.current;
-            divElt.innerHTML = svg.svg;
-            //need to add it there so the bbox has the right size
-            addNavigationArrow(svg);
-            // calculate svg width and height from svg bounding box
-            const svgEl = divElt.getElementsByTagName('svg')[0];
-            const bbox = svgEl.getBBox();
-            const xOrigin = bbox.x - 20;
-            const yOrigin = bbox.y - 20;
-            const svgWidth = Math.ceil(bbox.width + 40);
-            const svgHeight = Math.ceil(bbox.height + 40);
-
-            if (shouldResetPreferredSizes.current) {
-                setSvgPreferredWidth(svgWidth);
-                setSvgPreferredHeight(svgHeight);
-            }
+            const minWidth = svgFinalWidth;
+            const minHeight = svgFinalHeight;
 
             let viewboxMaxWidth =
                 svgType === SvgType.VOLTAGE_LEVEL
@@ -712,58 +450,61 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 svgType === SvgType.VOLTAGE_LEVEL
                     ? maxHeightVoltageLevel
                     : maxHeightSubstation;
+            let onNextVoltageCallback =
+                !isComputationRunning &&
+                !isAnyNodeBuilding &&
+                !modificationInProgress &&
+                !loadingState
+                    ? onNextVoltageLevelClick
+                    : null;
+            let onBreakerCallback =
+                !isComputationRunning &&
+                !isAnyNodeBuilding &&
+                !isNodeReadOnly(currentNode) &&
+                !modificationInProgress &&
+                !loadingState
+                    ? (breakerId, newSwitchState, switchElement) => {
+                          if (!modificationInProgress) {
+                              setModificationInProgress(true);
+                              updateLoadingState(true);
+                              setLocallySwitchedBreaker(switchElement);
+                              onBreakerClick(
+                                  breakerId,
+                                  newSwitchState,
+                                  switchElement
+                              );
+                          }
+                      }
+                    : null;
+            let onEquipmentMenuCallback =
+                !isComputationRunning &&
+                !isAnyNodeBuilding &&
+                !modificationInProgress &&
+                !loadingState
+                    ? showEquipmentMenu
+                    : null;
 
-            // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
-            divElt.innerHTML = ''; // clear the previous svg in div element before replacing
-            const draw = SVG()
-                .addTo(divElt)
-                .size(
-                    svgFinalWidth !== undefined ? svgFinalWidth : svgWidth,
-                    svgFinalHeight !== undefined ? svgFinalHeight : svgHeight
-                )
-                .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
-                .panZoom({
-                    panning: true,
-                    zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
-                    zoomMax: 10,
-                    zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: { top: 100, left: 100, right: 100, bottom: 100 },
-                });
-            draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
+            let selectionBackColor = theme.palette.background.paper;
 
-            // PowSyBl SLD introduced server side calculated SVG viewbox
-            // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
-            draw.node.firstChild.removeAttribute('viewBox');
+            const sldViewer = new SingleLineDiagramViewer(
+                svgRef.current, //container
+                svg.svg, //svgContent
+                svg.metadata, //svg metadata
+                svgType,
+                minWidth,
+                minHeight,
+                viewboxMaxWidth,
+                viewboxMaxHeight,
+                onNextVoltageCallback, //callback on the next voltage arrows
+                onBreakerCallback, // callback on the breakers
+                onEquipmentMenuCallback, //callback on the feeders
+                selectionBackColor //arrows color
+            );
 
-            if (svgWidth > viewboxMaxWidth || svgHeight > viewboxMaxHeight) {
-                //The svg is too big, display only the top left corner because that's
-                //better for users than zooming out. Keep the same aspect ratio
-                //so that panzoom's margins still work correctly.
-                //I am not sure the offsetX and offsetY thing is correct. It seems
-                //to help. When someone finds a big problem, then we can fix it.
-                const newLvlX = svgWidth / viewboxMaxWidth;
-                const newLvlY = svgHeight / viewboxMaxHeight;
-                if (newLvlX > newLvlY) {
-                    const offsetY = (viewboxMaxHeight - svgHeight) / newLvlX;
-                    draw.zoom(newLvlX, {
-                        x: xOrigin,
-                        y: (yOrigin + viewboxMaxHeight - offsetY) / 2,
-                    });
-                } else {
-                    const offsetX = (viewboxMaxWidth - svgWidth) / newLvlY;
-                    draw.zoom(newLvlY, {
-                        x: (xOrigin + viewboxMaxWidth - offsetX) / 2,
-                        y: yOrigin,
-                    });
-                }
+            if (shouldResetPreferredSizes.current) {
+                setSvgPreferredHeight(sldViewer.getHeight());
+                setSvgPreferredWidth(sldViewer.getWidth());
             }
-            draw.on('panStart', function (evt) {
-                divElt.style.cursor = 'move';
-            });
-            draw.on('panEnd', function (evt) {
-                divElt.style.cursor = 'default';
-            });
-            addNavigationArrow(svg);
 
             //Rotate clicked switch while waiting for updated sld data
             if (locallySwitchedBreaker) {
@@ -785,102 +526,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 }
             }
 
-            // handling the right click on a feeder (menus)
-            if (
-                !isComputationRunning &&
-                !isAnyNodeBuilding &&
-                !modificationInProgress
-            ) {
-                const feeders = svg.metadata.nodes.filter((element) => {
-                    return (
-                        element.vid !== '' &&
-                        FEEDER_COMPONENT_TYPES.has(element.componentType)
-                    );
-                });
-                feeders.forEach((feeder) => {
-                    const svgText = document
-                        .getElementById(feeder.id)
-                        .querySelector('text[class="sld-label"]');
-                    if (svgText !== null) {
-                        svgText.style.cursor = 'pointer';
-                        svgText.addEventListener(
-                            'mouseenter',
-                            function (event) {
-                                showFeederSelection(event.currentTarget);
-                            }
-                        );
-                        svgText.addEventListener(
-                            'mouseleave',
-                            function (event) {
-                                hideFeederSelection(event.currentTarget);
-                            }
-                        );
-                        svgText.addEventListener(
-                            'contextmenu',
-                            function (event) {
-                                showEquipmentMenu(
-                                    feeder.equipmentId,
-                                    getEquipmentTypeFromFeederType(
-                                        feeder.componentType
-                                    ),
-                                    feeder.id,
-                                    event.x,
-                                    event.y
-                                );
-                            }
-                        );
-                    }
-                });
-            }
-
-            // handling the click on a switch
-            if (
-                !isComputationRunning &&
-                !isAnyNodeBuilding &&
-                !isNodeReadOnly(currentNode) &&
-                !modificationInProgress
-            ) {
-                const switches = svg.metadata.nodes.filter((element) =>
-                    SWITCH_COMPONENT_TYPES.has(element.componentType)
-                );
-                switches.forEach((aSwitch) => {
-                    const domEl = document.getElementById(aSwitch.id);
-                    domEl.style.cursor = 'pointer';
-                    let dragged = false;
-                    domEl.addEventListener('mousedown', function (event) {
-                        dragged = false;
-                    });
-                    domEl.addEventListener('mousemove', function (event) {
-                        dragged = true;
-                    });
-                    domEl.addEventListener('mouseup', function (event) {
-                        if (dragged || event.button !== 0) {
-                            return;
-                        }
-                        const switchId = aSwitch.equipmentId;
-                        const open = aSwitch.open;
-
-                        if (!modificationInProgress) {
-                            setModificationInProgress(true);
-                            updateLoadingState(true);
-                            setLocallySwitchedBreaker(event.currentTarget);
-                            onBreakerClick(
-                                switchId,
-                                !open,
-                                event.currentTarget
-                            );
-                        }
-                    });
-                });
-            }
-
             if (svgDraw.current && svgUrl.current === svg.svgUrl) {
-                draw.viewbox(svgDraw.current.viewbox());
+                sldViewer.setViewBox(svgDraw.current.getViewBox());
             }
             svgUrl.current = svg.svgUrl;
-
-            svgDraw.current = draw;
+            svgDraw.current = sldViewer;
         }
+
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
         // Note: these deps must be kept in sync with the ones of the useLayoutEffect shouldResetPreferredSizes
         // is set to true. Because we want to reset svgPreferredWidth and svgPreferredHeight in all cases, except when only svgFinalWidth and svgFinalHeight have changed
@@ -896,8 +548,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
-        showFeederSelection,
-        hideFeederSelection,
         svgType,
         theme,
         sldId,
@@ -937,6 +587,14 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         isComputationRunning,
         svgType,
         theme,
+        equipmentMenu,
+        showEquipmentMenu,
+        locallySwitchedBreaker,
+        loadingState,
+        modificationInProgress,
+        isAnyNodeBuilding,
+        network,
+        ref,
     ]);
 
     const classes = useStyles();
