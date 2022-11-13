@@ -236,7 +236,7 @@ const GeneratorCreationDialog = ({
 
     const isReactiveCapabilityCurveOn = useCallback(() => {
         return reactiveCapabilityCurveChoice === 'CURVE';
-    }, [reactiveCapabilityCurveChoice, formValues?.reactiveCapabilityCurve]);
+    }, [reactiveCapabilityCurveChoice]);
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
         label: 'MinimumReactivePower',
