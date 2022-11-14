@@ -18,7 +18,7 @@ import {
     fetchVoltageLevelsEquipments,
     duplicateModifications,
 } from '../../../utils/rest-api';
-import { useSnackMessage } from '../../../utils/messages';
+import { useIntlRef, useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
@@ -154,7 +154,7 @@ const NetworkModificationNodeEditor = () => {
     const [copiedModifications, setCopiedModifications] = useState([]);
 
     const [isDragging, setIsDragging] = useState(false);
-
+    const { snackInfo } = useSnackMessage();
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
     const dispatch = useDispatch();
@@ -523,10 +523,16 @@ const NetworkModificationNodeEditor = () => {
                         if (data[0][key] === null) {
                             delete data[0][key];
                         }
-                        for (var i = 0; i < copiedModifications.length; i++) {
-                            if (modificationUuid === copiedModifications[i]) {
-                                setCopiedModifications([]);
-                            }
+                        if (
+                            copiedModifications.some(
+                                (m) => m === modificationUuid
+                            )
+                        ) {
+                            setCopiedModifications([]);
+                            let message = useIntlRef.current.formatMessage({
+                                id: 'CopiedModificationInvalidationMessage',
+                            });
+                            snackInfo(message);
                         }
                     });
                     setEditData(data[0]);
@@ -534,10 +540,6 @@ const NetworkModificationNodeEditor = () => {
             })
             .catch((errorMessage) => snackError(errorMessage));
     };
-
-    useEffect(() => {
-        console.log('Liste hypothèese copié', copiedModifications);
-    }, [copiedModifications]);
 
     const toggleSelectAllModifications = useCallback(() => {
         setToggleSelectAll((oldVal) => !oldVal);
