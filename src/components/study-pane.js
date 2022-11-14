@@ -17,7 +17,6 @@ import {
     openNetworkAreaDiagram,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
-import { equipments } from './network/network-equipments';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import NetworkTable from './network/network-table';

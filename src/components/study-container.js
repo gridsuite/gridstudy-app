@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import StudyPane, { StudyView } from './study-pane';
+import StudyPane from './study-pane';
 import React, {
     useCallback,
     useEffect,
@@ -18,7 +18,6 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     connectNotificationsWebsocket,
-    fetchAllEquipments,
     fetchLoadFlowInfos,
     fetchNetworkModificationTree,
     fetchSecurityAnalysisStatus,
