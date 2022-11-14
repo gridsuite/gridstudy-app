@@ -329,7 +329,8 @@ const GeneratorCreationDialog = ({
         useRegulatingTerminalValue({
             label: 'RegulatingTerminalGenerator',
             validation: {
-                isFieldRequired: voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+                isFieldRequired:
+                    voltageRegulationType === REGULATION_TYPES.DISTANT.id,
             },
             inputForm: inputForm,
             disabled: !voltageRegulation,
