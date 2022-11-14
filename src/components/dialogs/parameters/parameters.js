@@ -22,14 +22,10 @@ import {
     Typography,
     Switch,
 } from '@mui/material';
-import { useSnackbar } from 'notistack';
 
 import { updateConfigParameter } from '../../../utils/rest-api';
 
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../../utils/messages';
+import { useSnackMessage } from '../../../utils/messages';
 
 import {
     SingleLineDiagramParameters,
@@ -118,9 +114,7 @@ export const LabelledButton = ({ callback, label, name }) => {
     );
 };
 export function useParameterState(paramName) {
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const paramGlobalState = useSelector((state) => state[paramName]);
 
@@ -135,23 +129,13 @@ export function useParameterState(paramName) {
             setParamLocalState(value);
             updateConfigParameter(paramName, value).catch((errorMessage) => {
                 setParamLocalState(paramGlobalState);
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'paramsChangingError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'paramsChangingError',
                 });
             });
         },
-        [
-            paramName,
-            enqueueSnackbar,
-            intlRef,
-            setParamLocalState,
-            paramGlobalState,
-        ]
+        [paramName, setParamLocalState, paramGlobalState, snackError]
     );
 
     return [paramLocalState, handleChangeParamLocalState];

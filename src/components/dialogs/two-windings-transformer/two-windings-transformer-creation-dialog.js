@@ -16,15 +16,11 @@ import {
     Button,
     Alert,
 } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../../utils/messages';
+import { useSnackMessage } from '../../../utils/messages';
 import { createTwoWindingsTransformer } from '../../../utils/rest-api';
 import {
     useButtonWithTooltip,
@@ -76,10 +72,9 @@ const TwoWindingsTransformerCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intlRef = useIntlRef();
     const intl = useIntl();
 
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const characteristicsInputForm = useInputForm();
     const ratioTapInputForm = useInputForm();
@@ -875,13 +870,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 connectivity2?.connectionName?.id ?? null,
                 connectivity2?.connectionDirection?.id ?? 'UNDEFINED'
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'TwoWindingsTransformerCreationError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'TwoWindingsTransformerCreationError',
                 });
             });
             handleCloseAndClear();
