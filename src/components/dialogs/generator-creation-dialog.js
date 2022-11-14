@@ -337,7 +337,9 @@ const GeneratorCreationDialog = ({
             voltageLevelIdDefaultValue:
                 formValues?.regulatingTerminalVlId || null,
             equipmentSectionTypeDefaultValue:
-                formValues?.regulatingTerminalConnectableType || null,
+                formValues?.regulatingTerminalConnectableType ||
+                formValues?.regulatingTerminalType ||
+                null,
             equipmentSectionIdDefaultValue:
                 formValues?.regulatingTerminalConnectableId ||
                 formValues?.regulatingTerminalId ||
