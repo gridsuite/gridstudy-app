@@ -18,6 +18,7 @@ import {
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import Paper from '@mui/material/Paper';
+import { equipments } from './network/network-equipments';
 import PropTypes from 'prop-types';
 import NetworkTable from './network/network-table';
 import clsx from 'clsx';
@@ -172,6 +173,12 @@ const StudyPane = ({
         },
         [network, showVoltageLevelDiagram]
     );
+
+    useEffect(() => {
+        if (!network) return;
+        network.useEquipment(equipments.substations);
+        network.useEquipment(equipments.lines);
+    }, [network]);
 
     function showInSpreadsheet(equipment) {
         let newTableEquipment = {
