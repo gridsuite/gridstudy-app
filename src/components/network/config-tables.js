@@ -629,7 +629,10 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editor: ({ equipment, ...props }) =>
                     EnumField({
-                        enumList: ENERGY_SOURCES,
+                        enumList: [
+                            ...ENERGY_SOURCES,
+                            { id: 'OTHER', label: 'Other' },
+                        ],
                         ...props,
                     }),
             },
@@ -761,7 +764,10 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editor: ({ equipment, ...props }) =>
                     EnumField({
-                        enumList: LOAD_TYPES,
+                        enumList: [
+                            ...LOAD_TYPES,
+                            { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
+                        ],
                         ...props,
                     }),
             },
