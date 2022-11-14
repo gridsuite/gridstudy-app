@@ -39,7 +39,7 @@ import {
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { Box } from '@mui/system';
-import { ENERGY_SOURCES } from '../network/constants';
+import { ENERGY_SOURCES, UNDEFINED_ENERGY_SOURCE } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
+ * @param voltageLevelsEquipmentsOptionsPromise Promise handling list of voltage level equipment options
  * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  */
@@ -173,7 +174,11 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: false,
         },
-        defaultValue: formValues?.energySource ?? null,
+        defaultValue:
+            formValues?.energySource &&
+            formValues.energySource !== UNDEFINED_ENERGY_SOURCE
+                ? formValues.energySource
+                : null,
     });
 
     const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
@@ -379,7 +384,7 @@ const GeneratorCreationDialog = ({
                 currentNodeUuid,
                 generatorId,
                 sanitizeString(generatorName),
-                energySource,
+                !energySource ? UNDEFINED_ENERGY_SOURCE : energySource,
                 minimumActivePower,
                 maximumActivePower,
                 ratedNominalPower ? ratedNominalPower : null,
@@ -573,6 +578,10 @@ GeneratorCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
+    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

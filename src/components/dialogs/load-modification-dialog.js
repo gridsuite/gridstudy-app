@@ -16,7 +16,7 @@ import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
 import { modifyLoad } from '../../utils/rest-api';
-import { LOAD_TYPES } from '../network/constants';
+import { LOAD_TYPES, UNDEFINED_LOAD_TYPE } from '../network/constants';
 import {
     useDoubleValue,
     useOptionalEnumValue,
@@ -113,7 +113,11 @@ const LoadModificationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumObjects: LOAD_TYPES,
-        defaultValue: formValues?.loadType?.value ?? null,
+        defaultValue:
+            formValues?.loadType?.value &&
+            formValues.loadType.value !== UNDEFINED_LOAD_TYPE
+                ? formValues.loadType.value
+                : null,
         previousValue: loadInfos?.type
             ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)?.label
             : undefined,
@@ -154,7 +158,7 @@ const LoadModificationDialog = ({
                 currentNodeUuid,
                 loadInfos?.id,
                 sanitizeString(loadName),
-                loadType,
+                !loadType ? UNDEFINED_LOAD_TYPE : loadType,
                 activePower,
                 reactivePower,
                 undefined,
