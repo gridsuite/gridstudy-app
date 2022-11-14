@@ -931,7 +931,6 @@ const TwoWindingsTransformerCreationDialog = ({
                         value={tabIndex}
                         variant="scrollable"
                         onChange={(event, newValue) => setTabIndex(newValue)}
-                        position="sticky"
                     >
                         <Tab
                             label={
