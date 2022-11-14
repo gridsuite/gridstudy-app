@@ -301,15 +301,15 @@ const GeneratorCreationDialog = ({
         label: 'RegulationTypeText',
         inputForm: inputForm,
         formProps: filledTextField,
-        enumValues: REGULATION_TYPES,
+        enumValues: Object.values(REGULATION_TYPES),
         validation: {
             isFieldRequired: voltageRegulation,
         },
         defaultValue:
             formValues?.regulatingTerminalId ||
             formValues?.regulatingTerminalConnectableId
-                ? 'DISTANT'
-                : 'LOCAL',
+                ? REGULATION_TYPES.DISTANT.id
+                : REGULATION_TYPES.LOCAL.id,
     });
 
     const [qPercent, qPercentField] = useDoubleValue({
@@ -329,7 +329,7 @@ const GeneratorCreationDialog = ({
         useRegulatingTerminalValue({
             label: 'RegulatingTerminalGenerator',
             validation: {
-                isFieldRequired: voltageRegulationType === 'DISTANT',
+                isFieldRequired: voltageRegulationType === REGULATION_TYPES.DISTANT.id,
             },
             inputForm: inputForm,
             disabled: !voltageRegulation,
@@ -485,7 +485,7 @@ const GeneratorCreationDialog = ({
                 <Grid item xs={4} justifySelf={'end'} />
                 {gridItem(voltageSetpointField, 4)}
                 <Box sx={{ width: '100%' }} />
-                {voltageRegulationType === 'DISTANT' && (
+                {voltageRegulationType === REGULATION_TYPES.DISTANT.id && (
                     <>
                         <Grid item xs={4} justifySelf={'end'}>
                             <FormattedMessage id="RegulatingTerminalGenerator" />
