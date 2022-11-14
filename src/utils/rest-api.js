@@ -2357,6 +2357,7 @@ export function getUniqueNodeName(studyUuid) {
 export function fetchMapEquipments(
     studyUuid,
     currentNodeUuid,
+    substationsIds,
     inUpstreamBuiltParentNode
 ) {
     console.info(
@@ -2372,7 +2373,8 @@ export function fetchMapEquipments(
 
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/map-equipments-data';
+        '/network-map/map-equipments-data?' +
+        getQueryParamsList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }

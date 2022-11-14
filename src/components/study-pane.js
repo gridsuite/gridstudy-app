@@ -15,7 +15,6 @@ import {
     filteredNominalVoltagesUpdated,
     fullScreenNetworkAreaDiagramId,
     openNetworkAreaDiagram,
-    setForceNetworkReload,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { equipments } from './network/network-equipments';
@@ -92,7 +91,6 @@ const StudyPane = ({
     studyUuid,
     network,
     currentNode,
-    updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
     sensiStatus,
@@ -133,10 +131,6 @@ const StudyPane = ({
         type: null,
         changed: false,
     });
-
-    const reloadNetworkNeeded = useSelector(
-        (state) => state.networkReloadNeeded
-    );
 
     const dispatch = useDispatch();
 
@@ -179,19 +173,6 @@ const StudyPane = ({
         },
         [network, showVoltageLevelDiagram]
     );
-
-    useEffect(() => {
-        if (props.view === StudyView.SPREADSHEET) {
-            dispatch(setForceNetworkReload());
-        }
-    }, [dispatch, props.view]);
-
-    //RECHARGEMENT DE LA CARTE
-    useEffect(() => {
-        if (!network) return;
-        network.useEquipment(equipments.substations);
-        network.useEquipment(equipments.lines);
-    }, [network]);
 
     function showInSpreadsheet(equipment) {
         let newTableEquipment = {
@@ -279,13 +260,11 @@ const StudyPane = ({
                                 <NetworkMapTab
                                     /* TODO do we move redux param to container */
                                     studyUuid={studyUuid}
-                                    //network={network}
                                     visible={
                                         props.view === StudyView.MAP &&
                                         studyDisplayMode !==
                                             STUDY_DISPLAY_MODE.TREE
                                     }
-                                    updatedLines={updatedLines}
                                     useName={useName}
                                     lineFullPath={lineFullPath}
                                     lineParallelPath={lineParallelPath}
@@ -375,7 +354,7 @@ const StudyPane = ({
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
-                    disabled={disabled || reloadNetworkNeeded}
+                    disabled={disabled}
                     visible={props.view === StudyView.SPREADSHEET}
                 />
             </Paper>

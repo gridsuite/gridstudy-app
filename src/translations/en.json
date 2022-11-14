@@ -571,7 +571,6 @@
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
-    "InvalidData": "Data has been invalidated",
 
     "depth": "Depth",
 

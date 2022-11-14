@@ -8,6 +8,7 @@
 import { RemoteResourceHandler } from '../util/remote-resource-handler';
 import { networkCreated, networkEquipmentLoaded } from '../../redux/actions';
 import {
+    fetchAllEquipments,
     fetchBatteries,
     fetchDanglingLines,
     fetchGenerators,
@@ -474,6 +475,70 @@ export default class Network {
                 l.voltageLevelId1 !== voltageLevelId &&
                 l.voltageLevelId2 !== voltageLevelId
         );
+    }
+
+    checkAndGetValues(equipments) {
+        return equipments ? equipments : [];
+    }
+
+    reloadImpactedSubstationsEquipments(
+        studyUuid,
+        currentNode,
+        substationsIds
+    ) {
+        if (substationsIds) {
+            const updatedEquipments = fetchAllEquipments(
+                studyUuid,
+                currentNode?.id,
+                substationsIds
+            );
+            Promise.all([updatedEquipments])
+                .then((values) => {
+                    this.updateSubstations(
+                        this.checkAndGetValues(values[0].substations)
+                    );
+                    this.updateLines(this.checkAndGetValues(values[0].lines));
+                    this.updateTwoWindingsTransformers(
+                        this.checkAndGetValues(
+                            values[0].twoWindingsTransformers
+                        )
+                    );
+                    this.updateThreeWindingsTransformers(
+                        this.checkAndGetValues(
+                            values[0].threeWindingsTransformers
+                        )
+                    );
+                    this.updateGenerators(
+                        this.checkAndGetValues(values[0].generators)
+                    );
+                    this.updateLoads(this.checkAndGetValues(values[0].loads));
+                    this.updateBatteries(
+                        this.checkAndGetValues(values[0].batteries)
+                    );
+                    this.updateDanglingLines(
+                        this.checkAndGetValues(values[0].danglingLines)
+                    );
+                    this.updateLccConverterStations(
+                        this.checkAndGetValues(values[0].lccConverterStations)
+                    );
+                    this.updateVscConverterStations(
+                        this.checkAndGetValues(values[0].vscConverterStations)
+                    );
+                    this.updateHvdcLines(
+                        this.checkAndGetValues(values[0].hvdcLines)
+                    );
+                    this.updateShuntCompensators(
+                        this.checkAndGetValues(values[0].shuntCompensators)
+                    );
+                    this.updateStaticVarCompensators(
+                        this.checkAndGetValues(values[0].staticVarCompensators)
+                    );
+                })
+                .catch(function (error) {
+                    console.error(error.message);
+                    if (this.errHandler) this.errHandler(error);
+                });
+        }
     }
 
     removeEquipment(equipmentType, equipmentId) {

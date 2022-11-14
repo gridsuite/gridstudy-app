@@ -72,10 +72,7 @@ import {
     RESET_SHORT_CIRCUIT_NOTIF,
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
-    SET_NETWORK_RELOAD_NEEDED,
-    SET_FORCE_NETWORK_RELOAD,
-    RESET_NETWORK_RELOAD,
-    MAP_DATA_CREATED,
+    MAP_EQUIPMENTS_CREATED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -137,7 +134,7 @@ const initialState = {
     studyUuid: null,
     currentTreeNode: null,
     network: null,
-    mapData: null,
+    mapEquipments: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
     computedLanguage: getLocalStorageComputedLanguage(),
@@ -164,8 +161,6 @@ const initialState = {
     isModificationsInProgress: false,
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     reloadMap: true,
-    networkReloadNeeded: false,
-    forceReloadNetwork: true,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -188,8 +183,8 @@ export const reducer = createReducer(initialState, {
         state.network = action.network;
     },
 
-    [MAP_DATA_CREATED]: (state, action) => {
-        state.mapData = action.mapData;
+    [MAP_EQUIPMENTS_CREATED]: (state, action) => {
+        state.mapEquipments = action.mapEquipments;
     },
 
     [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
@@ -379,19 +374,6 @@ export const reducer = createReducer(initialState, {
 
     [MAP_MANUAL_REFRESH]: (state, action) => {
         state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
-    },
-
-    [SET_FORCE_NETWORK_RELOAD]: (state) => {
-        state.forceReloadNetwork = true;
-    },
-
-    [SET_NETWORK_RELOAD_NEEDED]: (state) => {
-        state.networkReloadNeeded = true;
-    },
-
-    [RESET_NETWORK_RELOAD]: (state) => {
-        state.networkReloadNeeded = false;
-        state.forceReloadNetwork = false;
     },
 
     [RESET_MAP_RELOADED]: (state) => {

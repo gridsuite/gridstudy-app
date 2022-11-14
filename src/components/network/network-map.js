@@ -20,7 +20,6 @@ import { makeStyles, useTheme } from '@mui/styles';
 import { decomposeColor } from '@mui/material/styles';
 import LoaderWithOverlay from '../util/loader-with-overlay';
 
-import Network from './network';
 import GeoData from './geo-data';
 import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
@@ -33,6 +32,7 @@ import { Button } from '@mui/material';
 import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
+import MapEquipments from './map-equipments-cache';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -467,7 +467,7 @@ NetworkMap.defaultProps = {
 };
 
 NetworkMap.propTypes = {
-    network: PropTypes.instanceOf(Network),
+    network: PropTypes.instanceOf(MapEquipments),
     substations: PropTypes.array,
     lines: PropTypes.array,
     geoData: PropTypes.instanceOf(GeoData),

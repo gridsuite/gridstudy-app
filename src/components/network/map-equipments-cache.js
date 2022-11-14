@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RemoteResourceHandler } from '../util/remote-resource-handler';
-import { networkCreated, networkEquipmentLoaded } from '../../redux/actions';
 import { fetchMapEquipments } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 
@@ -15,7 +13,7 @@ const elementIdIndexer = (map, element) => {
     return map;
 };
 
-export default class MapEquipmentsCache {
+export default class MapEquipments {
     substations = [];
 
     substationsById = new Map();
@@ -33,35 +31,54 @@ export default class MapEquipmentsCache {
     nominalVoltages = [];
 
     initEquipments(studyUuid, currentNodeUuid) {
-        console.log(
-            'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-        );
-        fetchMapEquipments(studyUuid, currentNodeUuid, false)
+        fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 console.log(val);
                 this.substations = val.substations;
-                this.dispatch(
-                    networkEquipmentLoaded(
-                        equipments.substations,
-                        this.substations
-                    )
-                );
                 this.completeSubstationsInfos();
 
                 this.lines = val.lines;
-                this.dispatch(
-                    networkEquipmentLoaded(equipments.lines, this.lines)
-                );
                 this.completeLinesInfos();
             })
             .catch((error) => {
                 console.error(error);
+                if (this.errHandler) this.errHandler(error);
             });
+    }
+
+    checkAndGetValues(equipments) {
+        return equipments ? equipments : [];
     }
 
     constructor(studyUuid, currentNodeUuid, errHandler, dispatch) {
         this.dispatch = dispatch;
+        this.errHandler = errHandler;
         this.initEquipments(studyUuid, currentNodeUuid);
+    }
+
+    reloadImpactedSubstationsEquipments(
+        studyUuid,
+        currentNode,
+        substationsIds,
+        handleUpdatedLines
+    ) {
+        const updatedEquipments = fetchMapEquipments(
+            studyUuid,
+            currentNode?.id,
+            substationsIds
+        );
+        Promise.all([updatedEquipments])
+            .then((values) => {
+                this.updateSubstations(
+                    this.checkAndGetValues(values[0].substations)
+                );
+                this.updateLines(this.checkAndGetValues(values[0].lines));
+                handleUpdatedLines(values[0].lines);
+            })
+            .catch(function (error) {
+                console.error(error.message);
+                if (this.errHandler) this.errHandler(error);
+            });
     }
 
     completeSubstationsInfos() {
@@ -107,17 +124,15 @@ export default class MapEquipmentsCache {
 
         // add newly created equipments
         let equipmentsAdded = false;
-        if (this.isResourceFetched(equipmentType)) {
-            newEquipements.forEach((equipment1) => {
-                const found = currentEquipments.find(
-                    (equipment2) => equipment2.id === equipment1.id
-                );
-                if (found === undefined) {
-                    currentEquipments.push(equipment1);
-                    equipmentsAdded = true;
-                }
-            });
-        }
+        newEquipements.forEach((equipment1) => {
+            const found = currentEquipments.find(
+                (equipment2) => equipment2.id === equipment1.id
+            );
+            if (found === undefined) {
+                currentEquipments.push(equipment1);
+                equipmentsAdded = true;
+            }
+        });
 
         return equipmentsAdded === true
             ? [...currentEquipments]

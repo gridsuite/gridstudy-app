@@ -35,12 +35,8 @@ import {
     isNodeRenamed,
 } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import {
-    mapDataCreated,
-    resetMapReloaded,
-    setForceNetworkReload,
-} from '../redux/actions';
-import MapData from './network/map-equipments-cache';
+import { mapEquipmentsCreated, resetMapReloaded } from '../redux/actions';
+import MapEquipments from './network/map-equipments-cache';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -73,7 +69,6 @@ const useStyles = makeStyles((theme) => ({
 export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
-    //network,
     currentNode,
     /* results*/
     securityAnalysisStatus,
@@ -89,7 +84,6 @@ export const NetworkMapTab = ({
     lineFlowMode,
     lineFlowColorMode,
     lineFlowAlertThreshold,
-    updatedLines,
     /* callbacks */
     openVoltageLevel,
     setIsComputationRunning,
@@ -97,7 +91,10 @@ export const NetworkMapTab = ({
     showInSpreadsheet,
     setErrorMessage,
 }) => {
-    const network = useSelector((state) => state.mapData);
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const UPDATE_TYPE_HEADER = 'updateType';
+
+    const network = useSelector((state) => state.mapEquipments);
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
@@ -110,24 +107,12 @@ export const NetworkMapTab = ({
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
-    const reloadMapNeeded = useSelector((state) => state.reloadMap);
-    const [geoData, setGeoData] = useState();
+    const refIsMapManualRefreshEnabled = useRef();
+    refIsMapManualRefreshEnabled.current = mapManualRefresh;
 
-    const loadMapData = useCallback(() => {
-        if (!isNodeBuilt(currentNode) || !studyUuid) {
-            return;
-        }
-        console.info(`Loading map data of study '${studyUuid}'...`);
-        const mapData = new MapData(
-            studyUuid,
-            currentNode?.id,
-            undefined,
-            dispatch
-        );
-        // For initial network loading, no need to initialize lines and substations at first,
-        // lazy loading will do the job (no glitches to avoid)
-        dispatch(mapDataCreated(mapData));
-    }, [currentNode, studyUuid, dispatch]);
+    const reloadMapNeeded = useSelector((state) => state.reloadMap);
+
+    const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
@@ -145,6 +130,8 @@ export const NetworkMapTab = ({
 
     const classes = useStyles();
     const currentNodeRef = useRef(null);
+
+    const [updatedLines, setUpdatedLines] = useState([]);
 
     function withEquipment(Menu, props) {
         return (
@@ -216,7 +203,7 @@ export const NetworkMapTab = ({
         []
     );
 
-    const reloadMapGeoData = useCallback(() => {
+    const loadMapGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         const substationPositions = fetchSubstationPositions(
             studyUuid,
@@ -255,10 +242,99 @@ export const NetworkMapTab = ({
         studyUuid,
     ]);
 
-    const handleReloadMap = useCallback(() => {
-        reloadMapGeoData();
-        dispatch(setForceNetworkReload());
-    }, [dispatch, reloadMapGeoData]);
+    const loadMapEquipments = useCallback(
+        (substationsIds) => {
+            if (!isNodeBuilt(currentNode) || !studyUuid) {
+                return;
+            }
+            if (!isInitialized) {
+                const initialMapEquipments = new MapEquipments(
+                    studyUuid,
+                    currentNode?.id,
+                    setErrorMessage,
+                    dispatch
+                );
+                dispatch(mapEquipmentsCreated(initialMapEquipments));
+            } else {
+                console.info('Reload map equipments');
+                network.reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    substationsIds,
+                    setUpdatedLines
+                );
+            }
+        },
+        [
+            currentNode,
+            dispatch,
+            isInitialized,
+            network,
+            setErrorMessage,
+            studyUuid,
+        ]
+    );
+
+    function parseStudyNotification(studyUpdatedForce) {
+        const substationsIds =
+            studyUpdatedForce.eventData.headers['substationsIds'];
+        const substationsIdsArray = substationsIds
+            .substring(1, substationsIds.length - 1)
+            .split(', ');
+
+        const deletedEquipmentId =
+            studyUpdatedForce.eventData.headers['deletedEquipmentId'];
+        const deletedEquipmentType =
+            studyUpdatedForce.eventData.headers['deletedEquipmentType'];
+
+        return [substationsIdsArray, deletedEquipmentId, deletedEquipmentType];
+    }
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
+                'study'
+            ) {
+                if (refIsMapManualRefreshEnabled.current) return;
+
+                const [
+                    substationsIds,
+                    deletedEquipmentId,
+                    deletedEquipmentType,
+                ] = parseStudyNotification(studyUpdatedForce);
+
+                if (substationsIds?.length > 0) {
+                    loadMapEquipments(substationsIds);
+                }
+
+                if (deletedEquipmentId && deletedEquipmentType) {
+                    console.info(
+                        'removing equipment with id=',
+                        deletedEquipmentId,
+                        ' and type=',
+                        deletedEquipmentType,
+                        ' from the mapData'
+                    );
+                    network.removeEquipment(
+                        deletedEquipmentType,
+                        deletedEquipmentId
+                    );
+                }
+            }
+        }
+    }, [
+        network,
+        dispatch,
+        studyUpdatedForce,
+        studyUpdatedForce.eventData.headers,
+        loadMapEquipments,
+    ]);
+
+    const handleFullMapReload = useCallback(() => {
+        loadMapEquipments();
+        loadMapGeoData();
+    }, [loadMapEquipments, loadMapGeoData]);
 
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
@@ -270,25 +346,17 @@ export const NetworkMapTab = ({
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
         if (!reloadMapNeeded) return;
-
-        loadMapData();
-        reloadMapGeoData();
+        handleFullMapReload();
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
         disabled,
-        reloadMapNeeded,
         studyUuid,
         currentNode,
-        lineFullPath,
-        setWaitingLoadGeoData,
-        setErrorMessage,
-        setGeoData,
-        intlRef,
+        handleFullMapReload,
         mapManualRefresh,
         isInitialized,
-        reloadMapGeoData,
-        loadMapData,
+        reloadMapNeeded,
     ]);
 
     let choiceVoltageLevelsSubstation = null;
@@ -347,7 +415,6 @@ export const NetworkMapTab = ({
         return loadFlowStatus === RunningStatus.SUCCEED;
     };
 
-    console.log(network);
     const renderMap = () => (
         <NetworkMap
             network={network}
@@ -381,7 +448,7 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
-            onReloadMapClick={handleReloadMap}
+            onReloadMapClick={handleFullMapReload}
         />
     );
 

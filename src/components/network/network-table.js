@@ -247,7 +247,7 @@ const useStyles = makeStyles((theme) => ({
     disabledLabel: {
         color: theme.palette.text.disabled,
     },
-    invalidData: {
+    invalidNode: {
         position: 'absolute',
         top: '30%',
         left: '43%',
@@ -1571,10 +1571,10 @@ const NetworkTable = (props) => {
                             </Grid>
                             {props.disabled && (
                                 <Alert
-                                    className={classes.invalidData}
+                                    className={classes.invalidNode}
                                     severity="warning"
                                 >
-                                    <FormattedMessage id="InvalidData" />
+                                    <FormattedMessage id="InvalidNode" />
                                 </Alert>
                             )}
                             <Grid item className={classes.exportCsv}>
