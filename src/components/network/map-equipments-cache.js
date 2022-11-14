@@ -33,7 +33,6 @@ export default class MapEquipments {
     initEquipments(studyUuid, currentNodeUuid) {
         fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
-                console.log(val);
                 this.substations = val.substations;
                 this.completeSubstationsInfos();
 
