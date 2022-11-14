@@ -52,3 +52,7 @@ export const CONNECTION_DIRECTION = [
 export function getEnergySourceLabel(energySourceId) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
+
+export function getLoadTypeLabel(loadTypeId) {
+    return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
+}
