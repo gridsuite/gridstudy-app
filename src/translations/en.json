@@ -507,7 +507,7 @@
     "HighTapPosition":"High tap position",
     "TapPosition":"Tap position",
     "TapPositionBetweenLowAndHighTapPositionValue": "Tap position must be greater or equal to Low tap position and lesser or equal to High tap position",
-    "TerminalRef":"Regulating terminal",
+    "TerminalRef":"Regulated terminal",
     "GenerateRatioTapRowsError": "Please generate the ratio changer steps",
     "IncoherenRatioLowTapPositionError": "The Low tap position value is not consistent with the ratio tap changer steps data",
     "GeneratePhaseTapRowsError": "Please generate the phase changer steps",

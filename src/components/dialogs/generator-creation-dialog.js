@@ -121,7 +121,8 @@ const GeneratorCreationDialog = ({
                 generator.reactiveCapabilityCurvePoints,
             minMaxReactiveLimits: generator?.minMaxReactiveLimits,
             regulatingTerminalConnectableId:
-                generator.regulatingTerminalConnectableId,
+                generator.regulatingTerminalConnectableId ||
+                generator.regulatingTerminalId,
             regulatingTerminalConnectableType:
                 generator.regulatingTerminalConnectableType,
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
@@ -338,7 +339,9 @@ const GeneratorCreationDialog = ({
             equipmentSectionTypeDefaultValue:
                 formValues?.regulatingTerminalConnectableType || null,
             equipmentSectionIdDefaultValue:
-                formValues?.regulatingTerminalConnectableId || null,
+                formValues?.regulatingTerminalConnectableId ||
+                formValues?.regulatingTerminalId ||
+                null,
         });
 
     const [frequencyRegulation, frequencyRegulationField] = useBooleanValue({
