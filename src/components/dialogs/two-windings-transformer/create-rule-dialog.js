@@ -39,7 +39,7 @@ export const CreateRuleDialog = (props) => {
 
     const isTapValuesValid = () => {
         if (highTapValue && lowTapValue) {
-            return !(highTapValue - lowTapValue > 0);
+            return !(highTapValue - lowTapValue === 0);
         }
         return true;
     };
