@@ -540,15 +540,6 @@ export const useRegulatingTerminalValue = ({
         });
     }, []);
 
-    console.info('validation 11111', validation);
-
-    // useEffect(() => {
-    //     if (!validation.isFieldRequired) {
-    //         inputForm.removeValidation('regulating-voltage-level');
-    //         inputForm.removeValidation('regulating-equipment');
-    //     }
-    // }, [validation.isFieldRequired]);
-
     const render = useMemo(() => {
         if (!validation.isFieldRequired) {
             inputForm.removeValidation('regulating-voltage-level');
