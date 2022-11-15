@@ -98,6 +98,10 @@ const GeneratorCreationDialog = ({
     ];
     const fieldRequired = { isFieldRequired: true };
 
+    const isDistantRegulation = (regulationType) => {
+        return regulationType === REGULATION_TYPES.DISTANT.id;
+    };
+
     const toFormValues = (generator) => {
         return {
             equipmentId: generator.id + '(1)',
@@ -329,8 +333,7 @@ const GeneratorCreationDialog = ({
         useRegulatingTerminalValue({
             label: 'RegulatingTerminalGenerator',
             validation: {
-                isFieldRequired:
-                    voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+                isFieldRequired: isDistantRegulation(voltageRegulationType),
             },
             inputForm: inputForm,
             disabled: !voltageRegulation,
@@ -437,12 +440,16 @@ const GeneratorCreationDialog = ({
                 transientReactance ? transientReactance : null,
                 transformerReactance ? transformerReactance : null,
                 (voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType) &&
                     regulatingTerminal?.equipmentSection?.id) ||
                     null,
                 (voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType) &&
                     regulatingTerminal?.equipmentSection?.type) ||
                     null,
-                (voltageRegulation && regulatingTerminal?.voltageLevel?.id) ||
+                (voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType) &&
+                    regulatingTerminal?.voltageLevel?.id) ||
                     null,
                 isReactiveCapabilityCurveOn,
                 frequencyRegulation,
@@ -486,7 +493,7 @@ const GeneratorCreationDialog = ({
                 <Grid item xs={4} justifySelf={'end'} />
                 {gridItem(voltageSetpointField, 4)}
                 <Box sx={{ width: '100%' }} />
-                {voltageRegulationType === REGULATION_TYPES.DISTANT.id && (
+                {isDistantRegulation(voltageRegulationType) && (
                     <>
                         <Grid item xs={4} justifySelf={'end'}>
                             <FormattedMessage id="RegulatingTerminalGenerator" />
