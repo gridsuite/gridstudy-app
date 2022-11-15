@@ -13,7 +13,7 @@ import {
     DialogTitle,
     Grid,
 } from '@mui/material';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCSVReader } from '../inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
@@ -45,6 +45,13 @@ export const ImportRuleDialog = (props) => {
             setSelectedFile();
         }
     }, [props.openImportRuleDialog, setSelectedFile]);
+
+    const isInvalid = useCallback(() => {
+        return (
+            typeof selectedFile === 'undefined' ||
+            typeof selectedFileError !== 'undefined'
+        );
+    }, [selectedFile, selectedFileError]);
 
     return (
         <Dialog open={props.openImportRuleDialog} fullWidth={true}>
@@ -85,10 +92,7 @@ export const ImportRuleDialog = (props) => {
                 <Button onClick={handleCloseDialog}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button
-                    disabled={selectedFileError?.length !== 0}
-                    onClick={handleSave}
-                >
+                <Button disabled={isInvalid()} onClick={handleSave}>
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
