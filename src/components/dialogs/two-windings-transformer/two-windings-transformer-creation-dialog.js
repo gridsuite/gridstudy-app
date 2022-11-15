@@ -50,6 +50,8 @@ import {
 import { REGULATION_MODES } from '../../network/constants';
 import { useBooleanValue } from '../inputs/boolean';
 import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
+import clsx from 'clsx';
+import makeStyles from '@mui/styles/makeStyles';
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
@@ -62,6 +64,17 @@ export const RATIO_TAP = 'ratio';
  * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
+
+const useStyles = makeStyles((theme) => ({
+    tabWithError: {
+        '&.Mui-selected': { color: theme.palette.error.main },
+        color: theme.palette.error.main,
+    },
+    tabWithErrorIndicator: {
+        backgroundColor: theme.palette.error.main,
+    },
+}));
+
 const TwoWindingsTransformerCreationDialog = ({
     editData,
     open,
@@ -73,6 +86,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const intl = useIntl();
+
+    const classes = useStyles();
 
     const { snackError } = useSnackMessage();
 
@@ -91,6 +106,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const equipmentPath = '2-windings-transformers';
 
     const [tabIndex, setTabIndex] = useState(0);
+
+    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
     const clearValues = () => {
         setFormValues(null);
@@ -725,13 +742,16 @@ const TwoWindingsTransformerCreationDialog = ({
     const handleSave = () => {
         setCreationError();
         let isFormValid = true;
+        let tabWithError = [];
         if (!characteristicsInputForm.validate()) {
             isFormValid = false;
+            tabWithError.push(0);
         }
 
         let ratioTap = undefined;
         if (ratioTapChangerEnabled && !ratioTapInputForm.validate()) {
             isFormValid = false;
+            tabWithError.push(1);
         } else if (ratioTapChangerEnabled && ratioTapInputForm.validate()) {
             if (
                 ratioTapRegulating &&
@@ -744,6 +764,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     })
                 );
                 isFormValid = false;
+                tabWithError.push(1);
             }
 
             let formatedRatioTapSteps = ratioTapRows.map((row) => {
@@ -782,6 +803,7 @@ const TwoWindingsTransformerCreationDialog = ({
         let phaseTap = undefined;
         if (phaseTapChangerEnabled && !phaseTapInputForm.validate()) {
             isFormValid = false;
+            tabWithError.push(2);
         } else if (phaseTapChangerEnabled && phaseTapInputForm.validate()) {
             if (
                 phaseTapRegulating &&
@@ -794,6 +816,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     })
                 );
                 isFormValid = false;
+                tabWithError.push(2);
             }
 
             let formatedPhaseTapSteps = phaseTapRows.map((row) => {
@@ -877,6 +900,8 @@ const TwoWindingsTransformerCreationDialog = ({
             });
             handleCloseAndClear();
         }
+
+        setTabIndexesWithError(tabWithError);
     };
 
     const handleClose = useCallback(
@@ -909,6 +934,18 @@ const TwoWindingsTransformerCreationDialog = ({
         setPhaseTapRows(rows);
     };
 
+    const getTabIndicatorClass = (index) =>
+        tabIndexesWithError.includes(index)
+            ? {
+                  indicator: classes.tabWithErrorIndicator,
+              }
+            : {};
+
+    const getTabClass = (index) =>
+        clsx({
+            [classes.tabWithError]: tabIndexesWithError.includes(index),
+        });
+
     return (
         <>
             <Dialog
@@ -925,33 +962,41 @@ const TwoWindingsTransformerCreationDialog = ({
                         </Grid>
                         <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
+                    <Grid container>
+                        <Tabs
+                            value={tabIndex}
+                            variant="scrollable"
+                            onChange={(event, newValue) =>
+                                setTabIndex(newValue)
+                            }
+                            classes={getTabIndicatorClass(tabIndex)}
+                        >
+                            <Tab
+                                label={
+                                    <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
+                                }
+                                className={getTabClass(0)}
+                                onClick={() => setDialogWidth('sm')}
+                            />
+                            <Tab
+                                onClick={() => setDialogWidth('xl')}
+                                label={
+                                    <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
+                                }
+                                className={getTabClass(1)}
+                            />
+                            <Tab
+                                onClick={() => setDialogWidth('xl')}
+                                label={
+                                    <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
+                                }
+                                className={getTabClass(2)}
+                            />
+                        </Tabs>
+                    </Grid>
                 </DialogTitle>
-                <DialogContent>
-                    <Tabs
-                        value={tabIndex}
-                        variant="scrollable"
-                        onChange={(event, newValue) => setTabIndex(newValue)}
-                    >
-                        <Tab
-                            label={
-                                <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
-                            }
-                            onClick={() => setDialogWidth('sm')}
-                        />
-                        <Tab
-                            onClick={() => setDialogWidth('xl')}
-                            label={
-                                <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
-                            }
-                        />
-                        <Tab
-                            onClick={() => setDialogWidth('xl')}
-                            label={
-                                <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
-                            }
-                        />
-                    </Tabs>
 
+                <DialogContent>
                     <Box hidden={tabIndex !== 0} p={1}>
                         <TwoWindingsTransformerPane
                             twoWindingsTransformerIdField={
