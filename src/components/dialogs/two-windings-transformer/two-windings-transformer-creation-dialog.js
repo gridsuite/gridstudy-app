@@ -296,7 +296,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [ratioTapTargetDeadband, ratioTapTargetDeadbandField] =
         useDoubleValue({
-            label: 'Deadband',
+            label: 'DeadbandKV',
             id: 'TargetDeadband',
             formProps: {
                 disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
@@ -441,7 +441,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [phaseTapTargetDeadband, phaseTapTargetDeadbandField] =
         useDoubleValue({
-            label: 'Deadband',
+            label: 'DeadbandMW',
             id: 'TargetDeadband',
             formProps: {
                 disabled: !phaseTapRegulating || !phaseTapChangerEnabled,
