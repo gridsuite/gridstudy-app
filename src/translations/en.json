@@ -402,7 +402,7 @@
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",
-    "RegulatingTerminalGenerator": "Regulating Terminal",
+    "RegulatingTerminalGenerator": "Regulated Terminal",
     "ShortCircuit": "Short-circuit",
     "TransientReactance": "Transient reactance",
     "TransformerReactance": "Transformer reactance",
