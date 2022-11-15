@@ -68,8 +68,13 @@ export const useInputForm = () => {
             .map((e) => e())
             .every((res) => res);
     }, []);
+
     const addValidation = useCallback((id, validate) => {
         validationMap.current.set(id, validate);
+    }, []);
+
+    const removeValidation = useCallback((id) => {
+        validationMap.current.delete(id);
     }, []);
 
     const clear = useCallback(() => {
@@ -88,8 +93,17 @@ export const useInputForm = () => {
             reset,
             hasChanged,
             setHasChanged,
+            removeValidation,
         };
-    }, [toggleClear, clear, validate, addValidation, reset, hasChanged]);
+    }, [
+        toggleClear,
+        clear,
+        validate,
+        addValidation,
+        reset,
+        hasChanged,
+        removeValidation,
+    ]);
 };
 
 export const useTextValue = ({
@@ -448,6 +462,7 @@ export const useEnumValue = ({
     return [value, field];
 };
 export const useRegulatingTerminalValue = ({
+    validation,
     disabled = false,
     inputForm,
     voltageLevelOptionsPromise,
@@ -525,9 +540,24 @@ export const useRegulatingTerminalValue = ({
         });
     }, []);
 
+    console.info('validation 11111', validation);
+
+    // useEffect(() => {
+    //     if (!validation.isFieldRequired) {
+    //         inputForm.removeValidation('regulating-voltage-level');
+    //         inputForm.removeValidation('regulating-equipment');
+    //     }
+    // }, [validation.isFieldRequired]);
+
     const render = useMemo(() => {
+        if (!validation.isFieldRequired) {
+            inputForm.removeValidation('regulating-voltage-level');
+            inputForm.removeValidation('regulating-equipment');
+        }
         return (
             <RegulatingTerminalEdition
+                validation={validation}
+                inputForm={inputForm}
                 disabled={disabled}
                 voltageLevelOptions={voltageLevelOptions}
                 regulatingTerminalValue={regulatingTerminal}
@@ -544,6 +574,8 @@ export const useRegulatingTerminalValue = ({
             />
         );
     }, [
+        validation,
+        inputForm,
         disabled,
         voltageLevelOptions,
         regulatingTerminal,
@@ -553,7 +585,6 @@ export const useRegulatingTerminalValue = ({
         setVoltageLevel,
         setEquipmentSection,
     ]);
-
     return [regulatingTerminal, render];
 };
 

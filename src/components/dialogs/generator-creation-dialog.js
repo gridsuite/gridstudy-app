@@ -333,10 +333,14 @@ const GeneratorCreationDialog = ({
         useRegulatingTerminalValue({
             label: 'RegulatingTerminalGenerator',
             validation: {
-                isFieldRequired: isDistantRegulation(voltageRegulationType),
+                isFieldRequired:
+                    !voltageRegulation ||
+                    isDistantRegulation(voltageRegulationType),
             },
             inputForm: inputForm,
-            disabled: !voltageRegulation,
+            disabled:
+                !voltageRegulation ||
+                !isDistantRegulation(voltageRegulationType),
             voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
                 formValues?.regulatingTerminalVlId || null,
@@ -493,16 +497,17 @@ const GeneratorCreationDialog = ({
                 <Grid item xs={4} justifySelf={'end'} />
                 {gridItem(voltageSetpointField, 4)}
                 <Box sx={{ width: '100%' }} />
-                {isDistantRegulation(voltageRegulationType) && (
-                    <>
-                        <Grid item xs={4} justifySelf={'end'}>
-                            <FormattedMessage id="RegulatingTerminalGenerator" />
-                        </Grid>
-                        {gridItem(regulatingTerminalField, 8)}
-                        <Grid item xs={4} justifySelf={'end'} />
-                        {gridItem(qPercentField, 4)}
-                    </>
-                )}
+                {voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType) && (
+                        <>
+                            <Grid item xs={4} justifySelf={'end'}>
+                                <FormattedMessage id="RegulatingTerminalGenerator" />
+                            </Grid>
+                            {gridItem(regulatingTerminalField, 8)}
+                            <Grid item xs={4} justifySelf={'end'} />
+                            {gridItem(qPercentField, 4)}
+                        </>
+                    )}
             </>
         );
     };
