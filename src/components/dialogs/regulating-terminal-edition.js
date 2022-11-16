@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export const REGULATING_VOLTAGE_LEVEL = 'regulating-voltage-level';
+export const REGULATING_EQUIPMENT = 'regulating-equipment';
+
 export function makeRefreshRegulatingTerminalSectionsCallback() {
     return (voltageLevel, putter) => {
         if (voltageLevel?.equipments) {
@@ -114,7 +117,7 @@ const RegulatingTerminalEdition = ({
             setErrorForVL(res?.errorMsgId);
             return !res.error;
         }
-        inputForm.addValidation('regulating-voltage-level', validate);
+        inputForm.addValidation(REGULATING_VOLTAGE_LEVEL, validate);
     }, [validation, inputForm, voltageLevelId, errorForVL]);
 
     const [errorForTerminal, setErrorForTerminal] = useState();
@@ -125,7 +128,7 @@ const RegulatingTerminalEdition = ({
             setErrorForTerminal(res?.errorMsgId);
             return !res.error;
         }
-        inputForm.addValidation('regulating-equipment', validate);
+        inputForm.addValidation(REGULATING_EQUIPMENT, validate);
     }, [validation, inputForm, currentEquipment, errorForTerminal]);
 
     useEffect(() => {

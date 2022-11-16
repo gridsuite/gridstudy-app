@@ -541,10 +541,6 @@ export const useRegulatingTerminalValue = ({
     }, []);
 
     const render = useMemo(() => {
-        if (!validation.isFieldRequired) {
-            inputForm.removeValidation('regulating-voltage-level');
-            inputForm.removeValidation('regulating-equipment');
-        }
         return (
             <RegulatingTerminalEdition
                 validation={validation}

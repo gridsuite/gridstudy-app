@@ -46,6 +46,10 @@ import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve-table';
+import {
+    REGULATING_EQUIPMENT,
+    REGULATING_VOLTAGE_LEVEL,
+} from './regulating-terminal-edition';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -293,7 +297,6 @@ const GeneratorCreationDialog = ({
         label: 'ReactivePowerText',
         validation: {
             isFieldRequired: !voltageRegulation,
-            isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
@@ -320,7 +323,6 @@ const GeneratorCreationDialog = ({
         label: 'QPercentText',
         validation: {
             isFieldRequired: false,
-            isFieldNumeric: true,
             isValueGreaterThan: '0',
             isValueLessOrEqualTo: '100',
         },
@@ -334,7 +336,7 @@ const GeneratorCreationDialog = ({
             label: 'RegulatingTerminalGenerator',
             validation: {
                 isFieldRequired:
-                    !voltageRegulation ||
+                    voltageRegulation &&
                     isDistantRegulation(voltageRegulationType),
             },
             inputForm: inputForm,
@@ -353,6 +355,13 @@ const GeneratorCreationDialog = ({
                 formValues?.regulatingTerminalId ||
                 null,
         });
+
+    useEffect(() => {
+        if (!voltageRegulation || !isDistantRegulation(voltageRegulationType)) {
+            inputForm.removeValidation(REGULATING_VOLTAGE_LEVEL);
+            inputForm.removeValidation(REGULATING_EQUIPMENT);
+        }
+    }, [voltageRegulation, voltageRegulationType, inputForm]);
 
     const [frequencyRegulation, frequencyRegulationField] = useBooleanValue({
         label: 'FrequencyRegulation',
