@@ -14,7 +14,7 @@ export const LOAD_TYPES = [
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },
 ];
-// and the undefined/default one
+// and the undefined/default one (not displayed)
 export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 
 // Relevant EnergySource Powsybl enum values
@@ -24,9 +24,8 @@ export const ENERGY_SOURCES = [
     { id: 'WIND', label: 'Wind' },
     { id: 'THERMAL', label: 'Thermal' },
     { id: 'SOLAR', label: 'Solar' },
+    { id: 'OTHER', label: 'Other' },
 ];
-// and the undefined/default one
-export const UNDEFINED_ENERGY_SOURCE = 'OTHER';
 
 export const UPDATE_TYPE = [
     'creatingInProgress',

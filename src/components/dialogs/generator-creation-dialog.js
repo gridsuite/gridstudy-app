@@ -19,7 +19,7 @@ import { useSnackMessage } from '../../utils/messages';
 import {
     useButtonWithTooltip,
     useDoubleValue,
-    useOptionalEnumValue,
+    useEnumValue,
     useInputForm,
     useRegulatingTerminalValue,
     useTableValues,
@@ -39,7 +39,7 @@ import {
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { Box } from '@mui/system';
-import { ENERGY_SOURCES, UNDEFINED_ENERGY_SOURCE } from '../network/constants';
+import { ENERGY_SOURCES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
@@ -166,19 +166,15 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.equipmentName,
     });
 
-    const [energySource, energySourceField] = useOptionalEnumValue({
+    const [energySource, energySourceField] = useEnumValue({
         label: 'EnergySourceText',
         inputForm: inputForm,
         formProps: filledTextField,
-        enumObjects: ENERGY_SOURCES,
+        enumValues: ENERGY_SOURCES,
         validation: {
-            isFieldRequired: false,
+            isFieldRequired: true,
         },
-        defaultValue:
-            formValues?.energySource &&
-            formValues.energySource !== UNDEFINED_ENERGY_SOURCE
-                ? formValues.energySource
-                : null,
+        defaultValue: formValues?.energySource ?? 'OTHER',
     });
 
     const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
@@ -384,7 +380,7 @@ const GeneratorCreationDialog = ({
                 currentNodeUuid,
                 generatorId,
                 sanitizeString(generatorName),
-                !energySource ? UNDEFINED_ENERGY_SOURCE : energySource,
+                energySource,
                 minimumActivePower,
                 maximumActivePower,
                 ratedNominalPower ? ratedNominalPower : null,

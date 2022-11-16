@@ -35,11 +35,7 @@ import {
     VoltageAdornment,
 } from './dialogUtils';
 import { Box } from '@mui/system';
-import {
-    ENERGY_SOURCES,
-    UNDEFINED_ENERGY_SOURCE,
-    getEnergySourceLabel,
-} from '../network/constants';
+import { ENERGY_SOURCES, getEnergySourceLabel } from '../network/constants';
 import { useNullableBooleanValue } from './inputs/boolean';
 import { modifyGenerator } from '../../utils/rest-api';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
@@ -150,11 +146,7 @@ const GeneratorModificationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumObjects: ENERGY_SOURCES,
-        defaultValue:
-            formValues?.energySource?.value &&
-            formValues.energySource.value !== UNDEFINED_ENERGY_SOURCE
-                ? formValues.energySource.value
-                : null,
+        defaultValue: formValues?.energySource?.value ?? null,
         previousValue: previousEnergySourceLabel,
     });
 
@@ -261,7 +253,7 @@ const GeneratorModificationDialog = ({
                 currentNodeUuid,
                 generatorInfos?.id,
                 sanitizeString(generatorName),
-                !energySource ? UNDEFINED_ENERGY_SOURCE : energySource,
+                energySource,
                 minimumActivePower,
                 maximumActivePower,
                 ratedNominalPower,

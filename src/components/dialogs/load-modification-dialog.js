@@ -169,7 +169,7 @@ const LoadModificationDialog = ({
                 currentNodeUuid,
                 loadInfos?.id,
                 sanitizeString(loadName),
-                !loadType ? UNDEFINED_LOAD_TYPE : loadType,
+                loadType,
                 activePower,
                 reactivePower,
                 undefined,
