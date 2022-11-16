@@ -6,10 +6,9 @@
  */
 
 import { useIntl } from 'react-intl';
-import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { fetchEquipmentInfos } from '../../utils/rest-api';
-import { displayErrorMessageWithSnackbar } from '../../utils/messages';
+import { useSnackMessage } from '../../utils/messages';
 
 export const useFormSearchCopy = ({
     studyUuid,
@@ -20,7 +19,7 @@ export const useFormSearchCopy = ({
 }) => {
     const intl = useIntl();
 
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackInfo, snackError } = useSnackMessage();
 
     const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
 
@@ -44,10 +43,8 @@ export const useFormSearchCopy = ({
                             equipmentId: element.id,
                         }
                     );
-                    enqueueSnackbar(msg, {
-                        variant: 'info',
-                        persist: false,
-                        style: { whiteSpace: 'pre-line' },
+                    snackInfo({
+                        messageTxt: msg,
                     });
                 });
             } else {
@@ -71,9 +68,8 @@ export const useFormSearchCopy = ({
                         }
                     );
                 }
-                displayErrorMessageWithSnackbar({
-                    errorMessage: msg,
-                    enqueueSnackbar,
+                snackError({
+                    messageTxt: msg,
                 });
             }
             handleCloseSearchDialog();

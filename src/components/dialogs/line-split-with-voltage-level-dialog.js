@@ -340,7 +340,10 @@ const LineSplitWithVoltageLevelDialog = ({
                 newLine2Id,
                 sanitizeString(newLine2Name)
             ).catch((errorMessage) => {
-                snackError(errorMessage, 'LineDivisionError');
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LineDivisionError',
+                });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();

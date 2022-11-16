@@ -29,12 +29,7 @@ import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-    useSnackMessage,
-} from '../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useIntlRef, useSnackMessage } from '../utils/messages';
 import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
@@ -86,7 +81,6 @@ export const NetworkModificationTreePane = ({
 }) => {
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
     const { snackError, snackInfo } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
@@ -169,21 +163,13 @@ export const NetworkModificationTreePane = ({
                 ) {
                     setSelectedNodeIdForCopy(null);
                     setCopyType(null);
-                    let message = intlRef.current.formatMessage({
-                        id: 'CopiedNodeInvalidationMessage',
+                    snackInfo({
+                        messageId: 'CopiedNodeInvalidationMessage',
                     });
-                    snackInfo(message);
                 }
             }
         }
-    }, [
-        studyUuid,
-        studyUpdatedForce,
-        updateNodes,
-        dispatch,
-        snackInfo,
-        intlRef,
-    ]);
+    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch, snackInfo]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
@@ -194,28 +180,20 @@ export const NetworkModificationTreePane = ({
                         type: type,
                         buildStatus: 'NOT_BUILT',
                     }).catch((errorMessage) => {
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'NodeCreateError',
-                                intlRef: intlRef,
-                            },
+                        snackError({
+                            messageTxt: errorMessage,
+                            headerId: 'NodeCreateError',
                         });
                     })
                 )
                 .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeCreateError',
-                            intlRef: intlRef,
-                        },
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'NodeCreateError',
                     });
                 });
         },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [studyUuid, snackError]
     );
 
     const handleCopyNode = useCallback(
@@ -249,7 +227,10 @@ export const NetworkModificationTreePane = ({
                         setCopyType(null);
                     })
                     .catch((errorMessage) => {
-                        snackError(errorMessage, 'NodeCreateError');
+                        snackError({
+                            messageTxt: errorMessage,
+                            headerId: 'NodeCreateError',
+                        });
                     });
             } else {
                 copyTreeNode(
@@ -258,7 +239,10 @@ export const NetworkModificationTreePane = ({
                     referenceNodeId,
                     insertMode
                 ).catch((errorMessage) => {
-                    snackError(errorMessage, 'NodeCreateError');
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'NodeCreateError',
+                    });
                 });
             }
         },
@@ -268,33 +252,25 @@ export const NetworkModificationTreePane = ({
     const handleRemoveNode = useCallback(
         (element) => {
             deleteTreeNode(studyUuid, element.id).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NodeDeleteError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'NodeDeleteError',
                 });
             });
         },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [studyUuid, snackError]
     );
 
     const handleBuildNode = useCallback(
         (element) => {
             buildNode(studyUuid, element.id).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NodeBuildingError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'NodeBuildingError',
                 });
             });
         },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [studyUuid, snackError]
     );
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
