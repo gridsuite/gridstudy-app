@@ -234,7 +234,7 @@ export const NetworkMapTab = ({
             });
         dispatch(resetMapReloaded());
     }, [
-        currentNode?.id,
+        currentNode,
         dispatch,
         intlRef,
         lineFullPath,
