@@ -1228,16 +1228,25 @@ export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
     const wsbase = document.baseURI
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');
-    const wsadress =
-        wsbase +
-        PREFIX_DIRECTORY_NOTIFICATION_WS +
-        '/notify?updateType=deleteStudy&studyUuid=' +
-        studyUuid;
+    const wsadress = wsbase + PREFIX_DIRECTORY_NOTIFICATION_WS + '/notify?';
 
     const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
     // don't log the token, it's private
     rws.onopen = function (event) {
-        console.info('Connected Websocket ' + wsadress + ' ...');
+        const filters = {
+            elementUuid: [studyUuid],
+            updateType: 'deleteStudy',
+        };
+        rws.send(JSON.stringify(filters));
+        console.info(
+            'Connected Websocket ' +
+                wsadress +
+                'and sending filters studyUuid=' +
+                filters.studyUuid +
+                ' and updateType=' +
+                filters.updateType +
+                ' ...'
+        );
     };
     return rws;
 }
@@ -1251,16 +1260,22 @@ export function connectNotificationsWsUpdateDirectories() {
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');
     const webSocketUrl =
-        webSocketBaseUrl +
-        PREFIX_DIRECTORY_NOTIFICATION_WS +
-        '/notify?updateType=directories';
+        webSocketBaseUrl + PREFIX_DIRECTORY_NOTIFICATION_WS + '/notify';
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
+        () => webSocketUrl + '?access_token=' + getToken()
     );
     reconnectingWebSocket.onopen = function (event) {
+        const filters = {
+            updateType: 'directories',
+        };
+        reconnectingWebSocket.send(JSON.stringify(filters));
         console.info(
-            'Connected Websocket update directories ' + webSocketUrl + ' ...'
+            'Connected Websocket update directories ' +
+                webSocketUrl +
+                ' and sending filter updateType=' +
+                filters.updateType +
+                '...'
         );
     };
     return reconnectingWebSocket;
