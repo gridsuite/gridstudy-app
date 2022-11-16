@@ -77,31 +77,20 @@ const RegulatingTerminalEdition = ({
         );
     };
 
-    const [voltageLevelId, setVoltageLevelId] = useState(
-        regulatingTerminalValue?.voltageLevel?.id
-    );
-
     const handleChangeVoltageLevel = useCallback(
         (event, value, reason) => {
             if (reason === 'selectOption') {
                 onChangeVoltageLevel(value);
-                setVoltageLevelId(value.id);
                 onChangeEquipmentSection(null);
                 inputForm.setHasChanged(true);
             } else if (reason === 'clear') {
                 onChangeVoltageLevel(null);
-                setVoltageLevelId(null);
                 onChangeEquipmentSection(null);
                 setEquipmentsOptions([]);
                 inputForm.setHasChanged(true);
             }
         },
-        [
-            onChangeEquipmentSection,
-            onChangeVoltageLevel,
-            setVoltageLevelId,
-            inputForm,
-        ]
+        [onChangeEquipmentSection, onChangeVoltageLevel, inputForm]
     );
 
     const handleChangeEquipment = (event, value, reason) => {
@@ -113,12 +102,20 @@ const RegulatingTerminalEdition = ({
 
     useEffect(() => {
         function validate() {
-            const res = validateField(voltageLevelId, validation);
+            const res = validateField(
+                regulatingTerminalValue?.voltageLevel?.id,
+                validation
+            );
             setErrorForVL(res?.errorMsgId);
             return !res.error;
         }
         inputForm.addValidation(REGULATING_VOLTAGE_LEVEL, validate);
-    }, [validation, inputForm, voltageLevelId, errorForVL]);
+    }, [
+        validation,
+        inputForm,
+        regulatingTerminalValue?.voltageLevel?.id,
+        errorForVL,
+    ]);
 
     const [errorForTerminal, setErrorForTerminal] = useState();
 
