@@ -324,6 +324,7 @@
     "exportCaseOnNode": "Exporter la situation",
     "nodeNameAlreadyUsed": "Ce nom est déjà utilisé",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
+    "MapEquipmentsLoadError": "Une erreur est survenue lors du chargement des données de l'image réseau",
     "CaseNameLoadError": "Une erreur est survenue lors de la récupération du nom de la situation",
     "StudyUnrecoverableStateRecreate": "Votre étude a un problème. Veuillez la recréer",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",

@@ -315,7 +315,7 @@ const NetworkMap = (props) => {
     const layers = [];
 
     if (
-        props.network !== null &&
+        props.mapEquipments !== null &&
         props.geoData !== null &&
         props.filteredNominalVoltages !== null &&
         !props.disabled
@@ -323,8 +323,8 @@ const NetworkMap = (props) => {
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
-                data: props.substations,
-                network: props.network,
+                data: props.mapEquipments?.substations,
+                network: props.mapEquipments,
                 geoData: props.geoData,
                 useName: props.useName,
                 getNominalVoltageColor: getNominalVoltageColor,
@@ -342,8 +342,8 @@ const NetworkMap = (props) => {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
-                data: props.lines,
-                network: props.network,
+                data: props.mapEquipments?.lines,
+                network: props.mapEquipments,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,
                 useName: props.useName,
@@ -404,7 +404,7 @@ const NetworkMap = (props) => {
                     setDeck(ref && ref.deck);
                 }}
                 onClick={(info, event) => {
-                    onClickHandler(info, event, props.network);
+                    onClickHandler(info, event, props.mapEquipments);
                 }}
                 onAfterRender={onAfterRender}
                 layers={layers}
@@ -468,8 +468,6 @@ NetworkMap.defaultProps = {
 
 NetworkMap.propTypes = {
     network: PropTypes.instanceOf(MapEquipments),
-    substations: PropTypes.array,
-    lines: PropTypes.array,
     geoData: PropTypes.instanceOf(GeoData),
     useName: PropTypes.bool.isRequired,
     filteredNominalVoltages: PropTypes.array,

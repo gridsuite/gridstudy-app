@@ -94,7 +94,7 @@ export const NetworkMapTab = ({
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const UPDATE_TYPE_HEADER = 'updateType';
 
-    const network = useSelector((state) => state.mapEquipments);
+    const mapEquipments = useSelector((state) => state.mapEquipments);
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
@@ -252,12 +252,13 @@ export const NetworkMapTab = ({
                     studyUuid,
                     currentNode?.id,
                     setErrorMessage,
-                    dispatch
+                    dispatch,
+                    intlRef
                 );
                 dispatch(mapEquipmentsCreated(initialMapEquipments));
             } else {
                 console.info('Reload map equipments');
-                network.reloadImpactedSubstationsEquipments(
+                mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
                     substationsIds,
@@ -269,7 +270,7 @@ export const NetworkMapTab = ({
             currentNode,
             dispatch,
             isInitialized,
-            network,
+            mapEquipments,
             setErrorMessage,
             studyUuid,
         ]
@@ -316,7 +317,7 @@ export const NetworkMapTab = ({
                         deletedEquipmentType,
                         ' from the mapData'
                     );
-                    network.removeEquipment(
+                    mapEquipments.removeEquipment(
                         deletedEquipmentType,
                         deletedEquipmentId
                     );
@@ -324,7 +325,7 @@ export const NetworkMapTab = ({
             }
         }
     }, [
-        network,
+        mapEquipments,
         dispatch,
         studyUpdatedForce,
         studyUpdatedForce.eventData.headers,
@@ -361,7 +362,7 @@ export const NetworkMapTab = ({
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
-        choiceVoltageLevelsSubstation = network?.getSubstation(
+        choiceVoltageLevelsSubstation = mapEquipments?.getSubstation(
             choiceVoltageLevelsSubstationId
         );
     }
@@ -399,8 +400,8 @@ export const NetworkMapTab = ({
     }
 
     const linesNearOverload = useCallback(() => {
-        if (network) {
-            return network.lines.some((l) => {
+        if (mapEquipments) {
+            return mapEquipments.lines.some((l) => {
                 const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
                 return (
                     zone === LineLoadingZone.WARNING ||
@@ -409,7 +410,7 @@ export const NetworkMapTab = ({
             });
         }
         return false;
-    }, [network, lineFlowAlertThreshold]);
+    }, [mapEquipments, lineFlowAlertThreshold]);
 
     const isLoadFlowValid = () => {
         return loadFlowStatus === RunningStatus.SUCCEED;
@@ -417,9 +418,7 @@ export const NetworkMapTab = ({
 
     const renderMap = () => (
         <NetworkMap
-            network={network}
-            substations={network?.substations}
-            lines={network?.lines}
+            mapEquipments={mapEquipments}
             updatedLines={updatedLines}
             geoData={geoData}
             waitingLoadGeoData={waitingLoadGeoData}
@@ -465,14 +464,14 @@ export const NetworkMapTab = ({
             {renderMap()}
             {renderEquipmentMenu()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
-            {network?.substations?.length > 0 && renderNominalVoltageFilter()}
+            {mapEquipments?.substations?.length > 0 &&
+                renderNominalVoltageFilter()}
 
             {displayOverloadTable && isLoadFlowValid() && linesNearOverload() && (
                 <div className={classes.divOverloadedLineView}>
                     <OverloadedLinesView
-                        lines={network.lines}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        network={network}
+                        mapEquipments={mapEquipments}
                         disabled={disabled}
                     />
                 </div>

@@ -323,6 +323,7 @@
     "exportCaseOnNode": "Export case",
     "nodeNameAlreadyUsed": "This name is already used",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
+    "MapEquipmentsLoadError": "An error occured while loading network map",
     "CaseNameLoadError": "An error occured while loading case name",
     "StudyUnrecoverableStateRecreate": "Your study has a problem. Please recreate it",
     "NodeCreateError": "An error occured while creating node",

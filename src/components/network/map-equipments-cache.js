@@ -30,6 +30,8 @@ export default class MapEquipments {
 
     nominalVoltages = [];
 
+    intlRef = undefined;
+
     initEquipments(studyUuid, currentNodeUuid) {
         fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
@@ -40,8 +42,14 @@ export default class MapEquipments {
                 this.completeLinesInfos();
             })
             .catch((error) => {
-                console.error(error);
-                if (this.errHandler) this.errHandler(error);
+                console.error(error.message);
+                if (this.errHandler) {
+                    this.errHandler(
+                        this.intlRef.current.formatMessage({
+                            id: 'MapEquipmentsLoadError',
+                        })
+                    );
+                }
             });
     }
 
@@ -49,9 +57,10 @@ export default class MapEquipments {
         return equipments ? equipments : [];
     }
 
-    constructor(studyUuid, currentNodeUuid, errHandler, dispatch) {
+    constructor(studyUuid, currentNodeUuid, errHandler, dispatch, intlRef) {
         this.dispatch = dispatch;
         this.errHandler = errHandler;
+        this.intlRef = intlRef;
         this.initEquipments(studyUuid, currentNodeUuid);
     }
 
@@ -76,7 +85,13 @@ export default class MapEquipments {
             })
             .catch(function (error) {
                 console.error(error.message);
-                if (this.errHandler) this.errHandler(error);
+                if (this.errHandler) {
+                    this.errHandler(
+                        this.intlRef.current.formatMessage({
+                            id: 'MapEquipmentsLoadError',
+                        })
+                    );
+                }
             });
     }
 
