@@ -629,10 +629,7 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editor: ({ equipment, ...props }) =>
                     EnumField({
-                        enumList: [
-                            ...ENERGY_SOURCES,
-                            { id: 'OTHER', label: 'Other' },
-                        ],
+                        enumList: ENERGY_SOURCES,
                         ...props,
                     }),
             },
