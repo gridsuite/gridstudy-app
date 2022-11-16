@@ -45,9 +45,7 @@ export function makeRefreshRegulatingTerminalSectionsCallback() {
 }
 
 const RegulatingTerminalEdition = ({
-    validation = {
-        isFieldRequired: false,
-    },
+    validation,
     inputForm,
     voltageLevelOptions,
     regulatingTerminalValue,

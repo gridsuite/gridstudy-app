@@ -462,7 +462,9 @@ export const useEnumValue = ({
     return [value, field];
 };
 export const useRegulatingTerminalValue = ({
-    validation,
+    validation = {
+        isFieldRequired: false,
+    },
     disabled = false,
     inputForm,
     voltageLevelOptionsPromise,
