@@ -306,6 +306,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 isValueGreaterThan: '-1',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
+            adornment: VoltageAdornment,
             inputForm: ratioTapInputForm,
             defaultValue: formValues?.ratioTapChanger?.targetDeadband,
         });
@@ -451,6 +452,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 isValueGreaterThan: '-1',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
+            adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
             defaultValue: formValues?.phaseTapChanger?.targetDeadband,
         });
