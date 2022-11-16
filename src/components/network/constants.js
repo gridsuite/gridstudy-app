@@ -47,11 +47,13 @@ export const REGULATION_MODES = {
     },
 };
 
-export const CONNECTION_DIRECTION = [
-    { id: '', label: 'None' },
+// Relevant ConnectablePosition.Direction Powsybl enum values
+export const CONNECTION_DIRECTIONS = [
     { id: 'TOP', label: 'Top' },
     { id: 'BOTTOM', label: 'Bottom' },
 ];
+// and the undefined/default one (not displayed)
+export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 
 export function getEnergySourceLabel(energySourceId) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
