@@ -334,9 +334,11 @@ export const NetworkMapTab = ({
     ]);
 
     const handleFullMapReload = useCallback(() => {
-        loadMapEquipments();
+        if (refIsMapManualRefreshEnabled.current || !isInitialized) {
+            loadMapEquipments();
+        }
         loadMapGeoData();
-    }, [loadMapEquipments, loadMapGeoData]);
+    }, [isInitialized, loadMapEquipments, loadMapGeoData]);
 
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
@@ -344,7 +346,7 @@ export const NetworkMapTab = ({
         // if only renaming, do not reload geo data
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (disabled) return;
-        if (mapManualRefresh && isInitialized) return;
+        if (refIsMapManualRefreshEnabled.current && isInitialized) return;
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
         if (!reloadMapNeeded) return;
@@ -356,7 +358,6 @@ export const NetworkMapTab = ({
         studyUuid,
         currentNode,
         handleFullMapReload,
-        mapManualRefresh,
         isInitialized,
         reloadMapNeeded,
     ]);
