@@ -269,6 +269,7 @@ export const NetworkMapTab = ({
         [
             currentNode,
             dispatch,
+            intlRef,
             isInitialized,
             mapEquipments,
             setErrorMessage,
