@@ -413,6 +413,7 @@
     "MinActivePowerLessThanMaxActivePower": "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
     "RatedNominalPowerGreaterThanZero": "La valeur de la puissance nominale doit être strictement positive",
     "VoltageGreaterThanZero": "La valeur de la tension doit être strictement positive",
+    "NormalizedPercent": "Ce pourcentage doit être compris entre 0 et 100",
     "GeneratorModificationError": "Erreur lors de la modification d'un générateur ",
     "ReactiveCapabilityCurveCreationError": "Le tableau des limites de réactifs par diagramme doit comporter au moins quatre points",
     "ActivePowerBetweenMaxAndMin": "La consigne de puissance active doit être comprise en les puissances actives minumum et maximale",

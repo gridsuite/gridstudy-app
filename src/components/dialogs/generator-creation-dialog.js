@@ -286,6 +286,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
+            isValueGreaterThan: '0',
             errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
@@ -323,8 +324,9 @@ const GeneratorCreationDialog = ({
         label: 'QPercentText',
         validation: {
             isFieldRequired: false,
-            isValueGreaterThan: '0',
+            isValueGreaterOrEqualTo: '0',
             isValueLessOrEqualTo: '100',
+            errorMsgId: 'NormalizedPercent',
         },
         adornment: percentageTextField,
         inputForm: inputForm,
