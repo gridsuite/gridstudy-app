@@ -296,7 +296,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [ratioTapTargetDeadband, ratioTapTargetDeadbandField] =
         useDoubleValue({
-            label: 'DeadbandKV',
+            label: 'Deadband',
             id: 'TargetDeadband',
             formProps: {
                 disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
@@ -306,6 +306,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 isValueGreaterThan: '-1',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
+            adornment: VoltageAdornment,
             inputForm: ratioTapInputForm,
             defaultValue: formValues?.ratioTapChanger?.targetDeadband,
         });
@@ -441,7 +442,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [phaseTapTargetDeadband, phaseTapTargetDeadbandField] =
         useDoubleValue({
-            label: 'DeadbandMW',
+            label: 'Deadband',
             id: 'TargetDeadband',
             formProps: {
                 disabled: !phaseTapRegulating || !phaseTapChangerEnabled,
@@ -451,6 +452,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 isValueGreaterThan: '-1',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
+            adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
             defaultValue: formValues?.phaseTapChanger?.targetDeadband,
         });
