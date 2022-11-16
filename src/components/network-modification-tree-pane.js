@@ -222,7 +222,7 @@ export const NetworkModificationTreePane = ({
                     insertMode
                 )
                     .then(() => {
-                        //After the first CUT / PASTE operation, it becomes a COPY / PASTE operation
+                        //After the first CUT / PASTE operation, we can't paste anymore
                         setSelectedNodeIdForCopy(null);
                         setCopyType(null);
                     })
