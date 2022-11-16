@@ -567,6 +567,7 @@
     "insertNetworkModificationNodeAbove": "Insérer un nœud au dessus dans la branche courante",
     "insertNetworkModificationNodeBelow": "Insérer un nœud en dessous dans la branche courante",
     "copyNetworkModificationNode": "Copier le nœud",
+    "cutNetworkModificationNode": "Couper le nœud",
     "pasteNetworkModificationNodeAbove": "Coller le nœud au dessus dans la branche courante",
     "pasteNetworkModificationNodeBelow": "Coller le nœud en dessous dans la branche courante",
     "pasteNetworkModificationNodeOnNewBranch": "Coller le nœud dans une nouvelle branche",
