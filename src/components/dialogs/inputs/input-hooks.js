@@ -764,6 +764,14 @@ export const useRadioValue = ({
         inputForm.addValidation(id ? id : label, validate);
     }, [label, validation, inputForm, value, id]);
 
+    const handleChangeValue = useCallback(
+        (event) => {
+            setValue(event.target.value);
+            inputForm.setHasChanged(true);
+        },
+        [inputForm]
+    );
+
     const field = useMemo(() => {
         return (
             <FormControl>
@@ -776,7 +784,7 @@ export const useRadioValue = ({
                     row
                     aria-labelledby={id ? id : label}
                     value={value ?? defaultValue}
-                    onChange={(e) => setValue(e.target.value)}
+                    onChange={handleChangeValue}
                 >
                     {possibleValues.map((value) => (
                         <FormControlLabel

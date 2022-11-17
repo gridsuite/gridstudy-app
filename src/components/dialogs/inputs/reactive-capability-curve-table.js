@@ -34,6 +34,9 @@ function hasValueCorrectFormat(valueToTest, index) {
 }
 
 function enforceMinimumValues(valueToTest) {
+    // The goal here is to verify that there are at least two items with the correct format
+    // in the provided array.
+    // If there are not enough items (less than two), then the first and second items will be intialized here.
     let returnValue = [];
     returnValue[0] = hasValueCorrectFormat(valueToTest, 0)
         ? valueToTest[0]
@@ -41,6 +44,7 @@ function enforceMinimumValues(valueToTest) {
     returnValue[1] = hasValueCorrectFormat(valueToTest, 1)
         ? valueToTest[1]
         : minimalValue;
+    // Then for each other item in the provieded array, we check that its format is correct.
     if (valueToTest?.length > 2) {
         for (let i = 2; i < valueToTest.length; i++) {
             returnValue[i] = hasValueCorrectFormat(valueToTest, i)
@@ -107,11 +111,10 @@ export const useReactiveCapabilityCurveTableValues = ({
     }, [values]);
 
     const handleSetValue = useCallback((index, newValue) => {
-        setValues((oldValues) => [
-            ...oldValues.slice(0, index),
-            newValue,
-            ...oldValues.slice(index + 1),
-        ]);
+        const valuesCopy = [...values];
+        valuesCopy.splice(index, 0, newValue);
+
+        setValues(valuesCopy);
     }, []);
 
     useEffect(() => {

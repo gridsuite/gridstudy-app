@@ -45,7 +45,7 @@ import { ENERGY_SOURCES, REACTIVE_LIMIT_TYPES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
-import { ReactiveCapabilityCurveTable } from './reactive-capability-curve-table';
+import { ReactiveCapabilityCurveReactiveRange } from './reactive-capability-curve-reactive-range';
 import { checkReactiveCapabilityCurve } from '../util/validation-functions';
 
 const useStyles = makeStyles((theme) => ({
@@ -123,7 +123,7 @@ const GeneratorCreationDialog = ({
                 generator.reactiveCapabilityCurvePoints,
             minMaxReactiveLimits: generator.minMaxReactiveLimits,
             reactiveCapabilityCurve:
-                generator.minMaxReactiveLimits === undefined,
+                generator.minMaxReactiveLimits === undefined, // We have to check if this field is present to determine if we are in reactive curve mode or not.
             minimumReactivePower:
                 generator?.minMaxReactiveLimits?.minimumReactivePower,
             maximumReactivePower:
@@ -258,9 +258,8 @@ const GeneratorCreationDialog = ({
         useReactiveCapabilityCurveTableValues({
             tableHeadersIds: headerIds,
             inputForm: inputForm,
-            Field: ReactiveCapabilityCurveTable,
+            Field: ReactiveCapabilityCurveReactiveRange,
             defaultValues: formValues?.reactiveCapabilityCurvePoints,
-            isRequired: false,
             isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn(),
         });
 
