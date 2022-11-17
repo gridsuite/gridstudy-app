@@ -416,7 +416,7 @@
     "NormalizedPercentage": "Ce pourcentage doit être compris entre 0 et 100",
     "GeneratorModificationError": "Erreur lors de la modification d'un générateur ",
     "ReactiveCapabilityCurveCreationError": "Le tableau des limites de réactifs par diagramme doit comporter au moins quatre points",
-    "ActivePowerBetweenMaxAndMin": "La consigne de puissance active doit être comprise en les puissances actives minumum et maximale",
+    "ActivePowerBetweenMaxAndMin": "La consigne de puissance active doit être comprise entre les puissances actives minumum et maximale",
 
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
