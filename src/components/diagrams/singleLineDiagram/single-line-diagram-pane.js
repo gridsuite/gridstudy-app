@@ -93,7 +93,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createSubstationSLD(substationId, state) {
                 const substation = network.getSubstation(substationId);
                 if (!substation) return;
-                let name = useName ? substation.name : substationId;
+                let name =
+                    useName && substation.name ? substation.name : substationId;
                 const countryName = substation?.countryName;
                 if (countryName) {
                     name += ' \u002D ' + countryName;
