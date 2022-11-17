@@ -75,6 +75,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const DialogTab = {
+    CHARACTERISTICS_TAB: 0,
+    RATIO_TAP_TAB: 1,
+    PHASE_TAP_TAB: 2,
+};
+
 const TwoWindingsTransformerCreationDialog = ({
     editData,
     open,
@@ -105,7 +111,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const equipmentPath = '2-windings-transformers';
 
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(DialogTab.CHARACTERISTICS_TAB);
 
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
@@ -742,16 +748,16 @@ const TwoWindingsTransformerCreationDialog = ({
     const handleSave = () => {
         setCreationError();
         let isFormValid = true;
-        let tabWithError = [];
+        let tabWithErrorList = [];
         if (!characteristicsInputForm.validate()) {
             isFormValid = false;
-            tabWithError.push(0);
+            tabWithErrorList.push(DialogTab.CHARACTERISTICS_TAB);
         }
 
         let ratioTap = undefined;
         if (ratioTapChangerEnabled && !ratioTapInputForm.validate()) {
             isFormValid = false;
-            tabWithError.push(1);
+            tabWithErrorList.push(DialogTab.RATIO_TAP_TAB);
         } else if (ratioTapChangerEnabled && ratioTapInputForm.validate()) {
             if (
                 ratioTapRegulating &&
@@ -764,7 +770,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     })
                 );
                 isFormValid = false;
-                tabWithError.push(1);
+                tabWithErrorList.push(DialogTab.RATIO_TAP_TAB);
             }
 
             let formatedRatioTapSteps = ratioTapRows.map((row) => {
@@ -803,7 +809,7 @@ const TwoWindingsTransformerCreationDialog = ({
         let phaseTap = undefined;
         if (phaseTapChangerEnabled && !phaseTapInputForm.validate()) {
             isFormValid = false;
-            tabWithError.push(2);
+            tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
         } else if (phaseTapChangerEnabled && phaseTapInputForm.validate()) {
             if (
                 phaseTapRegulating &&
@@ -816,7 +822,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     })
                 );
                 isFormValid = false;
-                tabWithError.push(2);
+                tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
             }
 
             let formatedPhaseTapSteps = phaseTapRows.map((row) => {
@@ -901,7 +907,7 @@ const TwoWindingsTransformerCreationDialog = ({
             handleCloseAndClear();
         }
 
-        setTabIndexesWithError(tabWithError);
+        setTabIndexesWithError(tabWithErrorList);
     };
 
     const handleClose = useCallback(
@@ -975,7 +981,9 @@ const TwoWindingsTransformerCreationDialog = ({
                                 label={
                                     <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
                                 }
-                                className={getTabClass(0)}
+                                className={getTabClass(
+                                    DialogTab.CHARACTERISTICS_TAB
+                                )}
                                 onClick={() => setDialogWidth('sm')}
                             />
                             <Tab
@@ -983,21 +991,24 @@ const TwoWindingsTransformerCreationDialog = ({
                                 label={
                                     <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
                                 }
-                                className={getTabClass(1)}
+                                className={getTabClass(DialogTab.RATIO_TAP_TAB)}
                             />
                             <Tab
                                 onClick={() => setDialogWidth('xl')}
                                 label={
                                     <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
                                 }
-                                className={getTabClass(2)}
+                                className={getTabClass(DialogTab.PHASE_TAP_TAB)}
                             />
                         </Tabs>
                     </Grid>
                 </DialogTitle>
 
                 <DialogContent>
-                    <Box hidden={tabIndex !== 0} p={1}>
+                    <Box
+                        hidden={tabIndex !== DialogTab.CHARACTERISTICS_TAB}
+                        p={1}
+                    >
                         <TwoWindingsTransformerPane
                             twoWindingsTransformerIdField={
                                 twoWindingsTransformerIdField
@@ -1027,7 +1038,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         />
                     </Box>
 
-                    <Box hidden={tabIndex !== 1} p={1}>
+                    <Box hidden={tabIndex !== DialogTab.RATIO_TAP_TAB} p={1}>
                         <RatioTapChangerPane
                             formValues={formValues}
                             setFormValues={setFormValues}
@@ -1054,7 +1065,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         />
                     </Box>
 
-                    <Box hidden={tabIndex !== 2} p={1}>
+                    <Box hidden={tabIndex !== DialogTab.PHASE_TAP_TAB} p={1}>
                         <PhaseTapChangerPane
                             formValues={formValues}
                             setFormValues={setFormValues}
