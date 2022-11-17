@@ -63,12 +63,12 @@ const RatioTapChangerPane = (props) => {
 
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
 
-    const isLineOnEditMode = useCallback(
+    /*const isLineOnEditMode = useCallback(
         (rowData) => {
             return lineEdit && rowData.rowIndex === lineEdit.id;
         },
         [lineEdit]
-    );
+    );*/
 
     const generateNewTapData = (index) => {
         return {
@@ -166,13 +166,14 @@ const RatioTapChangerPane = (props) => {
                 dataKey: 'ratio',
                 numeric: true,
                 fractionDigits: 5,
+                editor: NumericalField,
             },
         ];
     }, [intl]);
 
     const setColumnInError = useCallback(
         (dataKey) => {
-            if (!lineEdit.errors.has(dataKey)) {
+            if (!lineEdit?.errors.has(dataKey)) {
                 let newLineEdit = { ...lineEdit };
                 newLineEdit.errors.set(dataKey, true);
                 setLineEdit(newLineEdit);
@@ -183,7 +184,7 @@ const RatioTapChangerPane = (props) => {
 
     const resetColumnInError = useCallback(
         (dataKey) => {
-            if (lineEdit.errors.has(dataKey)) {
+            if (lineEdit?.errors.has(dataKey)) {
                 let newLineEdit = { ...lineEdit };
                 newLineEdit.errors.delete(dataKey);
                 setLineEdit(newLineEdit);
@@ -250,23 +251,21 @@ const RatioTapChangerPane = (props) => {
 
     const editableCellRender = useCallback(
         (rowData) => {
-            if (isLineOnEditMode(rowData)) {
-                const index = rowData.columnIndex - 1;
-                const Editor = COLUMNS_DEFINITIONS[index].editor;
-                if (Editor) {
-                    return (
-                        <div className={classes.tableCell}>
-                            <Editor
-                                key={rowData.dataKey + index}
-                                columnDefinition={COLUMNS_DEFINITIONS[index]}
-                                defaultValue={rowData.cellData}
-                                setColumnError={(k) => setColumnInError(k)}
-                                resetColumnError={(k) => resetColumnInError(k)}
-                                setter={(val) => handleEditCell(rowData, val)}
-                            />
-                        </div>
-                    );
-                }
+            const index = rowData.columnIndex - 1;
+            const Editor = COLUMNS_DEFINITIONS[index].editor;
+            if (Editor) {
+                return (
+                    <div className={classes.tableCell}>
+                        <Editor
+                            key={rowData.dataKey + index}
+                            columnDefinition={COLUMNS_DEFINITIONS[index]}
+                            defaultValue={rowData.cellData}
+                            setColumnError={(k) => setColumnInError(k)}
+                            resetColumnError={(k) => resetColumnInError(k)}
+                            setter={(val) => handleEditCell(rowData, val)}
+                        />
+                    </div>
+                );
             }
             return defaultCellRender(rowData);
         },
@@ -275,7 +274,6 @@ const RatioTapChangerPane = (props) => {
             classes.tableCell,
             defaultCellRender,
             handleEditCell,
-            isLineOnEditMode,
             resetColumnInError,
             setColumnInError,
         ]
@@ -287,17 +285,6 @@ const RatioTapChangerPane = (props) => {
                 c.cellRenderer = editableCellRender;
             }
             return c;
-        });
-
-        tableColumns.unshift({
-            id: 'edit',
-            dataKey: 'edit',
-            label: '',
-            minWidth: 75,
-            locked: true,
-            editColumn: true,
-            cellRenderer: (rowData, rowIndex) =>
-                editCellRender(rowData, rowIndex),
         });
         return tableColumns;
     };
@@ -471,6 +458,7 @@ const RatioTapChangerPane = (props) => {
                         <VirtualizedTable
                             rows={ratioTapRows}
                             columns={generateTableColumns()}
+
                         />
                     </Grid>
                     <Grid container item spacing={2} xs direction={'column'}>
