@@ -800,7 +800,16 @@ export const useRadioValue = ({
                 </RadioGroup>
             </FormControl>
         );
-    }, [intl, label, id, defaultValue, doTranslation, possibleValues, value]);
+    }, [
+        intl,
+        label,
+        id,
+        defaultValue,
+        doTranslation,
+        possibleValues,
+        value,
+        handleChangeValue,
+    ]);
 
     return [value, field];
 };
