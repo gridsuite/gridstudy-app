@@ -412,7 +412,7 @@
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
-    "NormalizedPercent": "This percent must be between 0 and 100",
+    "NormalizedPercentage": "This percentage must be between 0 and 100",
     "GeneratorModificationError": "Error while modifying generator",
     "ReactiveCapabilityCurveCreationError": "The table of reactive capability curve must have at least four points",
     "ActivePowerBetweenMaxAndMin": "The active powet setpoint must be between minimum active power and maximum active power values",

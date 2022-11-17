@@ -326,7 +326,7 @@ const GeneratorCreationDialog = ({
             isFieldRequired: false,
             isValueGreaterOrEqualTo: '0',
             isValueLessOrEqualTo: '100',
-            errorMsgId: 'NormalizedPercent',
+            errorMsgId: 'NormalizedPercentage',
         },
         adornment: percentageTextField,
         inputForm: inputForm,
