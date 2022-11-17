@@ -769,10 +769,10 @@ const TwoWindingsTransformerCreationDialog = ({
                     ratioTapRegulatingTerminal?.equipmentSection?.id,
                 regulatingTerminalType:
                     ratioTapRegulatingTerminal?.equipmentSection?.type ??
-                    twoWindingsTransformerId ===
-                        ratioTapRegulatingTerminal?.equipmentSection?.id
+                    (twoWindingsTransformerId ===
+                    ratioTapRegulatingTerminal?.equipmentSection?.id
                         ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
-                        : undefined,
+                        : undefined),
                 regulatingTerminalVlId:
                     ratioTapRegulatingTerminal?.voltageLevel?.id,
                 tapPosition: ratioTapPosition,
@@ -824,10 +824,10 @@ const TwoWindingsTransformerCreationDialog = ({
                     phaseTapRegulatingTerminal?.equipmentSection?.id,
                 regulatingTerminalType:
                     phaseTapRegulatingTerminal?.equipmentSection?.type ??
-                    twoWindingsTransformerId ===
-                        phaseTapRegulatingTerminal?.equipmentSection?.id
+                    (twoWindingsTransformerId ===
+                    phaseTapRegulatingTerminal?.equipmentSection?.id
                         ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
-                        : undefined,
+                        : undefined),
                 regulatingTerminalVlId:
                     phaseTapRegulatingTerminal?.voltageLevel?.id,
                 tapPosition: phaseTapPosition,
