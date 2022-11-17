@@ -110,15 +110,13 @@ export const useReactiveCapabilityCurveTableValues = ({
         setDisplayedValues(newValuesForDisplay);
     }, [values]);
 
-    const handleSetValue = useCallback(
-        (index, newValue) => {
-            const valuesCopy = [...values];
-            valuesCopy.splice(index, 0, newValue);
-
-            setValues(valuesCopy);
-        },
-        [values]
-    );
+    const handleSetValue = useCallback((index, newValue) => {
+        setValues((oldValues) => [
+            ...oldValues.slice(0, index),
+            newValue,
+            ...oldValues.slice(index + 1),
+        ]);
+    }, []);
 
     useEffect(() => {
         if (!isReactiveCapabilityCurveOn) {
