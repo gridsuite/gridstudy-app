@@ -16,6 +16,7 @@ import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
+import { CopyType } from '../../network-modification-tree-pane';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -38,6 +39,7 @@ const CreateNodeMenu = ({
     handleExportCaseOnNode,
     activeNode,
     selectedNodeForCopy,
+    copyType,
     handleCopyNode,
     handleCutNode,
     handlePasteNode,
@@ -84,6 +86,13 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
+    function isPastingAllowed() {
+        return (
+            selectedNodeForCopy !== null &&
+            (selectedNodeForCopy !== activeNode.id || copyType !== CopyType.CUT)
+        );
+    }
+
     const NODE_MENU_ITEMS = {
         BUILD_NODE: {
             onRoot: false,
@@ -123,19 +132,19 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => pasteNetworkModificationNode('CHILD'),
             id: 'pasteNetworkModificationNodeOnNewBranch',
-            disabled: selectedNodeForCopy == null,
+            disabled: !isPastingAllowed(),
         },
         PASTE_MODIFICATION_NODE_BEFORE: {
             onRoot: false,
             action: () => pasteNetworkModificationNode('BEFORE'),
             id: 'pasteNetworkModificationNodeAbove',
-            disabled: selectedNodeForCopy == null,
+            disabled: !isPastingAllowed(),
         },
         PASTE_MODIFICATION_NODE_AFTER: {
             onRoot: true,
             action: () => pasteNetworkModificationNode('AFTER'),
             id: 'pasteNetworkModificationNodeBelow',
-            disabled: selectedNodeForCopy == null,
+            disabled: !isPastingAllowed(),
         },
         REMOVE_NODE: {
             onRoot: false,
