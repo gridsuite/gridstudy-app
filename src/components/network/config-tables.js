@@ -717,6 +717,16 @@ export const TABLES_DEFINITIONS = {
                 forceUpdateOnChange: true,
                 changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
                 editor: BooleanListField,
+                resetColumnsInError: [
+                    {
+                        dependencyColumn: 'targetQ',
+                        value: true,
+                    },
+                    {
+                        dependencyColumn: 'targetV',
+                        value: false,
+                    },
+                ],
             },
             {
                 id: 'TargetV',
