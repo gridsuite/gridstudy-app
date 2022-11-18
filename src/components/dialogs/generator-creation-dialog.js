@@ -501,7 +501,8 @@ const GeneratorCreationDialog = ({
                 isReactiveCapabilityCurveOn() ? null : maximumReactivePower,
                 isReactiveCapabilityCurveOn() ? null : minimumReactivePower,
                 isReactiveCapabilityCurveOn() ? reactiveCapabilityCurve : null,
-                connectivity?.connectionDirection?.id ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectivity?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION,
                 connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
                 snackError({
