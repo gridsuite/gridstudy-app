@@ -29,6 +29,14 @@ const useStyles = makeStyles((theme) => ({
             width: 'fit-content',
         },
     },
+    //Style class to override disabled input style
+    fieldError: {
+        '& .MuiOutlinedInput-root': {
+            '&.Mui-disabled fieldset': {
+                borderColor: 'red',
+            },
+        },
+    },
 }));
 
 export const REGULATING_VOLTAGE_LEVEL = 'regulating-voltage-level';
@@ -238,7 +246,7 @@ const RegulatingTerminalEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
-                                {...genHelperError(errorForVL, errorForVL)}
+                                {...genHelperError(errorForVL)}
                             />
                         )}
                         PopperComponent={FittingPopper}
@@ -302,6 +310,10 @@ const RegulatingTerminalEdition = ({
                         renderInput={(params) => (
                             <TextField
                                 {...params}
+                                className={
+                                    genHelperError(errorForTerminal)?.error &&
+                                    classes.fieldError
+                                }
                                 fullWidth
                                 label={intl.formatMessage({
                                     id: 'Equipment',
@@ -309,10 +321,7 @@ const RegulatingTerminalEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
-                                {...genHelperError(
-                                    errorForTerminal,
-                                    errorForTerminal
-                                )}
+                                {...genHelperError(errorForTerminal)}
                             />
                         )}
                         PopperComponent={FittingPopper}
