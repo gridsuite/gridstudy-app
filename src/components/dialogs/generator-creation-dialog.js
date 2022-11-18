@@ -41,12 +41,21 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
-import { ENERGY_SOURCES, REACTIVE_LIMIT_TYPES } from '../network/constants';
+import { Box } from '@mui/system';
+import {
+    ENERGY_SOURCES,
+    REACTIVE_LIMIT_TYPES,
+    REGULATION_TYPES,
+} from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import makeStyles from '@mui/styles/makeStyles';
 import { ReactiveCapabilityCurveReactiveRange } from './reactive-capability-curve-reactive-range';
 import { checkReactiveCapabilityCurve } from '../util/validation-functions';
+import {
+    REGULATING_EQUIPMENT,
+    REGULATING_VOLTAGE_LEVEL,
+} from './regulating-terminal-edition';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -101,6 +110,10 @@ const GeneratorCreationDialog = ({
     ];
     const fieldRequired = { isFieldRequired: true };
 
+    const isDistantRegulation = (regulationType) => {
+        return regulationType === REGULATION_TYPES.DISTANT.id;
+    };
+
     const toFormValues = (generator) => {
         return {
             equipmentId: generator.id + '(1)',
@@ -110,7 +123,7 @@ const GeneratorCreationDialog = ({
             minActivePower: generator.minP,
             ratedNominalPower: generator.ratedS,
             activePowerSetpoint: generator.targetP,
-            voltageRegulatorOn: generator.voltageRegulatorOn,
+            voltageRegulationOn: generator.voltageRegulatorOn,
             voltageSetpoint: generator.targetV,
             reactivePowerSetpoint: generator.targetQ,
             voltageLevelId: generator.voltageLevelId,
@@ -130,10 +143,12 @@ const GeneratorCreationDialog = ({
             maximumReactivePower:
                 generator?.minMaxReactiveLimits?.maximumReactivePower,
             regulatingTerminalConnectableId:
-                generator.regulatingTerminalConnectableId,
+                generator.regulatingTerminalConnectableId ||
+                generator.regulatingTerminalId,
             regulatingTerminalConnectableType:
                 generator.regulatingTerminalConnectableType,
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
+            qPercent: generator.qPercent,
             connectionDirection: generator.connectionDirection,
             connectionName: generator.connectionName,
         };
@@ -269,6 +284,9 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
+            isValueGreaterOrEqualTo: minimumActivePower,
+            isValueLessOrEqualTo: maximumActivePower,
+            errorMsgId: 'ActivePowerBetweenMaxAndMin',
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
@@ -291,7 +309,6 @@ const GeneratorCreationDialog = ({
             errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
-        formProps: { disabled: !voltageRegulation },
         inputForm: inputForm,
         defaultValue: formValues?.voltageSetpoint,
     });
@@ -300,7 +317,6 @@ const GeneratorCreationDialog = ({
         label: 'ReactivePowerText',
         validation: {
             isFieldRequired: !voltageRegulation,
-            isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
@@ -308,19 +324,65 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
+    const [voltageRegulationType, voltageRegulationTypeField] = useEnumValue({
+        label: 'RegulationTypeText',
+        inputForm: inputForm,
+        formProps: filledTextField,
+        enumValues: Object.values(REGULATION_TYPES),
+        validation: {
+            isFieldRequired: voltageRegulation,
+        },
+        defaultValue:
+            formValues?.regulatingTerminalId ||
+            formValues?.regulatingTerminalConnectableId
+                ? REGULATION_TYPES.DISTANT.id
+                : REGULATION_TYPES.LOCAL.id,
+    });
+
+    const [qPercent, qPercentField] = useDoubleValue({
+        label: 'QPercentText',
+        validation: {
+            isFieldRequired: false,
+            isValueGreaterOrEqualTo: '0',
+            isValueLessOrEqualTo: '100',
+            errorMsgId: 'NormalizedPercentage',
+        },
+        adornment: percentageTextField,
+        inputForm: inputForm,
+        defaultValue: formValues?.qPercent,
+    });
+
     const [regulatingTerminal, regulatingTerminalField] =
         useRegulatingTerminalValue({
             label: 'RegulatingTerminalGenerator',
+            validation: {
+                isFieldRequired:
+                    voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType),
+            },
             inputForm: inputForm,
-            disabled: !voltageRegulation,
+            disabled:
+                !voltageRegulation ||
+                !isDistantRegulation(voltageRegulationType),
             voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
                 formValues?.regulatingTerminalVlId || null,
             equipmentSectionTypeDefaultValue:
-                formValues?.regulatingTerminalConnectableType || null,
+                formValues?.regulatingTerminalConnectableType ||
+                formValues?.regulatingTerminalType ||
+                null,
             equipmentSectionIdDefaultValue:
-                formValues?.regulatingTerminalConnectableId || null,
+                formValues?.regulatingTerminalConnectableId ||
+                formValues?.regulatingTerminalId ||
+                null,
         });
+
+    useEffect(() => {
+        if (!voltageRegulation || !isDistantRegulation(voltageRegulationType)) {
+            inputForm.removeValidation(REGULATING_VOLTAGE_LEVEL);
+            inputForm.removeValidation(REGULATING_EQUIPMENT);
+        }
+    }, [voltageRegulation, voltageRegulationType, inputForm]);
 
     const [frequencyRegulation, frequencyRegulationField] = useBooleanValue({
         label: 'FrequencyRegulation',
@@ -412,6 +474,7 @@ const GeneratorCreationDialog = ({
                 reactivePowerSetpoint ?? null,
                 voltageRegulation,
                 voltageSetpoint ? voltageSetpoint : null,
+                qPercent,
                 connectivity.voltageLevel.id,
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
@@ -420,12 +483,16 @@ const GeneratorCreationDialog = ({
                 transientReactance ? transientReactance : null,
                 transformerReactance ? transformerReactance : null,
                 (voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType) &&
                     regulatingTerminal?.equipmentSection?.id) ||
                     null,
                 (voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType) &&
                     regulatingTerminal?.equipmentSection?.type) ||
                     null,
-                (voltageRegulation && regulatingTerminal?.voltageLevel?.id) ||
+                (voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType) &&
+                    regulatingTerminal?.voltageLevel?.id) ||
                     null,
                 isReactiveCapabilityCurveOn(),
                 frequencyRegulation,
@@ -459,6 +526,29 @@ const GeneratorCreationDialog = ({
     const handleCloseAndClear = () => {
         setFormValues(null);
         handleClose();
+    };
+
+    const withVoltageRegulationInputs = () => {
+        return (
+            <>
+                {gridItem(voltageRegulationTypeField, 4)}
+                <Box sx={{ width: '100%' }} />
+                <Grid item xs={4} justifySelf={'end'} />
+                {gridItem(voltageSetpointField, 4)}
+                <Box sx={{ width: '100%' }} />
+                {voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType) && (
+                        <>
+                            <Grid item xs={4} justifySelf={'end'}>
+                                <FormattedMessage id="RegulatingTerminalGenerator" />
+                            </Grid>
+                            {gridItem(regulatingTerminalField, 8)}
+                            <Grid item xs={4} justifySelf={'end'} />
+                            {gridItem(qPercentField, 4)}
+                        </>
+                    )}
+            </>
+        );
     };
 
     return (
@@ -541,18 +631,15 @@ const GeneratorCreationDialog = ({
                         <GridSection title="Setpoints" />
                         <Grid container spacing={2}>
                             {gridItem(activePowerSetpointField, 4)}
-                            {gridItem(reactivePowerSetpointField, 4)}
+                            <Box sx={{ width: '100%' }} />
 
                             {gridItem(voltageRegulationField, 4)}
-                            {gridItem(voltageSetpointField, 4)}
-
-                            <Grid item xs={4} justifySelf={'end'}>
-                                <FormattedMessage id="RegulatingTerminalGenerator" />
-                            </Grid>
-                            {gridItem(regulatingTerminalField, 8)}
-
+                            {voltageRegulation
+                                ? withVoltageRegulationInputs()
+                                : gridItem(reactivePowerSetpointField, 4)}
+                            <Box sx={{ width: '100%' }} />
                             {gridItem(frequencyRegulationField, 4)}
-                            {gridItem(droopField, 4)}
+                            {frequencyRegulation && gridItem(droopField, 4)}
                         </Grid>
 
                         {/* Short-circuit part */}
