@@ -19,7 +19,7 @@ import { useSnackMessage } from '../../utils/messages';
 import {
     useButtonWithTooltip,
     useDoubleValue,
-    useOptionalEnumValue,
+    useEnumValue,
     useInputForm,
     useRegulatingTerminalValue,
     useTableValues,
@@ -70,6 +70,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
+ * @param voltageLevelsEquipmentsOptionsPromise Promise handling list of voltage level equipment options
  * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  */
@@ -177,15 +178,15 @@ const GeneratorCreationDialog = ({
         defaultValue: formValues?.equipmentName,
     });
 
-    const [energySource, energySourceField] = useOptionalEnumValue({
+    const [energySource, energySourceField] = useEnumValue({
         label: 'EnergySourceText',
         inputForm: inputForm,
         formProps: filledTextField,
-        enumObjects: ENERGY_SOURCES,
+        enumValues: ENERGY_SOURCES,
         validation: {
-            isFieldRequired: false,
+            isFieldRequired: true,
         },
-        defaultValue: formValues?.energySource ?? null,
+        defaultValue: formValues?.energySource ?? 'OTHER',
     });
 
     const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
@@ -652,6 +653,10 @@ GeneratorCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
+    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
