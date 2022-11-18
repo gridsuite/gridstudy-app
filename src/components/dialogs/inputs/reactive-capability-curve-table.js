@@ -92,6 +92,7 @@ export const useReactiveCapabilityCurveTableValues = ({
             setDisplayedValues(newValues);
 
             inputForm.reset();
+            inputForm.setHasChanged(true);
         },
         [values, inputForm]
     );
@@ -108,6 +109,7 @@ export const useReactiveCapabilityCurveTableValues = ({
             return v;
         });
         setDisplayedValues(newValuesForDisplay);
+        inputForm.setHasChanged(true);
     }, [values]);
 
     const handleSetValue = useCallback((index, newValue) => {
