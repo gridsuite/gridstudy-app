@@ -14,16 +14,17 @@ import {
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-export const ReactiveCapabilityCurveTable = ({
+export const ReactiveCapabilityCurveReactiveRange = ({
     index,
     onChange,
     defaultValue,
     inputForm,
     isFieldRequired,
     disabled = false,
+    customPLabel = undefined,
 }) => {
     const [p, pField] = useDoubleValue({
-        label: 'P',
+        label: customPLabel !== undefined ? customPLabel : 'P',
         id: 'P' + index,
         validation: { isFieldRequired: isFieldRequired },
         adornment: ActivePowerAdornment,
@@ -64,7 +65,7 @@ export const ReactiveCapabilityCurveTable = ({
     );
 };
 
-ReactiveCapabilityCurveTable.prototype = {
+ReactiveCapabilityCurveReactiveRange.prototype = {
     index: PropTypes.number.isRequired,
     onChange: PropTypes.func.isRequired,
     defaultValue: PropTypes.object,
@@ -72,4 +73,4 @@ ReactiveCapabilityCurveTable.prototype = {
     disabled: PropTypes.bool,
 };
 
-export default ReactiveCapabilityCurveTable;
+export default ReactiveCapabilityCurveReactiveRange;

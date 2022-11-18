@@ -18,12 +18,16 @@ import { validateField } from '../../util/validation-functions';
 import {
     CircularProgress,
     FormHelperText,
+    FormLabel,
     InputLabel,
     MenuItem,
+    Radio,
+    RadioGroup,
     Select,
     TextField,
     Tooltip,
     Button,
+    FormControlLabel,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
@@ -49,10 +53,6 @@ import {
     genHelperPreviousValue,
 } from './hooks-helpers';
 import { useAutocompleteField } from './use-autocomplete-field';
-import Grid from '@mui/material/Grid';
-import { Box } from '@mui/system';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/ControlPoint';
 import RegulatingTerminalEdition, {
     makeRefreshRegulatingTerminalSectionsCallback,
 } from '../regulating-terminal-edition';
@@ -577,134 +577,6 @@ export const useRegulatingTerminalValue = ({
     return [regulatingTerminal, render];
 };
 
-export const useTableValues = ({
-    id,
-    tableHeadersIds,
-    Field,
-    inputForm,
-    defaultValues,
-    isReactiveCapabilityCurveOn,
-    disabled = false,
-}) => {
-    const [values, setValues] = useState([]);
-    const classes = useStyles();
-
-    const handleAddValue = useCallback(() => {
-        setValues((oldValues) => [...oldValues, {}]);
-    }, []);
-
-    const checkValues = useCallback(() => {
-        if (defaultValues !== undefined && defaultValues.length !== 0) {
-            setValues([...defaultValues]);
-        } else {
-            setValues([]);
-            handleAddValue();
-        }
-    }, [defaultValues, handleAddValue]);
-
-    useEffect(() => {
-        checkValues();
-    }, [checkValues]);
-
-    const handleDeleteItem = useCallback(
-        (index) => {
-            setValues((oldValues) => {
-                let newValues = [...oldValues];
-                newValues.splice(index, 1);
-                return newValues;
-            });
-            inputForm.reset();
-        },
-        [inputForm]
-    );
-
-    const handleSetValue = useCallback((index, newValue) => {
-        setValues((oldValues) => {
-            let newValues = [...oldValues];
-            newValues[index] = newValue;
-            return newValues;
-        });
-    }, []);
-
-    useEffect(() => {
-        if (!isReactiveCapabilityCurveOn) {
-            //TODO When isReactiveCapabilityCurveOn is false, the reactive capability curve component does not change
-            // the validation of its values and they still required.
-            // we update the validations of reactive capability curve values so they are not required any more.
-            // is there a better way to do it ?
-            function validate() {
-                return !isReactiveCapabilityCurveOn;
-            }
-
-            values.forEach((value, index) => {
-                inputForm.addValidation('P' + index, validate);
-                inputForm.addValidation('QmaxP' + index, validate);
-                inputForm.addValidation('QminP' + index, validate);
-            });
-        }
-    }, [inputForm, values, isReactiveCapabilityCurveOn]);
-
-    const field = useMemo(() => {
-        return (
-            <Grid item container spacing={2}>
-                {tableHeadersIds.map((header) => (
-                    <Grid key={header} item xs={3}>
-                        <FormattedMessage id={header} />
-                    </Grid>
-                ))}
-                <Box sx={{ width: '100%' }} />
-                {values.map((value, idx) => (
-                    <Grid key={id + idx} container spacing={3} item>
-                        <Field
-                            defaultValue={value}
-                            onChange={handleSetValue}
-                            index={idx}
-                            inputForm={inputForm}
-                            isFieldRequired={isReactiveCapabilityCurveOn}
-                            disabled={disabled}
-                        />
-                        <Grid item xs={1}>
-                            <IconButton
-                                className={classes.icon}
-                                key={id + idx}
-                                onClick={() => handleDeleteItem(idx)}
-                                disabled={disabled || idx === 0}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                        </Grid>
-                        {idx === values.length - 1 && (
-                            <Grid item xs={1}>
-                                <IconButton
-                                    className={classes.icon}
-                                    key={id + idx}
-                                    onClick={() => handleAddValue()}
-                                    disabled={disabled}
-                                >
-                                    <AddIcon />
-                                </IconButton>
-                            </Grid>
-                        )}
-                    </Grid>
-                ))}
-            </Grid>
-        );
-    }, [
-        values,
-        id,
-        classes.icon,
-        handleAddValue,
-        handleDeleteItem,
-        handleSetValue,
-        inputForm,
-        tableHeadersIds,
-        isReactiveCapabilityCurveOn,
-        disabled,
-    ]);
-
-    return [values, field];
-};
-
 export const useSimpleTextValue = ({
     defaultValue,
     adornment,
@@ -878,4 +750,82 @@ export const useCSVReader = ({ label, header }) => {
         }
     }, [selectedFile, intl, header]);
     return [selectedFile, setSelectedFile, field, fileError];
+};
+
+export const useRadioValue = ({
+    label,
+    possibleValues = [],
+    defaultValue,
+    id,
+    validation = {},
+    inputForm,
+    doTranslation = true,
+}) => {
+    const [value, setValue] = useState(defaultValue);
+    const intl = useIntl();
+
+    useEffect(() => {
+        // Updates the component when the correct default value is given by the parent component.
+        if (defaultValue?.length > 0) {
+            setValue(defaultValue);
+        }
+    }, [defaultValue]);
+
+    useEffect(() => {
+        function validate() {
+            return true;
+        }
+
+        inputForm.addValidation(id ? id : label, validate);
+    }, [label, validation, inputForm, value, id]);
+
+    const handleChangeValue = useCallback(
+        (event) => {
+            setValue(event.target.value);
+            inputForm.setHasChanged(true);
+        },
+        [inputForm]
+    );
+
+    const field = useMemo(() => {
+        return (
+            <FormControl>
+                {label && (
+                    <FormLabel id={id ? id : label}>
+                        <FormattedMessage id={label} />
+                    </FormLabel>
+                )}
+                <RadioGroup
+                    row
+                    aria-labelledby={id ? id : label}
+                    value={value ?? defaultValue}
+                    onChange={handleChangeValue}
+                >
+                    {possibleValues.map((value) => (
+                        <FormControlLabel
+                            key={value.id}
+                            value={value.id}
+                            control={<Radio />}
+                            label={
+                                doTranslation
+                                    ? intl.formatMessage({ id: value.label })
+                                    : value.label
+                            }
+                        />
+                    ))}
+                </RadioGroup>
+            </FormControl>
+        );
+    }, [
+        intl,
+        label,
+        id,
+        defaultValue,
+        doTranslation,
+        possibleValues,
+        value,
+        handleChangeValue,
+    ]);
+
+    return [value, field];
 };
