@@ -269,7 +269,7 @@ export const useOptionalEnumValue = (props) => {
                     intl.formatMessage({ id: enumObject.label })
                 );
             return enumTranslation.length === 1
-                ? enumTranslation.at(0)
+                ? enumTranslation[0]
                 : enumValue;
         },
         [intl, props.enumObjects]
