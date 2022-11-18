@@ -9,12 +9,15 @@ export const SUBSTATION_RADIUS = 500;
 export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
 
+// Relevant LoadType Powsybl enum values
 export const LOAD_TYPES = [
-    { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },
 ];
+// and the undefined/default one (not displayed)
+export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 
+// Relevant EnergySource Powsybl enum values
 export const ENERGY_SOURCES = [
     { id: 'HYDRO', label: 'Hydro' },
     { id: 'NUCLEAR', label: 'Nuclear' },
@@ -53,3 +56,7 @@ export const REACTIVE_LIMIT_TYPES = [
     { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
 ];
+
+export function getLoadTypeLabel(loadTypeId) {
+    return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
+}
