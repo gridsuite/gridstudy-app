@@ -24,7 +24,6 @@ import {
     useRegulatingTerminalValue,
     useTableValues,
     useTextValue,
-    useEnumValue,
 } from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
