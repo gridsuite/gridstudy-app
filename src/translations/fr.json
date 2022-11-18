@@ -419,6 +419,7 @@
     "VoltageGreaterThanZero": "La valeur de la tension doit être strictement positive",
     "NormalizedPercentage": "Ce pourcentage doit être compris entre 0 et 100",
     "GeneratorModificationError": "Erreur lors de la modification d'un générateur ",
+    "ActivePowerBetweenMaxAndMin": "La consigne de puissance active doit être comprise entre les puissances actives minimale et maximale",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "Le tableau des limites de réactifs par diagramme doit comporter au moins quatre points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Chaque valeur de puissance active doit être un nombre unique et valide.",
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Chaque valeur de puissance active doit être comprise entre les valeurs P min et P max.",
