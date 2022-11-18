@@ -788,6 +788,7 @@ export const useRadioValue = ({
                 >
                     {possibleValues.map((value) => (
                         <FormControlLabel
+                            key={value.id}
                             value={value.id}
                             control={<Radio />}
                             label={
