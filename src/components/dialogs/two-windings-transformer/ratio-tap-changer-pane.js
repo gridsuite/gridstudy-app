@@ -213,6 +213,12 @@ const RatioTapChangerPane = (props) => {
 
     const handleEditCell = useCallback(
         (rowData, newVal) => {
+            setLineEdit({
+                oldValues: {},
+                newValues: {},
+                id: rowData.rowIndex,
+                errors: new Map(),
+            });
             const parsedVal = parseInt(newVal);
 
             if (!isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100) {

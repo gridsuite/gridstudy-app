@@ -214,6 +214,12 @@ const PhaseTapChangerPane = (props) => {
 
     const handleEditCell = useCallback(
         (rowData, newVal) => {
+            setLineEdit({
+                oldValues: {},
+                newValues: {},
+                id: rowData.rowIndex,
+                errors: new Map(),
+            });
             const parsedVal = parseInt(newVal);
 
             if (!isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100) {
@@ -251,7 +257,7 @@ const PhaseTapChangerPane = (props) => {
                                 setColumnError={(k) => setColumnInError(k)}
                                 resetColumnError={(k) => resetColumnInError(k)}
                                 setter={(val) => handleEditCell(rowData, val)}
-                                inputProps={style}
+                                inputProps={{ style }}
                             />
                         </div>
                     </>
