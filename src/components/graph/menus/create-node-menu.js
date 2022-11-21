@@ -39,6 +39,7 @@ const CreateNodeMenu = ({
     activeNode,
     selectedNodeForCopy,
     handleCopyNode,
+    handleCutNode,
     handlePasteNode,
 }) => {
     const classes = useStyles();
@@ -65,6 +66,11 @@ const CreateNodeMenu = ({
 
     function copyNetworkModificationNode() {
         handleCopyNode(activeNode.id);
+        handleClose();
+    }
+
+    function cutNetworkModificationNode() {
+        handleCutNode(activeNode.id);
         handleClose();
     }
 
@@ -107,6 +113,11 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => copyNetworkModificationNode(),
             id: 'copyNetworkModificationNode',
+        },
+        CUT_MODIFICATION_NODE: {
+            onRoot: false,
+            action: () => cutNetworkModificationNode(),
+            id: 'cutNetworkModificationNode',
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,

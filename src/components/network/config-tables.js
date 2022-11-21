@@ -717,6 +717,16 @@ export const TABLES_DEFINITIONS = {
                 forceUpdateOnChange: true,
                 changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
                 editor: BooleanListField,
+                resetColumnsInError: [
+                    {
+                        dependencyColumn: 'targetQ',
+                        value: true,
+                    },
+                    {
+                        dependencyColumn: 'targetV',
+                        value: false,
+                    },
+                ],
             },
             {
                 id: 'TargetV',
@@ -761,7 +771,10 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editor: ({ equipment, ...props }) =>
                     EnumField({
-                        enumList: LOAD_TYPES,
+                        enumList: [
+                            ...LOAD_TYPES,
+                            { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
+                        ],
                         ...props,
                     }),
             },
