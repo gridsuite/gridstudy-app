@@ -61,6 +61,7 @@ import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import Papa from 'papaparse';
+import Grid from '@mui/material/Grid';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
