@@ -558,6 +558,7 @@ const NetworkModificationNodeEditor = () => {
     }, [
         copiedModifications,
         currentTreeNode.id,
+        copyType,
         snackError,
         snackWarning,
         studyUuid,
