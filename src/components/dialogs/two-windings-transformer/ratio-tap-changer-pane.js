@@ -1,15 +1,15 @@
 import VirtualizedTable from '../../util/virtualized-table';
-import { Button, Grid, IconButton } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { gridItem } from '../dialogUtils';
-import EditIcon from '@mui/icons-material/Edit';
 import { NumericalField } from '../../network/equipment-table-editors';
 import Papa from 'papaparse';
 import makeStyles from '@mui/styles/makeStyles';
 import { RATIO_TAP } from './two-windings-transformer-creation-dialog';
 import { CreateRuleDialog } from './create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
+import Alert from '@mui/material/Alert';
 
 const useStyles = makeStyles((theme) => ({
     center: {
@@ -50,7 +50,9 @@ const RatioTapChangerPane = (props) => {
         highTapPosition,
         tapPositionField,
         loadTapChangingCapabilitiesField,
+        ratioTapLoadTapChangingCapabilities,
         regulatingField,
+        ratioCellIndexError,
     } = props;
 
     const classes = useStyles();
@@ -62,13 +64,7 @@ const RatioTapChangerPane = (props) => {
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
 
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
-
-    /*const isLineOnEditMode = useCallback(
-        (rowData) => {
-            return lineEdit && rowData.rowIndex === lineEdit.id;
-        },
-        [lineEdit]
-    );*/
+    const [ratioError, setRatioError] = useState('');
 
     const generateNewTapData = (index) => {
         return {
@@ -84,6 +80,10 @@ const RatioTapChangerPane = (props) => {
     };
 
     const generateTapRows = () => {
+        if (highTapPosition > 100) {
+            setRatioError(intl.formatMessage({ id: 'TapPositionValueError' }));
+            return;
+        }
         let tempRows = [];
         const rowNumber =
             highTapPosition - lowTapPosition > 0
@@ -193,29 +193,6 @@ const RatioTapChangerPane = (props) => {
         [lineEdit]
     );
 
-    const editCellRender = useCallback(
-        (rowData) => {
-            return (
-                <div className={classes.tableCell}>
-                    <IconButton
-                        size={'small'}
-                        onClick={() => {
-                            setLineEdit({
-                                oldValues: {},
-                                newValues: {},
-                                id: rowData.rowIndex,
-                                errors: new Map(),
-                            });
-                        }}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </div>
-            );
-        },
-        [classes.tableCell]
-    );
-
     const defaultCellRender = useCallback(
         (rowData) => {
             return (
@@ -251,9 +228,18 @@ const RatioTapChangerPane = (props) => {
 
     const editableCellRender = useCallback(
         (rowData) => {
-            const index = rowData.columnIndex - 1;
+            const index = rowData.columnIndex;
             const Editor = COLUMNS_DEFINITIONS[index].editor;
             if (Editor) {
+                let style;
+                if (
+                    ratioCellIndexError === rowData.rowIndex &&
+                    COLUMNS_DEFINITIONS[index].id === 'ratio'
+                ) {
+                    style = {
+                        color: 'red',
+                    };
+                }
                 return (
                     <div className={classes.tableCell}>
                         <Editor
@@ -263,6 +249,7 @@ const RatioTapChangerPane = (props) => {
                             setColumnError={(k) => setColumnInError(k)}
                             resetColumnError={(k) => resetColumnInError(k)}
                             setter={(val) => handleEditCell(rowData, val)}
+                            inputProps={{ style }}
                         />
                     </div>
                 );
@@ -276,6 +263,7 @@ const RatioTapChangerPane = (props) => {
             handleEditCell,
             resetColumnInError,
             setColumnInError,
+            ratioCellIndexError,
         ]
     );
 
@@ -305,11 +293,15 @@ const RatioTapChangerPane = (props) => {
         return isNaN(intValue) ? defaultValue : intValue;
     };
 
-    const handleImportTapRule = (selectedFile) => {
+    const handleImportTapRule = (selectedFile, setFileParseError) => {
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
             complete: function (results) {
+                if (results.data.length > 100) {
+                    setFileParseError('100 is max');
+                    return;
+                }
                 let rows = results.data.map((val) => {
                     return {
                         key: results.data.indexOf(val),
@@ -404,35 +396,42 @@ const RatioTapChangerPane = (props) => {
                         {loadTapChangingCapabilitiesField}
                     </Grid>
                 </Grid>
-
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
                         {regulatingField}
                     </Grid>
 
-                    <Grid item xs={4}>
-                        {targetVoltage1Field}
-                    </Grid>
-                    <Grid item xs={4}>
-                        {targetDeadbandField}
-                    </Grid>
+                    {ratioTapLoadTapChangingCapabilities && (
+                        <Grid item xs={4}>
+                            {targetVoltage1Field}
+                        </Grid>
+                    )}
+                    {ratioTapLoadTapChangingCapabilities && (
+                        <Grid item xs={4}>
+                            {targetDeadbandField}
+                        </Grid>
+                    )}
                 </Grid>
+                {ratioTapLoadTapChangingCapabilities && (
+                    <Grid item container spacing={2}>
+                        <Grid
+                            item
+                            xs={4}
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <FormattedMessage
+                                id="TerminalRef"
+                                disabled={true}
+                            />
+                        </Grid>
 
-                <Grid item container spacing={2}>
-                    <Grid
-                        item
-                        xs={4}
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <FormattedMessage id="TerminalRef" disabled={true} />
+                        {gridItem(regulatingTerminalField, 8)}
                     </Grid>
-
-                    {gridItem(regulatingTerminalField, 8)}
-                </Grid>
+                )}
 
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
@@ -458,7 +457,6 @@ const RatioTapChangerPane = (props) => {
                         <VirtualizedTable
                             rows={ratioTapRows}
                             columns={generateTableColumns()}
-
                         />
                     </Grid>
                     <Grid container item spacing={2} xs direction={'column'}>
@@ -497,6 +495,11 @@ const RatioTapChangerPane = (props) => {
                         </Grid>
                     </Grid>
                 </Grid>
+                {ratioError && (
+                    <Grid item xs={12}>
+                        <Alert severity="error">{ratioError}</Alert>
+                    </Grid>
+                )}
             </Grid>
 
             <CreateRuleDialog

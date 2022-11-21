@@ -512,6 +512,9 @@
     "IncoherentPhaseTapPositionError": "La valeur du champ Prise courante du déphaseur n'est pas présente dans les données de ses prises",
     "IncoherentRatioRegulatingTerminalError": "La valeur du Terminal distant réglé du régleur doit être renseignée",
     "IncoherentPhaseRegulatingTerminalError": "La valeur du Terminal distant réglé du déphaseur doit être renseignée",
+    "RatioValuesError": "Les rapports de transformation doivent être ordonnés et sans duplication",
+    "PhaseShiftValuesError": "les valeurs de dépahssage doivent être ordonnés et sans duplication",
+    "TapPositionValueError": "La prise maximale ne doit pas dépassé la valeur : ",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",

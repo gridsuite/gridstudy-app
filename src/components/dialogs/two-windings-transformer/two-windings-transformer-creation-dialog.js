@@ -100,6 +100,9 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [creationError, setCreationError] = useState(undefined);
 
+    const [ratioCellIndexError, setRatioCellIndexError] = useState(undefined);
+    const [phaseCellIndexError, setPhaseCellIndexError] = useState(undefined);
+
     // CHARACTERISTICS TAP PANE
 
     const [twoWindingsTransformerId, twoWindingsTransformerIdField] =
@@ -254,16 +257,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     : false,
         });
 
-    const [ratioTapRegulating, ratioTapRegulatingField] = useBooleanValue({
-        label: 'VoltageRegulation',
-        formProps: {
-            disabled: !ratioTapChangerEnabled,
-        },
-        validation: { isFieldRequired: true },
-        inputForm: ratioTapInputForm,
-        defaultValue: formValues?.ratioTapChanger?.regulating ?? false,
-    });
-
     const [
         ratioTapLoadTapChangingCapabilities,
         ratioTapLoadTapChangingCapabilitiesField,
@@ -276,6 +269,17 @@ const TwoWindingsTransformerCreationDialog = ({
         inputForm: ratioTapInputForm,
         defaultValue:
             formValues?.ratioTapChanger?.loadTapChangingCapabilities ?? false,
+    });
+
+    const [ratioTapRegulating, ratioTapRegulatingField] = useBooleanValue({
+        label: 'VoltageRegulation',
+        formProps: {
+            disabled:
+                !ratioTapChangerEnabled || !ratioTapLoadTapChangingCapabilities,
+        },
+        validation: { isFieldRequired: true },
+        inputForm: ratioTapInputForm,
+        defaultValue: formValues?.ratioTapChanger?.regulating ?? false,
     });
 
     const [targetVoltage, targetVoltage1Field] = useDoubleValue({
@@ -341,6 +345,7 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
+            isValueLessOrEqualTo: 100,
         },
         inputForm: ratioTapInputForm,
         formProps: {
@@ -746,6 +751,110 @@ const TwoWindingsTransformerCreationDialog = ({
                 isFormValid = false;
             }
 
+            if (ratioTapRows.length > 1) {
+                if (ratioTapRows[0].ratio === ratioTapRows[1].ratio) {
+                    isFormValid = false;
+                    setRatioCellIndexError(1);
+                    setCreationError(
+                        intl.formatMessage({
+                            id: 'RatioValuesError',
+                        })
+                    );
+                } else if (ratioTapRows[0].ratio < ratioTapRows[1].ratio) {
+                    for (
+                        let index = 0;
+                        index < ratioTapRows.length - 1;
+                        index++
+                    ) {
+                        if (
+                            ratioTapRows[index].ratio >=
+                            ratioTapRows[index + 1].ratio
+                        ) {
+                            isFormValid = false;
+                            setRatioCellIndexError(index + 1);
+                            setCreationError(
+                                intl.formatMessage({
+                                    id: 'RatioValuesError',
+                                })
+                            );
+                            break;
+                        }
+                    }
+                } else if (ratioTapRows[0].ratio > ratioTapRows[1].ratio) {
+                    for (
+                        let index = 0;
+                        index < ratioTapRows.length - 1;
+                        index++
+                    ) {
+                        if (
+                            ratioTapRows[index].ratio <=
+                            ratioTapRows[index + 1].ratio
+                        ) {
+                            isFormValid = false;
+                            setRatioCellIndexError(index + 1);
+                            setCreationError(
+                                intl.formatMessage({
+                                    id: 'RatioValuesError',
+                                })
+                            );
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (phaseTapRows.length > 1) {
+                if (phaseTapRows[0].ratio === phaseTapRows[1].ratio) {
+                    isFormValid = false;
+                    setPhaseCellIndexError(1);
+                    setCreationError(
+                        intl.formatMessage({
+                            id: 'PhaseShiftValuesError',
+                        })
+                    );
+                } else if (phaseTapRows[0].ratio < phaseTapRows[1].ratio) {
+                    for (
+                        let index = 0;
+                        index < phaseTapRows.length - 1;
+                        index++
+                    ) {
+                        if (
+                            phaseTapRows[index].ratio >=
+                            phaseTapRows[index + 1].ratio
+                        ) {
+                            isFormValid = false;
+                            setPhaseCellIndexError(index + 1);
+                            setCreationError(
+                                intl.formatMessage({
+                                    id: 'PhaseShiftValuesError',
+                                })
+                            );
+                            break;
+                        }
+                    }
+                } else if (phaseTapRows[0].ratio > phaseTapRows[1].ratio) {
+                    for (
+                        let index = 0;
+                        index < phaseTapRows.length - 1;
+                        index++
+                    ) {
+                        if (
+                            phaseTapRows[index].ratio <=
+                            phaseTapRows[index + 1].ratio
+                        ) {
+                            isFormValid = false;
+                            setPhaseCellIndexError(index + 1);
+                            setCreationError(
+                                intl.formatMessage({
+                                    id: 'PhaseShiftValuesError',
+                                })
+                            );
+                            break;
+                        }
+                    }
+                }
+            }
+
             let formatedRatioTapSteps = ratioTapRows.map((row) => {
                 return {
                     index: row.tap,
@@ -989,6 +1098,9 @@ const TwoWindingsTransformerCreationDialog = ({
                             loadTapChangingCapabilitiesField={
                                 ratioTapLoadTapChangingCapabilitiesField
                             }
+                            ratioTapLoadTapChangingCapabilities={
+                                ratioTapLoadTapChangingCapabilities
+                            }
                             regulatingField={ratioTapRegulatingField}
                             handleRatioTapRows={handleRatioTapRows}
                             ratioTapChangerEnabledField={
@@ -1006,6 +1118,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             highTapPosition={ratioHighTapPosition}
                             tapPositionField={ratioTapPositionField}
                             ratioTapRows={ratioTapRows}
+                            ratioCellIndexError={ratioCellIndexError}
                         />
                     </Box>
 
@@ -1037,6 +1150,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             highTapPosition={phaseHighTapPosition}
                             tapPositionField={phaseTapPositionField}
                             regulatingField={phaseTapRegulatingField}
+                            phaseCellIndexError={phaseCellIndexError}
                         />
                     </Box>
                     {creationError && (

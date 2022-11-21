@@ -27,6 +27,7 @@ export const CreateRuleDialog = (props) => {
         ...(props.ruleType === PHASE_TAP && { label: 'LowTapAlpha' }),
         ...(props.ruleType === RATIO_TAP && { label: 'LowTapRatio' }),
         validation: { isFieldRequired: true },
+        defaultValue: '',
         inputForm: inputForm,
     });
 
@@ -38,10 +39,9 @@ export const CreateRuleDialog = (props) => {
     });
 
     const isTapValuesValid = () => {
-        if (highTapValue && lowTapValue) {
-            return !(highTapValue - lowTapValue === 0);
-        }
-        return true;
+        return (
+            !highTapValue || !lowTapValue || highTapValue - lowTapValue === 0
+        );
     };
 
     const handleCloseDialog = () => {

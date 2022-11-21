@@ -796,7 +796,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     return [error, field, isValidName, name];
 };
 
-export const useCSVReader = ({ label, header }) => {
+export const useCSVReader = ({ label, header, maxDataLength }) => {
     const intl = useIntl();
 
     const [selectedFile, setSelectedFile] = useState();
@@ -850,6 +850,14 @@ export const useCSVReader = ({ label, header }) => {
                             })
                         );
                     }
+
+                    if (results.data.length > maxDataLength) {
+                        setFileError(
+                            intl.formatMessage({
+                                id: 'TapPositionValueError',
+                            }) + maxDataLength
+                        );
+                    }
                 },
             });
         } else if (selectedFile) {
@@ -861,6 +869,6 @@ export const useCSVReader = ({ label, header }) => {
         } else {
             setFileError();
         }
-    }, [selectedFile, intl, header]);
+    }, [selectedFile, intl, header, maxDataLength]);
     return [selectedFile, setSelectedFile, field, fileError];
 };

@@ -510,6 +510,9 @@
     "IncoherentRatioTapPositionError": "The Tap position value is not consistent with the ratio tap changer steps data",
     "IncoherentRatioRegulatingTerminalError": "The ratio tap Regulating terminal value must be filled",
     "IncoherentPhaseRegulatingTerminalError": "The phase tap Regulating terminal value must be filled",
+    "RatioValuesError": "Ratio values must be ordered and without duplications",
+    "PhaseShiftValuesError": "Phase values must be ordered and without duplications",
+    "TapPositionValueError": "The high tap position must not exceed the value : ",
 
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",
