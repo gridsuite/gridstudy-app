@@ -27,6 +27,11 @@ export const ENERGY_SOURCES = [
     { id: 'OTHER', label: 'Other' },
 ];
 
+export const REGULATION_TYPES = {
+    DISTANT: { id: 'DISTANT', label: 'Distant' },
+    LOCAL: { id: 'LOCAL', label: 'Local' },
+};
+
 export const UPDATE_TYPE = [
     'creatingInProgress',
     'updatingInProgress',
@@ -51,6 +56,11 @@ export const CONNECTION_DIRECTION = [
 export function getEnergySourceLabel(energySourceId) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
+
+export const REACTIVE_LIMIT_TYPES = [
+    { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
+    { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
+];
 
 export function getLoadTypeLabel(loadTypeId) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;

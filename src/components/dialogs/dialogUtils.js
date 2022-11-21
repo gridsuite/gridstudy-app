@@ -154,6 +154,19 @@ export const GridSection = ({ title, heading = '3', size = 12 }) => {
     );
 };
 
+export const GridSubSection = ({ title, size = 12 }) => {
+    const classes = useStyles();
+    return (
+        <Grid container spacing={2}>
+            <Grid item xs={size}>
+                <h5 className={classes.h5}>
+                    <FormattedMessage id={title} />
+                </h5>
+            </Grid>
+        </Grid>
+    );
+};
+
 export const gridItem = (field, size = 6) => {
     return (
         <Grid item xs={size} align={'start'}>
