@@ -284,6 +284,9 @@ export const reducer = createReducer(initialState, {
                 )
             ) {
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
+                // current node has changed, then will need to reload Geo Data
+                // state.reloadMap = true;
+
             }
         }
     },

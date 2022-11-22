@@ -428,6 +428,7 @@ export function StudyContainer({ view, onChangeTab }) {
             console.info(`Loading network of study '${studyUuid}'...`);
 
             if (isUpdate) {
+                console.info('C est un UPDATE');
                 // After a load flow, network has to be recreated.
                 // In order to avoid glitches during sld and map rendering,
                 // lines and substations have to be prefetched and set before network creation event is dispatched
@@ -442,6 +443,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     }
                 );
             } else {
+                console.info('C est un INIT');
                 const network = new Network(
                     studyUuid,
                     currentNode?.id,
@@ -533,7 +535,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUuid, loadTree]);
 
-    //handles map automatic mode network reload
+    // handles map automatic mode network reload
     useEffect(() => {
         if (!wsConnected) return;
         let previousCurrentNode = currentNodeRef.current;
@@ -544,6 +546,7 @@ export function StudyContainer({ view, onChangeTab }) {
         if (!isNodeBuilt(currentNode)) return;
         loadNetwork(true);
     }, [loadNetwork, currentNode, mapManualRefresh, wsConnected]);
+    // }, [ currentNode, mapManualRefresh, wsConnected, dispatch]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
