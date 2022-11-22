@@ -44,7 +44,7 @@ export const CreateRuleDialog = (props) => {
             !lowTapValue ||
             (!props.allowNegativeValues && highTapValue <= 0) ||
             (!props.allowNegativeValues && lowTapValue <= 0) ||
-            highTapValue - lowTapValue === 0
+            highTapValue === lowTapValue
         );
     };
 
