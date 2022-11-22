@@ -38,7 +38,7 @@ export const CreateRuleDialog = (props) => {
         inputForm: inputForm,
     });
 
-    const isTapValuesValid = () => {
+    const isTapValuesInvalid = () => {
         return (
             !highTapValue ||
             !lowTapValue ||
@@ -89,7 +89,7 @@ export const CreateRuleDialog = (props) => {
                 <Button onClick={handleCloseDialog}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleSave} disabled={isTapValuesValid()}>
+                <Button onClick={handleSave} disabled={isTapValuesInvalid()}>
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
