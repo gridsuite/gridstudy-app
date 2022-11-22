@@ -40,7 +40,11 @@ export const CreateRuleDialog = (props) => {
 
     const isTapValuesValid = () => {
         return (
-            !highTapValue || !lowTapValue || highTapValue - lowTapValue === 0
+            !highTapValue ||
+            !lowTapValue ||
+            (!props.allowNegativeValues && highTapValue <= 0) ||
+            (!props.allowNegativeValues && lowTapValue <= 0) ||
+            highTapValue - lowTapValue === 0
         );
     };
 

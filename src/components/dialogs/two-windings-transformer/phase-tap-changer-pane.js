@@ -531,6 +531,7 @@ const PhaseTapChangerPane = (props) => {
 
             <CreateRuleDialog
                 ruleType={PHASE_TAP}
+                allowNegativeValues={true}
                 openCreateRuleDialog={openCreateRuleDialog}
                 setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                 handleCreateTapRule={handleCreateAlphaTapRule}

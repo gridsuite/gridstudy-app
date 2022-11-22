@@ -513,6 +513,7 @@ const RatioTapChangerPane = (props) => {
                 openCreateRuleDialog={openCreateRuleDialog}
                 setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                 handleCreateTapRule={handleCreateRatioTapRule}
+                allowNegativeValues={false}
             />
 
             <ImportRuleDialog
