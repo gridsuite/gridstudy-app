@@ -81,7 +81,12 @@ const RatioTapChangerPane = (props) => {
 
     const generateTapRows = () => {
         if (highTapPosition > 100) {
-            setRatioError(intl.formatMessage({ id: 'TapPositionValueError' }));
+            setRatioError(
+                intl.formatMessage(
+                    { id: 'TapPositionValueError' },
+                    { value: 100 }
+                )
+            );
             return;
         }
         let tempRows = [];

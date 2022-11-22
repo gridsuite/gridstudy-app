@@ -31,7 +31,6 @@ export const ImportRuleDialog = (props) => {
                     ? 'ImportDephasingRule'
                     : 'ImportRegulationRule',
             header: props.csvColumns,
-            maxDataLength: 100,
         });
 
     const handleSave = () => {
