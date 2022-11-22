@@ -34,7 +34,11 @@ export function validateValueIsLessOrEqualThan(value, valueToCompareTo) {
     );
 }
 
-export function validateField(value, toValidate) {
+export function validateField(value, toValidate, disabled = false) {
+    if (disabled) {
+        return makeErrorRecord(null);
+    }
+
     // TODO: maybe update this function with the help of the new ones just above.
     if (toValidate.isFieldRequired) {
         if (

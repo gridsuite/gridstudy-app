@@ -511,7 +511,7 @@
     "TargetVoltage":"Tension",
     "TargetVoltageGreaterThanZero": "La tension doit être strictement positive",
     "Deadband":"Bande morte",
-    "TargetDeadbandGreaterThanZero": "La valeur de Deadband doit être égale ou supérieur à 0",
+    "TargetDeadbandGreaterEqualThanZero": "La valeur de bande morte doit être égale ou supérieure à 0",
     "LowTapPosition":"Prise min",
     "HighTapPosition":"Prise max",
     "TapPosition":"Prise courante",
@@ -546,7 +546,9 @@
     "PhaseActivePowerControl": "Suivi de transit",
 
     "RegulatingValueCurrentLimiter": "Limitation du courant",
+    "CurrentLimiterGreaterThanZero": "La valeur de la limitation du courant doit être strictement positive",
     "RegulatingValueActivePowerControl": "Consigne de transit",
+    "ActivePowerControlGreaterThanZero": "La valeur de la consigne de transit doit être strictement positive",
 
     "CreateRegulationRule":"Créer une loi de régleur",
     "LowTapRatio":"Rapport (prise min)",

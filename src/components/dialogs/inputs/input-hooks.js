@@ -130,13 +130,17 @@ export const useTextValue = ({
 
     useEffect(() => {
         function validate() {
-            const res = validateField(value, validationRef.current);
+            const res = validateField(
+                value,
+                validationRef.current,
+                formProps?.disabled
+            );
             setError(res?.errorMsgId);
             return !res.error;
         }
 
         inputForm.addValidation(id ? id : label, validate);
-    }, [label, inputForm, value, id, validation]);
+    }, [label, inputForm, value, id, validation, formProps?.disabled]);
 
     const handleChangeValue = useCallback(
         (event) => {

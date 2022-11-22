@@ -544,7 +544,9 @@
     "PhaseActivePowerControl": "Active power control",
 
     "RegulatingValueCurrentLimiter": "Current limiter",
+    "CurrentLimiterGreaterThanZero": "The current limiter value must be strictly positive",
     "RegulatingValueActivePowerControl": "Flow set point",
+    "ActivePowerControlGreaterThanZero": "The flow set point value must be strictly positive",
 
     "CreateRegulationRule":"Create regulation rule",
     "LowTapRatio":"Ratio (low tap position)",

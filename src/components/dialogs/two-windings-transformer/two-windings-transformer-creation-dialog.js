@@ -326,7 +326,7 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isValueGreaterThan: '-1',
+                isValueGreaterOrEqualTo: '0',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
             adornment: VoltageAdornment,
@@ -436,7 +436,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     regulationMode === REGULATION_MODES.CURRENT_LIMITER.id &&
                     phaseTapRegulating,
                 isValueGreaterThan: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                errorMsgId: 'CurrentLimiterGreaterThanZero',
             },
             adornment: AmpereAdornment,
             inputForm: phaseTapInputForm,
@@ -456,7 +456,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                     phaseTapRegulating,
                 isValueGreaterThan: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                errorMsgId: 'ActivePowerControlGreaterThanZero',
             },
             adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
@@ -472,7 +472,7 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isValueGreaterThan: '-1',
+                isValueGreaterOrEqualTo: '0',
                 errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
             adornment: ActivePowerAdornment,
