@@ -1117,6 +1117,34 @@ export function copyTreeNode(
     );
 }
 
+export function cutTreeNode(
+    studyUuid,
+    nodeToCutUuid,
+    referenceNodeUuid,
+    insertMode
+) {
+    const nodeCutUrl =
+        getStudyUrl(studyUuid) +
+        '/tree/nodes?insertMode=' +
+        insertMode +
+        '&nodeToCutUuid=' +
+        nodeToCutUuid +
+        '&referenceNodeUuid=' +
+        referenceNodeUuid;
+    console.debug(nodeCutUrl);
+    return backendFetch(nodeCutUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
@@ -1586,6 +1614,7 @@ export function createGenerator(
     reactivePowerSetpoint,
     voltageRegulationOn,
     voltageSetpoint,
+    qPercent,
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
@@ -1637,6 +1666,7 @@ export function createGenerator(
             reactivePowerSetpoint: reactivePowerSetpoint,
             voltageRegulationOn: voltageRegulationOn,
             voltageSetpoint: voltageSetpoint,
+            qPercent: qPercent,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
             marginalCost: marginalCost,

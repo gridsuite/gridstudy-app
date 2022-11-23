@@ -12,11 +12,15 @@ import DialogTitle from '@mui/material//DialogTitle';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { modifyLoad } from '../../utils/rest-api';
-import { LOAD_TYPES } from '../network/constants';
+import {
+    LOAD_TYPES,
+    UNDEFINED_LOAD_TYPE,
+    getLoadTypeLabel,
+} from '../network/constants';
 import {
     useDoubleValue,
     useOptionalEnumValue,
@@ -55,6 +59,8 @@ const LoadModificationDialog = ({
     const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
+
+    const intl = useIntl();
 
     const [formValues, setFormValues] = useState(undefined);
 
@@ -108,15 +114,24 @@ const LoadModificationDialog = ({
         clearable: true,
     });
 
+    const loadTypeLabelId = getLoadTypeLabel(loadInfos?.type);
+    const previousLoadTypeLabel = loadTypeLabelId
+        ? intl.formatMessage({
+              id: loadTypeLabelId,
+          })
+        : undefined;
+
     const [loadType, loadTypeField] = useOptionalEnumValue({
         label: 'Type',
         inputForm: inputForm,
         formProps: filledTextField,
         enumObjects: LOAD_TYPES,
-        defaultValue: formValues?.loadType?.value ?? null,
-        previousValue: loadInfos?.type
-            ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)?.label
-            : undefined,
+        defaultValue:
+            formValues?.loadType?.value &&
+            formValues.loadType.value !== UNDEFINED_LOAD_TYPE
+                ? formValues.loadType.value
+                : null,
+        previousValue: previousLoadTypeLabel,
     });
 
     const [activePower, activePowerField] = useDoubleValue({

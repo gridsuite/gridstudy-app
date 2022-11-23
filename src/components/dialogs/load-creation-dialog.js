@@ -15,7 +15,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { LOAD_TYPES } from '../network/constants';
+import { LOAD_TYPES, UNDEFINED_LOAD_TYPE } from '../network/constants';
 import {
     useDoubleValue,
     useOptionalEnumValue,
@@ -117,7 +117,10 @@ const LoadCreationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumObjects: LOAD_TYPES,
-        defaultValue: formValues?.loadType ?? null,
+        defaultValue:
+            formValues?.loadType && formValues.loadType !== UNDEFINED_LOAD_TYPE
+                ? formValues.loadType
+                : null,
     });
 
     const [activePower, activePowerField] = useDoubleValue({
@@ -164,7 +167,7 @@ const LoadCreationDialog = ({
                 currentNodeUuid,
                 loadId,
                 sanitizeString(loadName),
-                loadType,
+                !loadType ? UNDEFINED_LOAD_TYPE : loadType,
                 activePower,
                 reactivePower,
                 connectivity.voltageLevel.id,
