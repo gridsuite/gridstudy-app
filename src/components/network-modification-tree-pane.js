@@ -70,7 +70,7 @@ const usePreviousTreeDisplay = (display, width) => {
     return ref.current;
 };
 
-const CopyType = {
+export const CopyType = {
     COPY: 'COPY',
     CUT: 'CUT',
 };
@@ -344,6 +344,7 @@ export const NetworkModificationTreePane = ({
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
                     selectedNodeForCopy={selectedNodeIdForCopy}
+                    copyType={copyType}
                     handleCopyNode={handleCopyNode}
                     handleCutNode={handleCutNode}
                     handlePasteNode={handlePasteNode}

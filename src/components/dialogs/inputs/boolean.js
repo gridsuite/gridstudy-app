@@ -31,9 +31,13 @@ export const useBooleanValue = ({
         inputForm.addValidation(id ? id : label, validate);
     }, [label, validation, inputForm, value, id]);
 
-    const handleChangeValue = useCallback((event) => {
-        setValue(event.target.checked);
-    }, []);
+    const handleChangeValue = useCallback(
+        (event) => {
+            setValue(event.target.checked);
+            inputForm.setHasChanged(true);
+        },
+        [inputForm]
+    );
 
     const field = useMemo(() => {
         return (
@@ -87,13 +91,17 @@ export const useNullableBooleanValue = ({
         inputForm.addValidation(id ? id : label, validate);
     }, [label, validation, inputForm, value, id]);
 
-    const handleChangeValue = useCallback((event) => {
-        setValue((oldVal) => {
-            if (oldVal) return null;
-            else if (oldVal === null) return false;
-            return true;
-        });
-    }, []);
+    const handleChangeValue = useCallback(
+        (event) => {
+            setValue((oldVal) => {
+                if (oldVal) return null;
+                else if (oldVal === null) return false;
+                return true;
+            });
+            inputForm.setHasChanged(true);
+        },
+        [inputForm]
+    );
     const field = useMemo(() => {
         return (
             <FormControl fullWidth size="small">
