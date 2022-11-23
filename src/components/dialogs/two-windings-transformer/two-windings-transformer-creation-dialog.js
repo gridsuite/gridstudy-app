@@ -61,7 +61,7 @@ export const RATIO_TAP = 'ratio';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid : the node we are currently working on
+ * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
  */
 
@@ -272,9 +272,7 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true },
             inputForm: ratioTapInputForm,
             defaultValue:
-                formValues?.ratioTapChanger?.tapPosition !== undefined
-                    ? true
-                    : false,
+                formValues?.ratioTapChanger?.tapPosition !== undefined,
         });
 
     const [ratioTapRegulating, ratioTapRegulatingField] = useBooleanValue({
@@ -326,12 +324,16 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isValueGreaterOrEqualTo: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                isValueGreaterThan: '0',
+                errorMsgId: 'TargetDeadbandGreaterThanZero',
             },
             adornment: VoltageAdornment,
             inputForm: ratioTapInputForm,
-            defaultValue: formValues?.ratioTapChanger?.targetDeadband,
+            defaultValue:
+                formValues?.ratioTapChanger?.targetDeadband &&
+                formValues.ratioTapChanger.targetDeadband !== '0'
+                    ? formValues.ratioTapChanger.targetDeadband
+                    : '',
         });
 
     const [ratioTapRegulatingTerminal, ratioTapRegulatingTerminalField] =
@@ -395,9 +397,7 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true },
             inputForm: phaseTapInputForm,
             defaultValue:
-                formValues?.phaseTapChanger?.tapPosition !== undefined
-                    ? true
-                    : false,
+                formValues?.phaseTapChanger?.tapPosition !== undefined,
         });
 
     const [regulationMode, regulationModeField] = useEnumValue({
@@ -472,12 +472,16 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isValueGreaterOrEqualTo: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                isValueGreaterThan: '0',
+                errorMsgId: 'TargetDeadbandGreaterThanZero',
             },
             adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
-            defaultValue: formValues?.phaseTapChanger?.targetDeadband,
+            defaultValue:
+                formValues?.phaseTapChanger?.targetDeadband &&
+                formValues.phaseTapChanger.targetDeadband !== '0'
+                    ? formValues.phaseTapChanger.targetDeadband
+                    : '',
         });
 
     const [phaseTapRegulatingTerminal, phaseTapRegulatingTerminalField] =

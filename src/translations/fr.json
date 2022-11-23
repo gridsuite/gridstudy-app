@@ -511,7 +511,7 @@
     "TargetVoltage":"Tension",
     "TargetVoltageGreaterThanZero": "La tension doit être strictement positive",
     "Deadband":"Bande morte",
-    "TargetDeadbandGreaterEqualThanZero": "La valeur de bande morte doit être égale ou supérieure à 0",
+    "TargetDeadbandGreaterThanZero": "La valeur de bande morte doit être strictement positive",
     "LowTapPosition":"Prise min",
     "HighTapPosition":"Prise max",
     "TapPosition":"Prise courante",
