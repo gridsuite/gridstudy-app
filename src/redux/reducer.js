@@ -9,7 +9,6 @@ import { createReducer } from '@reduxjs/toolkit';
 
 import {
     USER,
-    SIGNIN_CALLBACK_ERROR,
     UNAUTHORIZED_USER_INFO,
     LOGOUT_ERROR,
     USER_VALIDATION_ERROR,
@@ -345,10 +344,6 @@ export const reducer = createReducer(initialState, {
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
         state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
             action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
-    },
-
-    [SIGNIN_CALLBACK_ERROR]: (state, action) => {
-        state.signInCallbackError = action.signInCallbackError;
     },
 
     [UNAUTHORIZED_USER_INFO]: (state, action) => {
