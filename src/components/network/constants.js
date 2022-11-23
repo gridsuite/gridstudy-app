@@ -35,7 +35,7 @@ export const REGULATION_MODES = {
     CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
     ACTIVE_POWER_CONTROL: {
         id: 'ACTIVE_POWER_CONTROL',
-        label: 'ActivePowerControl',
+        label: 'PhaseActivePowerControl',
     },
 };
 
