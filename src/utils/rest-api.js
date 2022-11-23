@@ -357,6 +357,26 @@ export function fetchSubstationPositions(studyUuid, currentNodeUuid) {
     );
 }
 
+export function fetchSubstationPositionsByIds(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
+    console.info('SUBSTATIONS BY IDS');
+    console.info(
+        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
+    );
+    const fetchSubstationPositionsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/geo-data/substations-by-ids?' +
+        getQueryParamsList(substationsIds, 'substationId');
+
+    console.debug(fetchSubstationPositionsUrl);
+    return backendFetch(fetchSubstationPositionsUrl).then((response) =>
+        response.json()
+    );
+}
+
 export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,

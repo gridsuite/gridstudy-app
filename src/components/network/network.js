@@ -428,7 +428,6 @@ export default class Network {
     }
 
     constructor(studyUuid, currentNodeUuid, errHandler, dispatch, prefetch) {
-        console.info('ON CONSTRUIT AGAIN')
         this.generateEquipementHandler({
             substations: () => fetchSubstations(studyUuid, currentNodeUuid),
             loads: () => fetchLoads(studyUuid, currentNodeUuid),

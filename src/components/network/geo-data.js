@@ -10,6 +10,7 @@ import cheapRuler from 'cheap-ruler';
 import getGreatCircleBearing from 'geolib/es/getGreatCircleBearing';
 import getRhumbLineBearing from 'geolib/es/getRhumbLineBearing';
 import { ArrowDirection } from './layers/arrow-layer';
+import { fetchSubstationPositionsByIds } from '../../utils/rest-api';
 
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
@@ -34,11 +35,32 @@ export default class GeoData {
         );
     }
 
-    getSubstationPosition(substation) {
+    addSubstationPositions(positions) {
+        console.info('Position to add', positions);
+        // index positions by substation id
+        positions.forEach((pos) =>
+            this.substationPositionsById.set(pos.id, pos.coordinate)
+        );
+    }
+
+    getSubstationPosition(substation, currentNode, studyUuid) {
         const position = this.substationPositionsById.get(substation);
         if (!position) {
-            console.warn(`Position not found for ${substation}`);
-            return [0, 0];
+            console.info(`Position not found for ${substation}`);
+            if (currentNode && studyUuid) {
+                return fetchSubstationPositionsByIds(
+                    studyUuid,
+                    currentNode?.id,
+                    [substation]
+                ).then((positions) => {
+                    this.addSubstationPositions(positions);
+                    return this.substationPositionsById.get(substation)
+                        ? this.substationPositionsById.get(substation)
+                        : [0, 0];
+                });
+            } else {
+                return [0, 0];
+            }
         }
         return [position.lon, position.lat];
     }

@@ -624,14 +624,17 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const updateNetwork = useCallback(
         (substationsIds) => {
+            console.info('substationsIds', substationsIds);
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
                 currentNode?.id,
                 substationsIds
             );
+            console.info('updatedEquipments', updatedEquipments);
             console.info('network partial update');
             Promise.all([updatedEquipments])
                 .then((values) => {
+                    console.info('values[0].substations', values[0].substations);
                     network.updateSubstations(
                         checkAndGetValues(values[0].substations)
                     );
@@ -714,10 +717,12 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
             ) {
+                console.info('studyUpdatedForce.eventData', studyUpdatedForce.eventData)
                 //when in manuel refresh mode the network is not partially updated
                 if (refIsNetworkRefreshNeeded.current) {
                     dispatch(setNetworkReloadNeeded());
                 } else {
+                    console.info('studyUpdatedForce.study partial update');
                     // study partial update :
                     // loading equipments involved in the study modification and updating the network
                     const substationsIds =
@@ -727,6 +732,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         substationsIds.length - 1
                     ); // removing square brackets
                     if (tmp && tmp.length > 0) {
+                        console.info('updateNetwork(tmp.split(\', \'));');
                         updateNetwork(tmp.split(', '));
                     }
 

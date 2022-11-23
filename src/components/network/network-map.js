@@ -90,6 +90,20 @@ const NetworkMap = (props) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
+    const studyUuid = useSelector((state) => state.studyUuid);
+
+    const currentNodeRef = useRef(currentNode);
+
+    const studyUuidRef = useRef(studyUuid);
+
+    useEffect(() => {
+        currentNodeRef.current = currentNode
+    }, [currentNode]);
+
+    useEffect(() => {
+        studyUuidRef.current = studyUuid
+    }, [studyUuid]);
+
     const classes = useStyles();
 
     useEffect(() => {
@@ -325,6 +339,8 @@ const NetworkMap = (props) => {
                 id: SUBSTATION_LAYER_PREFIX,
                 data: props.substations,
                 network: props.network,
+                currentNode: currentNodeRef.current,
+                studyUuid: studyUuidRef.current,
                 geoData: props.geoData,
                 useName: props.useName,
                 getNominalVoltageColor: getNominalVoltageColor,
