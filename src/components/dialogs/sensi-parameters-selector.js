@@ -50,6 +50,13 @@ export const SENSITIVITY_TYPES = [
 
 export const SENSI_PARAMETER_PREFIX_IN_DATABASE = 'sensi.';
 
+const PARAMETER_RESULTS_THRESHOLD = 'resultsthreshold';
+const PARAMETER_SENSI_INJECTIONS_SET = 'sensiInjectionsSet';
+const PARAMETER_SENSI_INJECTIONS = 'sensiInjections';
+const PARAMETER_SENSI_HVDCS = 'sensiHVDCs';
+const PARAMETER_SENSI_PSTS = 'sensiPSTs';
+const PARAMETER_SENSI_NODES = 'sensiNodes';
+
 const EquipmentType = {
     LINE: 'LINE',
     GENERATOR: 'GENERATOR',
@@ -657,7 +664,7 @@ const SensiParametersSelector = (props) => {
     const [paramSensiNodes, setParamSensiNodes] = useState(null);
 
     const [resultsThreshold, resultsThresholdField] = useDoubleValue({
-        label: 'resultsThreshold',
+        label: PARAMETER_RESULTS_THRESHOLD,
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
@@ -671,31 +678,31 @@ const SensiParametersSelector = (props) => {
 
     const [sensiInjectionsSet, SensiInjectionsSetsField] =
         useSensitivityFactors({
-            id: 'sensiInjectionsSet',
+            id: PARAMETER_SENSI_INJECTIONS_SET,
             Field: SensiInjectionsSet,
             initialValues: paramSensiInjectionsSet,
         });
 
     const [sensiInjections, SensiInjectionsField] = useSensitivityFactors({
-        id: 'sensiInjections',
+        id: PARAMETER_SENSI_INJECTIONS,
         Field: SensiInjections,
         initialValues: paramSensiInjections,
     });
 
     const [sensiHVDCs, SensiHVDCsField] = useSensitivityFactors({
-        id: 'sensiHVDCs',
+        id: PARAMETER_SENSI_HVDCS,
         Field: SensiHVDCs,
         initialValues: paramSensiHVDCs,
     });
 
     const [sensiPSTs, SensiPSTsField] = useSensitivityFactors({
-        id: 'sensiPSTs',
+        id: PARAMETER_SENSI_PSTS,
         Field: SensiPSTs,
         initialValues: paramSensiPSTs,
     });
 
     const [sensiNodes, SensiNodesField] = useSensitivityFactors({
-        id: 'sensiNodes',
+        id: PARAMETER_SENSI_NODES,
         Field: SensiNodes,
         initialValues: paramSensiNodes,
     });
@@ -707,20 +714,26 @@ const SensiParametersSelector = (props) => {
     const handleStart = () => {
         if (inputForm.validate()) {
             handleSaveSensiConfigurationParam(
-                'resultsThreshold',
+                PARAMETER_RESULTS_THRESHOLD,
                 resultsThreshold
             );
             handleSaveSensiConfigurationParam(
-                'sensiInjectionsSet',
+                PARAMETER_SENSI_INJECTIONS_SET,
                 sensiInjectionsSet
             );
             handleSaveSensiConfigurationParam(
-                'sensiInjections',
+                PARAMETER_SENSI_INJECTIONS,
                 sensiInjections
             );
-            handleSaveSensiConfigurationParam('sensiHVDCs', sensiHVDCs);
-            handleSaveSensiConfigurationParam('sensiPSTs', sensiPSTs);
-            handleSaveSensiConfigurationParam('sensiNodes', sensiNodes);
+            handleSaveSensiConfigurationParam(
+                PARAMETER_SENSI_HVDCS,
+                sensiHVDCs
+            );
+            handleSaveSensiConfigurationParam(PARAMETER_SENSI_PSTS, sensiPSTs);
+            handleSaveSensiConfigurationParam(
+                PARAMETER_SENSI_NODES,
+                sensiNodes
+            );
 
             // we provide to the sensitivity analysis service only the checked items in the configuration
             const sensiConfiguration = {
@@ -766,27 +779,27 @@ const SensiParametersSelector = (props) => {
         );
 
         // fetch configuration in config database
-        fetchSensiConfigurationParam('resultsThreshold').then((p) =>
+        fetchSensiConfigurationParam(PARAMETER_RESULTS_THRESHOLD).then((p) =>
             setParamResultsThreshold(parseFloat(JSON.parse(p.value)))
         );
 
-        fetchSensiConfigurationParam('sensiInjectionsSet').then((p) =>
+        fetchSensiConfigurationParam(PARAMETER_SENSI_INJECTIONS_SET).then((p) =>
             setParamSensiInjectionsSet(JSON.parse(p.value))
         );
 
-        fetchSensiConfigurationParam('sensiInjections').then((p) =>
+        fetchSensiConfigurationParam(PARAMETER_SENSI_INJECTIONS).then((p) =>
             setParamSensiInjections(JSON.parse(p.value))
         );
 
-        fetchSensiConfigurationParam('sensiHVDCs').then((p) =>
+        fetchSensiConfigurationParam(PARAMETER_SENSI_HVDCS).then((p) =>
             setParamSensiHVDCs(JSON.parse(p.value))
         );
 
-        fetchSensiConfigurationParam('sensiPSTs').then((p) =>
+        fetchSensiConfigurationParam(PARAMETER_SENSI_PSTS).then((p) =>
             setParamSensiPSTs(JSON.parse(p.value))
         );
 
-        fetchSensiConfigurationParam('sensiNodes').then((p) =>
+        fetchSensiConfigurationParam(PARAMETER_SENSI_NODES).then((p) =>
             setParamSensiNodes(JSON.parse(p.value))
         );
     }, []);
