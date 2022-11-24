@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
@@ -18,23 +18,21 @@ import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
 import { elementType } from '@gridsuite/commons-ui';
 import {
-    useInputForm,
     useDirectoryElements,
-    useEnumValue,
     useDoubleValue,
-} from './inputs/input-hooks';
-import { filledTextField, gridItem, GridSection } from './dialogUtils';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/ControlPoint';
+    useEnumValue,
+    useInputForm,
+} from '../inputs/input-hooks';
+import { filledTextField, gridItem, GridSection } from '../dialogUtils';
 import {
     fetchConfigParameter,
-    updateConfigParameter,
     getSensiDefaultResultsThreshold,
-} from '../../utils/rest-api';
-import { useSnackMessage } from '../../utils/messages';
+    updateConfigParameter,
+} from '../../../utils/rest-api';
+import { useSnackMessage } from '../../../utils/messages';
 import DialogActions from '@mui/material/DialogActions';
 import makeStyles from '@mui/styles/makeStyles';
+import { useSensitivityFactors } from './sensitivity-factors';
 
 export const INJECTION_DISTRIBUTION_TYPES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
@@ -75,7 +73,7 @@ const EquipmentType = {
     SUBSTATION: 'SUBSTATION',
 };
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
     checkedButton: {
         marginTop: 20,
     },
@@ -109,134 +107,6 @@ const SensiChecked = ({ checked, onClick }) => {
             className={classes.checkedButton}
         />
     );
-};
-
-export const useExpandableSensitivityFactors = ({
-    id,
-    labelAddValue,
-    Field,
-    inputForm,
-    validateItem,
-    isRequired,
-    initialValues,
-}) => {
-    const classes = useStyles();
-    const [values, setValues] = useState([]);
-    const [errors, setErrors] = useState();
-    const [itemListError, setItemListError] = useState({
-        show: false,
-        type: '',
-    });
-
-    useEffect(() => {
-        if (initialValues !== null) {
-            setValues(initialValues);
-        }
-    }, [initialValues]);
-
-    const handleDeleteItem = useCallback((index) => {
-        setValues((oldValues) => {
-            let newValues = [...oldValues];
-            newValues.splice(index, 1);
-            return newValues;
-        });
-    }, []);
-
-    const handleSetValue = useCallback((index, newValue) => {
-        setValues((oldValues) => {
-            let newValues = [...oldValues];
-            newValues[index] = newValue;
-            return newValues;
-        });
-    }, []);
-
-    const handleAddValue = useCallback(() => {
-        setValues((oldValues) => [...oldValues, {}]);
-        setItemListError({
-            show: false,
-            type: '',
-        });
-    }, []);
-
-    useEffect(() => {
-        function validation() {
-            const res = validateItem(values);
-            setErrors(res);
-            if (res?.size !== 0) {
-                return false;
-            }
-            setItemListError({
-                show: false,
-                type: '',
-            });
-
-            return true;
-        }
-
-        inputForm.addValidation(id, validation);
-    }, [inputForm, values, id, validateItem, isRequired]);
-
-    const isEmptyListError =
-        itemListError.show && itemListError.type === 'empty';
-
-    const field = useMemo(() => {
-        return (
-            <Grid item container spacing={2}>
-                {values.map((value, idx) => (
-                    <Grid key={id + idx} container spacing={2} item>
-                        <Field
-                            defaultValue={value}
-                            onChange={handleSetValue}
-                            index={idx}
-                            inputForm={inputForm}
-                            errors={errors?.get(idx)}
-                        />
-                        <Grid item xs={1}>
-                            <IconButton
-                                className={classes.deleteButton}
-                                key={id + idx}
-                                onClick={() => handleDeleteItem(idx)}
-                            >
-                                <DeleteIcon />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
-                ))}
-                <Grid container spacing={2}>
-                    <Grid item xs={3}>
-                        <Button
-                            fullWidth
-                            className={classes.button}
-                            startIcon={<AddIcon />}
-                            onClick={handleAddValue}
-                        >
-                            <FormattedMessage id={labelAddValue} />
-                        </Button>
-                        {isEmptyListError && (
-                            <div className={classes.emptyListError}>
-                                <FormattedMessage id={'EmptyList/' + id} />
-                            </div>
-                        )}
-                    </Grid>
-                </Grid>
-            </Grid>
-        );
-    }, [
-        values,
-        classes.button,
-        classes.deleteButton,
-        classes.emptyListError,
-        handleAddValue,
-        labelAddValue,
-        isEmptyListError,
-        id,
-        handleSetValue,
-        inputForm,
-        errors,
-        handleDeleteItem,
-    ]);
-
-    return [values, field];
 };
 
 const SensiInjectionsSet = ({ index, onChange, defaultValue, inputForm }) => {
@@ -615,37 +485,6 @@ const SensiNodes = ({ index, onChange, defaultValue }) => {
             {gridItem(contingenciesField, 2.5)}
         </>
     );
-};
-
-function validateFactor(values) {
-    const res = new Map();
-    return res;
-}
-
-const useSensitivityFactors = ({ id, Field, initialValues }) => {
-    const inputForm = useInputForm();
-
-    const [factors, factorsField] = useExpandableSensitivityFactors({
-        id: id,
-        labelAddValue: 'AddSensitivityFactor',
-        validateItem: validateFactor,
-        Field: Field,
-        inputForm: inputForm,
-        isRequired: false,
-        initialValues: initialValues,
-    });
-
-    const field = useMemo(() => {
-        return (
-            <>
-                <Grid container item direction="row" spacing={2}>
-                    {factorsField}
-                </Grid>
-            </>
-        );
-    }, [factorsField]);
-
-    return [factors, field];
 };
 
 const SensiParametersSelector = (props) => {
