@@ -8,10 +8,7 @@
 import Dialog from '@mui/material/Dialog';
 import { Alert } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import {
-    fetchFeederPositions,
-    getVoltageLevelSingleLineDiagram,
-} from '../../../utils/rest-api';
+import { getVoltageLevelSingleLineDiagram } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import {
     PARAM_CENTER_LABEL,
@@ -70,32 +67,14 @@ const PositionDiagramPane = ({
         ]
     );
 
-    const getFeederPositions = useCallback(() => {
-        fetchFeederPositions(studyUuid, currentNodeUuid, voltageLevelId?.id)
-            .then((res) => {
-                if (res) {
-                    console.log('res:', res);
-                }
-            })
-            .catch((err) => {
-                console.log('err:', err);
-            });
-    }, [currentNodeUuid, studyUuid, voltageLevelId?.id]);
-
     useEffect(() => {
         if (voltageLevelId?.id !== undefined) {
-            getFeederPositions();
             setEnableSld(true);
             setSvgUrl(getVoltageLevelSingleLineDiagramUrl());
         } else {
             setEnableSld(false);
         }
-    }, [
-        getFeederPositions,
-        getVoltageLevelSingleLineDiagramUrl,
-        svgUrl,
-        voltageLevelId,
-    ]);
+    }, [getVoltageLevelSingleLineDiagramUrl, svgUrl, voltageLevelId]);
 
     return (
         <AutoSizer>

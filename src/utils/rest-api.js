@@ -2405,22 +2405,3 @@ export function fetchElementsMetadata(ids) {
         response.json()
     );
 }
-
-export function fetchFeederPositions(
-    studyUuid,
-    currentNodeUuid,
-    voltageLevelId
-) {
-    console.info(
-        `Fetching feeder positions of study '${studyUuid}' and voltage level id '${voltageLevelId}'...`
-    );
-    const fetchFeederPositionsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network/voltage-levels/' +
-        encodeURIComponent(voltageLevelId) +
-        '/getFeederPositions';
-    console.debug(fetchFeederPositionsUrl);
-    return backendFetch(fetchFeederPositionsUrl).then((response) =>
-        response.json()
-    );
-}
