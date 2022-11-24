@@ -9,12 +9,15 @@ export const SUBSTATION_RADIUS = 500;
 export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
 
+// Relevant LoadType Powsybl enum values
 export const LOAD_TYPES = [
-    { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },
 ];
+// and the undefined/default one (not displayed)
+export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 
+// Relevant EnergySource Powsybl enum values
 export const ENERGY_SOURCES = [
     { id: 'HYDRO', label: 'Hydro' },
     { id: 'NUCLEAR', label: 'Nuclear' },
@@ -23,6 +26,11 @@ export const ENERGY_SOURCES = [
     { id: 'SOLAR', label: 'Solar' },
     { id: 'OTHER', label: 'Other' },
 ];
+
+export const REGULATION_TYPES = {
+    DISTANT: { id: 'DISTANT', label: 'Distant' },
+    LOCAL: { id: 'LOCAL', label: 'Local' },
+};
 
 export const UPDATE_TYPE = [
     'creatingInProgress',
@@ -35,7 +43,7 @@ export const REGULATION_MODES = {
     CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
     ACTIVE_POWER_CONTROL: {
         id: 'ACTIVE_POWER_CONTROL',
-        label: 'ActivePowerControl',
+        label: 'PhaseActivePowerControl',
     },
 };
 
@@ -47,4 +55,13 @@ export const CONNECTION_DIRECTION = [
 
 export function getEnergySourceLabel(energySourceId) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
+}
+
+export const REACTIVE_LIMIT_TYPES = [
+    { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
+    { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
+];
+
+export function getLoadTypeLabel(loadTypeId) {
+    return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
 }

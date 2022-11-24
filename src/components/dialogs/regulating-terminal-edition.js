@@ -12,6 +12,8 @@ import { createFilterOptions } from '@mui/material/useAutocomplete';
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
+import { validateField } from '../util/validation-functions';
+import { genHelperError } from './inputs/hooks-helpers';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
@@ -27,7 +29,18 @@ const useStyles = makeStyles((theme) => ({
             width: 'fit-content',
         },
     },
+    //Style class to override disabled input style
+    fieldError: {
+        '& .MuiOutlinedInput-root': {
+            '&.Mui-disabled fieldset': {
+                borderColor: 'red',
+            },
+        },
+    },
 }));
+
+export const REGULATING_VOLTAGE_LEVEL = 'regulating-voltage-level';
+export const REGULATING_EQUIPMENT = 'regulating-equipment';
 
 export function makeRefreshRegulatingTerminalSectionsCallback() {
     return (voltageLevel, putter) => {
@@ -40,6 +53,8 @@ export function makeRefreshRegulatingTerminalSectionsCallback() {
 }
 
 const RegulatingTerminalEdition = ({
+    validation,
+    inputForm,
     voltageLevelOptions,
     regulatingTerminalValue,
     voltageLevelsEquipments,
@@ -75,18 +90,51 @@ const RegulatingTerminalEdition = ({
             if (reason === 'selectOption') {
                 onChangeVoltageLevel(value);
                 onChangeEquipmentSection(null);
+                inputForm.setHasChanged(true);
             } else if (reason === 'clear') {
                 onChangeVoltageLevel(null);
                 onChangeEquipmentSection(null);
                 setEquipmentsOptions([]);
+                inputForm.setHasChanged(true);
             }
         },
-        [onChangeEquipmentSection, onChangeVoltageLevel]
+        [onChangeEquipmentSection, onChangeVoltageLevel, inputForm]
     );
 
     const handleChangeEquipment = (event, value, reason) => {
         onChangeEquipmentSection(value);
+        inputForm.setHasChanged(true);
     };
+
+    const [errorForVL, setErrorForVL] = useState();
+
+    useEffect(() => {
+        function validate() {
+            const res = validateField(
+                regulatingTerminalValue?.voltageLevel?.id,
+                validation
+            );
+            setErrorForVL(res?.errorMsgId);
+            return !res.error;
+        }
+        inputForm.addValidation(REGULATING_VOLTAGE_LEVEL, validate);
+    }, [
+        validation,
+        inputForm,
+        regulatingTerminalValue?.voltageLevel?.id,
+        errorForVL,
+    ]);
+
+    const [errorForTerminal, setErrorForTerminal] = useState();
+
+    useEffect(() => {
+        function validate() {
+            const res = validateField(currentEquipment, validation);
+            setErrorForTerminal(res?.errorMsgId);
+            return !res.error;
+        }
+        inputForm.addValidation(REGULATING_EQUIPMENT, validate);
+    }, [validation, inputForm, currentEquipment, errorForTerminal]);
 
     useEffect(() => {
         if (voltageLevelEquipmentsCallback) {
@@ -198,6 +246,7 @@ const RegulatingTerminalEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...genHelperError(errorForVL)}
                             />
                         )}
                         PopperComponent={FittingPopper}
@@ -261,6 +310,10 @@ const RegulatingTerminalEdition = ({
                         renderInput={(params) => (
                             <TextField
                                 {...params}
+                                className={
+                                    genHelperError(errorForTerminal)?.error &&
+                                    classes.fieldError
+                                }
                                 fullWidth
                                 label={intl.formatMessage({
                                     id: 'Equipment',
@@ -268,6 +321,7 @@ const RegulatingTerminalEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...genHelperError(errorForTerminal)}
                             />
                         )}
                         PopperComponent={FittingPopper}
@@ -279,6 +333,7 @@ const RegulatingTerminalEdition = ({
 };
 
 RegulatingTerminalEdition.propTypes = {
+    validation: PropTypes.object,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     regulatingTerminalValue: PropTypes.object,
     onChangeVoltageLevel: PropTypes.func.isRequired,
