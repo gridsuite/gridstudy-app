@@ -193,8 +193,6 @@ export const useConnectivityValue = ({
         currentNodeUuid,
     ]);
 
-    useEffect(() => {});
-
     const gridSize =
         direction && (direction === 'column' || direction === 'column-reverse')
             ? 12
