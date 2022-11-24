@@ -16,13 +16,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
-import { elementType } from '@gridsuite/commons-ui';
-import {
-    useDirectoryElements,
-    useDoubleValue,
-    useEnumValue,
-    useInputForm,
-} from '../inputs/input-hooks';
+import { useDoubleValue, useInputForm } from '../inputs/input-hooks';
 import { filledTextField, gridItem, GridSection } from '../dialogUtils';
 import {
     fetchConfigParameter,
@@ -33,6 +27,11 @@ import { useSnackMessage } from '../../../utils/messages';
 import DialogActions from '@mui/material/DialogActions';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSensitivityFactors } from './sensitivity-factors';
+import { SensiInjectionsSet } from './sensi-injections-set';
+import { SensiInjections } from './sensi-injections';
+import { SensiHVDCs } from './sensi-hvdcs';
+import { SensiPSTs } from './sensi-psts';
+import { SensiNodes } from './sensi-nodes';
 
 export const INJECTION_DISTRIBUTION_TYPES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
@@ -55,7 +54,7 @@ const PARAMETER_SENSI_HVDCS = 'sensiHVDCs';
 const PARAMETER_SENSI_PSTS = 'sensiPSTs';
 const PARAMETER_SENSI_NODES = 'sensiNodes';
 
-const EquipmentType = {
+export const EquipmentType = {
     LINE: 'LINE',
     GENERATOR: 'GENERATOR',
     LOAD: 'LOAD',
@@ -97,7 +96,7 @@ export const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SensiChecked = ({ checked, onClick }) => {
+export const SensiChecked = ({ checked, onClick }) => {
     const classes = useStyles();
     return (
         <Checkbox
@@ -106,384 +105,6 @@ const SensiChecked = ({ checked, onClick }) => {
             onChange={onClick}
             className={classes.checkedButton}
         />
-    );
-};
-
-const SensiInjectionsSet = ({ index, onChange, defaultValue, inputForm }) => {
-    const classes = useStyles();
-    const [checked, setChecked] = useState(defaultValue.checked ?? true);
-
-    const onClickChecked = () => {
-        setChecked(!checked);
-    };
-
-    const [monitoredBranches, monitoredBranchesField] = useDirectoryElements({
-        label: 'SupervisedBranches',
-        initialValues: defaultValue.monitoredBranches
-            ? defaultValue.monitoredBranches
-            : [],
-        elementType: elementType.FILTER,
-        equipmentTypes: ['LINE', 'TWO_WINDINGS_TRANSFORMER'],
-        titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    const [injections, injectionsField] = useDirectoryElements({
-        label: 'Injections',
-        initialValues: defaultValue.injections ? defaultValue.injections : [],
-        elementType: elementType.FILTER,
-        equipmentTypes: ['GENERATOR', 'LOAD'],
-        titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    const [distributionType, distributionTypeField] = useEnumValue({
-        label: 'DistributionType',
-        validation: { isFieldRequired: true },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        enumValues: INJECTION_DISTRIBUTION_TYPES,
-        defaultValue: defaultValue.distributionType
-            ? defaultValue.distributionType
-            : 'PROPORTIONAL',
-    });
-
-    const [contingencies, contingenciesField] = useDirectoryElements({
-        label: 'ContingencyLists',
-        initialValues: defaultValue.contingencies
-            ? defaultValue.contingencies
-            : [],
-        elementType: elementType.CONTINGENCY_LIST,
-        titleId: 'ContingencyListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    useEffect(() => {
-        onChange(index, {
-            checked,
-            monitoredBranches,
-            injections,
-            distributionType,
-            contingencies,
-        });
-    }, [
-        index,
-        onChange,
-        checked,
-        monitoredBranches,
-        injections,
-        distributionType,
-        contingencies,
-    ]);
-
-    return (
-        <>
-            <SensiChecked checked={checked} onClick={onClickChecked} />
-            {gridItem(monitoredBranchesField, 2.5)}
-            {gridItem(injectionsField, 2.5)}
-            {gridItem(distributionTypeField, 2.5)}
-            {gridItem(contingenciesField, 2.5)}
-        </>
-    );
-};
-
-const SensiInjections = ({ index, onChange, defaultValue }) => {
-    const classes = useStyles();
-    const [checked, setChecked] = useState(defaultValue.checked ?? true);
-
-    const onClickChecked = () => {
-        setChecked(!checked);
-    };
-
-    const [monitoredBranches, monitoredBranchesField] = useDirectoryElements({
-        label: 'SupervisedBranches',
-        initialValues: defaultValue.monitoredBranches
-            ? defaultValue.monitoredBranches
-            : [],
-        elementType: elementType.FILTER,
-        equipmentTypes: ['LINE', 'TWO_WINDINGS_TRANSFORMER'],
-        titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    const [injections, injectionsField] = useDirectoryElements({
-        label: 'Injections',
-        initialValues: defaultValue.injections ? defaultValue.injections : [],
-        elementType: elementType.FILTER,
-        equipmentTypes: ['GENERATOR', 'LOAD'],
-        titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    const [contingencies, contingenciesField] = useDirectoryElements({
-        label: 'ContingencyLists',
-        initialValues: defaultValue.contingencies
-            ? defaultValue.contingencies
-            : [],
-        elementType: elementType.CONTINGENCY_LIST,
-        titleId: 'ContingencyListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    useEffect(() => {
-        onChange(index, {
-            checked,
-            monitoredBranches,
-            injections,
-            contingencies,
-        });
-    }, [
-        index,
-        onChange,
-        checked,
-        monitoredBranches,
-        injections,
-        contingencies,
-    ]);
-
-    return (
-        <>
-            <SensiChecked checked={checked} onClick={onClickChecked} />
-            {gridItem(monitoredBranchesField, 2.5)}
-            {gridItem(injectionsField, 2.5)}
-            {gridItem(contingenciesField, 2.5)}
-        </>
-    );
-};
-
-const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
-    const classes = useStyles();
-    const [checked, setChecked] = useState(defaultValue.checked ?? true);
-
-    const onClickChecked = () => {
-        setChecked(!checked);
-    };
-
-    const [monitoredBranches, monitoredBranchesField] = useDirectoryElements({
-        label: 'SupervisedBranches',
-        initialValues: defaultValue.monitoredBranches
-            ? defaultValue.monitoredBranches
-            : [],
-        elementType: elementType.FILTER,
-        equipmentTypes: [
-            EquipmentType.LINE,
-            EquipmentType.TWO_WINDINGS_TRANSFORMER,
-        ],
-        titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    const [hvdcs, hvdcsField] = useDirectoryElements({
-        label: 'HvdcLines',
-        initialValues: defaultValue.hvdcs ? defaultValue.hvdcs : [],
-        elementType: elementType.FILTER,
-        equipmentTypes: [EquipmentType.HVDC_LINE],
-        titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    const [sensitivityType, sensitivityTypeField] = useEnumValue({
-        label: 'SensitivityType',
-        validation: { isFieldRequired: true },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        defaultValue: defaultValue.sensitivityType
-            ? defaultValue.sensitivityType
-            : 'DELTA_MW',
-        enumValues: SENSITIVITY_TYPES,
-    });
-
-    const [contingencies, contingenciesField] = useDirectoryElements({
-        label: 'ContingencyLists',
-        initialValues: defaultValue.contingencies
-            ? defaultValue.contingencies
-            : [],
-        elementType: elementType.CONTINGENCY_LIST,
-        titleId: 'ContingencyListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    useEffect(() => {
-        onChange(index, {
-            checked,
-            monitoredBranches,
-            hvdcs,
-            sensitivityType,
-            contingencies,
-        });
-    }, [
-        index,
-        onChange,
-        checked,
-        monitoredBranches,
-        hvdcs,
-        sensitivityType,
-        contingencies,
-    ]);
-
-    return (
-        <>
-            <SensiChecked checked={checked} onClick={onClickChecked} />
-            {gridItem(monitoredBranchesField, 2.5)}
-            {gridItem(sensitivityTypeField, 2.5)}
-            {gridItem(hvdcsField, 2.5)}
-            {gridItem(contingenciesField, 2.5)}
-        </>
-    );
-};
-
-const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
-    const classes = useStyles();
-    const [checked, setChecked] = useState(defaultValue.checked ?? true);
-
-    const onClickChecked = () => {
-        setChecked(!checked);
-    };
-
-    const [monitoredBranches, monitoredBranchesField] = useDirectoryElements({
-        label: 'SupervisedBranches',
-        initialValues: defaultValue.monitoredBranches
-            ? defaultValue.monitoredBranches
-            : [],
-        elementType: elementType.FILTER,
-        equipmentTypes: [
-            EquipmentType.LINE,
-            EquipmentType.TWO_WINDINGS_TRANSFORMER,
-        ],
-        titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    const [psts, pstsField] = useDirectoryElements({
-        label: 'PSTS',
-        initialValues: defaultValue.psts ? defaultValue.psts : [],
-        elementType: elementType.FILTER,
-        equipmentTypes: [EquipmentType.TWO_WINDINGS_TRANSFORMER],
-        titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    const [sensitivityType, sensitivityTypeField] = useEnumValue({
-        label: 'SensitivityType',
-        validation: { isFieldRequired: true },
-        inputForm: inputForm,
-        formProps: filledTextField,
-        defaultValue: defaultValue.sensitivityType
-            ? defaultValue.sensitivityType
-            : 'DELTA_MW',
-        enumValues: SENSITIVITY_TYPES,
-    });
-
-    const [contingencies, contingenciesField] = useDirectoryElements({
-        label: 'ContingencyLists',
-        initialValues: defaultValue.contingencies
-            ? defaultValue.contingencies
-            : [],
-        elementType: elementType.CONTINGENCY_LIST,
-        titleId: 'ContingencyListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    useEffect(() => {
-        onChange(index, {
-            checked,
-            monitoredBranches,
-            psts,
-            sensitivityType,
-            contingencies,
-        });
-    }, [
-        index,
-        onChange,
-        checked,
-        monitoredBranches,
-        psts,
-        sensitivityType,
-        contingencies,
-    ]);
-
-    return (
-        <>
-            <SensiChecked checked={checked} onClick={onClickChecked} />
-            {gridItem(monitoredBranchesField, 2.5)}
-            {gridItem(sensitivityTypeField, 2.5)}
-            {gridItem(pstsField, 2.5)}
-            {gridItem(contingenciesField, 2.5)}
-        </>
-    );
-};
-
-const SensiNodes = ({ index, onChange, defaultValue }) => {
-    const classes = useStyles();
-    const [checked, setChecked] = useState(defaultValue.checked ?? true);
-
-    const onClickChecked = () => {
-        setChecked(!checked);
-    };
-
-    const [monitoredVoltageLevels, monitoredVoltageLevelsField] =
-        useDirectoryElements({
-            label: 'SupervisedVoltageLevels',
-            initialValues: defaultValue.monitoredVoltageLevels
-                ? defaultValue.monitoredVoltageLevels
-                : [],
-            elementType: elementType.FILTER,
-            equipmentTypes: [EquipmentType.VOLTAGE_LEVEL],
-            titleId: 'FiltersListsSelection',
-            elementClassName: classes.chipElement,
-        });
-
-    const [equipmentsInVoltageRegulation, equipmentsInVoltageRegulationField] =
-        useDirectoryElements({
-            label: 'EquipmentsInVoltageRegulation',
-            initialValues: defaultValue.equipmentsInVoltageRegulation
-                ? defaultValue.equipmentsInVoltageRegulation
-                : [],
-            elementType: elementType.FILTER,
-            equipmentTypes: [
-                EquipmentType.GENERATOR,
-                EquipmentType.TWO_WINDINGS_TRANSFORMER,
-                EquipmentType.VSC_CONVERTER_STATION,
-                EquipmentType.STATIC_VAR_COMPENSATOR,
-                EquipmentType.SHUNT_COMPENSATOR,
-            ],
-            titleId: 'FiltersListsSelection',
-            elementClassName: classes.chipElement,
-        });
-
-    const [contingencies, contingenciesField] = useDirectoryElements({
-        label: 'ContingencyLists',
-        initialValues: defaultValue.contingencies
-            ? defaultValue.contingencies
-            : [],
-        elementType: elementType.CONTINGENCY_LIST,
-        titleId: 'ContingencyListsSelection',
-        elementClassName: classes.chipElement,
-    });
-
-    useEffect(() => {
-        onChange(index, {
-            checked,
-            monitoredVoltageLevels,
-            equipmentsInVoltageRegulation,
-            contingencies,
-        });
-    }, [
-        index,
-        onChange,
-        checked,
-        monitoredVoltageLevels,
-        equipmentsInVoltageRegulation,
-        contingencies,
-    ]);
-
-    return (
-        <>
-            <SensiChecked checked={checked} onClick={onClickChecked} />
-            {gridItem(monitoredVoltageLevelsField, 3)}
-            {gridItem(equipmentsInVoltageRegulationField, 3.5)}
-            {gridItem(contingenciesField, 2.5)}
-        </>
     );
 };
 
