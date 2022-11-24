@@ -395,22 +395,25 @@ const PhaseTapChangerPane = (props) => {
                         isEdited: true,
                     };
                 });
-                let tapValues = rows.map((row) => {
-                    return parseInt(row.tap);
-                });
-                let tempLowTapPosition = Math.min(...tapValues);
-                let tempHighTapPosition = Math.max(...tapValues);
 
-                let tempFormValues = {
-                    ...formValues,
-                    phaseTapChanger: {
-                        ...formValues.phaseTapChanger,
-                        lowTapPosition: tempLowTapPosition,
-                        highTapPosition: tempHighTapPosition,
-                    },
-                };
-                setFormValues(tempFormValues);
-                handlePhaseTapRows(rows);
+                if (rows && rows.length > 0) {
+                    let tapValues = rows.map((row) => {
+                        return parseInt(row.tap);
+                    });
+                    let tempLowTapPosition = Math.min(...tapValues);
+                    let tempHighTapPosition = Math.max(...tapValues);
+
+                    let tempFormValues = {
+                        ...formValues,
+                        phaseTapChanger: {
+                            ...formValues.phaseTapChanger,
+                            lowTapPosition: tempLowTapPosition,
+                            highTapPosition: tempHighTapPosition,
+                        },
+                    };
+                    setFormValues(tempFormValues);
+                    handlePhaseTapRows(rows);
+                }
             },
         });
     };
