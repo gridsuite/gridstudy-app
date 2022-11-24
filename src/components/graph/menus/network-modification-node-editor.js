@@ -16,8 +16,7 @@ import {
     fetchLines,
     fetchVoltageLevels,
     fetchVoltageLevelsEquipments,
-    duplicateModifications,
-    cutAndPasteModifications,
+    copyOrMoveModifications,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
@@ -142,7 +141,7 @@ function isPartial(s1, s2) {
 
 export const CopyType = {
     COPY: 'COPY',
-    CUT: 'CUT',
+    MOVE: 'MOVE',
 };
 
 const NetworkModificationNodeEditor = () => {
@@ -502,7 +501,7 @@ const NetworkModificationNodeEditor = () => {
         setCopiedModifications(
             Array.from(selectedItems).map((item) => item.uuid)
         );
-        setCopyType(CopyType.CUT);
+        setCopyType(CopyType.MOVE);
     }, [selectedItems]);
 
     const doCopyModification = useCallback(() => {
@@ -514,11 +513,12 @@ const NetworkModificationNodeEditor = () => {
     }, [selectedItems]);
 
     const doPasteModification = useCallback(() => {
-        if (copyType === CopyType.CUT) {
-            cutAndPasteModifications(
+        if (copyType === CopyType.MOVE) {
+            copyOrMoveModifications(
                 studyUuid,
                 currentTreeNode.id,
-                copiedModifications
+                copiedModifications,
+                copyType
             )
                 .then(() => {
                     setCopyType(null);
@@ -531,12 +531,14 @@ const NetworkModificationNodeEditor = () => {
                     });
                 });
         } else {
-            duplicateModifications(
+            copyOrMoveModifications(
                 studyUuid,
                 currentTreeNode.id,
-                copiedModifications
+                copiedModifications,
+                copyType
             )
-                .then((modificationsInFailure) => {
+                .then((message) => {
+                    let modificationsInFailure = JSON.parse(message);
                     if (modificationsInFailure.length > 0) {
                         console.warn(
                             'Modifications not pasted:',

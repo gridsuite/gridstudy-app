@@ -7,7 +7,6 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
-import { CopyType } from '../components/graph/menus/network-modification-node-editor';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -1166,12 +1165,13 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     );
 }
 
-export function cutAndPasteModifications(
+export function copyOrMoveModifications(
     studyUuid,
     targetNodeId,
-    modificationToCutUuidList
+    modificationToCutUuidList,
+    copyType
 ) {
-    console.info('cut and paste modifications');
+    console.info(copyType + ' modifications');
     const cutAndPasteModificationUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -1179,7 +1179,7 @@ export function cutAndPasteModifications(
         '/nodes/' +
         encodeURIComponent(targetNodeId) +
         '?' +
-        new URLSearchParams({ action: CopyType.CUT });
+        new URLSearchParams({ action: copyType });
 
     return backendFetch(cutAndPasteModificationUrl, {
         method: 'PUT',
@@ -1194,36 +1194,6 @@ export function cutAndPasteModifications(
             : response.text().then((text) => Promise.reject(text))
     );
 }
-
-export function duplicateModifications(
-    studyUuid,
-    targetNodeId,
-    modificationsIdList
-) {
-    console.info('duplicate and append modifications');
-    const duplicateModificationUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/nodes/' +
-        encodeURIComponent(targetNodeId) +
-        '?' +
-        new URLSearchParams({ action: CopyType.COPY });
-
-    return backendFetch(duplicateModificationUrl, {
-        method: 'PUT',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(modificationsIdList),
-    }).then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
-    );
-}
-
 function getUrlWithToken(baseUrl) {
     if (baseUrl.includes('?')) {
         return baseUrl + '&access_token=' + getToken();
