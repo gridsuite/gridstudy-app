@@ -613,5 +613,7 @@
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
-    "Bottom": "Bottom"
+    "Bottom": "Bottom",
+    "ConnectionPosition": "Connection position",
+    "ErrorNoVoltageSelected": "No voltage level selected, please select one before!"
 }

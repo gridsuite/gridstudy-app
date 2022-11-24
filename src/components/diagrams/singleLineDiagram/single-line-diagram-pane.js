@@ -50,7 +50,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       useName,
                       centerName,
                       diagonalName,
-                      componentLibrary
+                      componentLibrary,
+                      false
                   )
                 : null,
         [

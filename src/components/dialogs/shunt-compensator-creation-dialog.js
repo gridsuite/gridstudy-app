@@ -74,6 +74,7 @@ const ShuntCompensatorCreationDialog = ({
             busOrBusbarSectionId: null,
             connectionDirection: shuntCompensator.connectionDirection,
             connectionName: shuntCompensator.connectionName,
+            connectionPosition: shuntCompensator.connectionPosition,
         };
     };
 
@@ -167,6 +168,7 @@ const ShuntCompensatorCreationDialog = ({
             ? formValues.connectionDirection
             : '',
         connectionNameValue: formValues?.connectionName,
+        connectionPositionValue: formValues?.connectionPosition,
         withPosition: true,
     });
 
@@ -185,7 +187,8 @@ const ShuntCompensatorCreationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
                 connectivity?.connectionDirection?.id ?? 'UNDEFINED',
-                connectivity?.connectionName?.id ?? null
+                connectivity?.connectionName?.id ?? null,
+                connectivity?.connectionPosition?.id ?? null
             ).catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,

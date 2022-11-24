@@ -615,5 +615,7 @@
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
-    "Bottom": "Bas"
+    "Bottom": "Bas",
+    "ConnectionPosition": "Position départ",
+    "ErrorNoVoltageSelected": "Aucun niveau de tension sélectionné, veuillez en sélectionner un avant!"
 }

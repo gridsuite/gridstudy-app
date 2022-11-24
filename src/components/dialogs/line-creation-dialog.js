@@ -208,7 +208,8 @@ const LineCreationDialog = ({
             formValues?.busOrBusbarSectionId1 || null,
         connectionDirectionValue: formValues?.connectionDirection1 ?? '',
         connectionNameValue: formValues?.connectionName1,
-        withPosition: true,
+        withPosition: false,
+        connectionPositionValue: formValues?.connectionPosition1,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -224,7 +225,8 @@ const LineCreationDialog = ({
             formValues?.busOrBusbarSectionId2 || null,
         connectionDirectionValue: formValues?.connectionDirection2 ?? '',
         connectionNameValue: formValues?.connectionName2,
-        withPosition: true,
+        withPosition: false,
+        connectionPositionValue: formValues?.connectionPosition2,
     });
 
     const [permanentCurrentLimit1, permanentCurrentLimit1Field] =

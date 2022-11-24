@@ -213,7 +213,8 @@ export function getVoltageLevelSingleLineDiagram(
     useName,
     centerLabel,
     diagonalLabel,
-    componentLibrary
+    componentLibrary,
+    useFeederPositions
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -231,6 +232,7 @@ export function getVoltageLevelSingleLineDiagram(
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
+            useFeederPositions: useFeederPositions,
         }).toString()
     );
 }
@@ -1447,7 +1449,8 @@ export function createLoad(
     isUpdate = false,
     modificationUuid,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createLoadUrl;
     if (isUpdate) {
@@ -1480,6 +1483,7 @@ export function createLoad(
             busOrBusbarSectionId: busOrBusbarSectionId,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
+            connectionPosition: connectionPosition,
         }),
     }).then((response) => {
         return response.ok
@@ -1631,7 +1635,8 @@ export function createGenerator(
     minimumReactivePower,
     reactiveCapabilityCurve,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createGeneratorUrl;
     if (isUpdate) {
@@ -1681,6 +1686,7 @@ export function createGenerator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+            connectionPosition: connectionPosition,
         }),
     }).then((response) => {
         return response.ok
@@ -1702,7 +1708,8 @@ export function createShuntCompensator(
     isUpdate,
     modificationUuid,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createShuntUrl;
     if (isUpdate) {
@@ -1736,6 +1743,7 @@ export function createShuntCompensator(
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
+            connectionPosition: connectionPosition,
         }),
     }).then((response) => {
         return response.ok
@@ -2392,6 +2400,25 @@ export function fetchElementsMetadata(ids) {
             .join('&ids=');
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
+}
+
+export function fetchFeederPositions(
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelId
+) {
+    console.info(
+        `Fetching feeder positions of study '${studyUuid}' and voltage level id '${voltageLevelId}'...`
+    );
+    const fetchFeederPositionsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network/voltage-levels/' +
+        encodeURIComponent(voltageLevelId) +
+        '/getFeederPositions';
+    console.debug(fetchFeederPositionsUrl);
+    return backendFetch(fetchFeederPositionsUrl).then((response) =>
         response.json()
     );
 }

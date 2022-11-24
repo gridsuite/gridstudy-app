@@ -125,6 +125,7 @@ const GeneratorCreationDialog = ({
             regulatingTerminalVlId: generator.regulatingTerminalVlId,
             connectionDirection: generator.connectionDirection,
             connectionName: generator.connectionName,
+            connectionPosition: generator.connectionPosition,
         };
     };
 
@@ -357,6 +358,7 @@ const GeneratorCreationDialog = ({
             ? formValues.connectionDirection
             : '',
         connectionNameValue: formValues?.connectionName,
+        connectionPositionValue: formValues?.connectionPosition,
         withPosition: true,
     });
 
@@ -409,7 +411,8 @@ const GeneratorCreationDialog = ({
                 isReactiveCapabilityCurveOn ? null : minimumReactivePower,
                 isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null,
                 connectivity?.connectionDirection?.id ?? 'UNDEFINED',
-                connectivity?.connectionName?.id ?? null
+                connectivity?.connectionName?.id ?? null,
+                connectivity?.connectionPosition?.id ?? null
             ).catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,

@@ -73,6 +73,7 @@ const LoadCreationDialog = ({
             busOrBusbarSectionId: null,
             connectionDirection: load.connectionDirection,
             connectionName: load.connectionName,
+            connectionPosition: load.connectionPosition,
         };
     };
 
@@ -154,6 +155,7 @@ const LoadCreationDialog = ({
             ? formValues.connectionDirection
             : '',
         connectionNameValue: formValues?.connectionName,
+        connectionPositionValue: formValues?.connectionPosition,
         withPosition: true,
     });
 
@@ -172,7 +174,8 @@ const LoadCreationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
                 connectivity?.connectionDirection?.id ?? 'UNDEFINED',
-                connectivity?.connectionName?.id ?? null
+                connectivity?.connectionName?.id ?? null,
+                connectivity?.connectionPosition?.id ?? null
             ).catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,
@@ -224,7 +227,7 @@ const LoadCreationDialog = ({
                     </Grid>
                     <GridSection title="Connectivity" />
                     <Grid container spacing={2}>
-                        {gridItem(connectivityField, 8)}
+                        {gridItem(connectivityField, 12)}
                     </Grid>
                     <GridSection title="Setpoints" />
                     <Grid container spacing={2}>
