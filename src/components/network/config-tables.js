@@ -771,7 +771,10 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editor: ({ equipment, ...props }) =>
                     EnumField({
-                        enumList: LOAD_TYPES,
+                        enumList: [
+                            ...LOAD_TYPES,
+                            { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
+                        ],
                         ...props,
                     }),
             },
