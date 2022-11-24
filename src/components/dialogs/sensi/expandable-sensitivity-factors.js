@@ -12,7 +12,6 @@ export const useExpandableSensitivityFactors = ({
     labelAddValue,
     Field,
     inputForm,
-    validateItem,
     isRequired,
     initialValues,
 }) => {
@@ -56,21 +55,16 @@ export const useExpandableSensitivityFactors = ({
 
     useEffect(() => {
         function validation() {
-            const res = validateItem(values);
-            setErrors(res);
-            if (res?.size !== 0) {
-                return false;
-            }
+            setErrors(new Map());
             setItemListError({
                 show: false,
                 type: '',
             });
-
             return true;
         }
 
         inputForm.addValidation(id, validation);
-    }, [inputForm, values, id, validateItem, isRequired]);
+    }, [inputForm, values, id, isRequired]);
 
     const isEmptyListError =
         itemListError.show && itemListError.type === 'empty';
