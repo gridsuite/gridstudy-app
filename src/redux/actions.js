@@ -144,12 +144,6 @@ export function selectUseName(useName) {
     return { type: USE_NAME, [PARAM_USE_NAME]: useName };
 }
 
-export const USER = 'USER';
-
-export function setLoggedUser(user) {
-    return { type: USER, user: user };
-}
-
 export const CENTER_LABEL = 'CENTER_LABEL';
 
 export function selectCenterLabelState(centerLabel) {

@@ -36,15 +36,9 @@ import { useSnackMessage } from '../../utils/messages';
 import DialogActions from '@mui/material/DialogActions';
 import makeStyles from '@mui/styles/makeStyles';
 
-export const GENERATOR_DISTRIBUTION_TYPES = [
+export const INJECTION_DISTRIBUTION_TYPES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
     { id: 'PROPORTIONAL_MAXP', label: 'ProportionalMaxP' },
-    { id: 'REGULAR', label: 'Regular' },
-    { id: 'VENTILATION', label: 'Ventilation' },
-];
-
-export const LOAD_DISTRIBUTION_TYPES = [
-    { id: 'PROPORTIONAL', label: 'Proportional' },
     { id: 'REGULAR', label: 'Regular' },
     { id: 'VENTILATION', label: 'Ventilation' },
 ];
@@ -271,7 +265,7 @@ const SensiInjectionsSet = ({ index, onChange, defaultValue, inputForm }) => {
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        enumValues: GENERATOR_DISTRIBUTION_TYPES,
+        enumValues: INJECTION_DISTRIBUTION_TYPES,
         defaultValue: defaultValue.distributionType
             ? defaultValue.distributionType
             : 'PROPORTIONAL',
@@ -621,7 +615,7 @@ function validateFactor(values) {
     return res;
 }
 
-export const useSensitivityFactors = ({ id, Field, initialValues }) => {
+const useSensitivityFactors = ({ id, Field, initialValues }) => {
     const inputForm = useInputForm();
 
     const [factors, factorsField] = useExpandableSensitivityFactors({
@@ -712,9 +706,6 @@ const SensiParametersSelector = (props) => {
 
     const handleStart = () => {
         if (inputForm.validate()) {
-            // TODO : remove 'name' property when storing the parameters in config-server
-            // fetch name from uuid when fetching parameters from config-server
-
             handleSaveSensiConfigurationParam(
                 'resultsThreshold',
                 resultsThreshold
