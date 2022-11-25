@@ -607,11 +607,10 @@ const GeneratorCreationDialog = ({
                                         <Grid item xs={12}>
                                             {reactiveCapabilityCurveErrors.map(
                                                 (
-                                                    messageDescriptorId,
-                                                    index
+                                                    messageDescriptorId
                                                 ) => (
                                                     <div
-                                                        key={index}
+                                                        key={messageDescriptorId}
                                                         className={
                                                             classes.midFormErrorMessage
                                                         }
