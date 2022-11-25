@@ -32,6 +32,8 @@ export default class MapEquipments {
 
     intlRef = undefined;
 
+    deletionsBuffer = new Map();
+
     initEquipments(studyUuid, currentNodeUuid) {
         fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
@@ -303,5 +305,25 @@ export default class MapEquipments {
 
     getLine(id) {
         return this.linesById.get(id);
+    }
+
+    updateDeletionBuffer(deletedEquipmentId, deletedEquipmentType) {
+        const deletedEquipmentIds = this.deletionsBuffer.get(
+            deletedEquipmentType
+        )
+            ? [...this.deletionsBuffer.get(deletedEquipmentType)]
+            : [];
+        deletedEquipmentIds.push(deletedEquipmentId);
+        this.deletionsBuffer.set(deletedEquipmentType, deletedEquipmentIds);
+    }
+
+    applyDeletionBuffer() {
+        this.deletionsBuffer.forEach((ids, equipmentType) => {
+            console.log(ids);
+            ids.forEach((id) => {
+                this.removeEquipment(equipmentType, id);
+            });
+        });
+        this.deletionsBuffer.clear();
     }
 }

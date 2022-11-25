@@ -258,6 +258,7 @@ export const NetworkMapTab = ({
                 dispatch(mapEquipmentsCreated(initialMapEquipments));
             } else {
                 console.info('Reload map equipments');
+                mapEquipments.applyDeletionBuffer();
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
@@ -298,13 +299,19 @@ export const NetworkMapTab = ({
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
             ) {
-                if (refIsMapManualRefreshEnabled.current) return;
-
                 const [
                     substationsIds,
                     deletedEquipmentId,
                     deletedEquipmentType,
                 ] = parseStudyNotification(studyUpdatedForce);
+
+                if (refIsMapManualRefreshEnabled.current) {
+                    mapEquipments.updateDeletionBuffer(
+                        deletedEquipmentId,
+                        deletedEquipmentType
+                    );
+                    return;
+                }
 
                 if (substationsIds?.length > 0) {
                     loadMapEquipments(substationsIds);
