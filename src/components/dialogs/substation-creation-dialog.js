@@ -10,15 +10,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
-import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackMessage } from '../../utils/messages';
 import { createSubstation } from '../../utils/rest-api';
 import {
     useButtonWithTooltip,
@@ -45,9 +41,7 @@ const SubstationCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -58,7 +52,7 @@ const SubstationCreationDialog = ({
     const toFormValues = (substation) => {
         return {
             equipmentId: substation.id + '(1)',
-            equipmentName: substation.name,
+            equipmentName: substation.name ?? '',
             substationCountryLabel: substation.countryName,
             substationCountry: null,
         };
@@ -119,13 +113,9 @@ const SubstationCreationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'SubstationCreationError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'SubstationCreationError',
                 });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.

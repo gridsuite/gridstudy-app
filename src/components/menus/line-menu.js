@@ -21,7 +21,6 @@ import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
-import { useSnackbar } from 'notistack';
 import {
     energiseLineEnd,
     lockoutLine,
@@ -30,10 +29,7 @@ import {
 } from '../../utils/rest-api';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {
-    displayInfoMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { useSnackMessage } from '../../utils/messages';
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
@@ -64,11 +60,10 @@ const withLineMenu =
     }) => {
         const classes = useStyles();
         const intl = useIntl();
-        const intlRef = useIntlRef();
 
         const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-        const { enqueueSnackbar } = useSnackbar();
+        const { snackInfo } = useSnackMessage();
         const [displayUseName] = useParameterState(PARAM_USE_NAME);
         const network = useSelector((state) => state.network);
 
@@ -103,13 +98,9 @@ const withLineMenu =
                 .getReader()
                 .read()
                 .then((value) => {
-                    displayInfoMessageWithSnackbar({
-                        errorMessage: utf8Decoder.decode(value.value),
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: messsageId,
-                            intlRef: intlRef,
-                        },
+                    snackInfo({
+                        messageTxt: utf8Decoder.decode(value.value),
+                        headerId: messsageId,
                     });
                 });
             if (setModificationInProgress !== undefined) {

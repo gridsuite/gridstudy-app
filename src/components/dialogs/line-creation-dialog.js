@@ -11,16 +11,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
 import { createLine } from '../../utils/rest-api';
 import {
     useDoubleValue,
@@ -77,9 +73,7 @@ const LineCreationDialog = ({
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -88,7 +82,7 @@ const LineCreationDialog = ({
     const toFormValues = (line) => {
         return {
             equipmentId: line.id + '(1)',
-            equipmentName: line.name,
+            equipmentName: line.name ?? '',
             seriesResistance: line.r,
             seriesReactance: line.x,
             shuntConductance1: line.g1,
@@ -105,6 +99,10 @@ const LineCreationDialog = ({
             currentLimits2: {
                 permanentLimit: line.permanentLimit2,
             },
+            connectionDirection1: line.connectionDirection1,
+            connectionName1: line.connectionName1,
+            connectionDirection2: line.connectionDirection2,
+            connectionName2: line.connectionName2,
         };
     };
 
@@ -283,13 +281,9 @@ const LineCreationDialog = ({
                 connectivity2?.connectionName?.id ?? null,
                 connectivity2?.connectionDirection?.id ?? 'UNDEFINED'
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'LineCreationError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'LineCreationError',
                 });
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.

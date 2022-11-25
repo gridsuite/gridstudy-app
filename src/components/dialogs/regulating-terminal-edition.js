@@ -12,6 +12,8 @@ import { createFilterOptions } from '@mui/material/useAutocomplete';
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
+import { validateField } from '../util/validation-functions';
+import { genHelperError } from './inputs/hooks-helpers';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
@@ -27,7 +29,18 @@ const useStyles = makeStyles((theme) => ({
             width: 'fit-content',
         },
     },
+    //Style class to override disabled input style
+    fieldError: {
+        '& .MuiOutlinedInput-root': {
+            '&.Mui-disabled fieldset': {
+                borderColor: 'red',
+            },
+        },
+    },
 }));
+
+export const REGULATING_VOLTAGE_LEVEL = 'regulating-voltage-level';
+export const REGULATING_EQUIPMENT = 'regulating-equipment';
 
 export function makeRefreshRegulatingTerminalSectionsCallback() {
     return (voltageLevel, putter) => {
@@ -40,6 +53,8 @@ export function makeRefreshRegulatingTerminalSectionsCallback() {
 }
 
 const RegulatingTerminalEdition = ({
+    validation,
+    inputForm,
     voltageLevelOptions,
     regulatingTerminalValue,
     voltageLevelsEquipments,
@@ -48,6 +63,7 @@ const RegulatingTerminalEdition = ({
     direction,
     disabled = false,
     voltageLevelEquipmentsCallback,
+    equipmentSectionTypeDefaultValue,
 }) => {
     const classes = useStyles();
 
@@ -74,18 +90,51 @@ const RegulatingTerminalEdition = ({
             if (reason === 'selectOption') {
                 onChangeVoltageLevel(value);
                 onChangeEquipmentSection(null);
+                inputForm.setHasChanged(true);
             } else if (reason === 'clear') {
                 onChangeVoltageLevel(null);
                 onChangeEquipmentSection(null);
                 setEquipmentsOptions([]);
+                inputForm.setHasChanged(true);
             }
         },
-        [onChangeEquipmentSection, onChangeVoltageLevel]
+        [onChangeEquipmentSection, onChangeVoltageLevel, inputForm]
     );
 
     const handleChangeEquipment = (event, value, reason) => {
         onChangeEquipmentSection(value);
+        inputForm.setHasChanged(true);
     };
+
+    const [errorForVL, setErrorForVL] = useState();
+
+    useEffect(() => {
+        function validate() {
+            const res = validateField(
+                regulatingTerminalValue?.voltageLevel?.id,
+                validation
+            );
+            setErrorForVL(res?.errorMsgId);
+            return !res.error;
+        }
+        inputForm.addValidation(REGULATING_VOLTAGE_LEVEL, validate);
+    }, [
+        validation,
+        inputForm,
+        regulatingTerminalValue?.voltageLevel?.id,
+        errorForVL,
+    ]);
+
+    const [errorForTerminal, setErrorForTerminal] = useState();
+
+    useEffect(() => {
+        function validate() {
+            const res = validateField(currentEquipment, validation);
+            setErrorForTerminal(res?.errorMsgId);
+            return !res.error;
+        }
+        inputForm.addValidation(REGULATING_EQUIPMENT, validate);
+    }, [validation, inputForm, currentEquipment, errorForTerminal]);
 
     useEffect(() => {
         if (voltageLevelEquipmentsCallback) {
@@ -99,26 +148,41 @@ const RegulatingTerminalEdition = ({
             );
         }
     }, [
-        regulatingTerminalValue.voltageLevel,
+        regulatingTerminalValue?.voltageLevel?.id,
         setEquipmentsOptions,
         voltageLevelEquipmentsCallback,
         voltageLevelsEquipments,
     ]);
 
     useEffect(() => {
+        let selectedExistingEquipment;
+        if (regulatingTerminalValue?.equipmentSection) {
+            selectedExistingEquipment = equipmentsOptions.find(
+                (value) =>
+                    value.id === regulatingTerminalValue.equipmentSection.id
+            );
+        }
+        //To refactor in order to simplify it :
+        //If the user select an existing equipement from the list it is set as the current value
+        //Otherwise if nothing have been typed in Equipment field the value is an empty string
+        //If something has been typed but it does not match with an existing equipment, it is allowed in order to specify the equipment currently being created, the value will be the combination of what the user typed and default type passed as prop
         setCurrentEquipment(
             regulatingTerminalValue?.equipmentSection &&
-                equipmentsOptions.length
-                ? equipmentsOptions.find(
-                      (value) =>
-                          value.id ===
-                          regulatingTerminalValue.equipmentSection.id
-                  )
+                selectedExistingEquipment
+                ? selectedExistingEquipment
                 : regulatingTerminalValue?.equipmentSection === null
                 ? ''
-                : regulatingTerminalValue.equipmentSection
+                : {
+                      id: regulatingTerminalValue.equipmentSection.id,
+                      type: equipmentSectionTypeDefaultValue,
+                  }
         );
-    }, [equipmentsOptions, regulatingTerminalValue.equipmentSection]);
+    }, [
+        equipmentSectionTypeDefaultValue,
+        equipmentsOptions,
+        regulatingTerminalValue,
+        regulatingTerminalValue.equipmentSection,
+    ]);
 
     return (
         <>
@@ -153,7 +217,6 @@ const RegulatingTerminalEdition = ({
                         */
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
-
                             if (
                                 params.inputValue !== '' &&
                                 !options.find(
@@ -183,6 +246,7 @@ const RegulatingTerminalEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...genHelperError(errorForVL)}
                             />
                         )}
                         PopperComponent={FittingPopper}
@@ -217,7 +281,10 @@ const RegulatingTerminalEdition = ({
                         getOptionLabel={(equipment) => {
                             return equipment === ''
                                 ? '' // to clear field
-                                : equipment?.type + ' : ' + equipment?.id || '';
+                                : (equipment?.type ??
+                                      equipmentSectionTypeDefaultValue) +
+                                      ' : ' +
+                                      equipment?.id || '';
                         }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
@@ -243,6 +310,10 @@ const RegulatingTerminalEdition = ({
                         renderInput={(params) => (
                             <TextField
                                 {...params}
+                                className={
+                                    genHelperError(errorForTerminal)?.error &&
+                                    classes.fieldError
+                                }
                                 fullWidth
                                 label={intl.formatMessage({
                                     id: 'Equipment',
@@ -250,6 +321,7 @@ const RegulatingTerminalEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...genHelperError(errorForTerminal)}
                             />
                         )}
                         PopperComponent={FittingPopper}
@@ -261,6 +333,7 @@ const RegulatingTerminalEdition = ({
 };
 
 RegulatingTerminalEdition.propTypes = {
+    validation: PropTypes.object,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     regulatingTerminalValue: PropTypes.object,
     onChangeVoltageLevel: PropTypes.func.isRequired,

@@ -13,6 +13,7 @@ import {
     getUniqueNodeName,
     buildNode,
     copyTreeNode,
+    cutTreeNode,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -28,12 +29,7 @@ import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-    useSnackMessage,
-} from '../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useIntlRef, useSnackMessage } from '../utils/messages';
 import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
@@ -74,19 +70,24 @@ const usePreviousTreeDisplay = (display, width) => {
     return ref.current;
 };
 
+export const CopyType = {
+    COPY: 'COPY',
+    CUT: 'CUT',
+};
+
 export const NetworkModificationTreePane = ({
     studyUuid,
     studyMapTreeDisplay,
 }) => {
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
     const { snackError, snackInfo } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
     const [selectedNodeIdForCopy, setSelectedNodeIdForCopy] = useState(null);
+    const [copyType, setCopyType] = useState(null);
     const selectedNodeIdForCopyRef = useRef();
     selectedNodeIdForCopyRef.current = selectedNodeIdForCopy;
 
@@ -161,21 +162,14 @@ export const NetworkModificationTreePane = ({
                     )
                 ) {
                     setSelectedNodeIdForCopy(null);
-                    let message = intlRef.current.formatMessage({
-                        id: 'CopiedNodeInvalidationMessage',
+                    setCopyType(null);
+                    snackInfo({
+                        messageId: 'CopiedNodeInvalidationMessage',
                     });
-                    snackInfo(message);
                 }
             }
         }
-    }, [
-        studyUuid,
-        studyUpdatedForce,
-        updateNodes,
-        dispatch,
-        snackInfo,
-        intlRef,
-    ]);
+    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch, snackInfo]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
@@ -186,74 +180,97 @@ export const NetworkModificationTreePane = ({
                         type: type,
                         buildStatus: 'NOT_BUILT',
                     }).catch((errorMessage) => {
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'NodeCreateError',
-                                intlRef: intlRef,
-                            },
+                        snackError({
+                            messageTxt: errorMessage,
+                            headerId: 'NodeCreateError',
                         });
                     })
                 )
                 .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeCreateError',
-                            intlRef: intlRef,
-                        },
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'NodeCreateError',
                     });
                 });
         },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [studyUuid, snackError]
+    );
+
+    const handleCopyNode = useCallback(
+        (referenceNodeId) => {
+            setSelectedNodeIdForCopy(referenceNodeId);
+            setCopyType(CopyType.COPY);
+        },
+        [setSelectedNodeIdForCopy, setCopyType]
+    );
+
+    const handleCutNode = useCallback(
+        (referenceNodeId) => {
+            setSelectedNodeIdForCopy(referenceNodeId);
+            setCopyType(CopyType.CUT);
+        },
+        [setSelectedNodeIdForCopy, setCopyType]
     );
 
     const handlePasteNode = useCallback(
         (referenceNodeId, insertMode) => {
-            copyTreeNode(
-                studyUuid,
-                selectedNodeIdForCopy,
-                referenceNodeId,
-                insertMode
-            ).catch((errorMessage) => {
-                snackError(errorMessage, 'NodeCreateError');
-            });
+            if (CopyType.CUT === copyType) {
+                cutTreeNode(
+                    studyUuid,
+                    selectedNodeIdForCopy,
+                    referenceNodeId,
+                    insertMode
+                )
+                    .then(() => {
+                        //After the first CUT / PASTE operation, we can't paste anymore
+                        setSelectedNodeIdForCopy(null);
+                        setCopyType(null);
+                    })
+                    .catch((errorMessage) => {
+                        snackError({
+                            messageTxt: errorMessage,
+                            headerId: 'NodeCreateError',
+                        });
+                    });
+            } else {
+                copyTreeNode(
+                    studyUuid,
+                    selectedNodeIdForCopy,
+                    referenceNodeId,
+                    insertMode
+                ).catch((errorMessage) => {
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'NodeCreateError',
+                    });
+                });
+            }
         },
-        [studyUuid, selectedNodeIdForCopy, snackError]
+        [studyUuid, copyType, selectedNodeIdForCopy, snackError]
     );
 
     const handleRemoveNode = useCallback(
         (element) => {
             deleteTreeNode(studyUuid, element.id).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NodeDeleteError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'NodeDeleteError',
                 });
             });
         },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [studyUuid, snackError]
     );
 
     const handleBuildNode = useCallback(
         (element) => {
             buildNode(studyUuid, element.id).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NodeBuildingError',
-                        intlRef: intlRef,
-                    },
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'NodeBuildingError',
                 });
             });
         },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [studyUuid, snackError]
     );
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
@@ -327,7 +344,9 @@ export const NetworkModificationTreePane = ({
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
                     selectedNodeForCopy={selectedNodeIdForCopy}
-                    handleCopyNode={setSelectedNodeIdForCopy}
+                    copyType={copyType}
+                    handleCopyNode={handleCopyNode}
+                    handleCutNode={handleCutNode}
                     handlePasteNode={handlePasteNode}
                 />
             )}

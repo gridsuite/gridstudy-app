@@ -41,7 +41,7 @@ import LoadCreationDialog from '../../dialogs/load-creation-dialog';
 import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation-dialog';
 import LineCreationDialog from '../../dialogs/line-creation-dialog';
-import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-transformer-creation-dialog';
+import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-transformer/two-windings-transformer-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
 import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
@@ -293,7 +293,12 @@ const NetworkModificationNodeEditor = () => {
         },
         TWO_WINDINGS_TRANSFORMER_CREATION: {
             label: 'CreateTwoWindingsTransformer',
-            dialog: () => adapt(TwoWindingsTransformerCreationDialog, withVLs),
+            dialog: () =>
+                adapt(
+                    TwoWindingsTransformerCreationDialog,
+                    withVLs,
+                    withVLsAndEquipments
+                ),
             icon: <AddIcon />,
         },
         SUBSTATION_CREATION: {
@@ -382,7 +387,11 @@ const NetworkModificationNodeEditor = () => {
                     setModifications(res);
                 }
             })
-            .catch((errorMessage) => snackError(errorMessage))
+            .catch((errorMessage) => {
+                snackError({
+                    messageTxt: errorMessage,
+                });
+            })
             .finally(() => {
                 setPendingState(false);
                 setLaunchLoader(false);
@@ -473,7 +482,10 @@ const NetworkModificationNodeEditor = () => {
         )
             .then()
             .catch((errmsg) => {
-                snackError(errmsg, 'errDeleteModificationMsg');
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errDeleteModificationMsg',
+                });
             });
     }, [currentTreeNode?.id, selectedItems, snackError, studyUuid]);
 
@@ -496,14 +508,17 @@ const NetworkModificationNodeEditor = () => {
                         'Modifications not pasted:',
                         modificationsInFailure
                     );
-                    snackWarning(
-                        modificationsInFailure.length,
-                        'warnDuplicateModificationMsg'
-                    );
+                    snackWarning({
+                        messageTxt: modificationsInFailure.length,
+                        headerId: 'warnDuplicateModificationMsg',
+                    });
                 }
             })
             .catch((errmsg) => {
-                snackError(errmsg, 'errDuplicateModificationMsg');
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errDuplicateModificationMsg',
+                });
             });
     }, [
         copiedModifications,
@@ -512,6 +527,28 @@ const NetworkModificationNodeEditor = () => {
         snackWarning,
         studyUuid,
     ]);
+
+    function removeNullFields(data) {
+        let dataTemp = data;
+        if (dataTemp) {
+            Object.keys(dataTemp).forEach((key) => {
+                if (
+                    dataTemp[key] &&
+                    dataTemp[key] !== null &&
+                    typeof dataTemp[key] === 'object'
+                ) {
+                    dataTemp[key] = removeNullFields(dataTemp[key]);
+                }
+
+                if (dataTemp[key] === null) {
+                    delete dataTemp[key];
+                }
+            });
+        }
+        return dataTemp;
+    }
+
+    //doCopyModification
 
     const doEditModification = (modificationUuid) => {
         const modification = fetchNetworkModification(modificationUuid);
@@ -522,23 +559,27 @@ const NetworkModificationNodeEditor = () => {
                     Object.keys(data[0]).forEach((key) => {
                         if (data[0][key] === null) {
                             delete data[0][key];
-                        }
-                        if (
+                        } else if (
                             copiedModifications.some(
                                 (m) => m === modificationUuid
                             )
                         ) {
                             setCopiedModifications([]);
-                            let message = useIntlRef.current.formatMessage({
-                                id: 'CopiedModificationInvalidationMessage',
+                            snackInfo({
+                                messageId:
+                                    'CopiedModificationInvalidationMessage',
                             });
-                            snackInfo(message);
                         }
                     });
                     setEditData(data[0]);
+                    setEditData(removeNullFields(data[0]));
                 });
             })
-            .catch((errorMessage) => snackError(errorMessage));
+            .catch((errorMessage) => {
+                snackError({
+                    messageTxt: errorMessage,
+                });
+            });
     };
 
     const toggleSelectAllModifications = useCallback(() => {
@@ -571,7 +612,10 @@ const NetworkModificationNodeEditor = () => {
                 item.uuid,
                 before
             ).catch((errorMessage) => {
-                snackError(errorMessage, 'errReorderModificationMsg');
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'errReorderModificationMsg',
+                });
                 setModifications(modifications); // rollback
             });
         },
@@ -586,7 +630,7 @@ const NetworkModificationNodeEditor = () => {
         );
     };
 
-    const renderNetworkModificationsList = () => {
+    const renderNetworkModificationsList = (network) => {
         return (
             <DragDropContext
                 onDragEnd={commit}
@@ -752,7 +796,7 @@ const NetworkModificationNodeEditor = () => {
             </Toolbar>
             {renderPaneSubtitle()}
 
-            {renderNetworkModificationsList()}
+            {renderNetworkModificationsList(network)}
             <Fab
                 className={classes.addButton}
                 color="primary"
