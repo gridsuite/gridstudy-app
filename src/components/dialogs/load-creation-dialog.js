@@ -15,7 +15,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
-import { LOAD_TYPES, UNDEFINED_LOAD_TYPE } from '../network/constants';
+import {
+    LOAD_TYPES,
+    UNDEFINED_CONNECTION_DIRECTION,
+    UNDEFINED_LOAD_TYPE,
+} from '../network/constants';
 import {
     useDoubleValue,
     useOptionalEnumValue,
@@ -176,7 +180,8 @@ const LoadCreationDialog = ({
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION,
                 connectivity?.connectionName?.id ?? null,
                 connectivity?.connectionPosition?.id ?? null
             ).catch((errorMessage) => {

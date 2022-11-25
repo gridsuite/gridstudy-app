@@ -35,6 +35,7 @@ import {
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useConnectivityValue } from './connectivity-edition';
+import { UNDEFINED_CONNECTION_DIRECTION } from '../network/constants';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid : the node we are currently working on
+ * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
  */
 const LineCreationDialog = ({
@@ -279,9 +280,11 @@ const LineCreationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
                 connectivity1?.connectionName?.id ?? null,
-                connectivity1?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity1?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION,
                 connectivity2?.connectionName?.id ?? null,
-                connectivity2?.connectionDirection?.id ?? 'UNDEFINED'
+                connectivity2?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION
             ).catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,

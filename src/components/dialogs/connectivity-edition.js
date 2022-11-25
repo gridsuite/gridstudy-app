@@ -14,7 +14,6 @@ import {
 import { getIdOrSelf } from './dialogUtils';
 import { useSelector } from 'react-redux';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import { CONNECTION_DIRECTION } from '../network/constants';
 import {
     useEnumValue,
     useIntegerValue,
@@ -23,6 +22,11 @@ import {
 import InfoIcon from '@mui/icons-material/Info';
 import PositionDiagram from '../diagrams/singleLineDiagram/PositionDiagramPane';
 import { Tooltip } from '@mui/material';
+import {
+    CONNECTION_DIRECTIONS,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '../network/constants';
+import { useOptionalEnumValue, useTextValue } from './inputs/input-hooks';
 
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
@@ -72,7 +76,8 @@ function ided(objOrId) {
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
  * @param label optional label, no more so useful, except for debug purpose
- * @param id optional id that has to be defined if the hook it to be use more than once in a form
+ * @param id optional id that has to be defined if the hook is used more than once in a form
+ * @param validation field validation option
  * @param inputForm optional form for inputs basis
  * @param voltageLevelOptionsPromise a promise that will bring available voltage levels
  * @param currentNodeUuid current node id
@@ -144,13 +149,20 @@ export const useConnectivityValue = ({
             inputForm: inputForm,
         });
 
-    const [connectionDirection, connectionDirectionField] = useEnumValue({
-        label: 'ConnectionDirection',
-        validation: { isFieldRequired: false },
-        inputForm: inputForm,
-        enumValues: CONNECTION_DIRECTION,
-        defaultValue: connectionDirectionValue,
-    });
+    const [connectionDirection, connectionDirectionField] =
+        useOptionalEnumValue({
+            label: 'ConnectionDirection',
+            inputForm: inputForm,
+            enumObjects: CONNECTION_DIRECTIONS,
+            validation: {
+                isFieldRequired: false,
+            },
+            defaultValue:
+                connectionDirectionValue &&
+                connectionDirectionValue !== UNDEFINED_CONNECTION_DIRECTION
+                    ? connectionDirectionValue
+                    : null,
+        });
 
     const [connectionName, connectionNameField] = useTextValue({
         label: 'ConnectionName',
