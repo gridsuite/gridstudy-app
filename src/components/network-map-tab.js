@@ -122,7 +122,6 @@ export const NetworkMapTab = ({
     const [position, setPosition] = useState([-1, -1]);
 
     const classes = useStyles();
-    const currentNodeRef = useRef(null);
 
     function withEquipment(Menu, props) {
         return (
@@ -241,9 +240,7 @@ export const NetworkMapTab = ({
     const procEffect =
         reloadMapNeeded &&
         !(mapManualRefresh && isInitialized) &&
-        !disabled &&
-        !isNodeRenamed(currentNodeRef.current, currentNode);
-    currentNodeRef.current = currentNode;
+        !disabled ;
 
     useEffect(() => {
         if (!procEffect) return;

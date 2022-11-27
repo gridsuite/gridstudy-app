@@ -368,7 +368,7 @@ export function fetchSubstationPositionsByIds(
     );
     const fetchSubstationPositionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/geo-data/substations-by-ids?' +
+        '/geo-data/substations?' +
         getQueryParamsList(substationsIds, 'substationId');
 
     console.debug(fetchSubstationPositionsUrl);
