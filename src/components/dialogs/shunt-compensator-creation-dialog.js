@@ -187,9 +187,6 @@ const ShuntCompensatorCreationDialog = ({
                 connectivity,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
-                connectivity?.connectionName?.id ?? null,
-                connectivity?.connectionPosition?.id ?? null
                 connectivity?.connectionDirection?.id ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 connectivity?.connectionName?.id ?? null,

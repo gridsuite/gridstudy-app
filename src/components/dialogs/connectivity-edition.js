@@ -15,7 +15,7 @@ import { getIdOrSelf } from './dialogUtils';
 import { useSelector } from 'react-redux';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import {
-    useEnumValue,
+    useOptionalEnumValue,
     useIntegerValue,
     useTextValue,
 } from './inputs/input-hooks';
@@ -26,7 +26,6 @@ import {
     CONNECTION_DIRECTIONS,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../network/constants';
-import { useOptionalEnumValue, useTextValue } from './inputs/input-hooks';
 
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
