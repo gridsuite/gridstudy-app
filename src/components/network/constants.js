@@ -65,3 +65,8 @@ export const REACTIVE_LIMIT_TYPES = [
 export function getLoadTypeLabel(loadTypeId) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
 }
+
+export const SVG_DISPLAY_MODE = {
+    FEEDER_POSITION: 'FEEDER_POSITION',
+    DEFAULT: 'DEFAULT',
+};

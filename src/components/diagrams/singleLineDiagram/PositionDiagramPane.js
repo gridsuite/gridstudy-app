@@ -20,6 +20,7 @@ import PositionDiagram from './PositionDiagram';
 import { SvgType } from './single-line-diagram';
 import { AutoSizer } from 'react-virtualized';
 import { useIntl } from 'react-intl';
+import { SVG_DISPLAY_MODE } from '../../network/constants';
 
 const PositionDiagramPane = ({
     open,
@@ -34,14 +35,12 @@ const PositionDiagramPane = ({
     const componentLibrary = useSelector(
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
-    const [enableSld, setEnableSld] = useState(false);
 
     const [svgUrl, setSvgUrl] = useState(null);
     const intl = useIntl();
     const handleClose = () => {
-        onClose();
-        setEnableSld(false);
         setSvgUrl(null);
+        onClose();
     };
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
@@ -54,7 +53,7 @@ const PositionDiagramPane = ({
                 centerName,
                 diagonalName,
                 componentLibrary,
-                true
+                SVG_DISPLAY_MODE.FEEDER_POSITION
             ),
         [
             studyUuid,
@@ -69,12 +68,11 @@ const PositionDiagramPane = ({
 
     useEffect(() => {
         if (voltageLevelId?.id !== undefined) {
-            setEnableSld(true);
-            setSvgUrl(getVoltageLevelSingleLineDiagramUrl());
-        } else {
-            setEnableSld(false);
+            if (open) {
+                setSvgUrl(getVoltageLevelSingleLineDiagramUrl());
+            }
         }
-    }, [getVoltageLevelSingleLineDiagramUrl, svgUrl, voltageLevelId]);
+    }, [getVoltageLevelSingleLineDiagramUrl, open, svgUrl, voltageLevelId?.id]);
 
     return (
         <AutoSizer>
@@ -93,7 +91,7 @@ const PositionDiagramPane = ({
                         </Alert>
                     )}
 
-                    {enableSld && (
+                    {voltageLevelId?.id && open && (
                         <PositionDiagram
                             onClose={handleClose}
                             diagramTitle={voltageLevelId?.id ?? ''}
