@@ -560,9 +560,7 @@ const NetworkModificationNodeEditor = () => {
                         if (data[0][key] === null) {
                             delete data[0][key];
                         } else if (
-                            copiedModifications.some(
-                                (m) => m === modificationUuid
-                            )
+                            copiedModifications.includes(modificationUuid)
                         ) {
                             setCopiedModifications([]);
                             snackInfo({
@@ -571,7 +569,6 @@ const NetworkModificationNodeEditor = () => {
                             });
                         }
                     });
-                    setEditData(data[0]);
                     setEditData(removeNullFields(data[0]));
                 });
             })
