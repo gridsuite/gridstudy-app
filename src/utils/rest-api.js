@@ -111,8 +111,15 @@ export function fetchConfigParameter(name) {
         `/v1/applications/${appName}/parameters/${name}`;
     return backendFetch(fetchParams).then((response) =>
         response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
+            ? response.status === 204
+                ? null
+                : response.json()
+            : response.text().then((text) =>
+                  Promise.reject({
+                      status: response.status,
+                      message: text,
+                  })
+              )
     );
 }
 
@@ -2375,7 +2382,12 @@ export function getSensiDefaultResultsThreshold() {
     }).then((response) =>
         response.ok
             ? response.text()
-            : response.text().then((text) => Promise.reject(text))
+            : response.text().then((text) =>
+                  Promise.reject({
+                      status: response.status,
+                      message: text,
+                  })
+              )
     );
 }
 

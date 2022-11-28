@@ -53,6 +53,7 @@
     "paramsChangingDenied": "Les changements demandés ont été rejetés",
     "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
     "defaultLoadflowRetrievingError": "Une erreur est survenue lors de la récupération du fournisseur de load flow par défaut",
+    "defaultSensiResultsThresholdRetrievingError": "Une erreur est survenue lors de la récupération du seuil par défaut des résultats de l'analyse de sensibilité",
 
     "close": "Fermer",
     "validate": "Valider",

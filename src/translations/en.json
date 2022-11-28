@@ -53,6 +53,7 @@
     "paramsChangingDenied": "The requested changes have been rejected",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
     "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
+    "defaultSensiResultsThresholdRetrievingError": "An error occurred while retrieving the sensitivity analysis results default threshold",
 
     "close": "Close",
     "validate": "Validate",

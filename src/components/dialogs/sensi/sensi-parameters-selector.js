@@ -45,9 +45,9 @@ export const SENSITIVITY_TYPES = [
     { id: 'DELTA_A', label: 'DeltaA' },
 ];
 
-export const SENSI_PARAMETER_PREFIX_IN_DATABASE = 'sensi.';
+const SENSI_PARAMETER_PREFIX_IN_DATABASE = 'sensi.';
 
-const PARAMETER_RESULTS_THRESHOLD = 'resultsthreshold';
+const PARAMETER_RESULTS_THRESHOLD = 'resultsThreshold';
 const PARAMETER_SENSI_INJECTIONS_SET = 'sensiInjectionsSet';
 const PARAMETER_SENSI_INJECTIONS = 'sensiInjections';
 const PARAMETER_SENSI_HVDCS = 'sensiHVDCs';
@@ -114,8 +114,8 @@ const SensiParametersSelector = (props) => {
     const inputForm = useInputForm();
 
     const [defaultResultsThreshold, setDefaultResultsThreshold] =
-        useState(0.01);
-    const [paramResultsThreshold, setParamResultsThreshold] = useState(0.01);
+        useState(null);
+    const [paramResultsThreshold, setParamResultsThreshold] = useState(null);
     const [paramSensiInjectionsSet, setParamSensiInjectionsSet] =
         useState(null);
     const [paramSensiInjections, setParamSensiInjections] = useState(null);
@@ -226,43 +226,65 @@ const SensiParametersSelector = (props) => {
         [snackError]
     );
 
-    function fetchSensiConfigurationParam(paramName) {
-        return fetchConfigParameter(
-            SENSI_PARAMETER_PREFIX_IN_DATABASE + paramName
-        );
-    }
+    const fetchSensiConfigurationParam = useCallback(
+        (paramName) => {
+            return fetchConfigParameter(
+                SENSI_PARAMETER_PREFIX_IN_DATABASE + paramName
+            )
+                .then((p) => p && JSON.parse(p.value))
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsRetrievingError',
+                    });
+                });
+        },
+        [snackError]
+    );
 
     useEffect(() => {
         // get default results threshold value
-        getSensiDefaultResultsThreshold().then((value) =>
-            setDefaultResultsThreshold(value)
-        );
+        getSensiDefaultResultsThreshold()
+            .then((value) => setDefaultResultsThreshold(value))
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'defaultSensiResultsThresholdRetrievingError',
+                });
+            });
+    }, [snackError]);
 
-        // fetch configuration in config database
-        fetchSensiConfigurationParam(PARAMETER_RESULTS_THRESHOLD).then((p) =>
-            setParamResultsThreshold(parseFloat(JSON.parse(p.value)))
-        );
-
+    useEffect(() => {
         fetchSensiConfigurationParam(PARAMETER_SENSI_INJECTIONS_SET).then((p) =>
-            setParamSensiInjectionsSet(JSON.parse(p.value))
+            setParamSensiInjectionsSet(p)
         );
 
         fetchSensiConfigurationParam(PARAMETER_SENSI_INJECTIONS).then((p) =>
-            setParamSensiInjections(JSON.parse(p.value))
+            setParamSensiInjections(p)
         );
 
         fetchSensiConfigurationParam(PARAMETER_SENSI_HVDCS).then((p) =>
-            setParamSensiHVDCs(JSON.parse(p.value))
+            setParamSensiHVDCs(p)
         );
 
         fetchSensiConfigurationParam(PARAMETER_SENSI_PSTS).then((p) =>
-            setParamSensiPSTs(JSON.parse(p.value))
+            setParamSensiPSTs(p)
         );
 
         fetchSensiConfigurationParam(PARAMETER_SENSI_NODES).then((p) =>
-            setParamSensiNodes(JSON.parse(p.value))
+            setParamSensiNodes(p)
         );
-    }, []);
+    }, [fetchSensiConfigurationParam]);
+
+    useEffect(() => {
+        defaultResultsThreshold &&
+            fetchSensiConfigurationParam(PARAMETER_RESULTS_THRESHOLD).then(
+                (p) =>
+                    setParamResultsThreshold(
+                        p ? parseFloat(p) : defaultResultsThreshold
+                    )
+            );
+    }, [defaultResultsThreshold, fetchSensiConfigurationParam]);
 
     return (
         <>
