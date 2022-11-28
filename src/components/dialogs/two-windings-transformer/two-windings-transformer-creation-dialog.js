@@ -47,7 +47,10 @@ import {
     VoltageAdornment,
     sanitizeString,
 } from '../dialogUtils';
-import { REGULATION_MODES } from '../../network/constants';
+import {
+    REGULATION_MODES,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '../../network/constants';
 import { useBooleanValue } from '../inputs/boolean';
 import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import clsx from 'clsx';
@@ -901,9 +904,11 @@ const TwoWindingsTransformerCreationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
                 connectivity1?.connectionName?.id ?? null,
-                connectivity1?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity1?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION,
                 connectivity2?.connectionName?.id ?? null,
-                connectivity2?.connectionDirection?.id ?? 'UNDEFINED'
+                connectivity2?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION
             ).catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,
@@ -1111,7 +1116,14 @@ const TwoWindingsTransformerCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={
+                            !characteristicsInputForm.hasChanged &&
+                            !ratioTapInputForm.hasChanged &&
+                            !phaseTapInputForm.hasChanged
+                        }
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>
