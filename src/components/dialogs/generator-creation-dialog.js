@@ -218,7 +218,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
-            isValueLessOrEqualTo: maximumActivePower,
+            valueLessThanOrEqualTo: maximumActivePower,
             errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
         adornment: ActivePowerAdornment,
@@ -231,7 +231,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: false,
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
         adornment: MVAPowerAdornment,
@@ -284,8 +284,8 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
-            isValueGreaterOrEqualTo: minimumActivePower,
-            isValueLessOrEqualTo: maximumActivePower,
+            valueGreaterThanOrEqualTo: minimumActivePower,
+            valueLessThanOrEqualTo: maximumActivePower,
             errorMsgId: 'ActivePowerBetweenMaxAndMin',
         },
         adornment: ActivePowerAdornment,
@@ -305,7 +305,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
@@ -343,8 +343,8 @@ const GeneratorCreationDialog = ({
         label: 'QPercentText',
         validation: {
             isFieldRequired: false,
-            isValueGreaterOrEqualTo: '0',
-            isValueLessOrEqualTo: '100',
+            valueGreaterThanOrEqualTo: '0',
+            valueLessThanOrEqualTo: '100',
             errorMsgId: 'NormalizedPercentage',
         },
         adornment: percentageTextField,

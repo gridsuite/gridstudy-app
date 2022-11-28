@@ -233,7 +233,7 @@ const LineCreationDialog = ({
             validation: {
                 isFieldRequired: false,
                 isFieldNumeric: true,
-                isValueGreaterThan: '0',
+                valueGreaterThan: '0',
                 errorMsgId: 'permanentCurrentLimitGreaterThanZero',
             },
             adornment: AmpereAdornment,
@@ -247,7 +247,7 @@ const LineCreationDialog = ({
             validation: {
                 isFieldRequired: false,
                 isFieldNumeric: true,
-                isValueGreaterThan: '0',
+                valueGreaterThan: '0',
                 errorMsgId: 'permanentCurrentLimitGreaterThanZero',
             },
             adornment: AmpereAdornment,

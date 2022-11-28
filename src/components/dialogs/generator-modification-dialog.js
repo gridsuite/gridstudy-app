@@ -166,7 +166,7 @@ const GeneratorModificationDialog = ({
         label: 'MinimumActivePowerText',
         validation: {
             isFieldNumeric: true,
-            isValueLessOrEqualTo: maximumActivePower,
+            valueLessThanOrEqualTo: maximumActivePower,
             errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
         adornment: ActivePowerAdornment,
@@ -180,7 +180,7 @@ const GeneratorModificationDialog = ({
         label: 'RatedNominalPowerText',
         validation: {
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
         adornment: MVAPowerAdornment,
@@ -222,7 +222,7 @@ const GeneratorModificationDialog = ({
         label: 'VoltageText',
         validation: {
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,

@@ -117,7 +117,7 @@ const ShuntCompensatorCreationDialog = ({
             label: 'ShuntMaximumNumberOfSections',
             validation: {
                 isFieldRequired: true,
-                isValueGreaterThan: '0',
+                valueGreaterThan: '0',
                 errorMsgId: 'ShuntCompensatorErrorMaximumLessThanOne',
             },
             transformValue: toPositiveIntValue,
@@ -129,8 +129,8 @@ const ShuntCompensatorCreationDialog = ({
         useIntegerValue({
             label: 'ShuntCurrentNumberOfSections',
             validation: {
-                isValueLessOrEqualTo: maximumNumberOfSections,
-                isValueGreaterThan: '-1',
+                valueLessThanOrEqualTo: maximumNumberOfSections,
+                valueGreaterThan: '-1',
                 errorMsgId: 'ShuntCompensatorErrorCurrentLessThanMaximum',
                 isFieldRequired: true,
             },

@@ -162,8 +162,8 @@ const LineAttachToVoltageLevelDialog = ({
     const [percentage, percentageArea] = useComplementaryPercentage({
         validation: {
             isFieldRequired: true,
-            isValueGreaterThan: 0.0,
-            isValueLessOrEqualTo: 99.9,
+            valueGreaterThan: 0.0,
+            valueLessThanOrEqualTo: 99.9,
             errorMsgId: 'OutOfBoundsPercentage',
         },
         upperLeftText: <FormattedMessage id="Line1"></FormattedMessage>,
