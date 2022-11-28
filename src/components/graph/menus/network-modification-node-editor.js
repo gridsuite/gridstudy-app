@@ -142,7 +142,7 @@ const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const { snackError, snackWarning } = useSnackMessage();
+    const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
     const currentTreeNode = useSelector((state) => state.currentTreeNode);
 
@@ -162,7 +162,21 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
+    const CleanClipboard = () => {
+        setCopiedModifications([]);
+        snackInfo({
+            messageId: 'CopiedModificationInvalidationMessage',
+        });
+    };
+
     const closeDialog = () => {
+        setEditDialogOpen(undefined);
+        if (editData?.uuid && copiedModifications.includes(editData?.uuid))
+            CleanClipboard();
+        setEditData(undefined);
+    };
+
+    const handleCancel = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
@@ -172,6 +186,7 @@ const NetworkModificationNodeEditor = () => {
             <Dialog
                 open={true}
                 onClose={closeDialog}
+                onCancel={handleCancel}
                 currentNodeUuid={currentTreeNode.id}
                 editData={editData}
                 {...props}
@@ -303,7 +318,7 @@ const NetworkModificationNodeEditor = () => {
         },
         SUBSTATION_CREATION: {
             label: 'CreateSubstation',
-            dialog: () => adapt(SubstationCreationDialog, withVLs),
+            dialog: () => withDefaultParams(SubstationCreationDialog),
             icon: <AddIcon />,
         },
         VOLTAGE_LEVEL_CREATION: {

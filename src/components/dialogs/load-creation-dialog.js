@@ -4,15 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
 import {
@@ -24,7 +19,6 @@ import {
     useDoubleValue,
     useOptionalEnumValue,
     useInputForm,
-    useButtonWithTooltip,
     useTextValue,
 } from './inputs/input-hooks';
 import {
@@ -43,18 +37,16 @@ import { useConnectivityValue } from './connectivity-edition';
 
 /**
  * Dialog to create a load in the network
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param currentNodeUuid The node we are currently working on
  * @param editData the data to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LoadCreationDialog = ({
     editData,
-    open,
-    onClose,
     voltageLevelOptionsPromise,
     currentNodeUuid,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -86,11 +78,6 @@ const LoadCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-    });
-
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     useEffect(() => {
@@ -164,94 +151,67 @@ const LoadCreationDialog = ({
         withPosition: true,
     });
 
-    const handleSave = () => {
-        if (inputForm.validate()) {
-            createLoad(
-                studyUuid,
-                currentNodeUuid,
-                loadId,
-                sanitizeString(loadName),
-                !loadType ? UNDEFINED_LOAD_TYPE : loadType,
-                activePower,
-                reactivePower,
-                connectivity.voltageLevel.id,
-                connectivity.busOrBusbarSection.id,
-                editData ? true : false,
-                editData ? editData.uuid : undefined,
-                connectivity?.connectionDirection?.id ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                connectivity?.connectionName?.id ?? null
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'LoadCreationError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+    const handleValidation = () => {
+        return inputForm.validate();
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        createLoad(
+            studyUuid,
+            currentNodeUuid,
+            loadId,
+            sanitizeString(loadName),
+            !loadType ? UNDEFINED_LOAD_TYPE : loadType,
+            activePower,
+            reactivePower,
+            connectivity.voltageLevel.id,
+            connectivity.busOrBusbarSection.id,
+            editData ? true : false,
+            editData ? editData.uuid : undefined,
+            connectivity?.connectionDirection?.id ??
+                UNDEFINED_CONNECTION_DIRECTION,
+            connectivity?.connectionName?.id ?? null
+        ).catch((errorMessage) => {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'LoadCreationError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
+    const clear = () => {
+        inputForm.reset();
         setFormValues(null);
-        handleClose();
     };
 
     return (
-        <>
-            <Dialog
-                fullWidth
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-create-load"
-                maxWidth={'md'}
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
-                            <FormattedMessage id="CreateLoad" />
-                        </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <Grid container spacing={2}>
-                        {gridItem(loadIdField, 4)}
-                        {gridItem(loadNameField, 4)}
-                        {gridItem(loadTypeField, 4)}
-                    </Grid>
-                    <GridSection title="Connectivity" />
-                    <Grid container spacing={2}>
-                        {gridItem(connectivityField, 8)}
-                    </Grid>
-                    <GridSection title="Setpoints" />
-                    <Grid container spacing={2}>
-                        {gridItem(activePowerField, 4)}
-                        {gridItem(reactivePowerField, 4)}
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
+        <ModificationDialog
+            fullWidth
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            aria-labelledby="dialog-create-load"
+            maxWidth={'md'}
+            titleId="CreateLoad"
+            searchCopy={searchCopy}
+            {...dialogProps}
+        >
+            <Grid container spacing={2}>
+                {gridItem(loadIdField, 4)}
+                {gridItem(loadNameField, 4)}
+                {gridItem(loadTypeField, 4)}
+            </Grid>
+            <GridSection title="Connectivity" />
+            <Grid container spacing={2}>
+                {gridItem(connectivityField, 8)}
+            </Grid>
+            <GridSection title="Setpoints" />
+            <Grid container spacing={2}>
+                {gridItem(activePowerField, 4)}
+                {gridItem(reactivePowerField, 4)}
+            </Grid>
+
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
@@ -259,14 +219,12 @@ const LoadCreationDialog = ({
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />
-        </>
+        </ModificationDialog>
     );
 };
 
 LoadCreationDialog.propTypes = {
     editData: PropTypes.object,
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,

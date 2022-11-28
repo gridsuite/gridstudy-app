@@ -13,20 +13,13 @@ import React, {
     useRef,
 } from 'react';
 import { FormattedMessage } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '../../utils/messages';
-import {
-    useButtonWithTooltip,
-    useInputForm,
-    useTextValue,
-} from './inputs/input-hooks';
+import { useInputForm, useTextValue } from './inputs/input-hooks';
 import {
     gridItem,
     GridSection,
@@ -51,22 +44,20 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
 /**
  * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param lineOptionsPromise Promise handling list of network lines
  * @param voltageLevelOptionsPromise Promise handling list of network voltage levels
  * @param currentNodeUuid the currently selected tree node
  * @param substationOptionsPromise Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LineSplitWithVoltageLevelDialog = ({
-    open,
-    onClose,
     lineOptionsPromise,
     voltageLevelOptionsPromise,
     currentNodeUuid,
     substationOptionsPromise,
     editData,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -106,11 +97,6 @@ const LineSplitWithVoltageLevelDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-    });
-
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
@@ -322,47 +308,35 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
 
-    const handleSave = () => {
-        if (inputForm.validate()) {
-            divideLine(
-                studyUuid,
-                currentNodeUuid,
-                editData ? editData.uuid : undefined,
-                lineToDivide.id || lineToDivide,
-                parseFloat(percentage),
-                newVoltageLevel,
-                newVoltageLevel
-                    ? null
-                    : voltageLevelOrId?.id || voltageLevelOrId,
-                bbsOrNodeId?.id || bbsOrNodeId,
-                newLine1Id,
-                sanitizeString(newLine1Name),
-                newLine2Id,
-                sanitizeString(newLine2Name)
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'LineDivisionError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+    const handleValidation = () => {
+        return inputForm.validate();
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        divideLine(
+            studyUuid,
+            currentNodeUuid,
+            editData ? editData.uuid : undefined,
+            lineToDivide.id || lineToDivide,
+            parseFloat(percentage),
+            newVoltageLevel,
+            newVoltageLevel ? null : voltageLevelOrId?.id || voltageLevelOrId,
+            bbsOrNodeId?.id || bbsOrNodeId,
+            newLine1Id,
+            sanitizeString(newLine1Name),
+            newLine2Id,
+            sanitizeString(newLine2Name)
+        ).catch((errorMessage) => {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'LineDivisionError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
+    const clear = () => {
+        inputForm.reset();
         setFormValues(null);
-        handleClose();
     };
 
     const onVoltageLevelDo = useCallback(
@@ -433,101 +407,73 @@ const LineSplitWithVoltageLevelDialog = ({
     };
 
     return (
-        <>
-            <Dialog
-                fullWidth
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-create-voltage-level-amidst-a-line"
-                maxWidth={'md'}
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
-                            <FormattedMessage id="LineSplitWithVoltageLevel" />
-                        </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <GridSection title="LineToSplit" />
-                    <Grid container spacing={2} alignItems="center">
-                        {gridItem(lineToDivideField, 5)}
-                        {gridItem(
-                            <Typography>{lineSubstation(true)}</Typography>,
-                            1
-                        )}
-                        {gridItem(percentageArea, 5)}
-                        {gridItem(
-                            <Typography>{lineSubstation(false)}</Typography>,
-                            1
-                        )}
-                    </Grid>
-                    <GridSection title="VoltageLevelToSplitAt" />
-                    <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField)}
-                        {gridItem(bbsOrNodeIdField)}
-                        {gridItem(
-                            <Button
-                                onClick={openVoltageLevelDialog}
-                                startIcon={
-                                    newVoltageLevel ? <EditIcon /> : <AddIcon />
-                                }
-                            >
-                                <Typography align="left">
-                                    <FormattedMessage id="NewVoltageLevel" />
-                                </Typography>
-                            </Button>
-                        )}
-                    </Grid>
-                    <GridSection title="Line1" />
-                    <Grid container spacing={2}>
-                        {gridItem(newLine1IdField, 6)}
-                        {gridItem(newLine1NameField, 6)}
-                    </Grid>
-                    <GridSection title="Line2" />
-                    <Grid container spacing={2}>
-                        {gridItem(newLine2IdField, 6)}
-                        {gridItem(newLine2NameField, 6)}
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear} variant="text">
-                        <FormattedMessage id="cancel" />
-                    </Button>
+        <ModificationDialog
+            fullWidth
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            aria-labelledby="dialog-create-voltage-level-amidst-a-line"
+            maxWidth={'md'}
+            titleId="LineSplitWithVoltageLevel"
+            searchCopy={searchCopy}
+            {...dialogProps}
+        >
+            <GridSection title="LineToSplit" />
+            <Grid container spacing={2} alignItems="center">
+                {gridItem(lineToDivideField, 5)}
+                {gridItem(<Typography>{lineSubstation(true)}</Typography>, 1)}
+                {gridItem(percentageArea, 5)}
+                {gridItem(<Typography>{lineSubstation(false)}</Typography>, 1)}
+            </Grid>
+            <GridSection title="VoltageLevelToSplitAt" />
+            <Grid container spacing={2}>
+                {gridItem(voltageLevelIdField)}
+                {gridItem(bbsOrNodeIdField)}
+                {gridItem(
                     <Button
-                        onClick={handleSave}
-                        variant="text"
-                        disabled={!inputForm.hasChanged}
+                        onClick={openVoltageLevelDialog}
+                        startIcon={newVoltageLevel ? <EditIcon /> : <AddIcon />}
                     >
-                        <FormattedMessage id="validate" />
+                        <Typography align="left">
+                            <FormattedMessage id="NewVoltageLevel" />
+                        </Typography>
                     </Button>
-                </DialogActions>
-                {voltageLevelDialogOpen && (
-                    <VoltageLevelCreationDialog
-                        open={true}
-                        onClose={onVoltageLevelDialogClose}
-                        currentNodeUuid={currentNodeUuid}
-                        substationOptionsPromise={substationOptionsPromise}
-                        onCreateVoltageLevel={onVoltageLevelDo}
-                        editData={voltageLevelToEdit}
-                    />
                 )}
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={'VOLTAGE_LEVEL'}
-                    onSelectionChange={searchCopy.handleSelectionChange}
+            </Grid>
+            <GridSection title="Line1" />
+            <Grid container spacing={2}>
+                {gridItem(newLine1IdField, 6)}
+                {gridItem(newLine1NameField, 6)}
+            </Grid>
+            <GridSection title="Line2" />
+            <Grid container spacing={2}>
+                {gridItem(newLine2IdField, 6)}
+                {gridItem(newLine2NameField, 6)}
+            </Grid>
+            {voltageLevelDialogOpen && (
+                <VoltageLevelCreationDialog
+                    open={true}
+                    onClose={onVoltageLevelDialogClose}
+                    onCancel={onVoltageLevelDialogClose}
                     currentNodeUuid={currentNodeUuid}
+                    substationOptionsPromise={substationOptionsPromise}
+                    onCreateVoltageLevel={onVoltageLevelDo}
+                    editData={voltageLevelToEdit}
                 />
-            </Dialog>
-        </>
+            )}
+            <EquipmentSearchDialog
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
+                equipmentType={'VOLTAGE_LEVEL'}
+                onSelectionChange={searchCopy.handleSelectionChange}
+                currentNodeUuid={currentNodeUuid}
+            />
+        </ModificationDialog>
     );
 };
 
 LineSplitWithVoltageLevelDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
