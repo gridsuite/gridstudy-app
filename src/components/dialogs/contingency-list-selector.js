@@ -76,9 +76,9 @@ const ContingencyListSelector = (props) => {
     const saveFavorite = (newList) => {
         updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
             .then()
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'paramsChangingError',
                 });
             });

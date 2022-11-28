@@ -387,16 +387,16 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
                 })
-                .catch((errorMessage) => {
-                    console.error(errorMessage);
+                .catch((error) => {
+                    console.error(error.message);
                     setSvg({
                         svg: null,
                         metadata: null,
-                        error: errorMessage,
+                        error: error.message,
                         svgUrl: props.svgUrl,
                     });
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                     });
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();

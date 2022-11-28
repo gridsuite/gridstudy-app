@@ -52,9 +52,9 @@ const ContingenciesFiltersSelector = ({
     const saveFavorite = (newList) => {
         updateConfigParameter(paramName, newList)
             .then()
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'paramsChangingError',
                 });
             });

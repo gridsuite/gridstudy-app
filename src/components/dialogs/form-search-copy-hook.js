@@ -31,29 +31,28 @@ export const useFormSearchCopy = ({
             equipmentPath,
             element.id,
             true
-        ).then((response) => {
-            if (response.status === 200) {
-                response.json().then((equipment) => {
-                    const equipmentFormValues = toFormValues(equipment);
-                    setFormValues(equipmentFormValues);
+        )
+            .then((response) => {
+                const equipmentFormValues = toFormValues(response);
+                setFormValues(equipmentFormValues);
 
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopied' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                    snackInfo({
-                        messageTxt: msg,
-                    });
+                msg = intl.formatMessage(
+                    { id: 'EquipmentCopied' },
+                    {
+                        equipmentId: element.id,
+                    }
+                );
+                snackInfo({
+                    messageTxt: msg,
                 });
-            } else {
+            })
+            .catch((error) => {
                 console.error(
                     'error while fetching equipment {equipmentId} : status = {status}',
                     element.id,
-                    response.status
+                    error.status
                 );
-                if (response.status === 404) {
+                if (error.status === 404) {
                     msg = intl.formatMessage(
                         { id: 'EquipmentCopyFailed404' },
                         {
@@ -71,9 +70,8 @@ export const useFormSearchCopy = ({
                 snackError({
                     messageTxt: msg,
                 });
-            }
-            handleCloseSearchDialog();
-        });
+                handleCloseSearchDialog();
+            });
     };
 
     const handleCloseSearchDialog = () => {

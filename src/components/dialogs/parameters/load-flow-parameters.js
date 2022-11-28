@@ -68,9 +68,9 @@ export const useGetLfParamsAndProvider = () => {
                         : LF_PROVIDER_VALUES.OpenLoadFlow
                 );
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'defaultLoadflowRetrievingError',
                 });
             });

@@ -17,6 +17,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { notificationType } from '../utils/NotificationType';
+import { useSnackMessage } from '../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -37,7 +38,7 @@ const DirectoryItemSelector = (props) => {
 
     const rootsRef = useRef([]);
     rootsRef.current = rootDirectories;
-
+    const { snackError } = useSnackMessage();
     const openRef = useRef();
     openRef.current = props.open;
     const contentFilter = useCallback(
@@ -105,18 +106,25 @@ const DirectoryItemSelector = (props) => {
     );
 
     const updateRootDirectories = useCallback(() => {
-        fetchRootFolders().then((data) => {
-            let [nrs, mdr] = updatedTree(
-                rootsRef.current,
-                nodeMap.current,
-                null,
-                data
-            );
-            setRootDirectories(nrs);
-            nodeMap.current = mdr;
-            setData(convertRoots(nrs));
-        });
-    }, [convertRoots]);
+        fetchRootFolders()
+            .then((data) => {
+                let [nrs, mdr] = updatedTree(
+                    rootsRef.current,
+                    nodeMap.current,
+                    null,
+                    data
+                );
+                setRootDirectories(nrs);
+                nodeMap.current = mdr;
+                setData(convertRoots(nrs));
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'DirectoryItemSelector',
+                });
+            });
+    }, [convertRoots, snackError]);
 
     useEffect(() => {
         if (props.open) {
@@ -153,12 +161,12 @@ const DirectoryItemSelector = (props) => {
                         addToDirectory(nodeId, childrenMatchedTypes);
                     }
                 })
-                .catch((reason) => {
+                .catch((error) => {
                     console.warn(
                         "Could not update subs (and content) of '" +
                             nodeId +
                             "' :" +
-                            reason
+                            error.message
                     );
                 });
         },

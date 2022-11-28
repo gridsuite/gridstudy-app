@@ -96,9 +96,9 @@ export const ReportViewerTab = ({
                         setReport(globalReport);
                     }
                 })
-                .catch((errorMessage) =>
+                .catch((error) =>
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                     })
                 )
                 .finally(() => {

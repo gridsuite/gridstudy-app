@@ -1211,13 +1211,13 @@ const NetworkTable = (props) => {
             DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
             JSON.stringify([...selectedColumnsNames])
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
             setSelectedColumnsNames(
                 new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
             );
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'paramsChangingError',
             });
         });
@@ -1228,13 +1228,13 @@ const NetworkTable = (props) => {
             LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
             JSON.stringify(lockedColumnsToSave)
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             const allLockedTemp = allLockedColumnsNames[tabIndex];
             setLockedColumnsNames(
                 new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
             );
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'paramsChangingError',
             });
         });
@@ -1244,9 +1244,9 @@ const NetworkTable = (props) => {
             REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
             JSON.stringify(reorderedTableDefinitionIndexes)
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'paramsChangingError',
             });
         });

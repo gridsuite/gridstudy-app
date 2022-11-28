@@ -48,9 +48,9 @@ export const useSearchMatchingEquipments = (
                                 );
                             } // else ignore results of outdated fetch
                         })
-                        .catch((errorMessage) => {
+                        .catch((error) => {
                             snackError({
-                                messageTxt: errorMessage,
+                                messageTxt: error.message,
                                 headerId: 'equipmentsSearchingError',
                             });
                         });

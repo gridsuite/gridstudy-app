@@ -111,17 +111,11 @@ const EquipmentDeletionDialog = ({
         setEquipmentOrId(null);
     };
 
-    function handleDeleteEquipmentError(response, messsageId) {
-        const utf8Decoder = new TextDecoder('utf-8');
-        response.body
-            .getReader()
-            .read()
-            .then((value) => {
-                snackError({
-                    messageTxt: utf8Decoder.decode(value.value),
-                    headerId: messsageId,
-                });
-            });
+    function handleDeleteEquipmentError(errorMessage, messsageId) {
+        snackError({
+            messageTxt: errorMessage,
+            headerId: messsageId,
+        });
     }
 
     const handleSave = () => {
@@ -153,13 +147,11 @@ const EquipmentDeletionDialog = ({
                     : equipmentType,
                 equipmentOrId?.id || equipmentOrId,
                 editData?.uuid
-            ).then((response) => {
-                if (response.status !== 200) {
-                    handleDeleteEquipmentError(
-                        response,
-                        'UnableToDeleteEquipment'
-                    );
-                }
+            ).catch((error) => {
+                handleDeleteEquipmentError(
+                    error.message,
+                    'UnableToDeleteEquipment'
+                );
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
