@@ -1169,9 +1169,9 @@ export function copyOrMoveModifications(
     studyUuid,
     targetNodeId,
     modificationToCutUuidList,
-    copyType
+    copyInfos
 ) {
-    console.info(copyType + ' modifications');
+    console.info(copyInfos.copyType + ' modifications');
     const cutAndPasteModificationUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -1179,7 +1179,10 @@ export function copyOrMoveModifications(
         '/nodes/' +
         encodeURIComponent(targetNodeId) +
         '?' +
-        new URLSearchParams({ action: copyType });
+        new URLSearchParams({
+            action: copyInfos.copyType,
+            originNodeUuid: copyInfos.originNodeUuid ?? '',
+        });
 
     return backendFetch(cutAndPasteModificationUrl, {
         method: 'PUT',
@@ -1194,6 +1197,7 @@ export function copyOrMoveModifications(
             : response.text().then((text) => Promise.reject(text))
     );
 }
+
 function getUrlWithToken(baseUrl) {
     if (baseUrl.includes('?')) {
         return baseUrl + '&access_token=' + getToken();

@@ -158,7 +158,7 @@ const NetworkModificationNodeEditor = () => {
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
     const [copiedModifications, setCopiedModifications] = useState([]);
-    const [copyType, setCopyType] = useState(null);
+    const [copyInfos, setCopyInfos] = useState(null);
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -501,27 +501,30 @@ const NetworkModificationNodeEditor = () => {
         setCopiedModifications(
             Array.from(selectedItems).map((item) => item.uuid)
         );
-        setCopyType(CopyType.MOVE);
-    }, [selectedItems]);
+        setCopyInfos({
+            copyType: CopyType.MOVE,
+            originNodeUuid: currentTreeNode.id,
+        });
+    }, [currentTreeNode.id, selectedItems]);
 
     const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
         setCopiedModifications(
             Array.from(selectedItems).map((item) => item.uuid)
         );
-        setCopyType(CopyType.COPY);
+        setCopyInfos({ copyType: CopyType.COPY });
     }, [selectedItems]);
 
     const doPasteModification = useCallback(() => {
-        if (copyType === CopyType.MOVE) {
+        if (copyInfos.copyType === CopyType.MOVE) {
             copyOrMoveModifications(
                 studyUuid,
                 currentTreeNode.id,
                 copiedModifications,
-                copyType
+                copyInfos
             )
                 .then(() => {
-                    setCopyType(null);
+                    setCopyInfos(null);
                     setCopiedModifications([]);
                 })
                 .catch((errmsg) => {
@@ -535,7 +538,7 @@ const NetworkModificationNodeEditor = () => {
                 studyUuid,
                 currentTreeNode.id,
                 copiedModifications,
-                copyType
+                copyInfos
             )
                 .then((message) => {
                     let modificationsInFailure = JSON.parse(message);
@@ -560,7 +563,7 @@ const NetworkModificationNodeEditor = () => {
     }, [
         copiedModifications,
         currentTreeNode.id,
-        copyType,
+        copyInfos,
         snackError,
         snackWarning,
         studyUuid,
