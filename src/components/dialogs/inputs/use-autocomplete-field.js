@@ -187,9 +187,14 @@ export const useAutocompleteField = ({
     const handleSearchTermChange = useCallback(
         (term, reason) => {
             if (allowNewValue && reason !== 'reset') {
-                setValue({
-                    id: term,
-                });
+                let matchingOption = values?.find(
+                    (val) => val.id?.toUpperCase() === term.toUpperCase()
+                );
+                if (matchingOption) {
+                    setValue(matchingOption);
+                } else {
+                    setValue({ id: term });
+                }
                 inputForm.setHasChanged(true);
             }
 
