@@ -106,6 +106,7 @@ const DirectoryItemSelector = (props) => {
 
     const updateRootDirectories = useCallback(() => {
         fetchRootFolders().then((data) => {
+            console.log('fetched data : ', data);
             let [nrs, mdr] = updatedTree(
                 rootsRef.current,
                 nodeMap.current,
@@ -135,18 +136,20 @@ const DirectoryItemSelector = (props) => {
                         props.equipmentTypes &&
                         props.equipmentTypes.length > 0
                     ) {
+                        console.log('equipment type : ', props);
                         // filtering also with equipment types
                         fetchElementsMetadata(
-                            childrenMatchedTypes.map((e) => e.elementUuid)
+                            childrenMatchedTypes.map((e) => e.elementUuid), props.types, props.equipmentTypes
                         ).then((childrenWithMetada) => {
                             const childrenToBeInserted =
                                 childrenWithMetada.filter((e) => {
-                                    return props.equipmentTypes.includes(
+                                    console.log('element : ', e);
+                                    return e.type === elementType.DIRECTORY || props.equipmentTypes.includes(
                                         e.specificMetadata.equipmentType
                                     );
                                 });
                             // update directory content
-                            addToDirectory(nodeId, childrenToBeInserted);
+                            addToDirectory(nodeId, childrenWithMetada);
                         });
                     } else {
                         // update directory content
