@@ -703,7 +703,10 @@ export const useCSVPicker = ({ label, header, resetTrigger }) => {
             <>
                 <CSVReader
                     onUploadAccepted={(results) => {
-                        if (equals(header, results.data[0])) {
+                        if (
+                            results?.data.length > 0 &&
+                            equals(header, results.data[0])
+                        ) {
                             setFileError();
                         } else {
                             setFileError(
