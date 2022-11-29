@@ -702,7 +702,8 @@ export const useCSVPicker = ({ label, header, resetTrigger }) => {
         return (
             <>
                 <CSVReader
-                    onUploadAccepted={(results) => {
+                    onUploadAccepted={(results, acceptedFile) => {
+                        setAcceptedFile(acceptedFile);
                         if (
                             results?.data.length > 0 &&
                             equals(header, results.data[0])
@@ -717,31 +718,25 @@ export const useCSVPicker = ({ label, header, resetTrigger }) => {
                         }
                     }}
                 >
-                    {({ getRootProps, acceptedFile }) => {
-                        setAcceptedFile(acceptedFile);
-                        return (
-                            <Grid item>
-                                <Button
-                                    {...getRootProps()}
-                                    variant={'contained'}
-                                >
-                                    <FormattedMessage id={label} />
-                                </Button>
-                                <span
-                                    style={{
-                                        marginLeft: '10px',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    {acceptedFile
-                                        ? acceptedFile.name
-                                        : intl.formatMessage({
-                                              id: 'uploadMessage',
-                                          })}
-                                </span>
-                            </Grid>
-                        );
-                    }}
+                    {({ getRootProps, acceptedFile }) => (
+                        <Grid item>
+                            <Button {...getRootProps()} variant={'contained'}>
+                                <FormattedMessage id={label} />
+                            </Button>
+                            <span
+                                style={{
+                                    marginLeft: '10px',
+                                    fontWeight: 'bold',
+                                }}
+                            >
+                                {acceptedFile
+                                    ? acceptedFile.name
+                                    : intl.formatMessage({
+                                          id: 'uploadMessage',
+                                      })}
+                            </span>
+                        </Grid>
+                    )}
                 </CSVReader>
             </>
         );
