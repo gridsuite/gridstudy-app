@@ -450,7 +450,9 @@ const GeneratorCreationDialog = ({
         let isReactiveCapabilityCurveValid = true;
         if (isReactiveCapabilityCurveOn()) {
             const errorMessages = checkReactiveCapabilityCurve(
-                reactiveCapabilityCurve
+                reactiveCapabilityCurve,
+                minimumActivePower,
+                maximumActivePower
             );
             isReactiveCapabilityCurveValid = errorMessages.length === 0;
             setReactiveCapabilityCurveErrors(errorMessages);

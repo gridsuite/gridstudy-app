@@ -187,14 +187,22 @@ export function validateField(value, toValidate) {
  * errors if any, or an empty array otherwise.
  * @param reactiveCapabilityCurve an array of reactive capability curve points of
  * this format : [{ p: '', qminP: '', qmaxP: '' }, { p: '', qminP: '', qmaxP: '' }]
+ * @param minimumActivePower if defined, the lowest P value of reactiveCapabilityCurve
+ * must be greater than or equal to minimumActivePower.
+ * @param maximumActivePower if defined, the highest P value of reactiveCapabilityCurve
+ * must be less than or equal to maximumActivePower.
  * @returns An array of error messages. If there is no error, returns an empty array.
  */
-export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
-    let errorMessages = [];
+export function checkReactiveCapabilityCurve(
+    reactiveCapabilityCurve,
+    minimumActivePower = undefined,
+    maximumActivePower = undefined
+) {
+    let errorMessages = new Set();
 
     // At least four points must be set
     if (reactiveCapabilityCurve.length < 2) {
-        errorMessages.push('ReactiveCapabilityCurveCreationErrorMissingPoints');
+        errorMessages.add('ReactiveCapabilityCurveCreationErrorMissingPoints');
     }
 
     // Each P must be a unique valid number
@@ -205,23 +213,42 @@ export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
             validateValueIsANumber(element.p) ? toNumber(element.p) : null
         )
         .filter((p) => p !== null);
-    const setOfPs = [...new Set(everyValidP)];
+    const setOfPs = new Set(everyValidP);
 
-    if (setOfPs.length !== everyValidP.length) {
-        errorMessages.push('ReactiveCapabilityCurveCreationErrorPInvalid');
+    if (setOfPs.size !== everyValidP.length) {
+        errorMessages.add('ReactiveCapabilityCurveCreationErrorPInvalid');
     } else {
         // The first P must be the lowest value
+        // The first P must be greater than or equal to the provided minimumActivePower (if defined)
         // The last P must be the highest value
+        // The last P must be less than or equal to the provided maximumActivePower (if defined)
         // The P in between must be in the range defined by the first and last P
         const minP = everyValidP[0];
         const maxP = everyValidP[everyValidP.length - 1];
+
+        if (
+            validateValueIsANumber(minimumActivePower) &&
+            !validateValueIsGreaterThanOrEqualTo(minP, minimumActivePower)
+        ) {
+            errorMessages.add('ReactiveCapabilityCurveCreationErrorMinPTooLow');
+        }
+
+        if (
+            validateValueIsANumber(maximumActivePower) &&
+            !validateValueIsLessThanOrEqualTo(maxP, maximumActivePower)
+        ) {
+            errorMessages.add(
+                'ReactiveCapabilityCurveCreationErrorMaxPTooHigh'
+            );
+        }
+
         const pAreInRange = everyValidP.filter(
             (p) =>
                 validateValueIsLessThanOrEqualTo(minP, p) &&
                 validateValueIsLessThanOrEqualTo(p, maxP)
         );
         if (pAreInRange.length !== everyValidP.length) {
-            errorMessages.push(
+            errorMessages.add(
                 'ReactiveCapabilityCurveCreationErrorPOutOfRange'
             );
         }
@@ -230,13 +257,13 @@ export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
     // Each qMin must be inferior or equal to qMax
     for (let element of reactiveCapabilityCurve) {
         if (!validateValueIsLessThanOrEqualTo(element.qminP, element.qmaxP)) {
-            errorMessages.push(
+            errorMessages.add(
                 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
             );
             break;
         }
     }
-    return errorMessages;
+    return [...errorMessages];
 }
 
 function makeErrorRecord(msgId) {

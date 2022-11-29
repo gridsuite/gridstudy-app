@@ -421,8 +421,10 @@
     "ActivePowerBetweenMaxAndMin": "The active power setpoint must be between minimum active power and maximum active power values",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "The table of reactive capability curve must have at least four points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Each active power value must be a valid unique number.",
-    "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the P min and P max values.",
-    "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Each minimum reactive power value must be inferior or equal to the corresponding maximum reactive power value.",
+    "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the Min P and Max P values.",
+    "ReactiveCapabilityCurveCreationErrorMinPTooLow": "The Min P value in incoherent with the Minimum active power value.",
+    "ReactiveCapabilityCurveCreationErrorMaxPTooHigh": "The Max P value in incoherent with the Maximimum active power value.",
+    "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Each Minimum reactive power value must be inferior or equal to the corresponding Maximum reactive power value.",
 
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",

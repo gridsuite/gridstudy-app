@@ -134,9 +134,9 @@ export const GridSubSection = ({ title, size = 12 }) => {
     return (
         <Grid container spacing={2}>
             <Grid item xs={size}>
-                <h5 className={classes.h5}>
+                <h4>
                     <FormattedMessage id={title} />
-                </h5>
+                </h4>
             </Grid>
         </Grid>
     );
