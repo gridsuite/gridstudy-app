@@ -25,6 +25,7 @@ import {
     GridSection,
     compareById,
     sanitizeString,
+    getIdOrSelf,
 } from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
@@ -40,8 +41,6 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { MODIFICATION_TYPE } from '../network/constants';
-
-const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
 /**
  * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.
@@ -161,7 +160,7 @@ const LineSplitWithVoltageLevelDialog = ({
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue:
             lineOptions.find(
                 (value) => value.id === formValues?.lineToSplitId
@@ -190,7 +189,7 @@ const LineSplitWithVoltageLevelDialog = ({
             inputForm: inputForm,
             values: allVoltageLevelOptions,
             allowNewValue: true,
-            getLabel: getId,
+            getLabel: getIdOrSelf,
             defaultValue: defaultVoltageLevelId,
             selectedValue:
                 formValues && allVoltageLevelOptions
@@ -212,7 +211,7 @@ const LineSplitWithVoltageLevelDialog = ({
             inputForm: inputForm,
             values: busbarSectionOptions,
             allowNewValue: true,
-            getLabel: getId,
+            getLabel: getIdOrSelf,
             defaultValue: formValues?.bbsOrBusId || '',
             selectedValue: formValues
                 ? busbarSectionOptions.find(
