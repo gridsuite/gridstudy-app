@@ -223,7 +223,7 @@ const PhaseTapChangerPane = (props) => {
                 id: rowData.rowIndex,
                 errors: new Map(),
             });
-            const parsedVal = parseInt(newVal);
+            const parsedVal = parseFloat(newVal);
 
             if (!isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100) {
                 let tempRows = phaseTapRows;
