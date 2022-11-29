@@ -645,9 +645,9 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
                         }
                         setChecking(false);
                     })
-                    .catch((errorMessage) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'NodeUpdateError',
                         });
                     });

@@ -87,6 +87,7 @@ export function fetchValidateUser(user) {
         false
     )
         .then((response) => {
+            //if the response is ok, the responseCode will be either 200 or 204 otherwise it's an error and it will be caught
             if (response.status === 200) return true;
             else if (response.status === 204) return false;
         })
@@ -290,7 +291,7 @@ export function getNetworkAreaDiagramUrl(
 
 export function fetchNADSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetch(svgUrl, false);
+    return backendFetch(svgUrl);
 }
 
 function getQueryParamsList(params, paramName) {
@@ -760,7 +761,7 @@ export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/security-analysis/result';
     console.debug(url);
-    return backendFetch(url, true, { method: 'get' });
+    return backendFetch(url, true);
 }
 
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
@@ -775,7 +776,7 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/security-analysis/status';
     console.debug(url);
-    return backendFetch(url, false, { method: 'get' });
+    return backendFetch(url);
 }
 
 function getSensitivityAnalysisQueryParams(
@@ -859,7 +860,7 @@ export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/sensitivity-analysis/status';
     console.debug(url);
-    return backendFetch(url, false, { method: 'get' });
+    return backendFetch(url);
 }
 
 export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
@@ -874,7 +875,7 @@ export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/sensitivity-analysis/result';
     console.debug(url);
-    return backendFetch(url, true, { method: 'get' });
+    return backendFetch(url, true);
 }
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
@@ -908,7 +909,7 @@ export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/status';
     console.debug(url);
-    return backendFetch(url, false, { method: 'get' });
+    return backendFetch(url);
 }
 
 export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
@@ -919,7 +920,7 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/result';
     console.debug(url);
-    return backendFetch(url, true, { method: 'get' });
+    return backendFetch(url, true);
 }
 
 export function fetchContingencyAndFiltersLists(listIds) {
@@ -931,7 +932,7 @@ export function fetchContingencyAndFiltersLists(listIds) {
             .filter((e) => e != null && e !== '') // filter empty element
             .join('&ids=');
     console.debug(url);
-    return backendFetch(url, true, { method: 'get' });
+    return backendFetch(url, true);
 }
 
 export function fetchContingencyCount(
@@ -947,14 +948,14 @@ export function fetchContingencyCount(
         '/contingency-count' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
-    return backendFetch(url, true, { method: 'get' });
+    return backendFetch(url, true);
 }
 
 export function fetchNetworkModificationTree(studyUuid) {
     console.info('Fetching network modification tree');
     const url = getStudyUrl(studyUuid) + '/tree';
     console.debug(url);
-    return backendFetch(url, true, { method: 'get' });
+    return backendFetch(url, true);
 }
 
 export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
@@ -962,7 +963,7 @@ export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     const url =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid);
     console.debug(url);
-    return backendFetch(url, true, { method: 'get' });
+    return backendFetch(url, true);
 }
 
 export function createTreeNode(studyUuid, parentId, insertMode, node) {
@@ -1193,9 +1194,7 @@ export function getAvailableExportFormats() {
     const getExportFormatsUrl =
         PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
     console.debug(getExportFormatsUrl);
-    return backendFetch(getExportFormatsUrl, true, {
-        method: 'get',
-    });
+    return backendFetch(getExportFormatsUrl, true);
 }
 
 export function fetchAppsAndUrls() {
@@ -1245,9 +1244,7 @@ export function getLoadFlowParameters(studyUuid) {
     console.info('get load flow parameters');
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
-    return backendFetch(getLfParams, true, {
-        method: 'get',
-    });
+    return backendFetch(getLfParams, true);
 }
 
 export function setShortCircuitParameters(studyUuid, newParams) {
@@ -1270,9 +1267,7 @@ export function getShortCircuitParameters(studyUuid) {
     const getShortCircuitParams =
         getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
     console.debug(getShortCircuitParams);
-    return backendFetch(getShortCircuitParams, true, {
-        method: 'get',
-    });
+    return backendFetch(getShortCircuitParams, true);
 }
 
 function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
@@ -2003,9 +1998,7 @@ export function getLoadFlowProvider(studyUuid) {
     const getLoadFlowProviderUrl =
         getStudyUrl(studyUuid) + '/loadflow/provider';
     console.debug(getLoadFlowProviderUrl);
-    return backendFetch(getLoadFlowProviderUrl, false, {
-        method: 'get',
-    });
+    return backendFetch(getLoadFlowProviderUrl);
 }
 
 export function setLoadFlowProvider(studyUuid, newProvider) {
@@ -2028,9 +2021,7 @@ export function getDefaultLoadFlowProvider() {
     const getDefaultLoadFlowProviderUrl =
         PREFIX_STUDY_QUERIES + '/v1/loadflow-default-provider';
     console.debug(getDefaultLoadFlowProviderUrl);
-    return backendFetch(getDefaultLoadFlowProviderUrl, false, {
-        method: 'GET',
-    });
+    return backendFetch(getDefaultLoadFlowProviderUrl);
 }
 
 export function getAvailableComponentLibraries() {
@@ -2038,9 +2029,7 @@ export function getAvailableComponentLibraries() {
     const getAvailableComponentLibrariesUrl =
         PREFIX_STUDY_QUERIES + '/v1/svg-component-libraries';
     console.debug(getAvailableComponentLibrariesUrl);
-    return backendFetch(getAvailableComponentLibrariesUrl, true, {
-        method: 'get',
-    });
+    return backendFetch(getAvailableComponentLibrariesUrl, true);
 }
 
 export function deleteEquipment(
@@ -2095,9 +2084,7 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
         '/network-modification/modifications';
 
     console.debug(modificationsGetUrl);
-    return backendFetch(modificationsGetUrl, true, {
-        method: 'get',
-    });
+    return backendFetch(modificationsGetUrl, true);
 }
 
 export function fetchNetworkModification(modificationUuid) {
@@ -2106,9 +2093,7 @@ export function fetchNetworkModification(modificationUuid) {
         '/v1/modifications/' +
         encodeURIComponent(modificationUuid);
     console.debug(modificationFetchUrl);
-    return backendFetch(modificationFetchUrl, false, {
-        method: 'get',
-    });
+    return backendFetch(modificationFetchUrl);
 }
 
 export function buildNode(studyUuid, currentNodeUuid) {
@@ -2152,7 +2137,7 @@ export function fetchCaseName(studyUuid) {
     const url = getStudyUrl(studyUuid) + '/case/name';
     console.debug(url);
 
-    return backendFetch(url, false, { method: 'get' });
+    return backendFetch(url);
 }
 
 export function isNodeExists(studyUuid, nodeName) {
@@ -2169,9 +2154,7 @@ export function isNodeExists(studyUuid, nodeName) {
 export function getUniqueNodeName(studyUuid) {
     const uniqueNodeNameUrl = getStudyUrl(studyUuid) + '/nodes/nextUniqueName';
     console.debug(uniqueNodeNameUrl);
-    return backendFetch(uniqueNodeNameUrl, false, {
-        method: 'get',
-    });
+    return backendFetch(uniqueNodeNameUrl);
 }
 
 export function fetchElementsMetadata(ids) {
@@ -2183,5 +2166,5 @@ export function fetchElementsMetadata(ids) {
             .filter((e) => e != null && e !== '') // filter empty element
             .join('&ids=');
     console.debug(url);
-    return backendFetch(url, true, { method: 'get' });
+    return backendFetch(url, true);
 }

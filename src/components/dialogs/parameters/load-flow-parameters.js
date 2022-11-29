@@ -49,9 +49,9 @@ export const useGetLfParamsAndProvider = () => {
         (newProvider) => {
             setLoadFlowProvider(studyUuid, newProvider)
                 .then(() => setLfProvider(newProvider))
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'setLoadFlowProviderError',
                     });
                 });
@@ -80,9 +80,9 @@ export const useGetLfParamsAndProvider = () => {
         if (studyUuid) {
             getLoadFlowParameters(studyUuid)
                 .then((params) => setLfParams(params))
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'paramsRetrievingError',
                     });
                 });
@@ -95,9 +95,9 @@ export const useGetLfParamsAndProvider = () => {
                         setLfProvider(provider);
                     }
                 })
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'getLoadFlowProviderError',
                     });
                 });
@@ -419,15 +419,13 @@ export const LoadFlowParameters = ({
         (newParams) => {
             let oldParams = { ...lfParams };
             setLfParams(newParams);
-            setLoadFlowParameters(studyUuid, newParams).catch(
-                (errorMessage) => {
-                    setLfParams(oldParams);
-                    snackError({
-                        messageTxt: errorMessage,
-                        headerId: 'paramsChangingError',
-                    });
-                }
-            );
+            setLoadFlowParameters(studyUuid, newParams).catch((error) => {
+                setLfParams(oldParams);
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'paramsChangingError',
+                });
+            });
         },
         [lfParams, snackError, studyUuid, setLfParams]
     );
@@ -437,16 +435,16 @@ export const LoadFlowParameters = ({
             .then(() => {
                 return getLoadFlowParameters(studyUuid)
                     .then((params) => setLfParams(params))
-                    .catch((errorMessage) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'paramsRetrievingError',
                         });
                     });
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'paramsChangingError',
                 });
             });

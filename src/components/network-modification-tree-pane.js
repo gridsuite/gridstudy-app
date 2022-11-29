@@ -179,16 +179,16 @@ export const NetworkModificationTreePane = ({
                         name: response,
                         type: type,
                         buildStatus: 'NOT_BUILT',
-                    }).catch((errorMessage) => {
+                    }).catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'NodeCreateError',
                         });
                     })
                 )
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'NodeCreateError',
                     });
                 });
@@ -226,9 +226,9 @@ export const NetworkModificationTreePane = ({
                         setSelectedNodeIdForCopy(null);
                         setCopyType(null);
                     })
-                    .catch((errorMessage) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'NodeCreateError',
                         });
                     });
@@ -238,9 +238,9 @@ export const NetworkModificationTreePane = ({
                     selectedNodeIdForCopy,
                     referenceNodeId,
                     insertMode
-                ).catch((errorMessage) => {
+                ).catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'NodeCreateError',
                     });
                 });
@@ -251,9 +251,9 @@ export const NetworkModificationTreePane = ({
 
     const handleRemoveNode = useCallback(
         (element) => {
-            deleteTreeNode(studyUuid, element.id).catch((errorMessage) => {
+            deleteTreeNode(studyUuid, element.id).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'NodeDeleteError',
                 });
             });
@@ -263,9 +263,9 @@ export const NetworkModificationTreePane = ({
 
     const handleBuildNode = useCallback(
         (element) => {
-            buildNode(studyUuid, element.id).catch((errorMessage) => {
+            buildNode(studyUuid, element.id).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'NodeBuildingError',
                 });
             });

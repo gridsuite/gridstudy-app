@@ -184,9 +184,9 @@ export function RunButtonContainer({
         } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(setRanShortCircuit(true))
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'ShortCircuitError',
                     });
                 });

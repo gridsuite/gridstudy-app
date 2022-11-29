@@ -401,10 +401,10 @@ const VoltageLevelCreationDialog = ({
                 busbarConnections: busbarConnections,
                 isUpdate: editData ? true : false,
                 modificationUuid: editData ? editData.uuid : undefined,
-            }).catch((errorMessage) => {
-                console.error('while edit/create VL', errorMessage);
+            }).catch((error) => {
+                console.error('while edit/create VL', error.message);
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'VoltageLevelCreationError',
                 });
             });

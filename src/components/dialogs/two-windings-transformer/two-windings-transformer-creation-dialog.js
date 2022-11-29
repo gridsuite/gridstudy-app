@@ -905,9 +905,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 connectivity2?.connectionName?.id ?? null,
                 connectivity2?.connectionDirection?.id ??
                     UNDEFINED_CONNECTION_DIRECTION
-            ).catch((errorMessage) => {
+            ).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'TwoWindingsTransformerCreationError',
                 });
             });

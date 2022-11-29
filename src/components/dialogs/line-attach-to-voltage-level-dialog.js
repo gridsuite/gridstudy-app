@@ -357,9 +357,9 @@ const LineAttachToVoltageLevelDialog = ({
                 newLine1Name || null,
                 newLine2Id,
                 newLine2Name || null
-            ).catch((errorMessage) => {
+            ).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'LineAttachmentError',
                 });
             });
