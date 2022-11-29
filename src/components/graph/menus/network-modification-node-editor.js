@@ -162,7 +162,7 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
-    const CleanClipboard = () => {
+    const cleanClipboard = () => {
         setCopiedModifications([]);
         snackInfo({
             messageId: 'CopiedModificationInvalidationMessage',
@@ -172,7 +172,7 @@ const NetworkModificationNodeEditor = () => {
     const closeDialog = () => {
         setEditDialogOpen(undefined);
         if (editData?.uuid && copiedModifications.includes(editData?.uuid))
-            CleanClipboard();
+            cleanClipboard();
         setEditData(undefined);
     };
 
