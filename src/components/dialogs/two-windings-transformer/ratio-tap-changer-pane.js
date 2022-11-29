@@ -359,21 +359,23 @@ const RatioTapChangerPane = (props) => {
                         isEdited: true,
                     };
                 });
-                let tapValues = rows.map((row) => {
-                    return parseInt(row.tap);
-                });
-                let tempLowTapPosition = Math.min(...tapValues);
-                let tempHighTapPosition = Math.max(...tapValues);
+                if (rows && rows.length > 0) {
+                    let tapValues = rows.map((row) => {
+                        return parseInt(row.tap);
+                    });
+                    let tempLowTapPosition = Math.min(...tapValues);
+                    let tempHighTapPosition = Math.max(...tapValues);
 
-                setFormValues({
-                    ...formValues,
-                    ratioTapChanger: {
-                        ...formValues.ratioTapChanger,
-                        lowTapPosition: tempLowTapPosition,
-                        highTapPosition: tempHighTapPosition,
-                    },
-                });
-                handleRatioTapRows(rows);
+                    setFormValues({
+                        ...formValues,
+                        ratioTapChanger: {
+                            ...formValues.ratioTapChanger,
+                            lowTapPosition: tempLowTapPosition,
+                            highTapPosition: tempHighTapPosition,
+                        },
+                    });
+                    handleRatioTapRows(rows);
+                }
             },
         });
     };
