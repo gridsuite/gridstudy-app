@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { createTwoWindingsTransformer } from '../../../utils/rest-api';
 import {
     useButtonWithTooltip,
@@ -1112,7 +1112,14 @@ const TwoWindingsTransformerCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={
+                            !characteristicsInputForm.hasChanged &&
+                            !ratioTapInputForm.hasChanged &&
+                            !phaseTapInputForm.hasChanged
+                        }
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

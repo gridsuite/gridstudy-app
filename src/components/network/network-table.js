@@ -42,7 +42,7 @@ import {
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import SearchIcon from '@mui/icons-material/Search';

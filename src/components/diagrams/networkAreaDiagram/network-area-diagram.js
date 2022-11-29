@@ -35,7 +35,7 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
 import { AutoSizer } from 'react-virtualized';
 
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import { useIntl } from 'react-intl';
 

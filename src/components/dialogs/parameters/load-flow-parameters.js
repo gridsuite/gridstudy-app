@@ -28,7 +28,7 @@ import {
     setLoadFlowParameters,
     setLoadFlowProvider,
 } from '../../../utils/rest-api';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';

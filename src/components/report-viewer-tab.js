@@ -9,7 +9,7 @@ import { fetchReport } from '../utils/rest-api';
 import Paper from '@mui/material/Paper';
 import clsx from 'clsx';
 import { ReportViewer } from '@gridsuite/commons-ui';
-import { useSnackMessage } from '../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import WaitingLoader from './util/waiting-loader';
 import AlertInvalidNode from './util/alert-invalid-node';

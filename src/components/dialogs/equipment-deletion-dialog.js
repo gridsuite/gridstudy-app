@@ -17,7 +17,7 @@ import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useParams } from 'react-router-dom';
 import { deleteEquipment } from '../../utils/rest-api';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { validateField } from '../util/validation-functions';
 import { useInputForm } from './inputs/input-hooks';
 import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
