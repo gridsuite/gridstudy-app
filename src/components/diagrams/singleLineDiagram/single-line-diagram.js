@@ -249,6 +249,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         onTogglePin,
         onMinimize,
         disabled,
+        computedHeight,
+        setDisplayedHeights,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -337,6 +339,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             headerPreferredHeight
         );
         if (typeof sizes != 'undefined') {
+            let finalHeight = undefined;
             if (
                 !fullScreenSldId &&
                 sizes.svgWidth * numberToDisplay > totalWidth
@@ -349,14 +352,31 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     (totalWidth / numberToDisplay / sizes.svgWidth);
 
                 setSvgFinalHeight(adjustedHeight);
-                setFinalPaperHeight(
-                    adjustedHeight + (sizes.paperHeight - sizes.svgHeight)
-                );
+                finalHeight =
+                    adjustedHeight + (sizes.paperHeight - sizes.svgHeight);
+                setFinalPaperHeight(finalHeight);
+                setDisplayedHeights((n) => {
+                    return [
+                        ...n,
+                        adjustedHeight + (sizes.paperHeight - sizes.svgHeight),
+                    ];
+                });
             } else {
                 setSvgFinalWidth(sizes.svgWidth);
                 setFinalPaperWidth(sizes.paperWidth);
                 setSvgFinalHeight(sizes.svgHeight);
-                setFinalPaperHeight(sizes.paperHeight);
+                finalHeight = sizes.paperHeight;
+                setFinalPaperHeight(finalHeight);
+            }
+
+            if (!fullScreenSldId && finalHeight) {
+                setDisplayedHeights((n) => {
+                    if (!n.includes(finalHeight)) {
+                        return [...n, finalHeight];
+                    } else {
+                        return n;
+                    }
+                });
             }
         }
     }, [
@@ -369,6 +389,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         headerPreferredHeight,
         numberToDisplay,
         sldId,
+        setDisplayedHeights,
     ]);
 
     useEffect(() => {
@@ -677,6 +698,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         initialHeight = sizeHeight; // setting initial height for the next SLD.
     }
 
+    if (!fullScreenSldId && computedHeight) {
+        sizeHeight = computedHeight;
+        initialHeight = computedHeight;
+    }
+
     const pinSld = useCallback(() => onTogglePin(sldId), [sldId, onTogglePin]);
 
     const minimizeSld = useCallback(() => {
@@ -756,7 +782,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     <AlertInvalidNode noMargin={true} />
                 </Box>
             ) : (
-                <Box position="relative">
+                <Box>
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}

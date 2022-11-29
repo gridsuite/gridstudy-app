@@ -317,7 +317,28 @@ export function SingleLineDiagramPane({
     }, [views]);
 
     const displayedIds = new Set(displayedSLD.map(({ id }) => id));
+    const [displayedHeights, setDisplayedHeights] = useState([]);
+    const [computedHeight, setComputedHeight] = useState();
     const minimized = views.filter(({ id }) => !displayedIds.has(id));
+
+    useEffect(() => {
+        if (displayedSLD.length === 0 && computedHeight) {
+            setComputedHeight(undefined);
+            setDisplayedHeights([]);
+            return;
+        }
+
+        if (displayedHeights.length > 0) {
+            console.log(displayedHeights);
+            const highestHeight = Math.max(...displayedHeights);
+            console.log(highestHeight);
+
+            if (highestHeight !== computedHeight) {
+                console.log('NEW COMPUTED HEIGHT');
+                setComputedHeight(highestHeight);
+            }
+        }
+    }, [computedHeight, displayedHeights, displayedSLD]);
 
     return (
         <AutoSizer>
@@ -345,6 +366,8 @@ export function SingleLineDiagramPane({
                             disabled={disabled}
                             totalWidth={width}
                             totalHeight={height}
+                            setDisplayedHeights={setDisplayedHeights}
+                            computedHeight={computedHeight}
                         />
                     ))}
                     <Stack
