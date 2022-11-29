@@ -240,8 +240,21 @@ export const BooleanListField = ({
             if (columnDefinition.forceUpdateOnChange) {
                 forceLineUpdate();
             }
+            if (columnDefinition.resetColumnsInError) {
+                columnDefinition.resetColumnsInError.forEach((column) => {
+                    if (Boolean(val) === column.value) {
+                        resetColumnError(column.dependencyColumn);
+                    }
+                });
+            }
         },
-        [setter, forceLineUpdate, columnDefinition.forceUpdateOnChange]
+        [
+            setter,
+            forceLineUpdate,
+            columnDefinition.forceUpdateOnChange,
+            columnDefinition.resetColumnsInError,
+            resetColumnError,
+        ]
     );
 
     return (

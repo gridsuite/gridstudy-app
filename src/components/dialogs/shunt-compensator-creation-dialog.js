@@ -14,7 +14,7 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     useButtonWithTooltip,
     useDoubleValue,
@@ -35,6 +35,7 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
+import { UNDEFINED_CONNECTION_DIRECTION } from '../network/constants';
 
 const disabledChecked = { disabled: true };
 
@@ -43,7 +44,7 @@ const disabledChecked = { disabled: true };
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid : the node we are currently working on
+ * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
  */
 const ShuntCompensatorCreationDialog = ({
@@ -184,7 +185,8 @@ const ShuntCompensatorCreationDialog = ({
                 connectivity,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION,
                 connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
                 snackError({
