@@ -185,11 +185,12 @@ export const useAutocompleteField = ({
     }, [presentedOptions, userStr, onSearchTermChange]);
 
     const handleSearchTermChange = useCallback(
-        (term) => {
-            if (allowNewValue) {
+        (term, reason) => {
+            if (allowNewValue && reason !== 'reset') {
                 setValue({
                     id: term,
                 });
+                inputForm.setHasChanged(true);
             }
 
             if (!onSearchTermChange) return;
@@ -204,7 +205,13 @@ export const useAutocompleteField = ({
                 return term;
             });
         },
-        [values, minCharsBeforeSearch, onSearchTermChange, allowNewValue]
+        [
+            values,
+            minCharsBeforeSearch,
+            onSearchTermChange,
+            allowNewValue,
+            inputForm,
+        ]
     );
 
     const field = useMemo(() => {
@@ -250,7 +257,9 @@ export const useAutocompleteField = ({
                     blurOnSelect: true,
                     clearOnBlur: true,
                 })}
-                onInputChange={(_event, value) => handleSearchTermChange(value)}
+                onInputChange={(_event, value, reason) =>
+                    handleSearchTermChange(value, reason)
+                }
                 noOptionsText={intl.formatMessage({
                     id: 'element_search/noResult',
                 })}
