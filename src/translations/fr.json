@@ -116,7 +116,7 @@
     "ReactivePowerSide1": "q1 (MVar)",
     "ReactivePowerSide2": "q2 (MVar)",
     "ReactivePowerSide3": "q3 (MVar)",
-    "ActivePowerControl": "Suivi de transit",
+    "ActivePowerControl": "En compensation",
     "TargetP": "P consigne (MW)",
     "TargetQ": "Q consigne (MW)",
     "RatioTap": "Prise régleur",
@@ -561,8 +561,6 @@
     "ImportDephasingRule":"Importer une loi de déphasage",
 
     "GenerateSkeleton": "Générer le squelette",
-    "UploadCSV": "Télécharger le CSV",
-    "InvalidRuleUploadType": "Le fichier doit être de type CSV",
     "InvalidRuleHeader": "Le fichier n'a pas le bon header, veuillez vous référer au squelette",
     "uploadMessage": " Aucun fichier sélectionné",
 

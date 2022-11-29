@@ -28,7 +28,7 @@ import {
     PARAM_MAP_MANUAL_REFRESH,
 } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
-import { useIntlRef } from '../utils/messages';
+import { useIntlRef } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
     isNodeReadOnly,
