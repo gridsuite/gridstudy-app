@@ -18,7 +18,10 @@ function toNumber(value) {
             return Number(sanitizedString);
         }
     }
-    console.error("Error while trying to convert a value to Number. Value :", value);
+    console.error(
+        'Error while trying to convert a value to Number. Value :',
+        value
+    );
     return NaN;
 }
 
@@ -107,45 +110,70 @@ export function validateValueIsGreaterThan(value, valueToCompareTo) {
  * then any check that applies to the value will pass if the value is empty.
  */
 export function validateField(value, toValidate) {
-
     const isValueBlankOrEmpty = isBlankOrEmpty(value);
 
     if (toValidate.isFieldRequired && isValueBlankOrEmpty) {
         return makeErrorRecord('FieldIsRequired');
     }
 
-    if (!isValueBlankOrEmpty && toValidate.isFieldNumeric && !validateValueIsANumber(value)) {
+    if (
+        !isValueBlankOrEmpty &&
+        toValidate.isFieldNumeric &&
+        !validateValueIsANumber(value)
+    ) {
         return makeErrorRecord('FieldAcceptNumeric');
     }
 
     if (toValidate.valueLessThanOrEqualTo !== undefined) {
-        if (!isValueBlankOrEmpty && !validateValueIsLessThanOrEqualTo(value, toValidate.valueLessThanOrEqualTo)) {
+        if (
+            !isValueBlankOrEmpty &&
+            !validateValueIsLessThanOrEqualTo(
+                value,
+                toValidate.valueLessThanOrEqualTo
+            )
+        ) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
 
     if (toValidate.valueGreaterThanOrEqualTo !== undefined) {
-        if (!isValueBlankOrEmpty && !validateValueIsGreaterThanOrEqualTo(value, toValidate.valueGreaterThanOrEqualTo)) {
+        if (
+            !isValueBlankOrEmpty &&
+            !validateValueIsGreaterThanOrEqualTo(
+                value,
+                toValidate.valueGreaterThanOrEqualTo
+            )
+        ) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
 
     if (toValidate.valueLessThan !== undefined) {
-        if (!isValueBlankOrEmpty && !validateValueIsLessThan(value, toValidate.valueLessThan)) {
+        if (
+            !isValueBlankOrEmpty &&
+            !validateValueIsLessThan(value, toValidate.valueLessThan)
+        ) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
 
     if (toValidate.valueGreaterThan !== undefined) {
-        if (!isValueBlankOrEmpty && !validateValueIsGreaterThan(value, toValidate.valueGreaterThan)) {
+        if (
+            !isValueBlankOrEmpty &&
+            !validateValueIsGreaterThan(value, toValidate.valueGreaterThan)
+        ) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
 
     if (toValidate.function) {
         //return makeErrorRecord(toValidate.function(value)); // TODO Seems to not be used anymore ? To remove ?
-        alert("validation by function, this is still used, and NEEDS TO BE FIXED.");
-        console.error("validation by function, this is still used, and NEEDS TO BE FIXED.");
+        alert(
+            'validation by function, this is still used, and NEEDS TO BE FIXED.'
+        );
+        console.error(
+            'validation by function, this is still used, and NEEDS TO BE FIXED.'
+        );
     }
 
     return {
@@ -222,6 +250,6 @@ function makeErrorRecord(msgId) {
 }
 
 export const exportedForTesting = {
-    toNumber, isBlankOrEmpty
-}
-
+    toNumber,
+    isBlankOrEmpty,
+};
