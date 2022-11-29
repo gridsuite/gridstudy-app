@@ -17,6 +17,7 @@ import {
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
+    networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
@@ -127,6 +128,22 @@ export const NetworkModificationTreePane = ({
                 ).then((node) => {
                     dispatch(
                         networkModificationTreeNodeAdded(
+                            node,
+                            studyUpdatedForce.eventData.headers['parentNode'],
+                            studyUpdatedForce.eventData.headers['insertMode']
+                        )
+                    );
+                });
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeMoved'
+            ) {
+                fetchNetworkModificationTreeNode(
+                    studyUuid,
+                    studyUpdatedForce.eventData.headers['movedNode']
+                ).then((node) => {
+                    dispatch(
+                        networkModificationTreeNodeMoved(
                             node,
                             studyUpdatedForce.eventData.headers['parentNode'],
                             studyUpdatedForce.eventData.headers['insertMode']
