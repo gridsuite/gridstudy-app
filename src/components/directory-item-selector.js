@@ -17,7 +17,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { getFileIcon, elementType } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { notificationType } from '../utils/NotificationType';
-import { useSnackMessage } from '../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
