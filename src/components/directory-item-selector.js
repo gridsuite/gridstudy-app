@@ -163,10 +163,7 @@ const DirectoryItemSelector = (props) => {
                 })
                 .catch((error) => {
                     console.warn(
-                        "Could not update subs (and content) of '" +
-                            nodeId +
-                            "' :" +
-                            error.message
+                        `Could not update subs (and content) of '${nodeId}' : ${error.message}`
                     );
                 });
         },
