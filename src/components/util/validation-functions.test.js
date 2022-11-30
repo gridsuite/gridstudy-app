@@ -22,6 +22,7 @@ test('validation-functions.isBlankOrEmpty', () => {
 });
 
 test('validation-functions.toNumber', () => {
+    jest.spyOn(console, 'error').mockImplementation();
     expect(toNumber('')).toBeNaN();
     expect(toNumber(undefined)).toBeNaN();
     expect(toNumber(null)).toBeNaN();
@@ -169,6 +170,7 @@ test('validation-functions.validateField.isFieldNumeric', () => {
 });
 
 test('validation-functions.validateField.valueGreaterThanOrEqualTo', () => {
+    jest.spyOn(console, 'warn').mockImplementation();
     expect(validateField(500, { valueGreaterThanOrEqualTo: 10 }).error).toBe(
         false
     );
