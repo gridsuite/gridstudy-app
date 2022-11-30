@@ -22,7 +22,7 @@ import { useButtonWithTooltip } from './inputs/input-hooks';
  * Generic Modification Dialog which manage basic common behaviors
  * @param {String} titleId id for title translation
  * @param {EventListener} onClose Event to close the dialog
- * @param {CallbackEvent} onValidate callback when the dialog is validated
+ * @param {CallbackEvent} onValidated callback call when the dialog is validated
  * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
  * @param {CallbackEvent} onValidation callback when validation needs to be computed
  * @param {CallbackEvent} onSave callback when saving the modification
@@ -34,7 +34,7 @@ import { useButtonWithTooltip } from './inputs/input-hooks';
 const ModificationDialog = ({
     titleId,
     onClose,
-    onValidate,
+    onValidated,
     onClear,
     onValidation,
     onSave,
@@ -61,18 +61,19 @@ const ModificationDialog = ({
         }
     };
 
-    const handleCancel = (e) => {
-        closeAndClear(e, 'cancelButtonClick');
+    const handleCancel = (event) => {
+        closeAndClear(event, 'cancelButtonClick');
     };
 
-    const handleValidate = (e) => {
+    const handleValidate = (event) => {
         if (onValidation()) {
+            onValidated && onValidated();
             onSave();
-            onValidate();
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            closeAndClear(e, 'validateButtonClick');
+            closeAndClear(event, 'validateButtonClick');
         }
     };
+
     return (
         <Dialog
             onClose={handleClose}
@@ -104,7 +105,7 @@ const ModificationDialog = ({
 ModificationDialog.propTypes = {
     titleId: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,
-    onValidate: PropTypes.func.isRequired,
+    onValidated: PropTypes.func,
     onClear: PropTypes.func.isRequired,
     onValidation: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,

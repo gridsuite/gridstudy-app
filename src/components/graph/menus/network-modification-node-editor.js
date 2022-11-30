@@ -163,13 +163,18 @@ const NetworkModificationNodeEditor = () => {
     const [launchLoader, setLaunchLoader] = useState(false);
 
     const cleanClipboard = () => {
+        if (copiedModifications.length <= 0) return;
         setCopiedModifications([]);
         snackInfo({
             messageId: 'CopiedModificationInvalidationMessage',
         });
     };
 
-    const handleValidateDialog = () => {
+    // TODO this is not complete.
+    // We should clean Clipboard on notifications when another user edit
+    // a modification on a public study which is in the clipboard.
+    // We don't have precision on notifications to do this for now.
+    const handleValidatedDialog = () => {
         if (editData?.uuid && copiedModifications.includes(editData?.uuid))
             cleanClipboard();
     };
@@ -184,7 +189,7 @@ const NetworkModificationNodeEditor = () => {
             <Dialog
                 open={true}
                 onClose={handleCloseDialog}
-                onValidate={handleValidateDialog}
+                onValidated={handleValidatedDialog}
                 currentNodeUuid={currentTreeNode.id}
                 editData={editData}
                 {...props}
