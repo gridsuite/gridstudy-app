@@ -564,7 +564,6 @@ const LineAttachToVoltageLevelDialog = ({
                     <VoltageLevelCreationDialog
                         open={true}
                         onClose={onVoltageLevelDialogClose}
-                        onCancel={onVoltageLevelDialogClose}
                         currentNodeUuid={currentNodeUuid}
                         substationOptionsPromise={substationOptionsPromise}
                         onCreateVoltageLevel={onVoltageLevelDo}
@@ -575,7 +574,6 @@ const LineAttachToVoltageLevelDialog = ({
                     <LineCreationDialog
                         open={true}
                         onClose={onLineDialogClose}
-                        onCancel={onLineDialogClose}
                         currentNodeUuid={currentNodeUuid}
                         substationOptionsPromise={substationOptionsPromise}
                         displayConnectivity={false}
