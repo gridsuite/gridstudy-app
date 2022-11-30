@@ -226,30 +226,6 @@ export default class MapEquipments {
         }
     }
 
-    newSharedForUpdate(updatedEquipements, newEquipements) {
-        /* shallow clone of the network https://stackoverflow.com/a/44782052 */
-        let newNetwork = Object.assign(
-            Object.create(Object.getPrototypeOf(this)),
-            this
-        );
-        newNetwork.setEquipment(updatedEquipements, newEquipements);
-        return newNetwork;
-    }
-
-    setEquipment(equipment, values) {
-        this[equipment] = values;
-        switch (equipment) {
-            case equipments.substations:
-                this.completeSubstationsInfos();
-                break;
-            case equipments.lines:
-                this.completeLinesInfos();
-                break;
-            default:
-                break;
-        }
-    }
-
     removeBranchesOfVoltageLevel(branchesList, voltageLevelId) {
         return branchesList.filter(
             (l) =>
