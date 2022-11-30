@@ -91,7 +91,7 @@ export default class MapEquipments {
                 );
                 handleUpdatedLines(values[0].lines);
             })
-            .catch(function (error) {
+            .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
                     this.errHandler(
@@ -145,20 +145,12 @@ export default class MapEquipments {
         });
 
         // add newly created equipments
-        let equipmentsAdded = false;
-        newEquipements.forEach((equipment1) => {
-            const found = currentEquipments.find(
-                (equipment2) => equipment2.id === equipment1.id
-            );
-            if (found === undefined) {
-                currentEquipments.push(equipment1);
-                equipmentsAdded = true;
-            }
-        });
-
-        return equipmentsAdded === true
-            ? [...currentEquipments]
-            : currentEquipments;
+        const eqptsToAdd = newEquipements.filter(
+            (eqpt) =>
+                !currentEquipments.some((otherEqpt) => otherEqpt.id === eqpt.id)
+        );
+        if (eqptsToAdd.length === 0) return currentEquipments;
+        return [...currentEquipments, ...eqptsToAdd];
     }
 
     updateSubstations(substations, fullReload) {
