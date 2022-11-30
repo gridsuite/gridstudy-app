@@ -32,7 +32,7 @@ import { Button } from '@mui/material';
 import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
-import MapEquipments from './map-equipments-cache';
+import MapEquipments from './map-equipments';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
