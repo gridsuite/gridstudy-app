@@ -366,8 +366,8 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
-            isValueGreaterThan: ratioLowTapPosition - 1,
-            isValueLessOrEqualTo: ratioHighTapPosition,
+            valueGreaterThan: ratioLowTapPosition - 1,
+            valueLessOrEqualTo: ratioHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
         inputForm: ratioTapInputForm,
@@ -510,8 +510,8 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
-            isValueGreaterThan: phaseLowTapPosition - 1,
-            isValueLessOrEqualTo: phaseHighTapPosition,
+            valueGreaterThan: phaseLowTapPosition - 1,
+            valueLessOrEqualTo: phaseHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
         inputForm: phaseTapInputForm,
