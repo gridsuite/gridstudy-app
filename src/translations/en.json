@@ -562,8 +562,6 @@
     "ImportDephasingRule":"Import dephasing rule",
 
     "GenerateSkeleton": "Generate CSV skeleton",
-    "UploadCSV": "Uploadd CSV",
-    "InvalidRuleUploadType": "The selected file must be a CSV",
     "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the skeleton",
     "uploadMessage": " No file selected",
 

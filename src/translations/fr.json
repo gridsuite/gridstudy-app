@@ -564,8 +564,6 @@
     "ImportDephasingRule":"Importer une loi de déphasage",
 
     "GenerateSkeleton": "Générer le squelette",
-    "UploadCSV": "Télécharger le CSV",
-    "InvalidRuleUploadType": "Le fichier doit être de type CSV",
     "InvalidRuleHeader": "Le fichier n'a pas le bon header, veuillez vous référer au squelette",
     "uploadMessage": " Aucun fichier sélectionné",
 

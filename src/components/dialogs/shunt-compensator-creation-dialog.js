@@ -14,7 +14,7 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     useButtonWithTooltip,
     useDoubleValue,
