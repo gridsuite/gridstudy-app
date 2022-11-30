@@ -330,11 +330,15 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: {
                 isFieldRequired: false,
                 valueGreaterThan: '-1',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                errorMsgId: 'TargetDeadbandGreaterThanZero',
             },
             adornment: VoltageAdornment,
             inputForm: ratioTapInputForm,
-            defaultValue: formValues?.ratioTapChanger?.targetDeadband,
+            defaultValue:
+                formValues?.ratioTapChanger?.targetDeadband &&
+                formValues.ratioTapChanger.targetDeadband !== '0'
+                    ? formValues.ratioTapChanger.targetDeadband
+                    : '',
         });
 
     const [ratioTapRegulatingTerminal, ratioTapRegulatingTerminalField] =
@@ -379,8 +383,8 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
-            valueGreaterThan: ratioLowTapPosition - 1,
-            valueLessThanOrEqualTo: ratioHighTapPosition,
+            isValueGreaterThan: ratioLowTapPosition - 1,
+            isValueLessOrEqualTo: ratioHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
         inputForm: ratioTapInputForm,
@@ -398,9 +402,7 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true },
             inputForm: phaseTapInputForm,
             defaultValue:
-                formValues?.phaseTapChanger?.tapPosition !== undefined
-                    ? true
-                    : false,
+                formValues?.phaseTapChanger?.tapPosition !== undefined,
         });
 
     const [regulationMode, regulationModeField] = useEnumValue({
@@ -439,7 +441,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     regulationMode === REGULATION_MODES.CURRENT_LIMITER.id &&
                     phaseTapRegulating,
                 valueGreaterThan: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                errorMsgId: 'CurrentLimiterGreaterThanZero',
             },
             adornment: AmpereAdornment,
             inputForm: phaseTapInputForm,
@@ -459,7 +461,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                     phaseTapRegulating,
                 valueGreaterThan: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                errorMsgId: 'ActivePowerControlGreaterThanZero',
             },
             adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
@@ -475,12 +477,16 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                valueGreaterThan: '-1',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                valueGreaterThan: '0',
+                errorMsgId: 'TargetDeadbandGreaterThanZero',
             },
             adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
-            defaultValue: formValues?.phaseTapChanger?.targetDeadband,
+            defaultValue:
+                formValues?.phaseTapChanger?.targetDeadband &&
+                formValues.phaseTapChanger.targetDeadband !== '0'
+                    ? formValues.phaseTapChanger.targetDeadband
+                    : '',
         });
 
     const [phaseTapRegulatingTerminal, phaseTapRegulatingTerminalField] =
@@ -521,8 +527,8 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
-            valueGreaterThan: phaseLowTapPosition - 1,
-            valueLessThanOrEqualTo: phaseHighTapPosition,
+            isValueGreaterThan: phaseLowTapPosition - 1,
+            isValueLessOrEqualTo: phaseHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
         inputForm: phaseTapInputForm,

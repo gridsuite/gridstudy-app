@@ -5,6 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+const NO_ERROR = {
+    error: false,
+    errorMsgId: null,
+};
+
 /*
  * Returns a Number corresponding to provided value, or NaN if not a valid number per
  * Gridsuite's standard (allows either coma or dots for decimal).
@@ -109,7 +114,10 @@ export function validateValueIsGreaterThan(value, valueToCompareTo) {
  * Rule : if the field is NOT required (toValidate.isFieldRequired is either undefined or equals to false),
  * then any check that applies to the value will pass if the value is empty.
  */
-export function validateField(value, toValidate) {
+export function validateField(value, toValidate, disabled = false) {
+    if (disabled) {
+        return NO_ERROR;
+    }
     const isValueBlankOrEmpty = isBlankOrEmpty(value);
 
     if (toValidate.isFieldRequired && isValueBlankOrEmpty) {
@@ -173,10 +181,7 @@ export function validateField(value, toValidate) {
         );
     }
 
-    return {
-        error: false,
-        errorMsgId: null,
-    };
+    return NO_ERROR;
 }
 
 /**

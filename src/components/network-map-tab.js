@@ -375,18 +375,16 @@ export const NetworkMapTab = ({
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {network?.substations?.length > 0 && renderNominalVoltageFilter()}
 
-            {displayOverloadTable &&
-                isLoadFlowValid() &&
-                linesNearOverload() && (
-                    <div className={classes.divOverloadedLineView}>
-                        <OverloadedLinesView
-                            lines={network.lines}
-                            lineFlowAlertThreshold={lineFlowAlertThreshold}
-                            network={network}
-                            disabled={disabled}
-                        />
-                    </div>
-                )}
+            {displayOverloadTable && isLoadFlowValid() && linesNearOverload() && (
+                <div className={classes.divOverloadedLineView}>
+                    <OverloadedLinesView
+                        lines={network.lines}
+                        lineFlowAlertThreshold={lineFlowAlertThreshold}
+                        network={network}
+                        disabled={disabled}
+                    />
+                </div>
+            )}
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
