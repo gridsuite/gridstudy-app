@@ -27,7 +27,7 @@ const PREFIX_EXPLORE_SERVER_QUERIES =
 
 function getToken() {
     const state = store.getState();
-    return state.user?.id_token;
+    return state.user.id_token;
 }
 
 function handleResponse(response, expectsJson) {
@@ -44,7 +44,7 @@ function handleResponse(response, expectsJson) {
     }
 }
 
-function prepareRequest(init) {
+function prepareRequest(init, token) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             'Argument 2 of backendFetch is not an object' + typeof init
@@ -52,15 +52,13 @@ function prepareRequest(init) {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    const token = getToken();
-    if (token) {
-        initCopy.headers.append('Authorization', 'Bearer ' + token);
-    }
+    const tokenCopy = token ? token : getToken();
+    initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
     return initCopy;
 }
 
-function backendFetch(url, init) {
-    const initCopy = prepareRequest(init);
+function backendFetch(url, init, token) {
+    const initCopy = prepareRequest(init, token);
     return fetch(url, initCopy).then((response) =>
         handleResponse(response, false)
     );
@@ -87,12 +85,13 @@ export function fetchValidateUser(user) {
         PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${sub}`;
     console.debug(CheckAccessUrl);
 
-    return backendFetch(CheckAccessUrl, {
-        method: 'head',
-        headers: {
-            Authorization: 'Bearer ' + user?.id_token,
+    return backendFetch(
+        CheckAccessUrl,
+        {
+            method: 'head',
         },
-    })
+        user?.id_token
+    )
         .then((response) => {
             //if the response is ok, the responseCode will be either 200 or 204 otherwise it's an error and it will be caught
             return response.status === 200;
@@ -1203,13 +1202,15 @@ export function getAvailableExportFormats() {
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    return backendFetchJson('env.json').then((res) => {
-        return fetch(res.appsMetadataServerUrl + '/apps-metadata.json').then(
-            (response) => {
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return fetch(
+                res.appsMetadataServerUrl + '/apps-metadata.json'
+            ).then((response) => {
                 return response.json();
-            }
-        );
-    });
+            });
+        });
 }
 
 export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
