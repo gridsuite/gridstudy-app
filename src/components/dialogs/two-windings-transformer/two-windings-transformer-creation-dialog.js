@@ -258,9 +258,7 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true },
             inputForm: ratioTapInputForm,
             defaultValue:
-                formValues?.ratioTapChanger?.tapPosition !== undefined
-                    ? true
-                    : false,
+                formValues?.ratioTapChanger?.tapPosition !== undefined,
         });
 
     const [ratioTapRegulating, ratioTapRegulatingField] = useBooleanValue({
@@ -312,12 +310,16 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isValueGreaterThan: '-1',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                isValueGreaterThan: '0',
+                errorMsgId: 'TargetDeadbandGreaterThanZero',
             },
             adornment: VoltageAdornment,
             inputForm: ratioTapInputForm,
-            defaultValue: formValues?.ratioTapChanger?.targetDeadband,
+            defaultValue:
+                formValues?.ratioTapChanger?.targetDeadband &&
+                formValues.ratioTapChanger.targetDeadband !== '0'
+                    ? formValues.ratioTapChanger.targetDeadband
+                    : '',
         });
 
     const [ratioTapRegulatingTerminal, ratioTapRegulatingTerminalField] =
@@ -381,9 +383,7 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true },
             inputForm: phaseTapInputForm,
             defaultValue:
-                formValues?.phaseTapChanger?.tapPosition !== undefined
-                    ? true
-                    : false,
+                formValues?.phaseTapChanger?.tapPosition !== undefined,
         });
 
     const [regulationMode, regulationModeField] = useEnumValue({
@@ -422,7 +422,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     regulationMode === REGULATION_MODES.CURRENT_LIMITER.id &&
                     phaseTapRegulating,
                 isValueGreaterThan: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                errorMsgId: 'CurrentLimiterGreaterThanZero',
             },
             adornment: AmpereAdornment,
             inputForm: phaseTapInputForm,
@@ -442,7 +442,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                     phaseTapRegulating,
                 isValueGreaterThan: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                errorMsgId: 'ActivePowerControlGreaterThanZero',
             },
             adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
@@ -458,12 +458,16 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isValueGreaterThan: '-1',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                isValueGreaterThan: '0',
+                errorMsgId: 'TargetDeadbandGreaterThanZero',
             },
             adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
-            defaultValue: formValues?.phaseTapChanger?.targetDeadband,
+            defaultValue:
+                formValues?.phaseTapChanger?.targetDeadband &&
+                formValues.phaseTapChanger.targetDeadband !== '0'
+                    ? formValues.phaseTapChanger.targetDeadband
+                    : '',
         });
 
     const [phaseTapRegulatingTerminal, phaseTapRegulatingTerminalField] =
