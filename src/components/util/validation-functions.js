@@ -168,11 +168,8 @@ export function validateField(value, toValidate) {
 
     if (toValidate.function) {
         //return makeErrorRecord(toValidate.function(value)); // TODO Seems to not be used anymore ? To remove ?
-        alert(
-            'validation by function, this is still used, and NEEDS TO BE FIXED.'
-        );
         console.error(
-            'validation by function, this is still used, and NEEDS TO BE FIXED.'
+            'Validation by function, this is still used, and needs to be fixed.'
         );
     }
 
