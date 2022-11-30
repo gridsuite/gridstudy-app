@@ -62,6 +62,8 @@ export const ModificationListItem = ({
             return modif.lineToAttachToId;
         } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
             return modif.attachedLineId;
+        } else if (modif.type === 'DELETE_VOLTAGE_LEVEL_ON_LINE') {
+            return modif.attachedLineId;
         } else if (modif.equipmentId) {
             return modif.equipmentId;
         }

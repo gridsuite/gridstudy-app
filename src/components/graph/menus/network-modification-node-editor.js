@@ -61,6 +61,7 @@ import {
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
+import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -334,6 +335,16 @@ const NetworkModificationNodeEditor = () => {
                 adapt(
                     LinesAttachToSplitLinesDialog,
                     withVLs,
+                    withLines,
+                    withSubstations
+                ),
+            icon: <AddIcon />,
+        },
+        DELETE_VOLTAGE_LEVEL_ON_LINE: {
+            label: 'DeleteVoltageLevelOnLine',
+            dialog: () =>
+                adapt(
+                    DeleteVoltageLevelOnLineDialog,
                     withLines,
                     withSubstations
                 ),

@@ -490,6 +490,7 @@
     "ReplacingLines": "Replacing lines",
     "LineDivisionError": "Error while puting a voltage level amidst a line",
     "LineAttachmentError": "Error while attaching a voltage level to a line",
+    "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
@@ -626,5 +627,7 @@
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
-    "Bottom": "Bottom"
+    "Bottom": "Bottom",
+    "DeleteVoltageLevelOnLine": "Delete a voltage level on a line",
+    "ReplacingLine": "Replacing line"
 }
