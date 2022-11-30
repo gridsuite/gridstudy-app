@@ -44,7 +44,7 @@ function handleResponse(response, expectsJson) {
     }
 }
 
-function backendFetch(url, expectsJson, init, withAuth = true) {
+function prepareRequest(init) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             'Argument 2 of backendFetch is not an object' + typeof init
@@ -52,12 +52,23 @@ function backendFetch(url, expectsJson, init, withAuth = true) {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    if (withAuth) {
+    if (getToken()) {
         initCopy.headers.append('Authorization', 'Bearer ' + getToken());
     }
+    return initCopy;
+}
 
+function backendFetch(url, init) {
+    const initCopy = prepareRequest(init);
     return fetch(url, initCopy).then((response) =>
-        handleResponse(response, expectsJson)
+        handleResponse(response, false)
+    );
+}
+
+function backendFetchJson(url, init) {
+    const initCopy = prepareRequest(init);
+    return fetch(url, initCopy).then((response) =>
+        handleResponse(response, true)
     );
 }
 
@@ -75,17 +86,12 @@ export function fetchValidateUser(user) {
         PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${sub}`;
     console.debug(CheckAccessUrl);
 
-    return backendFetch(
-        CheckAccessUrl,
-        false,
-        {
-            method: 'head',
-            headers: {
-                Authorization: 'Bearer ' + user?.id_token,
-            },
+    return backendFetch(CheckAccessUrl, {
+        method: 'head',
+        headers: {
+            Authorization: 'Bearer ' + user?.id_token,
         },
-        false
-    )
+    })
         .then((response) => {
             //if the response is ok, the responseCode will be either 200 or 204 otherwise it's an error and it will be caught
             return response.status === 200;
@@ -116,7 +122,7 @@ export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
     const fetchParams =
         PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
-    return backendFetch(fetchParams, true);
+    return backendFetchJson(fetchParams);
 }
 
 export function fetchConfigParameter(name) {
@@ -129,14 +135,14 @@ export function fetchConfigParameter(name) {
     const fetchParams =
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}`;
-    return backendFetch(fetchParams, true);
+    return backendFetchJson(fetchParams);
 }
 
 export function fetchRootFolders() {
     console.info('Fetching Root Directories');
     const fetchRootFoldersUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
-    return backendFetch(fetchRootFoldersUrl, true);
+    return backendFetchJson(fetchRootFoldersUrl);
 }
 
 export function fetchDirectoryContent(directoryUuid) {
@@ -144,7 +150,7 @@ export function fetchDirectoryContent(directoryUuid) {
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/elements`;
-    return backendFetch(fetchDirectoryContentUrl, true);
+    return backendFetchJson(fetchDirectoryContentUrl);
 }
 
 export function updateConfigParameter(name, value) {
@@ -159,7 +165,7 @@ export function updateConfigParameter(name, value) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}?value=` +
         encodeURIComponent(value);
-    return backendFetch(updateParams, false, { method: 'put' });
+    return backendFetch(updateParams, { method: 'put' });
 }
 
 function getStudyUrl(studyUuid) {
@@ -182,14 +188,14 @@ export function fetchStudy(studyUuid) {
     console.info(`Fetching study '${studyUuid}' ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid);
     console.debug(fetchStudiesUrl);
-    return backendFetch(fetchStudiesUrl, true);
+    return backendFetchJson(fetchStudiesUrl);
 }
 
 export function fetchStudyExists(studyUuid) {
     console.info(`Fetching study '${studyUuid}' existence ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid);
     console.debug(fetchStudiesUrl);
-    return backendFetch(fetchStudiesUrl, false, { method: 'head' });
+    return backendFetch(fetchStudiesUrl, { method: 'head' });
 }
 
 function getPathUrl(studyUuid) {
@@ -205,7 +211,7 @@ export function fetchPath(studyUuid) {
     console.info(`Fetching element '${studyUuid}' and its parents info ...`);
     const fetchPathUrl = getPathUrl(studyUuid);
     console.debug(fetchPathUrl);
-    return backendFetch(fetchPathUrl, true);
+    return backendFetchJson(fetchPathUrl);
 }
 
 export function getVoltageLevelSingleLineDiagram(
@@ -311,17 +317,16 @@ export function fetchReport(studyUuid, currentNodeUuid, nodeOnlyReport) {
             ' in study ' +
             studyUuid
     );
-    return backendFetch(
+    return backendFetchJson(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/report?nodeOnlyReport=' +
-            (nodeOnlyReport ? 'true' : 'false'),
-        true
+            (nodeOnlyReport ? 'true' : 'false')
     );
 }
 
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetch(svgUrl, true);
+    return backendFetchJson(svgUrl);
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
@@ -343,7 +348,7 @@ export function fetchSubstationPositions(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/geo-data/substations';
     console.debug(fetchSubstationPositionsUrl);
-    return backendFetch(fetchSubstationPositionsUrl, true);
+    return backendFetchJson(fetchSubstationPositionsUrl);
 }
 
 export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
@@ -541,13 +546,12 @@ export function fetchEquipmentsInfos(
     if (equipmentType !== undefined) {
         urlSearchParams.append('equipmentType', equipmentType);
     }
-    return backendFetch(
+    return backendFetchJson(
         getStudyUrl(studyUuid) +
             '/nodes/' +
             encodeURIComponent(nodeUuid) +
             '/search?' +
-            urlSearchParams.toString(),
-        true
+            urlSearchParams.toString()
     );
 }
 
@@ -587,7 +591,7 @@ export function fetchEquipments(
         '?' +
         getQueryParamsList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
-    return backendFetch(fetchEquipmentsUrl, true);
+    return backendFetchJson(fetchEquipmentsUrl);
 }
 
 export function fetchEquipmentInfos(
@@ -618,7 +622,7 @@ export function fetchEquipmentInfos(
         '?' +
         urlSearchParams.toString();
     console.debug(fetchEquipmentInfosUrl);
-    return backendFetch(fetchEquipmentInfosUrl, true);
+    return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
 export function fetchBusesForVoltageLevel(
@@ -640,7 +644,7 @@ export function fetchBusesForVoltageLevel(
         '?' +
         urlSearchParams.toString();
     console.debug(fetchBusesUrl);
-    return backendFetch(fetchBusesUrl, true);
+    return backendFetchJson(fetchBusesUrl);
 }
 
 export function fetchBusbarSectionsForVoltageLevel(
@@ -663,7 +667,7 @@ export function fetchBusbarSectionsForVoltageLevel(
         urlSearchParams.toString();
 
     console.debug(fetchBusbarSectionsUrl);
-    return backendFetch(fetchBusbarSectionsUrl, true);
+    return backendFetchJson(fetchBusbarSectionsUrl);
 }
 
 export function fetchLinePositions(studyUuid, currentNodeUuid) {
@@ -673,7 +677,7 @@ export function fetchLinePositions(studyUuid, currentNodeUuid) {
     const fetchLinePositionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/geo-data/lines';
     console.debug(fetchLinePositionsUrl);
-    return backendFetch(fetchLinePositionsUrl, true);
+    return backendFetchJson(fetchLinePositionsUrl);
 }
 
 export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
@@ -685,7 +689,7 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
         '?' +
         new URLSearchParams({ open: open }).toString();
     console.debug(updateSwitchUrl);
-    return backendFetch(updateSwitchUrl, false, { method: 'put' });
+    return backendFetch(updateSwitchUrl, { method: 'put' });
 }
 
 export function startLoadFlow(studyUuid, currentNodeUuid) {
@@ -699,7 +703,7 @@ export function startLoadFlow(studyUuid, currentNodeUuid) {
     const startLoadFlowUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
-    return backendFetch(startLoadFlowUrl, false, { method: 'put' });
+    return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
 export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
@@ -714,7 +718,7 @@ export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/security-analysis/stop';
     console.debug(stopSecurityAnalysisUrl);
-    return backendFetch(stopSecurityAnalysisUrl, false, { method: 'put' });
+    return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
 function getContingencyListsQueryParams(contingencyListNames) {
@@ -745,7 +749,7 @@ export function startSecurityAnalysis(
         '/security-analysis/run' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
-    return backendFetch(url, false, { method: 'post' });
+    return backendFetch(url, { method: 'post' });
 }
 
 export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
@@ -760,7 +764,7 @@ export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/security-analysis/result';
     console.debug(url);
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
 
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
@@ -829,7 +833,7 @@ export function startSensitivityAnalysis(
             branchFiltersUuids
         );
     console.debug(url);
-    return backendFetch(url, false, { method: 'post' });
+    return backendFetch(url, { method: 'post' });
 }
 
 export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
@@ -844,7 +848,7 @@ export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/sensitivity-analysis/stop';
     console.debug(stopSensitivityAnalysisUrl);
-    return backendFetch(stopSensitivityAnalysisUrl, false, { method: 'put' });
+    return backendFetch(stopSensitivityAnalysisUrl, { method: 'put' });
 }
 
 export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
@@ -874,7 +878,7 @@ export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/sensitivity-analysis/result';
     console.debug(url);
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
@@ -886,7 +890,7 @@ export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/run';
     console.debug(startShortCircuitAnanysisUrl);
-    return backendFetch(startShortCircuitAnanysisUrl, false, { method: 'put' });
+    return backendFetch(startShortCircuitAnanysisUrl, { method: 'put' });
 }
 
 export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
@@ -897,7 +901,7 @@ export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/stop';
     console.debug(stopShortCircuitAnalysisUrl);
-    return backendFetch(stopShortCircuitAnalysisUrl, false, { method: 'put' });
+    return backendFetch(stopShortCircuitAnalysisUrl, { method: 'put' });
 }
 
 export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
@@ -919,7 +923,7 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/result';
     console.debug(url);
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
 
 export function fetchContingencyAndFiltersLists(listIds) {
@@ -931,7 +935,7 @@ export function fetchContingencyAndFiltersLists(listIds) {
             .filter((e) => e != null && e !== '') // filter empty element
             .join('&ids=');
     console.debug(url);
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
 
 export function fetchContingencyCount(
@@ -947,14 +951,14 @@ export function fetchContingencyCount(
         '/contingency-count' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
 
 export function fetchNetworkModificationTree(studyUuid) {
     console.info('Fetching network modification tree');
     const url = getStudyUrl(studyUuid) + '/tree';
     console.debug(url);
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
 
 export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
@@ -962,7 +966,7 @@ export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     const url =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid);
     console.debug(url);
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
 
 export function createTreeNode(studyUuid, parentId, insertMode, node) {
@@ -973,7 +977,7 @@ export function createTreeNode(studyUuid, parentId, insertMode, node) {
         '?mode=' +
         insertMode;
     console.debug('%s with body: %s', nodeCreationUrl, node);
-    return backendFetch(nodeCreationUrl, false, {
+    return backendFetch(nodeCreationUrl, {
         method: 'post',
         headers: {
             Accept: 'application/json',
@@ -988,7 +992,7 @@ export function deleteTreeNode(studyUuid, nodeId) {
     const url =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeId);
     console.debug(url);
-    return backendFetch(url, false, {
+    return backendFetch(url, {
         method: 'delete',
     });
 }
@@ -996,7 +1000,7 @@ export function deleteTreeNode(studyUuid, nodeId) {
 export function updateTreeNode(studyUuid, node) {
     const nodeUpdateUrl = getStudyUrl(studyUuid) + '/tree/nodes/';
     console.debug(nodeUpdateUrl);
-    return backendFetch(nodeUpdateUrl, false, {
+    return backendFetch(nodeUpdateUrl, {
         method: 'put',
         headers: {
             Accept: 'application/json',
@@ -1021,7 +1025,7 @@ export function copyTreeNode(
         '&referenceNodeUuid=' +
         referenceNodeUuid;
     console.debug(nodeCopyUrl);
-    return backendFetch(nodeCopyUrl, false, {
+    return backendFetch(nodeCopyUrl, {
         method: 'post',
         headers: {
             Accept: 'application/json',
@@ -1045,7 +1049,7 @@ export function cutTreeNode(
         '&referenceNodeUuid=' +
         referenceNodeUuid;
     console.debug(nodeCutUrl);
-    return backendFetch(nodeCutUrl, false, {
+    return backendFetch(nodeCutUrl, {
         method: 'post',
         headers: {
             Accept: 'application/json',
@@ -1065,7 +1069,7 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
         new URLSearchParams({ modificationsUuids: modificationUuid });
 
     console.debug(modificationDeleteUrl);
-    return backendFetch(modificationDeleteUrl, false, {
+    return backendFetch(modificationDeleteUrl, {
         method: 'delete',
     });
 }
@@ -1083,7 +1087,7 @@ export function duplicateModifications(
         '/nodes/' +
         encodeURIComponent(targetNodeId);
 
-    return backendFetch(duplicateModificationUrl, true, {
+    return backendFetchJson(duplicateModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -1193,17 +1197,16 @@ export function getAvailableExportFormats() {
     const getExportFormatsUrl =
         PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
     console.debug(getExportFormatsUrl);
-    return backendFetch(getExportFormatsUrl, true);
+    return backendFetchJson(getExportFormatsUrl);
 }
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    return backendFetch('env.json', true).then((res) => {
-        return backendFetch(
-            res.appsMetadataServerUrl + '/apps-metadata.json',
-            true,
-            undefined,
-            false
+    return backendFetchJson('env.json').then((res) => {
+        return fetch(res.appsMetadataServerUrl + '/apps-metadata.json').then(
+            (response) => {
+                return response.json();
+            }
         );
     });
 }
@@ -1214,7 +1217,7 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modification/groovy';
     console.debug(changeUrl);
-    return backendFetch(changeUrl, false, {
+    return backendFetch(changeUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -1229,7 +1232,7 @@ export function setLoadFlowParameters(studyUuid, newParams) {
     const setLoadFlowParametersUrl =
         getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(setLoadFlowParametersUrl);
-    return backendFetch(setLoadFlowParametersUrl, false, {
+    return backendFetch(setLoadFlowParametersUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -1243,7 +1246,7 @@ export function getLoadFlowParameters(studyUuid) {
     console.info('get load flow parameters');
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
-    return backendFetch(getLfParams, true);
+    return backendFetchJson(getLfParams);
 }
 
 export function setShortCircuitParameters(studyUuid, newParams) {
@@ -1251,7 +1254,7 @@ export function setShortCircuitParameters(studyUuid, newParams) {
     const setShortCircuitParametersUrl =
         getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
     console.debug(setShortCircuitParametersUrl);
-    return backendFetch(setShortCircuitParametersUrl, false, {
+    return backendFetch(setShortCircuitParametersUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -1266,7 +1269,7 @@ export function getShortCircuitParameters(studyUuid) {
     const getShortCircuitParams =
         getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
     console.debug(getShortCircuitParams);
-    return backendFetch(getShortCircuitParams, true);
+    return backendFetchJson(getShortCircuitParams);
 }
 
 function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
@@ -1276,7 +1279,7 @@ function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
         encodeURIComponent(lineId) +
         '/status';
     console.debug('%s with body: %s', changeLineStatusUrl, status);
-    return backendFetch(changeLineStatusUrl, false, {
+    return backendFetch(changeLineStatusUrl, {
         method: 'put',
         body: status,
     });
@@ -1341,7 +1344,7 @@ export function createLoad(
             '/network-modification/loads';
     }
 
-    return backendFetch(createLoadUrl, false, {
+    return backendFetch(createLoadUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1390,7 +1393,7 @@ export function modifyLoad(
             '/network-modification/loads';
     }
 
-    return backendFetch(modifyLoadUrl, false, {
+    return backendFetch(modifyLoadUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -1456,7 +1459,7 @@ export function modifyGenerator(
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
     };
-    return backendFetch(modificationUrl, false, {
+    return backendFetch(modificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -1514,7 +1517,7 @@ export function createGenerator(
             '/network-modification/generators';
     }
 
-    return backendFetch(createGeneratorUrl, false, {
+    return backendFetch(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1582,7 +1585,7 @@ export function createShuntCompensator(
             '/network-modification/shunt-compensators';
     }
 
-    return backendFetch(createShuntUrl, false, {
+    return backendFetch(createShuntUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1641,7 +1644,7 @@ export function createLine(
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/lines';
     }
-    return backendFetch(createLineUrl, false, {
+    return backendFetch(createLineUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1716,7 +1719,7 @@ export function createTwoWindingsTransformer(
             '/network-modification/two-windings-transformers';
     }
 
-    return backendFetch(createTwoWindingsTransformerUrl, false, {
+    return backendFetch(createTwoWindingsTransformerUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1772,7 +1775,7 @@ export function createSubstation(
             '/network-modification/substations';
     }
 
-    return backendFetch(createSubstationUrl, false, {
+    return backendFetch(createSubstationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1823,7 +1826,7 @@ export function createVoltageLevel({
         busbarConnections: busbarConnections,
     });
 
-    return backendFetch(createVoltageLevelUrl, false, {
+    return backendFetch(createVoltageLevelUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1874,7 +1877,7 @@ export function divideLine(
             '/network-modification/line-splits';
     }
 
-    return backendFetch(lineSplitUrl, false, {
+    return backendFetch(lineSplitUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1931,7 +1934,7 @@ export function attachLine(
             '/network-modification/line-attach';
     }
 
-    return backendFetch(lineAttachUrl, false, {
+    return backendFetch(lineAttachUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1982,7 +1985,7 @@ export function linesAttachToSplitLines(
             '/network-modification/lines-attach-to-split-lines';
     }
 
-    return backendFetch(lineAttachUrl, false, {
+    return backendFetch(lineAttachUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -2005,7 +2008,7 @@ export function setLoadFlowProvider(studyUuid, newProvider) {
     const setLoadFlowProviderUrl =
         getStudyUrl(studyUuid) + '/loadflow/provider';
     console.debug(setLoadFlowProviderUrl);
-    return backendFetch(setLoadFlowProviderUrl, false, {
+    return backendFetch(setLoadFlowProviderUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -2028,7 +2031,7 @@ export function getAvailableComponentLibraries() {
     const getAvailableComponentLibrariesUrl =
         PREFIX_STUDY_QUERIES + '/v1/svg-component-libraries';
     console.debug(getAvailableComponentLibrariesUrl);
-    return backendFetch(getAvailableComponentLibrariesUrl, true);
+    return backendFetchJson(getAvailableComponentLibrariesUrl);
 }
 
 export function deleteEquipment(
@@ -2058,7 +2061,7 @@ export function deleteEquipment(
             '/id/' +
             encodeURIComponent(equipmentId);
     }
-    return backendFetch(deleteEquipmentUrl, false, {
+    return backendFetch(deleteEquipmentUrl, {
         method: modificationUuid ? 'PUT' : 'DELETE',
     });
 }
@@ -2069,7 +2072,7 @@ export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
     );
     const fetchLoadFlowInfosUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/infos';
-    return backendFetch(fetchLoadFlowInfosUrl, true);
+    return backendFetchJson(fetchLoadFlowInfosUrl);
 }
 
 export function fetchNetworkModifications(studyUuid, nodeUuid) {
@@ -2083,7 +2086,7 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
         '/network-modification/modifications';
 
     console.debug(modificationsGetUrl);
-    return backendFetch(modificationsGetUrl, true);
+    return backendFetchJson(modificationsGetUrl);
 }
 
 export function fetchNetworkModification(modificationUuid) {
@@ -2101,7 +2104,7 @@ export function buildNode(studyUuid, currentNodeUuid) {
     );
     const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/build';
     console.debug(url);
-    return backendFetch(url, false, { method: 'post' });
+    return backendFetch(url, { method: 'post' });
 }
 
 export function changeNetworkModificationOrder(
@@ -2120,7 +2123,7 @@ export function changeNetworkModificationOrder(
         '?' +
         new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
     console.debug(url);
-    return backendFetch(url, false, { method: 'put' });
+    return backendFetch(url, { method: 'put' });
 }
 
 export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
@@ -2147,7 +2150,7 @@ export function isNodeExists(studyUuid, nodeName) {
             nodeName: nodeName,
         });
     console.debug(existsNodeUrl);
-    return backendFetch(existsNodeUrl, false, { method: 'head' });
+    return backendFetch(existsNodeUrl, { method: 'head' });
 }
 
 export function getUniqueNodeName(studyUuid) {
@@ -2165,5 +2168,5 @@ export function fetchElementsMetadata(ids) {
             .filter((e) => e != null && e !== '') // filter empty element
             .join('&ids=');
     console.debug(url);
-    return backendFetch(url, true);
+    return backendFetchJson(url);
 }
