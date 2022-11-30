@@ -304,7 +304,7 @@ const NetworkModificationNodeEditor = () => {
         },
         SUBSTATION_CREATION: {
             label: 'CreateSubstation',
-            dialog: () => withDefaultParams(SubstationCreationDialog),
+            dialog: () => adapt(SubstationCreationDialog),
             icon: <AddIcon />,
         },
         VOLTAGE_LEVEL_CREATION: {
