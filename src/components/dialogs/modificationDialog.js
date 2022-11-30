@@ -22,7 +22,7 @@ import { useButtonWithTooltip } from './inputs/input-hooks';
  * Generic Modification Dialog which manage basic common behaviors
  * @param {String} titleId id for title translation
  * @param {EventListener} onClose Event to close the dialog
- * @param {CallbackEvent} onCancel callback when cancelling the dialog
+ * @param {CallbackEvent} onValidate callback when the dialog is validated
  * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
  * @param {CallbackEvent} onValidation callback when validation needs to be computed
  * @param {CallbackEvent} onSave callback when saving the modification
@@ -34,7 +34,7 @@ import { useButtonWithTooltip } from './inputs/input-hooks';
 const ModificationDialog = ({
     titleId,
     onClose,
-    onCancel,
+    onValidate,
     onClear,
     onValidation,
     onSave,
@@ -48,29 +48,29 @@ const ModificationDialog = ({
         handleClick: searchCopy?.handleOpenSearchDialog,
     });
 
-    const handleCloseAndClear = () => {
+    const closeAndClear = (event, reason) => {
         onClear();
-        onClose();
-    };
-
-    const handleCancelAndClear = () => {
-        onClear();
-        onCancel();
+        onClose(event, reason);
     };
 
     // For the global Parent Component, disable close with backdropClick
     // Then cancel the dialog for other reasons
     const handleClose = (event, reason) => {
         if (reason !== 'backdropClick') {
-            handleCancelAndClear();
+            closeAndClear(event, reason);
         }
     };
 
-    const handleSave = () => {
+    const handleCancel = (e) => {
+        closeAndClear(e, 'cancelButtonClick');
+    };
+
+    const handleValidate = (e) => {
         if (onValidation()) {
             onSave();
+            onValidate();
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
+            closeAndClear(e, 'validateButtonClick');
         }
     };
     return (
@@ -90,10 +90,10 @@ const ModificationDialog = ({
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
-                <Button onClick={handleCancelAndClear}>
+                <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleSave} disabled={disabledSave}>
+                <Button onClick={handleValidate} disabled={disabledSave}>
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
@@ -104,7 +104,7 @@ const ModificationDialog = ({
 ModificationDialog.propTypes = {
     titleId: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
+    onValidate: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     onValidation: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,

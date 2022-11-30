@@ -169,14 +169,12 @@ const NetworkModificationNodeEditor = () => {
         });
     };
 
-    const closeDialog = () => {
-        setEditDialogOpen(undefined);
+    const handleValidateDialog = () => {
         if (editData?.uuid && copiedModifications.includes(editData?.uuid))
             cleanClipboard();
-        setEditData(undefined);
     };
 
-    const handleCancel = () => {
+    const handleCloseDialog = (e, reason) => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
@@ -185,8 +183,8 @@ const NetworkModificationNodeEditor = () => {
         return (
             <Dialog
                 open={true}
-                onClose={closeDialog}
-                onCancel={handleCancel}
+                onClose={handleCloseDialog}
+                onValidate={handleValidateDialog}
                 currentNodeUuid={currentTreeNode.id}
                 editData={editData}
                 {...props}
