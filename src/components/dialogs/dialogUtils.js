@@ -130,7 +130,6 @@ export const GridSection = ({ title, size = 12 }) => {
 };
 
 export const GridSubSection = ({ title, size = 12 }) => {
-    const classes = useStyles();
     return (
         <Grid container spacing={2}>
             <Grid item xs={size}>
