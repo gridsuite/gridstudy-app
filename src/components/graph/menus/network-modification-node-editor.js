@@ -18,7 +18,7 @@ import {
     fetchVoltageLevelsEquipments,
     duplicateModifications,
 } from '../../../utils/rest-api';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
@@ -242,7 +242,7 @@ const NetworkModificationNodeEditor = () => {
         };
     }
 
-    function withEquipmentModificationOptions(Dialog, resourceType, resource) {
+    function withEquipmentModificationOptions(resourceType, resource) {
         const equipmentOptionsPromise = fetchEquipments(
             studyUuid,
             currentTreeNode?.id,
@@ -259,7 +259,7 @@ const NetworkModificationNodeEditor = () => {
             };
         }
 
-        return adapt(Dialog, withFetchedOptions);
+        return withFetchedOptions;
     }
 
     const dialogs = {
@@ -271,10 +271,9 @@ const NetworkModificationNodeEditor = () => {
         LOAD_MODIFICATION: {
             label: 'ModifyLoad',
             dialog: () =>
-                withEquipmentModificationOptions(
+                adapt(
                     LoadModificationDialog,
-                    'Loads',
-                    equipments.loads
+                    withEquipmentModificationOptions('Loads', equipments.loads)
                 ),
             icon: <AddIcon />,
         },
@@ -287,10 +286,12 @@ const NetworkModificationNodeEditor = () => {
         GENERATOR_MODIFICATION: {
             label: 'ModifyGenerator',
             dialog: () =>
-                withEquipmentModificationOptions(
+                adapt(
                     GeneratorModificationDialog,
-                    'Generator',
-                    equipments.generators
+                    withEquipmentModificationOptions(
+                        'Generators',
+                        equipments.generators
+                    )
                 ),
             icon: <AddIcon />,
         },

@@ -28,6 +28,7 @@ import {
     Tooltip,
     Button,
     FormControlLabel,
+    Grid,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
@@ -43,7 +44,7 @@ import {
 import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useParameterState } from '../parameters/parameters';
@@ -56,7 +57,7 @@ import { useAutocompleteField } from './use-autocomplete-field';
 import RegulatingTerminalEdition, {
     makeRefreshRegulatingTerminalSectionsCallback,
 } from '../regulating-terminal-edition';
-import Papa from 'papaparse';
+import { useCSVReader } from 'react-papaparse';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -683,73 +684,65 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     return [error, field, isValidName, name];
 };
 
-export const useCSVReader = ({ label, header }) => {
+export const useCSVPicker = ({ label, header, resetTrigger }) => {
     const intl = useIntl();
 
-    const [selectedFile, setSelectedFile] = useState();
+    const { CSVReader } = useCSVReader();
+    const [_acceptedFile, setAcceptedFile] = useState();
     const [fileError, setFileError] = useState();
 
     const equals = (a, b) =>
         a.length === b.length && a.every((v, i) => v === b[i]);
 
-    const handleFileUpload = useCallback((e) => {
-        let files = e.target.files;
-        if (files.size === 0) {
-            setSelectedFile();
-        } else {
-            setSelectedFile(files[0]);
-        }
-    }, []);
+    useEffect(() => {
+        setAcceptedFile();
+    }, [resetTrigger]);
 
     const field = useMemo(() => {
         return (
             <>
-                <Button variant="contained" color="primary" component="label">
-                    <FormattedMessage id={label} />
-                    <input
-                        type="file"
-                        name="file"
-                        onChange={(e) => handleFileUpload(e)}
-                        style={{ display: 'none' }}
-                    />
-                </Button>
-                {selectedFile?.name === undefined ? (
-                    <FormattedMessage id="uploadMessage" />
-                ) : (
-                    selectedFile.name
-                )}
+                <CSVReader
+                    onUploadAccepted={(results, acceptedFile) => {
+                        setAcceptedFile(acceptedFile);
+                        if (
+                            results?.data.length > 0 &&
+                            equals(header, results.data[0])
+                        ) {
+                            setFileError();
+                        } else {
+                            setFileError(
+                                intl.formatMessage({
+                                    id: 'InvalidRuleHeader',
+                                })
+                            );
+                        }
+                    }}
+                >
+                    {({ getRootProps, acceptedFile }) => (
+                        <Grid item>
+                            <Button {...getRootProps()} variant={'contained'}>
+                                <FormattedMessage id={label} />
+                            </Button>
+                            <span
+                                style={{
+                                    marginLeft: '10px',
+                                    fontWeight: 'bold',
+                                }}
+                            >
+                                {acceptedFile
+                                    ? acceptedFile.name
+                                    : intl.formatMessage({
+                                          id: 'uploadMessage',
+                                      })}
+                            </span>
+                        </Grid>
+                    )}
+                </CSVReader>
             </>
         );
-    }, [handleFileUpload, label, selectedFile?.name]);
+    }, [header, intl, label]);
 
-    useEffect(() => {
-        if (selectedFile?.type === 'text/csv') {
-            Papa.parse(selectedFile, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function (results) {
-                    if (equals(header, results.meta.fields)) {
-                        setFileError();
-                    } else {
-                        setFileError(
-                            intl.formatMessage({
-                                id: 'InvalidRuleHeader',
-                            })
-                        );
-                    }
-                },
-            });
-        } else if (selectedFile) {
-            setFileError(
-                intl.formatMessage({
-                    id: 'InvalidRuleUploadType',
-                })
-            );
-        } else {
-            setFileError();
-        }
-    }, [selectedFile, intl, header]);
-    return [selectedFile, setSelectedFile, field, fileError];
+    return [_acceptedFile, field, fileError];
 };
 
 export const useRadioValue = ({

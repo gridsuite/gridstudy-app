@@ -7,7 +7,7 @@
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 

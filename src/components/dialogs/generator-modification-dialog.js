@@ -10,7 +10,7 @@ import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     useDoubleValue,
