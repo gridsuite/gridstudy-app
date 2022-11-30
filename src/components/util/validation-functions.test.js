@@ -7,7 +7,6 @@ import {
     validateField,
     checkReactiveCapabilityCurve,
 } from './validation-functions';
-import { expect, test } from '@jest/globals';
 
 const { toNumber, isBlankOrEmpty } = exportedForTesting;
 
