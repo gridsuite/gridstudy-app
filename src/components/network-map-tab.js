@@ -104,6 +104,8 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
+    const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
+
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
@@ -258,7 +260,6 @@ export const NetworkMapTab = ({
                 dispatch(mapEquipmentsCreated(initialMapEquipments));
             } else {
                 console.info('Reload map equipments');
-                mapEquipments.applyDeletionBuffer();
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
@@ -299,23 +300,15 @@ export const NetworkMapTab = ({
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
             ) {
+                if (refIsMapManualRefreshEnabled.current) {
+                    return;
+                }
+
                 const [
                     substationsIds,
                     deletedEquipmentId,
                     deletedEquipmentType,
                 ] = parseStudyNotification(studyUpdatedForce);
-
-                if (refIsMapManualRefreshEnabled.current) {
-                    mapEquipments.updateDeletionBuffer(
-                        deletedEquipmentId,
-                        deletedEquipmentType
-                    );
-                    return;
-                }
-
-                if (substationsIds?.length > 0) {
-                    loadMapEquipments(substationsIds);
-                }
 
                 if (deletedEquipmentId && deletedEquipmentType) {
                     console.info(
@@ -329,6 +322,10 @@ export const NetworkMapTab = ({
                         deletedEquipmentType,
                         deletedEquipmentId
                     );
+                }
+
+                if (substationsIds?.length > 0) {
+                    loadMapEquipments(substationsIds);
                 }
             }
         }
@@ -368,6 +365,16 @@ export const NetworkMapTab = ({
         isInitialized,
         reloadMapNeeded,
     ]);
+
+    useEffect(() => {
+        let previousNodeStatus = isCurrentNodeBuiltRef.current;
+        isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
+
+        //when we build node we want the map to be up to date
+        if (!previousNodeStatus && isCurrentNodeBuiltRef.current) {
+            loadMapEquipments();
+        }
+    }, [currentNode, loadMapEquipments]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {

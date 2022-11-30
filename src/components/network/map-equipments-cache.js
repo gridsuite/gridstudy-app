@@ -77,12 +77,18 @@ export default class MapEquipments {
             currentNode?.id,
             substationsIds
         );
+        const isFullReload = substationsIds ? false : true;
+
         Promise.all([updatedEquipments])
             .then((values) => {
                 this.updateSubstations(
-                    this.checkAndGetValues(values[0].substations)
+                    this.checkAndGetValues(values[0].substations),
+                    isFullReload
                 );
-                this.updateLines(this.checkAndGetValues(values[0].lines));
+                this.updateLines(
+                    this.checkAndGetValues(values[0].lines),
+                    isFullReload
+                );
                 handleUpdatedLines(values[0].lines);
             })
             .catch(function (error) {
@@ -155,7 +161,11 @@ export default class MapEquipments {
             : currentEquipments;
     }
 
-    updateSubstations(substations) {
+    updateSubstations(substations, fullReload) {
+        if (fullReload) {
+            this.substations = [];
+        }
+
         // replace current modified substations
         let voltageLevelAdded = false;
         this.substations.forEach((substation1, index) => {
@@ -197,7 +207,10 @@ export default class MapEquipments {
         this.linesById = this.lines.reduce(elementIdIndexer, new Map());
     }
 
-    updateLines(lines) {
+    updateLines(lines, fullReload) {
+        if (fullReload) {
+            this.lines = [];
+        }
         this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
 
         // add more infos
@@ -305,25 +318,5 @@ export default class MapEquipments {
 
     getLine(id) {
         return this.linesById.get(id);
-    }
-
-    updateDeletionBuffer(deletedEquipmentId, deletedEquipmentType) {
-        const deletedEquipmentIds = this.deletionsBuffer.get(
-            deletedEquipmentType
-        )
-            ? [...this.deletionsBuffer.get(deletedEquipmentType)]
-            : [];
-        deletedEquipmentIds.push(deletedEquipmentId);
-        this.deletionsBuffer.set(deletedEquipmentType, deletedEquipmentIds);
-    }
-
-    applyDeletionBuffer() {
-        this.deletionsBuffer.forEach((ids, equipmentType) => {
-            console.log(ids);
-            ids.forEach((id) => {
-                this.removeEquipment(equipmentType, id);
-            });
-        });
-        this.deletionsBuffer.clear();
     }
 }
