@@ -129,18 +129,6 @@ export const GridSection = ({ title, size = 12 }) => {
     );
 };
 
-export const GridSubSection = ({ title, size = 12 }) => {
-    return (
-        <Grid container spacing={2}>
-            <Grid item xs={size}>
-                <h4>
-                    <FormattedMessage id={title} />
-                </h4>
-            </Grid>
-        </Grid>
-    );
-};
-
 export const gridItem = (field, size = 6) => {
     return (
         <Grid item xs={size} align={'start'}>

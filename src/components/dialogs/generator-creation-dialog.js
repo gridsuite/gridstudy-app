@@ -31,7 +31,6 @@ import {
     filledTextField,
     gridItem,
     GridSection,
-    GridSubSection,
     MVAPowerAdornment,
     OhmAdornment,
     percentageTextField,
@@ -585,14 +584,13 @@ const GeneratorCreationDialog = ({
                         </Grid>
 
                         {/* Limits part */}
-                        <GridSection title="Limits" />
-                        <GridSubSection title="ActiveLimits" />
+                        <GridSection title="ActiveLimits" />
                         <Grid container spacing={2}>
                             {gridItem(minimumActivePowerField, 4)}
                             {gridItem(maximumActivePowerField, 4)}
                             {gridItem(ratedNominalPowerField, 4)}
                         </Grid>
-                        <GridSubSection title="ReactiveLimits" />
+                        <GridSection title="ReactiveLimits" />
                         <Grid container spacing={2}>
                             {gridItem(
                                 reactiveCapabilityCurveChoiceRadioButton,
