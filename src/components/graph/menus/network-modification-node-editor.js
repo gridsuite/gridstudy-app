@@ -317,7 +317,7 @@ const NetworkModificationNodeEditor = () => {
         },
         SUBSTATION_CREATION: {
             label: 'CreateSubstation',
-            dialog: () => withDefaultParams(SubstationCreationDialog),
+            dialog: () => adapt(SubstationCreationDialog),
             icon: <AddIcon />,
         },
         VOLTAGE_LEVEL_CREATION: {
@@ -355,7 +355,7 @@ const NetworkModificationNodeEditor = () => {
         },
         EQUIPMENT_DELETION: {
             label: 'DeleteEquipment',
-            dialog: () => withDefaultParams(EquipmentDeletionDialog),
+            dialog: () => adapt(EquipmentDeletionDialog),
             icon: <DeleteIcon />,
         },
     };
