@@ -459,7 +459,7 @@
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
     "Breaker": "Disjoncteur",
     "Disconnector": "Sectionneur",
-    "SameHorizAndVertPos": "Au moins deux SJBs ont mêmes positions horizontale et verticale",
+    "SameHorizAndVertPos": "Au moins deux SJBs ont les mêmes positions horizontale et verticale",
     "DuplicateId": "Identifiant non unique",
     "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
 
@@ -511,7 +511,7 @@
     "TargetVoltage":"Tension",
     "TargetVoltageGreaterThanZero": "La tension doit être strictement positive",
     "Deadband":"Bande morte",
-    "TargetDeadbandGreaterThanZero": "La valeur de Deadband doit être égale ou supérieur à 0",
+    "TargetDeadbandGreaterThanZero": "La valeur de bande morte doit être strictement positive",
     "LowTapPosition":"Prise min",
     "HighTapPosition":"Prise max",
     "TapPosition":"Prise courante",
@@ -546,7 +546,9 @@
     "PhaseActivePowerControl": "Suivi de transit",
 
     "RegulatingValueCurrentLimiter": "Limitation du courant",
+    "CurrentLimiterGreaterThanZero": "La valeur de la limitation du courant doit être strictement positive",
     "RegulatingValueActivePowerControl": "Consigne de transit",
+    "ActivePowerControlGreaterThanZero": "La valeur de la consigne de transit doit être strictement positive",
 
     "CreateRegulationRule":"Créer une loi de régleur",
     "LowTapRatio":"Rapport (prise min)",
@@ -561,8 +563,6 @@
     "ImportDephasingRule":"Importer une loi de déphasage",
 
     "GenerateSkeleton": "Générer le squelette",
-    "UploadCSV": "Télécharger le CSV",
-    "InvalidRuleUploadType": "Le fichier doit être de type CSV",
     "InvalidRuleHeader": "Le fichier n'a pas le bon header, veuillez vous référer au squelette",
     "uploadMessage": " Aucun fichier sélectionné",
 
