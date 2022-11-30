@@ -193,7 +193,7 @@ export const NetworkMapTab = ({
         []
     );
 
-    const reloadMapGeoData = useCallback(() => {
+    const loadMapGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         const substationPositions = fetchSubstationPositions(
             studyUuid,
@@ -233,54 +233,21 @@ export const NetworkMapTab = ({
     ]);
 
     const handleReloadMap = useCallback(() => {
-        reloadMapGeoData();
+        loadMapGeoData();
         dispatch(setForceNetworkReload());
-    }, [dispatch, reloadMapGeoData]);
+    }, [dispatch, loadMapGeoData]);
 
-    const procEffect =
+    const procLoadGeoData =
         reloadMapNeeded &&
         !(mapManualRefresh && isInitialized) &&
         !disabled ;
 
-    useEffect(() => {
-        if (!procEffect) return;
-        reloadMapGeoData();
-        setInitialized(true);
-    }, [procEffect, reloadMapGeoData]);
 
-    // const handleReloadMap = useCallback(() => {
-    //     reloadMapGeoData();
-    //     dispatch(setForceNetworkReload());
-    // }, [dispatch, reloadMapGeoData]);
-    //
-    // useEffect(() => {
-    //     let previousCurrentNode = currentNodeRef.current;
-    //     currentNodeRef.current = currentNode;
-    //     // if only renaming, do not reload geo data
-    //     if (isNodeRenamed(previousCurrentNode, currentNode)) return;
-    //     if (disabled) return;
-    //     if (mapManualRefresh && isInitialized) return;
-    //     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
-    //     // TODO REMOVE LATER
-    //     if (!reloadMapNeeded) return;
-    //
-    //     reloadMapGeoData();
-    //     setInitialized(true);
-    //     // Note: studyUuid and dispatch don't change
-    // }, [
-    //     disabled,
-    //     reloadMapNeeded,
-    //     studyUuid,
-    //     currentNode,
-    //     lineFullPath,
-    //     setWaitingLoadGeoData,
-    //     setErrorMessage,
-    //     setGeoData,
-    //     intlRef,
-    //     mapManualRefresh,
-    //     isInitialized,
-    //     reloadMapGeoData,
-    // ]);
+    useEffect(() => {
+        if (!procLoadGeoData) return;
+        loadMapGeoData();
+        setInitialized(true);
+    }, [procLoadGeoData, loadMapGeoData]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
