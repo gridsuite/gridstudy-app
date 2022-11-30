@@ -52,8 +52,9 @@ function prepareRequest(init) {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    if (getToken()) {
-        initCopy.headers.append('Authorization', 'Bearer ' + getToken());
+    const token = getToken();
+    if (token) {
+        initCopy.headers.append('Authorization', 'Bearer ' + token);
     }
     return initCopy;
 }
