@@ -294,7 +294,8 @@ const TwoWindingsTransformerCreationDialog = ({
             disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
         },
         validation: {
-            isFieldRequired: ratioTapRegulating && ratioTapChangerEnabled,
+            skipValidation: !ratioTapRegulating || !ratioTapChangerEnabled,
+            isFieldRequired: true,
             valueGreaterThan: '0',
             errorMsgId: 'TargetVoltageGreaterThanZero',
         },
@@ -311,6 +312,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
             },
             validation: {
+                skipValidation: !ratioTapRegulating || !ratioTapChangerEnabled,
                 isFieldRequired: false,
                 valueGreaterThan: '-1',
                 errorMsgId: 'TargetDeadbandGreaterThanZero',
@@ -365,7 +367,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const [ratioTapPosition, ratioTapPositionField] = useIntegerValue({
         label: 'TapPosition',
         validation: {
-            isFieldRequired: ratioTapChangerEnabled,
+            skipValidation: !ratioTapChangerEnabled,
+            isFieldRequired: true,
             valueGreaterThan: ratioLowTapPosition - 1,
             valueLessThanOrEqualTo: ratioHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
@@ -420,6 +423,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 disabled: !phaseTapRegulating || !phaseTapChangerEnabled,
             },
             validation: {
+                skipValidation: !phaseTapRegulating || !phaseTapChangerEnabled,
                 isFieldRequired:
                     regulationMode === REGULATION_MODES.CURRENT_LIMITER.id &&
                     phaseTapRegulating,
@@ -439,6 +443,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 disabled: !phaseTapRegulating || !phaseTapChangerEnabled,
             },
             validation: {
+                skipValidation: !phaseTapRegulating || !phaseTapChangerEnabled,
                 isFieldRequired:
                     regulationMode ===
                         REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
@@ -459,6 +464,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 disabled: !phaseTapRegulating || !phaseTapChangerEnabled,
             },
             validation: {
+                skipValidation: !phaseTapRegulating || !phaseTapChangerEnabled,
                 isFieldRequired: false,
                 valueGreaterThan: '0',
                 errorMsgId: 'TargetDeadbandGreaterThanZero',
@@ -509,7 +515,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const [phaseTapPosition, phaseTapPositionField] = useDoubleValue({
         label: 'TapPosition',
         validation: {
-            isFieldRequired: phaseTapChangerEnabled,
+            skipValidation: !phaseTapChangerEnabled,
+            isFieldRequired: true,
             valueGreaterThan: phaseLowTapPosition - 1,
             valueLessThanOrEqualTo: phaseHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',

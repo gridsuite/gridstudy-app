@@ -114,10 +114,11 @@ export function validateValueIsGreaterThan(value, valueToCompareTo) {
  * Rule : if the field is NOT required (toValidate.isFieldRequired is either undefined or equals to false),
  * then any check that applies to the value will pass if the value is empty.
  */
-export function validateField(value, toValidate, disabled = false) {
-    if (disabled) {
+export function validateField(value, toValidate) {
+    if (toValidate.skipValidation) {
         return NO_ERROR;
     }
+
     const isValueBlankOrEmpty = isBlankOrEmpty(value);
 
     if (toValidate.isFieldRequired && isValueBlankOrEmpty) {
