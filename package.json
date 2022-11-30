@@ -24,8 +24,8 @@
         "geolib": "^3.2.1",
         "localized-countries": "^2.0.0",
         "lucene-escape-query": "^1.0.1",
-        "mjolnir.js": "^2.4.0",
         "mui-nested-menu": "^2.0.0",
+        "mjolnir.js": "^2.4.0",
         "notistack": "^2.0.3",
         "qs": "^6.9.1",
         "react": "^18.0.0",
@@ -34,7 +34,6 @@
         "react-dom": "^18.0.0",
         "react-flow-renderer": "^10.0.0",
         "react-intl": "^6.0.0",
-        "react-json-view": "^1.21.3",
         "react-map-gl": "^6.0.0",
         "react-papaparse": "^4.1.0",
         "react-redux": "^8.0.0",
@@ -44,12 +43,13 @@
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
-        "typeface-roboto": "^1.0.0"
+        "typeface-roboto": "^1.0.0",
+        "react-json-view": "^1.21.3"
     },
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "test": "react-scripts test --watchAll=false --silent",
+        "test": "react-scripts test --watchAll=false",
         "eject": "react-scripts eject"
     },
     "eslintConfig": {
