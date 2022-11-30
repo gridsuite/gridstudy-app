@@ -2396,11 +2396,11 @@ export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
         '&equipmentTypes=' +
         equipmentTypes.join('&equipmentTypes=') +
         '&elementTypes=' +
-        elementTypes.join('&elementTypes=')
-    console.log('uuuuuuuuuuuuuuurl ', url);
+        elementTypes.join('&elementTypes=');
+    console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) => {
         return response.ok
-        ? response.json()
-        : response.text().then((text) => Promise.reject(text));
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text));
     });
 }

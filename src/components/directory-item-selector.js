@@ -139,15 +139,10 @@ const DirectoryItemSelector = (props) => {
                         console.log('equipment type : ', props);
                         // filtering also with equipment types
                         fetchElementsMetadata(
-                            childrenMatchedTypes.map((e) => e.elementUuid), props.types, props.equipmentTypes
+                            childrenMatchedTypes.map((e) => e.elementUuid),
+                            props.types,
+                            props.equipmentTypes
                         ).then((childrenWithMetada) => {
-                            const childrenToBeInserted =
-                                childrenWithMetada.filter((e) => {
-                                    console.log('element : ', e);
-                                    return e.type === elementType.DIRECTORY || props.equipmentTypes.includes(
-                                        e.specificMetadata.equipmentType
-                                    );
-                                });
                             // update directory content
                             addToDirectory(nodeId, childrenWithMetada);
                         });
@@ -165,7 +160,7 @@ const DirectoryItemSelector = (props) => {
                     );
                 });
         },
-        [addToDirectory, contentFilter, props.equipmentTypes]
+        [addToDirectory, contentFilter, props]
     );
 
     useEffect(() => {
