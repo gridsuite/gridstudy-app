@@ -409,30 +409,6 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
             { p: '10', qminP: '1', qmaxP: '56' },
         ]).length
     ).toBe(0);
-    expect(
-        checkReactiveCapabilityCurve(
-            [
-                { p: '-10', qminP: '-5', qmaxP: '-2' },
-                { p: '0', qminP: '0,8', qmaxP: '1' },
-                { p: '-3', qminP: '-6.5', qmaxP: '-2' },
-                { p: '10', qminP: '1', qmaxP: '56' },
-            ],
-            -10,
-            10
-        ).length
-    ).toBe(0);
-    expect(
-        checkReactiveCapabilityCurve(
-            [
-                { p: '-10', qminP: '-5', qmaxP: '-2' },
-                { p: '0', qminP: '0,8', qmaxP: '1' },
-                { p: '-3', qminP: '-6.5', qmaxP: '-2' },
-                { p: '10', qminP: '1', qmaxP: '56' },
-            ],
-            -11,
-            11
-        ).length
-    ).toBe(0);
 
     // Not enough points
     expect(checkReactiveCapabilityCurve([]).length).not.toBe(0);
@@ -481,44 +457,6 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
             { p: '-10', qminP: '0', qmaxP: '0' },
             { p: '10', qminP: '1', qmaxP: '56' },
         ]).length
-    ).not.toBe(0);
-
-    // Pmin and Pmax values are not in the minimumActivePower/maximmActivePower range
-    expect(
-        checkReactiveCapabilityCurve(
-            [
-                { p: '-10', qminP: '-5', qmaxP: '-2' },
-                { p: '0', qminP: '0,8', qmaxP: '1' },
-                { p: '-3', qminP: '-6.5', qmaxP: '-2' },
-                { p: '10', qminP: '1', qmaxP: '56' },
-            ],
-            -9,
-            11
-        ).length
-    ).not.toBe(0);
-    expect(
-        checkReactiveCapabilityCurve(
-            [
-                { p: '-10', qminP: '-5', qmaxP: '-2' },
-                { p: '0', qminP: '0,8', qmaxP: '1' },
-                { p: '-3', qminP: '-6.5', qmaxP: '-2' },
-                { p: '10', qminP: '1', qmaxP: '56' },
-            ],
-            -10,
-            9
-        ).length
-    ).not.toBe(0);
-    expect(
-        checkReactiveCapabilityCurve(
-            [
-                { p: '-10', qminP: '-5', qmaxP: '-2' },
-                { p: '0', qminP: '0,8', qmaxP: '1' },
-                { p: '-3', qminP: '-6.5', qmaxP: '-2' },
-                { p: '10', qminP: '1', qmaxP: '56' },
-            ],
-            undefined,
-            9
-        ).length
     ).not.toBe(0);
 
     // P values between Pmin and Pmax are below Pmin or above Pmax
