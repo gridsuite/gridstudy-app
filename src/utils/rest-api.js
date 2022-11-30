@@ -88,7 +88,7 @@ export function fetchValidateUser(user) {
     )
         .then((response) => {
             //if the response is ok, the responseCode will be either 200 or 204 otherwise it's an error and it will be caught
-            return response.status === 200 ? true : false;
+            return response.status === 200;
         })
         .catch((error) => {
             if (error.status === 403) return false;
