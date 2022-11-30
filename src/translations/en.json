@@ -407,7 +407,7 @@
     "P": "P",
     "QminP": "QminP",
     "QmaxP": "QmaxP",
-    "RegulatingTerminalGenerator": "Regulated Terminal",
+    "RegulatingTerminalGenerator": "Regulated terminal",
     "ShortCircuit": "Short-circuit",
     "TransientReactance": "Transient reactance",
     "TransformerReactance": "Transformer reactance",
@@ -422,7 +422,7 @@
     "ActivePowerBetweenMaxAndMin": "The active power setpoint must be between minimum active power and maximum active power values",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "The table of reactive capability curve must have at least four points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Each active power value must be a valid unique number.",
-    "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the P min and P max values.",
+    "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the min P and max P values.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Each minimum reactive power value must be inferior or equal to the corresponding maximum reactive power value.",
 
     "CreateLine": "Create line",

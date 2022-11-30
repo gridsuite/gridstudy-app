@@ -129,7 +129,7 @@
     "PhaseTap2": "Plot déphaseur 2",
     "RatioTap3": "Plot régleur 3",
     "PhaseTap3": "Plot déphaseur 3",
-    "VoltageRegulatorOn": "Réglage tension",
+    "VoltageRegulatorOn": "Réglage de tension",
     "RegulatingTerminal": "Nœud réglé",
 
     "displayOverloadTable": "Afficher la table des surcharges en cas de dépassement de seuil\u00a0:",
@@ -391,7 +391,7 @@
     "MinimumActivePowerText": "Puissance active min",
     "MaximumActivePowerText": "Puissance active max",
     "RatedNominalPowerText": "Puissance nominale",
-    "VoltageRegulationText": "Réglage tension",
+    "VoltageRegulationText": "Réglage de tension",
     "RegulationTypeText": "Type de réglage",
     "Local": "Local",
     "Distant": "Distant",
@@ -507,7 +507,7 @@
     "ConfigurePhaseTapChanger": "Créer déphaseur",
 
     "OnLoad":"En charge",
-    "VoltageRegulation":"Réglage tension",
+    "VoltageRegulation":"Réglage de tension",
     "Regulating":"En réglage",
     "TargetVoltage":"Tension",
     "TargetVoltageGreaterThanZero": "La tension doit être strictement positive",
