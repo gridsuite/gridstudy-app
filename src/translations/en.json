@@ -18,6 +18,7 @@
     "moveStudyNotification": "The study has been moved from {oldStudyPath} to {studyPath}",
 
     "CopiedNodeInvalidationMessage": "As a result of node modification, the contents of the clipboard have been deleted",
+    "CopiedModificationInvalidationMessage": "Following a modification of the hypothesis, the content of the clipboard has been deleted",
     "exportNetwork": "Export the network",
     "export": "Export",
     "format": "Format",

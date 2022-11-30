@@ -4,16 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -22,7 +18,6 @@ import {
     useDoubleValue,
     useInputForm,
     useTextValue,
-    useButtonWithTooltip,
 } from './inputs/input-hooks';
 import {
     AmpereAdornment,
@@ -55,20 +50,20 @@ const useStyles = makeStyles((theme) => ({
 
 /**
  * Dialog to create a line in the network
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
+ * @param onCreateLine callback to customize line creation process
+ * @param displayConnectivity to display connectivity section or not
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LineCreationDialog = ({
     editData,
-    open,
-    onClose,
     voltageLevelOptionsPromise,
     currentNodeUuid,
     onCreateLine = createLine,
     displayConnectivity = true,
+    ...dialogProps
 }) => {
     const classes = useStyles();
 
@@ -115,11 +110,6 @@ const LineCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-    });
-
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     useEffect(() => {
@@ -256,197 +246,163 @@ const LineCreationDialog = ({
             defaultValue: formValues?.currentLimits2?.permanentLimit,
         });
 
-    const handleSave = () => {
-        if (inputForm.validate()) {
-            onCreateLine(
-                studyUuid,
-                currentNodeUuid,
-                lineId,
-                sanitizeString(lineName),
-                seriesResistance,
-                seriesReactance,
-                shuntConductance1,
-                shuntSusceptance1,
-                shuntConductance2,
-                shuntSusceptance2,
-                connectivity1?.voltageLevel?.id,
-                connectivity1?.busOrBusbarSection?.id,
-                connectivity2?.voltageLevel?.id,
-                connectivity2?.busOrBusbarSection?.id,
-                permanentCurrentLimit1,
-                permanentCurrentLimit2,
-                editData ? true : false,
-                editData ? editData.uuid : undefined,
-                connectivity1?.connectionName?.id ?? null,
-                connectivity1?.connectionDirection?.id ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                connectivity2?.connectionName?.id ?? null,
-                connectivity2?.connectionDirection?.id ??
-                    UNDEFINED_CONNECTION_DIRECTION
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'LineCreationError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+    const handleValidation = () => {
+        return inputForm.validate();
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        onCreateLine(
+            studyUuid,
+            currentNodeUuid,
+            lineId,
+            sanitizeString(lineName),
+            seriesResistance,
+            seriesReactance,
+            shuntConductance1,
+            shuntSusceptance1,
+            shuntConductance2,
+            shuntSusceptance2,
+            connectivity1?.voltageLevel?.id,
+            connectivity1?.busOrBusbarSection?.id,
+            connectivity2?.voltageLevel?.id,
+            connectivity2?.busOrBusbarSection?.id,
+            permanentCurrentLimit1,
+            permanentCurrentLimit2,
+            editData ? true : false,
+            editData ? editData.uuid : undefined,
+            connectivity1?.connectionName?.id ?? null,
+            connectivity1?.connectionDirection?.id ??
+                UNDEFINED_CONNECTION_DIRECTION,
+            connectivity2?.connectionName?.id ?? null,
+            connectivity2?.connectionDirection?.id ??
+                UNDEFINED_CONNECTION_DIRECTION
+        ).catch((errorMessage) => {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'LineCreationError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
+    const clear = () => {
+        inputForm.reset();
         setFormValues(null);
-        handleClose();
     };
 
     return (
         <>
-            <Dialog
-                open={open}
-                onClose={handleClose}
+            <ModificationDialog
+                onClear={clear}
+                onValidation={handleValidation}
+                onSave={handleSave}
+                disabledSave={!inputForm.hasChanged}
                 aria-labelledby="dialog-create-line"
                 fullWidth={true}
+                titleId="CreateLine"
+                searchCopy={searchCopy}
+                {...dialogProps}
             >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
-                            <FormattedMessage id="CreateLine" />
+                <Grid container spacing={2}>
+                    {gridItem(lineIdField)}
+                    {gridItem(lineNameField)}
+                </Grid>
+                {displayConnectivity && (
+                    <>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="Connectivity" />
+                                </h3>
+                            </Grid>
                         </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <Grid container spacing={2}>
-                        {gridItem(lineIdField)}
-                        {gridItem(lineNameField)}
-                    </Grid>
-                    {displayConnectivity && (
-                        <>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <h3 className={classes.h3}>
-                                        <FormattedMessage id="Connectivity" />
-                                    </h3>
-                                </Grid>
+                        <Grid container spacing={2}>
+                            <Grid item xs={6}>
+                                <h4 className={classes.h4}>
+                                    <FormattedMessage id="Side1" />
+                                </h4>
                             </Grid>
-                            <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    <h4 className={classes.h4}>
-                                        <FormattedMessage id="Side1" />
-                                    </h4>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <h4 className={classes.h4}>
-                                        <FormattedMessage id="Side2" />
-                                    </h4>
-                                </Grid>
+                            <Grid item xs={6}>
+                                <h4 className={classes.h4}>
+                                    <FormattedMessage id="Side2" />
+                                </h4>
                             </Grid>
+                        </Grid>
 
-                            <Grid container spacing={2}>
-                                <Grid item container xs={6} direction="column">
-                                    <Grid
-                                        container
-                                        direction="column"
-                                        spacing={2}
-                                    >
-                                        {gridItem(connectivity1Field, 12)}
-                                    </Grid>
-                                </Grid>
-                                <Grid item container direction="column" xs={6}>
-                                    <Grid
-                                        container
-                                        direction="column"
-                                        spacing={2}
-                                    >
-                                        {gridItem(connectivity2Field, 12)}
-                                    </Grid>
+                        <Grid container spacing={2}>
+                            <Grid item container xs={6} direction="column">
+                                <Grid container direction="column" spacing={2}>
+                                    {gridItem(connectivity1Field, 12)}
                                 </Grid>
                             </Grid>
-                        </>
-                    )}
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3>
-                                <FormattedMessage id="Characteristics" />
-                            </h3>
+                            <Grid item container direction="column" xs={6}>
+                                <Grid container direction="column" spacing={2}>
+                                    {gridItem(connectivity2Field, 12)}
+                                </Grid>
+                            </Grid>
                         </Grid>
+                    </>
+                )}
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h3>
+                            <FormattedMessage id="Characteristics" />
+                        </h3>
                     </Grid>
-                    <Grid container spacing={2}>
-                        {gridItem(seriesResistanceField)}
-                        {gridItem(seriesReactanceField)}
+                </Grid>
+                <Grid container spacing={2}>
+                    {gridItem(seriesResistanceField)}
+                    {gridItem(seriesReactanceField)}
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side1" />
+                        </h4>
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <h4 className={classes.h4}>
-                                <FormattedMessage id="Side1" />
-                            </h4>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <h4 className={classes.h4}>
-                                <FormattedMessage id="Side2" />
-                            </h4>
-                        </Grid>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side2" />
+                        </h4>
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item container xs={6} spacing={2}>
-                            {gridItem(shuntConductance1Field, 12)}
-                            {gridItem(shuntSusceptance1Field, 12)}
-                        </Grid>
-                        <Grid item container xs={6} spacing={2}>
-                            {gridItem(shuntConductance2Field, 12)}
-                            {gridItem(shuntSusceptance2Field, 12)}
-                        </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item container xs={6} spacing={2}>
+                        {gridItem(shuntConductance1Field, 12)}
+                        {gridItem(shuntSusceptance1Field, 12)}
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="Limits" />
-                            </h3>
-                        </Grid>
+                    <Grid item container xs={6} spacing={2}>
+                        {gridItem(shuntConductance2Field, 12)}
+                        {gridItem(shuntSusceptance2Field, 12)}
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <h4 className={classes.h4}>
-                                <FormattedMessage id="Side1" />
-                            </h4>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <h4 className={classes.h4}>
-                                <FormattedMessage id="Side2" />
-                            </h4>
-                        </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Limits" />
+                        </h3>
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item container xs={6} direction="column">
-                            {gridItem(permanentCurrentLimit1Field, 12)}
-                        </Grid>
-                        <Grid item container direction="column" xs={6}>
-                            {gridItem(permanentCurrentLimit2Field, 12)}
-                        </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side1" />
+                        </h4>
                     </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side2" />
+                        </h4>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item container xs={6} direction="column">
+                        {gridItem(permanentCurrentLimit1Field, 12)}
+                    </Grid>
+                    <Grid item container direction="column" xs={6}>
+                        {gridItem(permanentCurrentLimit2Field, 12)}
+                    </Grid>
+                </Grid>
+            </ModificationDialog>
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
@@ -460,13 +416,13 @@ const LineCreationDialog = ({
 
 LineCreationDialog.propTypes = {
     editData: PropTypes.object,
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
     currentNodeUuid: PropTypes.string,
+    onCreateLine: PropTypes.func,
+    displayConnectivity: PropTypes.bool,
 };
 
 export default LineCreationDialog;
