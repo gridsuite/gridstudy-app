@@ -142,7 +142,7 @@ const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const { snackError, snackWarning } = useSnackMessage();
+    const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
     const currentTreeNode = useSelector((state) => state.currentTreeNode);
 
@@ -162,7 +162,24 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
-    const closeDialog = () => {
+    const cleanClipboard = () => {
+        if (copiedModifications.length <= 0) return;
+        setCopiedModifications([]);
+        snackInfo({
+            messageId: 'CopiedModificationInvalidationMessage',
+        });
+    };
+
+    // TODO this is not complete.
+    // We should clean Clipboard on notifications when another user edit
+    // a modification on a public study which is in the clipboard.
+    // We don't have precision on notifications to do this for now.
+    const handleValidatedDialog = () => {
+        if (editData?.uuid && copiedModifications.includes(editData?.uuid))
+            cleanClipboard();
+    };
+
+    const handleCloseDialog = (e, reason) => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
@@ -171,7 +188,8 @@ const NetworkModificationNodeEditor = () => {
         return (
             <Dialog
                 open={true}
-                onClose={closeDialog}
+                onClose={handleCloseDialog}
+                onValidated={handleValidatedDialog}
                 currentNodeUuid={currentTreeNode.id}
                 editData={editData}
                 {...props}
