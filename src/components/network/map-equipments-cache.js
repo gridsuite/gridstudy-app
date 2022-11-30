@@ -217,15 +217,6 @@ export default class MapEquipments {
         this.completeLinesInfos();
     }
 
-    // TODO investigate turn this into a custom hook ?
-    useEquipment(equipment) {
-        const fetcher = this.lazyLoaders.get(equipment);
-        if (fetcher) return fetcher.fetch();
-        else {
-            console.error('not found ' + equipment);
-        }
-    }
-
     removeBranchesOfVoltageLevel(branchesList, voltageLevelId) {
         return branchesList.filter(
             (l) =>
