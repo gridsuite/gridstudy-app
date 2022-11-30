@@ -8,6 +8,7 @@
 export const equipments = {
     substations: 'substations',
     voltageLevels: 'voltageLevels',
+    voltageLevelsEquipments: 'voltage-levels-equipments',
     lines: 'lines',
     twoWindingsTransformers: 'twoWindingsTransformers',
     threeWindingsTransformers: 'threeWindingsTransformers',

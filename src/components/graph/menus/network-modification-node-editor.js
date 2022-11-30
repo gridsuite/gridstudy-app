@@ -184,51 +184,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLsAndEquipments(p) {
-        const voltageLevelsEquipmentsOptionsPromise =
-            fetchVoltageLevelsEquipments(studyUuid, currentTreeNode?.id);
-        return {
-            ...p,
-            voltageLevelsEquipmentsOptionsPromise:
-                voltageLevelsEquipmentsOptionsPromise,
-        };
-    }
-
-    function withVLs(p) {
-        const voltageLevelOptionsPromise = fetchVoltageLevels(
-            studyUuid,
-            currentTreeNode?.id
-        );
-        return {
-            ...p,
-            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
-        };
-    }
-
-    function withLines(p) {
-        const lineOptionsPromise = fetchLines(
-            studyUuid,
-            currentTreeNode?.id,
-            []
-        );
-        return {
-            ...p,
-            lineOptionsPromise: lineOptionsPromise,
-        };
-    }
-
-    function withSubstations(p) {
-        const substationOptionsPromise = fetchSubstations(
-            studyUuid,
-            currentTreeNode?.id,
-            []
-        );
-        return {
-            ...p,
-            substationOptionsPromise: substationOptionsPromise,
-        };
-    }
-
     function withEquipmentModificationOptions(Dialog, resourceType, resource) {
         const equipmentOptionsPromise = fetchEquipments(
             studyUuid,
@@ -252,7 +207,14 @@ const NetworkModificationNodeEditor = () => {
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
-            dialog: () => adapt(LoadCreationDialog, withVLs),
+            dialog: () =>
+                adapt(
+                    LoadCreationDialog,
+                    withEquipmentModificationOptions(
+                        'Voltage-levels',
+                        equipments.voltageLevels
+                    )
+                ),
             icon: <AddIcon />,
         },
         LOAD_MODIFICATION: {
@@ -268,7 +230,14 @@ const NetworkModificationNodeEditor = () => {
         GENERATOR_CREATION: {
             label: 'CreateGenerator',
             dialog: () =>
-                adapt(GeneratorCreationDialog, withVLs, withVLsAndEquipments),
+                adapt(
+                    GeneratorCreationDialog,
+                    withEquipmentModificationOptions(
+                        'Voltage-levels',
+                        equipments.voltageLevels
+                    ),
+                    withEquipmentModificationOptions
+                ),
             icon: <AddIcon />,
         },
         GENERATOR_MODIFICATION: {
@@ -283,12 +252,26 @@ const NetworkModificationNodeEditor = () => {
         },
         SHUNT_COMPENSATOR_CREATION: {
             label: 'CreateShuntCompensator',
-            dialog: () => adapt(ShuntCompensatorCreationDialog, withVLs),
+            dialog: () =>
+                adapt(
+                    ShuntCompensatorCreationDialog,
+                    withEquipmentModificationOptions(
+                        'Voltage-levels',
+                        equipments.voltageLevels
+                    )
+                ),
             icon: <AddIcon />,
         },
         LINE_CREATION: {
             label: 'CreateLine',
-            dialog: () => adapt(LineCreationDialog, withVLs),
+            dialog: () =>
+                adapt(
+                    LineCreationDialog,
+                    withEquipmentModificationOptions(
+                        'Voltage-levels',
+                        equipments.voltageLevels
+                    )
+                ),
             icon: <AddIcon />,
         },
         TWO_WINDINGS_TRANSFORMER_CREATION: {
@@ -296,25 +279,52 @@ const NetworkModificationNodeEditor = () => {
             dialog: () =>
                 adapt(
                     TwoWindingsTransformerCreationDialog,
-                    withVLs,
-                    withVLsAndEquipments
+                    withEquipmentModificationOptions(
+                        'Voltage-levels',
+                        equipments.voltageLevels
+                    ),
+                    withEquipmentModificationOptions(
+                        'Voltage-levels-equipments',
+                        equipments.voltageLevelsEquipments
+                    )
                 ),
             icon: <AddIcon />,
         },
         SUBSTATION_CREATION: {
             label: 'CreateSubstation',
-            dialog: () => adapt(SubstationCreationDialog, withVLs),
+            dialog: () =>
+                adapt(
+                    SubstationCreationDialog,
+                    withEquipmentModificationOptions(
+                        'Voltage-levels',
+                        equipments.voltageLevels
+                    )
+                ),
             icon: <AddIcon />,
         },
         VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
-            dialog: () => adapt(VoltageLevelCreationDialog, withSubstations),
+            dialog: () =>
+                adapt(
+                    VoltageLevelCreationDialog,
+                    withEquipmentModificationOptions(
+                        'Substations',
+                        equipments.substations
+                    )
+                ),
             icon: <AddIcon />,
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
             dialog: () =>
-                adapt(LineSplitWithVoltageLevelDialog, withVLs, withLines),
+                adapt(
+                    LineSplitWithVoltageLevelDialog,
+                    withEquipmentModificationOptions(
+                        'Voltage-levels',
+                        equipments.voltageLevels
+                    ),
+                    withEquipmentModificationOptions('Lines', equipments.lines)
+                ),
             icon: <AddIcon />,
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
@@ -322,9 +332,15 @@ const NetworkModificationNodeEditor = () => {
             dialog: () =>
                 adapt(
                     LineAttachToVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
+                    withEquipmentModificationOptions(
+                        'Voltage-levels',
+                        equipments.voltageLevels
+                    ),
+                    withEquipmentModificationOptions('Lines', equipments.lines),
+                    withEquipmentModificationOptions(
+                        'Substations',
+                        equipments.substations
+                    )
                 ),
             icon: <AddIcon />,
         },
@@ -333,9 +349,15 @@ const NetworkModificationNodeEditor = () => {
             dialog: () =>
                 adapt(
                     LinesAttachToSplitLinesDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
+                    withEquipmentModificationOptions(
+                        'Voltage-levels',
+                        equipments.voltageLevels
+                    ),
+                    withEquipmentModificationOptions('Lines', equipments.lines),
+                    withEquipmentModificationOptions(
+                        'Substations',
+                        equipments.substations
+                    )
                 ),
             icon: <AddIcon />,
         },
