@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { createTwoWindingsTransformer } from '../../../utils/rest-api';
 import {
     useButtonWithTooltip,
@@ -47,7 +47,10 @@ import {
     VoltageAdornment,
     sanitizeString,
 } from '../dialogUtils';
-import { REGULATION_MODES } from '../../network/constants';
+import {
+    REGULATION_MODES,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '../../network/constants';
 import { useBooleanValue } from '../inputs/boolean';
 import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import clsx from 'clsx';
@@ -61,7 +64,7 @@ export const RATIO_TAP = 'ratio';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid : the node we are currently working on
+ * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
  */
 
@@ -897,9 +900,11 @@ const TwoWindingsTransformerCreationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
                 connectivity1?.connectionName?.id ?? null,
-                connectivity1?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity1?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION,
                 connectivity2?.connectionName?.id ?? null,
-                connectivity2?.connectionDirection?.id ?? 'UNDEFINED'
+                connectivity2?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION
             ).catch((errorMessage) => {
                 snackError({
                     messageTxt: errorMessage,
@@ -1107,7 +1112,14 @@ const TwoWindingsTransformerCreationDialog = ({
                     <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button
+                        onClick={handleSave}
+                        disabled={
+                            !characteristicsInputForm.hasChanged &&
+                            !ratioTapInputForm.hasChanged &&
+                            !phaseTapInputForm.hasChanged
+                        }
+                    >
                         <FormattedMessage id="validate" />
                     </Button>
                 </DialogActions>

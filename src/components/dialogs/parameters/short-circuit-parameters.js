@@ -18,7 +18,7 @@ import {
     getShortCircuitParameters,
     setShortCircuitParameters,
 } from '../../../utils/rest-api';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LabelledSilder, LineSeparator } from '../dialogUtils';
 

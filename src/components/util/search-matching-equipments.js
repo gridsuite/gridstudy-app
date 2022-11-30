@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useParameterState } from '../dialogs/parameters/parameters';

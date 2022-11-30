@@ -15,7 +15,7 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { createGenerator } from '../../utils/rest-api';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     useButtonWithTooltip,
     useDoubleValue,
@@ -46,6 +46,7 @@ import {
     ENERGY_SOURCES,
     REACTIVE_LIMIT_TYPES,
     REGULATION_TYPES,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
@@ -500,7 +501,8 @@ const GeneratorCreationDialog = ({
                 isReactiveCapabilityCurveOn() ? null : maximumReactivePower,
                 isReactiveCapabilityCurveOn() ? null : minimumReactivePower,
                 isReactiveCapabilityCurveOn() ? reactiveCapabilityCurve : null,
-                connectivity?.connectionDirection?.id ?? 'UNDEFINED',
+                connectivity?.connectionDirection?.id ??
+                    UNDEFINED_CONNECTION_DIRECTION,
                 connectivity?.connectionName?.id ?? null
             ).catch((errorMessage) => {
                 snackError({

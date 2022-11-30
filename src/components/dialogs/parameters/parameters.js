@@ -25,7 +25,7 @@ import {
 
 import { updateConfigParameter } from '../../../utils/rest-api';
 
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
     SingleLineDiagramParameters,

@@ -11,7 +11,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { lighten, darken } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { updateTreeNode } from '../../../utils/rest-api';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EditableTitle } from './editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
