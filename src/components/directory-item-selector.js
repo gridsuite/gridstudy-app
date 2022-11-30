@@ -106,7 +106,6 @@ const DirectoryItemSelector = (props) => {
 
     const updateRootDirectories = useCallback(() => {
         fetchRootFolders().then((data) => {
-            console.log('fetched data : ', data);
             let [nrs, mdr] = updatedTree(
                 rootsRef.current,
                 nodeMap.current,
@@ -136,7 +135,6 @@ const DirectoryItemSelector = (props) => {
                         props.equipmentTypes &&
                         props.equipmentTypes.length > 0
                     ) {
-                        console.log('equipment type : ', props);
                         // filtering also with equipment types
                         fetchElementsMetadata(
                             childrenMatchedTypes.map((e) => e.elementUuid),
