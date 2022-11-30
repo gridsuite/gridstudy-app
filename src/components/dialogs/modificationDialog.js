@@ -54,7 +54,7 @@ const ModificationDialog = ({
     };
 
     // For the global Parent Component, disable close with backdropClick
-    // Then cancel the dialog for other reasons
+    // Then close the dialog for other reasons
     const handleClose = (event, reason) => {
         if (reason !== 'backdropClick') {
             closeAndClear(event, reason);
