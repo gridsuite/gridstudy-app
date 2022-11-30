@@ -2386,7 +2386,6 @@ export function getUniqueNodeName(studyUuid) {
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     console.info('Fetching elements metadata');
-    console.log('params : ', equipmentTypes, elementTypes);
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/elements/metadata?ids=' +
