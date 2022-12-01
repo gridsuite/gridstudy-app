@@ -62,7 +62,6 @@ import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import Papa from 'papaparse';
-import Grid from '@mui/material/Grid';
 import { useCSVReader } from 'react-papaparse';
 
 export const useInputForm = () => {
