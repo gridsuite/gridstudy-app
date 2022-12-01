@@ -7,7 +7,10 @@ import { NumericalField } from '../../network/equipment-table-editors';
 import { REGULATION_MODES } from '../../network/constants';
 import Papa from 'papaparse';
 import makeStyles from '@mui/styles/makeStyles';
-import { PHASE_TAP } from './two-windings-transformer-creation-dialog';
+import {
+    MAX_TAP_NUMBER,
+    PHASE_TAP,
+} from './two-windings-transformer-creation-dialog';
 import { CreateRuleDialog } from './create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import Alert from '@mui/material/Alert';
@@ -83,11 +86,11 @@ const PhaseTapChangerPane = (props) => {
     };
 
     const generateTapRows = () => {
-        if (highTapPosition > 100) {
+        if (highTapPosition > MAX_TAP_NUMBER) {
             setRatioError(
                 intl.formatMessage(
                     { id: 'TapPositionValueError' },
-                    { value: 100 }
+                    { value: MAX_TAP_NUMBER }
                 )
             );
             return;
@@ -225,7 +228,11 @@ const PhaseTapChangerPane = (props) => {
             });
             const parsedVal = parseFloat(newVal);
 
-            if (!isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100) {
+            if (
+                !isNaN(parsedVal) &&
+                parsedVal >= 0 &&
+                parsedVal <= MAX_TAP_NUMBER
+            ) {
                 let tempRows = phaseTapRows;
                 const column = rowData.dataKey;
                 tempRows[rowData.rowIndex][column] = parsedVal;
@@ -288,6 +295,15 @@ const PhaseTapChangerPane = (props) => {
         });
 
         return tableColumns;
+    };
+
+    const generateTableKey = () => {
+        // We generate a unique key for the table because when we change alpha value by creating a new rule for example,
+        // the table does not update only by scrolling. With this key we make sure it is updated when creating a new rule
+        return (
+            phaseTapRows[0]?.alpha +
+            phaseTapRows[phaseTapRows.length - 1]?.alpha
+        );
     };
 
     const getCSVColumns = () => {
@@ -408,6 +424,9 @@ const PhaseTapChangerPane = (props) => {
 
             tempRows.forEach((row, index) => {
                 tempRows[index].alpha = currentAlpha;
+
+                // When creating a new rule, the index does not change because we keep the same number of rows.
+                // We set the key to currentAlpha because it is unique, and we can't have duplicate
                 tempRows[index].key = currentAlpha;
                 currentAlpha += alphaInterval;
             });
@@ -491,10 +510,7 @@ const PhaseTapChangerPane = (props) => {
                         <VirtualizedTable
                             rows={phaseTapRows}
                             columns={generateTableColumns()}
-                            key={
-                                phaseTapRows[0]?.alpha +
-                                phaseTapRows[phaseTapRows.length - 1]?.alpha
-                            }
+                            key={generateTableKey()}
                         />
                     </Grid>
                     <Grid container item spacing={2} xs direction={'column'}>

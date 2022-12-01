@@ -47,6 +47,7 @@ import makeStyles from '@mui/styles/makeStyles';
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
+export const MAX_TAP_NUMBER = 100;
 
 const useStyles = makeStyles((theme) => ({
     tabWithError: {
@@ -546,7 +547,7 @@ const TwoWindingsTransformerCreationDialog = ({
             setPhaseTapRows(
                 Object.values(twt.phaseTapChanger?.steps).map((step) => {
                     return {
-                        key: step.rho,
+                        key: step.index,
                         tap: step.index,
                         resistance: step.r,
                         reactance: step.x,
@@ -669,6 +670,33 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     }, [editData]);
 
+    const validateTableRows = useCallback((rows, setCellIndexError, error) => {
+        if (rows.length > 1) {
+            if (rows[0].ratio === rows[1].ratio) {
+                setCellIndexError(1);
+                setCreationError(error);
+                return false;
+            } else if (rows[0].ratio < rows[1].ratio) {
+                for (let index = 0; index < rows.length - 1; index++) {
+                    if (rows[index].ratio >= rows[index + 1].ratio) {
+                        setCellIndexError(index + 1);
+                        setCreationError(error);
+                        return false;
+                    }
+                }
+            } else if (rows[0].ratio > rows[1].ratio) {
+                for (let index = 0; index < rows.length - 1; index++) {
+                    if (rows[index].ratio <= rows[index + 1].ratio) {
+                        setCellIndexError(index + 1);
+                        setCreationError(error);
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }, []);
+
     const validateTapRows = useCallback(() => {
         setCreationError();
         let creationError = '';
@@ -765,56 +793,15 @@ const TwoWindingsTransformerCreationDialog = ({
                 tabWithErrorList.push(DialogTab.RATIO_TAP_TAB);
             }
 
-            if (ratioTapRows.length > 1) {
-                if (ratioTapRows[0].ratio === ratioTapRows[1].ratio) {
-                    isFormValid = false;
-                    setRatioCellIndexError(1);
-                    setCreationError(
-                        intl.formatMessage({
-                            id: 'RatioValuesError',
-                        })
-                    );
-                } else if (ratioTapRows[0].ratio < ratioTapRows[1].ratio) {
-                    for (
-                        let index = 0;
-                        index < ratioTapRows.length - 1;
-                        index++
-                    ) {
-                        if (
-                            ratioTapRows[index].ratio >=
-                            ratioTapRows[index + 1].ratio
-                        ) {
-                            isFormValid = false;
-                            setRatioCellIndexError(index + 1);
-                            setCreationError(
-                                intl.formatMessage({
-                                    id: 'RatioValuesError',
-                                })
-                            );
-                            break;
-                        }
-                    }
-                } else if (ratioTapRows[0].ratio > ratioTapRows[1].ratio) {
-                    for (
-                        let index = 0;
-                        index < ratioTapRows.length - 1;
-                        index++
-                    ) {
-                        if (
-                            ratioTapRows[index].ratio <=
-                            ratioTapRows[index + 1].ratio
-                        ) {
-                            isFormValid = false;
-                            setRatioCellIndexError(index + 1);
-                            setCreationError(
-                                intl.formatMessage({
-                                    id: 'RatioValuesError',
-                                })
-                            );
-                            break;
-                        }
-                    }
-                }
+            if (
+                !validateTableRows(
+                    ratioTapRows,
+                    setRatioCellIndexError,
+                    intl.formatMessage({ id: 'RatioValuesError' })
+                )
+            ) {
+                isFormValid = false;
+                tabWithErrorList.push(DialogTab.RATIO_TAP_TAB);
             }
         }
 
@@ -836,56 +823,15 @@ const TwoWindingsTransformerCreationDialog = ({
                 tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
             }
 
-            if (phaseTapRows.length > 1) {
-                if (phaseTapRows[0].ratio === phaseTapRows[1].ratio) {
-                    isFormValid = false;
-                    setPhaseCellIndexError(1);
-                    setCreationError(
-                        intl.formatMessage({
-                            id: 'PhaseShiftValuesError',
-                        })
-                    );
-                } else if (phaseTapRows[0].ratio < phaseTapRows[1].ratio) {
-                    for (
-                        let index = 0;
-                        index < phaseTapRows.length - 1;
-                        index++
-                    ) {
-                        if (
-                            phaseTapRows[index].ratio >=
-                            phaseTapRows[index + 1].ratio
-                        ) {
-                            isFormValid = false;
-                            setPhaseCellIndexError(index + 1);
-                            setCreationError(
-                                intl.formatMessage({
-                                    id: 'PhaseShiftValuesError',
-                                })
-                            );
-                            break;
-                        }
-                    }
-                } else if (phaseTapRows[0].ratio > phaseTapRows[1].ratio) {
-                    for (
-                        let index = 0;
-                        index < phaseTapRows.length - 1;
-                        index++
-                    ) {
-                        if (
-                            phaseTapRows[index].ratio <=
-                            phaseTapRows[index + 1].ratio
-                        ) {
-                            isFormValid = false;
-                            setPhaseCellIndexError(index + 1);
-                            setCreationError(
-                                intl.formatMessage({
-                                    id: 'PhaseShiftValuesError',
-                                })
-                            );
-                            break;
-                        }
-                    }
-                }
+            if (
+                !validateTableRows(
+                    phaseTapRows,
+                    setPhaseCellIndexError,
+                    intl.formatMessage({ id: 'PhaseShiftValuesError' })
+                )
+            ) {
+                isFormValid = false;
+                tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
             }
         }
         setTabIndexesWithError(tabWithErrorList);

@@ -6,7 +6,10 @@ import { gridItem } from '../dialogUtils';
 import { NumericalField } from '../../network/equipment-table-editors';
 import Papa from 'papaparse';
 import makeStyles from '@mui/styles/makeStyles';
-import { RATIO_TAP } from './two-windings-transformer-creation-dialog';
+import {
+    MAX_TAP_NUMBER,
+    RATIO_TAP,
+} from './two-windings-transformer-creation-dialog';
 import { CreateRuleDialog } from './create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import Alert from '@mui/material/Alert';
@@ -80,11 +83,11 @@ const RatioTapChangerPane = (props) => {
     };
 
     const generateTapRows = () => {
-        if (highTapPosition > 100) {
+        if (highTapPosition > MAX_TAP_NUMBER) {
             setRatioError(
                 intl.formatMessage(
                     { id: 'TapPositionValueError' },
-                    { value: 100 }
+                    { value: MAX_TAP_NUMBER }
                 )
             );
             return;
@@ -226,7 +229,11 @@ const RatioTapChangerPane = (props) => {
             });
             const parsedVal = parseFloat(newVal);
 
-            if (!isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100) {
+            if (
+                !isNaN(parsedVal) &&
+                parsedVal >= 0 &&
+                parsedVal <= MAX_TAP_NUMBER
+            ) {
                 let tempRows = ratioTapRows;
                 const column = rowData.dataKey;
                 tempRows[rowData.rowIndex][column] = parsedVal;
@@ -288,6 +295,15 @@ const RatioTapChangerPane = (props) => {
         return tableColumns;
     };
 
+    const generateTableKey = () => {
+        // We generate a unique key for the table because when we change alpha value by creating a new rule for example,
+        // the table does not update only by scrolling. With this key we make sure it is updated when creating a new rule
+        return (
+            ratioTapRows[0]?.ratio +
+            ratioTapRows[ratioTapRows.length - 1]?.ratio
+        );
+    };
+
     const getCSVColumns = () => {
         return [
             intl.formatMessage({ id: 'Tap' }),
@@ -309,8 +325,13 @@ const RatioTapChangerPane = (props) => {
             header: true,
             skipEmptyLines: true,
             complete: function (results) {
-                if (results.data.length > 100) {
-                    setFileParseError('100 is max');
+                if (results.data.length > MAX_TAP_NUMBER) {
+                    setFileParseError(
+                        intl.formatMessage(
+                            { id: 'TapPositionValueError' },
+                            { value: MAX_TAP_NUMBER }
+                        )
+                    );
                     return;
                 }
                 let rows = results.data.map((val) => {
@@ -390,6 +411,9 @@ const RatioTapChangerPane = (props) => {
 
             tempRows.forEach((row, index) => {
                 tempRows[index].ratio = currentRatio;
+
+                // When creating a new rule, the index does not change because we keep the same number of rows.
+                // We set the key to currentRatio because it is unique, and we can't have duplicate
                 tempRows[index].key = currentRatio;
                 currentRatio += ratioInterval;
             });
@@ -471,10 +495,7 @@ const RatioTapChangerPane = (props) => {
                         <VirtualizedTable
                             rows={ratioTapRows}
                             columns={generateTableColumns()}
-                            key={
-                                ratioTapRows[0]?.ratio +
-                                ratioTapRows[ratioTapRows.length - 1]?.ratio
-                            }
+                            key={generateTableKey()}
                         />
                     </Grid>
                     <Grid container item spacing={2} xs direction={'column'}>
