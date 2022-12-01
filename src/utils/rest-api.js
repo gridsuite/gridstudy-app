@@ -698,12 +698,22 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
     console.info('updating switch ' + switchId + ' ...');
     const updateSwitchUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/switches/' +
-        encodeURIComponent(switchId) +
-        '?' +
-        new URLSearchParams({ open: open }).toString();
+        '/network-modifications';
     console.debug(updateSwitchUrl);
-    return backendFetch(updateSwitchUrl, { method: 'put' });
+    return backendFetch(updateSwitchUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/text',
+        },
+        body: JSON.stringify({
+            type: 'EQUIPMENT_ATTRIBUTE_MODIFICATION',
+            equipmentType: 'SWITCH',
+            equipmentId: switchId,
+            equipmentAttributeName: "open",
+            equipmentAttributeValue: open,
+        }),
+    });
 }
 
 export function startLoadFlow(studyUuid, currentNodeUuid) {
@@ -1311,11 +1321,11 @@ export function fetchAppsAndUrls() {
 }
 
 export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
-    console.info('Creating groovy script');
+    console.info('Creating groovy script (request network change)');
     const changeUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
-
+    console.debug(changeUrl);
     return backendFetch(changeUrl, {
         method: 'POST',
         headers: {
