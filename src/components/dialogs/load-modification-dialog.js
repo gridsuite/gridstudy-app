@@ -4,15 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Button from '@mui/material//Button';
-import Dialog from '@mui/material//Dialog';
-import DialogActions from '@mui/material//DialogActions';
-import DialogContent from '@mui/material//DialogContent';
-import DialogTitle from '@mui/material//DialogTitle';
+import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { modifyLoad } from '../../utils/rest-api';
@@ -41,18 +37,16 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
 /**
  * Dialog to modify a load in the network
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param equipmentOptionsPromise Promise handling list of loads that can be modified
  * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LoadModificationDialog = ({
     editData,
-    open,
-    onClose,
     currentNodeUuid,
     equipmentOptionsPromise,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -162,95 +156,64 @@ const LoadModificationDialog = ({
         clearable: true,
     });
 
-    const handleSave = () => {
-        if (inputForm.validate()) {
-            modifyLoad(
-                studyUuid,
-                currentNodeUuid,
-                loadInfos?.id,
-                sanitizeString(loadName),
-                loadType,
-                activePower,
-                reactivePower,
-                undefined,
-                undefined,
-                editData ? true : false,
-                editData ? editData.uuid : undefined
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'LoadModificationError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+    const handleValidation = () => {
+        return inputForm.validate();
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        modifyLoad(
+            studyUuid,
+            currentNodeUuid,
+            loadInfos?.id,
+            sanitizeString(loadName),
+            loadType,
+            activePower,
+            reactivePower,
+            undefined,
+            undefined,
+            editData ? true : false,
+            editData ? editData.uuid : undefined
+        ).catch((errorMessage) => {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'LoadModificationError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
+    const clear = () => {
+        inputForm.reset();
         setFormValues(null);
-        handleClose();
     };
 
     return (
-        <>
-            <Dialog
-                fullWidth
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-modify-load"
-                maxWidth={'md'}
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={12}>
-                            <FormattedMessage id="ModifyLoad" />
-                        </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <Grid container spacing={2}>
-                        {gridItem(loadIdField, 4)}
-                        {gridItem(loadNameField, 4)}
-                        {gridItem(loadTypeField, 4)}
-                    </Grid>
-                    <GridSection title="Setpoints" />
-                    <Grid container spacing={2}>
-                        {gridItem(activePowerField, 4)}
-                        {gridItem(reactivePowerField, 4)}
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear} variant="text">
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        variant="text"
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
+        <ModificationDialog
+            fullWidth
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            aria-labelledby="dialog-modify-load"
+            maxWidth={'md'}
+            titleId="ModifyLoad"
+            {...dialogProps}
+        >
+            <Grid container spacing={2}>
+                {gridItem(loadIdField, 4)}
+                {gridItem(loadNameField, 4)}
+                {gridItem(loadTypeField, 4)}
+            </Grid>
+            <GridSection title="Setpoints" />
+            <Grid container spacing={2}>
+                {gridItem(activePowerField, 4)}
+                {gridItem(reactivePowerField, 4)}
+            </Grid>
+        </ModificationDialog>
     );
 };
 
 LoadModificationDialog.propTypes = {
     editData: PropTypes.object,
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     currentNodeUuid: PropTypes.string,
     equipmentOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
