@@ -44,7 +44,7 @@ export default class GeoData {
     getSubstationPosition(substation, currentNode, studyUuid) {
         const position = this.substationPositionsById.get(substation);
         if (!position) {
-            console.info(`Position not found for ${substation}`);
+            console.warn(`Position not found for ${substation}`);
             if (currentNode && studyUuid) {
                 return fetchSubstationPositionsByIds(
                     studyUuid,
