@@ -27,7 +27,7 @@ export const TapChangerSelector = ({
 }) => {
     return (
         <Select
-            defaultValue={defaultValue.tapPosition}
+            defaultValue={tapChanger.tapPosition}
             onChange={(ev) => {
                 setter({ ...tapChanger, tapPosition: ev.target.value });
             }}
@@ -49,9 +49,9 @@ export const TapChangerSelector = ({
             ].map((step, index) => (
                 <MenuItem
                     key={'tapChanger' + index}
-                    value={index + defaultValue.lowTapPosition}
+                    value={index + tapChanger.lowTapPosition}
                 >
-                    {index + defaultValue.lowTapPosition}
+                    {index + tapChanger.lowTapPosition}
                 </MenuItem>
             ))}
         </Select>
