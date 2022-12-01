@@ -1149,29 +1149,35 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     );
 }
 
-export function duplicateModifications(
+export function copyOrMoveModifications(
     studyUuid,
     targetNodeId,
-    modificationsIdList
+    modificationToCutUuidList,
+    copyInfos
 ) {
-    console.info('duplicate and append modifications');
-    const duplicateModificationUrl =
+    console.info(copyInfos.copyType + ' modifications');
+    const copyOrMoveModificationUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
-        encodeURIComponent(targetNodeId);
+        encodeURIComponent(targetNodeId) +
+        '?' +
+        new URLSearchParams({
+            action: copyInfos.copyType,
+            originNodeUuid: copyInfos.originNodeUuid ?? '',
+        });
 
-    return backendFetch(duplicateModificationUrl, {
+    return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modificationsIdList),
+        body: JSON.stringify(modificationToCutUuidList),
     }).then((response) =>
         response.ok
-            ? response.json()
+            ? response.text()
             : response.text().then((text) => Promise.reject(text))
     );
 }

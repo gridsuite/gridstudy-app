@@ -90,7 +90,7 @@ import {
 } from './network/config-tables';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
-import { useSnackMessage } from '../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { StudyContainer } from './study-container';
 
 const noUserManager = { instance: null, error: null };

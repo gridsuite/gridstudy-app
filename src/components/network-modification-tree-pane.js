@@ -29,7 +29,7 @@ import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import { useIntlRef, useSnackMessage } from '../utils/messages';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
@@ -298,7 +298,6 @@ export const NetworkModificationTreePane = ({
     }, []);
 
     const closeCreateNodeMenu = useCallback(() => {
-        // setActiveNode(null);
         setCreateNodeMenu({
             display: false,
         });
