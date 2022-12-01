@@ -312,7 +312,7 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                valueGreaterThan: '-1',
+                valueGreaterThan: '0',
                 errorMsgId: 'TargetDeadbandGreaterThanZero',
             },
             adornment: VoltageAdornment,
