@@ -329,12 +329,8 @@ export function SingleLineDiagramPane({
         }
 
         if (displayedHeights.length > 0) {
-            console.log(displayedHeights);
             const highestHeight = Math.max(...displayedHeights);
-            console.log(highestHeight);
-
             if (highestHeight !== computedHeight) {
-                console.log('NEW COMPUTED HEIGHT');
                 setComputedHeight(highestHeight);
             }
         }
