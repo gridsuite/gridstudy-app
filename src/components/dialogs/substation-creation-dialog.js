@@ -4,20 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { createSubstation } from '../../utils/rest-api';
 import {
-    useButtonWithTooltip,
     useCountryValue,
     useInputForm,
     useTextValue,
@@ -28,16 +22,14 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 
 /**
  * Dialog to create a substation in the network
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param currentNodeUuid : the currently selected tree node
  * @param editData the data to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const SubstationCreationDialog = ({
-    open,
-    onClose,
     currentNodeUuid,
     editData,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -64,11 +56,6 @@ const SubstationCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-    });
-
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     useEffect(() => {
@@ -102,77 +89,50 @@ const SubstationCreationDialog = ({
         defaultLabelValue: formValues?.substationCountryLabel ?? null,
     });
 
-    const handleSave = () => {
-        if (inputForm.validate()) {
-            createSubstation(
-                studyUuid,
-                currentNodeUuid,
-                substationId,
-                sanitizeString(substationName),
-                substationCountry,
-                editData ? true : false,
-                editData ? editData.uuid : undefined
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'SubstationCreationError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+    const handleValidation = () => {
+        return inputForm.validate();
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        createSubstation(
+            studyUuid,
+            currentNodeUuid,
+            substationId,
+            sanitizeString(substationName),
+            substationCountry,
+            editData ? true : false,
+            editData ? editData.uuid : undefined
+        ).catch((errorMessage) => {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'SubstationCreationError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
+    const clear = () => {
+        inputForm.reset();
         setFormValues(null);
-        handleClose();
     };
 
     return (
-        <>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-create-substation"
-                fullWidth={true}
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
-                            <FormattedMessage id="CreateSubstation" />
-                        </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <Grid container spacing={2}>
-                        {gridItem(substationIdField, 4)}
-                        {gridItem(substationNameField, 4)}
-                        {gridItem(substationCountryField, 4)}
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
+        <ModificationDialog
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            aria-labelledby="dialog-create-substation"
+            fullWidth={true}
+            titleId="CreateSubstation"
+            searchCopy={searchCopy}
+            {...dialogProps}
+        >
+            <Grid container spacing={2}>
+                {gridItem(substationIdField, 4)}
+                {gridItem(substationNameField, 4)}
+                {gridItem(substationCountryField, 4)}
+            </Grid>
+
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
@@ -180,14 +140,12 @@ const SubstationCreationDialog = ({
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />
-        </>
+        </ModificationDialog>
     );
 };
 
 SubstationCreationDialog.propTypes = {
     editData: PropTypes.object,
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     currentNodeUuid: PropTypes.string,
 };
 
