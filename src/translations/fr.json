@@ -626,5 +626,8 @@
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
-    "Bottom": "Bas"
+    "Bottom": "Bas",
+    "RevertConnectVoltageLevelOnLineError": "Erreur lors de la suppression de coupure",
+    "RevertConnectVoltageLevelOnLine": "Supprimer une coupure",
+    "ReplacingLine": "Liaison de remplacement"
 }

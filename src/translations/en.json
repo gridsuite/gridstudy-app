@@ -624,5 +624,8 @@
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
-    "Bottom": "Bottom"
+    "Bottom": "Bottom",
+    "RevertConnectVoltageLevelOnLineError": "Error while reverting a connexion from voltage level on a line",
+    "RevertConnectVoltageLevelOnLine": "Reverting connect voltage level on a line",
+    "ReplacingLine": "Replacing line"
 }

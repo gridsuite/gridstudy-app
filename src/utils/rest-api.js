@@ -2397,3 +2397,48 @@ export function fetchElementsMetadata(ids) {
         response.json()
     );
 }
+
+export function revertConnectVoltageLevelOnLine(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    replacingLine1Id,
+    replacingLine1Name
+) {
+    const body = JSON.stringify({
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        replacingLine1Id,
+        replacingLine1Name,
+    });
+
+    let lineAttachUrl;
+    if (modificationUuid) {
+        console.info('Revert connect voltage level on line update', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/revert-connect-voltage-level-on-line';
+    } else {
+        console.info('Revert connect voltage level on line create', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/revert-connect-voltage-level-on-line';
+    }
+
+    return backendFetch(lineAttachUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}

@@ -19,5 +19,6 @@
     "network_modifications/creatingModification": "Création de l'hypothèse en cours ...",
     "network_modifications/deletingModification": "Supression de l'hypothèse en cours ...",
     "network_modifications/updatingModification": "Mise à jour de l'hypothèse en cours ...",
-    "network_modifications/modifications": "Mise à jour de la liste des hypothèses en cours ..."
+    "network_modifications/modifications": "Mise à jour de la liste des hypothèses en cours ...",
+    "network_modifications/REVERT_CONNECT_VOLTAGE_LEVEL_ON_LINE": "Suppression d'une coupure {computedLabel}"
 }

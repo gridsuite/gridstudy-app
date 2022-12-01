@@ -61,6 +61,7 @@ import {
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
+import RevertConnectVoltageLevelOnLineDialog from '../../dialogs/RevertConnectVoltageLevelOnLineDialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -334,6 +335,16 @@ const NetworkModificationNodeEditor = () => {
                 adapt(
                     LinesAttachToSplitLinesDialog,
                     withVLs,
+                    withLines,
+                    withSubstations
+                ),
+            icon: <AddIcon />,
+        },
+        REVERT_CONNECT_VOLTAGE_LEVEL_ON_LINE: {
+            label: 'RevertConnectVoltageLevelOnLine',
+            dialog: () =>
+                adapt(
+                    RevertConnectVoltageLevelOnLineDialog,
                     withLines,
                     withSubstations
                 ),
