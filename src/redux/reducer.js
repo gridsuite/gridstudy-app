@@ -499,7 +499,7 @@ export const reducer = createReducer(initialState, {
     [CURRENT_TREE_NODE]: (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
         // current node has changed, then will need to reload Geo Data
-        state.reloadMap = true;
+        // state.reloadMap = true;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
