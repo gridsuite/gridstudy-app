@@ -1294,8 +1294,9 @@ function generateTapRequest(type, leg) {
         '.get' +
         type +
         'TapChanger()\n' +
-        'if (tap.getLowTapPosition() <= {} && {} <= tap.getHighTapPosition() ) { \n' +
-        '    tap.setTapPosition({})\n' +
+        'value = {}\n' +
+        'if (tap.getLowTapPosition() <= value.getTapPosition && value.getTapPosition <= tap.getHighTapPosition() ) { \n' +
+        '    tap.setTapPosition(value.getTapPosition)\n' +
         // to force update of transformer as sub elements changes like tapChanger are not detected
         '    equipment.setFictitious(equipment.isFictitious())\n' +
         '} else {\n' +

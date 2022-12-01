@@ -25,10 +25,18 @@ export const TapChangerSelector = ({
     defaultValue,
     ...props
 }) => {
+    useEffect(() => {
+        console.log('default value : ', defaultValue);
+        console.log('tab changer : ', tapChanger);
+    }, [defaultValue, tapChanger]);
+    const [selectedValue, setSelectedValue] = useState(defaultValue.tapPosition)
     return (
         <Select
-            defaultValue={defaultValue}
-            onChange={(ev) => setter(ev.target.value)}
+            defaultValue={selectedValue}
+            onChange={(ev) => {
+                setter({...tapChanger, tapPosition: ev.target.value});
+                setSelectedValue(ev.target.value);
+            }}
             size={'medium'}
             margin={'none'}
             MenuProps={{
