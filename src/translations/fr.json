@@ -122,7 +122,6 @@
     "TargetQ": "Q consigne (MW)",
     "RatioTap": "Prise régleur",
     "PhaseTap": "Prise déphaseur",
-
     "RatioTap1": "Plot régleur 1",
     "PhaseTap1": "Plot déphaseur 1",
     "RatioTap2": "Plot régleur 2",
@@ -469,7 +468,6 @@
     "LineAttachToVoltageLevel": "Créer un piquage",
     "LinesAttachToSplitLines": "Piquage en coupure",
     "LineToAttachTo": "Liaison piquée",
-    "LengthPercentage": "% long.",
     "OutOfBoundsPercentage": "Pourcentage en dehors des limites",
     "BusbarOrNodeID": "ID SJB ou nœud",
     "Line1": "Liaison origine",
