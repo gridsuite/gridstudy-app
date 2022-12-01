@@ -7,7 +7,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import List from '@mui/material/List';
 import PropTypes from 'prop-types';
-import { isEqual } from './is-object-equals';
 
 const CheckboxList = ({
     itemRenderer,
@@ -24,7 +23,7 @@ const CheckboxList = ({
         const newChecked = new Set(
             [...checked].filter((element) => {
                 for (const existingValue of existingValues) {
-                    if (isEqual(element, existingValue)) {
+                    if (element?.uuid === existingValue?.uuid) {
                         return true;
                     }
                 }
@@ -53,7 +52,7 @@ const CheckboxList = ({
             const newChecked = new Set(checked);
             let valueToDelete = undefined;
             for (const e of newChecked) {
-                if (isEqual(e, value)) {
+                if (e?.uuid === value?.uuid) {
                     valueToDelete = e;
                     break;
                 }
@@ -75,7 +74,7 @@ const CheckboxList = ({
 
     const isCheckboxInCheckedSet = (checkedSet, checkBoxToCheck) => {
         for (const element of checkedSet) {
-            if (isEqual(element, checkBoxToCheck)) {
+            if (element?.uuid === checkBoxToCheck?.uuid) {
                 return true;
             }
         }
