@@ -23,7 +23,7 @@ import {
     getSensiDefaultResultsThreshold,
     updateConfigParameter,
 } from '../../../utils/rest-api';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import DialogActions from '@mui/material/DialogActions';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSensitivityFactors } from './sensitivity-factors';
