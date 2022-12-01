@@ -25,17 +25,11 @@ export const TapChangerSelector = ({
     defaultValue,
     ...props
 }) => {
-    useEffect(() => {
-        console.log('default value : ', defaultValue);
-        console.log('tab changer : ', tapChanger);
-    }, [defaultValue, tapChanger]);
-    const [selectedValue, setSelectedValue] = useState(defaultValue.tapPosition)
     return (
         <Select
-            defaultValue={selectedValue}
+            defaultValue={defaultValue.tapPosition}
             onChange={(ev) => {
-                setter({...tapChanger, tapPosition: ev.target.value});
-                setSelectedValue(ev.target.value);
+                setter({ ...tapChanger, tapPosition: ev.target.value });
             }}
             size={'medium'}
             margin={'none'}
@@ -55,9 +49,9 @@ export const TapChangerSelector = ({
             ].map((step, index) => (
                 <MenuItem
                     key={'tapChanger' + index}
-                    value={index + tapChanger.lowTapPosition}
+                    value={index + defaultValue.lowTapPosition}
                 >
-                    {index + tapChanger.lowTapPosition}
+                    {index + defaultValue.lowTapPosition}
                 </MenuItem>
             ))}
         </Select>
