@@ -816,6 +816,25 @@ const TwoWindingsTransformerCreationDialog = ({
                     }
                 }
             }
+        }
+
+        if (phaseTapChangerEnabled && !phaseTapInputForm.validate()) {
+            isFormValid = false;
+            tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
+        } else if (phaseTapChangerEnabled && phaseTapInputForm.validate()) {
+            if (
+                phaseTapRegulating &&
+                (!phaseTapRegulatingTerminal?.equipmentSection ||
+                    !phaseTapRegulatingTerminal?.voltageLevel)
+            ) {
+                setCreationError(
+                    intl.formatMessage({
+                        id: 'IncoherentPhaseRegulatingTerminalError',
+                    })
+                );
+                isFormValid = false;
+                tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
+            }
 
             if (phaseTapRows.length > 1) {
                 if (phaseTapRows[0].ratio === phaseTapRows[1].ratio) {
@@ -867,36 +886,6 @@ const TwoWindingsTransformerCreationDialog = ({
                         }
                     }
                 }
-            }
-
-            let formatedRatioTapSteps = ratioTapRows.map((row) => {
-                return {
-                    index: row.tap,
-                    r: row.resistance,
-                    x: row.reactance,
-                    g: row.conductance,
-                    b: row.susceptance,
-                    rho: row.ratio,
-                };
-            });
-        }
-
-        if (phaseTapChangerEnabled && !phaseTapInputForm.validate()) {
-            isFormValid = false;
-            tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
-        } else if (phaseTapChangerEnabled && phaseTapInputForm.validate()) {
-            if (
-                phaseTapRegulating &&
-                (!phaseTapRegulatingTerminal?.equipmentSection ||
-                    !phaseTapRegulatingTerminal?.voltageLevel)
-            ) {
-                setCreationError(
-                    intl.formatMessage({
-                        id: 'IncoherentPhaseRegulatingTerminalError',
-                    })
-                );
-                isFormValid = false;
-                tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
             }
         }
         setTabIndexesWithError(tabWithErrorList);
