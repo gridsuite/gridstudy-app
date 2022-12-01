@@ -36,8 +36,6 @@ export default class GeoData {
     }
 
     addSubstationPositions(positions) {
-        console.info('Position to add', positions);
-        // index positions by substation id
         positions.forEach((pos) =>
             this.substationPositionsById.set(pos.id, pos.coordinate)
         );

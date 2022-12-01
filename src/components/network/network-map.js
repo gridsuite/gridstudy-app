@@ -92,17 +92,17 @@ const NetworkMap = (props) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const currentNodeRef = useRef(currentNode);
-
-    const studyUuidRef = useRef(studyUuid);
-
-    useEffect(() => {
-        currentNodeRef.current = currentNode
-    }, [currentNode]);
-
-    useEffect(() => {
-        studyUuidRef.current = studyUuid
-    }, [studyUuid]);
+    // const currentNodeRef = useRef(currentNode);
+    //
+    // const studyUuidRef = useRef(studyUuid);
+    //
+    // useEffect(() => {
+    //     currentNodeRef.current = currentNode;
+    // }, [currentNode]);
+    //
+    // useEffect(() => {
+    //     studyUuidRef.current = studyUuid;
+    // }, [studyUuid]);
 
     const classes = useStyles();
 
@@ -334,13 +334,14 @@ const NetworkMap = (props) => {
         props.filteredNominalVoltages !== null &&
         !props.disabled
     ) {
+        console.info('in the network map');
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
                 data: props.substations,
                 network: props.network,
-                currentNode: currentNodeRef.current,
-                studyUuid: studyUuidRef.current,
+                currentNode: currentNode,
+                studyUuid: studyUuid,
                 geoData: props.geoData,
                 useName: props.useName,
                 getNominalVoltageColor: getNominalVoltageColor,

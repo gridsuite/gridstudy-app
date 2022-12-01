@@ -14,7 +14,6 @@ import {
     SUBSTATION_RADIUS_MIN_PIXEL,
 } from './constants';
 import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
-import { useSelector } from 'react-redux';
 
 const voltageLevelNominalVoltageIndexer = (map, voltageLevel) => {
     let list = map.get(voltageLevel.nominalVoltage);
@@ -143,7 +142,8 @@ class SubstationLayer extends CompositeLayer {
                         (metaVoltageLevel.nominalVoltageIndex + 1),
                     getPosition: (metaVoltageLevel) =>
                         this.props.geoData.getSubstationPosition(
-                            metaVoltageLevel.voltageLevels[0].substationId, this.props.currentNode,
+                            metaVoltageLevel.voltageLevels[0].substationId,
+                            this.props.currentNode,
                             this.props.studyUuid
                         ),
                     getFillColor: this.props.getNominalVoltageColor(

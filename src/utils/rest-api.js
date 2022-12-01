@@ -362,7 +362,6 @@ export function fetchSubstationPositionsByIds(
     currentNodeUuid,
     substationsIds
 ) {
-    console.info('SUBSTATIONS BY IDS');
     console.info(
         `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );

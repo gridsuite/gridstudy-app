@@ -6,7 +6,7 @@
  */
 
 import NetworkMap from './network/network-map';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchLinePositions,
@@ -29,11 +29,7 @@ import {
 } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
-import {
-    isNodeBuilt,
-    isNodeReadOnly,
-    isNodeRenamed,
-} from './graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
 import { resetMapReloaded, setForceNetworkReload } from '../redux/actions';
 
@@ -238,10 +234,7 @@ export const NetworkMapTab = ({
     }, [dispatch, loadMapGeoData]);
 
     const procLoadGeoData =
-        reloadMapNeeded &&
-        !(mapManualRefresh && isInitialized) &&
-        !disabled ;
-
+        reloadMapNeeded && !(mapManualRefresh && isInitialized) && !disabled;
 
     useEffect(() => {
         if (!procLoadGeoData) return;
