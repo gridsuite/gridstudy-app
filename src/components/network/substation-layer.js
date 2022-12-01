@@ -130,6 +130,7 @@ class SubstationLayer extends CompositeLayer {
 
     renderLayers() {
         const layers = [];
+
         // substations : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.metaVoltageLevelsByNominalVoltage.forEach((e) => {
             const substationsLayer = new ScatterplotLayerExt(

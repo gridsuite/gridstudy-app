@@ -334,7 +334,6 @@ const NetworkMap = (props) => {
         props.filteredNominalVoltages !== null &&
         !props.disabled
     ) {
-        console.info('in the network map');
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,

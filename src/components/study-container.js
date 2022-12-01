@@ -428,7 +428,6 @@ export function StudyContainer({ view, onChangeTab }) {
             console.info(`Loading network of study '${studyUuid}'...`);
 
             if (isUpdate) {
-                console.info('C est un UPDATE');
                 // After a load flow, network has to be recreated.
                 // In order to avoid glitches during sld and map rendering,
                 // lines and substations have to be prefetched and set before network creation event is dispatched
@@ -443,7 +442,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     }
                 );
             } else {
-                console.info('C est un INIT');
                 const network = new Network(
                     studyUuid,
                     currentNode?.id,
@@ -535,7 +533,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUuid, loadTree]);
 
-    // handles map automatic mode network reload
+    //handles map automatic mode network reload
     useEffect(() => {
         if (!wsConnected) return;
         let previousCurrentNode = currentNodeRef.current;
@@ -546,7 +544,6 @@ export function StudyContainer({ view, onChangeTab }) {
         if (!isNodeBuilt(currentNode)) return;
         loadNetwork(true);
     }, [loadNetwork, currentNode, mapManualRefresh, wsConnected]);
-    // }, [ currentNode, mapManualRefresh, wsConnected, dispatch]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
@@ -714,15 +711,10 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
             ) {
-                console.info(
-                    'studyUpdatedForce.eventData',
-                    studyUpdatedForce.eventData
-                );
                 //when in manuel refresh mode the network is not partially updated
                 if (refIsNetworkRefreshNeeded.current) {
                     dispatch(setNetworkReloadNeeded());
                 } else {
-                    console.info('studyUpdatedForce.study partial update');
                     // study partial update :
                     // loading equipments involved in the study modification and updating the network
                     const substationsIds =
@@ -732,7 +724,6 @@ export function StudyContainer({ view, onChangeTab }) {
                         substationsIds.length - 1
                     ); // removing square brackets
                     if (tmp && tmp.length > 0) {
-                        console.info("updateNetwork(tmp.split(', '));");
                         updateNetwork(tmp.split(', '));
                     }
 
