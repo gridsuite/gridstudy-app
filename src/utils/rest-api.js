@@ -1172,7 +1172,7 @@ export function copyOrMoveModifications(
     copyInfos
 ) {
     console.info(copyInfos.copyType + ' modifications');
-    const cutAndPasteModificationUrl =
+    const copyOrMoveModificationUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
@@ -1184,7 +1184,7 @@ export function copyOrMoveModifications(
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
-    return backendFetch(cutAndPasteModificationUrl, {
+    return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',

@@ -523,14 +523,25 @@ const NetworkModificationNodeEditor = () => {
                 copiedModifications,
                 copyInfos
             )
-                .then(() => {
+                .then((message) => {
+                    let modificationsInFailure = JSON.parse(message);
+                    if (modificationsInFailure.length > 0) {
+                        console.warn(
+                            'Modifications not moved:',
+                            modificationsInFailure
+                        );
+                        snackWarning({
+                            messageTxt: modificationsInFailure.length,
+                            headerId: 'warnCutModificationMsg',
+                        });
+                    }
                     setCopyInfos(null);
                     setCopiedModifications([]);
                 })
                 .catch((errmsg) => {
                     snackError({
                         messageTxt: errmsg,
-                        headerId: 'errDuplicateModificationMsg',
+                        headerId: 'errCutModificationMsg',
                     });
                 });
         } else {
