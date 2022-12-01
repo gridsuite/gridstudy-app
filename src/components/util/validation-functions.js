@@ -173,7 +173,7 @@ export function validateField(value, toValidate, disabled = false) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
-    
+
     if (toValidate.isValueGreaterOrEqualThan !== undefined) {
         if (value && toValidate.isValueGreaterOrEqualThan) {
             const minValue = toNumber(toValidate.isValueGreaterOrEqualThan);
