@@ -10,6 +10,9 @@ import {
 
 const { toNumber, isBlankOrEmpty } = exportedForTesting;
 
+const consoleErrorConvertNumber = 'Error while trying to convert a value to Number';
+const consoleWarnNoMessageId = 'Error message id missing in validation function';
+
 test('validation-functions.isBlankOrEmpty', () => {
     expect(isBlankOrEmpty('hello')).toBeFalsy();
     expect(isBlankOrEmpty('0')).toBeFalsy();
@@ -22,19 +25,22 @@ test('validation-functions.isBlankOrEmpty', () => {
 });
 
 test('validation-functions.toNumber', () => {
-    expect(toNumber('')).toBeNaN();
-    expect(toNumber(undefined)).toBeNaN();
-    expect(toNumber(null)).toBeNaN();
-    expect(toNumber(false)).toBeNaN();
-    expect(toNumber(true)).toBeNaN();
+    WithSuppressedConsole(({errors}) => ({errors: [...errors, consoleErrorConvertNumber]}), () => {
+        expect(toNumber('')).toBeNaN();
+        expect(toNumber(undefined)).toBeNaN();
+        expect(toNumber(null)).toBeNaN();
+        expect(toNumber(false)).toBeNaN();
+        expect(toNumber(true)).toBeNaN();
+        expect(toNumber('  0020,5000  ')).toBe(20.5);
+        expect(toNumber(0)).toBe(0);
+        expect(toNumber(',0')).toBe(0);
+        expect(toNumber(0.99999)).not.toBe(1);
+        expect(toNumber({ 0: 1 })).toBeNaN();
+        expect(toNumber([10])).toBeNaN();
+    });
+
     expect(toNumber(NaN)).toBeNaN();
     expect(toNumber('hello')).toBeNaN();
-    expect(toNumber({ 0: 1 })).toBeNaN();
-    expect(toNumber([10])).toBeNaN();
-    expect(toNumber('  0020,5000  ')).toBe(20.5);
-    expect(toNumber(0)).toBe(0);
-    expect(toNumber(',0')).toBe(0);
-    expect(toNumber(0.99999)).not.toBe(1);
 
     // Converted values must be equal in these cases
     expect(toNumber(0) === toNumber(0)).toBe(true);
@@ -66,13 +72,15 @@ test('validation-functions.validateValueIsANumber', () => {
     expect(validateValueIsANumber('-55,51')).toBe(true);
     expect(validateValueIsANumber('-55,')).toBe(true);
     expect(validateValueIsANumber('-55.')).toBe(true);
-    expect(validateValueIsANumber(null)).toBe(false);
+    WithSuppressedConsole(({errors}) => ({errors: [...errors, consoleErrorConvertNumber]}), () => {
+        expect(validateValueIsANumber(null)).toBe(false);
+        expect(validateValueIsANumber(false)).toBe(false);
+        expect(validateValueIsANumber(true)).toBe(false);
+    });
     expect(validateValueIsANumber(NaN)).toBe(false);
     expect(validateValueIsANumber(undefined)).toBe(false);
-    expect(validateValueIsANumber(false)).toBe(false);
     expect(validateValueIsANumber('hello')).toBe(false);
     expect(validateValueIsANumber('15.564,54')).toBe(false);
-    expect(validateValueIsANumber(true)).toBe(false);
     expect(validateValueIsANumber('')).toBe(false);
 });
 
@@ -84,16 +92,18 @@ test('validation-functions.validateValueIsLessThanOrEqualTo', () => {
     expect(validateValueIsLessThanOrEqualTo(-0.91, -0.9)).toBe(true);
     expect(validateValueIsLessThanOrEqualTo('90,54', 154)).toBe(true);
     expect(validateValueIsLessThanOrEqualTo('-90,54', -90.54)).toBe(true);
-    expect(validateValueIsLessThanOrEqualTo(false, true)).toBe(false);
-    expect(validateValueIsLessThanOrEqualTo(false, false)).toBe(false);
+    WithSuppressedConsole(({errors}) => ({errors: [...errors, consoleErrorConvertNumber]}), () => {
+        expect(validateValueIsLessThanOrEqualTo(false, true)).toBe(false);
+        expect(validateValueIsLessThanOrEqualTo(false, false)).toBe(false);
+        expect(validateValueIsLessThanOrEqualTo(true, true)).toBe(false);
+        expect(validateValueIsLessThanOrEqualTo(0, false)).toBe(false);
+        expect(validateValueIsLessThanOrEqualTo(0, true)).toBe(false);
+    });
     expect(validateValueIsLessThanOrEqualTo(undefined, undefined)).toBe(false);
-    expect(validateValueIsLessThanOrEqualTo(true, true)).toBe(false);
     expect(validateValueIsLessThanOrEqualTo(1.00001, 1)).toBe(false);
     expect(validateValueIsLessThanOrEqualTo(0.00001, -1)).toBe(false);
     expect(validateValueIsLessThanOrEqualTo('1.00001', '1')).toBe(false);
     expect(validateValueIsLessThanOrEqualTo('.00001', '-1')).toBe(false);
-    expect(validateValueIsLessThanOrEqualTo(0, false)).toBe(false);
-    expect(validateValueIsLessThanOrEqualTo(0, true)).toBe(false);
     expect(validateValueIsLessThanOrEqualTo(0, NaN)).toBe(false);
     expect(validateValueIsLessThanOrEqualTo(NaN, NaN)).toBe(false);
     expect(validateValueIsLessThanOrEqualTo(NaN, undefined)).toBe(false);
@@ -108,16 +118,18 @@ test('validation-functions.validateValueIsLessThan', () => {
     expect(validateValueIsLessThan(-0.91, -0.9)).toBe(true);
     expect(validateValueIsLessThan('90,54', 154)).toBe(true);
     expect(validateValueIsLessThan('-90,54', -90.54)).toBe(false);
-    expect(validateValueIsLessThan(false, true)).toBe(false);
-    expect(validateValueIsLessThan(false, false)).toBe(false);
+    WithSuppressedConsole(({errors}) => ({errors: [...errors, consoleErrorConvertNumber]}), () => {
+        expect(validateValueIsLessThan(false, true)).toBe(false);
+        expect(validateValueIsLessThan(false, false)).toBe(false);
+        expect(validateValueIsLessThan(true, true)).toBe(false);
+        expect(validateValueIsLessThan(0, false)).toBe(false);
+        expect(validateValueIsLessThan(0, true)).toBe(false);
+    });
     expect(validateValueIsLessThan(undefined, undefined)).toBe(false);
-    expect(validateValueIsLessThan(true, true)).toBe(false);
     expect(validateValueIsLessThan(1.00001, 1)).toBe(false);
     expect(validateValueIsLessThan(0.00001, -1)).toBe(false);
     expect(validateValueIsLessThan('1.00001', '1')).toBe(false);
     expect(validateValueIsLessThan('.00001', '-1')).toBe(false);
-    expect(validateValueIsLessThan(0, false)).toBe(false);
-    expect(validateValueIsLessThan(0, true)).toBe(false);
     expect(validateValueIsLessThan(0, NaN)).toBe(false);
     expect(validateValueIsLessThan(NaN, NaN)).toBe(false);
     expect(validateValueIsLessThan(NaN, undefined)).toBe(false);
@@ -178,15 +190,17 @@ test('validation-functions.validateField.valueGreaterThanOrEqualTo', () => {
     expect(validateField(0, { valueGreaterThanOrEqualTo: 0 }).error).toBe(
         false
     );
-    expect(validateField(0, { valueGreaterThanOrEqualTo: 10 }).error).toBe(
+    WithSuppressedConsole(({warns}) => ({warns: [...warns, consoleWarnNoMessageId]}), () => {
+        expect(validateField(0, { valueGreaterThanOrEqualTo: 10 }).error).toBe(
+            true
+        );
+        expect(validateField(-500, { valueGreaterThanOrEqualTo: 10 }).error).toBe(
+            true
+        );
+        expect(validateField(-500, { valueGreaterThanOrEqualTo: 0 }).error).toBe(
         true
-    );
-    expect(validateField(-500, { valueGreaterThanOrEqualTo: 10 }).error).toBe(
-        true
-    );
-    expect(validateField(-500, { valueGreaterThanOrEqualTo: 0 }).error).toBe(
-        true
-    );
+        );
+    });
     expect(validateField(0, { valueGreaterThanOrEqualTo: -10 }).error).toBe(
         false
     );
@@ -247,9 +261,11 @@ test('validation-functions.validateField.valueLessThanOrEqualTo', () => {
     expect(validateField(-600, { valueLessThanOrEqualTo: 0 }).error).toBe(
         false
     );
-    expect(validateField(0, { valueLessThanOrEqualTo: -10 }).error).toBe(true);
-    expect(validateField(600, { valueLessThanOrEqualTo: 10 }).error).toBe(true);
-    expect(validateField(600, { valueLessThanOrEqualTo: 0 }).error).toBe(true);
+    WithSuppressedConsole(({warns}) => ({warns: [...warns, consoleWarnNoMessageId]}), () => {
+        expect(validateField(0, { valueLessThanOrEqualTo: -10 }).error).toBe(true);
+        expect(validateField(600, { valueLessThanOrEqualTo: 10 }).error).toBe(true);
+        expect(validateField(600, { valueLessThanOrEqualTo: 0 }).error).toBe(true);
+    });
     expect(validateField(0, { valueLessThanOrEqualTo: 0 }).error).toBe(false);
     expect(validateField(0, { valueLessThanOrEqualTo: 10 }).error).toBe(false);
     expect(
@@ -301,13 +317,15 @@ test('validation-functions.validateField.valueLessThanOrEqualTo', () => {
 });
 
 test('validation-functions.validateField.valueLessThan', () => {
-    expect(validateField(600, { valueLessThan: 10 }).error).toBe(true);
-    expect(validateField(600, { valueLessThan: 0 }).error).toBe(true);
-    expect(validateField(0, { valueLessThan: 0 }).error).toBe(true);
+    WithSuppressedConsole(({warns}) => ({warns: [...warns, consoleWarnNoMessageId]}), () => {
+        expect(validateField(600, { valueLessThan: 10 }).error).toBe(true);
+        expect(validateField(600, { valueLessThan: 0 }).error).toBe(true);
+        expect(validateField(0, { valueLessThan: 0 }).error).toBe(true);
+        expect(validateField(0, { valueLessThan: -10 }).error).toBe(true);
+    });
     expect(validateField(0, { valueLessThan: 10 }).error).toBe(false);
     expect(validateField(-600, { valueLessThan: 10 }).error).toBe(false);
     expect(validateField(-600, { valueLessThan: 0 }).error).toBe(false);
-    expect(validateField(0, { valueLessThan: -10 }).error).toBe(true);
     expect(
         validateField('', { valueLessThan: 6, isFieldRequired: false }).error
     ).toBe(false);
@@ -339,10 +357,12 @@ test('validation-functions.validateField.valueLessThan', () => {
 test('validation-functions.validateField.valueGreaterThan', () => {
     expect(validateField(600, { valueGreaterThan: 10 }).error).toBe(false);
     expect(validateField(600, { valueGreaterThan: 0 }).error).toBe(false);
-    expect(validateField(0, { valueGreaterThan: 0 }).error).toBe(true);
-    expect(validateField(0, { valueGreaterThan: 10 }).error).toBe(true);
-    expect(validateField(-600, { valueGreaterThan: 10 }).error).toBe(true);
-    expect(validateField(-600, { valueGreaterThan: 0 }).error).toBe(true);
+    WithSuppressedConsole(({warns}) => ({warns: [...warns, consoleWarnNoMessageId]}), () => {
+        expect(validateField(0, { valueGreaterThan: 0 }).error).toBe(true);
+        expect(validateField(0, { valueGreaterThan: 10 }).error).toBe(true);
+        expect(validateField(-600, { valueGreaterThan: 10 }).error).toBe(true);
+        expect(validateField(-600, { valueGreaterThan: 0 }).error).toBe(true);
+    });
     expect(validateField(0, { valueGreaterThan: -10 }).error).toBe(false);
     expect(
         validateField('', { valueGreaterThan: 2, isFieldRequired: false }).error
