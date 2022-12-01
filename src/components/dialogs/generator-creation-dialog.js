@@ -6,18 +6,13 @@
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { createGenerator } from '../../utils/rest-api';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
-    useButtonWithTooltip,
     useDoubleValue,
     useEnumValue,
     useInputForm,
@@ -31,7 +26,6 @@ import {
     filledTextField,
     gridItem,
     GridSection,
-    GridSubSection,
     MVAPowerAdornment,
     OhmAdornment,
     percentageTextField,
@@ -74,20 +68,18 @@ const useStyles = makeStyles((theme) => ({
 
 /**
  * Dialog to create a generator in the network
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param voltageLevelsEquipmentsOptionsPromise Promise handling list of voltage level equipment options
  * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const GeneratorCreationDialog = ({
-    open,
-    onClose,
     voltageLevelOptionsPromise,
     voltageLevelsEquipmentsOptionsPromise,
     currentNodeUuid,
     editData,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -165,11 +157,6 @@ const GeneratorCreationDialog = ({
         setFormValues,
     });
 
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
-    });
-
     useEffect(() => {
         if (editData) {
             setFormValues(editData);
@@ -219,7 +206,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
-            isValueLessOrEqualTo: maximumActivePower,
+            valueLessThanOrEqualTo: maximumActivePower,
             errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
         adornment: ActivePowerAdornment,
@@ -232,7 +219,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: false,
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
         adornment: MVAPowerAdornment,
@@ -285,8 +272,8 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
-            isValueGreaterOrEqualTo: minimumActivePower,
-            isValueLessOrEqualTo: maximumActivePower,
+            valueGreaterThanOrEqualTo: minimumActivePower,
+            valueLessThanOrEqualTo: maximumActivePower,
             errorMsgId: 'ActivePowerBetweenMaxAndMin',
         },
         adornment: ActivePowerAdornment,
@@ -306,7 +293,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
@@ -344,8 +331,8 @@ const GeneratorCreationDialog = ({
         label: 'QPercentText',
         validation: {
             isFieldRequired: false,
-            isValueGreaterOrEqualTo: '0',
-            isValueLessOrEqualTo: '100',
+            valueGreaterThanOrEqualTo: '0',
+            valueLessThanOrEqualTo: '100',
             errorMsgId: 'NormalizedPercentage',
         },
         adornment: percentageTextField,
@@ -445,7 +432,7 @@ const GeneratorCreationDialog = ({
         );
     }, [minimumReactivePower, maximumReactivePower]);
 
-    const handleSave = () => {
+    const handleValidation = () => {
         // ReactiveCapabilityCurveCreation validation
         let isReactiveCapabilityCurveValid = true;
         if (isReactiveCapabilityCurveOn()) {
@@ -458,76 +445,66 @@ const GeneratorCreationDialog = ({
             setReactiveCapabilityCurveErrors([]);
         }
 
-        if (
+        return (
             inputForm.validate() &&
             (!isReactiveCapabilityCurveOn() || isReactiveCapabilityCurveValid)
-        ) {
-            createGenerator(
-                studyUuid,
-                currentNodeUuid,
-                generatorId,
-                sanitizeString(generatorName),
-                energySource,
-                minimumActivePower,
-                maximumActivePower,
-                ratedNominalPower ? ratedNominalPower : null,
-                activePowerSetpoint,
-                reactivePowerSetpoint ?? null,
-                voltageRegulation,
-                voltageSetpoint ? voltageSetpoint : null,
-                qPercent,
-                connectivity.voltageLevel.id,
-                connectivity.busOrBusbarSection.id,
-                editData ? true : false,
-                editData?.uuid,
-                marginalCost ? marginalCost : null,
-                transientReactance ? transientReactance : null,
-                transformerReactance ? transformerReactance : null,
-                (voltageRegulation &&
-                    isDistantRegulation(voltageRegulationType) &&
-                    regulatingTerminal?.equipmentSection?.id) ||
-                    null,
-                (voltageRegulation &&
-                    isDistantRegulation(voltageRegulationType) &&
-                    regulatingTerminal?.equipmentSection?.type) ||
-                    null,
-                (voltageRegulation &&
-                    isDistantRegulation(voltageRegulationType) &&
-                    regulatingTerminal?.voltageLevel?.id) ||
-                    null,
-                isReactiveCapabilityCurveOn(),
-                frequencyRegulation,
-                frequencyRegulation ? droop : null,
-                isReactiveCapabilityCurveOn() ? null : maximumReactivePower,
-                isReactiveCapabilityCurveOn() ? null : minimumReactivePower,
-                isReactiveCapabilityCurveOn() ? reactiveCapabilityCurve : null,
-                connectivity?.connectionDirection?.id ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                connectivity?.connectionName?.id ?? null
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'GeneratorCreationError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+        );
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        createGenerator(
+            studyUuid,
+            currentNodeUuid,
+            generatorId,
+            sanitizeString(generatorName),
+            energySource,
+            minimumActivePower,
+            maximumActivePower,
+            ratedNominalPower ? ratedNominalPower : null,
+            activePowerSetpoint,
+            reactivePowerSetpoint ?? null,
+            voltageRegulation,
+            voltageSetpoint ? voltageSetpoint : null,
+            qPercent,
+            connectivity.voltageLevel.id,
+            connectivity.busOrBusbarSection.id,
+            editData ? true : false,
+            editData?.uuid,
+            marginalCost ? marginalCost : null,
+            transientReactance ? transientReactance : null,
+            transformerReactance ? transformerReactance : null,
+            (voltageRegulation &&
+                isDistantRegulation(voltageRegulationType) &&
+                regulatingTerminal?.equipmentSection?.id) ||
+                null,
+            (voltageRegulation &&
+                isDistantRegulation(voltageRegulationType) &&
+                regulatingTerminal?.equipmentSection?.type) ||
+                null,
+            (voltageRegulation &&
+                isDistantRegulation(voltageRegulationType) &&
+                regulatingTerminal?.voltageLevel?.id) ||
+                null,
+            isReactiveCapabilityCurveOn(),
+            frequencyRegulation,
+            frequencyRegulation ? droop : null,
+            isReactiveCapabilityCurveOn() ? null : maximumReactivePower,
+            isReactiveCapabilityCurveOn() ? null : minimumReactivePower,
+            isReactiveCapabilityCurveOn() ? reactiveCapabilityCurve : null,
+            connectivity?.connectionDirection?.id ??
+                UNDEFINED_CONNECTION_DIRECTION,
+            connectivity?.connectionName?.id ?? null
+        ).catch((errorMessage) => {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'GeneratorCreationError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
+    const clear = () => {
+        inputForm.reset();
         setFormValues(null);
-        handleClose();
     };
 
     const withVoltageRegulationInputs = () => {
@@ -554,122 +531,99 @@ const GeneratorCreationDialog = ({
     };
 
     return (
-        <>
-            <Dialog
-                fullWidth
-                maxWidth="md" // 3 columns
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-create-generator"
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
-                            <FormattedMessage id="CreateGenerator" />
-                        </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <div>
-                        <Grid container spacing={2}>
-                            {gridItem(generatorIdField, 4)}
-                            {gridItem(generatorNameField, 4)}
-                            {gridItem(energySourceField, 4)}
-                        </Grid>
+        <ModificationDialog
+            fullWidth
+            maxWidth="md" // 3 columns
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            aria-labelledby="dialog-create-generator"
+            titleId={'CreateGenerator'}
+            searchCopy={searchCopy}
+            {...dialogProps}
+        >
+            <div>
+                <Grid container spacing={2}>
+                    {gridItem(generatorIdField, 4)}
+                    {gridItem(generatorNameField, 4)}
+                    {gridItem(energySourceField, 4)}
+                </Grid>
 
-                        {/* Connectivity part */}
-                        <GridSection title="Connectivity" />
-                        <Grid container spacing={2}>
-                            {gridItem(connectivityField, 8)}
-                        </Grid>
+                {/* Connectivity part */}
+                <GridSection title="Connectivity" />
+                <Grid container spacing={2}>
+                    {gridItem(connectivityField, 8)}
+                </Grid>
 
-                        {/* Limits part */}
-                        <GridSection title="Limits" />
-                        <GridSubSection title="ActiveLimits" />
-                        <Grid container spacing={2}>
-                            {gridItem(minimumActivePowerField, 4)}
-                            {gridItem(maximumActivePowerField, 4)}
-                            {gridItem(ratedNominalPowerField, 4)}
-                        </Grid>
-                        <GridSubSection title="ReactiveLimits" />
-                        <Grid container spacing={2}>
-                            {gridItem(
-                                reactiveCapabilityCurveChoiceRadioButton,
-                                12
-                            )}
-                            {!isReactiveCapabilityCurveOn() &&
-                                gridItem(minimumReactivePowerField, 4)}
-                            {!isReactiveCapabilityCurveOn() &&
-                                gridItem(maximumReactivePowerField, 4)}
+                {/* Limits part */}
+                <GridSection title="ActiveLimits" />
+                <Grid container spacing={2}>
+                    {gridItem(minimumActivePowerField, 4)}
+                    {gridItem(maximumActivePowerField, 4)}
+                    {gridItem(ratedNominalPowerField, 4)}
+                </Grid>
+                <GridSection title="ReactiveLimits" />
+                <Grid container spacing={2}>
+                    {gridItem(reactiveCapabilityCurveChoiceRadioButton, 12)}
+                    {!isReactiveCapabilityCurveOn() &&
+                        gridItem(minimumReactivePowerField, 4)}
+                    {!isReactiveCapabilityCurveOn() &&
+                        gridItem(maximumReactivePowerField, 4)}
 
-                            {isReactiveCapabilityCurveOn() &&
-                                reactiveCapabilityCurveErrors.length > 0 && (
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12}>
-                                            {reactiveCapabilityCurveErrors.map(
-                                                (messageDescriptorId) => (
-                                                    <div
-                                                        className={
-                                                            classes.midFormErrorMessage
-                                                        }
-                                                    >
-                                                        <FormattedMessage
-                                                            id={
-                                                                messageDescriptorId
-                                                            }
-                                                        />
-                                                    </div>
-                                                )
-                                            )}
-                                        </Grid>
-                                    </Grid>
-                                )}
-                            {isReactiveCapabilityCurveOn() &&
-                                gridItem(reactiveCapabilityCurveField, 12)}
-                        </Grid>
+                    {isReactiveCapabilityCurveOn() &&
+                        reactiveCapabilityCurveErrors.length > 0 && (
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    {reactiveCapabilityCurveErrors.map(
+                                        (messageDescriptorId) => (
+                                            <div
+                                                key={messageDescriptorId}
+                                                className={
+                                                    classes.midFormErrorMessage
+                                                }
+                                            >
+                                                <FormattedMessage
+                                                    id={messageDescriptorId}
+                                                />
+                                            </div>
+                                        )
+                                    )}
+                                </Grid>
+                            </Grid>
+                        )}
+                    {isReactiveCapabilityCurveOn() &&
+                        gridItem(reactiveCapabilityCurveField, 12)}
+                </Grid>
 
-                        {/* Setpoints part */}
-                        <GridSection title="Setpoints" />
-                        <Grid container spacing={2}>
-                            {gridItem(activePowerSetpointField, 4)}
-                            <Box sx={{ width: '100%' }} />
+                {/* Setpoints part */}
+                <GridSection title="Setpoints" />
+                <Grid container spacing={2}>
+                    {gridItem(activePowerSetpointField, 4)}
+                    <Box sx={{ width: '100%' }} />
 
-                            {gridItem(voltageRegulationField, 4)}
-                            {voltageRegulation
-                                ? withVoltageRegulationInputs()
-                                : gridItem(reactivePowerSetpointField, 4)}
-                            <Box sx={{ width: '100%' }} />
-                            {gridItem(frequencyRegulationField, 4)}
-                            {frequencyRegulation && gridItem(droopField, 4)}
-                        </Grid>
+                    {gridItem(voltageRegulationField, 4)}
+                    {voltageRegulation
+                        ? withVoltageRegulationInputs()
+                        : gridItem(reactivePowerSetpointField, 4)}
+                    <Box sx={{ width: '100%' }} />
+                    {gridItem(frequencyRegulationField, 4)}
+                    {frequencyRegulation && gridItem(droopField, 4)}
+                </Grid>
 
-                        {/* Short-circuit part */}
-                        <GridSection title="ShortCircuit" />
-                        <Grid container spacing={2}>
-                            {gridItem(transientReactanceField, 4)}
-                            {gridItem(transformerReactanceField, 4)}
-                        </Grid>
+                {/* Short-circuit part */}
+                <GridSection title="ShortCircuit" />
+                <Grid container spacing={2}>
+                    {gridItem(transientReactanceField, 4)}
+                    {gridItem(transformerReactanceField, 4)}
+                </Grid>
 
-                        {/* Cost of start part */}
-                        <GridSection title="MarginalCost" />
-                        <Grid container spacing={2}>
-                            {gridItem(marginalCostField, 4)}
-                        </Grid>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                {/* Cost of start part */}
+                <GridSection title="MarginalCost" />
+                <Grid container spacing={2}>
+                    {gridItem(marginalCostField, 4)}
+                </Grid>
+            </div>
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
@@ -677,14 +631,12 @@ const GeneratorCreationDialog = ({
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />
-        </>
+        </ModificationDialog>
     );
 };
 
 GeneratorCreationDialog.propTypes = {
     editData: PropTypes.object,
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,

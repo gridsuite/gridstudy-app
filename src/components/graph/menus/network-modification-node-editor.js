@@ -18,7 +18,7 @@ import {
     fetchVoltageLevelsEquipments,
     copyOrMoveModifications,
 } from '../../../utils/rest-api';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
@@ -148,7 +148,7 @@ const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const { snackError, snackWarning } = useSnackMessage();
+    const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
     const currentTreeNode = useSelector((state) => state.currentTreeNode);
 
@@ -169,7 +169,24 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
-    const closeDialog = () => {
+    const cleanClipboard = () => {
+        if (copiedModifications.length <= 0) return;
+        setCopiedModifications([]);
+        snackInfo({
+            messageId: 'CopiedModificationInvalidationMessage',
+        });
+    };
+
+    // TODO this is not complete.
+    // We should clean Clipboard on notifications when another user edit
+    // a modification on a public study which is in the clipboard.
+    // We don't have precision on notifications to do this for now.
+    const handleValidatedDialog = () => {
+        if (editData?.uuid && copiedModifications.includes(editData?.uuid))
+            cleanClipboard();
+    };
+
+    const handleCloseDialog = (e, reason) => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
@@ -178,7 +195,8 @@ const NetworkModificationNodeEditor = () => {
         return (
             <Dialog
                 open={true}
-                onClose={closeDialog}
+                onClose={handleCloseDialog}
+                onValidated={handleValidatedDialog}
                 currentNodeUuid={currentTreeNode.id}
                 editData={editData}
                 {...props}
@@ -236,7 +254,7 @@ const NetworkModificationNodeEditor = () => {
         };
     }
 
-    function withEquipmentModificationOptions(Dialog, resourceType, resource) {
+    function withEquipmentModificationOptions(resourceType, resource) {
         const equipmentOptionsPromise = fetchEquipments(
             studyUuid,
             currentTreeNode?.id,
@@ -253,7 +271,7 @@ const NetworkModificationNodeEditor = () => {
             };
         }
 
-        return adapt(Dialog, withFetchedOptions);
+        return withFetchedOptions;
     }
 
     const dialogs = {
@@ -265,10 +283,9 @@ const NetworkModificationNodeEditor = () => {
         LOAD_MODIFICATION: {
             label: 'ModifyLoad',
             dialog: () =>
-                withEquipmentModificationOptions(
+                adapt(
                     LoadModificationDialog,
-                    'Loads',
-                    equipments.loads
+                    withEquipmentModificationOptions('Loads', equipments.loads)
                 ),
             icon: <AddIcon />,
         },
@@ -281,10 +298,12 @@ const NetworkModificationNodeEditor = () => {
         GENERATOR_MODIFICATION: {
             label: 'ModifyGenerator',
             dialog: () =>
-                withEquipmentModificationOptions(
+                adapt(
                     GeneratorModificationDialog,
-                    'Generator',
-                    equipments.generators
+                    withEquipmentModificationOptions(
+                        'Generators',
+                        equipments.generators
+                    )
                 ),
             icon: <AddIcon />,
         },
@@ -310,7 +329,7 @@ const NetworkModificationNodeEditor = () => {
         },
         SUBSTATION_CREATION: {
             label: 'CreateSubstation',
-            dialog: () => adapt(SubstationCreationDialog, withVLs),
+            dialog: () => adapt(SubstationCreationDialog),
             icon: <AddIcon />,
         },
         VOLTAGE_LEVEL_CREATION: {
@@ -348,7 +367,7 @@ const NetworkModificationNodeEditor = () => {
         },
         EQUIPMENT_DELETION: {
             label: 'DeleteEquipment',
-            dialog: () => withDefaultParams(EquipmentDeletionDialog),
+            dialog: () => adapt(EquipmentDeletionDialog),
             icon: <DeleteIcon />,
         },
     };

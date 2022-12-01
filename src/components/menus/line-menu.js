@@ -29,7 +29,7 @@ import {
 } from '../../utils/rest-api';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';

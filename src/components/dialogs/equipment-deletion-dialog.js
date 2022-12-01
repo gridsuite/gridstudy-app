@@ -5,24 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useParams } from 'react-router-dom';
 import { deleteEquipment } from '../../utils/rest-api';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { validateField } from '../util/validation-functions';
 import { useInputForm } from './inputs/input-hooks';
 import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
 import { filledTextField, getIdOrSelf } from './dialogUtils';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import ModificationDialog from './modificationDialog';
 
 const equipmentTypes = [
     'LINE',
@@ -54,19 +50,18 @@ const makeItems = (eqpts, usesNames) => {
         .sort((a, b) => a.label.localeCompare(b.label));
 };
 
+const defaultEquipmentType = 'LINE';
+
 /**
  * Dialog to delete an equipment in the network
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
- * @param {String} title Title of the dialog
  * @param currentNodeUuid : the currently selected tree node
  * @param editData the data to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const EquipmentDeletionDialog = ({
-    open,
-    onClose,
     currentNodeUuid,
     editData,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -76,7 +71,7 @@ const EquipmentDeletionDialog = ({
     const inputForm = useInputForm();
 
     const [equipmentType, setEquipmentType] = useState(
-        editData?.equipmentType ?? 'LINE'
+        editData?.equipmentType ?? defaultEquipmentType
     );
 
     const [errors, setErrors] = useState(new Map());
@@ -124,7 +119,7 @@ const EquipmentDeletionDialog = ({
             });
     }
 
-    const handleSave = () => {
+    const handleValidation = () => {
         // Check if error list contains an error
         let isValid;
         if (inputForm) {
@@ -143,101 +138,78 @@ const EquipmentDeletionDialog = ({
                 .map((p) => p.error)
                 .every((e) => e);
         }
-
-        if (isValid) {
-            deleteEquipment(
-                studyUuid,
-                currentNodeUuid,
-                equipmentType.endsWith('CONVERTER_STATION')
-                    ? 'HVDC_CONVERTER_STATION'
-                    : equipmentType,
-                equipmentOrId?.id || equipmentOrId,
-                editData?.uuid
-            ).then((response) => {
-                if (response.status !== 200) {
-                    handleDeleteEquipmentError(
-                        response,
-                        'UnableToDeleteEquipment'
-                    );
-                }
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+        return isValid;
     };
 
-    const handleCloseAndClear = () => {
-        setEquipmentType('LINE');
+    const handleSave = () => {
+        deleteEquipment(
+            studyUuid,
+            currentNodeUuid,
+            equipmentType.endsWith('CONVERTER_STATION')
+                ? 'HVDC_CONVERTER_STATION'
+                : equipmentType,
+            equipmentOrId?.id || equipmentOrId,
+            editData?.uuid
+        ).then((response) => {
+            if (response.status !== 200) {
+                handleDeleteEquipmentError(response, 'UnableToDeleteEquipment');
+            }
+        });
+    };
+
+    const handleClear = () => {
+        setEquipmentType(defaultEquipmentType);
         setErrors(new Map());
-        onClose();
-    };
-
-    const handleClose = (event, reason) => {
-        if (reason !== 'backdropClick') {
-            setErrors(new Map());
-            onClose();
-        }
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
+        <ModificationDialog
+            onClear={handleClear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            titleId="DeleteEquipment"
             aria-labelledby="dialog-delete-equipment"
             fullWidth
+            {...dialogProps}
         >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'DeleteEquipment' })}
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={6} align="start">
-                        <FormControl fullWidth size="small">
-                            <InputLabel
-                                id="equipment-type-label"
-                                variant={'filled'}
-                            >
-                                {intl.formatMessage({ id: 'Type' })}
-                            </InputLabel>
-                            <Select
-                                id="equipment-type"
-                                value={equipmentType}
-                                onChange={handleChangeEquipmentType}
-                                variant="filled"
-                                fullWidth
-                            >
-                                {equipmentTypes.map((item) => {
-                                    return (
-                                        <MenuItem key={item} value={item}>
-                                            {intl.formatMessage({
-                                                id: item,
-                                            })}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={6} align="start">
-                        {equipmentField}
-                    </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={6} align="start">
+                    <FormControl fullWidth size="small">
+                        <InputLabel
+                            id="equipment-type-label"
+                            variant={'filled'}
+                        >
+                            {intl.formatMessage({ id: 'Type' })}
+                        </InputLabel>
+                        <Select
+                            id="equipment-type"
+                            value={equipmentType}
+                            onChange={handleChangeEquipmentType}
+                            variant="filled"
+                            fullWidth
+                        >
+                            {equipmentTypes.map((item) => {
+                                return (
+                                    <MenuItem key={item} value={item}>
+                                        {intl.formatMessage({
+                                            id: item,
+                                        })}
+                                    </MenuItem>
+                                );
+                            })}
+                        </Select>
+                    </FormControl>
                 </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear}>
-                    <FormattedMessage id="cancel" />
-                </Button>
-                <Button onClick={handleSave} disabled={!inputForm.hasChanged}>
-                    <FormattedMessage id="validate" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                <Grid item xs={6} align="start">
+                    {equipmentField}
+                </Grid>
+            </Grid>
+        </ModificationDialog>
     );
 };
 
 EquipmentDeletionDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     currentNodeUuid: PropTypes.string,
     editData: PropTypes.object,
 };
