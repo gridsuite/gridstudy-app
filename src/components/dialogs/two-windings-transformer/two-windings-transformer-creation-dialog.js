@@ -296,7 +296,7 @@ const TwoWindingsTransformerCreationDialog = ({
         validation: {
             skipValidation: !ratioTapRegulating || !ratioTapChangerEnabled,
             isFieldRequired: true,
-            valueGreaterThan: '0',
+            valueGreaterThanOrEqualTo: '0',
             errorMsgId: 'TargetVoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
@@ -427,7 +427,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 isFieldRequired:
                     regulationMode === REGULATION_MODES.CURRENT_LIMITER.id &&
                     phaseTapRegulating,
-                valueGreaterThan: '0',
+                valueGreaterThanOrEqualTo: '0',
                 errorMsgId: 'CurrentLimiterGreaterThanZero',
             },
             adornment: AmpereAdornment,
