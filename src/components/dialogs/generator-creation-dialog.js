@@ -584,7 +584,7 @@ const GeneratorCreationDialog = ({
                         {/* Connectivity part */}
                         <GridSection title="Connectivity" />
                         <Grid container spacing={2}>
-                            {gridItem(connectivityField, 8)}
+                            {gridItem(connectivityField, 12)}
                         </Grid>
 
                         {/* Limits part */}

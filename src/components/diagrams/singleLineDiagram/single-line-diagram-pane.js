@@ -27,7 +27,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { getNameOrId, useSingleLineDiagram, ViewState } from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
-import { SVG_DISPLAY_MODE } from '../../network/constants';
+import { SLD_DISPLAY_MODE } from '../../network/constants';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -52,7 +52,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       centerName,
                       diagonalName,
                       componentLibrary,
-                      SVG_DISPLAY_MODE.DEFAULT
+                      SLD_DISPLAY_MODE.DEFAULT
                   )
                 : null,
         [

@@ -36,6 +36,7 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../network/constants';
+import { Box } from '@mui/material';
 
 const disabledChecked = { disabled: true };
 
@@ -222,6 +223,7 @@ const ShuntCompensatorCreationDialog = ({
             <Dialog
                 fullWidth
                 open={open}
+                maxWidth="md"
                 onClose={handleClose}
                 aria-labelledby="dialog-create-shuntCompensator"
             >
@@ -235,8 +237,8 @@ const ShuntCompensatorCreationDialog = ({
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
-                        {gridItem(shuntCompensatorIdField)}
-                        {gridItem(shuntCompensatorNameField)}
+                        {gridItem(shuntCompensatorIdField, 4)}
+                        {gridItem(shuntCompensatorNameField, 4)}
                     </Grid>
                     <GridSection title="Connectivity" />
                     <Grid container spacing={2}>
@@ -244,10 +246,12 @@ const ShuntCompensatorCreationDialog = ({
                     </Grid>
                     <GridSection title="Characteristics" />
                     <Grid container spacing={2}>
-                        {gridItem(maximumNumberOfSectionsField)}
-                        {gridItem(currentNumberOfSectionsField)}
-                        {gridItem(identicalSectionsField)}
-                        {gridItem(susceptancePerSectionField)}
+                        {gridItem(maximumNumberOfSectionsField, 4)}
+                        {gridItem(currentNumberOfSectionsField, 4)}
+                        <Box sx={{ width: '100%' }} />
+                        {gridItem(identicalSectionsField, 4)}
+                        {gridItem(susceptancePerSectionField, 4)}
+                        <Box sx={{ width: '100%' }} />
                     </Grid>
                 </DialogContent>
                 <DialogActions>

@@ -214,7 +214,7 @@ export function getVoltageLevelSingleLineDiagram(
     centerLabel,
     diagonalLabel,
     componentLibrary,
-    displayMode
+    sldDisplayMode
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -232,7 +232,7 @@ export function getVoltageLevelSingleLineDiagram(
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
-            displayMode: displayMode,
+            sldDisplayMode: sldDisplayMode,
         }).toString()
     );
 }

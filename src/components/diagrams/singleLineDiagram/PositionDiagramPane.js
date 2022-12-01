@@ -20,7 +20,7 @@ import PositionDiagram from './PositionDiagram';
 import { SvgType } from './single-line-diagram';
 import { AutoSizer } from 'react-virtualized';
 import { useIntl } from 'react-intl';
-import { SVG_DISPLAY_MODE } from '../../network/constants';
+import { SLD_DISPLAY_MODE } from '../../network/constants';
 
 const PositionDiagramPane = ({
     open,
@@ -53,7 +53,7 @@ const PositionDiagramPane = ({
                 centerName,
                 diagonalName,
                 componentLibrary,
-                SVG_DISPLAY_MODE.FEEDER_POSITION
+                SLD_DISPLAY_MODE.FEEDER_POSITION
             ),
         [
             studyUuid,
@@ -80,7 +80,7 @@ const PositionDiagramPane = ({
                 <Dialog
                     onClose={handleClose}
                     open={open}
-                    maxWidth
+                    maxWidth="md"
                     scroll="body"
                 >
                     {!voltageLevelId?.id && (

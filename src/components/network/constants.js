@@ -68,7 +68,7 @@ export function getLoadTypeLabel(loadTypeId) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
 }
 
-export const SVG_DISPLAY_MODE = {
+export const SLD_DISPLAY_MODE = {
     FEEDER_POSITION: 'FEEDER_POSITION',
     DEFAULT: 'DEFAULT',
 };

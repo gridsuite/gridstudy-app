@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
         '& polyline': {
             pointerEvents: 'none',
         },
-        '& .sld-graph-label': {
+        '& .sld-graph-label, .sld-label': {
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
@@ -78,9 +78,6 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .sld-out .sld-label': {
             display: 'none',
-        },
-        ' .sld-out:after': {
-            content: 'whatever it is you want to add',
         },
         '& .sld-flash, .sld-lock': {
             stroke: 'none',
@@ -319,10 +316,7 @@ const PositionDiagram = forwardRef((props, ref) => {
     ]);
 
     useLayoutEffect(() => {
-        if (
-            typeof svgFinalWidth != 'undefined' &&
-            typeof svgFinalHeight != 'undefined'
-        ) {
+        if (svgFinalWidth && svgFinalHeight) {
             const divElt = svgRef.current;
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
@@ -337,8 +331,6 @@ const PositionDiagram = forwardRef((props, ref) => {
     }, [
         svgFinalWidth,
         svgFinalHeight,
-        //TODO, these are from the previous useLayoutEffect
-        //how to refactor to avoid repeating them here ?
         svg,
         svgType,
         theme,
