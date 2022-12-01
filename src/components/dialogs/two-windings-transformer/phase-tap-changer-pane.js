@@ -408,6 +408,7 @@ const PhaseTapChangerPane = (props) => {
 
             tempRows.forEach((row, index) => {
                 tempRows[index].alpha = currentAlpha;
+                tempRows[index].key = currentAlpha;
                 currentAlpha += alphaInterval;
             });
             handlePhaseTapRows(tempRows);
@@ -490,6 +491,10 @@ const PhaseTapChangerPane = (props) => {
                         <VirtualizedTable
                             rows={phaseTapRows}
                             columns={generateTableColumns()}
+                            key={
+                                phaseTapRows[0]?.alpha +
+                                phaseTapRows[phaseTapRows.length - 1]?.alpha
+                            }
                         />
                     </Grid>
                     <Grid container item spacing={2} xs direction={'column'}>

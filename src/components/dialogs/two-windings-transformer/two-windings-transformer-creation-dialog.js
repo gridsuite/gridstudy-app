@@ -541,7 +541,7 @@ const TwoWindingsTransformerCreationDialog = ({
             setRatioTapRows(
                 Object.values(twt.ratioTapChanger?.steps).map((step) => {
                     return {
-                        key: step.index,
+                        key: step.rho,
                         tap: step.index,
                         resistance: step.r,
                         reactance: step.x,
@@ -557,7 +557,7 @@ const TwoWindingsTransformerCreationDialog = ({
             setPhaseTapRows(
                 Object.values(twt.phaseTapChanger?.steps).map((step) => {
                     return {
-                        key: step.index,
+                        key: step.rho,
                         tap: step.index,
                         resistance: step.r,
                         reactance: step.x,

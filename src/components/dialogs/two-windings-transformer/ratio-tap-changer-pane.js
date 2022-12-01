@@ -390,6 +390,7 @@ const RatioTapChangerPane = (props) => {
 
             tempRows.forEach((row, index) => {
                 tempRows[index].ratio = currentRatio;
+                tempRows[index].key = currentRatio;
                 currentRatio += ratioInterval;
             });
             handleRatioTapRows(tempRows);
@@ -470,6 +471,10 @@ const RatioTapChangerPane = (props) => {
                         <VirtualizedTable
                             rows={ratioTapRows}
                             columns={generateTableColumns()}
+                            key={
+                                ratioTapRows[0]?.ratio +
+                                ratioTapRows[ratioTapRows.length - 1]?.ratio
+                            }
                         />
                     </Grid>
                     <Grid container item spacing={2} xs direction={'column'}>
