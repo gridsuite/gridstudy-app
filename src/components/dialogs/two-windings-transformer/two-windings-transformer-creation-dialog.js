@@ -1160,6 +1160,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     highTapPosition={phaseHighTapPosition}
                     tapPositionField={phaseTapPositionField}
                     regulatingField={phaseTapRegulatingField}
+                    phaseCellIndexError={phaseCellIndexError}
                 />
             </Box>
             {creationError && (
