@@ -30,16 +30,33 @@ function getToken() {
     return state.user.id_token;
 }
 
+function parseError(text) {
+    try {
+        return JSON.parse(text);
+    } catch (err) {
+        return null;
+    }
+}
+
 function handleResponse(response, expectsJson) {
     if (response.ok) {
         return expectsJson ? response.json() : response;
     } else {
         return response.text().then((text) => {
-            return Promise.reject({
-                message: text ? text : response.statusText,
-                status: response.status,
-                statusText: response.statusText,
-            });
+            const errorJson = parseError(text);
+            if (errorJson) {
+                return Promise.reject({
+                    status: errorJson.status,
+                    statusText: errorJson.error,
+                    message: errorJson.message || response.statusText,
+                });
+            } else {
+                return Promise.reject({
+                    status: response.status,
+                    statusText: response.statusText,
+                    message: response.statusText,
+                });
+            }
         });
     }
 }
