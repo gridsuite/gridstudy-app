@@ -237,18 +237,15 @@ export const NetworkModificationTreePane = ({
                     selectedNodeIdForCopy,
                     referenceNodeId,
                     insertMode
-                )
-                    .then(() => {
-                        //After the first CUT / PASTE operation, we can't paste anymore
-                        setSelectedNodeIdForCopy(null);
-                        setCopyType(null);
-                    })
-                    .catch((errorMessage) => {
-                        snackError({
-                            messageTxt: errorMessage,
-                            headerId: 'NodeCreateError',
-                        });
+                ).catch((errorMessage) => {
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'NodeCreateError',
                     });
+                });
+                //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
+                setSelectedNodeIdForCopy(null);
+                setCopyType(null);
             } else {
                 copyTreeNode(
                     studyUuid,
