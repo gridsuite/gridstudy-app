@@ -710,7 +710,7 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
             type: 'EQUIPMENT_ATTRIBUTE_MODIFICATION',
             equipmentType: 'SWITCH',
             equipmentId: switchId,
-            equipmentAttributeName: "open",
+            equipmentAttributeName: 'open',
             equipmentAttributeValue: open,
         }),
     });
@@ -2267,7 +2267,7 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modification/modifications';
+        '/network-modifications';
 
     console.debug(modificationsGetUrl);
     return backendFetch(modificationsGetUrl, {
@@ -2282,7 +2282,7 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
 export function fetchNetworkModification(modificationUuid) {
     const modificationFetchUrl =
         PREFIX_NETWORK_MODIFICATION_QUERIES +
-        '/v1/modifications/' +
+        '/v1/network-modifications/' +
         encodeURIComponent(modificationUuid);
     console.debug(modificationFetchUrl);
     return backendFetch(modificationFetchUrl, {
