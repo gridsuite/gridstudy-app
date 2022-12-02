@@ -81,8 +81,6 @@ const GeneratorModificationDialog = ({
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
-    const fieldRequired = { isFieldRequired: true };
-
     useEffect(() => {
         if (!equipmentOptionsPromise) return;
         equipmentOptionsPromise.then((values) => {
@@ -105,7 +103,7 @@ const GeneratorModificationDialog = ({
 
     const [generatorInfos, generatorIdField] = useAutocompleteField({
         label: 'ID',
-        validation: fieldRequired,
+        validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
         values: equipmentOptions?.sort(compareById),
