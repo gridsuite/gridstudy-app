@@ -23,15 +23,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    PARAM_DISPLAY_OVERLOAD_TABLE,
-    PARAM_MAP_MANUAL_REFRESH,
-} from '../utils/config-params';
+import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import { resetMapReloaded, setForceNetworkReload } from '../redux/actions';
+import { resetMapReloaded } from '../redux/actions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -97,9 +94,6 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
-    const mapManualRefresh = useSelector(
-        (state) => state[PARAM_MAP_MANUAL_REFRESH]
-    );
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
     const [geoData, setGeoData] = useState();
 
@@ -228,13 +222,7 @@ export const NetworkMapTab = ({
         studyUuid,
     ]);
 
-    const handleReloadMap = useCallback(() => {
-        loadMapGeoData();
-        dispatch(setForceNetworkReload());
-    }, [dispatch, loadMapGeoData]);
-
-    const procLoadGeoData =
-        reloadMapNeeded && !(mapManualRefresh && isInitialized) && !disabled;
+    const procLoadGeoData = reloadMapNeeded && !isInitialized && !disabled;
 
     useEffect(() => {
         if (!procLoadGeoData) return;
@@ -331,7 +319,7 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
-            onReloadMapClick={handleReloadMap}
+            // onReloadMapClick={handleReloadMap}
         />
     );
 

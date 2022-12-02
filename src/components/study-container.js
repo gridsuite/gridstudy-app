@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import StudyPane, { StudyView } from './study-pane';
+import StudyPane from './study-pane';
 import React, {
     useCallback,
     useEffect,
@@ -38,7 +38,6 @@ import {
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
-    setNetworkReloadNeeded,
     resetNetworkReload,
 } from '../redux/actions';
 import Network from './network/network';
@@ -60,7 +59,6 @@ import {
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
 
 export function useNodeData(
     studyUuid,
@@ -228,19 +226,9 @@ export function StudyContainer({ view, onChangeTab }) {
         getShortCircuitRunningStatus
     );
 
-    const mapManualRefresh = useSelector(
-        (state) => state[PARAM_MAP_MANUAL_REFRESH]
-    );
-
-    const refIsNetworkRefreshNeeded = useRef();
-    refIsNetworkRefreshNeeded.current =
-        mapManualRefresh && view === StudyView.MAP;
-
     const [updatedLines, setUpdatedLines] = useState([]);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
-    const forceReloadNetwork = useSelector((state) => state.forceReloadNetwork);
 
     const loadNetworkRef = useRef();
 
@@ -520,13 +508,6 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
-    //handles map manual mode network reload
-    useEffect(() => {
-        if (mapManualRefresh && forceReloadNetwork) {
-            loadNetwork(true);
-        }
-    }, [forceReloadNetwork, loadNetwork, mapManualRefresh]);
-
     useEffect(() => {
         if (studyUuid) {
             loadTree();
@@ -538,12 +519,10 @@ export function StudyContainer({ view, onChangeTab }) {
         if (!wsConnected) return;
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
-        // if only node renaming, do not reload network
-        if (mapManualRefresh) return;
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
         loadNetwork(true);
-    }, [loadNetwork, currentNode, mapManualRefresh, wsConnected]);
+    }, [loadNetwork, currentNode, wsConnected]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
@@ -711,44 +690,35 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
             ) {
-                //when in manuel refresh mode the network is not partially updated
-                if (refIsNetworkRefreshNeeded.current) {
-                    dispatch(setNetworkReloadNeeded());
-                } else {
-                    // study partial update :
-                    // loading equipments involved in the study modification and updating the network
-                    const substationsIds =
-                        studyUpdatedForce.eventData.headers['substationsIds'];
-                    const tmp = substationsIds.substring(
-                        1,
-                        substationsIds.length - 1
-                    ); // removing square brackets
-                    if (tmp && tmp.length > 0) {
-                        updateNetwork(tmp.split(', '));
-                    }
+                // study partial update :
+                // loading equipments involved in the study modification and updating the network
+                const substationsIds =
+                    studyUpdatedForce.eventData.headers['substationsIds'];
+                const tmp = substationsIds.substring(
+                    1,
+                    substationsIds.length - 1
+                ); // removing square brackets
+                if (tmp && tmp.length > 0) {
+                    updateNetwork(tmp.split(', '));
+                }
 
-                    // removing deleted equipment from the network
-                    const deletedEquipmentId =
-                        studyUpdatedForce.eventData.headers[
-                            'deletedEquipmentId'
-                        ];
-                    const deletedEquipmentType =
-                        studyUpdatedForce.eventData.headers[
-                            'deletedEquipmentType'
-                        ];
-                    if (deletedEquipmentId && deletedEquipmentType) {
-                        console.info(
-                            'removing equipment with id=',
-                            deletedEquipmentId,
-                            ' and type=',
-                            deletedEquipmentType,
-                            ' from the network'
-                        );
-                        network.removeEquipment(
-                            deletedEquipmentType,
-                            deletedEquipmentId
-                        );
-                    }
+                // removing deleted equipment from the network
+                const deletedEquipmentId =
+                    studyUpdatedForce.eventData.headers['deletedEquipmentId'];
+                const deletedEquipmentType =
+                    studyUpdatedForce.eventData.headers['deletedEquipmentType'];
+                if (deletedEquipmentId && deletedEquipmentType) {
+                    console.info(
+                        'removing equipment with id=',
+                        deletedEquipmentId,
+                        ' and type=',
+                        deletedEquipmentType,
+                        ' from the network'
+                    );
+                    network.removeEquipment(
+                        deletedEquipmentType,
+                        deletedEquipmentId
+                    );
                 }
             }
         }

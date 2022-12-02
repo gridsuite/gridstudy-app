@@ -35,6 +35,23 @@ export default class GeoData {
         );
     }
 
+    async asyncFetchSubstationPositionsByIds(studyUuid, currentNodeId, substation) {
+        console.info('2')
+        const fetchedPosition = await fetchSubstationPositionsByIds(
+            studyUuid,
+            currentNodeId,
+            [substation]
+        ).then((positions => {
+            this.addSubstationPositions(positions);
+            console.info('3')
+            return this.substationPositionsById.get(substation)
+                ? this.substationPositionsById.get(substation)
+                : [0, 0];
+        }));
+        console.info('4')
+        return fetchedPosition;
+    }
+
     addSubstationPositions(positions) {
         positions.forEach((pos) =>
             this.substationPositionsById.set(pos.id, pos.coordinate)
@@ -46,16 +63,22 @@ export default class GeoData {
         if (!position) {
             console.warn(`Position not found for ${substation}`);
             if (currentNode && studyUuid) {
-                return fetchSubstationPositionsByIds(
-                    studyUuid,
-                    currentNode?.id,
-                    [substation]
-                ).then((positions) => {
-                    this.addSubstationPositions(positions);
-                    return this.substationPositionsById.get(substation)
-                        ? this.substationPositionsById.get(substation)
-                        : [0, 0];
-                });
+                console.info('1')
+                // const fetchedPosition = fetchSubstationPositionsByIds(
+                //     studyUuid,
+                //     currentNode?.id,
+                //     [substation]
+                // ).then((positions) => {
+                //     console.info('2')
+                //     this.addSubstationPositions(positions);
+                //     return this.substationPositionsById.get(substation)
+                //         ? this.substationPositionsById.get(substation)
+                //         : [0, 0];
+                // });
+                // console.info('3')
+                // return fetchedPosition;
+                console.info('5')
+                return this.asyncFetchSubstationPositionsByIds(studyUuid, currentNode?.id, substation);
             } else {
                 return [0, 0];
             }
