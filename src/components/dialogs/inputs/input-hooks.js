@@ -786,7 +786,11 @@ export const useRadioValue = ({
 
     const field = useMemo(() => {
         return (
-            <FormControl>
+            <FormControl
+                style={{
+                    marginTop: '-12px',
+                }}
+            >
                 {label && (
                     <FormLabel id={id ? id : label}>
                         <FormattedMessage id={label} />

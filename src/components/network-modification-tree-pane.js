@@ -315,7 +315,6 @@ export const NetworkModificationTreePane = ({
     }, []);
 
     const closeCreateNodeMenu = useCallback(() => {
-        // setActiveNode(null);
         setCreateNodeMenu({
             display: false,
         });
