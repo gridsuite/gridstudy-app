@@ -158,7 +158,7 @@ const DirectoryItemSelector = (props) => {
                     );
                 });
         },
-        [addToDirectory, contentFilter, props]
+        [addToDirectory, contentFilter, props.types, props.equipmentTypes]
     );
 
     useEffect(() => {
