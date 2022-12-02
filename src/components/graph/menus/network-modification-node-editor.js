@@ -340,7 +340,12 @@ const NetworkModificationNodeEditor = () => {
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
             dialog: () =>
-                adapt(LineSplitWithVoltageLevelDialog, withVLs, withLines),
+                adapt(
+                    LineSplitWithVoltageLevelDialog,
+                    withVLs,
+                    withLines,
+                    withSubstations
+                ),
             icon: <AddIcon />,
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
