@@ -16,7 +16,7 @@ import {
     fetchLines,
     fetchVoltageLevels,
     fetchVoltageLevelsEquipments,
-    duplicateModifications,
+    copyOrMoveModifications,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,6 +48,7 @@ import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-volta
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CheckboxList from '../../util/checkbox-list';
@@ -138,6 +139,11 @@ function isPartial(s1, s2) {
     return s1 !== s2;
 }
 
+export const CopyType = {
+    COPY: 'COPY',
+    MOVE: 'MOVE',
+};
+
 const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
@@ -152,6 +158,7 @@ const NetworkModificationNodeEditor = () => {
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
     const [copiedModifications, setCopiedModifications] = useState([]);
+    const [copyInfos, setCopyInfos] = useState(null);
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -333,7 +340,12 @@ const NetworkModificationNodeEditor = () => {
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
             dialog: () =>
-                adapt(LineSplitWithVoltageLevelDialog, withVLs, withLines),
+                adapt(
+                    LineSplitWithVoltageLevelDialog,
+                    withVLs,
+                    withLines,
+                    withSubstations
+                ),
             icon: <AddIcon />,
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
@@ -508,40 +520,85 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [currentTreeNode?.id, selectedItems, snackError, studyUuid]);
 
+    const doCutModification = useCallback(() => {
+        // just memorize the list of selected modifications
+        setCopiedModifications(
+            Array.from(selectedItems).map((item) => item.uuid)
+        );
+        setCopyInfos({
+            copyType: CopyType.MOVE,
+            originNodeUuid: currentTreeNode.id,
+        });
+    }, [currentTreeNode.id, selectedItems]);
+
     const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
         setCopiedModifications(
             Array.from(selectedItems).map((item) => item.uuid)
         );
+        setCopyInfos({ copyType: CopyType.COPY });
     }, [selectedItems]);
 
     const doPasteModification = useCallback(() => {
-        duplicateModifications(
-            studyUuid,
-            currentTreeNode.id,
-            copiedModifications
-        )
-            .then((modificationsInFailure) => {
-                if (modificationsInFailure.length > 0) {
-                    console.warn(
-                        'Modifications not pasted:',
-                        modificationsInFailure
-                    );
-                    snackWarning({
-                        messageTxt: modificationsInFailure.length,
-                        headerId: 'warnDuplicateModificationMsg',
+        if (copyInfos.copyType === CopyType.MOVE) {
+            copyOrMoveModifications(
+                studyUuid,
+                currentTreeNode.id,
+                copiedModifications,
+                copyInfos
+            )
+                .then((message) => {
+                    let modificationsInFailure = JSON.parse(message);
+                    if (modificationsInFailure.length > 0) {
+                        console.warn(
+                            'Modifications not moved:',
+                            modificationsInFailure
+                        );
+                        snackWarning({
+                            messageTxt: modificationsInFailure.length,
+                            headerId: 'warnCutModificationMsg',
+                        });
+                    }
+                    setCopyInfos(null);
+                    setCopiedModifications([]);
+                })
+                .catch((errmsg) => {
+                    snackError({
+                        messageTxt: errmsg,
+                        headerId: 'errCutModificationMsg',
                     });
-                }
-            })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errDuplicateModificationMsg',
                 });
-            });
+        } else {
+            copyOrMoveModifications(
+                studyUuid,
+                currentTreeNode.id,
+                copiedModifications,
+                copyInfos
+            )
+                .then((message) => {
+                    let modificationsInFailure = JSON.parse(message);
+                    if (modificationsInFailure.length > 0) {
+                        console.warn(
+                            'Modifications not pasted:',
+                            modificationsInFailure
+                        );
+                        snackWarning({
+                            messageTxt: modificationsInFailure.length,
+                            headerId: 'warnDuplicateModificationMsg',
+                        });
+                    }
+                })
+                .catch((errmsg) => {
+                    snackError({
+                        messageTxt: errmsg,
+                        headerId: 'errDuplicateModificationMsg',
+                    });
+                });
+        }
     }, [
         copiedModifications,
         currentTreeNode.id,
+        copyInfos,
         snackError,
         snackWarning,
         studyUuid,
@@ -752,6 +809,14 @@ const NetworkModificationNodeEditor = () => {
                     onClick={toggleSelectAllModifications}
                 />
                 <div className={classes.filler} />
+                <IconButton
+                    onClick={doCutModification}
+                    size={'small'}
+                    className={classes.toolbarIcon}
+                    disabled={selectedItems.size === 0 || isAnyNodeBuilding}
+                >
+                    <ContentCutIcon />
+                </IconButton>
                 <IconButton
                     onClick={doCopyModification}
                     size={'small'}
