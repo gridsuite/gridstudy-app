@@ -70,5 +70,5 @@ export function getLoadTypeLabel(loadTypeId) {
 
 export const SLD_DISPLAY_MODE = {
     FEEDER_POSITION: 'FEEDER_POSITION',
-    DEFAULT: 'DEFAULT',
+    STATE_VARIABLE: 'STATE_VARIABLE',
 };

@@ -630,5 +630,6 @@
     "Top": "Haut",
     "Bottom": "Bas",
     "ConnectionPosition": "Position départ",
-    "ErrorNoVoltageSelected": "Aucun niveau de tension sélectionné, veuillez en sélectionner un avant!"
+    "ErrorNoVoltageSelected": "Aucun poste sélectionné, veuillez en sélectionner un avant",
+    "DisplayTakenPositions": "Afficher les positions prises"
 }

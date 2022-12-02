@@ -6,7 +6,6 @@
  */
 
 import { useCallback } from 'react';
-import { SvgType } from './single-line-diagram';
 import { useDispatch } from 'react-redux';
 import {
     closeSld,
@@ -96,3 +95,101 @@ export const useSingleLineDiagram = () => {
 export function getNameOrId(value) {
     return value?.name ?? value?.id;
 }
+
+export function setWidthAndHeight(
+    svg,
+    finalPaperWidth,
+    finalPaperHeight,
+    loadingState,
+    totalWidth,
+    initialHeight,
+    initialWidth,
+    errorWidth
+) {
+    let sizeWidth,
+        sizeHeight = initialHeight;
+    if (svg.error) {
+        sizeWidth = errorWidth;
+    } else if (finalPaperWidth && finalPaperHeight) {
+        sizeWidth = finalPaperWidth;
+        sizeHeight = finalPaperHeight;
+    } else if (initialWidth !== undefined || loadingState) {
+        sizeWidth = initialWidth;
+    } else {
+        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
+    }
+
+    if (sizeWidth !== undefined) {
+        initialWidth = sizeWidth; // setting initial width for the next SLD.
+    }
+    if (sizeHeight !== undefined) {
+        initialHeight = sizeHeight; // setting initial height for the next SLD.
+    }
+    return { sizeWidth, sizeHeight };
+}
+
+// Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
+export function computePaperAndSvgSizesIfReady(
+    fullScreen,
+    svgType,
+    totalWidth,
+    totalHeight,
+    svgPreferredWidth,
+    svgPreferredHeight,
+    headerPreferredHeight,
+    borders,
+    maxWidthVoltageLevel,
+    maxHeightVoltageLevel,
+    maxWidthSubstation,
+    maxHeightSubstation,
+    mapRightOffset,
+    mapBottomOffset
+) {
+    if (
+        typeof svgPreferredWidth != 'undefined' &&
+        typeof headerPreferredHeight != 'undefined'
+    ) {
+        let paperWidth, paperHeight, svgWidth, svgHeight;
+        if (fullScreen) {
+            paperWidth = totalWidth;
+            paperHeight = totalHeight;
+            svgWidth = totalWidth - borders;
+            svgHeight = totalHeight - headerPreferredHeight - borders;
+        } else {
+            let maxWidth, maxHeight;
+            if (svgType === SvgType.VOLTAGE_LEVEL) {
+                maxWidth = maxWidthVoltageLevel;
+                maxHeight = maxHeightVoltageLevel;
+            } else {
+                maxWidth = maxWidthSubstation;
+                maxHeight = maxHeightSubstation;
+            }
+            svgWidth = Math.min(
+                svgPreferredWidth,
+                totalWidth - mapRightOffset,
+                maxWidth
+            );
+            svgHeight = Math.min(
+                svgPreferredHeight,
+                totalHeight - mapBottomOffset - headerPreferredHeight,
+                maxHeight
+            );
+            paperWidth = svgWidth + borders;
+            paperHeight = svgHeight + headerPreferredHeight + borders;
+        }
+        return { paperWidth, paperHeight, svgWidth, svgHeight };
+    }
+}
+
+export const SubstationLayout = {
+    HORIZONTAL: 'horizontal',
+    VERTICAL: 'vertical',
+    SMART: 'smart',
+    SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
+    SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
+};
+
+export const SvgType = {
+    VOLTAGE_LEVEL: 'voltage-level',
+    SUBSTATION: 'substation',
+};

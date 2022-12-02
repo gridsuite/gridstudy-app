@@ -17,10 +17,10 @@ import {
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
 import PositionDiagram from './PositionDiagram';
-import { SvgType } from './single-line-diagram';
 import { AutoSizer } from 'react-virtualized';
 import { useIntl } from 'react-intl';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
+import { SvgType } from './utils';
 
 const PositionDiagramPane = ({
     open,

@@ -34,16 +34,7 @@ import { AutoSizer } from 'react-virtualized';
 import { useIntlRef, useSnackMessage } from '../../../utils/messages';
 
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
-
-export const SubstationLayout = {
-    HORIZONTAL: 'horizontal',
-    VERTICAL: 'vertical',
-    SMART: 'smart',
-    SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
-    SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
-};
-
-export const VOLTAGE_LEVEL_TYPE = 'voltage-level';
+import { computePaperAndSvgSizesIfReady, setWidthAndHeight } from './utils';
 
 const loadingWidth = 150;
 const maxWidthVoltageLevel = 900;
@@ -117,43 +108,6 @@ let initialWidth, initialHeight;
 const mapRightOffset = 120;
 const mapBottomOffset = 80;
 const borders = 2; // we use content-size: border-box so this needs to be included..
-// Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
-const computePaperAndSvgSizesIfReady = (
-    fullScreen,
-    svgType,
-    totalWidth,
-    totalHeight,
-    svgPreferredWidth,
-    svgPreferredHeight,
-    headerPreferredHeight
-) => {
-    if (
-        typeof svgPreferredWidth != 'undefined' &&
-        typeof headerPreferredHeight != 'undefined'
-    ) {
-        let paperWidth, paperHeight, svgWidth, svgHeight;
-
-        let maxWidth, maxHeight;
-        if (svgType === VOLTAGE_LEVEL_TYPE) {
-            maxWidth = maxWidthVoltageLevel;
-            maxHeight = maxHeightVoltageLevel;
-        }
-        svgWidth = Math.min(
-            svgPreferredWidth,
-            totalWidth - mapRightOffset,
-            maxWidth
-        );
-        svgHeight = Math.min(
-            svgPreferredHeight,
-            totalHeight - mapBottomOffset - headerPreferredHeight,
-            maxHeight
-        );
-        paperWidth = svgWidth + borders;
-        paperHeight = svgHeight + headerPreferredHeight + borders;
-
-        return { paperWidth, paperHeight, svgWidth, svgHeight };
-    }
-};
 
 const PositionDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
@@ -206,9 +160,14 @@ const PositionDiagram = forwardRef((props, ref) => {
             totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
-            headerPreferredHeight
+            headerPreferredHeight,
+            borders,
+            maxWidthVoltageLevel,
+            maxHeightVoltageLevel,
+            mapRightOffset,
+            mapBottomOffset
         );
-        if (typeof sizes != 'undefined') {
+        if (sizes) {
             setSvgFinalWidth(sizes.svgWidth);
             setFinalPaperWidth(sizes.paperWidth);
             setSvgFinalHeight(sizes.svgHeight);
@@ -349,28 +308,16 @@ const PositionDiagram = forwardRef((props, ref) => {
         }
     };
 
-    let sizeWidth,
-        sizeHeight = initialHeight;
-    if (svg.error) {
-        sizeWidth = errorWidth;
-    } else if (
-        typeof finalPaperWidth != 'undefined' &&
-        typeof finalPaperHeight != 'undefined'
-    ) {
-        sizeWidth = finalPaperWidth;
-        sizeHeight = finalPaperHeight;
-    } else if (initialWidth !== undefined || loadingState) {
-        sizeWidth = initialWidth;
-    } else {
-        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
-    }
-
-    if (sizeWidth !== undefined) {
-        initialWidth = sizeWidth; // setting initial width for the next SLD.
-    }
-    if (sizeHeight !== undefined) {
-        initialHeight = sizeHeight; // setting initial height for the next SLD.
-    }
+    let { sizeWidth, sizeHeight } = setWidthAndHeight(
+        svg,
+        finalPaperWidth,
+        finalPaperHeight,
+        loadingState,
+        totalWidth,
+        initialHeight,
+        initialWidth,
+        errorWidth
+    );
 
     return !svg.error ? (
         <Paper
@@ -432,7 +379,7 @@ const PositionDiagram = forwardRef((props, ref) => {
 
 PositionDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
-    svgUrl: PropTypes.string.isRequired,
+    svgUrl: PropTypes.string,
     onClose: PropTypes.func,
     svgType: PropTypes.string.isRequired,
     disabled: PropTypes.bool,

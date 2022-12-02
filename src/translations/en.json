@@ -628,5 +628,6 @@
     "Top": "Top",
     "Bottom": "Bottom",
     "ConnectionPosition": "Connection position",
-    "ErrorNoVoltageSelected": "No voltage level selected, please select one before!"
+    "ErrorNoVoltageSelected": "No voltage level selected, please select one before",
+    "DisplayTakenPositions": "Display taken positions"
 }

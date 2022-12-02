@@ -26,6 +26,7 @@ import {
     CONNECTION_DIRECTIONS,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../network/constants';
+import { useIntl } from 'react-intl';
 
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
@@ -114,6 +115,8 @@ export const useConnectivityValue = ({
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
         []
     );
+    const [open, setOpen] = useState(false);
+    const intl = useIntl();
 
     useEffect(() => {
         if (!voltageLevelOptionsPromise) return;
@@ -235,8 +238,6 @@ export const useConnectivityValue = ({
         connectionPosition,
     ]);
 
-    const [open, setOpen] = React.useState(false);
-
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -309,7 +310,11 @@ export const useConnectivityValue = ({
                                         align="start"
                                     >
                                         {
-                                            <Tooltip title="Show available positions">
+                                            <Tooltip
+                                                title={intl.formatMessage({
+                                                    id: 'DisplayTakenPositions',
+                                                })}
+                                            >
                                                 <InfoIcon
                                                     onClick={handleClickOpen}
                                                     color="action"
@@ -334,14 +339,15 @@ export const useConnectivityValue = ({
         );
     }, [
         direction,
+        withPosition,
+        withDirectionsInfos,
+        gridSize,
         voltageLevelField,
         busOrBusbarSectionField,
-        gridSize,
-        withDirectionsInfos,
         connectionNameField,
         connectionDirectionField,
-        withPosition,
         connectionPositionField,
+        intl,
         studyUuid,
         open,
         voltageLevelObjOrId,
