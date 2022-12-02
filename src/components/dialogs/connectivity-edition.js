@@ -247,21 +247,15 @@ export const useConnectivityValue = ({
     };
 
     const render = useMemo(() => {
+        const conditionalSize =
+            withPosition && withDirectionsInfos ? 4 : gridSize;
         return (
             <>
                 <Grid container direction={direction || 'row'} spacing={2}>
-                    <Grid
-                        item
-                        xs={withPosition && withDirectionsInfos ? 4 : gridSize}
-                        align="start"
-                    >
+                    <Grid item xs={conditionalSize} align="start">
                         {voltageLevelField}
                     </Grid>
-                    <Grid
-                        item
-                        xs={withPosition && withDirectionsInfos ? 4 : gridSize}
-                        align="start"
-                    >
+                    <Grid item xs={conditionalSize} align="start">
                         {busOrBusbarSectionField}
                     </Grid>
 
@@ -273,26 +267,10 @@ export const useConnectivityValue = ({
                                     <Grid item xs={gridSize} align="start" />
                                 </>
                             )}
-                            <Grid
-                                item
-                                xs={
-                                    withPosition && withDirectionsInfos
-                                        ? 4
-                                        : gridSize
-                                }
-                                align="start"
-                            >
+                            <Grid item xs={conditionalSize} align="start">
                                 {connectionNameField}
                             </Grid>
-                            <Grid
-                                item
-                                xs={
-                                    withPosition && withDirectionsInfos
-                                        ? 4
-                                        : gridSize
-                                }
-                                align="start"
-                            >
+                            <Grid item xs={conditionalSize} align="start">
                                 {connectionDirectionField}
                             </Grid>
                             {withPosition && (
