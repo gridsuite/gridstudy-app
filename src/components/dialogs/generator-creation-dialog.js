@@ -298,6 +298,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: VoltageAdornment,
         inputForm: inputForm,
+        formProps: { disabled: !voltageRegulation },
         defaultValue: formValues?.voltageSetpoint,
     });
 
