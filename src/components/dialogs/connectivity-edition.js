@@ -20,7 +20,7 @@ import {
     useTextValue,
 } from './inputs/input-hooks';
 import InfoIcon from '@mui/icons-material/Info';
-import PositionDiagram from '../diagrams/singleLineDiagram/PositionDiagramPane';
+import PositionDiagramPane from '../diagrams/singleLineDiagram/PositionDiagramPane';
 import { Tooltip } from '@mui/material';
 import {
     CONNECTION_DIRECTIONS,
@@ -306,7 +306,7 @@ export const useConnectivityValue = ({
                         </>
                     )}
                 </Grid>
-                <PositionDiagram
+                <PositionDiagramPane
                     studyUuid={studyUuid}
                     open={open}
                     onClose={handleClose}
