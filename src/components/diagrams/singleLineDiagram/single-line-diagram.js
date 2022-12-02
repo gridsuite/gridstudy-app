@@ -42,7 +42,7 @@ import { equipments } from '../../network/network-equipments';
 import { RunningStatus } from '../../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 
-import { useIntlRef, useSnackMessage } from '../../../utils/messages';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';

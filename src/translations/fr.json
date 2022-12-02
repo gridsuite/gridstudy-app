@@ -18,6 +18,7 @@
     "moveStudyNotification": "L'étude a été déplacée de {oldStudyPath} à {studyPath}",
 
     "CopiedNodeInvalidationMessage": "Suite à modification de nœud, le contenu du presse papier a été supprimé",
+    "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "format": "Format",
@@ -121,14 +122,13 @@
     "TargetQ": "Q consigne (MW)",
     "RatioTap": "Prise régleur",
     "PhaseTap": "Prise déphaseur",
-
     "RatioTap1": "Plot régleur 1",
     "PhaseTap1": "Plot déphaseur 1",
     "RatioTap2": "Plot régleur 2",
     "PhaseTap2": "Plot déphaseur 2",
     "RatioTap3": "Plot régleur 3",
     "PhaseTap3": "Plot déphaseur 3",
-    "VoltageRegulatorOn": "Réglage tension",
+    "VoltageRegulatorOn": "Réglage de tension",
     "RegulatingTerminal": "Nœud réglé",
 
     "displayOverloadTable": "Afficher la table des surcharges en cas de dépassement de seuil\u00a0:",
@@ -348,7 +348,9 @@
     "FieldIsRequired": "Ce champ doit être renseigné",
     "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",
     "errDuplicateModificationMsg": "Une erreur est survenue lors de la copie des modifications",
+    "errCutModificationMsg": "Une erreur est survenue lors du coupage des modifications",
     "warnDuplicateModificationMsg": "Nombre de modifications non copiées :",
+    "warnCutModificationMsg": "Nombre de modifications non coupées :",
     "errDeleteModificationMsg": "Une erreur est survenue lors de la suppression des modifications",
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
@@ -390,7 +392,7 @@
     "MinimumActivePowerText": "Puissance active min",
     "MaximumActivePowerText": "Puissance active max",
     "RatedNominalPowerText": "Puissance nominale",
-    "VoltageRegulationText": "Réglage tension",
+    "VoltageRegulationText": "Réglage de tension",
     "RegulationTypeText": "Type de réglage",
     "Local": "Local",
     "Distant": "Distant",
@@ -459,7 +461,7 @@
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
     "Breaker": "Disjoncteur",
     "Disconnector": "Sectionneur",
-    "SameHorizAndVertPos": "Au moins deux SJBs ont mêmes positions horizontale et verticale",
+    "SameHorizAndVertPos": "Au moins deux SJBs ont les mêmes positions horizontale et verticale",
     "DuplicateId": "Identifiant non unique",
     "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
 
@@ -468,7 +470,6 @@
     "LineAttachToVoltageLevel": "Créer un piquage",
     "LinesAttachToSplitLines": "Piquage en coupure",
     "LineToAttachTo": "Liaison piquée",
-    "LengthPercentage": "% long.",
     "OutOfBoundsPercentage": "Pourcentage en dehors des limites",
     "BusbarOrNodeID": "ID SJB ou nœud",
     "Line1": "Liaison origine",
@@ -506,12 +507,12 @@
     "ConfigurePhaseTapChanger": "Créer déphaseur",
 
     "OnLoad":"En charge",
-    "VoltageRegulation":"Réglage tension",
+    "VoltageRegulation":"Réglage de tension",
     "Regulating":"En réglage",
     "TargetVoltage":"Tension",
     "TargetVoltageGreaterThanZero": "La tension doit être strictement positive",
     "Deadband":"Bande morte",
-    "TargetDeadbandGreaterThanZero": "La valeur de Deadband doit être égale ou supérieur à 0",
+    "TargetDeadbandGreaterThanZero": "La valeur de bande morte doit être strictement positive",
     "LowTapPosition":"Prise min",
     "HighTapPosition":"Prise max",
     "TapPosition":"Prise courante",
@@ -546,7 +547,9 @@
     "PhaseActivePowerControl": "Suivi de transit",
 
     "RegulatingValueCurrentLimiter": "Limitation du courant",
+    "CurrentLimiterGreaterThanZero": "La valeur de la limitation du courant doit être strictement positive",
     "RegulatingValueActivePowerControl": "Consigne de transit",
+    "ActivePowerControlGreaterThanZero": "La valeur de la consigne de transit doit être strictement positive",
 
     "CreateRegulationRule":"Créer une loi de régleur",
     "LowTapRatio":"Rapport (prise min)",
@@ -561,8 +564,6 @@
     "ImportDephasingRule":"Importer une loi de déphasage",
 
     "GenerateSkeleton": "Générer le squelette",
-    "UploadCSV": "Télécharger le CSV",
-    "InvalidRuleUploadType": "Le fichier doit être de type CSV",
     "InvalidRuleHeader": "Le fichier n'a pas le bon header, veuillez vous référer au squelette",
     "uploadMessage": " Aucun fichier sélectionné",
 

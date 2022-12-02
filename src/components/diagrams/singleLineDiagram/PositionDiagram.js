@@ -31,10 +31,9 @@ import { fetchSvg } from '../../../utils/rest-api';
 
 import { AutoSizer } from 'react-virtualized';
 
-import { useIntlRef, useSnackMessage } from '../../../utils/messages';
-
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { computePaperAndSvgSizesIfReady, setWidthAndHeight } from './utils';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 
 const loadingWidth = 150;
 const maxWidthVoltageLevel = 900;
