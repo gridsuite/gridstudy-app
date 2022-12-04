@@ -21,57 +21,34 @@ import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
-
 import { fetchSvg } from '../../../utils/rest-api';
-
-import { AutoSizer } from 'react-virtualized';
-
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
-import { computePaperAndSvgSizesIfReady, setWidthAndHeight } from './utils';
+import {
+    BORDERS,
+    commonStyle,
+    commonSldStyle,
+    computePaperAndSvgSizesIfReady,
+    MAP_BOTTOM_OFFSET,
+    MAP_RIGHT_OFFSET,
+    MAX_HEIGHT_VOLTAGE_LEVEL,
+    MAX_WIDTH_VOLTAGE_LEVEL,
+    setWidthAndHeight,
+    renderIntoPaperWrapper,
+    NoSvg,
+} from './utils';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 
-const loadingWidth = 150;
-const maxWidthVoltageLevel = 900;
-const maxHeightVoltageLevel = 700;
-const errorWidth = maxWidthVoltageLevel;
-
-const useStyles = makeStyles((theme) => ({
-    divSld: {
-        '& svg': {
-            // necessary because the default (inline-block) adds vertical space
-            // to our otherwise pixel accurate computations (this makes a
-            // scrollbar appear in fullscreen mode)
-            display: 'block',
-        },
-        '& polyline': {
-            pointerEvents: 'none',
-        },
-        '& .sld-graph-label, .sld-label': {
-            fill: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
-        },
-        '& .sld-disconnector:not(.sld-fictitious), :not(.sld-breaker):not(.sld-disconnector):not(.sld-load-break-switch).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
-            {
-                stroke: theme.palette.text.primary,
-            },
-        '& .arrow': {
-            fill: theme.palette.text.primary,
-            pointerEvents: 'none',
-        },
+const customSldStyle = (theme) => {
+    return {
         '& .sld-in .sld-label': {
             display: 'none',
         },
         '& .sld-out .sld-label': {
             display: 'none',
-        },
-        '& .sld-flash, .sld-lock': {
-            stroke: 'none',
-            fill: theme.palette.text.primary,
         },
         '& .sld-arrow-in': {
             display: 'none',
@@ -79,37 +56,20 @@ const useStyles = makeStyles((theme) => ({
         '& .sld-arrow-out': {
             display: 'none',
         },
-        overflow: 'hidden',
-    },
-    close: {
-        padding: 0,
-        borderRight: theme.spacing(1),
-    },
-    header: {
-        padding: 5,
-        display: 'flex',
-        flexDirection: 'row',
-        wordBreak: 'break-all',
-        backgroundColor: theme.palette.background.default,
-    },
-    paperBorders: {
-        borderLeft: '1px solid ' + theme.palette.action.disabled,
-        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
-        borderRight: '1px solid ' + theme.palette.action.hover,
-    },
+        '& .arrow': {
+            fill: theme.palette.text.primary,
+            pointerEvents: 'none',
+        },
+    };
+};
+
+const useStyles = makeStyles((theme) => ({
+    divSld: { ...commonSldStyle(theme, customSldStyle(theme)) },
+    ...commonStyle(theme, {}),
 }));
 
-const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
-
-let initialWidth, initialHeight;
-// To allow controls that are in the corners of the map to not be hidden in normal mode
-// (but they are still hidden in fullscreen mode)
-const mapRightOffset = 120;
-const mapBottomOffset = 80;
-const borders = 2; // we use content-size: border-box so this needs to be included..
-
 const PositionDiagram = forwardRef((props, ref) => {
-    const [svg, setSvg] = useState(noSvg);
+    const [svg, setSvg] = useState(NoSvg);
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const { snackError } = useSnackMessage();
@@ -146,7 +106,6 @@ const PositionDiagram = forwardRef((props, ref) => {
     // easily avoid recomputing stuff when updating with the same values
     const [svgPreferredWidth, setSvgPreferredWidth] = useState();
     const [svgPreferredHeight, setSvgPreferredHeight] = useState();
-    const [headerPreferredHeight, setHeaderPreferredHeight] = useState();
     const [finalPaperWidth, setFinalPaperWidth] = useState();
     const [finalPaperHeight, setFinalPaperHeight] = useState();
     const [svgFinalWidth, setSvgFinalWidth] = useState();
@@ -159,12 +118,11 @@ const PositionDiagram = forwardRef((props, ref) => {
             totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
-            headerPreferredHeight,
-            borders,
-            maxWidthVoltageLevel,
-            maxHeightVoltageLevel,
-            mapRightOffset,
-            mapBottomOffset
+            BORDERS,
+            MAX_WIDTH_VOLTAGE_LEVEL,
+            MAX_HEIGHT_VOLTAGE_LEVEL,
+            MAP_RIGHT_OFFSET,
+            MAP_BOTTOM_OFFSET
         );
         if (sizes) {
             setSvgFinalWidth(sizes.svgWidth);
@@ -178,7 +136,6 @@ const PositionDiagram = forwardRef((props, ref) => {
         svgType,
         svgPreferredWidth,
         svgPreferredHeight,
-        headerPreferredHeight,
     ]);
 
     useEffect(() => {
@@ -210,7 +167,7 @@ const PositionDiagram = forwardRef((props, ref) => {
                     updateLoadingState(false);
                 });
         } else {
-            setSvg(noSvg);
+            setSvg(NoSvg);
         }
     }, [props.svgUrl, forceState, snackError, intlRef]);
 
@@ -232,8 +189,8 @@ const PositionDiagram = forwardRef((props, ref) => {
             const minWidth = svgFinalWidth;
             const minHeight = svgFinalHeight;
 
-            let viewboxMaxWidth = maxWidthVoltageLevel;
-            let viewboxMaxHeight = maxHeightVoltageLevel;
+            let viewboxMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
+            let viewboxMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
             let selectionBackColor = theme.palette.background.paper;
 
             const sldViewer = new SingleLineDiagramViewer(
@@ -302,7 +259,7 @@ const PositionDiagram = forwardRef((props, ref) => {
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
-            setSvg(noSvg);
+            setSvg(NoSvg);
             props.onClose();
         }
     };
@@ -313,66 +270,52 @@ const PositionDiagram = forwardRef((props, ref) => {
         finalPaperHeight,
         loadingState,
         totalWidth,
-        initialHeight,
-        initialWidth,
-        errorWidth
+        MAX_WIDTH_VOLTAGE_LEVEL
     );
 
-    return !svg.error ? (
-        <Paper
-            ref={ref}
-            elevation={4}
-            square={true}
-            className={classes.paperBorders}
-            style={{
-                pointerEvents: 'auto',
-                width: sizeWidth,
-                minWidth: loadingWidth,
-                height: sizeHeight,
-                position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
-                overflow: 'hidden',
-            }}
-        >
-            <Box>
-                <AutoSizer
-                    onResize={({ height }) => {
-                        setHeaderPreferredHeight(height);
-                    }}
-                >
-                    {() => /* just for measuring the header */ {}}
-                </AutoSizer>
-
-                <Box className={classes.header}>
-                    <Box flexGrow={1}>
-                        <Typography>{props.diagramTitle}</Typography>
-                    </Box>
-                    <Box>
-                        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-                            <IconButton
-                                className={classes.close}
-                                onClick={onCloseHandler}
-                            >
-                                <CloseIcon />
-                            </IconButton>
+    function PositionDiagramElement() {
+        return (
+            <>
+                <Box>
+                    <Box className={classes.header}>
+                        <Box flexGrow={1}>
+                            <Typography>{props.diagramTitle}</Typography>
+                        </Box>
+                        <Box>
+                            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                                <IconButton
+                                    className={classes.close}
+                                    onClick={onCloseHandler}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            </Box>
                         </Box>
                     </Box>
                 </Box>
-            </Box>
-            {loadingState && (
-                <Box height={2}>
-                    <LinearProgress />
+                {loadingState && (
+                    <Box height={2}>
+                        <LinearProgress />
+                    </Box>
+                )}
+                <Box position="relative">
+                    <div
+                        ref={svgRef}
+                        className={classes.divSld}
+                        dangerouslySetInnerHTML={{ __html: svg.svg }}
+                    />
                 </Box>
-            )}
-            <Box position="relative">
-                <div
-                    ref={svgRef}
-                    className={classes.divSld}
-                    dangerouslySetInnerHTML={{ __html: svg.svg }}
-                />
-            </Box>
-        </Paper>
-    ) : (
-        <></>
+            </>
+        );
+    }
+
+    return renderIntoPaperWrapper(
+        svg,
+        ref,
+        classes,
+        sizeWidth,
+        sizeHeight,
+        <PositionDiagramElement />
     );
 });
 

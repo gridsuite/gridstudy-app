@@ -115,7 +115,7 @@ export const useConnectivityValue = ({
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
         []
     );
-    const [open, setOpen] = useState(false);
+    const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
 
     useEffect(() => {
@@ -238,12 +238,12 @@ export const useConnectivityValue = ({
         connectionPosition,
     ]);
 
-    const handleClickOpen = () => {
-        setOpen(true);
+    const handleClickOpenDiagramPane = () => {
+        setIsDiagramPaneOpen(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleCloseDiagramPane = () => {
+        setIsDiagramPaneOpen(false);
     };
 
     const render = useMemo(() => {
@@ -294,7 +294,9 @@ export const useConnectivityValue = ({
                                                 })}
                                             >
                                                 <InfoIcon
-                                                    onClick={handleClickOpen}
+                                                    onClick={
+                                                        handleClickOpenDiagramPane
+                                                    }
                                                     color="action"
                                                     cursor="pointer"
                                                 />
@@ -308,8 +310,8 @@ export const useConnectivityValue = ({
                 </Grid>
                 <PositionDiagramPane
                     studyUuid={studyUuid}
-                    open={open}
-                    onClose={handleClose}
+                    open={isDiagramPaneOpen}
+                    onClose={handleCloseDiagramPane}
                     voltageLevelId={voltageLevelObjOrId}
                     currentNodeUuid={currentNodeUuid}
                 />
@@ -327,7 +329,7 @@ export const useConnectivityValue = ({
         connectionPositionField,
         intl,
         studyUuid,
-        open,
+        isDiagramPaneOpen,
         voltageLevelObjOrId,
         currentNodeUuid,
     ]);

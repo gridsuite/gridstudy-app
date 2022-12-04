@@ -17,7 +17,6 @@ import {
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
 import PositionDiagram from './PositionDiagram';
-import { AutoSizer } from 'react-virtualized';
 import { useIntl } from 'react-intl';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
 import { SvgType } from './utils';
@@ -75,36 +74,25 @@ const PositionDiagramPane = ({
     }, [getVoltageLevelSingleLineDiagramUrl, open, svgUrl, voltageLevelId?.id]);
 
     return (
-        <AutoSizer>
-            {(width, height) => (
-                <Dialog
-                    onClose={handleClose}
-                    open={open}
-                    maxWidth="md"
-                    scroll="body"
-                >
-                    {!voltageLevelId?.id && (
-                        <Alert severity="error">
-                            {intl.formatMessage({
-                                id: 'ErrorNoVoltageSelected',
-                            })}
-                        </Alert>
-                    )}
-
-                    {voltageLevelId?.id && open && (
-                        <PositionDiagram
-                            onClose={handleClose}
-                            diagramTitle={voltageLevelId?.id ?? ''}
-                            svgUrl={svgUrl}
-                            svgType={SvgType.VOLTAGE_LEVEL}
-                            isComputationRunning={false}
-                            totalWidth={width}
-                            totalHeight={height}
-                        />
-                    )}
-                </Dialog>
+        <Dialog onClose={handleClose} open={open} maxWidth="md" scroll="body">
+            {!voltageLevelId?.id && (
+                <Alert severity="error">
+                    {intl.formatMessage({
+                        id: 'ErrorNoVoltageSelected',
+                    })}
+                </Alert>
             )}
-        </AutoSizer>
+
+            {voltageLevelId?.id && open && (
+                <PositionDiagram
+                    onClose={handleClose}
+                    diagramTitle={voltageLevelId?.id ?? ''}
+                    svgUrl={svgUrl}
+                    svgType={SvgType.VOLTAGE_LEVEL}
+                    isComputationRunning={false}
+                />
+            )}
+        </Dialog>
     );
 };
 
