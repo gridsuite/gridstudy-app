@@ -21,6 +21,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
     'GROOVY_SCRIPT',
+    'BRANCH_STATUS',
 ]);
 
 const isEditableModification = (modif) => {
