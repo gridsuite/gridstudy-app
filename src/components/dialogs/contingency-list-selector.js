@@ -110,6 +110,7 @@ const ContingencyListSelector = (props) => {
         ) {
             fetchContingencyAndFiltersLists(favoriteContingencyListUuids)
                 .then((res) => {
+                    console.log('conttttt : ', res);
                     const mapCont = res.reduce((map, obj) => {
                         map[obj.elementUuid] = {
                             id: obj.elementUuid,

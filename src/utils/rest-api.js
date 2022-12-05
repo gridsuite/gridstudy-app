@@ -125,11 +125,12 @@ export function fetchRootFolders() {
     );
 }
 
-export function fetchDirectoryContent(directoryUuid) {
+export function fetchDirectoryContent(directoryUuid, types) {
     console.info("Fetching Folder content '%s'", directoryUuid);
+    const elementTypes = types ? '&elementTypes=' + elementTypes.join('&elementTypes=') : '';
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements`;
+        `/v1/directories/${directoryUuid}/elements` + elementTypes;
     return backendFetch(fetchDirectoryContentUrl).then((response) =>
         response.ok
             ? response.json()
@@ -977,6 +978,7 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
 }
 
 export function fetchContingencyAndFiltersLists(listIds) {
+    console.log('conList 1 : ', listIds);
     console.info('Fetching contingency and filters lists');
     const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
@@ -998,6 +1000,7 @@ export function fetchContingencyCount(
     console.info(
         `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' and node '${currentNodeUuid}'...`
     );
+    console.log('herreeeee : ', )
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/contingency-count' +

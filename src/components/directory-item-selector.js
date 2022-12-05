@@ -126,8 +126,9 @@ const DirectoryItemSelector = (props) => {
 
     const fetchDirectory = useCallback(
         (nodeId) => {
-            fetchDirectoryContent(nodeId)
+            fetchDirectoryContent(nodeId, props.types)
                 .then((children) => {
+                    console.log('ttttttt : ', children);
                     const childrenMatchedTypes = children.filter((item) =>
                         contentFilter().has(item.type)
                     );
@@ -142,10 +143,12 @@ const DirectoryItemSelector = (props) => {
                             props.equipmentTypes
                         ).then((childrenWithMetada) => {
                             // update directory content
+                            console.log('testing : ', childrenWithMetada);
                             addToDirectory(nodeId, childrenWithMetada);
                         });
                     } else {
                         // update directory content
+                        console.log('testinggg 2', props.types, childrenMatchedTypes);
                         addToDirectory(nodeId, childrenMatchedTypes);
                     }
                 })
