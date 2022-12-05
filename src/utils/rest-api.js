@@ -1165,29 +1165,35 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     );
 }
 
-export function duplicateModifications(
+export function copyOrMoveModifications(
     studyUuid,
     targetNodeId,
-    modificationsIdList
+    modificationToCutUuidList,
+    copyInfos
 ) {
-    console.info('duplicate and append modifications');
-    const duplicateModificationUrl =
+    console.info(copyInfos.copyType + ' modifications');
+    const copyOrMoveModificationUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
-        encodeURIComponent(targetNodeId);
+        encodeURIComponent(targetNodeId) +
+        '?' +
+        new URLSearchParams({
+            action: copyInfos.copyType,
+            originNodeUuid: copyInfos.originNodeUuid ?? '',
+        });
 
-    return backendFetch(duplicateModificationUrl, {
+    return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modificationsIdList),
+        body: JSON.stringify(modificationToCutUuidList),
     }).then((response) =>
         response.ok
-            ? response.json()
+            ? response.text()
             : response.text().then((text) => Promise.reject(text))
     );
 }
@@ -2384,16 +2390,22 @@ export function getUniqueNodeName(studyUuid) {
     });
 }
 
-export function fetchElementsMetadata(ids) {
+export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     console.info('Fetching elements metadata');
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/elements/metadata?ids=' +
         ids
             .filter((e) => e != null && e !== '') // filter empty element
-            .join('&ids=');
+            .join('&ids=') +
+        '&equipmentTypes=' +
+        equipmentTypes.join('&equipmentTypes=') +
+        '&elementTypes=' +
+        elementTypes.join('&elementTypes=');
     console.debug(url);
-    return backendFetch(url, { method: 'get' }).then((response) =>
-        response.json()
-    );
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        return response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text));
+    });
 }

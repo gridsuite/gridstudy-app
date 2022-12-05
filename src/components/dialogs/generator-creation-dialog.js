@@ -297,6 +297,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: VoltageAdornment,
         inputForm: inputForm,
+        formProps: { disabled: !voltageRegulation },
         defaultValue: formValues?.voltageSetpoint,
     });
 
@@ -314,7 +315,6 @@ const GeneratorCreationDialog = ({
     const [voltageRegulationType, voltageRegulationTypeField] = useEnumValue({
         label: 'RegulationTypeText',
         inputForm: inputForm,
-        formProps: filledTextField,
         enumValues: Object.values(REGULATION_TYPES),
         validation: {
             isFieldRequired: voltageRegulation,

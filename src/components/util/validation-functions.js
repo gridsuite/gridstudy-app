@@ -118,7 +118,6 @@ export function validateField(value, toValidate) {
     if (toValidate.skipValidation) {
         return NO_ERROR;
     }
-
     const isValueBlankOrEmpty = isBlankOrEmpty(value);
 
     if (toValidate.isFieldRequired && isValueBlankOrEmpty) {
@@ -174,6 +173,14 @@ export function validateField(value, toValidate) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
+
+    if (toValidate.function) {
+        //return makeErrorRecord(toValidate.function(value)); // TODO Seems to not be used anymore ? To remove ?
+        console.error(
+            'Validation by function, this is still used, and needs to be fixed.'
+        );
+    }
+
     return NO_ERROR;
 }
 
