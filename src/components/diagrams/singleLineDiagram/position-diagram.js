@@ -105,8 +105,8 @@ const PositionDiagram = forwardRef((props, ref) => {
     const [svgFinalWidth, setSvgFinalWidth] = useState();
     const [svgFinalHeight, setSvgFinalHeight] = useState();
 
-    const [serverHeight, setServerHeight] = useState();
-    const [serverWidth, setServerWidth] = useState();
+    const [serverHeight, setServerHeight] = useState(0);
+    const [serverWidth, setServerWidth] = useState(0);
 
     useLayoutEffect(() => {
         setSvgFinalWidth(serverWidth);
