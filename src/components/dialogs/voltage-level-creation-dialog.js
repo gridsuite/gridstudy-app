@@ -32,8 +32,6 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { useExpandableValues } from './inputs/use-expandable-values';
 
-const validationObj = { isFieldRequired: true };
-
 const numericalWithButton = {
     type: 'number',
     inputProps: { min: 0, style: { textAlign: 'right' } },
@@ -134,7 +132,7 @@ const BusBarConnexion = ({
         id: 'sjbFrom' + index,
         label: 'BusBarSection',
         inputForm: inputForm,
-        validation: validationObj,
+        validation: { isFieldRequired: true },
         defaultValue:
             defaultValue && defaultValue.fromBBS
                 ? getBusbarSectionById(fieldProps, defaultValue?.fromBBS)
@@ -148,7 +146,7 @@ const BusBarConnexion = ({
         id: 'sjbTo' + index,
         label: 'BusBarSection',
         inputForm: inputForm,
-        validation: validationObj,
+        validation: { isFieldRequired: true },
         defaultValue:
             defaultValue && defaultValue.toBBS
                 ? getBusbarSectionById(fieldProps, defaultValue?.toBBS)
@@ -332,7 +330,7 @@ const VoltageLevelCreationDialog = ({
     const [substation, substationField] = useAutocompleteField({
         id: 'optSubstation',
         label: 'Substation',
-        validation: validationObj,
+        validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
         values: substationOptions?.sort(compareById),

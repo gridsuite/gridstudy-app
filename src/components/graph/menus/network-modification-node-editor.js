@@ -6,6 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import {
     fetchNetworkModifications,
     deleteModifications,
@@ -25,6 +26,7 @@ import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
+import { useParameterState } from '../../dialogs/parameters/parameters';
 import { equipments } from '../../network/network-equipments';
 import { ModificationListItem } from './modification-list-item';
 import {
@@ -151,6 +153,7 @@ const NetworkModificationNodeEditor = () => {
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
     const currentTreeNode = useSelector((state) => state.currentTreeNode);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const currentNodeIdRef = useRef(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -317,16 +320,18 @@ const NetworkModificationNodeEditor = () => {
             dialog: () => adapt(LineCreationDialog, withVLs),
             icon: <AddIcon />,
         },
-        TWO_WINDINGS_TRANSFORMER_CREATION: {
-            label: 'CreateTwoWindingsTransformer',
-            dialog: () =>
-                adapt(
-                    TwoWindingsTransformerCreationDialog,
-                    withVLs,
-                    withVLsAndEquipments
-                ),
-            icon: <AddIcon />,
-        },
+        ...(enableDeveloperMode && {
+            TWO_WINDINGS_TRANSFORMER_CREATION: {
+                label: 'CreateTwoWindingsTransformer',
+                dialog: () =>
+                    adapt(
+                        TwoWindingsTransformerCreationDialog,
+                        withVLs,
+                        withVLsAndEquipments
+                    ),
+                icon: <AddIcon />,
+            },
+        }),
         SUBSTATION_CREATION: {
             label: 'CreateSubstation',
             dialog: () => adapt(SubstationCreationDialog),
@@ -340,7 +345,12 @@ const NetworkModificationNodeEditor = () => {
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
             dialog: () =>
-                adapt(LineSplitWithVoltageLevelDialog, withVLs, withLines),
+                adapt(
+                    LineSplitWithVoltageLevelDialog,
+                    withVLs,
+                    withLines,
+                    withSubstations
+                ),
             icon: <AddIcon />,
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {

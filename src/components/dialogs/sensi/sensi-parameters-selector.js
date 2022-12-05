@@ -128,7 +128,7 @@ const SensiParametersSelector = (props) => {
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
-            isValueGreaterOrEqualThan: defaultResultsThreshold,
+            valueGreaterThanOrEqualTo: defaultResultsThreshold,
             errorMsgId: 'ResultsThresholdGreaterOrEqualDefaultValue',
         },
         inputForm: inputForm,
