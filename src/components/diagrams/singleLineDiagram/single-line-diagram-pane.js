@@ -174,9 +174,9 @@ export function SingleLineDiagramPane({
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const [displayedSLD, setDisplayedSld] = useState([]);
-    const [displayedSLDHeights, setDisplayedSLDHeights] = useState([]);
-    const displayedSLDHeightsRef = useRef();
-    displayedSLDHeightsRef.current = displayedSLDHeights;
+    const [displayedSldHeights, setDisplayedSldHeights] = useState([]);
+    const displayedSldHeightsRef = useRef();
+    displayedSldHeightsRef.current = displayedSldHeights;
 
     const createView = useDisplayView(network, studyUuid, currentNode);
 
@@ -324,28 +324,28 @@ export function SingleLineDiagramPane({
     const [computedHeight, setComputedHeight] = useState();
 
     useEffect(() => {
-        let displayedHeights_ = displayedSLDHeightsRef.current;
+        let displayedSldHeights_ = displayedSldHeightsRef.current;
         viewsRef.current.forEach((sld) => {
             if (sld.state === ViewState.MINIMIZED) {
-                displayedHeights_ = displayedHeights_.filter(
+                displayedSldHeights_ = displayedSldHeights_.filter(
                     (displayedHeight) => displayedHeight.id !== sld.id
                 );
             }
         });
-        displayedHeights_ = displayedHeights_.filter((displayedHeight) =>
+        displayedSldHeights_ = displayedSldHeights_.filter((displayedHeight) =>
             viewsRef.current.map((sld) => sld.id).includes(displayedHeight.id)
         );
 
-        setDisplayedSLDHeights(displayedHeights_);
+        setDisplayedSldHeights(displayedSldHeights_);
     }, [views]);
 
     useEffect(() => {
-        if (displayedSLDHeights.length === 0) {
+        if (displayedSldHeights.length === 0) {
             setComputedHeight();
         }
 
         const initialHeights = [
-            ...displayedSLDHeights.map(
+            ...displayedSldHeights.map(
                 (displayedHeight) => displayedHeight.initialHeight
             ),
         ];
@@ -355,7 +355,7 @@ export function SingleLineDiagramPane({
                 setComputedHeight(newComputedHeight);
             }
         }
-    }, [displayedSLDHeights]);
+    }, [displayedSldHeights]);
 
     return (
         <AutoSizer>
@@ -384,7 +384,7 @@ export function SingleLineDiagramPane({
                             totalWidth={width}
                             totalHeight={height}
                             computedHeight={computedHeight}
-                            setDisplayedSLDHeights={setDisplayedSLDHeights}
+                            setDisplayedSldHeights={setDisplayedSldHeights}
                         />
                     ))}
                     <Stack

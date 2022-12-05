@@ -250,7 +250,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         onMinimize,
         disabled,
         computedHeight,
-        setDisplayedSLDHeights,
+        setDisplayedSldHeights,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -330,21 +330,21 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (finalPaperHeight) {
-            setDisplayedSLDHeights((displayedHeights) => {
+            setDisplayedSldHeights((displayedSldHeight) => {
                 if (
-                    displayedHeights.filter((height) => height.id === sldId)
+                    displayedSldHeight.filter((height) => height.id === sldId)
                         .length > 0
                 ) {
-                    return displayedHeights;
+                    return displayedSldHeight;
                 } else {
                     return [
-                        ...displayedHeights,
+                        ...displayedSldHeight,
                         { id: sldId, initialHeight: finalPaperHeight },
                     ];
                 }
             });
         }
-    }, [computedHeight, finalPaperHeight, setDisplayedSLDHeights, sldId]);
+    }, [computedHeight, finalPaperHeight, setDisplayedSldHeights, sldId]);
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
