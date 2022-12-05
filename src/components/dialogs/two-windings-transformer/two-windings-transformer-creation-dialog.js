@@ -360,7 +360,7 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
-            isValueLessOrEqualTo: 100,
+            isValueLessOrEqualTo: MAX_TAP_NUMBER,
         },
         inputForm: ratioTapInputForm,
         formProps: {
@@ -531,7 +531,7 @@ const TwoWindingsTransformerCreationDialog = ({
             setRatioTapRows(
                 Object.values(twt.ratioTapChanger?.steps).map((step) => {
                     return {
-                        key: step.rho,
+                        key: step.index,
                         tap: step.index,
                         resistance: step.r,
                         reactance: step.x,
