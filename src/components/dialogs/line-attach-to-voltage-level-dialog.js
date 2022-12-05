@@ -277,6 +277,7 @@ const LineAttachToVoltageLevelDialog = ({
         inputForm: inputForm,
         validation: { isFieldRequired: true },
         defaultValue: lineToEdit?.equipmentId,
+        formProps: { disabled: true },
     });
 
     const [attachmentPointId, attachmentPointIdField] = useTextValue({
