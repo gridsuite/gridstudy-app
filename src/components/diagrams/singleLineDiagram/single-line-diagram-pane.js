@@ -332,10 +332,10 @@ export function SingleLineDiagramPane({
                 );
             }
         });
-
         displayedHeights_ = displayedHeights_.filter((displayedHeight) =>
             viewsRef.current.map((sld) => sld.id).includes(displayedHeight.id)
         );
+
         setDisplayedHeights(displayedHeights_);
     }, [views]);
 
@@ -344,13 +344,13 @@ export function SingleLineDiagramPane({
             setComputedHeight();
         }
 
-        const heights = [
+        const initialHeights = [
             ...displayedHeights.map(
                 (displayedHeight) => displayedHeight.initialHeight
             ),
         ];
-        if (heights.length > 0) {
-            const newComputedHeight = Math.max(...heights);
+        if (initialHeights.length > 0) {
+            const newComputedHeight = Math.max(...initialHeights);
             if (newComputedHeight && !isNaN(newComputedHeight)) {
                 setComputedHeight(newComputedHeight);
             }
