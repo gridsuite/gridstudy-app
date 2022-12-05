@@ -137,16 +137,12 @@ const DirectoryItemSelector = (props) => {
                     ) {
                         // filtering also with equipment types
                         fetchElementsMetadata(
-                            childrenMatchedTypes.map((e) => e.elementUuid)
+                            childrenMatchedTypes.map((e) => e.elementUuid),
+                            props.types,
+                            props.equipmentTypes
                         ).then((childrenWithMetada) => {
-                            const childrenToBeInserted =
-                                childrenWithMetada.filter((e) => {
-                                    return props.equipmentTypes.includes(
-                                        e.specificMetadata.equipmentType
-                                    );
-                                });
                             // update directory content
-                            addToDirectory(nodeId, childrenToBeInserted);
+                            addToDirectory(nodeId, childrenWithMetada);
                         });
                     } else {
                         // update directory content
@@ -162,7 +158,7 @@ const DirectoryItemSelector = (props) => {
                     );
                 });
         },
-        [addToDirectory, contentFilter, props.equipmentTypes]
+        [addToDirectory, contentFilter, props.types, props.equipmentTypes]
     );
 
     useEffect(() => {
