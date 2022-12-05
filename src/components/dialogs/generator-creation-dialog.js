@@ -101,7 +101,6 @@ const GeneratorCreationDialog = ({
         'MinimumReactivePower',
         'MaximumReactivePower',
     ];
-    const fieldRequired = { isFieldRequired: true };
 
     const isDistantRegulation = (regulationType) => {
         return regulationType === REGULATION_TYPES.DISTANT.id;
@@ -165,7 +164,7 @@ const GeneratorCreationDialog = ({
 
     const [generatorId, generatorIdField] = useTextValue({
         label: 'ID',
-        validation: fieldRequired,
+        validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentId,
@@ -231,7 +230,6 @@ const GeneratorCreationDialog = ({
         reactiveCapabilityCurveChoice,
         reactiveCapabilityCurveChoiceRadioButton,
     ] = useRadioValue({
-        validation: fieldRequired,
         inputForm: inputForm,
         defaultValue:
             formValues?.reactiveCapabilityCurve === false ? 'MINMAX' : 'CURVE',
@@ -283,7 +281,7 @@ const GeneratorCreationDialog = ({
 
     const [voltageRegulation, voltageRegulationField] = useBooleanValue({
         label: 'VoltageRegulationText',
-        validation: fieldRequired,
+        validation: { isFieldRequired: true },
         inputForm: inputForm,
         defaultValue: formValues?.voltageRegulationOn ?? false,
     });
@@ -298,6 +296,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: VoltageAdornment,
         inputForm: inputForm,
+        formProps: { disabled: !voltageRegulation },
         defaultValue: formValues?.voltageSetpoint,
     });
 
@@ -373,7 +372,7 @@ const GeneratorCreationDialog = ({
 
     const [frequencyRegulation, frequencyRegulationField] = useBooleanValue({
         label: 'FrequencyRegulation',
-        validation: fieldRequired,
+        validation: { isFieldRequired: true },
         inputForm: inputForm,
         defaultValue: formValues?.participate ?? false,
     });
