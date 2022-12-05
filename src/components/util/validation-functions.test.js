@@ -474,3 +474,12 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
         ]).length
     ).not.toBe(0);
 });
+
+test('validation-functions.validateField.forceValidation', () => {
+    expect(validateField(600, { valueLessThan: 10 }).error).toBe(true);
+    expect(validateField(600, { valueLessThan: 10 }, true).error).toBe(false);
+    expect(
+        validateField(600, { valueLessThan: 10, forceValidation: true }, true)
+            .error
+    ).toBe(true);
+});
