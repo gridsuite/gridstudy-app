@@ -53,7 +53,6 @@ import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
-import { height } from '@mui/system';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -310,6 +309,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         closeEquipmentMenu();
     }
 
+    useImperativeHandle(
+        ref,
+        () => ({
+            reloadSvg: forceUpdate,
+        }),
+        // Note: forceUpdate doesn't change
+        [forceUpdate]
+    );
+
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
     const [svgPreferredWidth, setSvgPreferredWidth] = useState();
@@ -337,15 +345,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             });
         }
     }, [computedHeight, finalPaperHeight, setDisplayedHeights, sldId]);
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
@@ -600,6 +599,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     }, [
         svgFinalWidth,
         svgFinalHeight,
+        //TODO, these are from the previous useLayoutEffect
+        //how to refactor to avoid repeating them here ?
         svg,
         onNextVoltageLevelClick,
         onBreakerClick,
