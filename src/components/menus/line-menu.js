@@ -60,7 +60,6 @@ const withLineMenu =
     }) => {
         const classes = useStyles();
         const intl = useIntl();
-
         const studyUuid = decodeURIComponent(useParams().studyUuid);
 
         const { snackInfo } = useSnackMessage();
@@ -86,7 +85,8 @@ const withLineMenu =
         const getLineDescriptor = useCallback(
             (voltageLevelId) => {
                 return displayUseName
-                    ? network.getVoltageLevel(voltageLevelId).name
+                    ? network.getVoltageLevel(voltageLevelId).name ??
+                          voltageLevelId
                     : voltageLevelId;
             },
             [displayUseName, network]
