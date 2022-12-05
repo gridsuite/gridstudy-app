@@ -4,13 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
@@ -57,18 +53,16 @@ function getValueOrNull(val) {
 
 /**
  * Dialog to create a generator in the network
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param currentNodeUuid the currently selected tree node
  * @param equipmentOptionsPromise Promise handling list of generator options
  * @param editData the data to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const GeneratorModificationDialog = ({
     editData,
-    open,
-    onClose,
     currentNodeUuid,
     equipmentOptionsPromise,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -86,8 +80,6 @@ const GeneratorModificationDialog = ({
 
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
-
-    const fieldRequired = { isFieldRequired: true };
 
     useEffect(() => {
         if (!equipmentOptionsPromise) return;
@@ -111,7 +103,7 @@ const GeneratorModificationDialog = ({
 
     const [generatorInfos, generatorIdField] = useAutocompleteField({
         label: 'ID',
-        validation: fieldRequired,
+        validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
         values: equipmentOptions?.sort(compareById),
@@ -166,7 +158,7 @@ const GeneratorModificationDialog = ({
         label: 'MinimumActivePowerText',
         validation: {
             isFieldNumeric: true,
-            isValueLessOrEqualTo: maximumActivePower,
+            valueLessThanOrEqualTo: maximumActivePower,
             errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
         adornment: ActivePowerAdornment,
@@ -180,7 +172,7 @@ const GeneratorModificationDialog = ({
         label: 'RatedNominalPowerText',
         validation: {
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
         adornment: MVAPowerAdornment,
@@ -222,7 +214,7 @@ const GeneratorModificationDialog = ({
         label: 'VoltageText',
         validation: {
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
@@ -246,128 +238,98 @@ const GeneratorModificationDialog = ({
         clearable: true,
     });
 
-    const handleSave = () => {
-        if (inputForm.validate()) {
-            modifyGenerator(
-                studyUuid,
-                currentNodeUuid,
-                generatorInfos?.id,
-                sanitizeString(generatorName),
-                energySource,
-                minimumActivePower,
-                maximumActivePower,
-                ratedNominalPower,
-                activePowerSetpoint,
-                reactivePowerSetpoint,
-                voltageRegulation,
-                voltageSetpoint,
-                undefined,
-                undefined,
-                editData?.uuid
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'GeneratorModificationError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+    const handleValidation = () => {
+        return inputForm.validate();
     };
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        modifyGenerator(
+            studyUuid,
+            currentNodeUuid,
+            generatorInfos?.id,
+            sanitizeString(generatorName),
+            energySource,
+            minimumActivePower,
+            maximumActivePower,
+            ratedNominalPower,
+            activePowerSetpoint,
+            reactivePowerSetpoint,
+            voltageRegulation,
+            voltageSetpoint,
+            undefined,
+            undefined,
+            editData?.uuid
+        ).catch((errorMessage) => {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'GeneratorModificationError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
+    const clear = () => {
+        inputForm.reset();
         setFormValues(null);
-        handleClose();
     };
 
     return (
-        <>
-            <Dialog
-                fullWidth
-                maxWidth="md" // 3 columns
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-create-generator"
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
-                            <FormattedMessage id="ModifyGenerator" />
-                        </Grid>
+        <ModificationDialog
+            fullWidth
+            maxWidth="md" // 3 columns
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            aria-labelledby="dialog-create-generator"
+            titleId="ModifyGenerator"
+            {...dialogProps}
+        >
+            <div>
+                <Grid container spacing={2}>
+                    {gridItem(generatorIdField, 4)}
+                    {gridItem(generatorNameField, 4)}
+                    {gridItem(energySourceField, 4)}
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Limits" />
+                        </h3>
                     </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <div>
-                        <Grid container spacing={2}>
-                            {gridItem(generatorIdField, 4)}
-                            {gridItem(generatorNameField, 4)}
-                            {gridItem(energySourceField, 4)}
-                        </Grid>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Limits" />
-                                </h3>
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                            {gridItem(minimumActivePowerField, 4)}
-                            {gridItem(maximumActivePowerField, 4)}
-                            {gridItem(ratedNominalPowerField, 4)}
-                        </Grid>
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <h3 className={classes.h3}>
-                                    <FormattedMessage id="Setpoints" />
-                                </h3>
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={2}>
-                            {gridItem(activePowerSetpointField, 4)}
-                            {gridItem(reactivePowerSetpointField, 4)}
-                            <Box sx={{ width: '100%' }} />
-                            {gridItemWithTooltip(
-                                voltageRegulationField,
-                                voltageRegulation !== null ? (
-                                    ''
-                                ) : (
-                                    <FormattedMessage id={'NoModification'} />
-                                ),
-                                4
-                            )}
-                            {gridItem(voltageSetpointField, 4)}
-                        </Grid>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
+                </Grid>
+                <Grid container spacing={2}>
+                    {gridItem(minimumActivePowerField, 4)}
+                    {gridItem(maximumActivePowerField, 4)}
+                    {gridItem(ratedNominalPowerField, 4)}
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Setpoints" />
+                        </h3>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    {gridItem(activePowerSetpointField, 4)}
+                    {gridItem(reactivePowerSetpointField, 4)}
+                    <Box sx={{ width: '100%' }} />
+                    {gridItemWithTooltip(
+                        voltageRegulationField,
+                        voltageRegulation !== null ? (
+                            ''
+                        ) : (
+                            <FormattedMessage id={'NoModification'} />
+                        ),
+                        4
+                    )}
+                    {gridItem(voltageSetpointField, 4)}
+                </Grid>
+            </div>
+        </ModificationDialog>
     );
 };
 
 GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     currentNodeUuid: PropTypes.string,
     equipmentOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,

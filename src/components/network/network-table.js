@@ -680,8 +680,26 @@ const NetworkTable = (props) => {
                 "('" +
                 lineEdit.id.replace(/'/g, "\\'") +
                 "')\n";
+
+            const isTransformer =
+                lineEdit?.equipmentType ===
+                    TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS
+                        .modifiableEquipmentType ||
+                lineEdit?.equipmentType ===
+                    TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS
+                        .modifiableEquipmentType;
+
             Object.values(lineEdit.newValues).forEach((cr) => {
-                groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
+                //TODO this is when we change transformer, in case we want to change the tap position from spreadsheet, we set it inside
+                // tapChanger object. so we extract the value from the object before registering a change request.
+                // this part should be removed if we don't pass tapPosition inside another Object anymore
+
+                const val =
+                    isTransformer && cr.value?.tapPosition
+                        ? cr.value?.tapPosition
+                        : cr.value;
+
+                groovyCr += cr.changeCmd.replace(/\{\}/g, val) + '\n';
             });
 
             Promise.resolve(

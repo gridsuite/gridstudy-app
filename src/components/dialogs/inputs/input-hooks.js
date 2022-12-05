@@ -754,7 +754,6 @@ export const useRadioValue = ({
     possibleValues = [],
     defaultValue,
     id,
-    validation = {},
     inputForm,
     doTranslation = true,
 }) => {
@@ -768,14 +767,6 @@ export const useRadioValue = ({
         }
     }, [defaultValue]);
 
-    useEffect(() => {
-        function validate() {
-            return true;
-        }
-
-        inputForm.addValidation(id ? id : label, validate);
-    }, [label, validation, inputForm, value, id]);
-
     const handleChangeValue = useCallback(
         (event) => {
             setValue(event.target.value);
@@ -786,7 +777,11 @@ export const useRadioValue = ({
 
     const field = useMemo(() => {
         return (
-            <FormControl>
+            <FormControl
+                style={{
+                    marginTop: '-12px',
+                }}
+            >
                 {label && (
                     <FormLabel id={id ? id : label}>
                         <FormattedMessage id={label} />

@@ -77,6 +77,7 @@ import {
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
     MAP_EQUIPMENTS_CREATED,
+    NETWORK_MODIFICATION_TREE_NODE_MOVED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -219,6 +220,30 @@ export const reducer = createReducer(initialState, {
         if (state.networkModificationTreeModel) {
             let newModel =
                 state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.addChild(
+                action.networkModificationTreeNode,
+                action.parentNodeId,
+                action.insertMode
+            );
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
+            // check if added node is the new parent of the current Node
+            if (
+                action.networkModificationTreeNode?.childrenIds.includes(
+                    state.currentTreeNode?.id
+                )
+            ) {
+                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
+            }
+        }
+    },
+
+    [NETWORK_MODIFICATION_TREE_NODE_MOVED]: (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel =
+                state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.removeNodes([action.networkModificationTreeNode.id]);
             newModel.addChild(
                 action.networkModificationTreeNode,
                 action.parentNodeId,

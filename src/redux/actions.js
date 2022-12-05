@@ -84,6 +84,22 @@ export function networkModificationTreeNodeAdded(
     };
 }
 
+export const NETWORK_MODIFICATION_TREE_NODE_MOVED =
+    'NETWORK_MODIFICATION_TREE_NODE_MOVED';
+
+export function networkModificationTreeNodeMoved(
+    networkModificationTreeNode,
+    parentNodeId,
+    insertMode
+) {
+    return {
+        type: NETWORK_MODIFICATION_TREE_NODE_MOVED,
+        networkModificationTreeNode: networkModificationTreeNode,
+        parentNodeId: parentNodeId,
+        insertMode: insertMode,
+    };
+}
+
 export const NETWORK_MODIFICATION_TREE_NODES_REMOVED =
     'NETWORK_MODIFICATION_TREE_NODES_REMOVED';
 
