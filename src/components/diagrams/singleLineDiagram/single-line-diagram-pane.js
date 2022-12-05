@@ -174,9 +174,9 @@ export function SingleLineDiagramPane({
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const [displayedSLD, setDisplayedSld] = useState([]);
-    const [displayedHeights, setDisplayedHeights] = useState([]);
-    const displayedHeightsRef = useRef();
-    displayedHeightsRef.current = displayedHeights;
+    const [displayedSLDHeights, setDisplayedSLDHeights] = useState([]);
+    const displayedSLDHeightsRef = useRef();
+    displayedSLDHeightsRef.current = displayedSLDHeights;
 
     const createView = useDisplayView(network, studyUuid, currentNode);
 
@@ -324,7 +324,7 @@ export function SingleLineDiagramPane({
     const [computedHeight, setComputedHeight] = useState();
 
     useEffect(() => {
-        let displayedHeights_ = displayedHeightsRef.current;
+        let displayedHeights_ = displayedSLDHeightsRef.current;
         viewsRef.current.forEach((sld) => {
             if (sld.state === ViewState.MINIMIZED) {
                 displayedHeights_ = displayedHeights_.filter(
@@ -336,16 +336,16 @@ export function SingleLineDiagramPane({
             viewsRef.current.map((sld) => sld.id).includes(displayedHeight.id)
         );
 
-        setDisplayedHeights(displayedHeights_);
+        setDisplayedSLDHeights(displayedHeights_);
     }, [views]);
 
     useEffect(() => {
-        if (displayedHeights.length === 0) {
+        if (displayedSLDHeights.length === 0) {
             setComputedHeight();
         }
 
         const initialHeights = [
-            ...displayedHeights.map(
+            ...displayedSLDHeights.map(
                 (displayedHeight) => displayedHeight.initialHeight
             ),
         ];
@@ -355,7 +355,7 @@ export function SingleLineDiagramPane({
                 setComputedHeight(newComputedHeight);
             }
         }
-    }, [displayedHeights]);
+    }, [displayedSLDHeights]);
 
     return (
         <AutoSizer>
@@ -384,7 +384,7 @@ export function SingleLineDiagramPane({
                             totalWidth={width}
                             totalHeight={height}
                             computedHeight={computedHeight}
-                            setDisplayedHeights={setDisplayedHeights}
+                            setDisplayedSLDHeights={setDisplayedSLDHeights}
                         />
                     ))}
                     <Stack
