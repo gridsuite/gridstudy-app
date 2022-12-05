@@ -25,7 +25,7 @@ import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
-import { fetchSvg } from '../../../utils/rest-api';
+import { connectNotificationsWebsocket, fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
     BORDERS,
@@ -41,6 +41,7 @@ import {
     NoSvg,
 } from './utils';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { studyUpdated } from '../../../redux/actions';
 
 const customSldStyle = (theme) => {
     return {
@@ -111,31 +112,17 @@ const PositionDiagram = forwardRef((props, ref) => {
     const [svgFinalWidth, setSvgFinalWidth] = useState();
     const [svgFinalHeight, setSvgFinalHeight] = useState();
 
+    const [serverHeight, setServerHeight] = useState();
+    const [serverWidth, setServerWidth] = useState();
+
     useLayoutEffect(() => {
-        const sizes = computePaperAndSvgSizesIfReady(
-            svgType,
-            totalWidth,
-            totalHeight,
-            svgPreferredWidth,
-            svgPreferredHeight,
-            BORDERS,
-            MAX_WIDTH_VOLTAGE_LEVEL,
-            MAX_HEIGHT_VOLTAGE_LEVEL,
-            MAP_RIGHT_OFFSET,
-            MAP_BOTTOM_OFFSET
-        );
-        if (sizes) {
-            setSvgFinalWidth(sizes.svgWidth);
-            setFinalPaperWidth(sizes.paperWidth);
-            setSvgFinalHeight(sizes.svgHeight);
-            setFinalPaperHeight(sizes.paperHeight);
-        }
+        setSvgFinalWidth(serverWidth);
+        setFinalPaperWidth(serverWidth+10);
+        setSvgFinalHeight(serverHeight);
+        setFinalPaperHeight(serverHeight+10);
     }, [
-        totalWidth,
-        totalHeight,
-        svgType,
-        svgPreferredWidth,
-        svgPreferredHeight,
+        serverWidth,
+        serverHeight
     ]);
 
     useEffect(() => {
@@ -172,15 +159,15 @@ const PositionDiagram = forwardRef((props, ref) => {
     }, [props.svgUrl, forceState, snackError, intlRef]);
 
     // shouldResetPreferredSizes doesn't need to be a ref, but it makes the static checks happy
-    const shouldResetPreferredSizes = useRef();
-    shouldResetPreferredSizes.current = false;
-    useLayoutEffect(() => {
-        shouldResetPreferredSizes.current = true;
-        // Note: these deps must be kept in sync with the ones of the useLayoutEffect where setSvgPreferredWidth and setSvgPreferredHeight
-        // are called. Because we want to reset them in all cases, except when only svgFinalWidth and svgFinalHeight have changed
-        // so we use the same deps but without svgFinalWidth and svgFinalHeight
-        // TODO is there a better way to do this??
-    }, [network, svg, currentNode, svgType, theme, ref, disabled]);
+    // const shouldResetPreferredSizes = useRef();
+    // shouldResetPreferredSizes.current = false;
+    // useLayoutEffect(() => {
+    //     shouldResetPreferredSizes.current = true;
+    //     // Note: these deps must be kept in sync with the ones of the useLayoutEffect where setSvgPreferredWidth and setSvgPreferredHeight
+    //     // are called. Because we want to reset them in all cases, except when only svgFinalWidth and svgFinalHeight have changed
+    //     // so we use the same deps but without svgFinalWidth and svgFinalHeight
+    //     // TODO is there a better way to do this??
+    // }, [network, svg, currentNode, svgType, theme, ref, disabled]);
 
     useLayoutEffect(() => {
         if (disabled) return;
@@ -205,10 +192,13 @@ const PositionDiagram = forwardRef((props, ref) => {
                 selectionBackColor //arrows color
             );
 
-            if (shouldResetPreferredSizes.current) {
-                setSvgPreferredHeight(sldViewer.getHeight());
-                setSvgPreferredWidth(sldViewer.getWidth());
-            }
+            // if (shouldResetPreferredSizes.current) {
+            //     setSvgPreferredHeight(sldViewer.getHeight());
+            //     setSvgPreferredWidth(sldViewer.getWidth());
+            // }
+
+            setServerHeight(sldViewer.getHeight());
+            setServerWidth(sldViewer.getWidth());
 
             if (svgDraw.current && svgUrl.current === svg.svgUrl) {
                 sldViewer.setViewBox(svgDraw.current.getViewBox());
@@ -273,41 +263,47 @@ const PositionDiagram = forwardRef((props, ref) => {
         MAX_WIDTH_VOLTAGE_LEVEL
     );
 
-    function PositionDiagramElement() {
-        return (
-            <>
-                <Box>
-                    <Box className={classes.header}>
-                        <Box flexGrow={1}>
-                            <Typography>{props.diagramTitle}</Typography>
-                        </Box>
-                        <Box>
-                            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-                                <IconButton
-                                    className={classes.close}
-                                    onClick={onCloseHandler}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
+    const PositionDiagramElement = useCallback(
+        () => {
+            return (
+                <>
+                    <Box>
+                        <Box className={classes.header}>
+                            <Box flexGrow={1}>
+                                <Typography>{props.diagramTitle}</Typography>
+                            </Box>
+                            <Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                                    <IconButton
+                                        className={classes.close}
+                                        onClick={onCloseHandler}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Box>
                             </Box>
                         </Box>
                     </Box>
-                </Box>
-                {loadingState && (
-                    <Box height={2}>
-                        <LinearProgress />
+                    {loadingState && (
+                        <Box height={2}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    <Box position="relative">
+                        <div
+                            ref={svgRef}
+                            className={classes.divSld}
+                            dangerouslySetInnerHTML={{ __html: svg.svg }}
+                        />
                     </Box>
-                )}
-                <Box position="relative">
-                    <div
-                        ref={svgRef}
-                        className={classes.divSld}
-                        dangerouslySetInnerHTML={{ __html: svg.svg }}
-                    />
-                </Box>
-            </>
-        );
-    }
+                </>
+            );
+
+
+        },
+        // Note: dispatch doesn't change
+        [classes, loadingState, props.diagramTitle, svg.svg, onCloseHandler]
+    );
 
     return renderIntoPaperWrapper(
         svg,
@@ -315,7 +311,7 @@ const PositionDiagram = forwardRef((props, ref) => {
         classes,
         sizeWidth,
         sizeHeight,
-        <PositionDiagramElement />
+        PositionDiagramElement()
     );
 });
 
