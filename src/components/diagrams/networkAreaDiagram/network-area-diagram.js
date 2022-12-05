@@ -62,17 +62,12 @@ const useStyles = makeStyles((theme) => ({
             display: 'block',
             width: '100%',
         },
-        '&  .nad-text-nodes': {
-            fill: theme.palette.text.primary,
+        '& .nad-label-box': {
+            color: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
-
-        '&  .nad-edge-infos text': {
-            stroke: theme.palette.background.default,
-        },
-
-        '&  .nad-branch-edges circle': {
-            fill: theme.palette.background.default,
+        '& .nad-text-edges': {
+            stroke: theme.palette.text.primary,
         },
 
         overflow: 'hidden',
