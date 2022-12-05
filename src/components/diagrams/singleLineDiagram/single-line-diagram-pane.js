@@ -174,6 +174,9 @@ export function SingleLineDiagramPane({
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const [displayedSLD, setDisplayedSld] = useState([]);
+    const [displayedHeights, setDisplayedHeights] = useState([]);
+    const displayedHeightsRef = useRef();
+    displayedHeightsRef.current = displayedHeights;
 
     const createView = useDisplayView(network, studyUuid, currentNode);
 
@@ -317,24 +320,42 @@ export function SingleLineDiagramPane({
     }, [views]);
 
     const displayedIds = new Set(displayedSLD.map(({ id }) => id));
-    const [displayedHeights, setDisplayedHeights] = useState([]);
-    const [computedHeight, setComputedHeight] = useState();
     const minimized = views.filter(({ id }) => !displayedIds.has(id));
+    const [computedHeight, setComputedHeight] = useState();
 
     useEffect(() => {
-        if (displayedSLD.length === 0 && computedHeight) {
-            setComputedHeight(undefined);
-            setDisplayedHeights([]);
-            return;
+        let displayedHeights_ = displayedHeightsRef.current;
+        viewsRef.current.forEach((sld) => {
+            if (sld.state === ViewState.MINIMIZED) {
+                displayedHeights_ = displayedHeights_.filter(
+                    (displayedHeight) => displayedHeight.id !== sld.id
+                );
+            }
+        });
+
+        displayedHeights_ = displayedHeights_.filter((displayedHeight) =>
+            viewsRef.current.map((sld) => sld.id).includes(displayedHeight.id)
+        );
+        setDisplayedHeights(displayedHeights_);
+    }, [views]);
+
+    useEffect(() => {
+        if (displayedHeights.length === 0) {
+            setComputedHeight();
         }
 
-        if (displayedHeights.length > 0) {
-            const highestHeight = Math.max(...displayedHeights);
-            if (highestHeight !== computedHeight) {
-                setComputedHeight(highestHeight);
+        const heights = [
+            ...displayedHeights.map(
+                (displayedHeight) => displayedHeight.initialHeight
+            ),
+        ];
+        if (heights.length > 0) {
+            const newComputedHeight = Math.max(...heights);
+            if (newComputedHeight && !isNaN(newComputedHeight)) {
+                setComputedHeight(newComputedHeight);
             }
         }
-    }, [computedHeight, displayedHeights, displayedSLD]);
+    }, [displayedHeights]);
 
     return (
         <AutoSizer>
@@ -362,8 +383,8 @@ export function SingleLineDiagramPane({
                             disabled={disabled}
                             totalWidth={width}
                             totalHeight={height}
-                            setDisplayedHeights={setDisplayedHeights}
                             computedHeight={computedHeight}
+                            setDisplayedHeights={setDisplayedHeights}
                         />
                     ))}
                     <Stack

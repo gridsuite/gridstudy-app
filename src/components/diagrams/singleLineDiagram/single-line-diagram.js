@@ -53,6 +53,7 @@ import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
+import { height } from '@mui/system';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -309,15 +310,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         closeEquipmentMenu();
     }
 
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
-
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
     const [svgPreferredWidth, setSvgPreferredWidth] = useState();
@@ -327,6 +319,33 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const [finalPaperHeight, setFinalPaperHeight] = useState();
     const [svgFinalWidth, setSvgFinalWidth] = useState();
     const [svgFinalHeight, setSvgFinalHeight] = useState();
+
+    useEffect(() => {
+        if (finalPaperHeight) {
+            setDisplayedHeights((displayedHeights) => {
+                if (
+                    displayedHeights.filter((height) => height.id === sldId)
+                        .length > 0
+                ) {
+                    return displayedHeights;
+                } else {
+                    return [
+                        ...displayedHeights,
+                        { id: sldId, initialHeight: finalPaperHeight },
+                    ];
+                }
+            });
+        }
+    }, [computedHeight, finalPaperHeight, setDisplayedHeights, sldId]);
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            reloadSvg: forceUpdate,
+        }),
+        // Note: forceUpdate doesn't change
+        [forceUpdate]
+    );
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
@@ -339,7 +358,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             headerPreferredHeight
         );
         if (typeof sizes != 'undefined') {
-            let finalHeight = undefined;
             if (
                 !fullScreenSldId &&
                 sizes.svgWidth * numberToDisplay > totalWidth
@@ -352,31 +370,14 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     (totalWidth / numberToDisplay / sizes.svgWidth);
 
                 setSvgFinalHeight(adjustedHeight);
-                finalHeight =
-                    adjustedHeight + (sizes.paperHeight - sizes.svgHeight);
-                setFinalPaperHeight(finalHeight);
-                setDisplayedHeights((n) => {
-                    return [
-                        ...n,
-                        adjustedHeight + (sizes.paperHeight - sizes.svgHeight),
-                    ];
-                });
+                setFinalPaperHeight(
+                    adjustedHeight + (sizes.paperHeight - sizes.svgHeight)
+                );
             } else {
                 setSvgFinalWidth(sizes.svgWidth);
                 setFinalPaperWidth(sizes.paperWidth);
                 setSvgFinalHeight(sizes.svgHeight);
-                finalHeight = sizes.paperHeight;
-                setFinalPaperHeight(finalHeight);
-            }
-
-            if (!fullScreenSldId && finalHeight) {
-                setDisplayedHeights((n) => {
-                    if (!n.includes(finalHeight)) {
-                        return [...n, finalHeight];
-                    } else {
-                        return n;
-                    }
-                });
+                setFinalPaperHeight(sizes.paperHeight);
             }
         }
     }, [
@@ -389,7 +390,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         headerPreferredHeight,
         numberToDisplay,
         sldId,
-        setDisplayedHeights,
     ]);
 
     useEffect(() => {
@@ -600,8 +600,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     }, [
         svgFinalWidth,
         svgFinalHeight,
-        //TODO, these are from the previous useLayoutEffect
-        //how to refactor to avoid repeating them here ?
         svg,
         onNextVoltageLevelClick,
         onBreakerClick,
@@ -700,7 +698,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     if (!fullScreenSldId && computedHeight) {
         sizeHeight = computedHeight;
-        initialHeight = computedHeight;
     }
 
     const pinSld = useCallback(() => onTogglePin(sldId), [sldId, onTogglePin]);
