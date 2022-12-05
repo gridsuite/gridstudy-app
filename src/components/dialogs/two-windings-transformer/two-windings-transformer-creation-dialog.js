@@ -344,7 +344,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const [ratioLowTapPosition, ratioLowTapPositionField] = useDoubleValue({
         label: 'LowTapPosition',
         validation: {
-            isFieldRequired: ratioTapChangerEnabled,
+            skipValidation: !ratioTapChangerEnabled,
+            isFieldRequired: true,
         },
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.lowTapPosition,
@@ -356,7 +357,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const [ratioHighTapPosition, ratioHighTapPositionField] = useDoubleValue({
         label: 'HighTapPosition',
         validation: {
-            isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
+            skipValidation: !ratioTapChangerEnabled,
+            isFieldRequired: !editData && !isCopy,
         },
         inputForm: ratioTapInputForm,
         formProps: {
@@ -496,7 +498,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const [phaseLowTapPosition, phaseLowTapPositionField] = useDoubleValue({
         label: 'LowTapPosition',
         validation: {
-            isFieldRequired: phaseTapChangerEnabled,
+            skipValidation: !phaseTapChangerEnabled,
+            isFieldRequired: true,
         },
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.lowTapPosition,
@@ -506,7 +509,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const [phaseHighTapPosition, phaseHighTapPositionField] = useDoubleValue({
         label: 'HighTapPosition',
         validation: {
-            isFieldRequired: phaseTapChangerEnabled && !editData && !isCopy,
+            skipValidation: !phaseTapChangerEnabled,
+            isFieldRequired: !editData && !isCopy,
         },
         inputForm: phaseTapInputForm,
         formProps: { disabled: !phaseTapChangerEnabled },

@@ -242,7 +242,10 @@ const GeneratorCreationDialog = ({
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
         label: 'MinimumReactivePower',
-        validation: { isFieldRequired: reactivePowerRequired },
+        validation: {
+            skipValidation: !reactivePowerRequired,
+            isFieldRequired: true,
+        },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: formValues?.minimumReactivePower,
@@ -250,7 +253,10 @@ const GeneratorCreationDialog = ({
 
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
         label: 'MaximumReactivePower',
-        validation: { isFieldRequired: reactivePowerRequired },
+        validation: {
+            skipValidation: !reactivePowerRequired,
+            isFieldRequired: true,
+        },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: formValues?.maximumReactivePower,
@@ -304,11 +310,11 @@ const GeneratorCreationDialog = ({
     const [reactivePowerSetpoint, reactivePowerSetpointField] = useDoubleValue({
         label: 'ReactivePowerText',
         validation: {
-            isFieldRequired: !voltageRegulation,
+            skipValidation: voltageRegulation,
+            isFieldRequired: true,
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        formProps: { disabled: voltageRegulation },
         defaultValue: formValues?.reactivePowerSetpoint,
     });
 
@@ -317,7 +323,8 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
         enumValues: Object.values(REGULATION_TYPES),
         validation: {
-            isFieldRequired: voltageRegulation,
+            skipValidation: !voltageRegulation,
+            isFieldRequired: true,
         },
         defaultValue:
             formValues?.regulatingTerminalId ||
@@ -343,9 +350,10 @@ const GeneratorCreationDialog = ({
         useRegulatingTerminalValue({
             label: 'RegulatingTerminalGenerator',
             validation: {
-                isFieldRequired:
-                    voltageRegulation &&
-                    isDistantRegulation(voltageRegulationType),
+                skipValidation:
+                    !voltageRegulation ||
+                    !isDistantRegulation(voltageRegulationType),
+                isFieldRequired: true,
             },
             inputForm: inputForm,
             disabled:
@@ -380,10 +388,12 @@ const GeneratorCreationDialog = ({
 
     const [droop, droopField] = useDoubleValue({
         label: 'Droop',
-        validation: { isFieldRequired: frequencyRegulation },
+        validation: {
+            skipValidation: !frequencyRegulation,
+            isFieldRequired: true,
+        },
         adornment: percentageTextField,
         inputForm: inputForm,
-        formProps: { disabled: !frequencyRegulation },
         defaultValue: formValues?.droop,
     });
 

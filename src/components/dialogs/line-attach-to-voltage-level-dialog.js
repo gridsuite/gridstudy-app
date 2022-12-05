@@ -278,10 +278,10 @@ const LineAttachToVoltageLevelDialog = ({
         label: 'AttachedLineId',
         inputForm: inputForm,
         validation: {
-            isFieldRequired: true,
+            isFieldRequired: true, // Do not remove, this field is not optional
         },
         defaultValue: lineToEdit?.equipmentId,
-        formProps: { disabled: true },
+        formProps: { disabled: true }, // Do not remove, the user should not modify this value
     });
 
     const [attachmentPointId, attachmentPointIdField] = useTextValue({

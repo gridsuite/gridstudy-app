@@ -189,7 +189,10 @@ const LineCreationDialog = ({
     const [connectivity1, connectivity1Field] = useConnectivityValue({
         label: 'Connectivity',
         id: 'Connectivity1',
-        validation: { isFieldRequired: displayConnectivity },
+        validation: {
+            skipValidation: !displayConnectivity,
+            isFieldRequired: true,
+        },
         inputForm: inputForm,
         voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
@@ -205,7 +208,10 @@ const LineCreationDialog = ({
     const [connectivity2, connectivity2Field] = useConnectivityValue({
         label: 'Connectivity',
         id: 'Connectivity2',
-        validation: { isFieldRequired: displayConnectivity },
+        validation: {
+            skipValidation: !displayConnectivity,
+            isFieldRequired: true,
+        },
         inputForm: inputForm,
         voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         currentNodeUuid: currentNodeUuid,
