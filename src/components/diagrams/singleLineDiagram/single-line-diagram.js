@@ -216,7 +216,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         });
     }, []);
 
-
     const handleViewInSpreadsheet = useCallback(() => {
         props.showInSpreadsheet(equipmentMenu);
         closeEquipmentMenu();
@@ -555,7 +554,16 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 />
             )
         );
-    }, [closeEquipmentMenu, currentNode, equipmentMenu.display, equipmentMenu.equipmentId, equipmentMenu.equipmentType, equipmentMenu.position, handleViewInSpreadsheet, modificationInProgress]);
+    }, [
+        closeEquipmentMenu,
+        currentNode,
+        equipmentMenu.display,
+        equipmentMenu.equipmentId,
+        equipmentMenu.equipmentType,
+        equipmentMenu.position,
+        handleViewInSpreadsheet,
+        modificationInProgress,
+    ]);
 
     const displayMenu = useCallback(
         (equipmentType, menuId) => {

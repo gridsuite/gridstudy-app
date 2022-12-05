@@ -16,7 +16,7 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
-import PositionDiagram from './PositionDiagram';
+import PositionDiagram from './position-diagram';
 import { useIntl } from 'react-intl';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
 import { SvgType } from './utils';

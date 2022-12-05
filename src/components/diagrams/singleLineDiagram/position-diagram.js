@@ -25,15 +25,11 @@ import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
-import { connectNotificationsWebsocket, fetchSvg } from '../../../utils/rest-api';
+import { fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
-    BORDERS,
     commonStyle,
     commonSldStyle,
-    computePaperAndSvgSizesIfReady,
-    MAP_BOTTOM_OFFSET,
-    MAP_RIGHT_OFFSET,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
     setWidthAndHeight,
@@ -41,7 +37,6 @@ import {
     NoSvg,
 } from './utils';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
-import { studyUpdated } from '../../../redux/actions';
 
 const customSldStyle = (theme) => {
     return {
@@ -76,7 +71,7 @@ const PositionDiagram = forwardRef((props, ref) => {
     const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
     const svgRef = useRef();
-    const { totalWidth, totalHeight, svgType, disabled } = props;
+    const { totalWidth, svgType, disabled } = props;
 
     const network = useSelector((state) => state.network);
 
@@ -105,8 +100,6 @@ const PositionDiagram = forwardRef((props, ref) => {
 
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
-    const [svgPreferredWidth, setSvgPreferredWidth] = useState();
-    const [svgPreferredHeight, setSvgPreferredHeight] = useState();
     const [finalPaperWidth, setFinalPaperWidth] = useState();
     const [finalPaperHeight, setFinalPaperHeight] = useState();
     const [svgFinalWidth, setSvgFinalWidth] = useState();
@@ -117,13 +110,10 @@ const PositionDiagram = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         setSvgFinalWidth(serverWidth);
-        setFinalPaperWidth(serverWidth+10);
+        setFinalPaperWidth(serverWidth + 10);
         setSvgFinalHeight(serverHeight);
-        setFinalPaperHeight(serverHeight+10);
-    }, [
-        serverWidth,
-        serverHeight
-    ]);
+        setFinalPaperHeight(serverHeight + 10);
+    }, [serverWidth, serverHeight]);
 
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
@@ -247,12 +237,12 @@ const PositionDiagram = forwardRef((props, ref) => {
 
     const classes = useStyles();
 
-    const onCloseHandler = () => {
+    const onCloseHandler = useCallback(() => {
         if (props.onClose !== null) {
             setSvg(NoSvg);
             props.onClose();
         }
-    };
+    }, [props]);
 
     let { sizeWidth, sizeHeight } = setWidthAndHeight(
         svg,
@@ -273,7 +263,12 @@ const PositionDiagram = forwardRef((props, ref) => {
                                 <Typography>{props.diagramTitle}</Typography>
                             </Box>
                             <Box>
-                                <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                    }}
+                                >
                                     <IconButton
                                         className={classes.close}
                                         onClick={onCloseHandler}
@@ -298,8 +293,6 @@ const PositionDiagram = forwardRef((props, ref) => {
                     </Box>
                 </>
             );
-
-
         },
         // Note: dispatch doesn't change
         [classes, loadingState, props.diagramTitle, svg.svg, onCloseHandler]

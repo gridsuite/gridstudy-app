@@ -20,7 +20,7 @@ import {
     useTextValue,
 } from './inputs/input-hooks';
 import InfoIcon from '@mui/icons-material/Info';
-import PositionDiagramPane from '../diagrams/singleLineDiagram/PositionDiagramPane';
+import PositionDiagramPane from '../diagrams/singleLineDiagram/position-diagram-pane';
 import { Tooltip } from '@mui/material';
 import {
     CONNECTION_DIRECTIONS,
