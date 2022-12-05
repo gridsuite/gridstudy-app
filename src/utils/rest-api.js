@@ -40,7 +40,8 @@ function parseError(text) {
 
 function handleResponse(response, expectsJson) {
     if (response.ok) {
-        return expectsJson ? response.json() : response;
+        if (expectsJson === undefined) return response;
+        else return expectsJson ? response.json() : response.text();
     } else {
         return response.text().then((text) => {
             const errorJson = parseError(text);
@@ -74,7 +75,12 @@ function prepareRequest(init, token) {
     return initCopy;
 }
 
-function backendFetch(url, init, token) {
+export function backendFetch(url, init, token) {
+    const initCopy = prepareRequest(init, token);
+    return fetch(url, initCopy).then((response) => handleResponse(response));
+}
+
+export function backendFetchText(url, init, token) {
     const initCopy = prepareRequest(init, token);
     return fetch(url, initCopy).then((response) =>
         handleResponse(response, false)
@@ -313,7 +319,7 @@ export function getNetworkAreaDiagramUrl(
 
 export function fetchNADSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetch(svgUrl);
+    return backendFetchText(svgUrl);
 }
 
 function getQueryParamsList(params, paramName) {
@@ -796,7 +802,7 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/security-analysis/status';
     console.debug(url);
-    return backendFetch(url);
+    return backendFetchText(url);
 }
 
 function getSensitivityAnalysisQueryParams(
@@ -880,7 +886,7 @@ export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/sensitivity-analysis/status';
     console.debug(url);
-    return backendFetch(url);
+    return backendFetchText(url);
 }
 
 export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
@@ -929,7 +935,7 @@ export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/status';
     console.debug(url);
-    return backendFetch(url);
+    return backendFetchText(url);
 }
 
 export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
@@ -1110,7 +1116,7 @@ export function copyOrMoveModifications(
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
-    return backendFetch(copyOrMoveModificationUrl, {
+    return backendFetchText(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -1242,7 +1248,7 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modification/groovy';
     console.debug(changeUrl);
-    return backendFetch(changeUrl, {
+    return backendFetchText(changeUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -1369,7 +1375,7 @@ export function createLoad(
             '/network-modification/loads';
     }
 
-    return backendFetch(createLoadUrl, {
+    return backendFetchText(createLoadUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1418,7 +1424,7 @@ export function modifyLoad(
             '/network-modification/loads';
     }
 
-    return backendFetch(modifyLoadUrl, {
+    return backendFetchText(modifyLoadUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -1484,7 +1490,7 @@ export function modifyGenerator(
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
     };
-    return backendFetch(modificationUrl, {
+    return backendFetchText(modificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -1542,7 +1548,7 @@ export function createGenerator(
             '/network-modification/generators';
     }
 
-    return backendFetch(createGeneratorUrl, {
+    return backendFetchText(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1610,7 +1616,7 @@ export function createShuntCompensator(
             '/network-modification/shunt-compensators';
     }
 
-    return backendFetch(createShuntUrl, {
+    return backendFetchText(createShuntUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1669,7 +1675,7 @@ export function createLine(
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-modification/lines';
     }
-    return backendFetch(createLineUrl, {
+    return backendFetchText(createLineUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1744,7 +1750,7 @@ export function createTwoWindingsTransformer(
             '/network-modification/two-windings-transformers';
     }
 
-    return backendFetch(createTwoWindingsTransformerUrl, {
+    return backendFetchText(createTwoWindingsTransformerUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1800,7 +1806,7 @@ export function createSubstation(
             '/network-modification/substations';
     }
 
-    return backendFetch(createSubstationUrl, {
+    return backendFetchText(createSubstationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1851,7 +1857,7 @@ export function createVoltageLevel({
         busbarConnections: busbarConnections,
     });
 
-    return backendFetch(createVoltageLevelUrl, {
+    return backendFetchText(createVoltageLevelUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1902,7 +1908,7 @@ export function divideLine(
             '/network-modification/line-splits';
     }
 
-    return backendFetch(lineSplitUrl, {
+    return backendFetchText(lineSplitUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1959,7 +1965,7 @@ export function attachLine(
             '/network-modification/line-attach';
     }
 
-    return backendFetch(lineAttachUrl, {
+    return backendFetchText(lineAttachUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -2010,7 +2016,7 @@ export function linesAttachToSplitLines(
             '/network-modification/lines-attach-to-split-lines';
     }
 
-    return backendFetch(lineAttachUrl, {
+    return backendFetchText(lineAttachUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -2025,7 +2031,7 @@ export function getLoadFlowProvider(studyUuid) {
     const getLoadFlowProviderUrl =
         getStudyUrl(studyUuid) + '/loadflow/provider';
     console.debug(getLoadFlowProviderUrl);
-    return backendFetch(getLoadFlowProviderUrl);
+    return backendFetchText(getLoadFlowProviderUrl);
 }
 
 export function setLoadFlowProvider(studyUuid, newProvider) {
@@ -2048,7 +2054,7 @@ export function getDefaultLoadFlowProvider() {
     const getDefaultLoadFlowProviderUrl =
         PREFIX_STUDY_QUERIES + '/v1/loadflow-default-provider';
     console.debug(getDefaultLoadFlowProviderUrl);
-    return backendFetch(getDefaultLoadFlowProviderUrl);
+    return backendFetchText(getDefaultLoadFlowProviderUrl);
 }
 
 export function getAvailableComponentLibraries() {
@@ -2129,7 +2135,7 @@ export function buildNode(studyUuid, currentNodeUuid) {
     );
     const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/build';
     console.debug(url);
-    return backendFetch(url, { method: 'post' });
+    return backendFetchText(url, { method: 'post' });
 }
 
 export function changeNetworkModificationOrder(
@@ -2164,7 +2170,7 @@ export function fetchCaseName(studyUuid) {
     const url = getStudyUrl(studyUuid) + '/case/name';
     console.debug(url);
 
-    return backendFetch(url);
+    return backendFetchText(url);
 }
 
 export function isNodeExists(studyUuid, nodeName) {
@@ -2181,7 +2187,7 @@ export function isNodeExists(studyUuid, nodeName) {
 export function getUniqueNodeName(studyUuid) {
     const uniqueNodeNameUrl = getStudyUrl(studyUuid) + '/nodes/nextUniqueName';
     console.debug(uniqueNodeNameUrl);
-    return backendFetch(uniqueNodeNameUrl);
+    return backendFetchText(uniqueNodeNameUrl);
 }
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
