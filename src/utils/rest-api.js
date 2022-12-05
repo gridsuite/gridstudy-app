@@ -1091,26 +1091,32 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
     });
 }
 
-export function duplicateModifications(
+export function copyOrMoveModifications(
     studyUuid,
     targetNodeId,
-    modificationsIdList
+    modificationToCutUuidList,
+    copyInfos
 ) {
-    console.info('duplicate and append modifications');
-    const duplicateModificationUrl =
+    console.info(copyInfos.copyType + ' modifications');
+    const copyOrMoveModificationUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
-        encodeURIComponent(targetNodeId);
+        encodeURIComponent(targetNodeId) +
+        '?' +
+        new URLSearchParams({
+            action: copyInfos.copyType,
+            originNodeUuid: copyInfos.originNodeUuid ?? '',
+        });
 
-    return backendFetchJson(duplicateModificationUrl, {
+    return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(modificationsIdList),
+        body: JSON.stringify(modificationToCutUuidList),
     });
 }
 
@@ -2178,14 +2184,18 @@ export function getUniqueNodeName(studyUuid) {
     return backendFetch(uniqueNodeNameUrl);
 }
 
-export function fetchElementsMetadata(ids) {
+export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     console.info('Fetching elements metadata');
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/elements/metadata?ids=' +
         ids
             .filter((e) => e != null && e !== '') // filter empty element
-            .join('&ids=');
+            .join('&ids=') +
+        '&equipmentTypes=' +
+        equipmentTypes.join('&equipmentTypes=') +
+        '&elementTypes=' +
+        elementTypes.join('&elementTypes=');
     console.debug(url);
     return backendFetchJson(url);
 }

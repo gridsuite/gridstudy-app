@@ -4,19 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import React, { useEffect, useState } from 'react';
+import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
-    useButtonWithTooltip,
     useDoubleValue,
     useInputForm,
     useIntegerValue,
@@ -41,18 +35,16 @@ const disabledChecked = { disabled: true };
 
 /**
  * Dialog to create a shunt compensator in the network
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const ShuntCompensatorCreationDialog = ({
-    open,
-    onClose,
     voltageLevelOptionsPromise,
     currentNodeUuid,
     editData,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -86,11 +78,6 @@ const ShuntCompensatorCreationDialog = ({
         setFormValues,
     });
 
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
-    });
-
     useEffect(() => {
         if (editData) {
             setFormValues(editData);
@@ -118,7 +105,7 @@ const ShuntCompensatorCreationDialog = ({
             label: 'ShuntMaximumNumberOfSections',
             validation: {
                 isFieldRequired: true,
-                isValueGreaterThan: '0',
+                valueGreaterThan: '0',
                 errorMsgId: 'ShuntCompensatorErrorMaximumLessThanOne',
             },
             transformValue: toPositiveIntValue,
@@ -130,8 +117,8 @@ const ShuntCompensatorCreationDialog = ({
         useIntegerValue({
             label: 'ShuntCurrentNumberOfSections',
             validation: {
-                isValueLessOrEqualTo: maximumNumberOfSections,
-                isValueGreaterThan: '-1',
+                valueLessThanOrEqualTo: maximumNumberOfSections,
+                valueGreaterThan: '-1',
                 errorMsgId: 'ShuntCompensatorErrorCurrentLessThanMaximum',
                 isFieldRequired: true,
             },
@@ -171,94 +158,67 @@ const ShuntCompensatorCreationDialog = ({
         withPosition: true,
     });
 
-    const handleSave = () => {
-        if (inputForm.validate()) {
-            createShuntCompensator(
-                studyUuid,
-                currentNodeUuid,
-                shuntCompensatorId,
-                sanitizeString(shuntCompensatorName),
-                maximumNumberOfSections,
-                currentNumberOfSections,
-                identicalSections,
-                susceptancePerSection,
-                connectivity,
-                editData ? true : false,
-                editData ? editData.uuid : undefined,
-                connectivity?.connectionDirection?.id ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                connectivity?.connectionName?.id ?? null
-            ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ShuntCompensatorCreationError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+    const handleValidation = () => {
+        return inputForm.validate();
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        createShuntCompensator(
+            studyUuid,
+            currentNodeUuid,
+            shuntCompensatorId,
+            sanitizeString(shuntCompensatorName),
+            maximumNumberOfSections,
+            currentNumberOfSections,
+            identicalSections,
+            susceptancePerSection,
+            connectivity,
+            editData ? true : false,
+            editData ? editData.uuid : undefined,
+            connectivity?.connectionDirection?.id ??
+                UNDEFINED_CONNECTION_DIRECTION,
+            connectivity?.connectionName?.id ?? null
+        ).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'ShuntCompensatorCreationError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
+    const clear = () => {
+        inputForm.reset();
         setFormValues(null);
-        handleClose();
     };
 
     return (
-        <>
-            <Dialog
-                fullWidth
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-create-shuntCompensator"
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
-                            <FormattedMessage id="CreateShuntCompensator" />
-                        </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <Grid container spacing={2}>
-                        {gridItem(shuntCompensatorIdField)}
-                        {gridItem(shuntCompensatorNameField)}
-                    </Grid>
-                    <GridSection title="Connectivity" />
-                    <Grid container spacing={2}>
-                        {gridItem(connectivityField, 12)}
-                    </Grid>
-                    <GridSection title="Characteristics" />
-                    <Grid container spacing={2}>
-                        {gridItem(maximumNumberOfSectionsField)}
-                        {gridItem(currentNumberOfSectionsField)}
-                        {gridItem(identicalSectionsField)}
-                        {gridItem(susceptancePerSectionField)}
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
+        <ModificationDialog
+            fullWidth
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            aria-labelledby="dialog-create-shuntCompensator"
+            titleId="CreateShuntCompensator"
+            searchCopy={searchCopy}
+            {...dialogProps}
+        >
+            <Grid container spacing={2}>
+                {gridItem(shuntCompensatorIdField)}
+                {gridItem(shuntCompensatorNameField)}
+            </Grid>
+            <GridSection title="Connectivity" />
+            <Grid container spacing={2}>
+                {gridItem(connectivityField, 12)}
+            </Grid>
+            <GridSection title="Characteristics" />
+            <Grid container spacing={2}>
+                {gridItem(maximumNumberOfSectionsField)}
+                {gridItem(currentNumberOfSectionsField)}
+                {gridItem(identicalSectionsField)}
+                {gridItem(susceptancePerSectionField)}
+            </Grid>
+
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
@@ -266,14 +226,12 @@ const ShuntCompensatorCreationDialog = ({
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />
-        </>
+        </ModificationDialog>
     );
 };
 
 ShuntCompensatorCreationDialog.propTypes = {
     editData: PropTypes.object,
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,

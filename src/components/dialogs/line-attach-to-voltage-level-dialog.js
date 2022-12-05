@@ -13,10 +13,7 @@ import React, {
     useRef,
 } from 'react';
 import { FormattedMessage } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
+import ModificationDialog from './modificationDialog';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
@@ -47,22 +44,20 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param lineOptionsPromise Promise handling list of network lines
  * @param voltageLevelOptionsPromise Promise handling list of network voltage levels
  * @param currentNodeUuid the currently selected tree node
  * @param substationOptionsPromise Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LineAttachToVoltageLevelDialog = ({
-    open,
-    onClose,
     lineOptionsPromise,
     voltageLevelOptionsPromise,
     currentNodeUuid,
     substationOptionsPromise,
     editData,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -162,8 +157,8 @@ const LineAttachToVoltageLevelDialog = ({
     const [percentage, percentageArea] = useComplementaryPercentage({
         validation: {
             isFieldRequired: true,
-            isValueGreaterThan: 0.0,
-            isValueLessOrEqualTo: 99.9,
+            valueGreaterThan: 0.0,
+            valueLessThanOrEqualTo: 99.9,
             errorMsgId: 'OutOfBoundsPercentage',
         },
         upperLeftText: <FormattedMessage id="Line1"></FormattedMessage>,
@@ -337,50 +332,38 @@ const LineAttachToVoltageLevelDialog = ({
 
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
 
-    const handleSave = () => {
-        if (inputForm.validate()) {
-            attachLine(
-                studyUuid,
-                currentNodeUuid,
-                editData ? editData.uuid : undefined,
-                lineToAttachTo.id || lineToAttachTo,
-                parseFloat(percentage),
-                attachmentPointId,
-                attachmentPointName,
-                newVoltageLevel,
-                newVoltageLevel
-                    ? null
-                    : voltageLevelOrId?.id || voltageLevelOrId,
-                bbsOrNodeId?.id || bbsOrNodeId,
-                attachmentLine,
-                newLine1Id,
-                newLine1Name || null,
-                newLine2Id,
-                newLine2Name || null
-            ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LineAttachmentError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+    const handleValidation = () => {
+        return inputForm.validate();
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        attachLine(
+            studyUuid,
+            currentNodeUuid,
+            editData ? editData.uuid : undefined,
+            lineToAttachTo.id || lineToAttachTo,
+            parseFloat(percentage),
+            attachmentPointId,
+            attachmentPointName,
+            newVoltageLevel,
+            newVoltageLevel ? null : voltageLevelOrId?.id || voltageLevelOrId,
+            bbsOrNodeId?.id || bbsOrNodeId,
+            attachmentLine,
+            newLine1Id,
+            newLine1Name || null,
+            newLine2Id,
+            newLine2Name || null
+        ).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'LineAttachmentError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
+    const clear = () => {
+        inputForm.reset();
         setFormValues(null);
-        handleClose();
     };
 
     const onVoltageLevelDo = useCallback(
@@ -504,96 +487,79 @@ const LineAttachToVoltageLevelDialog = ({
 
     return (
         <>
-            <Dialog
+            <ModificationDialog
                 fullWidth
-                open={open}
-                onClose={handleClose}
+                onClear={clear}
+                onValidation={handleValidation}
+                onSave={handleSave}
+                disabledSave={!inputForm.hasChanged}
                 aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 maxWidth={'md'}
+                titleId="LineAttachToVoltageLevel"
+                {...dialogProps}
             >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={12}>
-                            <FormattedMessage id="LineAttachToVoltageLevel" />
-                        </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <GridSection title="LineToAttachTo" />
-                    <Grid container spacing={2} alignItems="center">
-                        {gridItem(lineToAttachToField, 5)}
-                        {gridItem(
-                            <Typography>{lineSubstation(true)}</Typography>,
-                            1
-                        )}
-                        {gridItem(percentageArea, 5)}
-                        {gridItem(
-                            <Typography>{lineSubstation(false)}</Typography>,
-                            1
-                        )}
-                    </Grid>
-                    <GridSection title="AttachmentPoint" />
-                    <Grid container spacing={2}>
-                        {gridItem(attachmentPointIdField, 6)}
-                        {gridItem(attachmentPointNameField, 6)}
-                    </Grid>
-                    <GridSection title="VoltageLevel" />
-                    <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField)}
-                        {gridItem(bbsOrNodeIdField)}
-                        {gridItem(
-                            <Button
-                                onClick={openVoltageLevelDialog}
-                                startIcon={
-                                    newVoltageLevel ? <EditIcon /> : <AddIcon />
-                                }
-                            >
-                                <Typography align="left">
-                                    <FormattedMessage id="NewVoltageLevel" />
-                                </Typography>
-                            </Button>
-                        )}
-                    </Grid>
-                    <GridSection title="AttachedLine" />
-                    <Grid container spacing={2}>
-                        {gridItem(lineToIdField)}
-                        <Box width="100%" />
-                        {gridItem(
-                            <Button
-                                onClick={openLineDialog}
-                                startIcon={
-                                    attachmentLine ? <EditIcon /> : <AddIcon />
-                                }
-                            >
-                                <Typography align="left">
-                                    <FormattedMessage id="AttachedLine" />
-                                </Typography>
-                            </Button>
-                        )}
-                    </Grid>
-                    <GridSection title="Line1" />
-                    <Grid container spacing={2}>
-                        {gridItem(newLine1IdField, 6)}
-                        {gridItem(newLine1NameField, 6)}
-                    </Grid>
-                    <GridSection title="Line2" />
-                    <Grid container spacing={2}>
-                        {gridItem(newLine2IdField, 6)}
-                        {gridItem(newLine2NameField, 6)}
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear} variant="text">
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        variant="text"
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
+                <GridSection title="LineToAttachTo" />
+                <Grid container spacing={2} alignItems="center">
+                    {gridItem(lineToAttachToField, 5)}
+                    {gridItem(
+                        <Typography>{lineSubstation(true)}</Typography>,
+                        1
+                    )}
+                    {gridItem(percentageArea, 5)}
+                    {gridItem(
+                        <Typography>{lineSubstation(false)}</Typography>,
+                        1
+                    )}
+                </Grid>
+                <GridSection title="AttachmentPoint" />
+                <Grid container spacing={2}>
+                    {gridItem(attachmentPointIdField, 6)}
+                    {gridItem(attachmentPointNameField, 6)}
+                </Grid>
+                <GridSection title="VoltageLevel" />
+                <Grid container spacing={2}>
+                    {gridItem(voltageLevelIdField)}
+                    {gridItem(bbsOrNodeIdField)}
+                    {gridItem(
+                        <Button
+                            onClick={openVoltageLevelDialog}
+                            startIcon={
+                                newVoltageLevel ? <EditIcon /> : <AddIcon />
+                            }
+                        >
+                            <Typography align="left">
+                                <FormattedMessage id="NewVoltageLevel" />
+                            </Typography>
+                        </Button>
+                    )}
+                </Grid>
+                <GridSection title="AttachedLine" />
+                <Grid container spacing={2}>
+                    {gridItem(lineToIdField)}
+                    <Box width="100%" />
+                    {gridItem(
+                        <Button
+                            onClick={openLineDialog}
+                            startIcon={
+                                attachmentLine ? <EditIcon /> : <AddIcon />
+                            }
+                        >
+                            <Typography align="left">
+                                <FormattedMessage id="AttachedLine" />
+                            </Typography>
+                        </Button>
+                    )}
+                </Grid>
+                <GridSection title="Line1" />
+                <Grid container spacing={2}>
+                    {gridItem(newLine1IdField, 6)}
+                    {gridItem(newLine1NameField, 6)}
+                </Grid>
+                <GridSection title="Line2" />
+                <Grid container spacing={2}>
+                    {gridItem(newLine2IdField, 6)}
+                    {gridItem(newLine2NameField, 6)}
+                </Grid>
                 {voltageLevelDialogOpen && (
                     <VoltageLevelCreationDialog
                         open={true}
@@ -608,7 +574,6 @@ const LineAttachToVoltageLevelDialog = ({
                     <LineCreationDialog
                         open={true}
                         onClose={onLineDialogClose}
-                        voltageLevelOptions={voltageLevelOptions}
                         currentNodeUuid={currentNodeUuid}
                         substationOptionsPromise={substationOptionsPromise}
                         displayConnectivity={false}
@@ -616,15 +581,12 @@ const LineAttachToVoltageLevelDialog = ({
                         editData={lineToEdit}
                     />
                 )}
-            </Dialog>
+            </ModificationDialog>
         </>
     );
 };
 
 LineAttachToVoltageLevelDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    lineOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
