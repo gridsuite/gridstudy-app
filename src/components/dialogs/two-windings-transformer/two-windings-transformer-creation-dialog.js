@@ -840,74 +840,80 @@ const TwoWindingsTransformerCreationDialog = ({
     };
 
     const handleSave = () => {
-        const formatedRatioTapSteps = ratioTapRows.map((row) => {
-            return {
-                index: row.tap,
-                r: row.resistance,
-                x: row.reactance,
-                g: row.conductance,
-                b: row.susceptance,
-                rho: row.ratio,
+        let ratioTap = undefined;
+        if (ratioTapChangerEnabled) {
+            const formatedRatioTapSteps = ratioTapRows.map((row) => {
+                return {
+                    index: row.tap,
+                    r: row.resistance,
+                    x: row.reactance,
+                    g: row.conductance,
+                    b: row.susceptance,
+                    rho: row.ratio,
+                };
+            });
+
+            ratioTap = {
+                loadTapChangingCapabilities:
+                    ratioTapLoadTapChangingCapabilities,
+                regulating: ratioTapRegulating,
+                targetV: targetVoltage,
+                targetDeadband: ratioTapTargetDeadband,
+                regulatingTerminalId:
+                    ratioTapRegulatingTerminal?.equipmentSection?.id,
+                regulatingTerminalType:
+                    ratioTapRegulatingTerminal?.equipmentSection?.type ??
+                    (twoWindingsTransformerId ===
+                    ratioTapRegulatingTerminal?.equipmentSection?.id
+                        ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
+                        : undefined),
+                regulatingTerminalVlId:
+                    ratioTapRegulatingTerminal?.voltageLevel?.id,
+                tapPosition: ratioTapPosition,
+                lowTapPosition: ratioLowTapPosition,
+                steps: formatedRatioTapSteps,
             };
-        });
+        }
 
-        const ratioTap = {
-            loadTapChangingCapabilities: ratioTapLoadTapChangingCapabilities,
-            regulating: ratioTapRegulating,
-            targetV: targetVoltage,
-            targetDeadband: ratioTapTargetDeadband,
-            regulatingTerminalId:
-                ratioTapRegulatingTerminal?.equipmentSection?.id,
-            regulatingTerminalType:
-                ratioTapRegulatingTerminal?.equipmentSection?.type ??
-                (twoWindingsTransformerId ===
-                ratioTapRegulatingTerminal?.equipmentSection?.id
-                    ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
-                    : undefined),
-            regulatingTerminalVlId:
-                ratioTapRegulatingTerminal?.voltageLevel?.id,
-            tapPosition: ratioTapPosition,
-            lowTapPosition: ratioLowTapPosition,
-            steps: formatedRatioTapSteps,
-        };
+        let phaseTap = undefined;
+        if (phaseTapChangerEnabled) {
+            const formatedPhaseTapSteps = phaseTapRows.map((row) => {
+                return {
+                    index: row.tap,
+                    r: row.resistance,
+                    x: row.reactance,
+                    g: row.conductance,
+                    b: row.susceptance,
+                    rho: row.ratio,
+                    alpha: row.alpha,
+                };
+            });
 
-        const formatedPhaseTapSteps = phaseTapRows.map((row) => {
-            return {
-                index: row.tap,
-                r: row.resistance,
-                x: row.reactance,
-                g: row.conductance,
-                b: row.susceptance,
-                rho: row.ratio,
-                alpha: row.alpha,
+            phaseTap = {
+                regulating: phaseTapRegulating,
+                regulationMode: regulationMode,
+                regulationValue:
+                    regulationMode === REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+                        ? flowSetPointRegulatingValue
+                        : regulationMode === REGULATION_MODES.CURRENT_LIMITER.id
+                        ? currentLimiterRegulatingValue
+                        : undefined,
+                targetDeadband: phaseTapTargetDeadband,
+                regulatingTerminalId:
+                    phaseTapRegulatingTerminal?.equipmentSection?.id,
+                regulatingTerminalType:
+                    phaseTapRegulatingTerminal?.equipmentSection?.type ??
+                    (twoWindingsTransformerId ===
+                    phaseTapRegulatingTerminal?.equipmentSection?.id
+                        ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
+                        : undefined),
+                regulatingTerminalVlId:
+                    phaseTapRegulatingTerminal?.voltageLevel?.id,
+                tapPosition: phaseTapPosition,
+                lowTapPosition: phaseLowTapPosition,
+                steps: formatedPhaseTapSteps,
             };
-        });
-
-        const phaseTap = {
-            regulating: phaseTapRegulating,
-            regulationMode: regulationMode,
-            regulationValue:
-                regulationMode === REGULATION_MODES.ACTIVE_POWER_CONTROL.id
-                    ? flowSetPointRegulatingValue
-                    : regulationMode === REGULATION_MODES.CURRENT_LIMITER.id
-                    ? currentLimiterRegulatingValue
-                    : undefined,
-            targetDeadband: phaseTapTargetDeadband,
-            regulatingTerminalId:
-                phaseTapRegulatingTerminal?.equipmentSection?.id,
-            regulatingTerminalType:
-                phaseTapRegulatingTerminal?.equipmentSection?.type ??
-                (twoWindingsTransformerId ===
-                phaseTapRegulatingTerminal?.equipmentSection?.id
-                    ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
-                    : undefined),
-            regulatingTerminalVlId:
-                phaseTapRegulatingTerminal?.voltageLevel?.id,
-            tapPosition: phaseTapPosition,
-            lowTapPosition: phaseLowTapPosition,
-            steps: formatedPhaseTapSteps,
-        };
-
+        }
         const currentLimits1 = {
             permanentLimit: permanentCurrentLimit1,
         };
