@@ -127,7 +127,7 @@ export function fetchRootFolders() {
 
 export function fetchDirectoryContent(directoryUuid, types) {
     console.info("Fetching Folder content '%s'", directoryUuid);
-    const elementTypes = types ? '&elementTypes=' + elementTypes.join('&elementTypes=') : '';
+    const elementTypes = types ? '?elementTypes=' + types.join('&elementTypes=') : '';
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/elements` + elementTypes;
