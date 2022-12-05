@@ -2381,16 +2381,22 @@ export function getUniqueNodeName(studyUuid) {
     });
 }
 
-export function fetchElementsMetadata(ids) {
+export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     console.info('Fetching elements metadata');
     const url =
         PREFIX_EXPLORE_SERVER_QUERIES +
         '/v1/explore/elements/metadata?ids=' +
         ids
             .filter((e) => e != null && e !== '') // filter empty element
-            .join('&ids=');
+            .join('&ids=') +
+        '&equipmentTypes=' +
+        equipmentTypes.join('&equipmentTypes=') +
+        '&elementTypes=' +
+        elementTypes.join('&elementTypes=');
     console.debug(url);
-    return backendFetch(url, { method: 'get' }).then((response) =>
-        response.json()
-    );
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        return response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
