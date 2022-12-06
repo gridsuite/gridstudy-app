@@ -7,7 +7,7 @@
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { createSubstation } from '../../utils/rest-api';
@@ -16,9 +16,80 @@ import {
     useInputForm,
     useTextValue,
 } from './inputs/input-hooks';
-import { filledTextField, gridItem, sanitizeString } from './dialogUtils';
+import {
+    filledTextField,
+    gridItem,
+    GridSection,
+    sanitizeString,
+} from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { useExpandableValues } from './inputs/use-expandable-values';
+
+const validateStringPair = (values) => {
+    const res = new Map();
+    const idMap = values.reduce(
+        (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
+        new Map()
+    );
+
+    values.forEach((val, idx) => {
+        const errorId = idMap.get(val.name) > 1;
+        if (errorId)
+            res.set(idx, {
+                error: true,
+                ...(errorId && { name: 'DuplicateId' }),
+            });
+    });
+    console.debug('smth to do %c;-)', 'color:orange', idMap, res, values);
+    return res;
+};
+
+const NonNullStringPair = ({
+    index,
+    onChange,
+    defaultValue,
+    inputForm,
+    errors,
+}) => {
+    const [name, nameField] = useTextValue({
+        id: 'pairKey' + index,
+        label: 'PropertyName',
+        validation: {
+            isFieldRequired: true,
+        },
+        defaultValue: defaultValue?.name || '',
+        inputForm: inputForm,
+        errorMsg: errors?.name,
+    });
+
+    const [value, valueField] = useTextValue({
+        id: 'pairValue' + index,
+        label: 'PropertyValue',
+        validation: {
+            isFieldRequired: true,
+        },
+        defaultValue: defaultValue?.value || '',
+        inputForm: inputForm,
+        errorMsg: errors?.value,
+    });
+
+    useEffect(() => {
+        onChange(index, {
+            name,
+            value,
+        });
+    }, [index, name, value, onChange]);
+
+    return (
+        <>
+            {gridItem(nameField, 5)}
+            {gridItem(valueField, 5)}
+        </>
+    );
+};
+
+const emptyArray = [];
 
 /**
  * Dialog to create a substation in the network
@@ -89,6 +160,25 @@ const SubstationCreationDialog = ({
         defaultLabelValue: formValues?.substationCountryLabel ?? null,
     });
 
+    const propies = useMemo(() => {
+        return !formValues?.properties
+            ? null
+            : Object.entries(formValues.properties).map((p) => {
+                  return { name: p[0], value: p[1] };
+              });
+    }, [formValues?.properties]);
+    console.debug('%cformValues', 'color:purple', formValues, propies);
+
+    const [additionalProps, AdditionalProps] = useExpandableValues({
+        id: 'additionalProps',
+        labelAddValue: 'AddProperty',
+        validateItem: validateStringPair,
+        inputForm: inputForm,
+        Field: NonNullStringPair,
+        defaultValues: propies,
+        isRequired: false,
+    });
+
     const handleValidation = () => {
         return inputForm.validate();
     };
@@ -101,7 +191,8 @@ const SubstationCreationDialog = ({
             sanitizeString(substationName),
             substationCountry,
             editData ? true : false,
-            editData ? editData.uuid : undefined
+            editData ? editData.uuid : undefined,
+            additionalProps
         ).catch((errorMessage) => {
             snackError({
                 messageTxt: errorMessage,
@@ -131,6 +222,11 @@ const SubstationCreationDialog = ({
                 {gridItem(substationIdField, 4)}
                 {gridItem(substationNameField, 4)}
                 {gridItem(substationCountryField, 4)}
+            </Grid>
+
+            <Grid container>
+                <GridSection title={'AdditionalInformations'} />
+                {AdditionalProps}
             </Grid>
 
             <EquipmentSearchDialog

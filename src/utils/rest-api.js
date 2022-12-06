@@ -1912,7 +1912,8 @@ export function createSubstation(
     substationName,
     substationCountry,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let createSubstationUrl;
     if (isUpdate) {
@@ -1929,18 +1930,25 @@ export function createSubstation(
             '/network-modification/substations';
     }
 
+    const asObj = !properties
+        ? undefined
+        : Object.fromEntries(properties.map((p) => [p.name, p.value]));
+
+    const body = JSON.stringify({
+        equipmentId: substationId,
+        equipmentName: substationName,
+        substationCountry: substationCountry === '' ? null : substationCountry,
+        properties: asObj,
+    });
+    console.debug('createSubstation body', properties, body);
+
     return backendFetch(createSubstationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            equipmentId: substationId,
-            equipmentName: substationName,
-            substationCountry:
-                substationCountry === '' ? null : substationCountry,
-        }),
+        body: body,
     }).then((response) => {
         return response.ok
             ? response.text()

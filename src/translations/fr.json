@@ -448,6 +448,10 @@
 
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
+    "AdditionalInformations": "Informations complémentaires",
+    "AddProperty": "Ajouter une propriété",
+    "PropertyName": "Nom de la propriété",
+    "PropertyValue": "Valeur de la propriété",
 
     "CreateVoltageLevel": "Créer un poste",
     "Substation": "Site",
