@@ -114,10 +114,13 @@ export function fetchConfigParameter(name) {
     );
 }
 
-export function fetchRootFolders() {
+export function fetchRootFolders(types) {
     console.info('Fetching Root Directories');
+    const elementTypes = types
+        ? '?elementTypes=' + types.join('&elementTypes=')
+        : '';
     const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories` + elementTypes;
     return backendFetch(fetchRootFoldersUrl).then((response) =>
         response.ok
             ? response.json()
@@ -127,10 +130,13 @@ export function fetchRootFolders() {
 
 export function fetchDirectoryContent(directoryUuid, types) {
     console.info("Fetching Folder content '%s'", directoryUuid);
-    const elementTypes = types ? '?elementTypes=' + types.join('&elementTypes=') : '';
+    const elementTypes = types
+        ? '?elementTypes=' + types.join('&elementTypes=')
+        : '';
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements` + elementTypes;
+        `/v1/directories/${directoryUuid}/elements` +
+        elementTypes;
     return backendFetch(fetchDirectoryContentUrl).then((response) =>
         response.ok
             ? response.json()
@@ -978,7 +984,6 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
 }
 
 export function fetchContingencyAndFiltersLists(listIds) {
-    console.log('conList 1 : ', listIds);
     console.info('Fetching contingency and filters lists');
     const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
@@ -1000,7 +1005,6 @@ export function fetchContingencyCount(
     console.info(
         `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' and node '${currentNodeUuid}'...`
     );
-    console.log('herreeeee : ', )
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/contingency-count' +

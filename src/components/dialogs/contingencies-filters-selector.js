@@ -88,7 +88,6 @@ const ContingenciesFiltersSelector = ({
         if (favoriteListUuids && favoriteListUuids.length > 0) {
             fetchContingencyAndFiltersLists(favoriteListUuids)
                 .then((res) => {
-                    console.log('favoriteListUuids : ', favoriteListUuids);
                     const mapCont = res.reduce((map, obj) => {
                         map[obj.elementUuid] = {
                             id: obj.elementUuid,

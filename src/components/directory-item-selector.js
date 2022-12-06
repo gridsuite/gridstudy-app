@@ -105,7 +105,7 @@ const DirectoryItemSelector = (props) => {
     );
 
     const updateRootDirectories = useCallback(() => {
-        fetchRootFolders().then((data) => {
+        fetchRootFolders(props?.types).then((data) => {
             let [nrs, mdr] = updatedTree(
                 rootsRef.current,
                 nodeMap.current,
@@ -116,7 +116,7 @@ const DirectoryItemSelector = (props) => {
             nodeMap.current = mdr;
             setData(convertRoots(nrs));
         });
-    }, [convertRoots]);
+    }, [convertRoots, props.types]);
 
     useEffect(() => {
         if (props.open) {
@@ -128,7 +128,6 @@ const DirectoryItemSelector = (props) => {
         (nodeId) => {
             fetchDirectoryContent(nodeId, props.types)
                 .then((children) => {
-                    console.log('ttttttt : ', children);
                     const childrenMatchedTypes = children.filter((item) =>
                         contentFilter().has(item.type)
                     );
@@ -143,12 +142,10 @@ const DirectoryItemSelector = (props) => {
                             props.equipmentTypes
                         ).then((childrenWithMetada) => {
                             // update directory content
-                            console.log('testing : ', childrenWithMetada);
                             addToDirectory(nodeId, childrenWithMetada);
                         });
                     } else {
                         // update directory content
-                        console.log('testinggg 2', props.types, childrenMatchedTypes);
                         addToDirectory(nodeId, childrenMatchedTypes);
                     }
                 })
