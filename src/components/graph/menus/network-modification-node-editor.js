@@ -174,6 +174,7 @@ const NetworkModificationNodeEditor = () => {
 
     const cleanClipboard = () => {
         if (copiedModifications.length <= 0) return;
+        setCopyInfos(null);
         setCopiedModifications([]);
         snackInfo({
             messageId: 'CopiedModificationInvalidationMessage',
@@ -414,6 +415,8 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const dofetchNetworkModifications = useCallback(() => {
+        // Do not fetch modifications on the root node
+        if (currentTreeNode?.type !== 'NETWORK_MODIFICATION') return;
         setLaunchLoader(true);
         fetchNetworkModifications(studyUuid, currentTreeNode?.id)
             .then((res) => {
@@ -433,7 +436,13 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentTreeNode.id, snackError, dispatch]);
+    }, [
+        studyUuid,
+        currentTreeNode.id,
+        currentTreeNode.type,
+        snackError,
+        dispatch,
+    ]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
