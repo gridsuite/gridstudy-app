@@ -10,7 +10,6 @@ import cheapRuler from 'cheap-ruler';
 import getGreatCircleBearing from 'geolib/es/getGreatCircleBearing';
 import getRhumbLineBearing from 'geolib/es/getRhumbLineBearing';
 import { ArrowDirection } from './layers/arrow-layer';
-import { fetchSubstationPositionsByIds } from '../../utils/rest-api';
 
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
@@ -27,6 +26,11 @@ export default class GeoData {
 
     linePositionsById = new Map();
 
+    GeoData(other) {
+        this.substationPositionsById = other.substationPositionsById;
+        this.linePositionsById = other.linePositionsById;
+    }
+
     setSubstationPositions(positions) {
         // index positions by substation id
         this.substationPositionsById = positions.reduce(
@@ -35,56 +39,70 @@ export default class GeoData {
         );
     }
 
-    async asyncFetchSubstationPositionsByIds(studyUuid, currentNodeId, substation) {
-        console.info('2')
-        const fetchedPosition = await fetchSubstationPositionsByIds(
-            studyUuid,
-            currentNodeId,
-            [substation]
-        ).then((positions => {
-            this.addSubstationPositions(positions);
-            console.info('3')
-            return this.substationPositionsById.get(substation)
-                ? this.substationPositionsById.get(substation)
-                : [0, 0];
-        }));
-        console.info('4')
-        return fetchedPosition;
+    getSubstationPositions() {
+        return this.substationPositionsById;
     }
 
+    // async asyncFetchSubstationPositionsByIds(studyUuid, currentNodeId, substation) {
+    //     console.info('2')
+    //     const fetchedPosition = await fetchSubstationPositionsByIds(
+    //         studyUuid,
+    //         currentNodeId,
+    //         [substation]
+    //     ).then((positions => {
+    //         this.addSubstationPositions(positions);
+    //         console.info('3')
+    //         return this.substationPositionsById.get(substation)
+    //             ? this.substationPositionsById.get(substation)
+    //             : [0, 0];
+    //     }));
+    //     console.info('4')
+    //     return fetchedPosition;
+    // }
+
     addSubstationPositions(positions) {
+        console.info('positions in add', positions);
         positions.forEach((pos) =>
             this.substationPositionsById.set(pos.id, pos.coordinate)
         );
     }
 
-    getSubstationPosition(substation, currentNode, studyUuid) {
+    getSubstationPosition(substation) {
         const position = this.substationPositionsById.get(substation);
         if (!position) {
             console.warn(`Position not found for ${substation}`);
-            if (currentNode && studyUuid) {
-                console.info('1')
-                // const fetchedPosition = fetchSubstationPositionsByIds(
-                //     studyUuid,
-                //     currentNode?.id,
-                //     [substation]
-                // ).then((positions) => {
-                //     console.info('2')
-                //     this.addSubstationPositions(positions);
-                //     return this.substationPositionsById.get(substation)
-                //         ? this.substationPositionsById.get(substation)
-                //         : [0, 0];
-                // });
-                // console.info('3')
-                // return fetchedPosition;
-                console.info('5')
-                return this.asyncFetchSubstationPositionsByIds(studyUuid, currentNode?.id, substation);
-            } else {
-                return [0, 0];
-            }
+            return [0, 0];
         }
         return [position.lon, position.lat];
     }
+
+    // getSubstationPosition(substation, currentNode, studyUuid) {
+    //     const position = this.substationPositionsById.get(substation);
+    //     if (!position) {
+    //         console.warn(`Position not found for ${substation}`);
+    //         if (currentNode && studyUuid) {
+    //             console.info('1')
+    //             const fetchedPosition = fetchSubstationPositionsByIds(
+    //                 studyUuid,
+    //                 currentNode?.id,
+    //                 [substation]
+    //             ).then((positions) => {
+    //                 console.info('2')
+    //                 this.addSubstationPositions(positions);
+    //                 return this.substationPositionsById.get(substation)
+    //                     ? this.substationPositionsById.get(substation)
+    //                     : [0, 0];
+    //             });
+    //             console.info('3')
+    //             return fetchedPosition;
+    //             console.info('5')
+    //             return this.asyncFetchSubstationPositionsByIds(studyUuid, currentNode?.id, substation);
+    //         } else {
+    //             return [0, 0];
+    //         }
+    //     }
+    //     return [position.lon, position.lat];
+    // }
 
     setLinePositions(positions) {
         // index positions by line id
