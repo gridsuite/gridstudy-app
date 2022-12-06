@@ -67,3 +67,5 @@ export const REACTIVE_LIMIT_TYPES = [
 export function getLoadTypeLabel(loadTypeId) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
 }
+
+//TODO modification types

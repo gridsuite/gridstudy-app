@@ -384,6 +384,7 @@ const LineAttachToVoltageLevelDialog = ({
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
+                    type: 'VOLTAGE_LEVEL_CREATION',
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
@@ -440,6 +441,7 @@ const LineAttachToVoltageLevelDialog = ({
         ) => {
             return new Promise(() => {
                 const preparedLine = {
+                    type: 'LINE_CREATION',
                     equipmentId: lineId,
                     equipmentName: lineName,
                     seriesResistance: seriesResistance,

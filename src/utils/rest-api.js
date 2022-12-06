@@ -1162,8 +1162,8 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modification?' +
-        new URLSearchParams({ modificationsUuids: modificationUuid });
+        '/network-modifications/' +
+        encodeURIComponent(modificationUuid);
 
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {

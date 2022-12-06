@@ -352,6 +352,7 @@ const LineSplitWithVoltageLevelDialog = ({
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
+                    type: 'VOLTAGE_LEVEL_CREATION',
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
