@@ -34,6 +34,7 @@ import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { useParameterState } from '../dialogs/parameters/parameters';
+import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -85,8 +86,7 @@ const withLineMenu =
         const getLineDescriptor = useCallback(
             (voltageLevelId) => {
                 return displayUseName
-                    ? network.getVoltageLevel(voltageLevelId)?.name ??
-                          voltageLevelId
+                    ? getNameOrId(network.getVoltageLevel(voltageLevelId))
                     : voltageLevelId;
             },
             [displayUseName, network]
