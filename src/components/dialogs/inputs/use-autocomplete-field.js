@@ -206,8 +206,15 @@ export const useAutocompleteField = ({
 
     const field = useMemo(() => {
         const handleKeyDown = (e) => {
-            if (e.ctrlKey && e.code === 'Space') {
-                handleForcedSearch(userStr);
+            if (readOnlyTextField) {
+                // in readonly mode, we disable any user Key strike, except Tab for navigation
+                if (e.code !== 'Tab') {
+                    e.preventDefault();
+                }
+            } else {
+                if (e.ctrlKey && e.code === 'Space') {
+                    handleForcedSearch(userStr);
+                }
             }
         };
 
@@ -285,10 +292,6 @@ export const useAutocompleteField = ({
                             />
                         }
                         value={value}
-                        inputProps={{
-                            ...props.inputProps,
-                            readOnly: readOnlyTextField,
-                        }}
                         {...genHelperPreviousValue(previousValue)}
                         {...genHelperError(error, errorMsg)}
                     />
