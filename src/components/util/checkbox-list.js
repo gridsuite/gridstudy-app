@@ -22,12 +22,9 @@ const CheckboxList = ({
         const existingValues = new Set(values);
         const newChecked = new Set(
             [...checked].filter((element) => {
-                for (const existingValue of existingValues) {
-                    if (element?.uuid === existingValue?.uuid) {
-                        return true;
-                    }
-                }
-                return false;
+                return Array.from(existingValues).some(
+                    (existingValue) => existingValue.uuid === element.uuid
+                );
             })
         );
         if (newChecked.size !== checked.size) {
@@ -50,13 +47,9 @@ const CheckboxList = ({
     const handleToggle = useCallback(
         (value) => {
             const newChecked = new Set(checked);
-            let valueToDelete = undefined;
-            for (const e of newChecked) {
-                if (e?.uuid === value?.uuid) {
-                    valueToDelete = e;
-                    break;
-                }
-            }
+            const valueToDelete = Array.from(newChecked).find(
+                (e) => e.uuid === value?.uuid
+            );
 
             if (!newChecked.delete(valueToDelete)) {
                 newChecked.add(value);
@@ -73,12 +66,9 @@ const CheckboxList = ({
     useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
 
     const isCheckboxInCheckedSet = (checkedSet, checkBoxToCheck) => {
-        for (const element of checkedSet) {
-            if (element?.uuid === checkBoxToCheck?.uuid) {
-                return true;
-            }
-        }
-        return false;
+        return Array.from(checkedSet).some(
+            (element) => element?.uuid === checkBoxToCheck?.uuid
+        );
     };
 
     return (
