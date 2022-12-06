@@ -539,6 +539,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     };
                 })
             );
+        } else {
+            setRatioTapRows([]);
         }
 
         if (twt.phaseTapChanger?.steps) {
@@ -556,6 +558,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     };
                 })
             );
+        } else {
+            setPhaseTapRows([]);
         }
 
         setIsCopy(true);
