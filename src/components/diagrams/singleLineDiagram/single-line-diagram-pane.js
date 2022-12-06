@@ -325,12 +325,15 @@ export function SingleLineDiagramPane({
 
     useEffect(() => {
         let displayedSldHeights_ = displayedSldHeightsRef.current;
-        displayedSldHeights_ = displayedSldHeights_.filter(
-            (displayedSldHeight) =>
-                viewsRef.current
-                    .filter((sld) => sld.state !== ViewState.MINIMIZED)
-                    .map((sld) => sld.id)
-                    .includes(displayedSldHeight.id)
+        viewsRef.current.forEach((sld) => {
+            if (sld.state === ViewState.MINIMIZED) {
+                displayedSldHeights_ = displayedSldHeights_.filter(
+                    (displayedHeight) => displayedHeight.id !== sld.id
+                );
+            }
+        });
+        displayedSldHeights_ = displayedSldHeights_.filter((displayedHeight) =>
+            viewsRef.current.map((sld) => sld.id).includes(displayedHeight.id)
         );
 
         setDisplayedSldHeights(displayedSldHeights_);
