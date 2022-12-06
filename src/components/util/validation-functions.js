@@ -173,6 +173,7 @@ export function validateField(value, toValidate, disabled = false) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
+
     return NO_ERROR;
 }
 
