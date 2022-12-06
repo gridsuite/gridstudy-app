@@ -235,50 +235,46 @@ const PositionDiagram = forwardRef((props, ref) => {
         MAX_WIDTH_VOLTAGE_LEVEL
     );
 
-    const PositionDiagramElement = useCallback(
-        () => {
-            return (
-                <>
-                    <Box>
-                        <Box className={classes.header}>
-                            <Box flexGrow={1}>
-                                <Typography>{props.diagramTitle}</Typography>
-                            </Box>
-                            <Box>
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                    }}
+    const PositionDiagramElement = useCallback(() => {
+        return (
+            <>
+                <Box>
+                    <Box className={classes.header}>
+                        <Box flexGrow={1}>
+                            <Typography>{props.diagramTitle}</Typography>
+                        </Box>
+                        <Box>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                }}
+                            >
+                                <IconButton
+                                    className={classes.close}
+                                    onClick={onCloseHandler}
                                 >
-                                    <IconButton
-                                        className={classes.close}
-                                        onClick={onCloseHandler}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </Box>
+                                    <CloseIcon />
+                                </IconButton>
                             </Box>
                         </Box>
                     </Box>
-                    {loadingState && (
-                        <Box height={2}>
-                            <LinearProgress />
-                        </Box>
-                    )}
-                    <Box position="relative">
-                        <div
-                            ref={svgRef}
-                            className={classes.divSld}
-                            dangerouslySetInnerHTML={{ __html: svg.svg }}
-                        />
+                </Box>
+                {loadingState && (
+                    <Box height={2}>
+                        <LinearProgress />
                     </Box>
-                </>
-            );
-        },
-        // Note: dispatch doesn't change
-        [classes, loadingState, props.diagramTitle, svg.svg, onCloseHandler]
-    );
+                )}
+                <Box position="relative">
+                    <div
+                        ref={svgRef}
+                        className={classes.divSld}
+                        dangerouslySetInnerHTML={{ __html: svg.svg }}
+                    />
+                </Box>
+            </>
+        );
+    }, [classes, loadingState, props.diagramTitle, svg.svg, onCloseHandler]);
 
     return renderIntoPaperWrapper(
         svg,
