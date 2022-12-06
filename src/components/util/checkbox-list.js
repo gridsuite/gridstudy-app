@@ -19,10 +19,9 @@ const CheckboxList = ({
     const [checked, setChecked] = useState(new Set(initialSelection));
 
     useEffect(() => {
-        const existingValues = new Set(values);
         const newChecked = new Set(
             [...checked].filter((element) => {
-                return Array.from(existingValues).some(
+                return values.some(
                     (existingValue) => existingValue.uuid === element.uuid
                 );
             })
@@ -47,10 +46,9 @@ const CheckboxList = ({
     const handleToggle = useCallback(
         (value) => {
             const newChecked = new Set(checked);
-            const valueToDelete = Array.from(newChecked).find(
+            const valueToDelete = [...checked].find(
                 (e) => e.uuid === value?.uuid
             );
-
             if (!newChecked.delete(valueToDelete)) {
                 newChecked.add(value);
             }
