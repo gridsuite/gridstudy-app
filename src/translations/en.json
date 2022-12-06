@@ -54,6 +54,7 @@
     "paramsChangingDenied": "The requested changes have been rejected",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
     "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
+    "defaultSensiResultsThresholdRetrievingError": "An error occurred while retrieving the sensitivity analysis results default threshold",
 
     "close": "Close",
     "validate": "Validate",
@@ -625,8 +626,33 @@
     "EmptyList/connections": "Connections list is empty",
 
     "UnsupportedView": "Search is unavailable in tree view",
+
+    "resultsThreshold": "Minimum sensitivity threshold",
+    "SensitivityBranches": "Branch sensitivity",
+    "SensitivityInjectionsSet": "Relatively to injections set :",
+    "SensitivityInjection": "Relatively to each injection :",
+    "SensitivityHvdc": "Relatively to each HVDC :",
+    "SensitivityTD": "Relatively to each PST :",
+    "SensitivityNodes": "Node sensitivity",
+    "Proportional": "Proportional",
+    "ProportionalMaxP": "Proportional to maxP",
+    "Regular": "Regular distribution",
+    "Ventilation": "Ventilation",
+    "DistributionType": "Distribution type",
+    "SensitivityType": "Sensitivity type",
+    "DeltaMW": "\u0394 MW",
+    "DeltaA": "\u0394 A",
+    "AddSensitivityFactor": "Add sensitivity factor",
+    "ContingencyLists": "Contingencies",
+    "Injections": "Injections",
+    "SupervisedVoltageLevels": "Supervised voltage levels",
+    "EquipmentsInVoltageRegulation": "Equipments in voltage regulation",
+    "PSTS": "PSTs",
+    "ElementAlreadyUsed": "This element is already used",
+
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
-    "Bottom": "Bottom"
+    "Bottom": "Bottom",
+    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value"
 }

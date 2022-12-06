@@ -9,7 +9,6 @@ import { createReducer } from '@reduxjs/toolkit';
 
 import {
     USER,
-    SIGNIN_CALLBACK_ERROR,
     UNAUTHORIZED_USER_INFO,
     LOGOUT_ERROR,
     USER_VALIDATION_ERROR,
@@ -63,9 +62,6 @@ import {
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
     SET_MODIFICATIONS_IN_PROGRESS,
-    FAVORITE_SENSI_CONTINGENCY_LISTS,
-    FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
     OPEN_SLD,
@@ -106,9 +102,6 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
-    PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
-    PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -132,9 +125,6 @@ const paramsInitialState = {
     [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
     [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
-    [PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS]: [],
-    [PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS]: [],
-    [PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
 };
@@ -381,10 +371,6 @@ export const reducer = createReducer(initialState, {
             action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
     },
 
-    [SIGNIN_CALLBACK_ERROR]: (state, action) => {
-        state.signInCallbackError = action.signInCallbackError;
-    },
-
     [UNAUTHORIZED_USER_INFO]: (state, action) => {
         state.authenticationRouterError = action.authenticationRouterError;
     },
@@ -510,18 +496,6 @@ export const reducer = createReducer(initialState, {
     [FAVORITE_CONTINGENCY_LISTS]: (state, action) => {
         state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
             action[PARAM_FAVORITE_CONTINGENCY_LISTS];
-    },
-    [FAVORITE_SENSI_VARIABLES_FILTERS_LISTS]: (state, action) => {
-        state[PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS] =
-            action[PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS];
-    },
-    [FAVORITE_SENSI_CONTINGENCY_LISTS]: (state, action) => {
-        state[PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS] =
-            action[PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS];
-    },
-    [FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: (state, action) => {
-        state[PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS] =
-            action[PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS];
     },
     [CURRENT_TREE_NODE]: (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
