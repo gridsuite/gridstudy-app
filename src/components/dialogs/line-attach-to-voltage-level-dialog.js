@@ -39,6 +39,7 @@ import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import { MODIFICATION_TYPE } from '../network/constants';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -384,7 +385,7 @@ const LineAttachToVoltageLevelDialog = ({
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
-                    type: 'VOLTAGE_LEVEL_CREATION',
+                    type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
@@ -441,7 +442,7 @@ const LineAttachToVoltageLevelDialog = ({
         ) => {
             return new Promise(() => {
                 const preparedLine = {
-                    type: 'LINE_CREATION',
+                    type: MODIFICATION_TYPE.LINE_CREATION,
                     equipmentId: lineId,
                     equipmentName: lineName,
                     seriesResistance: seriesResistance,
