@@ -148,17 +148,6 @@ const PositionDiagram = forwardRef((props, ref) => {
         }
     }, [props.svgUrl, forceState, snackError, intlRef]);
 
-    // shouldResetPreferredSizes doesn't need to be a ref, but it makes the static checks happy
-    // const shouldResetPreferredSizes = useRef();
-    // shouldResetPreferredSizes.current = false;
-    // useLayoutEffect(() => {
-    //     shouldResetPreferredSizes.current = true;
-    //     // Note: these deps must be kept in sync with the ones of the useLayoutEffect where setSvgPreferredWidth and setSvgPreferredHeight
-    //     // are called. Because we want to reset them in all cases, except when only svgFinalWidth and svgFinalHeight have changed
-    //     // so we use the same deps but without svgFinalWidth and svgFinalHeight
-    //     // TODO is there a better way to do this??
-    // }, [network, svg, currentNode, svgType, theme, ref, disabled]);
-
     useLayoutEffect(() => {
         if (disabled) return;
 
@@ -181,11 +170,6 @@ const PositionDiagram = forwardRef((props, ref) => {
                 viewboxMaxHeight,
                 selectionBackColor //arrows color
             );
-
-            // if (shouldResetPreferredSizes.current) {
-            //     setSvgPreferredHeight(sldViewer.getHeight());
-            //     setSvgPreferredWidth(sldViewer.getWidth());
-            // }
 
             setServerHeight(sldViewer.getHeight());
             setServerWidth(sldViewer.getWidth());
