@@ -116,8 +116,6 @@ const PositionDiagram = forwardRef((props, ref) => {
     }, [serverWidth, serverHeight]);
 
     useEffect(() => {
-        // We use isNodeBuilt here instead of the "disabled" props to avoid
-        // triggering this effect when changing current node
         if (props.svgUrl) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
