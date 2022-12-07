@@ -330,21 +330,21 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (finalPaperHeight) {
-            setDisplayedSldHeights((displayedSldHeight) => {
+            setDisplayedSldHeights((displayedSldHeights) => {
                 if (
-                    displayedSldHeight.filter((height) => height.id === sldId)
+                    displayedSldHeights.filter((sld) => sld.id === sldId)
                         .length > 0
                 ) {
-                    return displayedSldHeight;
+                    return displayedSldHeights;
                 } else {
                     return [
-                        ...displayedSldHeight,
+                        ...displayedSldHeights,
                         { id: sldId, initialHeight: finalPaperHeight },
                     ];
                 }
             });
         }
-    }, [computedHeight, finalPaperHeight, setDisplayedSldHeights, sldId]);
+    }, [finalPaperHeight, setDisplayedSldHeights, sldId]);
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
