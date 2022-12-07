@@ -550,7 +550,6 @@
     "RegulatingValueCurrentLimiter": "Limitation du courant",
     "CurrentLimiterGreaterThanZero": "La valeur de la limitation du courant doit être strictement positive",
     "RegulatingValueActivePowerControl": "Consigne de transit",
-    "ActivePowerControlGreaterThanZero": "La valeur de la consigne de transit doit être strictement positive",
 
     "CreateRegulationRule":"Créer une loi de régleur",
     "LowTapRatio":"Rapport (prise min)",
