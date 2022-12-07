@@ -47,6 +47,7 @@ import makeStyles from '@mui/styles/makeStyles';
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
+export const MAX_TAP_NUMBER = 100;
 
 const useStyles = makeStyles((theme) => ({
     tabWithError: {
@@ -108,6 +109,9 @@ const TwoWindingsTransformerCreationDialog = ({
     const [isCopy, setIsCopy] = useState(false);
 
     const [creationError, setCreationError] = useState(undefined);
+
+    const [ratioCellIndexError, setRatioCellIndexError] = useState(undefined);
+    const [phaseCellIndexError, setPhaseCellIndexError] = useState(undefined);
 
     // CHARACTERISTICS TAP PANE
 
@@ -263,16 +267,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     : false,
         });
 
-    const [ratioTapRegulating, ratioTapRegulatingField] = useBooleanValue({
-        label: 'VoltageRegulation',
-        formProps: {
-            disabled: !ratioTapChangerEnabled,
-        },
-        validation: { isFieldRequired: true },
-        inputForm: ratioTapInputForm,
-        defaultValue: formValues?.ratioTapChanger?.regulating ?? false,
-    });
-
     const [
         ratioTapLoadTapChangingCapabilities,
         ratioTapLoadTapChangingCapabilitiesField,
@@ -285,6 +279,17 @@ const TwoWindingsTransformerCreationDialog = ({
         inputForm: ratioTapInputForm,
         defaultValue:
             formValues?.ratioTapChanger?.loadTapChangingCapabilities ?? false,
+    });
+
+    const [ratioTapRegulating, ratioTapRegulatingField] = useBooleanValue({
+        label: 'VoltageRegulation',
+        formProps: {
+            disabled:
+                !ratioTapChangerEnabled || !ratioTapLoadTapChangingCapabilities,
+        },
+        validation: { isFieldRequired: true },
+        inputForm: ratioTapInputForm,
+        defaultValue: formValues?.ratioTapChanger?.regulating ?? false,
     });
 
     const [targetVoltage, targetVoltage1Field] = useDoubleValue({
@@ -355,6 +360,7 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
+            isValueLessOrEqualTo: MAX_TAP_NUMBER,
         },
         inputForm: ratioTapInputForm,
         formProps: {
@@ -662,6 +668,33 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     }, [editData]);
 
+    const validateTableRows = useCallback((rows, setCellIndexError, error) => {
+        if (rows.length > 1) {
+            if (rows[0].ratio === rows[1].ratio) {
+                setCellIndexError(1);
+                setCreationError(error);
+                return false;
+            } else if (rows[0].ratio < rows[1].ratio) {
+                for (let index = 0; index < rows.length - 1; index++) {
+                    if (rows[index].ratio >= rows[index + 1].ratio) {
+                        setCellIndexError(index + 1);
+                        setCreationError(error);
+                        return false;
+                    }
+                }
+            } else if (rows[0].ratio > rows[1].ratio) {
+                for (let index = 0; index < rows.length - 1; index++) {
+                    if (rows[index].ratio <= rows[index + 1].ratio) {
+                        setCellIndexError(index + 1);
+                        setCreationError(error);
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }, []);
+
     const validateTapRows = useCallback(() => {
         setCreationError();
         let creationError = '';
@@ -757,6 +790,17 @@ const TwoWindingsTransformerCreationDialog = ({
                 isFormValid = false;
                 tabWithErrorList.push(DialogTab.RATIO_TAP_TAB);
             }
+
+            if (
+                !validateTableRows(
+                    ratioTapRows,
+                    setRatioCellIndexError,
+                    intl.formatMessage({ id: 'RatioValuesError' })
+                )
+            ) {
+                isFormValid = false;
+                tabWithErrorList.push(DialogTab.RATIO_TAP_TAB);
+            }
         }
 
         if (phaseTapChangerEnabled && !phaseTapInputForm.validate()) {
@@ -773,6 +817,17 @@ const TwoWindingsTransformerCreationDialog = ({
                         id: 'IncoherentPhaseRegulatingTerminalError',
                     })
                 );
+                isFormValid = false;
+                tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
+            }
+
+            if (
+                !validateTableRows(
+                    phaseTapRows,
+                    setPhaseCellIndexError,
+                    intl.formatMessage({ id: 'PhaseShiftValuesError' })
+                )
+            ) {
                 isFormValid = false;
                 tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
             }
@@ -1011,6 +1066,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     loadTapChangingCapabilitiesField={
                         ratioTapLoadTapChangingCapabilitiesField
                     }
+                    ratioTapLoadTapChangingCapabilities={
+                        ratioTapLoadTapChangingCapabilities
+                    }
                     regulatingField={ratioTapRegulatingField}
                     handleRatioTapRows={handleRatioTapRows}
                     ratioTapChangerEnabledField={ratioTapChangerEnabledField}
@@ -1024,6 +1082,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     highTapPosition={ratioHighTapPosition}
                     tapPositionField={ratioTapPositionField}
                     ratioTapRows={ratioTapRows}
+                    ratioCellIndexError={ratioCellIndexError}
                 />
             </Box>
 
@@ -1051,6 +1110,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     highTapPosition={phaseHighTapPosition}
                     tapPositionField={phaseTapPositionField}
                     regulatingField={phaseTapRegulatingField}
+                    phaseCellIndexError={phaseCellIndexError}
                 />
             </Box>
             {creationError && (
