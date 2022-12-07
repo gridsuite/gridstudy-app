@@ -34,7 +34,6 @@ import {
     MAX_WIDTH_VOLTAGE_LEVEL,
     renderIntoPaperWrapper,
     NoSvg,
-    LOADING_WIDTH,
 } from './utils';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 
@@ -138,9 +137,6 @@ const PositionDiagram = forwardRef((props, ref) => {
         if (disabled) return;
 
         if (svg.svg) {
-            const minWidth = LOADING_WIDTH;
-            const minHeight = 0;
-
             let viewboxMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
             let viewboxMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
             let selectionBackColor = theme.palette.background.paper;
@@ -150,8 +146,8 @@ const PositionDiagram = forwardRef((props, ref) => {
                 svg.svg, //svgContent
                 svg.metadata, //svg metadata
                 svgType,
-                minWidth,
-                minHeight,
+                0,
+                0,
                 viewboxMaxWidth,
                 viewboxMaxHeight,
                 selectionBackColor //arrows color
