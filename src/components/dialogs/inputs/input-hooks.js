@@ -817,7 +817,7 @@ export const useDirectoryElements = ({
     return [values, field];
 };
 
-export const useCSVPicker = ({ label, header, resetTrigger }) => {
+export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber }) => {
     const intl = useIntl();
 
     const { CSVReader } = useCSVReader();
@@ -849,6 +849,15 @@ export const useCSVPicker = ({ label, header, resetTrigger }) => {
                                 })
                             );
                         }
+
+                        if (results.data.length > maxTapNumber) {
+                            setFileError(
+                                intl.formatMessage(
+                                    { id: 'TapPositionValueError' },
+                                    { value: maxTapNumber }
+                                )
+                            );
+                        }
                     }}
                 >
                     {({ getRootProps, acceptedFile }) => (
@@ -873,7 +882,7 @@ export const useCSVPicker = ({ label, header, resetTrigger }) => {
                 </CSVReader>
             </>
         );
-    }, [header, intl, label]);
+    }, [header, intl, label, maxTapNumber]);
 
     return [_acceptedFile, field, fileError];
 };

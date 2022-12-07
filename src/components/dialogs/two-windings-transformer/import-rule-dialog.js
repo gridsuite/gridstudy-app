@@ -17,7 +17,10 @@ import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCSVPicker } from '../inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
-import { PHASE_TAP } from './two-windings-transformer-creation-dialog';
+import {
+    MAX_TAP_NUMBER,
+    PHASE_TAP,
+} from './two-windings-transformer-creation-dialog';
 
 export const ImportRuleDialog = (props) => {
     const handleCloseDialog = () => {
@@ -31,6 +34,7 @@ export const ImportRuleDialog = (props) => {
                 : 'ImportRegulationRule',
         header: props.csvColumns,
         resetTrigger: props.openImportRuleDialog,
+        maxTapNumber: MAX_TAP_NUMBER,
     });
 
     const handleSave = () => {
