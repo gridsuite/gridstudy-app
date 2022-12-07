@@ -219,7 +219,7 @@ export function SingleLineDiagramPane({
                 open
             ).catch((error) => {
                 console.error(error.message);
-                setUpdateSwitchMsg(error.status + ' : ' + error.statusText);
+                setUpdateSwitchMsg(error.message);
             });
         },
         [studyUuid, currentNode]
