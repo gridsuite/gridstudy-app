@@ -142,6 +142,8 @@ function getEquipmentTypeFromFeederType(feederType) {
     }
 }
 
+let initialWidth, initialHeight;
+
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
 const computePaperAndSvgSizesIfReady = (
     fullScreen,
@@ -228,8 +230,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const theme = useTheme();
 
     const [modificationInProgress, setModificationInProgress] = useState(false);
-
-    let initialWidth, initialHeight;
 
     const errorWidth = MAX_WIDTH_VOLTAGE_LEVEL;
 

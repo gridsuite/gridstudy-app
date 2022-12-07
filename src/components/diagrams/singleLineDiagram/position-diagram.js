@@ -9,7 +9,6 @@ import React, {
     forwardRef,
     useCallback,
     useEffect,
-    useImperativeHandle,
     useLayoutEffect,
     useRef,
     useState,
@@ -76,26 +75,9 @@ const PositionDiagram = forwardRef((props, ref) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const [forceState, updateState] = useState(false);
-
     const [loadingState, updateLoadingState] = useState(false);
 
     const theme = useTheme();
-
-    const [modificationInProgress, setModificationInProgress] = useState(false);
-
-    const forceUpdate = useCallback(() => {
-        updateState((s) => !s);
-    }, []);
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
 
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
@@ -131,7 +113,7 @@ const PositionDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(NoSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef]);
+    }, [props.svgUrl, snackError, intlRef]);
 
     useLayoutEffect(() => {
         if (disabled) return;
@@ -170,7 +152,6 @@ const PositionDiagram = forwardRef((props, ref) => {
         theme,
         ref,
         disabled,
-        modificationInProgress,
         loadingState,
     ]);
 
@@ -184,14 +165,12 @@ const PositionDiagram = forwardRef((props, ref) => {
                     svgEl.setAttribute('height', serverHeight);
                 }
             }
-            setModificationInProgress(false);
         }
     }, [
         svg,
         svgType,
         theme,
         loadingState,
-        modificationInProgress,
         network,
         ref,
         serverWidth,
