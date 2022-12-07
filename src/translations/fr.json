@@ -527,6 +527,9 @@
     "IncoherentPhaseTapPositionError": "La valeur du champ Prise courante du déphaseur n'est pas présente dans les données de ses prises",
     "IncoherentRatioRegulatingTerminalError": "La valeur du Terminal distant réglé du régleur doit être renseignée",
     "IncoherentPhaseRegulatingTerminalError": "La valeur du Terminal distant réglé du déphaseur doit être renseignée",
+    "RatioValuesError": "Les rapports de transformation doivent être ordonnés et sans duplication",
+    "PhaseShiftValuesError": "les valeurs de déphasage doivent être ordonnés et sans duplication",
+    "TapPositionValueError": "La prise maximale ne doit pas dépasser la valeur {value}",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",
@@ -550,7 +553,6 @@
     "RegulatingValueCurrentLimiter": "Limitation du courant",
     "CurrentLimiterGreaterThanZero": "La valeur de la limitation du courant doit être strictement positive",
     "RegulatingValueActivePowerControl": "Consigne de transit",
-    "ActivePowerControlGreaterThanZero": "La valeur de la consigne de transit doit être strictement positive",
 
     "CreateRegulationRule":"Créer une loi de régleur",
     "LowTapRatio":"Rapport (prise min)",
