@@ -209,4 +209,3 @@ export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 export function getSubstationNameOrId(value) {
     return value?.substationName ?? value?.substationId;
 }
-
