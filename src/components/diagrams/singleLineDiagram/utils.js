@@ -191,38 +191,6 @@ export function getNameOrId(value) {
     return value?.name ?? value?.id;
 }
 
-export function setWidthAndHeight(
-    svg,
-    finalPaperWidth,
-    finalPaperHeight,
-    loadingState,
-    totalWidth,
-    initialHeight,
-    initialWidth,
-    errorWidth
-) {
-    let sizeWidth,
-        sizeHeight = initialHeight;
-    if (svg.error) {
-        sizeWidth = errorWidth;
-    } else if (finalPaperWidth && finalPaperHeight) {
-        sizeWidth = finalPaperWidth;
-        sizeHeight = finalPaperHeight;
-    } else if (initialWidth !== undefined || loadingState) {
-        sizeWidth = initialWidth;
-    } else {
-        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
-    }
-
-    if (sizeWidth !== undefined) {
-        initialWidth = sizeWidth; // setting initial width for the next SLD.
-    }
-    if (sizeHeight !== undefined) {
-        initialHeight = sizeHeight; // setting initial height for the next SLD.
-    }
-    return { sizeWidth, sizeHeight };
-}
-
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
     VERTICAL: 'vertical',

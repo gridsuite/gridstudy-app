@@ -62,7 +62,6 @@ import {
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_SUBSTATION,
     MAX_WIDTH_VOLTAGE_LEVEL,
-    setWidthAndHeight,
     SvgType,
     renderIntoPaperWrapper,
     NoSvg,
@@ -236,6 +235,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const theme = useTheme();
 
     const [modificationInProgress, setModificationInProgress] = useState(false);
+
+    let initialWidth, initialHeight;
+
+    const errorWidth = MAX_WIDTH_VOLTAGE_LEVEL;
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
@@ -617,6 +620,22 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         modificationInProgress,
     ]);
 
+    let sizeWidth,
+        sizeHeight = initialHeight;
+    if (svg.error) {
+        sizeWidth = errorWidth;
+    } else if (
+        typeof finalPaperWidth != 'undefined' &&
+        typeof finalPaperHeight != 'undefined'
+    ) {
+        sizeWidth = finalPaperWidth;
+        sizeHeight = finalPaperHeight;
+    } else if (initialWidth !== undefined || loadingState) {
+        sizeWidth = initialWidth;
+    } else {
+        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
+    }
+
     const displayMenu = useCallback(
         (equipmentType, menuId) => {
             const Menu = withEquipmentMenu(
@@ -639,14 +658,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         [closeEquipmentMenu, equipmentMenu, handleViewInSpreadsheet]
     );
 
-    let { sizeWidth, sizeHeight } = setWidthAndHeight(
-        svg,
-        finalPaperWidth,
-        finalPaperHeight,
-        loadingState,
-        totalWidth,
-        MAX_WIDTH_VOLTAGE_LEVEL
-    );
+    if (sizeWidth !== undefined) {
+        initialWidth = sizeWidth; // setting initial width for the next SLD.
+    }
+    if (sizeHeight !== undefined) {
+        initialHeight = sizeHeight; // setting initial height for the next SLD.
+    }
 
     const pinSld = useCallback(() => onTogglePin(sldId), [sldId, onTogglePin]);
 

@@ -32,9 +32,9 @@ import {
     commonSldStyle,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
-    setWidthAndHeight,
     renderIntoPaperWrapper,
     NoSvg,
+    LOADING_WIDTH,
 } from './utils';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 
@@ -71,7 +71,7 @@ const PositionDiagram = forwardRef((props, ref) => {
     const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
     const svgRef = useRef();
-    const { totalWidth, svgType, disabled } = props;
+    const { svgType, disabled } = props;
 
     const network = useSelector((state) => state.network);
 
@@ -100,20 +100,8 @@ const PositionDiagram = forwardRef((props, ref) => {
 
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
-    const [finalPaperWidth, setFinalPaperWidth] = useState();
-    const [finalPaperHeight, setFinalPaperHeight] = useState();
-    const [svgFinalWidth, setSvgFinalWidth] = useState();
-    const [svgFinalHeight, setSvgFinalHeight] = useState();
-
     const [serverHeight, setServerHeight] = useState(0);
     const [serverWidth, setServerWidth] = useState(0);
-
-    useLayoutEffect(() => {
-        setSvgFinalWidth(serverWidth);
-        setFinalPaperWidth(serverWidth);
-        setSvgFinalHeight(serverHeight);
-        setFinalPaperHeight(serverHeight);
-    }, [serverWidth, serverHeight]);
 
     useEffect(() => {
         if (props.svgUrl) {
@@ -150,8 +138,8 @@ const PositionDiagram = forwardRef((props, ref) => {
         if (disabled) return;
 
         if (svg.svg) {
-            const minWidth = svgFinalWidth;
-            const minHeight = svgFinalHeight;
+            const minWidth = LOADING_WIDTH;
+            const minHeight = 0;
 
             let viewboxMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
             let viewboxMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
@@ -185,29 +173,24 @@ const PositionDiagram = forwardRef((props, ref) => {
         svgType,
         theme,
         ref,
-        svgFinalHeight,
-        svgFinalWidth,
         disabled,
         modificationInProgress,
         loadingState,
     ]);
 
     useLayoutEffect(() => {
-        if (svgFinalWidth && svgFinalHeight) {
+        if (serverWidth && serverHeight) {
             const divElt = svgRef.current;
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
                 if (svgEl != null) {
-                    svgEl.setAttribute('width', svgFinalWidth);
-                    svgEl.setAttribute('height', svgFinalHeight);
+                    svgEl.setAttribute('width', serverWidth);
+                    svgEl.setAttribute('height', serverHeight);
                 }
             }
             setModificationInProgress(false);
-        } else {
         }
     }, [
-        svgFinalWidth,
-        svgFinalHeight,
         svg,
         svgType,
         theme,
@@ -215,6 +198,8 @@ const PositionDiagram = forwardRef((props, ref) => {
         modificationInProgress,
         network,
         ref,
+        serverWidth,
+        serverHeight,
     ]);
 
     const classes = useStyles();
@@ -225,15 +210,6 @@ const PositionDiagram = forwardRef((props, ref) => {
             props.onClose();
         }
     }, [props]);
-
-    let { sizeWidth, sizeHeight } = setWidthAndHeight(
-        svg,
-        finalPaperWidth,
-        finalPaperHeight,
-        loadingState,
-        totalWidth,
-        MAX_WIDTH_VOLTAGE_LEVEL
-    );
 
     const PositionDiagramElement = useCallback(() => {
         return (
@@ -280,8 +256,8 @@ const PositionDiagram = forwardRef((props, ref) => {
         svg,
         ref,
         classes,
-        sizeWidth,
-        sizeHeight,
+        serverWidth,
+        serverHeight,
         PositionDiagramElement()
     );
 });
