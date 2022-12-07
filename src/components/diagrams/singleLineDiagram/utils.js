@@ -96,3 +96,7 @@ export const useSingleLineDiagram = () => {
 export function getNameOrId(value) {
     return value?.name ?? value?.id;
 }
+
+export function getSubstationNameOrId(value) {
+    return value?.substationName ?? value?.substationId;
+}

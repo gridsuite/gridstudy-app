@@ -271,11 +271,16 @@ const LineAttachToVoltageLevelDialog = ({
         return lineData;
     }, [attachmentLine, formValues]);
 
+    // This field has to be disabled but must be validated, because
+    // it is automatically filled when creating an attached line.
     const [, lineToIdField] = useTextValue({
         id: 'attachedLineId',
         label: 'AttachedLineId',
         inputForm: inputForm,
-        validation: { isFieldRequired: true },
+        validation: {
+            forceValidation: true,
+            isFieldRequired: true,
+        },
         defaultValue: lineToEdit?.equipmentId,
         formProps: { disabled: true },
     });

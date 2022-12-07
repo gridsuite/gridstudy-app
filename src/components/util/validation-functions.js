@@ -115,7 +115,7 @@ export function validateValueIsGreaterThan(value, valueToCompareTo) {
  * then any check that applies to the value will pass if the value is empty.
  */
 export function validateField(value, toValidate, disabled = false) {
-    if (disabled) {
+    if (disabled && !toValidate.forceValidation) {
         return NO_ERROR;
     }
     const isValueBlankOrEmpty = isBlankOrEmpty(value);
@@ -173,6 +173,7 @@ export function validateField(value, toValidate, disabled = false) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
+
     return NO_ERROR;
 }
 

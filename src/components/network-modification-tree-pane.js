@@ -17,6 +17,7 @@ import {
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
+    networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
@@ -135,6 +136,22 @@ export const NetworkModificationTreePane = ({
                 });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeMoved'
+            ) {
+                fetchNetworkModificationTreeNode(
+                    studyUuid,
+                    studyUpdatedForce.eventData.headers['movedNode']
+                ).then((node) => {
+                    dispatch(
+                        networkModificationTreeNodeMoved(
+                            node,
+                            studyUpdatedForce.eventData.headers['parentNode'],
+                            studyUpdatedForce.eventData.headers['insertMode']
+                        )
+                    );
+                });
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeDeleted'
             ) {
                 dispatch(
@@ -220,18 +237,15 @@ export const NetworkModificationTreePane = ({
                     selectedNodeIdForCopy,
                     referenceNodeId,
                     insertMode
-                )
-                    .then(() => {
-                        //After the first CUT / PASTE operation, we can't paste anymore
-                        setSelectedNodeIdForCopy(null);
-                        setCopyType(null);
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'NodeCreateError',
-                        });
+                ).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'NodeCreateError',
                     });
+                });
+                //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
+                setSelectedNodeIdForCopy(null);
+                setCopyType(null);
             } else {
                 copyTreeNode(
                     studyUuid,
@@ -318,20 +332,18 @@ export const NetworkModificationTreePane = ({
                     prevTreeDisplay={prevTreeDisplay}
                 />
 
-                {currentNode && currentNode.type === 'NETWORK_MODIFICATION' && (
-                    <StudyDrawer
-                        open={isModificationsDrawerOpen}
-                        drawerClassName={classes.nodeEditor}
-                        drawerShiftClassName={classes.nodeEditorShift}
-                        anchor={
-                            prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
-                                ? 'right'
-                                : 'left'
-                        }
-                    >
-                        <NodeEditor />
-                    </StudyDrawer>
-                )}
+                <StudyDrawer
+                    open={isModificationsDrawerOpen}
+                    drawerClassName={classes.nodeEditor}
+                    drawerShiftClassName={classes.nodeEditorShift}
+                    anchor={
+                        prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
+                            ? 'right'
+                            : 'left'
+                    }
+                >
+                    <NodeEditor />
+                </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
                 <CreateNodeMenu
