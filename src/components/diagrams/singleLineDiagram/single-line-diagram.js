@@ -143,22 +143,15 @@ function getEquipmentTypeFromFeederType(feederType) {
 }
 
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
-function computePaperAndSvgSizesIfReady(
+const computePaperAndSvgSizesIfReady = (
     fullScreen,
     svgType,
     totalWidth,
     totalHeight,
     svgPreferredWidth,
     svgPreferredHeight,
-    headerPreferredHeight,
-    borders,
-    maxWidthVoltageLevel,
-    maxHeightVoltageLevel,
-    maxWidthSubstation,
-    maxHeightSubstation,
-    mapRightOffset,
-    mapBottomOffset
-) {
+    headerPreferredHeight
+) => {
     if (
         typeof svgPreferredWidth != 'undefined' &&
         typeof headerPreferredHeight != 'undefined'
@@ -167,33 +160,33 @@ function computePaperAndSvgSizesIfReady(
         if (fullScreen) {
             paperWidth = totalWidth;
             paperHeight = totalHeight;
-            svgWidth = totalWidth - borders;
-            svgHeight = totalHeight - headerPreferredHeight - borders;
+            svgWidth = totalWidth - BORDERS;
+            svgHeight = totalHeight - headerPreferredHeight - BORDERS;
         } else {
             let maxWidth, maxHeight;
             if (svgType === SvgType.VOLTAGE_LEVEL) {
-                maxWidth = maxWidthVoltageLevel;
-                maxHeight = maxHeightVoltageLevel;
+                maxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
+                maxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
             } else {
-                maxWidth = maxWidthSubstation;
-                maxHeight = maxHeightSubstation;
+                maxWidth = MAX_WIDTH_SUBSTATION;
+                maxHeight = MAX_HEIGHT_SUBSTATION;
             }
             svgWidth = Math.min(
                 svgPreferredWidth,
-                totalWidth - mapRightOffset,
+                totalWidth - MAP_RIGHT_OFFSET,
                 maxWidth
             );
             svgHeight = Math.min(
                 svgPreferredHeight,
-                totalHeight - mapBottomOffset - headerPreferredHeight,
+                totalHeight - MAP_BOTTOM_OFFSET - headerPreferredHeight,
                 maxHeight
             );
-            paperWidth = svgWidth + borders;
-            paperHeight = svgHeight + headerPreferredHeight + borders;
+            paperWidth = svgWidth + BORDERS;
+            paperHeight = svgHeight + headerPreferredHeight + BORDERS;
         }
         return { paperWidth, paperHeight, svgWidth, svgHeight };
     }
-}
+};
 
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
