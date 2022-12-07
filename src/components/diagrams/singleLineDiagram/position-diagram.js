@@ -110,9 +110,9 @@ const PositionDiagram = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         setSvgFinalWidth(serverWidth);
-        setFinalPaperWidth(serverWidth + 10);
+        setFinalPaperWidth(serverWidth);
         setSvgFinalHeight(serverHeight);
-        setFinalPaperHeight(serverHeight + 10);
+        setFinalPaperHeight(serverHeight);
     }, [serverWidth, serverHeight]);
 
     useEffect(() => {
