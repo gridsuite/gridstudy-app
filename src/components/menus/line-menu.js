@@ -85,9 +85,12 @@ const withLineMenu =
 
         const getLineDescriptor = useCallback(
             (voltageLevelId) => {
-                return displayUseName
-                    ? network.getVoltageLevel(voltageLevelId).name
-                    : voltageLevelId;
+                if (displayUseName) {
+                    let vl = network.getVoltageLevel(voltageLevelId);
+                    return vl.name ?? voltageLevelId;
+                } else {
+                    return voltageLevelId;
+                }
             },
             [displayUseName, network]
         );

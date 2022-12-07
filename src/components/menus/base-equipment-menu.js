@@ -78,6 +78,10 @@ const BaseEquipmentMenu = ({
         }
     }
 
+    function getItemText(useName, id, name) {
+        return useName ? name ?? id : id;
+    }
+
     const equipment = getEquipment(equipmentType, equipmentId);
 
     return (
@@ -106,7 +110,11 @@ const BaseEquipmentMenu = ({
                         <ItemViewInSpreadsheet
                             equipmentType={equipmentType}
                             equipmentId={equipment.id}
-                            itemText={useName ? equipment.name : equipment.id}
+                            itemText={getItemText(
+                                useName,
+                                equipment.id,
+                                equipment.name
+                            )}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
 
@@ -115,7 +123,7 @@ const BaseEquipmentMenu = ({
                             <ItemViewInSpreadsheet
                                 equipmentType={equipments.voltageLevels}
                                 equipmentId={v.id}
-                                itemText={useName ? v.name : v.id}
+                                itemText={getItemText(useName, v.id, v.name)}
                                 handleViewInSpreadsheet={
                                     handleViewInSpreadsheet
                                 }
@@ -136,18 +144,22 @@ const BaseEquipmentMenu = ({
                         <ItemViewInSpreadsheet
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
-                            itemText={
-                                useName
-                                    ? equipment.substationName
-                                    : equipment.substationId
-                            }
+                            itemText={getItemText(
+                                useName,
+                                equipment.substationId,
+                                equipment.substationName
+                            )}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {/* menus for the voltage level */}
                         <ItemViewInSpreadsheet
                             equipmentType={equipments.voltageLevels}
                             equipmentId={equipment.id}
-                            itemText={useName ? equipment.name : equipment.id}
+                            itemText={getItemText(
+                                useName,
+                                equipment.id,
+                                equipment.name
+                            )}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                     </NestedMenuItem>
