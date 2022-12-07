@@ -54,6 +54,7 @@
     "paramsChangingDenied": "Les changements demandés ont été rejetés",
     "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
     "defaultLoadflowRetrievingError": "Une erreur est survenue lors de la récupération du fournisseur de load flow par défaut",
+    "defaultSensiResultsThresholdRetrievingError": "Une erreur est survenue lors de la récupération du seuil par défaut des résultats de l'analyse de sensibilité",
 
     "close": "Fermer",
     "validate": "Valider",
@@ -552,7 +553,6 @@
     "RegulatingValueCurrentLimiter": "Limitation du courant",
     "CurrentLimiterGreaterThanZero": "La valeur de la limitation du courant doit être strictement positive",
     "RegulatingValueActivePowerControl": "Consigne de transit",
-    "ActivePowerControlGreaterThanZero": "La valeur de la consigne de transit doit être strictement positive",
 
     "CreateRegulationRule":"Créer une loi de régleur",
     "LowTapRatio":"Rapport (prise min)",
@@ -629,8 +629,33 @@
     "EmptyList/connections": "La liste de connexions est vide",
 
     "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
+
+    "resultsThreshold": "Seuil minimal de sensibilité",
+    "SensitivityBranches": "Sensibilité au niveau des quadripôles",
+    "SensitivityInjectionsSet": "Par rapport à un ensemble d'injections :",
+    "SensitivityInjection": "Par rapport à chaque injection :",
+    "SensitivityHvdc": "Par rapport à chaque HVDC :",
+    "SensitivityTD": "Par rapport à chaque TD :",
+    "SensitivityNodes": "Sensibilité au niveau des nœuds",
+    "Proportional": "Proportionnel",
+    "ProportionalMaxP": "Proportionnel à Pmax",
+    "Regular": "Équirépartition",
+    "Ventilation": "Ventilation",
+    "DistributionType": "Type de répartition",
+    "SensitivityType": "Type de sensibilité",
+    "DeltaMW": "\u0394 MW",
+    "DeltaA": "\u0394 A",
+    "AddSensitivityFactor": "Ajouter calcul de sensibilité",
+    "ContingencyLists": "Aléas",
+    "Injections": "Injections",
+    "SupervisedVoltageLevels": "Postes surveillés",
+    "EquipmentsInVoltageRegulation": "Ouvrages en réglage tension",
+    "PSTS": "TDs",
+    "ElementAlreadyUsed": "Cet élément est déjà utilisé",
+
     "ConnectionName": "Nom départ",
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
-    "Bottom": "Bas"
+    "Bottom": "Bas",
+    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut"
 }

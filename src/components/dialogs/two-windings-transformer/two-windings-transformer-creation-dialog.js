@@ -449,8 +449,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     regulationMode ===
                         REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                     phaseTapRegulating,
-                valueGreaterThan: '0',
-                errorMsgId: 'ActivePowerControlGreaterThanZero',
             },
             adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
@@ -741,7 +739,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         id: 'IncoherentPhaseLowTapPositionError',
                     });
                 }
-                if (!tapValues.includes(phaseTapPosition)) {
+                if (!tapValues.includes(parseInt(phaseTapPosition))) {
                     creationError = intl.formatMessage({
                         id: 'IncoherentPhaseTapPositionError',
                     });
