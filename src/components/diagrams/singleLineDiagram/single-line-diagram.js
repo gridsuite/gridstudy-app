@@ -331,18 +331,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         if (finalPaperHeight) {
             setDisplayedSldHeights((displayedSldHeights) => {
-                //we check if the length is superior to 1 because we may want to reconsiderate an sld final height when it is displayed on its own
-                if (
-                    displayedSldHeights.find((sld) => sld.id === sldId) &&
-                    displayedSldHeights.length > 1
-                ) {
-                    return displayedSldHeights;
-                } else {
-                    return [
-                        ...displayedSldHeights,
-                        { id: sldId, initialHeight: finalPaperHeight },
-                    ];
-                }
+                return [
+                    ...displayedSldHeights.filter((sld) => sld.id !== sldId),
+                    { id: sldId, initialHeight: finalPaperHeight },
+                ];
             });
         }
     }, [finalPaperHeight, setDisplayedSldHeights, sldId]);
