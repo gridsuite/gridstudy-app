@@ -15,6 +15,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { useParameterState } from './parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -38,6 +40,8 @@ const NetworkModificationDialog = ({
     const classes = useStyles();
     const intl = useIntl();
 
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
     const handleClose = () => {
         onClose();
     };
@@ -56,21 +60,30 @@ const NetworkModificationDialog = ({
                 </DialogTitle>
                 <DialogContent>
                     <Grid container direction="column" spacing={2}>
-                        {Object.entries(dialogs).map(([id, values]) => (
-                            <Grid key={id} item>
-                                <Button
-                                    fullWidth
-                                    className={classes.button}
-                                    variant="outlined"
-                                    startIcon={values.icon}
-                                    onClick={() => onOpenDialog(id)}
-                                >
-                                    <Typography align="left">
-                                        <FormattedMessage id={values.label} />
-                                    </Typography>
-                                </Button>
-                            </Grid>
-                        ))}
+                        {Object.entries(dialogs)
+                            .filter(
+                                ([id, values]) =>
+                                    !values.onlyDeveloperMode ||
+                                    (values.onlyDeveloperMode &&
+                                        enableDeveloperMode)
+                            )
+                            .map(([id, values]) => (
+                                <Grid key={id} item>
+                                    <Button
+                                        fullWidth
+                                        className={classes.button}
+                                        variant="outlined"
+                                        startIcon={values.icon}
+                                        onClick={() => onOpenDialog(id)}
+                                    >
+                                        <Typography align="left">
+                                            <FormattedMessage
+                                                id={values.label}
+                                            />
+                                        </Typography>
+                                    </Button>
+                                </Grid>
+                            ))}
                     </Grid>
                 </DialogContent>
                 <DialogActions>

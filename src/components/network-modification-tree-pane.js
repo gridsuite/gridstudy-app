@@ -332,20 +332,18 @@ export const NetworkModificationTreePane = ({
                     prevTreeDisplay={prevTreeDisplay}
                 />
 
-                {currentNode && currentNode.type === 'NETWORK_MODIFICATION' && (
-                    <StudyDrawer
-                        open={isModificationsDrawerOpen}
-                        drawerClassName={classes.nodeEditor}
-                        drawerShiftClassName={classes.nodeEditorShift}
-                        anchor={
-                            prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
-                                ? 'right'
-                                : 'left'
-                        }
-                    >
-                        <NodeEditor />
-                    </StudyDrawer>
-                )}
+                <StudyDrawer
+                    open={isModificationsDrawerOpen}
+                    drawerClassName={classes.nodeEditor}
+                    drawerShiftClassName={classes.nodeEditorShift}
+                    anchor={
+                        prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
+                            ? 'right'
+                            : 'left'
+                    }
+                >
+                    <NodeEditor />
+                </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
                 <CreateNodeMenu
