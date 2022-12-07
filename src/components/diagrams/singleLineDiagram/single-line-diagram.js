@@ -56,13 +56,13 @@ import {
     BORDERS,
     commonStyle,
     commonSldStyle,
-    computePaperAndSvgSizesIfReady,
     MAP_BOTTOM_OFFSET,
     MAP_RIGHT_OFFSET,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_SUBSTATION,
     MAX_WIDTH_VOLTAGE_LEVEL,
+    setWidthAndHeight,
     SvgType,
     renderIntoPaperWrapper,
     NoSvg,
@@ -143,6 +143,59 @@ function getEquipmentTypeFromFeederType(feederType) {
     }
 }
 
+// Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
+function computePaperAndSvgSizesIfReady(
+    fullScreen,
+    svgType,
+    totalWidth,
+    totalHeight,
+    svgPreferredWidth,
+    svgPreferredHeight,
+    headerPreferredHeight,
+    borders,
+    maxWidthVoltageLevel,
+    maxHeightVoltageLevel,
+    maxWidthSubstation,
+    maxHeightSubstation,
+    mapRightOffset,
+    mapBottomOffset
+) {
+    if (
+        typeof svgPreferredWidth != 'undefined' &&
+        typeof headerPreferredHeight != 'undefined'
+    ) {
+        let paperWidth, paperHeight, svgWidth, svgHeight;
+        if (fullScreen) {
+            paperWidth = totalWidth;
+            paperHeight = totalHeight;
+            svgWidth = totalWidth - borders;
+            svgHeight = totalHeight - headerPreferredHeight - borders;
+        } else {
+            let maxWidth, maxHeight;
+            if (svgType === SvgType.VOLTAGE_LEVEL) {
+                maxWidth = maxWidthVoltageLevel;
+                maxHeight = maxHeightVoltageLevel;
+            } else {
+                maxWidth = maxWidthSubstation;
+                maxHeight = maxHeightSubstation;
+            }
+            svgWidth = Math.min(
+                svgPreferredWidth,
+                totalWidth - mapRightOffset,
+                maxWidth
+            );
+            svgHeight = Math.min(
+                svgPreferredHeight,
+                totalHeight - mapBottomOffset - headerPreferredHeight,
+                maxHeight
+            );
+            paperWidth = svgWidth + borders;
+            paperHeight = svgHeight + headerPreferredHeight + borders;
+        }
+        return { paperWidth, paperHeight, svgWidth, svgHeight };
+    }
+}
+
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
     const svgUrl = useRef('');
@@ -183,10 +236,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const theme = useTheme();
 
     const [modificationInProgress, setModificationInProgress] = useState(false);
-
-    let initialWidth, initialHeight;
-
-    const errorWidth = MAX_WIDTH_VOLTAGE_LEVEL;
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
@@ -568,22 +617,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         modificationInProgress,
     ]);
 
-    let sizeWidth,
-        sizeHeight = initialHeight;
-    if (svg.error) {
-        sizeWidth = errorWidth;
-    } else if (
-        typeof finalPaperWidth != 'undefined' &&
-        typeof finalPaperHeight != 'undefined'
-    ) {
-        sizeWidth = finalPaperWidth;
-        sizeHeight = finalPaperHeight;
-    } else if (initialWidth !== undefined || loadingState) {
-        sizeWidth = initialWidth;
-    } else {
-        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
-    }
-
     const displayMenu = useCallback(
         (equipmentType, menuId) => {
             const Menu = withEquipmentMenu(
@@ -606,12 +639,14 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         [closeEquipmentMenu, equipmentMenu, handleViewInSpreadsheet]
     );
 
-    if (sizeWidth !== undefined) {
-        initialWidth = sizeWidth; // setting initial width for the next SLD.
-    }
-    if (sizeHeight !== undefined) {
-        initialHeight = sizeHeight; // setting initial height for the next SLD.
-    }
+    let { sizeWidth, sizeHeight } = setWidthAndHeight(
+        svg,
+        finalPaperWidth,
+        finalPaperHeight,
+        loadingState,
+        totalWidth,
+        MAX_WIDTH_VOLTAGE_LEVEL
+    );
 
     const pinSld = useCallback(() => onTogglePin(sldId), [sldId, onTogglePin]);
 

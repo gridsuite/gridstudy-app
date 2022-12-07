@@ -223,59 +223,6 @@ export function setWidthAndHeight(
     return { sizeWidth, sizeHeight };
 }
 
-// Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
-export function computePaperAndSvgSizesIfReady(
-    fullScreen,
-    svgType,
-    totalWidth,
-    totalHeight,
-    svgPreferredWidth,
-    svgPreferredHeight,
-    headerPreferredHeight,
-    borders,
-    maxWidthVoltageLevel,
-    maxHeightVoltageLevel,
-    maxWidthSubstation,
-    maxHeightSubstation,
-    mapRightOffset,
-    mapBottomOffset
-) {
-    if (
-        typeof svgPreferredWidth != 'undefined' &&
-        typeof headerPreferredHeight != 'undefined'
-    ) {
-        let paperWidth, paperHeight, svgWidth, svgHeight;
-        if (fullScreen) {
-            paperWidth = totalWidth;
-            paperHeight = totalHeight;
-            svgWidth = totalWidth - borders;
-            svgHeight = totalHeight - headerPreferredHeight - borders;
-        } else {
-            let maxWidth, maxHeight;
-            if (svgType === SvgType.VOLTAGE_LEVEL) {
-                maxWidth = maxWidthVoltageLevel;
-                maxHeight = maxHeightVoltageLevel;
-            } else {
-                maxWidth = maxWidthSubstation;
-                maxHeight = maxHeightSubstation;
-            }
-            svgWidth = Math.min(
-                svgPreferredWidth,
-                totalWidth - mapRightOffset,
-                maxWidth
-            );
-            svgHeight = Math.min(
-                svgPreferredHeight,
-                totalHeight - mapBottomOffset - headerPreferredHeight,
-                maxHeight
-            );
-            paperWidth = svgWidth + borders;
-            paperHeight = svgHeight + headerPreferredHeight + borders;
-        }
-        return { paperWidth, paperHeight, svgWidth, svgHeight };
-    }
-}
-
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
     VERTICAL: 'vertical',
