@@ -296,8 +296,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         []
     );
 
-    const hasSldSizeChanged = (oldWidth, newWidth, oldHeight, newHeight) => {
-        return !(oldWidth === newWidth && oldHeight === newHeight);
+    const hasSldSizeRemainedTheSame = (
+        oldWidth,
+        oldHeight,
+        newWidth,
+        newHeight
+    ) => {
+        return oldWidth === newWidth && oldHeight === newHeight;
     };
 
     const closeEquipmentMenu = useCallback(() => {
@@ -535,10 +540,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             if (
                 svgDraw.current &&
                 svgUrl.current === svg.svgUrl &&
-                !hasSldSizeChanged(
+                hasSldSizeRemainedTheSame(
                     svgDraw.current.getOriginalWidth(),
-                    sldViewer.getOriginalWidth(),
                     svgDraw.current.getOriginalHeight(),
+                    sldViewer.getOriginalWidth(),
                     sldViewer.getOriginalHeight()
                 )
             ) {
