@@ -583,11 +583,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
                 if (svgEl != null) {
                     svgEl.setAttribute('width', svgFinalWidth);
-                    if (!computedHeight) {
-                        svgEl.setAttribute('height', svgFinalHeight);
-                    } else {
-                        svgEl.setAttribute('height', computedHeight);
-                    }
+                    svgEl.setAttribute(
+                        'height',
+                        computedHeight ? computedHeight : svgFinalHeight
+                    );
                 }
             }
             setModificationInProgress(false);
