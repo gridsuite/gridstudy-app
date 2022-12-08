@@ -2383,6 +2383,29 @@ export function getUniqueNodeName(studyUuid) {
     });
 }
 
+function getSensiUrl() {
+    return PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES + '/v1/';
+}
+
+export function getSensiDefaultResultsThreshold() {
+    console.info('get sensi default results threshold');
+    const getSensiDefaultResultsThresholdUrl =
+        getSensiUrl() + 'results-threshold-default-value';
+    console.debug(getSensiDefaultResultsThresholdUrl);
+    return backendFetch(getSensiDefaultResultsThresholdUrl, {
+        method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) =>
+                  Promise.reject({
+                      status: response.status,
+                      message: text,
+                  })
+              )
+    );
+}
+
 export function fetchMapEquipments(
     studyUuid,
     currentNodeUuid,
@@ -2406,29 +2429,6 @@ export function fetchMapEquipments(
         getQueryParamsList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
-}
-
-function getSensiUrl() {
-    return PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES + '/v1/';
-}
-
-export function getSensiDefaultResultsThreshold() {
-    console.info('get sensi default results threshold');
-    const getSensiDefaultResultsThresholdUrl =
-        getSensiUrl() + 'results-threshold-default-value';
-    console.debug(getSensiDefaultResultsThresholdUrl);
-    return backendFetch(getSensiDefaultResultsThresholdUrl, {
-        method: 'get',
-    }).then((response) =>
-        response.ok
-            ? response.text()
-            : response.text().then((text) =>
-                  Promise.reject({
-                      status: response.status,
-                      message: text,
-                  })
-              )
-    );
 }
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
