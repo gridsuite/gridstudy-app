@@ -46,9 +46,9 @@ const NodeEditor = () => {
             id: currentTreeNode?.id,
             type: currentTreeNode?.type,
             name: newName,
-        }).catch((errorMessage) => {
+        }).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'NodeUpdateError',
             });
         });
