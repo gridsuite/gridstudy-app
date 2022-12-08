@@ -724,6 +724,7 @@ export const useDirectoryElements = ({
 
     const addElements = useCallback(
         (elements) => {
+            let elementsToAdd = [];
             elements.forEach((element) => {
                 const { icon, children, ...elementRest } = element;
                 // check if element is already present
@@ -733,9 +734,12 @@ export const useDirectoryElements = ({
                         headerId: 'ElementAlreadyUsed',
                     });
                 } else {
-                    setValues(values.concat(elementRest));
+                    elementsToAdd.push(elementRest);
                 }
             });
+            if (elementsToAdd.length > 0) {
+                setValues(values.concat(elementsToAdd));
+            }
 
             setDirectoryItemSelectorOpen(false);
         },

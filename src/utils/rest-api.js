@@ -173,18 +173,27 @@ export function fetchConfigParameter(name) {
     );
 }
 
-export function fetchRootFolders() {
+export function fetchRootFolders(types) {
     console.info('Fetching Root Directories');
+    const urlSearchParams = types
+        ? '?elementTypes=' + types.join('&elementTypes=')
+        : '';
     const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/root-directories` +
+        urlSearchParams;
     return backendFetchJson(fetchRootFoldersUrl);
 }
 
-export function fetchDirectoryContent(directoryUuid) {
+export function fetchDirectoryContent(directoryUuid, types) {
     console.info("Fetching Folder content '%s'", directoryUuid);
+    const urlSearchParams = types
+        ? '?elementTypes=' + types.join('&elementTypes=')
+        : '';
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements`;
+        `/v1/directories/${directoryUuid}/elements` +
+        urlSearchParams;
     return backendFetchJson(fetchDirectoryContentUrl);
 }
 
