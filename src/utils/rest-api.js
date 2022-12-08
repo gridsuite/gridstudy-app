@@ -116,11 +116,11 @@ export function fetchConfigParameter(name) {
 
 export function fetchRootFolders(types) {
     console.info('Fetching Root Directories');
-    const elementTypes = types
+    const urlSearchParams = types
         ? '?elementTypes=' + types.join('&elementTypes=')
         : '';
     const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories` + elementTypes;
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories` + urlSearchParams;
     return backendFetch(fetchRootFoldersUrl).then((response) =>
         response.ok
             ? response.json()
@@ -130,13 +130,13 @@ export function fetchRootFolders(types) {
 
 export function fetchDirectoryContent(directoryUuid, types) {
     console.info("Fetching Folder content '%s'", directoryUuid);
-    const elementTypes = types
+    const urlSearchParams = types
         ? '?elementTypes=' + types.join('&elementTypes=')
         : '';
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
         `/v1/directories/${directoryUuid}/elements` +
-        elementTypes;
+        urlSearchParams;
     return backendFetch(fetchDirectoryContentUrl).then((response) =>
         response.ok
             ? response.json()
