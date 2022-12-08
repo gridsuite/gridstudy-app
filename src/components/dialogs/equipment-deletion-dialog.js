@@ -122,8 +122,8 @@ const EquipmentDeletionDialog = ({
         setEquipmentsFound([]);
         if (Array.isArray(equipmentType.fetcher)) {
             Promise.all(
-                equipmentType.fetcher.map((fetchProm) =>
-                    fetchProm(studyUuid, currentNodeUuid)
+                equipmentType.fetcher.map((fetchPromise) =>
+                    fetchPromise(studyUuid, currentNodeUuid)
                 )
             ).then((vals) => {
                 setEquipmentsFound(vals?.flat().sort(compareById));
