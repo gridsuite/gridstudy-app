@@ -227,9 +227,7 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        // We use isNodeBuilt here instead of the "disabled" props to avoid
-        // triggering this effect when changing current node
-        if (isNodeBuilt(currentNodeRef.current) && visible) {
+        if (visible) {
             const viewsFromSldState = [];
             sldState.forEach((currentState) => {
                 let currentView = createView(currentState);
@@ -330,7 +328,7 @@ export function SingleLineDiagramPane({
                             onNextVoltageLevelClick={handleOpenView}
                             onBreakerClick={handleUpdateSwitchState}
                             diagramTitle={getNameOrId(sld)}
-                            svgUrl={sld.svgUrl}
+                            svgUrl={sld.svgUrl ?? ''}
                             sldId={sld.id}
                             ref={sld.ref}
                             svgType={sld.type}
