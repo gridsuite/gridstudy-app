@@ -70,7 +70,7 @@ const equipmentTypes = {
     },
     HVDC_CONVERTER_STATION: {
         label: 'HVDC_CONVERTER_STATION',
-        fetcher: fetchLccConverterStations,
+        fetcher: [fetchLccConverterStations, fetchVscConverterStations],
     },
     SHUNT_COMPENSATOR: {
         label: 'SHUNT_COMPENSATOR',
@@ -120,9 +120,19 @@ const EquipmentDeletionDialog = ({
 
     useEffect(() => {
         setEquipmentsFound([]);
-        equipmentType.fetcher(studyUuid, currentNodeUuid).then((vals) => {
-            setEquipmentsFound(vals?.sort(compareById));
-        });
+        if (Array.isArray(equipmentType.fetcher)) {
+            Promise.all(
+                equipmentType.fetcher.map((fetchProm) =>
+                    fetchProm(studyUuid, currentNodeUuid)
+                )
+            ).then((vals) => {
+                setEquipmentsFound(vals?.flat().sort(compareById));
+            });
+        } else {
+            equipmentType.fetcher(studyUuid, currentNodeUuid).then((vals) => {
+                setEquipmentsFound(vals?.sort(compareById));
+            });
+        }
     }, [equipmentType, currentNodeUuid, studyUuid]);
 
     const [equipmentOrId, equipmentField, setEquipmentOrId] =
