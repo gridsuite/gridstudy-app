@@ -6,7 +6,7 @@
  */
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { Tooltip } from '@mui/material';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { ControlButton, useStore, useReactFlow } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
@@ -20,11 +20,19 @@ const CenterGraphButton = ({ currentNode }) => {
     const [, , zoom] = useStore((state) => state.transform);
     const intl = useIntl();
 
+    const autoRef = useRef();
+
     const focusNode = useCallback(() => {
         // if no selected node, center on Root
-        const x = currentNode ? currentNode.position.x + nodeWidth / 2.0 : 0;
-        const y = currentNode ? currentNode.position.y + nodeHeight / 2.0 : 0;
-        setCenter(x, y, zoom);
+        if (!currentNode) {
+            setCenter(0, 0, zoom);
+        } else {
+            const dx = autoRef?.current?.parentNode?.clientWidth ?? 0 / 2.0;
+            const x = currentNode.position.x + nodeWidth / 2.0 - dx;
+            const y = currentNode.position.y + nodeHeight / 2.0;
+            setCenter(x, y, zoom);
+        }
+        // setCenter(x, y, zoom);
     }, [setCenter, currentNode, zoom]);
 
     return (
@@ -35,7 +43,7 @@ const CenterGraphButton = ({ currentNode }) => {
             enterDelay={TOOLTIP_DELAY}
             enterNextDelay={TOOLTIP_DELAY}
         >
-            <span>
+            <span ref={autoRef}>
                 <ControlButton
                     onClick={() => {
                         focusNode();
