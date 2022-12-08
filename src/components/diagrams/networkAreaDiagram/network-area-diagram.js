@@ -92,25 +92,25 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.default,
     },
     fullScreenIcon: {
-        bottom: 5,
+        bottom: 40,
         right: 5,
         position: 'absolute',
         cursor: 'pointer',
     },
     plusIcon: {
-        bottom: 5,
+        bottom: 40,
         left: 30,
         position: 'absolute',
         cursor: 'pointer',
     },
     lessIcon: {
-        bottom: 5,
+        bottom: 40,
         left: 5,
         position: 'absolute',
         cursor: 'pointer',
     },
     depth: {
-        bottom: 25,
+        bottom: 60,
         left: 5,
         position: 'absolute',
     },
@@ -427,7 +427,7 @@ const SizedNetworkAreaDiagram = (props) => {
                     <AlertInvalidNode noMargin={true} />
                 </Box>
             ) : (
-                <Box position="relative">
+                <Box position="relative" width={sizeWidth} height={sizeHeight}>
                     <Box position="relative" left={0} right={0} top={0}>
                         {loadingState && (
                             <Box height={2}>
