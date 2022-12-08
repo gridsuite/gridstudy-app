@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { TreeViewFinder } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import {
     fetchDirectoryContent,
@@ -14,10 +13,14 @@ import {
     fetchRootFolders,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
-import { getFileIcon, elementType } from '@gridsuite/commons-ui';
+import {
+    getFileIcon,
+    elementType,
+    useSnackMessage,
+    TreeViewFinder,
+} from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { notificationType } from '../utils/NotificationType';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
