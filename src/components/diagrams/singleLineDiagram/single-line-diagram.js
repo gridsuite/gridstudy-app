@@ -583,7 +583,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
                 if (svgEl != null) {
                     svgEl.setAttribute('width', svgFinalWidth);
-                    svgEl.setAttribute('height', svgFinalHeight);
+                    if (!computedHeight) {
+                        svgEl.setAttribute('height', svgFinalHeight);
+                    } else {
+                        svgEl.setAttribute('height', computedHeight);
+                    }
                 }
             }
             setModificationInProgress(false);
@@ -608,6 +612,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         isAnyNodeBuilding,
         network,
         ref,
+        computedHeight,
     ]);
 
     const classes = useStyles();
