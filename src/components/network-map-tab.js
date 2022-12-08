@@ -9,9 +9,9 @@ import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-    fetchLinePositions,
+    fetchLinePositions, fetchLinePositionsByIds,
     fetchSubstationPositions,
-    fetchSubstationPositionsByIds,
+    fetchSubstationPositionsByIds
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
@@ -231,7 +231,7 @@ export const NetworkMapTab = ({
         setInitialized(true);
     }, [procLoadGeoData, loadMapGeoData]);
 
-    const getMissingSubstationPositions = useCallback(
+    const getMissingSubstationsPositions = useCallback(
         (foundSubstationPositions, allSubstations) => {
             if (!foundSubstationPositions.size) {
                 return Promise.resolve([]);
@@ -257,6 +257,32 @@ export const NetworkMapTab = ({
         [studyUuid, currentNode?.id]
     );
 
+    const getMissingLinesPositions = useCallback(
+        (foundLinesPositions, allLines) => {
+            if (!foundLinesPositions.size) {
+                return Promise.resolve([]);
+            }
+            let notFoundLinesIds = [];
+            const foundLinesIds = Array.from(
+                foundLinesPositions.keys()
+            );
+            allLines.forEach((s) => {
+                if (!foundLinesIds.includes(s.id)) {
+                    notFoundLinesIds.push(s.id);
+                }
+            });
+            if (notFoundLinesIds.length === 0) {
+                return Promise.resolve([]);
+            }
+            return fetchLinePositionsByIds(
+                studyUuid,
+                currentNode?.id,
+                notFoundLinesIds
+            );
+        },
+        [studyUuid, currentNode?.id]
+    );
+
     const geoDataRef = useRef();
 
     useEffect(() => {
@@ -267,23 +293,29 @@ export const NetworkMapTab = ({
         setWaitingLoadGeoData(true);
         if (geoDataRef.current) {
 
-            const missingSubstationPositions = getMissingSubstationPositions(
+            const missingSubstationPositions = getMissingSubstationsPositions(
                 geoDataRef.current.substationPositionsById,
                 network.getSubstations()
             );
-            Promise.resolve([missingSubstationPositions]).then((positions) => {
-                const newGeoData = geoDataRef.current;
-                positions[0].then((value) => {
-                    console.info('newGeoData111', newGeoData);
-                    newGeoData.addSubstationPositions(value);
+
+            const missingLinesPositions = getMissingLinesPositions(
+                geoDataRef.current.linePositionsById,
+                network.getLines()
+            );
+            Promise.all([missingSubstationPositions, missingLinesPositions]).then((positions) => {
+                    const newGeoData = geoDataRef.current;
+
+                    newGeoData.addSubstationPositions(positions[0]);
                     setGeoData(newGeoData);
-                    console.info('newGeoData222', newGeoData);
+
+                    newGeoData.addLinePositions(positions[1]);
+                    setGeoData(newGeoData);
+
                     setWaitingLoadGeoData(false);
-                    console.info('GeoData', geoData);
-                });
+
             });
         }
-    }, [network, getMissingSubstationPositions]);
+    }, [network, getMissingSubstationsPositions]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {

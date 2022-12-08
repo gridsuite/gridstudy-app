@@ -317,6 +317,10 @@ export default class Network {
         return this.nominalVoltages;
     }
 
+    getLines() {
+        return Array.from(this.linesById.values());
+    }
+
     getLine(id) {
         return this.linesById.get(id);
     }

@@ -49,6 +49,12 @@ export default class GeoData {
         );
     }
 
+    addLinePositions(positions) {
+        positions.forEach((pos) =>
+            this.linePositionsById.set(pos.id, pos.coordinate)
+        );
+    }
+
     getSubstationPosition(substation) {
         const position = this.substationPositionsById.get(substation);
         if (!position) {

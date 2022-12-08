@@ -363,7 +363,7 @@ export function fetchSubstationPositionsByIds(
     substationsIds
 ) {
     console.info(
-        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
+        `Fetching substations positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
     const fetchSubstationPositionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -707,6 +707,25 @@ export function fetchLinePositions(studyUuid, currentNodeUuid) {
     );
     const fetchLinePositionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/geo-data/lines';
+    console.debug(fetchLinePositionsUrl);
+    return backendFetch(fetchLinePositionsUrl).then((response) =>
+        response.json()
+    );
+}
+
+export function fetchLinePositionsByIds(
+    studyUuid,
+    currentNodeUuid,
+    linesIds
+) {
+    console.info(
+        `Fetching lines positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
+    );
+    const fetchLinePositionsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/geo-data/lines?' +
+        getQueryParamsList(linesIds, 'lineId');
+
     console.debug(fetchLinePositionsUrl);
     return backendFetch(fetchLinePositionsUrl).then((response) =>
         response.json()
