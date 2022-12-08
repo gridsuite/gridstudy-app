@@ -48,18 +48,20 @@ export const useFormSearchCopy = ({
             })
             .catch((error) => {
                 console.error(
-                    'error while fetching equipment {equipmentId} : status = {status} message = {message}',
+                    'error while fetching equipment {equipmentId} : message = {message}',
                     element.id,
-                    error.status,
                     error.message
                 );
                 if (error.status === 404) {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed404' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
+                    msg =
+                        intl.formatMessage(
+                            { id: 'EquipmentCopyFailed404' },
+                            {
+                                equipmentId: element.id,
+                            }
+                        ) +
+                        ' ' +
+                        error.message;
                 } else {
                     msg =
                         intl.formatMessage(
