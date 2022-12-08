@@ -53,15 +53,12 @@ export const useFormSearchCopy = ({
                     error.message
                 );
                 if (error.status === 404) {
-                    msg =
-                        intl.formatMessage(
-                            { id: 'EquipmentCopyFailed404' },
-                            {
-                                equipmentId: element.id,
-                            }
-                        ) +
-                        ' ' +
-                        error.message;
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed404' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
                 } else {
                     msg =
                         intl.formatMessage(
