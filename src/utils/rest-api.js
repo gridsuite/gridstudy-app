@@ -129,7 +129,9 @@ export function fetchRootFolders(types) {
         ? '?elementTypes=' + types.join('&elementTypes=')
         : '';
     const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories` + urlSearchParams;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/root-directories` +
+        urlSearchParams;
     return backendFetch(fetchRootFoldersUrl).then((response) =>
         response.ok
             ? response.json()
