@@ -539,7 +539,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             //if original sld size has not changed (sld structure has remained the same), we keep the same zoom
             if (
                 svgDraw.current &&
-                svgUrl.current === svg.svgUrl &&
                 hasSldSizeRemainedTheSame(
                     svgDraw.current.getOriginalWidth(),
                     svgDraw.current.getOriginalHeight(),
