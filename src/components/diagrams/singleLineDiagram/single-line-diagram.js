@@ -340,6 +340,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             svgPreferredHeight,
             headerPreferredHeight
         );
+
         if (typeof sizes != 'undefined') {
             if (
                 !fullScreenSldId &&
@@ -530,14 +531,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 }
             }
 
+            //if original sld size has not changed (sld structure has remained the same), we keep the same zoom
             if (
                 svgDraw.current &&
                 svgUrl.current === svg.svgUrl &&
                 !hasSldSizeChanged(
-                    svgDraw.current.getWidth(),
-                    sldViewer.getWidth(),
-                    svgDraw.current.getHeight(),
-                    sldViewer.getHeight()
+                    svgDraw.current.getOriginalWidth(),
+                    sldViewer.getOriginalWidth(),
+                    svgDraw.current.getOriginalHeight(),
+                    sldViewer.getOriginalHeight()
                 )
             ) {
                 sldViewer.setViewBox(svgDraw.current.getViewBox());
