@@ -125,13 +125,17 @@ function useStudy(studyUuidRequest) {
             .then(() => {
                 setStudyUuid(studyUuidRequest);
             })
-            .catch(() => {
-                setErrMessage(
-                    intlRef.current.formatMessage(
-                        { id: 'studyNotFound' },
-                        { studyUuid: studyUuidRequest }
-                    )
-                );
+            .catch((error) => {
+                if (error.status === 404) {
+                    setErrMessage(
+                        intlRef.current.formatMessage(
+                            { id: 'studyNotFound' },
+                            { studyUuid: studyUuidRequest }
+                        )
+                    );
+                } else {
+                    setErrMessage(error.message);
+                }
             })
             .finally(() => setPending(false));
     }, [studyUuidRequest, intlRef]);

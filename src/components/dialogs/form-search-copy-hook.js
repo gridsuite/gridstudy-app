@@ -48,9 +48,10 @@ export const useFormSearchCopy = ({
             })
             .catch((error) => {
                 console.error(
-                    'error while fetching equipment {equipmentId} : status = {status}',
+                    'error while fetching equipment {equipmentId} : status = {status} message = {message}',
                     element.id,
-                    error.status
+                    error.status,
+                    error.message
                 );
                 if (error.status === 404) {
                     msg = intl.formatMessage(
@@ -60,12 +61,15 @@ export const useFormSearchCopy = ({
                         }
                     );
                 } else {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
+                    msg =
+                        intl.formatMessage(
+                            { id: 'EquipmentCopyFailed' },
+                            {
+                                equipmentId: element.id,
+                            }
+                        ) +
+                        ' ' +
+                        error.message;
                 }
                 snackError({
                     messageTxt: msg,
