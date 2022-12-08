@@ -143,9 +143,7 @@ class SubstationLayer extends CompositeLayer {
                         (metaVoltageLevel.nominalVoltageIndex + 1),
                     getPosition: (metaVoltageLevel) =>
                         this.props.geoData.getSubstationPosition(
-                            metaVoltageLevel.voltageLevels[0].substationId,
-                            this.props.currentNode,
-                            this.props.studyUuid
+                            metaVoltageLevel.voltageLevels[0].substationId
                         ),
                     getFillColor: this.props.getNominalVoltageColor(
                         e.nominalVoltage

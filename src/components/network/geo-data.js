@@ -26,11 +26,6 @@ export default class GeoData {
 
     linePositionsById = new Map();
 
-    GeoData(other) {
-        this.substationPositionsById = other.substationPositionsById;
-        this.linePositionsById = other.linePositionsById;
-    }
-
     setSubstationPositions(positions) {
         // index positions by substation id
         this.substationPositionsById = positions.reduce(
