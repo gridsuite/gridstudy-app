@@ -21,9 +21,6 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
-    PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
-    PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
@@ -396,44 +393,6 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists) {
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
-    };
-}
-
-export const FAVORITE_SENSI_VARIABLES_FILTERS_LISTS =
-    'FAVORITE_SENSI_VARIABLES_FILTERS_LISTS';
-
-export function selectFavoriteSensiVariablesFiltersLists(
-    favoriteSensiVariablesFiltersLists
-) {
-    return {
-        type: FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-        [PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS]:
-            favoriteSensiVariablesFiltersLists,
-    };
-}
-
-export const FAVORITE_SENSI_CONTINGENCY_LISTS =
-    'FAVORITE_SENSI_CONTINGENCY_LISTS';
-
-export function selectFavoriteSensiContingencyLists(
-    favoriteSensiContingencyLists
-) {
-    return {
-        type: FAVORITE_SENSI_CONTINGENCY_LISTS,
-        [PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS]: favoriteSensiContingencyLists,
-    };
-}
-
-export const FAVORITE_SENSI_BRANCH_FILTERS_LISTS =
-    'FAVORITE_SENSI_BRANCH_FILTERS_LISTS';
-
-export function selectFavoriteSensiBranchFiltersLists(
-    favoriteSensiBranchFiltersLists
-) {
-    return {
-        type: FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
-        [PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS]:
-            favoriteSensiBranchFiltersLists,
     };
 }
 
