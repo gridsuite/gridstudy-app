@@ -7,7 +7,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import List from '@mui/material/List';
 import PropTypes from 'prop-types';
-import { isEqual } from './is-object-equals';
 
 const CheckboxList = ({
     itemRenderer,
@@ -20,15 +19,11 @@ const CheckboxList = ({
     const [checked, setChecked] = useState(new Set(initialSelection));
 
     useEffect(() => {
-        const existingValues = new Set(values);
         const newChecked = new Set(
             [...checked].filter((element) => {
-                for (const existingValue of existingValues) {
-                    if (isEqual(element, existingValue)) {
-                        return true;
-                    }
-                }
-                return false;
+                return values.some(
+                    (existingValue) => existingValue.uuid === element.uuid
+                );
             })
         );
         if (newChecked.size !== checked.size) {
@@ -51,14 +46,9 @@ const CheckboxList = ({
     const handleToggle = useCallback(
         (value) => {
             const newChecked = new Set(checked);
-            let valueToDelete = undefined;
-            for (const e of newChecked) {
-                if (isEqual(e, value)) {
-                    valueToDelete = e;
-                    break;
-                }
-            }
-
+            const valueToDelete = [...checked].find(
+                (e) => e.uuid === value?.uuid
+            );
             if (!newChecked.delete(valueToDelete)) {
                 newChecked.add(value);
             }
@@ -74,12 +64,9 @@ const CheckboxList = ({
     useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
 
     const isCheckboxInCheckedSet = (checkedSet, checkBoxToCheck) => {
-        for (const element of checkedSet) {
-            if (isEqual(element, checkBoxToCheck)) {
-                return true;
-            }
-        }
-        return false;
+        return Array.from(checkedSet).some(
+            (element) => element?.uuid === checkBoxToCheck?.uuid
+        );
     };
 
     return (

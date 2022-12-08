@@ -22,6 +22,8 @@ const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/network-modification';
+const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/sensitivity-analysis';
 const PREFIX_EXPLORE_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/explore';
 
@@ -109,15 +111,27 @@ export function fetchConfigParameter(name) {
         `/v1/applications/${appName}/parameters/${name}`;
     return backendFetch(fetchParams).then((response) =>
         response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
+            ? response.status === 204
+                ? null
+                : response.json()
+            : response.text().then((text) =>
+                  Promise.reject({
+                      status: response.status,
+                      message: text,
+                  })
+              )
     );
 }
 
-export function fetchRootFolders() {
+export function fetchRootFolders(types) {
     console.info('Fetching Root Directories');
+    const urlSearchParams = types
+        ? '?elementTypes=' + types.join('&elementTypes=')
+        : '';
     const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/root-directories` +
+        urlSearchParams;
     return backendFetch(fetchRootFoldersUrl).then((response) =>
         response.ok
             ? response.json()
@@ -125,11 +139,15 @@ export function fetchRootFolders() {
     );
 }
 
-export function fetchDirectoryContent(directoryUuid) {
+export function fetchDirectoryContent(directoryUuid, types) {
     console.info("Fetching Folder content '%s'", directoryUuid);
+    const urlSearchParams = types
+        ? '?elementTypes=' + types.join('&elementTypes=')
+        : '';
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements`;
+        `/v1/directories/${directoryUuid}/elements` +
+        urlSearchParams;
     return backendFetch(fetchDirectoryContentUrl).then((response) =>
         response.ok
             ? response.json()
@@ -809,40 +827,10 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     });
 }
 
-function getSensitivityAnalysisQueryParams(
-    variablesFiltersUuids,
-    contingencyListUuids,
-    branchFiltersUuids
-) {
-    if (
-        variablesFiltersUuids.length > 0 ||
-        contingencyListUuids.length > 0 ||
-        branchFiltersUuids.length > 0
-    ) {
-        const urlSearchParams = new URLSearchParams();
-        variablesFiltersUuids.forEach((variablesFiltersUuid) =>
-            urlSearchParams.append(
-                'variablesFiltersListUuid',
-                variablesFiltersUuid
-            )
-        );
-        contingencyListUuids.forEach((contingencyListUuid) =>
-            urlSearchParams.append('contingencyListUuid', contingencyListUuid)
-        );
-        branchFiltersUuids.forEach((branchFiltersUuid) =>
-            urlSearchParams.append('branchFiltersListUuid', branchFiltersUuid)
-        );
-        return '?' + urlSearchParams.toString();
-    }
-    return '';
-}
-
 export function startSensitivityAnalysis(
     studyUuid,
     currentNodeUuid,
-    variablesFiltersUuids,
-    contingencyListUuids,
-    branchFiltersUuids
+    sensiConfiguration
 ) {
     console.info(
         'Running sensi on ' +
@@ -853,14 +841,19 @@ export function startSensitivityAnalysis(
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensitivity-analysis/run' +
-        getSensitivityAnalysisQueryParams(
-            variablesFiltersUuids,
-            contingencyListUuids,
-            branchFiltersUuids
-        );
+        '/sensitivity-analysis/run';
     console.debug(url);
-    return backendFetch(url, { method: 'post' });
+
+    const body = JSON.stringify(sensiConfiguration);
+
+    return backendFetch(url, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: body,
+    });
 }
 
 export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
@@ -2388,6 +2381,29 @@ export function getUniqueNodeName(studyUuid) {
             ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
+}
+
+function getSensiUrl() {
+    return PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES + '/v1/';
+}
+
+export function getSensiDefaultResultsThreshold() {
+    console.info('get sensi default results threshold');
+    const getSensiDefaultResultsThresholdUrl =
+        getSensiUrl() + 'results-threshold-default-value';
+    console.debug(getSensiDefaultResultsThresholdUrl);
+    return backendFetch(getSensiDefaultResultsThresholdUrl, {
+        method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) =>
+                  Promise.reject({
+                      status: response.status,
+                      message: text,
+                  })
+              )
+    );
 }
 
 export function fetchMapEquipments(

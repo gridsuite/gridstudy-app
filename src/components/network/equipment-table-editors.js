@@ -77,6 +77,7 @@ export const NumericalField = ({
     columnDefinition,
     setter,
     style,
+    inputProps,
     ...props
 }) => {
     const [error, setError] = useState(false);
@@ -171,6 +172,7 @@ export const NumericalField = ({
                     max: { max },
                     step: 'any',
                     lang: 'en-US', // to have . as decimal separator
+                    ...inputProps,
                 }}
             />
         );
