@@ -324,12 +324,12 @@ export function SingleLineDiagramPane({
     const [computedHeight, setComputedHeight] = useState();
 
     useEffect(() => {
-        let displayedSldHeights_ = displayedSldHeightsRef.current;
-        displayedSldHeights_ = displayedSldHeights_?.filter((displayedHeight) =>
-            views
-                .filter((sld) => sld.state !== ViewState.MINIMIZED)
-                .map((sld) => sld.id)
-                .includes(displayedHeight.id)
+        let displayedSldHeights_ = displayedSldHeightsRef.current?.filter(
+            (displayedHeight) =>
+                views
+                    .filter((sld) => sld.state !== ViewState.MINIMIZED)
+                    .map((sld) => sld.id)
+                    .includes(displayedHeight.id)
         );
 
         setDisplayedSldHeights(displayedSldHeights_);
@@ -343,7 +343,7 @@ export function SingleLineDiagramPane({
         ];
         if (initialHeights.length > 0) {
             const newComputedHeight = Math.max(...initialHeights);
-            if (newComputedHeight && !isNaN(newComputedHeight)) {
+            if (newComputedHeight) {
                 setComputedHeight(newComputedHeight);
             }
         }
