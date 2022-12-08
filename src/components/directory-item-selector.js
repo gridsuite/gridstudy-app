@@ -105,7 +105,7 @@ const DirectoryItemSelector = (props) => {
     );
 
     const updateRootDirectories = useCallback(() => {
-        fetchRootFolders().then((data) => {
+        fetchRootFolders(props?.types).then((data) => {
             let [nrs, mdr] = updatedTree(
                 rootsRef.current,
                 nodeMap.current,
@@ -116,7 +116,7 @@ const DirectoryItemSelector = (props) => {
             nodeMap.current = mdr;
             setData(convertRoots(nrs));
         });
-    }, [convertRoots]);
+    }, [convertRoots, props.types]);
 
     useEffect(() => {
         if (props.open) {
@@ -126,7 +126,7 @@ const DirectoryItemSelector = (props) => {
 
     const fetchDirectory = useCallback(
         (nodeId) => {
-            fetchDirectoryContent(nodeId)
+            fetchDirectoryContent(nodeId, props.types)
                 .then((children) => {
                     const childrenMatchedTypes = children.filter((item) =>
                         contentFilter().has(item.type)
