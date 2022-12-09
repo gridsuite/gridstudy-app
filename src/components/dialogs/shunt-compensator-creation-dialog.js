@@ -178,9 +178,9 @@ const ShuntCompensatorCreationDialog = ({
             connectivity?.connectionDirection?.id ??
                 UNDEFINED_CONNECTION_DIRECTION,
             connectivity?.connectionName?.id ?? null
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'ShuntCompensatorCreationError',
             });
         });

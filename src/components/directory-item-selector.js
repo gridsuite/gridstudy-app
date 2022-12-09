@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { TreeViewFinder } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import {
     fetchDirectoryContent,
@@ -14,7 +13,12 @@ import {
     fetchRootFolders,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
-import { getFileIcon, elementType } from '@gridsuite/commons-ui';
+import {
+    getFileIcon,
+    elementType,
+    useSnackMessage,
+    TreeViewFinder,
+} from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { notificationType } from '../utils/NotificationType';
 
@@ -37,7 +41,7 @@ const DirectoryItemSelector = (props) => {
 
     const rootsRef = useRef([]);
     rootsRef.current = rootDirectories;
-
+    const { snackError } = useSnackMessage();
     const openRef = useRef();
     openRef.current = props.open;
     const contentFilter = useCallback(
@@ -105,18 +109,25 @@ const DirectoryItemSelector = (props) => {
     );
 
     const updateRootDirectories = useCallback(() => {
-        fetchRootFolders(props?.types).then((data) => {
-            let [nrs, mdr] = updatedTree(
-                rootsRef.current,
-                nodeMap.current,
-                null,
-                data
-            );
-            setRootDirectories(nrs);
-            nodeMap.current = mdr;
-            setData(convertRoots(nrs));
-        });
-    }, [convertRoots, props.types]);
+        fetchRootFolders(props?.types)
+            .then((data) => {
+                let [nrs, mdr] = updatedTree(
+                    rootsRef.current,
+                    nodeMap.current,
+                    null,
+                    data
+                );
+                setRootDirectories(nrs);
+                nodeMap.current = mdr;
+                setData(convertRoots(nrs));
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'DirectoryItemSelector',
+                });
+            });
+    }, [convertRoots, props.types, snackError]);
 
     useEffect(() => {
         if (props.open) {
@@ -149,12 +160,9 @@ const DirectoryItemSelector = (props) => {
                         addToDirectory(nodeId, childrenMatchedTypes);
                     }
                 })
-                .catch((reason) => {
+                .catch((error) => {
                     console.warn(
-                        "Could not update subs (and content) of '" +
-                            nodeId +
-                            "' :" +
-                            reason
+                        `Could not update subs (and content) of '${nodeId}' : ${error.message}`
                     );
                 });
         },
