@@ -372,9 +372,10 @@ const LineSplitWithVoltageLevelDialog = ({
                     setBusOrBusbarSectionOptions(busbarSections);
                     setBbsOrNodeId(busbarSections[0].id);
                 }
+                inputForm.setHasChanged(true);
             });
         },
-        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId]
+        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId, inputForm]
     );
 
     const onVoltageLevelDialogClose = () => {
