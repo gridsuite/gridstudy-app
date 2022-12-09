@@ -517,7 +517,6 @@
     "LowTapPosition":"Prise min",
     "HighTapPosition":"Prise max",
     "TapPosition":"Prise courante",
-    "LowTapPositionErrorLessThanOne": "La valeur de la prise min doit être strictement positive",
     "HighTapPositionError": "La valeur de la prise max doit être comprise entre la prise min et 100",
     "TapPositionBetweenLowAndHighTapPositionValue": "La valeur de la prise courante doit être comprise entre la valeur de Prise min et Prise max",
     "TerminalRef":"Terminal réglé",

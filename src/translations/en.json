@@ -517,7 +517,6 @@
     "LowTapPosition":"Low tap position",
     "HighTapPosition":"High tap position",
     "TapPosition":"Tap position",
-    "LowTapPositionErrorLessThanOne": "Low tap position must be strictly positive",
     "HighTapPositionError": "High tap position must be between low tap and 100",
     "TapPositionBetweenLowAndHighTapPositionValue": "Tap position must be greater or equal to Low tap position and lesser or equal to High tap position",
     "TerminalRef":"Regulated terminal",

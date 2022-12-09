@@ -35,7 +35,7 @@ import {
     MicroSusceptanceAdornment,
     VoltageAdornment,
     sanitizeString,
-    toPositiveIntOrEmptyValue,
+    toIntOrEmptyValue,
 } from '../dialogUtils';
 import {
     REGULATION_MODES,
@@ -348,10 +348,8 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
-            valueGreaterThan: '0',
-            errorMsgId: 'LowTapPositionErrorLessThanOne',
         },
-        transformValue: toPositiveIntOrEmptyValue,
+        transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.lowTapPosition,
         formProps: {
@@ -363,12 +361,11 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
-            valueGreaterThan: '0',
             valueLessThanOrEqualTo: MAX_TAP_NUMBER,
             valueGreaterThanOrEqualTo: ratioLowTapPosition,
             errorMsgId: 'HighTapPositionError',
         },
-        transformValue: toPositiveIntOrEmptyValue,
+        transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         formProps: {
             disabled: !ratioTapChangerEnabled,
@@ -383,7 +380,7 @@ const TwoWindingsTransformerCreationDialog = ({
             valueLessThanOrEqualTo: ratioHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
-        transformValue: toPositiveIntOrEmptyValue,
+        transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.tapPosition,
         formProps: {
@@ -503,10 +500,8 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
-            valueGreaterThan: '0',
-            errorMsgId: 'LowTapPositionErrorLessThanOne',
         },
-        transformValue: toPositiveIntOrEmptyValue,
+        transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.lowTapPosition,
         formProps: { disabled: !phaseTapChangerEnabled },
@@ -516,12 +511,11 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled && !editData && !isCopy,
-            valueGreaterThan: '0',
             valueLessThanOrEqualTo: MAX_TAP_NUMBER,
             valueGreaterThanOrEqualTo: phaseLowTapPosition,
             errorMsgId: 'HighTapPositionError',
         },
-        transformValue: toPositiveIntOrEmptyValue,
+        transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         formProps: { disabled: !phaseTapChangerEnabled },
     });
@@ -534,7 +528,7 @@ const TwoWindingsTransformerCreationDialog = ({
             valueLessThanOrEqualTo: phaseHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
-        transformValue: toPositiveIntOrEmptyValue,
+        transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.tapPosition,
         formProps: { disabled: !phaseTapChangerEnabled },
