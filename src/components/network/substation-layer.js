@@ -193,7 +193,6 @@ class SubstationLayer extends CompositeLayer {
                 updateTriggers: {
                     getText: [this.props.useName],
                     getPosition: [
-                        this.props.useName,
                         this.props.geoData.substationPositionsById,
                         this.props.network.substations,
                     ],
