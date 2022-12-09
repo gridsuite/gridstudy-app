@@ -45,7 +45,7 @@ import {
 import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useParameterState } from '../parameters/parameters';
@@ -60,7 +60,6 @@ import RegulatingTerminalEdition, {
 } from '../regulating-terminal-edition';
 import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
-import { OverflowableText } from '@gridsuite/commons-ui';
 import { useCSVReader } from 'react-papaparse';
 
 export const useInputForm = () => {
@@ -654,9 +653,9 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
                         }
                         setChecking(false);
                     })
-                    .catch((errorMessage) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'NodeUpdateError',
                         });
                     });
@@ -724,6 +723,7 @@ export const useDirectoryElements = ({
 
     const addElements = useCallback(
         (elements) => {
+            let elementsToAdd = [];
             elements.forEach((element) => {
                 const { icon, children, ...elementRest } = element;
                 // check if element is already present
@@ -733,9 +733,12 @@ export const useDirectoryElements = ({
                         headerId: 'ElementAlreadyUsed',
                     });
                 } else {
-                    setValues(values.concat(elementRest));
+                    elementsToAdd.push(elementRest);
                 }
             });
+            if (elementsToAdd.length > 0) {
+                setValues(values.concat(elementsToAdd));
+            }
 
             setDirectoryItemSelectorOpen(false);
         },
