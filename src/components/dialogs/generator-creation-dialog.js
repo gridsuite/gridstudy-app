@@ -495,9 +495,9 @@ const GeneratorCreationDialog = ({
                 UNDEFINED_CONNECTION_DIRECTION,
             connectivity?.connectionName?.id ?? null,
             connectivity?.connectionPosition?.id ?? null
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'GeneratorCreationError',
             });
         });

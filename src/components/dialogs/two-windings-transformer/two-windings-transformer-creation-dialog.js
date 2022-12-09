@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import { createTwoWindingsTransformer } from '../../../utils/rest-api';
 import {
     useDoubleValue,
@@ -41,7 +41,6 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../../network/constants';
 import { useBooleanValue } from '../inputs/boolean';
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import clsx from 'clsx';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -952,9 +951,9 @@ const TwoWindingsTransformerCreationDialog = ({
             connectivity2?.connectionName?.id ?? null,
             connectivity2?.connectionDirection?.id ??
                 UNDEFINED_CONNECTION_DIRECTION
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'TwoWindingsTransformerCreationError',
             });
         });

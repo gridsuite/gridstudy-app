@@ -217,16 +217,15 @@ export function SingleLineDiagramPane({
 
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
-                (response) => {
-                    if (!response.ok) {
-                        console.error(response);
-                        setUpdateSwitchMsg(
-                            response.status + ' : ' + response.statusText
-                        );
-                    }
-                }
-            );
+            updateSwitchState(
+                studyUuid,
+                currentNode?.id,
+                breakerId,
+                open
+            ).catch((error) => {
+                console.error(error.message);
+                setUpdateSwitchMsg(error.message);
+            });
         },
         [studyUuid, currentNode]
     );
