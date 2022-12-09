@@ -363,6 +363,7 @@ const TwoWindingsTransformerCreationDialog = ({
             isValueLessOrEqualTo: MAX_TAP_NUMBER,
         },
         inputForm: ratioTapInputForm,
+        defaultValue: (isCopy || editData) && ratioTapRows?.slice(-1)?.[0]?.tap,
         formProps: {
             disabled: !ratioTapChangerEnabled,
         },
@@ -509,6 +510,7 @@ const TwoWindingsTransformerCreationDialog = ({
             isFieldRequired: phaseTapChangerEnabled && !editData && !isCopy,
         },
         inputForm: phaseTapInputForm,
+        defaultValue: (isCopy || editData) && phaseTapRows?.slice(-1)?.[0]?.tap,
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
