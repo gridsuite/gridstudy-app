@@ -110,7 +110,11 @@ class SubstationLayer extends CompositeLayer {
             });
         }
 
-        if (props.useName !== oldProps.useName) {
+        if (
+            changeFlags.dataChanged ||
+            props.useName !== oldProps.useName ||
+            props.filteredNominalVoltages !== oldProps.filteredNominalVoltages
+        ) {
             let substationsLabels = [];
 
             if (props.network != null && props.geoData != null) {
