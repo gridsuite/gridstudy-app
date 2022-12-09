@@ -1149,15 +1149,15 @@ export function cutTreeNode(
     );
 }
 
-export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
+export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications/' +
-        encodeURIComponent(modificationUuid);
+        '/network-modifications?uuids=' +
+        encodeURIComponent(modificationUuids);
 
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
