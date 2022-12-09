@@ -205,7 +205,7 @@ export function SingleLineDiagramPane({
                 ?.ref?.current?.reloadSvg();
         } else
             viewsRef.current.forEach((sld) => {
-                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+                if (sld.svgUrl?.indexOf(currentNodeRef.current?.id) !== -1) {
                     sld.ref?.current?.reloadSvg();
                 }
             });
@@ -357,7 +357,7 @@ export function SingleLineDiagramPane({
                             onNextVoltageLevelClick={handleOpenView}
                             onBreakerClick={handleUpdateSwitchState}
                             diagramTitle={getNameOrId(sld)}
-                            svgUrl={sld.svgUrl ?? ''}
+                            svgUrl={sld.svgUrl}
                             sldId={sld.id}
                             ref={sld.ref}
                             svgType={sld.type}
