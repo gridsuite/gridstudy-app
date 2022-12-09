@@ -205,7 +205,10 @@ export function SingleLineDiagramPane({
                 ?.ref?.current?.reloadSvg();
         } else
             viewsRef.current.forEach((sld) => {
-                if (sld.svgUrl && sld.svgUrl?.indexOf(currentNodeRef.current?.id) !== -1) {
+                if (
+                    sld.svgUrl &&
+                    sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1
+                ) {
                     sld.ref?.current?.reloadSvg();
                 }
             });
