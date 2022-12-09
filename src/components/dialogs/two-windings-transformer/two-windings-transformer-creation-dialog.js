@@ -35,6 +35,7 @@ import {
     MicroSusceptanceAdornment,
     VoltageAdornment,
     sanitizeString,
+    toPositiveIntOrEmptyValue,
 } from '../dialogUtils';
 import {
     REGULATION_MODES,
@@ -343,11 +344,14 @@ const TwoWindingsTransformerCreationDialog = ({
                 formValues?.ratioTapChanger?.regulatingTerminalId ?? '',
         });
 
-    const [ratioLowTapPosition, ratioLowTapPositionField] = useDoubleValue({
+    const [ratioLowTapPosition, ratioLowTapPositionField] = useIntegerValue({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
+            valueGreaterThan: '0',
+            errorMsgId: 'LowTapPositionErrorLessThanOne',
         },
+        transformValue: toPositiveIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.lowTapPosition,
         formProps: {
@@ -355,12 +359,16 @@ const TwoWindingsTransformerCreationDialog = ({
         },
     });
 
-    const [ratioHighTapPosition, ratioHighTapPositionField] = useDoubleValue({
+    const [ratioHighTapPosition, ratioHighTapPositionField] = useIntegerValue({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
-            isValueLessOrEqualTo: MAX_TAP_NUMBER,
+            valueGreaterThan: '0',
+            valueLessThanOrEqualTo: MAX_TAP_NUMBER,
+            valueGreaterThanOrEqualTo: ratioLowTapPosition,
+            errorMsgId: 'HighTapPositionError',
         },
+        transformValue: toPositiveIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         formProps: {
             disabled: !ratioTapChangerEnabled,
@@ -371,10 +379,11 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
-            valueGreaterThan: ratioLowTapPosition - 1,
+            valueGreaterThanOrEqualTo: ratioLowTapPosition,
             valueLessThanOrEqualTo: ratioHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
+        transformValue: toPositiveIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.tapPosition,
         formProps: {
@@ -490,33 +499,42 @@ const TwoWindingsTransformerCreationDialog = ({
                 formValues?.phaseTapChanger?.regulatingTerminalId ?? '',
         });
 
-    const [phaseLowTapPosition, phaseLowTapPositionField] = useDoubleValue({
+    const [phaseLowTapPosition, phaseLowTapPositionField] = useIntegerValue({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
+            valueGreaterThan: '0',
+            errorMsgId: 'LowTapPositionErrorLessThanOne',
         },
+        transformValue: toPositiveIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.lowTapPosition,
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
-    const [phaseHighTapPosition, phaseHighTapPositionField] = useDoubleValue({
+    const [phaseHighTapPosition, phaseHighTapPositionField] = useIntegerValue({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled && !editData && !isCopy,
+            valueGreaterThan: '0',
+            valueLessThanOrEqualTo: MAX_TAP_NUMBER,
+            valueGreaterThanOrEqualTo: phaseLowTapPosition,
+            errorMsgId: 'HighTapPositionError',
         },
+        transformValue: toPositiveIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
-    const [phaseTapPosition, phaseTapPositionField] = useDoubleValue({
+    const [phaseTapPosition, phaseTapPositionField] = useIntegerValue({
         label: 'TapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
-            valueGreaterThan: phaseLowTapPosition - 1,
+            valueGreaterThanOrEqualTo: phaseLowTapPosition,
             valueLessThanOrEqualTo: phaseHighTapPosition,
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
+        transformValue: toPositiveIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.tapPosition,
         formProps: { disabled: !phaseTapChangerEnabled },
