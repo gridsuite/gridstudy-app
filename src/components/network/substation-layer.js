@@ -108,7 +108,9 @@ class SubstationLayer extends CompositeLayer {
                 metaVoltageLevelsByNominalVoltage:
                     metaVoltageLevelsByNominalVoltageArray,
             });
+        }
 
+        if (props.useName !== oldProps.useName) {
             let substationsLabels = [];
 
             if (props.network != null && props.geoData != null) {
