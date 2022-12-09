@@ -112,15 +112,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const [ratioCellIndexError, setRatioCellIndexError] = useState(undefined);
     const [phaseCellIndexError, setPhaseCellIndexError] = useState(undefined);
 
-    const computePhaseHighTapPosition = () => {
-        const values = phaseTapRows?.map((step) => step.tap);
-        return Array.isArray(values) && values.length > 0
-            ? Math.max(...values)
-            : undefined;
-    };
-
-    const computeRatioHighTapPosition = () => {
-        const values = ratioTapRows?.map((step) => step.tap);
+    const computeHighTapPosition = (steps) => {
+        const values = steps?.map((step) => step.tap);
         return Array.isArray(values) && values.length > 0
             ? Math.max(...values)
             : undefined;
@@ -376,7 +369,8 @@ const TwoWindingsTransformerCreationDialog = ({
             isValueLessOrEqualTo: MAX_TAP_NUMBER,
         },
         inputForm: ratioTapInputForm,
-        defaultValue: (isCopy || editData) && computeRatioHighTapPosition(),
+        defaultValue:
+            (isCopy || editData) && computeHighTapPosition(ratioTapRows),
         formProps: {
             disabled: !ratioTapChangerEnabled,
         },
@@ -389,7 +383,7 @@ const TwoWindingsTransformerCreationDialog = ({
             valueGreaterThan: ratioLowTapPosition - 1,
             valueLessThanOrEqualTo: ratioHighTapPosition
                 ? ratioHighTapPosition
-                : computeRatioHighTapPosition,
+                : computeHighTapPosition(ratioTapRows),
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
         inputForm: ratioTapInputForm,
@@ -523,7 +517,8 @@ const TwoWindingsTransformerCreationDialog = ({
             isFieldRequired: phaseTapChangerEnabled && !editData && !isCopy,
         },
         inputForm: phaseTapInputForm,
-        defaultValue: (isCopy || editData) && computePhaseHighTapPosition(),
+        defaultValue:
+            (isCopy || editData) && computeHighTapPosition(phaseTapRows),
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
@@ -534,7 +529,7 @@ const TwoWindingsTransformerCreationDialog = ({
             valueGreaterThan: phaseLowTapPosition - 1,
             valueLessThanOrEqualTo: phaseHighTapPosition
                 ? phaseHighTapPosition
-                : computePhaseHighTapPosition,
+                : computeHighTapPosition(phaseTapRows),
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
         inputForm: phaseTapInputForm,
