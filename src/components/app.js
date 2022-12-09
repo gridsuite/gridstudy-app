@@ -49,6 +49,7 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     setShowAuthenticationRouterLogin,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -90,7 +91,6 @@ import {
 } from './network/config-tables';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import { StudyContainer } from './study-container';
 
 const noUserManager = { instance: null, error: null };
@@ -367,9 +367,9 @@ const App = () => {
         if (user !== null) {
             fetchConfigParameters(COMMON_APP_NAME)
                 .then((params) => updateParams(params))
-                .catch((errorMessage) =>
+                .catch((error) =>
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'paramsRetrievingError',
                     })
                 );
@@ -397,16 +397,16 @@ const App = () => {
                             );
                             updateParams(params);
                         })
-                        .catch((errorMessage) => {
+                        .catch((error) => {
                             snackError({
-                                messageTxt: errorMessage,
+                                messageTxt: error.message,
                                 headerId: 'paramsRetrievingError',
                             });
                         });
                 })
-                .catch((errorMessage) =>
+                .catch((error) =>
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'paramsRetrievingError',
                     })
                 );

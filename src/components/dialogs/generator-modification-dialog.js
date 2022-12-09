@@ -258,9 +258,9 @@ const GeneratorModificationDialog = ({
             undefined,
             undefined,
             editData?.uuid
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'GeneratorModificationError',
             });
         });
