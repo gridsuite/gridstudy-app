@@ -847,7 +847,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
-    svgUrl: PropTypes.string.isRequired,
+    svgUrl: PropTypes.string,
     sldId: PropTypes.string,
     numberToDisplay: PropTypes.number,
     onClose: PropTypes.func,
