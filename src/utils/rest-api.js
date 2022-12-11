@@ -374,6 +374,7 @@ export function fetchSvg(svgUrl) {
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
+    console.info('constructor 222222')
     return fetchEquipments(
         studyUuid,
         currentNodeUuid,
@@ -722,6 +723,40 @@ export function fetchLinePositions(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/geo-data/lines';
     console.debug(fetchLinePositionsUrl);
     return backendFetchJson(fetchLinePositionsUrl);
+}
+
+export function fetchSubstationPositionsByIds(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
+    console.info(
+        `Fetching substations positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
+    );
+    const fetchSubstationPositionsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/geo-data/substations?' +
+        getQueryParamsList(substationsIds, 'substationId');
+
+    console.debug(fetchSubstationPositionsUrl);
+    return backendFetch(fetchSubstationPositionsUrl).then((response) =>
+        response.json()
+    );
+}
+
+export function fetchLinePositionsByIds(studyUuid, currentNodeUuid, linesIds) {
+    console.info(
+        `Fetching lines positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
+    );
+    const fetchLinePositionsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/geo-data/lines?' +
+        getQueryParamsList(linesIds, 'lineId');
+
+    console.debug(fetchLinePositionsUrl);
+    return backendFetch(fetchLinePositionsUrl).then((response) =>
+        response.json()
+    );
 }
 
 export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {

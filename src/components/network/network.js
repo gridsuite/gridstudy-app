@@ -309,6 +309,10 @@ export default class Network {
         return Array.from(this.substationsById.values());
     }
 
+    getLines() {
+        return Array.from(this.linesById.values());
+    }
+
     getSubstation(id) {
         return this.substationsById.get(id);
     }
@@ -423,11 +427,13 @@ export default class Network {
                 this.lazyLoaders.get(value.equipment).fetched = true;
                 this.setEquipment(value.equipment, value.values);
             });
+            console.info('networkCreated')
             this.dispatch(networkCreated(this));
         });
     }
 
     constructor(studyUuid, currentNodeUuid, errHandler, dispatch, prefetch) {
+        console.info('constructor 1111')
         this.generateEquipementHandler({
             substations: () => fetchSubstations(studyUuid, currentNodeUuid),
             loads: () => fetchLoads(studyUuid, currentNodeUuid),
@@ -450,16 +456,18 @@ export default class Network {
                 fetchStaticVarCompensators(studyUuid, currentNodeUuid),
             errHandler,
         });
+        console.info('constructor 333333')
         this.lazyLoaders.set(
             equipments.voltageLevels,
             this.lazyLoaders.get(equipments.substations)
         );
 
         this.dispatch = dispatch;
-
+        console.info('constructor 444444')
         if (prefetch !== undefined) {
             this.prefetch(prefetch.equipments);
         }
+        console.info('constructor 555555')
     }
 
     removeInjectionOfVoltageLevel(injectionsList, voltageLevelId) {
