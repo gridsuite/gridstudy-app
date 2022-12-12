@@ -77,6 +77,7 @@ import {
     SET_FORCE_NETWORK_RELOAD,
     RESET_NETWORK_RELOAD,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
+    SET_FULLSCREEN_DIAGRAM_ID,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -108,7 +109,7 @@ import {
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadSldStateFromSessionStorage } from './session-storage';
-import { ViewState } from '../components/diagrams/singleLineDiagram/utils';
+import { ViewState } from '../components/diagrams/diagram-common';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -149,6 +150,7 @@ const initialState = {
     filteredNominalVoltages: null,
     fullScreenSldId: null,
     fullScreenNadId: null,
+    fullScreenDiagramId: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
     allReorderedTableDefinitionIndexes: [],
@@ -469,6 +471,10 @@ export const reducer = createReducer(initialState, {
 
     [FULLSCREEN_NETWORK_AREA_DIAGRAM_ID]: (state, action) => {
         state.fullScreenNadId = action.fullScreenNadId;
+    },
+
+    [SET_FULLSCREEN_DIAGRAM_ID]: (state, action) => {
+        state.fullScreenDiagramId = action.fullScreenDiagramId;
     },
 
     [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {

@@ -5,8 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+// TODO THIS FILE WILL BE REMOVED AFTER THE SLD/NAD REFACTORIZATION.
+// TODO PLEASE USE ../diagram-common.js INSTEAD OF THIS ONE.
+
 import { useCallback } from 'react';
-import { SvgType } from './single-line-diagram';
+import { SvgType } from '../diagram-common';
 import { useDispatch } from 'react-redux';
 import {
     closeSld,

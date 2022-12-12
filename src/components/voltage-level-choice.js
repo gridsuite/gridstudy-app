@@ -17,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import { useSelector } from 'react-redux';
 import { getNominalVoltageColor } from '../utils/colors';
 import { PARAM_USE_NAME } from '../utils/config-params';
-import { getNameOrId } from './diagrams/singleLineDiagram/utils';
+import { getNameOrId } from './diagrams/diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     menu: {

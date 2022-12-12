@@ -36,10 +36,11 @@ import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
+import { DiagramPane } from './diagrams/diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
+import { useSingleLineDiagram } from './diagrams/diagram-common';
 import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
 import { isNodeBuilt } from './graph/util/model-functions';
 
@@ -165,6 +166,7 @@ const StudyPane = ({
     }, [network, filteredNominalVoltages, dispatch]);
 
     function openVoltageLevelDiagram(vlId, substationId) {
+        // TODO CHARLY voir ce qu'on doit faire des NAD ici
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
             props.onChangeTab(0); // switch to map view
@@ -173,6 +175,7 @@ const StudyPane = ({
     }
 
     const openVoltageLevel = useCallback(
+        // TODO CHARLY voir ce qu'on doit faire des NAD ici
         (vlId) => {
             if (!network) return;
             showVoltageLevelDiagram(vlId);
@@ -203,6 +206,7 @@ const StudyPane = ({
     }
 
     function renderMapView() {
+        let useRefactoDiagram = true; // TODO CHARLY remove this
         return (
             <ReactFlowProvider>
                 <div
@@ -321,39 +325,64 @@ const StudyPane = ({
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
                 */}
-                            <SingleLineDiagramPane
-                                studyUuid={studyUuid}
-                                network={network}
-                                onClose={closeVoltageLevelDiagram}
-                                openVoltageLevel={openVoltageLevel}
-                                isComputationRunning={isComputationRunning}
-                                showInSpreadsheet={showInSpreadsheet}
-                                loadFlowStatus={getLoadFlowRunningStatus(
-                                    loadFlowInfos?.loadFlowStatus
-                                )}
-                                currentNode={currentNode}
-                                disabled={disabled}
-                                visible={
-                                    props.view === StudyView.MAP &&
-                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
-                                }
-                            />
-
-                            <NetworkAreaDiagramPane
-                                studyUuid={studyUuid}
-                                network={network}
-                                currentNode={currentNode}
-                                loadFlowStatus={getLoadFlowRunningStatus(
-                                    loadFlowInfos?.loadFlowStatus
-                                )}
-                                onClose={closeNetworkAreaDiagram}
-                                disabled={disabled}
-                                align="right"
-                                visible={
-                                    props.view === StudyView.MAP &&
-                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
-                                }
-                            />
+                            {!useRefactoDiagram && (
+                                <SingleLineDiagramPane
+                                    studyUuid={studyUuid}
+                                    network={network}
+                                    onClose={closeVoltageLevelDiagram}
+                                    openVoltageLevel={openVoltageLevel}
+                                    isComputationRunning={isComputationRunning}
+                                    showInSpreadsheet={showInSpreadsheet}
+                                    loadFlowStatus={getLoadFlowRunningStatus(
+                                        loadFlowInfos?.loadFlowStatus
+                                    )}
+                                    currentNode={currentNode}
+                                    disabled={disabled}
+                                    visible={
+                                        props.view === StudyView.MAP &&
+                                        studyDisplayMode !==
+                                            STUDY_DISPLAY_MODE.TREE
+                                    }
+                                />
+                            )}
+                            {!useRefactoDiagram && (
+                                <NetworkAreaDiagramPane
+                                    studyUuid={studyUuid}
+                                    network={network}
+                                    currentNode={currentNode}
+                                    loadFlowStatus={getLoadFlowRunningStatus(
+                                        loadFlowInfos?.loadFlowStatus
+                                    )}
+                                    onClose={closeNetworkAreaDiagram}
+                                    disabled={disabled}
+                                    align="right"
+                                    visible={
+                                        props.view === StudyView.MAP &&
+                                        studyDisplayMode !==
+                                            STUDY_DISPLAY_MODE.TREE
+                                    }
+                                />
+                            )}
+                            {useRefactoDiagram && (
+                                <DiagramPane
+                                    studyUuid={studyUuid}
+                                    network={network}
+                                    //onClose={closeVoltageLevelDiagram} // was useless
+                                    openVoltageLevel={openVoltageLevel}
+                                    isComputationRunning={isComputationRunning}
+                                    showInSpreadsheet={showInSpreadsheet}
+                                    loadFlowStatus={getLoadFlowRunningStatus(
+                                        loadFlowInfos?.loadFlowStatus
+                                    )}
+                                    currentNode={currentNode}
+                                    disabled={disabled}
+                                    visible={
+                                        props.view === StudyView.MAP &&
+                                        studyDisplayMode !==
+                                            STUDY_DISPLAY_MODE.TREE
+                                    }
+                                />
+                            )}
                         </div>
                     </div>
                 </div>

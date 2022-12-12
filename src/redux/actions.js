@@ -378,6 +378,15 @@ export function fullScreenNetworkAreaDiagramId(fullScreenNadId) {
     };
 }
 
+export const SET_FULLSCREEN_DIAGRAM_ID = 'SET_FULLSCREEN_DIAGRAM_ID';
+
+export function setFullScreenDiagramId(diagramIdParam) {
+    return {
+        type: SET_FULLSCREEN_DIAGRAM_ID,
+        fullScreenDiagramId: diagramIdParam,
+    };
+}
+
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 
 export function changeDisplayedColumns(displayedColumnsParams) {

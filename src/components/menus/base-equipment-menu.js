@@ -19,10 +19,7 @@ import { useIntl } from 'react-intl';
 import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
-import {
-    getNameOrId,
-    getSubstationNameOrId,
-} from '../diagrams/singleLineDiagram/utils';
+import { getNameOrId, getSubstationNameOrId } from '../diagrams/diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {

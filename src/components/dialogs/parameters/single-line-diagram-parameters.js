@@ -8,7 +8,7 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
-import { SubstationLayout } from '../../diagrams/singleLineDiagram/single-line-diagram';
+import { SubstationLayout } from '../../diagrams/diagram-common';
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,

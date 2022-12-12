@@ -12,14 +12,16 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
-} from '../../../utils/config-params';
+} from '../../utils/config-params';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     updateSwitchState,
-} from '../../../utils/rest-api';
-import SingleLineDiagram from './single-line-diagram';
+} from '../../utils/rest-api';
+import { getNetworkAreaDiagramUrl } from '../../utils/rest-api';
+//import SingleLineDiagram, { SvgType } from './singleLineDiagram/single-line-diagram';
+//import NetworkAreaDiagram from './networkAreaDiagram/network-area-diagram';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -29,9 +31,10 @@ import {
     useSingleLineDiagram,
     ViewState,
     SvgType,
-} from '../diagram-common';
-import { isNodeBuilt } from '../../graph/util/model-functions';
+} from './diagram-common';
+import { isNodeBuilt } from '../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
+import Diagram from './diagram';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -161,7 +164,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-export function SingleLineDiagramPane({
+export function DiagramPane({
     studyUuid,
     network,
     isComputationRunning,
@@ -171,6 +174,8 @@ export function SingleLineDiagramPane({
     disabled,
     visible,
 }) {
+    // OLD SLD
+
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
@@ -220,18 +225,65 @@ export function SingleLineDiagramPane({
 
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            updateSwitchState(
-                studyUuid,
-                currentNode?.id,
-                breakerId,
-                open
-            ).catch((error) => {
-                console.error(error.message);
-                setUpdateSwitchMsg(error.message);
-            });
+            updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
+                (response) => {
+                    if (!response.ok) {
+                        console.error(response);
+                        setUpdateSwitchMsg(
+                            response.status + ' : ' + response.statusText
+                        );
+                    }
+                }
+            );
         },
         [studyUuid, currentNode]
     );
+
+    // OLD NAD
+
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
+    const [depth, setDepth] = useState(0);
+
+    const voltageLevelsIds = useSelector(
+        (state) => state.voltageLevelsIdsForNad
+    );
+
+    const fullScreenNadId = useSelector((state) => state.fullScreenNadId);
+
+    const displayedVoltageLevelIdRef = useRef();
+    displayedVoltageLevelIdRef.current = voltageLevelsIds[0];
+
+    let displayedVoltageLevels = [];
+    let nadTitle = '';
+    let nadUrl = '';
+
+    if (visible) {
+        if (network) {
+            if (voltageLevelsIds) {
+                voltageLevelsIds.forEach((id) =>
+                    displayedVoltageLevels.push(network.getVoltageLevel(id))
+                );
+            }
+        }
+
+        if (displayedVoltageLevels.length > 0) {
+            displayedVoltageLevels.forEach((vl) => {
+                const name = useName && vl?.name ? vl?.name : vl?.id;
+                if (name !== undefined) {
+                    nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
+                }
+            });
+
+            nadUrl = getNetworkAreaDiagramUrl(
+                studyUuid,
+                currentNode?.id,
+                voltageLevelsIds,
+                depth
+            );
+        }
+    }
+
+    // OLD SLD
 
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
@@ -328,18 +380,26 @@ export function SingleLineDiagramPane({
     const [computedHeight, setComputedHeight] = useState();
 
     useEffect(() => {
-        let displayedSldHeights_ = displayedSldHeightsRef.current?.filter(
-            (displayedHeight) =>
-                views
-                    .filter((sld) => sld.state !== ViewState.MINIMIZED)
-                    .map((sld) => sld.id)
-                    .includes(displayedHeight.id)
+        let displayedSldHeights_ = displayedSldHeightsRef.current;
+        viewsRef.current.forEach((sld) => {
+            if (sld.state === ViewState.MINIMIZED) {
+                displayedSldHeights_ = displayedSldHeights_.filter(
+                    (displayedHeight) => displayedHeight.id !== sld.id
+                );
+            }
+        });
+        displayedSldHeights_ = displayedSldHeights_.filter((displayedHeight) =>
+            viewsRef.current.map((sld) => sld.id).includes(displayedHeight.id)
         );
 
         setDisplayedSldHeights(displayedSldHeights_);
     }, [views]);
 
     useEffect(() => {
+        if (displayedSldHeights.length === 0) {
+            setComputedHeight();
+        }
+
         const initialHeights = [
             ...displayedSldHeights.map(
                 (displayedHeight) => displayedHeight.initialHeight
@@ -347,7 +407,7 @@ export function SingleLineDiagramPane({
         ];
         if (initialHeights.length > 0) {
             const newComputedHeight = Math.max(...initialHeights);
-            if (newComputedHeight) {
+            if (newComputedHeight && !isNaN(newComputedHeight)) {
                 setComputedHeight(newComputedHeight);
             }
         }
@@ -355,68 +415,110 @@ export function SingleLineDiagramPane({
 
     return (
         <AutoSizer>
-            {({ width, height }) => (
-                <div style={{ flexDirection: 'row', display: 'inline-flex' }}>
-                    {displayedSLD.map((sld) => (
-                        <SingleLineDiagram
-                            key={sld.id}
-                            onClose={handleCloseSLD}
-                            onNextVoltageLevelClick={handleOpenView}
-                            onBreakerClick={handleUpdateSwitchState}
-                            diagramTitle={getNameOrId(sld)}
-                            svgUrl={sld.svgUrl}
-                            sldId={sld.id}
-                            ref={sld.ref}
-                            svgType={sld.type}
-                            updateSwitchMsg={updateSwitchMsg}
-                            isComputationRunning={isComputationRunning}
-                            showInSpreadsheet={showInSpreadsheet}
-                            loadFlowStatus={loadFlowStatus}
-                            numberToDisplay={displayedSLD.length}
-                            onTogglePin={togglePinSld}
-                            onMinimize={minimizeSld}
-                            pinned={sld.state === ViewState.PINNED}
-                            disabled={disabled}
-                            totalWidth={width}
-                            totalHeight={height}
-                            computedHeight={computedHeight}
-                            setDisplayedSldHeights={setDisplayedSldHeights}
-                        />
-                    ))}
-                    <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
-                        spacing={1}
-                        className={classes.minimizedSLD}
-                        style={{
-                            display: !fullScreenSldId ? '' : 'none',
-                        }}
+            {({ width, height }) => {
+                //console.error("CHARLY SLD PANE AutoSizer :", { width, height })
+                return (
+                    <div
+                        style={{ flexDirection: 'row', display: 'inline-flex' }}
                     >
-                        {minimized.map((view) => (
-                            <Chip
-                                key={view.id}
-                                icon={<ArrowUpwardIcon />}
-                                label={getNameOrId(view)}
-                                onClick={() =>
-                                    handleOpenView(view.id, view.type)
+                        {displayedSLD.map((sld) => (
+                            <Diagram
+                                computedHeight={computedHeight}
+                                diagramTitle={getNameOrId(sld)}
+                                disabled={disabled}
+                                isComputationRunning={isComputationRunning}
+                                key={sld.id}
+                                loadFlowStatus={loadFlowStatus}
+                                numberToDisplay={
+                                    displayedSLD.length +
+                                    (voltageLevelsIds?.length > 0 ? 1 : 0)
                                 }
-                                onDelete={() => handleCloseSLD(view.id)}
+                                onBreakerClick={handleUpdateSwitchState}
+                                //onClose={handleCloseSLD}
+                                onMinimize={minimizeSld}
+                                onNextVoltageLevelClick={handleOpenView}
+                                onTogglePin={togglePinSld}
+                                pinned={sld.state === ViewState.PINNED}
+                                ref={sld.ref}
+                                setDisplayedDiagramHeights={
+                                    setDisplayedSldHeights
+                                }
+                                showInSpreadsheet={showInSpreadsheet}
+                                diagramId={sld.id}
+                                svgType={sld.type}
+                                svgUrl={sld.svgUrl}
+                                totalHeight={height}
+                                totalWidth={width}
+                                updateSwitchMsg={updateSwitchMsg}
                             />
                         ))}
-                    </Stack>
-                </div>
-            )}
+                        {voltageLevelsIds?.length > 0 && (
+                            <Diagram
+                                computedHeight={computedHeight}
+                                currentNode={currentNode}
+                                depth={depth}
+                                diagramTitle={nadTitle}
+                                disabled={disabled}
+                                loadFlowStatus={loadFlowStatus}
+                                diagramId={voltageLevelsIds[0]}
+                                numberToDisplay={
+                                    displayedSLD.length +
+                                    (voltageLevelsIds?.length > 0 ? 1 : 0)
+                                }
+                                //onClose={closeNetworkAreaDiagram}
+                                setDepth={setDepth}
+                                //studyUuid={studyUuid}
+                                svgUrl={nadUrl}
+                                totalHeight={height}
+                                totalWidth={width}
+                                isComputationRunning={isComputationRunning}
+                                onMinimize={minimizeSld}
+                                onNextVoltageLevelClick={handleOpenView}
+                                onTogglePin={togglePinSld}
+                                //pinned={sld.state === ViewState.PINNED} // TODO
+                                setDisplayedDiagramHeights={
+                                    setDisplayedSldHeights
+                                } // TODO recalculer en incluant le NAD ?
+                                showInSpreadsheet={showInSpreadsheet}
+                                //sldId={sld.id}
+                                svgType={SvgType.NETWORK_AREA_DIAGRAM}
+                            />
+                        )}
+                        <Stack
+                            direction={{ xs: 'column', sm: 'row' }}
+                            spacing={1}
+                            className={classes.minimizedSLD}
+                            style={{
+                                display: !fullScreenSldId ? '' : 'none',
+                            }}
+                        >
+                            {minimized.map((view) => (
+                                <Chip
+                                    key={view.id}
+                                    icon={<ArrowUpwardIcon />}
+                                    label={getNameOrId(view)}
+                                    onClick={() =>
+                                        handleOpenView(view.id, view.type)
+                                    }
+                                    onDelete={() => handleCloseSLD(view.id)}
+                                />
+                            ))}
+                        </Stack>
+                    </div>
+                );
+            }}
         </AutoSizer>
     );
 }
 
-SingleLineDiagramPane.propTypes = {
+DiagramPane.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     network: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
-    onClose: PropTypes.func,
+    //onClose: PropTypes.func,
     onNextVoltageLevelClick: PropTypes.func,
     disabled: PropTypes.bool,
     visible: PropTypes.bool,

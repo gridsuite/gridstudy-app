@@ -32,7 +32,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import { Button } from '@mui/material';
 import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
-import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
+import { getNameOrId } from '../diagrams/diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {

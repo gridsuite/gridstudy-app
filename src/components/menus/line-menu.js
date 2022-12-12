@@ -34,7 +34,7 @@ import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { useParameterState } from '../dialogs/parameters/parameters';
-import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
+import { getNameOrId } from '../diagrams/diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {

@@ -13,7 +13,7 @@ import {
     SUBSTATION_RADIUS_MAX_PIXEL,
     SUBSTATION_RADIUS_MIN_PIXEL,
 } from './constants';
-import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
+import { getNameOrId } from '../diagrams/diagram-common';
 
 const voltageLevelNominalVoltageIndexer = (map, voltageLevel) => {
     let list = map.get(voltageLevel.nominalVoltage);
