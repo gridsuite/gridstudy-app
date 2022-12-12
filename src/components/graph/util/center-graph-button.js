@@ -10,19 +10,28 @@ import React, { useCallback } from 'react';
 import { ControlButton, useReactFlow } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
+import {
+    ROOT_NODE_TYPE,
+    spaceRootNodeX,
+    spaceRootNodeY,
+} from './model-constants';
 
 const CenterGraphButton = ({ currentNode }) => {
-    const { setCenter } = useReactFlow();
+    const { setCenter, getZoom } = useReactFlow();
     const intl = useIntl();
 
     const focusNode = useCallback(() => {
-        // if no selected node, center on Root
-        if (currentNode) {
-            const x = currentNode.width / 2.0 + currentNode.position.x;
-            const y = currentNode.height / 2.0 + currentNode.position.y;
-            setCenter(x, y);
-        }
-    }, [setCenter, currentNode]);
+        const x =
+            currentNode?.type === ROOT_NODE_TYPE
+                ? currentNode.position.x / 2.0 + spaceRootNodeX
+                : currentNode.width / 2.0 + currentNode.position.x;
+        const y =
+            currentNode?.type === ROOT_NODE_TYPE
+                ? currentNode.position.y + spaceRootNodeY
+                : currentNode.height / 2.0 + currentNode.position.y;
+
+        setCenter(x, y, { zoom: getZoom() });
+    }, [setCenter, currentNode, getZoom]);
 
     return (
         <Tooltip

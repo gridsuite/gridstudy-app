@@ -15,4 +15,7 @@ export const nodeTypes = {
 
 export const nodeWidth = 200;
 export const nodeHeight = 50;
+export const spaceRootNodeX = 55;
+export const spaceRootNodeY = 60;
 export const rootNodeWidth = 60;
+export const ROOT_NODE_TYPE = 'ROOT';
