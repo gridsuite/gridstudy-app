@@ -6,7 +6,7 @@
  */
 
 import NetworkMap from './network/network-map';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchLinePositions,
@@ -25,19 +25,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    PARAM_DISPLAY_OVERLOAD_TABLE,
-    PARAM_MAP_MANUAL_REFRESH,
-} from '../utils/config-params';
+import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '@gridsuite/commons-ui';
-import {
-    isNodeBuilt,
-    isNodeReadOnly,
-    isNodeRenamed,
-} from './graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import { resetMapReloaded, setForceNetworkReload } from '../redux/actions';
+import { setForceNetworkReload } from '../redux/actions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -97,16 +90,11 @@ export const NetworkMapTab = ({
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
-    const [isInitialized, setInitialized] = useState(false);
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
-    const mapManualRefresh = useSelector(
-        (state) => state[PARAM_MAP_MANUAL_REFRESH]
-    );
-    const reloadMapNeeded = useSelector((state) => state.reloadMap);
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -124,7 +112,6 @@ export const NetworkMapTab = ({
     const [position, setPosition] = useState([-1, -1]);
 
     const classes = useStyles();
-    const currentNodeRef = useRef(null);
 
     function withEquipment(Menu, props) {
         return (
@@ -196,69 +183,83 @@ export const NetworkMapTab = ({
         []
     );
 
-    const getMissingSubstationsPositions = useCallback(
-        (foundSubstationPositions, allSubstations) => {
-            console.info('foundSubstationPositions', foundSubstationPositions);
-            console.info('allSubstations', allSubstations);
-            console.info('currentNode?.id', currentNode?.id);
-            if (!foundSubstationPositions.size) {
+    const getMissingEquipmentsPositions = useCallback(
+        (foundEquipmentPositions, allEquipments, fetchEquipmentCB) => {
+            if (!foundEquipmentPositions.size) {
                 return Promise.resolve([]);
             }
-            let notFoundSubstationIds = [];
-            const foundSubstationsIds = Array.from(
-                foundSubstationPositions.keys()
+            let notFoundEquipmentsIds = [];
+            const foundEquipmentsIds = Array.from(
+                foundEquipmentPositions.keys()
             );
-            allSubstations.forEach((s) => {
-                if (!foundSubstationsIds.includes(s.id)) {
-                    notFoundSubstationIds.push(s.id);
+            allEquipments.forEach((s) => {
+                if (!foundEquipmentsIds.includes(s.id)) {
+                    notFoundEquipmentsIds.push(s.id);
                 }
             });
-            if (notFoundSubstationIds.length === 0) {
+            if (notFoundEquipmentsIds.length === 0) {
                 return Promise.resolve([]);
             }
-            console.info('notFoundSubstationIds', notFoundSubstationIds)
-            return fetchSubstationPositionsByIds(
+            return fetchEquipmentCB(
                 studyUuid,
                 currentNode?.id,
-                notFoundSubstationIds
+                notFoundEquipmentsIds
             );
         },
         [studyUuid, currentNode?.id]
     );
 
-    const getMissingLinesPositions = useCallback(
-        (foundLinesPositions, allLines) => {
-            if (!foundLinesPositions.size) {
-                return Promise.resolve([]);
-            }
-            let notFoundLinesIds = [];
-            const foundLinesIds = Array.from(foundLinesPositions.keys());
-            allLines.forEach((s) => {
-                if (!foundLinesIds.includes(s.id)) {
-                    notFoundLinesIds.push(s.id);
-                }
-            });
-            if (notFoundLinesIds.length === 0) {
-                return Promise.resolve([]);
-            }
-            return fetchLinePositionsByIds(
-                studyUuid,
-                currentNode?.id,
-                notFoundLinesIds
-            );
-        },
-        [studyUuid, currentNode]
-    );
-
-    useEffect(() => {
-        console.info('THE NETWORK IS LOADED')
-        reloadMapGeoData();
-    }, [network]);
+    // const getMissingSubstationsPositions = useCallback(
+    //     (foundSubstationPositions, allSubstations) => {
+    //         if (!foundSubstationPositions.size) {
+    //             return Promise.resolve([]);
+    //         }
+    //         let notFoundSubstationIds = [];
+    //         const foundSubstationsIds = Array.from(
+    //             foundSubstationPositions.keys()
+    //         );
+    //         allSubstations.forEach((s) => {
+    //             if (!foundSubstationsIds.includes(s.id)) {
+    //                 notFoundSubstationIds.push(s.id);
+    //             }
+    //         });
+    //         if (notFoundSubstationIds.length === 0) {
+    //             return Promise.resolve([]);
+    //         }
+    //         return fetchSubstationPositionsByIds(
+    //             studyUuid,
+    //             currentNode?.id,
+    //             notFoundSubstationIds
+    //         );
+    //     },
+    //     [studyUuid, currentNode?.id]
+    // );
+    //
+    // const getMissingLinesPositions = useCallback(
+    //     (foundLinesPositions, allLines) => {
+    //         if (!foundLinesPositions.size) {
+    //             return Promise.resolve([]);
+    //         }
+    //         let notFoundLinesIds = [];
+    //         const foundLinesIds = Array.from(foundLinesPositions.keys());
+    //         allLines.forEach((s) => {
+    //             if (!foundLinesIds.includes(s.id)) {
+    //                 notFoundLinesIds.push(s.id);
+    //             }
+    //         });
+    //         if (notFoundLinesIds.length === 0) {
+    //             return Promise.resolve([]);
+    //         }
+    //         return fetchLinePositionsByIds(
+    //             studyUuid,
+    //             currentNode?.id,
+    //             notFoundLinesIds
+    //         );
+    //     },
+    //     [studyUuid, currentNode]
+    // );
 
     const reloadMapGeoData = useCallback(() => {
-        console.info(`Loading geo data of study '${studyUuid}'...`);
-
-        console.info('Network', network);
         if (studyUuid && currentNode) {
             setWaitingLoadGeoData(true);
             if (
@@ -266,17 +267,17 @@ export const NetworkMapTab = ({
                 (geoData.substationPositionsById.size > 0 ||
                     geoData.linePositionsById.size > 0)
             ) {
-                const newGeoData = new GeoData(geoData.substationPositionsById, geoData.linePositionsById);
-                console.info('ON A DES SUBSTATIONS GEO DATA');
                 const missingSubstationPositions =
-                    getMissingSubstationsPositions(
+                    getMissingEquipmentsPositions(
                         geoData.substationPositionsById,
-                        network.getSubstations()
+                        network.getSubstations(),
+                        fetchSubstationPositionsByIds
                     );
 
-                const missingLinesPositions = getMissingLinesPositions(
+                const missingLinesPositions = getMissingEquipmentsPositions(
                     geoData.linePositionsById,
-                    network.getLines()
+                    network.getLines(),
+                    fetchLinePositionsByIds
                 );
 
                 Promise.all([
@@ -284,16 +285,13 @@ export const NetworkMapTab = ({
                     missingLinesPositions,
                 ]).then((positions) => {
                     if (positions) {
-                        console.info('positions', positions);
-                        newGeoData.addSubstationPositions(positions[0]);
-                        newGeoData.addLinePositions(positions[1]);
-                        setGeoData(newGeoData);
-                        geoData.geoDataUpdated = true;
+                        geoData.addSubstationPositions(positions[0]);
+                        geoData.addLinePositions(positions[1]);
                         setWaitingLoadGeoData(false);
                     }
                 });
             } else {
-                console.info('ON A RIEN, FAUT TOUT CHARGER SUBSTATION');
+                console.info(`Loading geo data of study '${studyUuid}'...`);
                 const substationPositions = fetchSubstationPositions(
                     studyUuid,
                     currentNode?.id
@@ -322,55 +320,29 @@ export const NetworkMapTab = ({
                         );
                     });
             }
-
-            dispatch(resetMapReloaded());
         }
     }, [
-        currentNode?.id,
-        dispatch,
+        currentNode,
         intlRef,
         lineFullPath,
         setErrorMessage,
         studyUuid,
-        getMissingSubstationsPositions,
-        getMissingLinesPositions,
+        getMissingEquipmentsPositions,
         network,
-        // geoData,
+        geoData,
     ]);
+
+    const reloadMapGeoDataRef = useRef(null);
+    reloadMapGeoDataRef.current = reloadMapGeoData;
+
+    useEffect(() => {
+        reloadMapGeoDataRef.current();
+    }, [network]);
 
     const handleReloadMap = useCallback(() => {
         reloadMapGeoData();
         dispatch(setForceNetworkReload());
     }, [dispatch, reloadMapGeoData]);
-
-    useEffect(() => {
-        let previousCurrentNode = currentNodeRef.current;
-        currentNodeRef.current = currentNode;
-        // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
-        if (disabled) return;
-        if (mapManualRefresh && isInitialized) return;
-        // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
-        // TODO REMOVE LATER
-        if (!reloadMapNeeded) return;
-
-        reloadMapGeoData();
-        setInitialized(true);
-        // Note: studyUuid and dispatch don't change
-    }, [
-        disabled,
-        reloadMapNeeded,
-        studyUuid,
-        currentNode,
-        lineFullPath,
-        setWaitingLoadGeoData,
-        setErrorMessage,
-        setGeoData,
-        intlRef,
-        mapManualRefresh,
-        isInitialized,
-        reloadMapGeoData,
-    ]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
@@ -428,7 +400,6 @@ export const NetworkMapTab = ({
         return loadFlowStatus === RunningStatus.SUCCEED;
     };
 
-    console.info('substations', network.substations);
     const renderMap = () => (
         <NetworkMap
             network={network}

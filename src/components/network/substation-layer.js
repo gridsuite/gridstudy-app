@@ -36,19 +36,15 @@ class SubstationLayer extends CompositeLayer {
     }
 
     updateState({ props, oldProps, changeFlags }) {
-        console.info('updateState');
         if (changeFlags.dataChanged) {
-            console.info('changeFlags.dataChanged', changeFlags.dataChanged)
             let metaVoltageLevelsByNominalVoltage = new Map();
 
             if (props.network != null && props.geoData != null) {
-
                 // create meta voltage levels
                 // a meta voltage level is made of:
                 //   - a list of voltage level that belong to same substation and with same nominal voltage
                 //   - index of the voltage levels nominal voltage in the substation nominal voltage list
                 props.data.forEach((substation) => {
-                    console.info('substation', substation)
                     // index voltage levels of this substation by its nominal voltage (this is because we might
                     // have several voltage levels with the same nominal voltage in the same substation)
                     const voltageLevelsByNominalVoltage =
