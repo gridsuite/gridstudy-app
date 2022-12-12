@@ -13,7 +13,7 @@ import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { nodeHeight, nodeWidth } from './model-constants';
 
 const CenterGraphButton = ({ currentNode }) => {
-    const { setCenter } = useReactFlow();
+    const { setCenter, fitView } = useReactFlow();
 
     // Use of hook useStore to get tree internal state and retrieve current zoom
     // Must be used inside a child component of the ReactFlow component
@@ -22,9 +22,11 @@ const CenterGraphButton = ({ currentNode }) => {
 
     const focusNode = useCallback(() => {
         // if no selected node, center on Root
-        const x = currentNode ? currentNode.position.x + nodeWidth / 2.0 : 0;
-        const y = currentNode ? currentNode.position.y + nodeHeight / 2.0 : 0;
-        setCenter(x, y, zoom);
+        if (currentNode) {
+            const x = currentNode.width / 2.0 + currentNode.position.x;
+            const y = currentNode.height / 2.0 + currentNode.position.y;
+            setCenter(x, y);
+        }
     }, [setCenter, currentNode, zoom]);
 
     return (
