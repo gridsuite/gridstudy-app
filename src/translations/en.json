@@ -54,6 +54,7 @@
     "paramsChangingDenied": "The requested changes have been rejected",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
     "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
+    "defaultSensiResultsThresholdRetrievingError": "An error occurred while retrieving the sensitivity analysis results default threshold",
 
     "close": "Close",
     "validate": "Validate",
@@ -516,6 +517,7 @@
     "LowTapPosition":"Low tap position",
     "HighTapPosition":"High tap position",
     "TapPosition":"Tap position",
+    "HighTapPositionError": "High tap position must be between low tap and 100",
     "TapPositionBetweenLowAndHighTapPositionValue": "Tap position must be greater or equal to Low tap position and lesser or equal to High tap position",
     "TerminalRef":"Regulated terminal",
     "GenerateRatioTapRowsError": "Please generate the ratio changer steps",
@@ -526,6 +528,9 @@
     "IncoherentPhaseTapPositionError": "The Tap position value is not consistent with the phase tap changer steps data",
     "IncoherentRatioRegulatingTerminalError": "The ratio tap Regulating terminal value must be filled",
     "IncoherentPhaseRegulatingTerminalError": "The phase tap Regulating terminal value must be filled",
+    "RatioValuesError": "The values of the ratio tap ratios must be ordered and without duplicates",
+    "PhaseShiftValuesError": "The values of the phase tap ratios must be ordered and without duplicates",
+    "TapPositionValueError": "The high tap position must not exceed the value {value}",
 
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",
@@ -549,7 +554,6 @@
     "RegulatingValueCurrentLimiter": "Current limiter",
     "CurrentLimiterGreaterThanZero": "The current limiter value must be strictly positive",
     "RegulatingValueActivePowerControl": "Flow set point",
-    "ActivePowerControlGreaterThanZero": "The flow set point value must be strictly positive",
 
     "CreateRegulationRule":"Create regulation rule",
     "LowTapRatio":"Ratio (low tap position)",
@@ -626,8 +630,33 @@
     "EmptyList/connections": "Connections list is empty",
 
     "UnsupportedView": "Search is unavailable in tree view",
+
+    "resultsThreshold": "Minimum sensitivity threshold",
+    "SensitivityBranches": "Branch sensitivity",
+    "SensitivityInjectionsSet": "Relatively to injections set :",
+    "SensitivityInjection": "Relatively to each injection :",
+    "SensitivityHvdc": "Relatively to each HVDC :",
+    "SensitivityTD": "Relatively to each PST :",
+    "SensitivityNodes": "Node sensitivity",
+    "Proportional": "Proportional",
+    "ProportionalMaxP": "Proportional to maxP",
+    "Regular": "Regular distribution",
+    "Ventilation": "Ventilation",
+    "DistributionType": "Distribution type",
+    "SensitivityType": "Sensitivity type",
+    "DeltaMW": "\u0394 MW",
+    "DeltaA": "\u0394 A",
+    "AddSensitivityFactor": "Add sensitivity factor",
+    "ContingencyLists": "Contingencies",
+    "Injections": "Injections",
+    "SupervisedVoltageLevels": "Supervised voltage levels",
+    "EquipmentsInVoltageRegulation": "Equipments in voltage regulation",
+    "PSTS": "PSTs",
+    "ElementAlreadyUsed": "This element is already used",
+
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
-    "Bottom": "Bottom"
+    "Bottom": "Bottom",
+    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value"
 }

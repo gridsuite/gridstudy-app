@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import {
     fetchNetworkModifications,
     deleteModifications,
@@ -26,7 +25,6 @@ import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
-import { useParameterState } from '../../dialogs/parameters/parameters';
 import { equipments } from '../../network/network-equipments';
 import { ModificationListItem } from './modification-list-item';
 import {
@@ -153,7 +151,6 @@ const NetworkModificationNodeEditor = () => {
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
     const currentTreeNode = useSelector((state) => state.currentTreeNode);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const currentNodeIdRef = useRef(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -174,6 +171,7 @@ const NetworkModificationNodeEditor = () => {
 
     const cleanClipboard = () => {
         if (copiedModifications.length <= 0) return;
+        setCopyInfos(null);
         setCopiedModifications([]);
         snackInfo({
             messageId: 'CopiedModificationInvalidationMessage',
@@ -320,18 +318,17 @@ const NetworkModificationNodeEditor = () => {
             dialog: () => adapt(LineCreationDialog, withVLs),
             icon: <AddIcon />,
         },
-        ...(enableDeveloperMode && {
-            TWO_WINDINGS_TRANSFORMER_CREATION: {
-                label: 'CreateTwoWindingsTransformer',
-                dialog: () =>
-                    adapt(
-                        TwoWindingsTransformerCreationDialog,
-                        withVLs,
-                        withVLsAndEquipments
-                    ),
-                icon: <AddIcon />,
-            },
-        }),
+        TWO_WINDINGS_TRANSFORMER_CREATION: {
+            onlyDeveloperMode: true,
+            label: 'CreateTwoWindingsTransformer',
+            dialog: () =>
+                adapt(
+                    TwoWindingsTransformerCreationDialog,
+                    withVLs,
+                    withVLsAndEquipments
+                ),
+            icon: <AddIcon />,
+        },
         SUBSTATION_CREATION: {
             label: 'CreateSubstation',
             dialog: () => adapt(SubstationCreationDialog),
@@ -414,6 +411,8 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const dofetchNetworkModifications = useCallback(() => {
+        // Do not fetch modifications on the root node
+        if (currentTreeNode?.type !== 'NETWORK_MODIFICATION') return;
         setLaunchLoader(true);
         fetchNetworkModifications(studyUuid, currentTreeNode?.id)
             .then((res) => {
@@ -423,9 +422,9 @@ const NetworkModificationNodeEditor = () => {
                     setModifications(res);
                 }
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                 });
             })
             .finally(() => {
@@ -433,7 +432,13 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentTreeNode.id, snackError, dispatch]);
+    }, [
+        studyUuid,
+        currentTreeNode.id,
+        currentTreeNode.type,
+        snackError,
+        dispatch,
+    ]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -638,9 +643,9 @@ const NetworkModificationNodeEditor = () => {
                     setEditData(removeNullFields(data[0]));
                 });
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                 });
             });
     };
@@ -674,9 +679,9 @@ const NetworkModificationNodeEditor = () => {
                 currentTreeNode?.id,
                 item.uuid,
                 before
-            ).catch((errorMessage) => {
+            ).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'errReorderModificationMsg',
                 });
                 setModifications(modifications); // rollback
