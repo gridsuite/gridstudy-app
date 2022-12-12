@@ -120,7 +120,7 @@ export function toPositiveIntValue(val) {
 }
 
 export function toIntOrEmptyValue(val) {
-    return val === '-' ? val : parseInt(val) || '';
+    return val === '-' || val === '0' ? val : parseInt(val) || '';
 }
 
 export function sanitizeString(val) {
