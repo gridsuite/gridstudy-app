@@ -113,6 +113,13 @@ const TwoWindingsTransformerCreationDialog = ({
     const [ratioCellIndexError, setRatioCellIndexError] = useState(undefined);
     const [phaseCellIndexError, setPhaseCellIndexError] = useState(undefined);
 
+    const computeHighTapPosition = (steps) => {
+        const values = steps?.map((step) => step.tap);
+        return Array.isArray(values) && values.length > 0
+            ? Math.max(...values)
+            : undefined;
+    };
+
     // CHARACTERISTICS TAP PANE
 
     const [twoWindingsTransformerId, twoWindingsTransformerIdField] =
@@ -367,6 +374,8 @@ const TwoWindingsTransformerCreationDialog = ({
         },
         transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
+        defaultValue:
+            (isCopy || editData) && computeHighTapPosition(ratioTapRows),
         formProps: {
             disabled: !ratioTapChangerEnabled,
         },
@@ -376,8 +385,10 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
-            valueGreaterThanOrEqualTo: ratioLowTapPosition,
-            valueLessThanOrEqualTo: ratioHighTapPosition,
+            valueGreaterThan: ratioLowTapPosition,
+            valueLessThanOrEqualTo: ratioHighTapPosition
+                ? ratioHighTapPosition
+                : computeHighTapPosition(ratioTapRows),
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
         transformValue: toIntOrEmptyValue,
@@ -517,6 +528,8 @@ const TwoWindingsTransformerCreationDialog = ({
         },
         transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
+        defaultValue:
+            (isCopy || editData) && computeHighTapPosition(phaseTapRows),
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
@@ -524,8 +537,10 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
-            valueGreaterThanOrEqualTo: phaseLowTapPosition,
-            valueLessThanOrEqualTo: phaseHighTapPosition,
+            valueGreaterThan: phaseLowTapPosition,
+            valueLessThanOrEqualTo: phaseHighTapPosition
+                ? phaseHighTapPosition
+                : computeHighTapPosition(phaseTapRows),
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
         transformValue: toIntOrEmptyValue,
