@@ -197,6 +197,7 @@ export const NetworkMapTab = ({
             if (notFoundEquipmentsIds.length === 0) {
                 return Promise.resolve([]);
             }
+            setWaitingLoadGeoData(true);
             return fetchEquipmentCB(
                 studyUuid,
                 currentNode?.id,
@@ -208,7 +209,6 @@ export const NetworkMapTab = ({
 
     const reloadMapGeoData = useCallback(() => {
         if (studyUuid && currentNode) {
-            setWaitingLoadGeoData(true);
             if (
                 geoData &&
                 (geoData.substationPositionsById.size > 0 ||
@@ -239,6 +239,7 @@ export const NetworkMapTab = ({
                 });
             } else {
                 console.info(`Loading geo data of study '${studyUuid}'...`);
+                setWaitingLoadGeoData(true);
                 const substationPositions = fetchSubstationPositions(
                     studyUuid,
                     currentNode?.id
