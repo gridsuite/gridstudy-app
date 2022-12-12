@@ -327,9 +327,9 @@ const LineSplitWithVoltageLevelDialog = ({
             sanitizeString(newLine1Name),
             newLine2Id,
             sanitizeString(newLine2Name)
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'LineDivisionError',
             });
         });
@@ -374,9 +374,10 @@ const LineSplitWithVoltageLevelDialog = ({
                     setBusOrBusbarSectionOptions(busbarSections);
                     setBbsOrNodeId(busbarSections[0].id);
                 }
+                inputForm.setHasChanged(true);
             });
         },
-        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId]
+        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId, inputForm]
     );
 
     const onVoltageLevelDialogClose = () => {

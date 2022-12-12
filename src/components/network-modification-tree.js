@@ -24,11 +24,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import makeStyles from '@mui/styles/makeStyles';
-import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
+import { DRAWER_NODE_EDITOR_WIDTH, TOOLTIP_DELAY } from '../utils/UIconstants';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
-import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import { nodeTypes } from './graph/util/model-constants';
 
 // snapGrid value set to [15, 15] which is the default value for ReactFlow

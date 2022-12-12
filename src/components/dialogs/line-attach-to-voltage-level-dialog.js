@@ -359,9 +359,9 @@ const LineAttachToVoltageLevelDialog = ({
             newLine1Name || null,
             newLine2Id,
             newLine2Name || null
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'LineAttachmentError',
             });
         });
@@ -406,9 +406,10 @@ const LineAttachToVoltageLevelDialog = ({
                     setBusOrBusbarSectionOptions(busbarSections);
                     setBbsOrNodeId(busbarSections[0].id);
                 }
+                inputForm.setHasChanged(true);
             });
         },
-        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId]
+        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId, inputForm]
     );
 
     const onVoltageLevelDialogClose = () => {
@@ -459,9 +460,10 @@ const LineAttachToVoltageLevelDialog = ({
                     },
                 };
                 setAttachmentLine(preparedLine);
+                inputForm.setHasChanged(true);
             });
         },
-        []
+        [inputForm]
     );
 
     const onLineDialogClose = () => {
