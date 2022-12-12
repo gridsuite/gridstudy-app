@@ -185,9 +185,6 @@ export const NetworkMapTab = ({
 
     const getMissingEquipmentsPositions = useCallback(
         (foundEquipmentPositions, allEquipments, fetchEquipmentCB) => {
-            if (!foundEquipmentPositions.size) {
-                return Promise.resolve([]);
-            }
             let notFoundEquipmentsIds = [];
             const foundEquipmentsIds = Array.from(
                 foundEquipmentPositions.keys()
