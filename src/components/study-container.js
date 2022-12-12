@@ -85,7 +85,9 @@ export function useNodeData(
                 if (nodeUuidRef.current === nodeUuid)
                     setResult(resultConversion ? resultConversion(res) : res);
             })
-            .catch((err) => setErrorMessage(err.message))
+            .catch((err) => {
+                setErrorMessage(err.message);
+            })
             .finally(() => setIsPending(false));
     }, [nodeUuid, studyUuid, fetcher, resultConversion]);
 
@@ -120,19 +122,21 @@ function useStudy(studyUuidRequest) {
 
     useEffect(() => {
         fetchStudyExists(studyUuidRequest)
-            .then((response) => {
-                if (response.status === 200) {
-                    setStudyUuid(studyUuidRequest);
-                } else {
+            .then(() => {
+                setStudyUuid(studyUuidRequest);
+            })
+            .catch((error) => {
+                if (error.status === 404) {
                     setErrMessage(
                         intlRef.current.formatMessage(
                             { id: 'studyNotFound' },
                             { studyUuid: studyUuidRequest }
                         )
                     );
+                } else {
+                    setErrMessage(error.message);
                 }
             })
-            .catch((e) => setErrMessage(e.message))
             .finally(() => setPending(false));
     }, [studyUuidRequest, intlRef]);
 
@@ -345,10 +349,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     parentDirectoriesNames
                 );
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 document.title = initialTitle;
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'LoadStudyAndParentsInfoError',
                 });
             });
@@ -502,14 +506,14 @@ export function StudyContainer({ view, onChangeTab }) {
                     )
                 );
             })
-            .catch((errorMessage) => {
-                if (errorMessage.status === 404) {
+            .catch((error) => {
+                if (error.status === 404) {
                     snackError({
                         headerId: 'StudyUnrecoverableStateRecreate',
                     });
                 } else {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'NetworkModificationTreeLoadError',
                     });
                 }

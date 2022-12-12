@@ -119,6 +119,10 @@ export function toPositiveIntValue(val) {
     return parseInt(val) || 0;
 }
 
+export function toIntOrEmptyValue(val) {
+    return val === '-' || val === '0' ? val : parseInt(val) || '';
+}
+
 export function sanitizeString(val) {
     return val.trim() === '' ? null : val.trim();
 }

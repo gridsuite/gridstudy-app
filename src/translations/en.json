@@ -518,6 +518,7 @@
     "LowTapPosition":"Low tap position",
     "HighTapPosition":"High tap position",
     "TapPosition":"Tap position",
+    "HighTapPositionError": "High tap position must be between low tap and 100",
     "TapPositionBetweenLowAndHighTapPositionValue": "Tap position must be greater or equal to Low tap position and lesser or equal to High tap position",
     "TerminalRef":"Regulated terminal",
     "GenerateRatioTapRowsError": "Please generate the ratio changer steps",

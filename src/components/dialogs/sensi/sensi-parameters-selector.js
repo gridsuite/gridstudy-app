@@ -216,9 +216,9 @@ const SensiParametersSelector = (props) => {
             updateConfigParameter(
                 SENSI_PARAMETER_PREFIX_IN_DATABASE + paramName,
                 JSON.stringify(paramValue)
-            ).catch((errorMessage) => {
+            ).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'paramsChangingError',
                 });
             });
