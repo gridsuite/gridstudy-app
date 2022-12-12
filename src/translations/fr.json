@@ -629,6 +629,7 @@
     "ReactivePowerSetpointMVAR": "Consigne de reactif (MVAR)",
     "EmptyList/bbs": "La liste de jeux de barres est vide",
     "EmptyList/connections": "La liste de connexions est vide",
+    "EmptyList/variations": "La liste de variations est vide",
 
     "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
 
@@ -662,8 +663,10 @@
     "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
     "DeltaP": "Δ P",
     "PTarget": "P cible",
+    "DeltaPTarget": "Delta P / P cible",
     "CreateVariation": "Ajouter Variation",
     "ActiveVariationMode": "Mode variation de l'actif",
+    "ReactiveVariationMode": "Mode variation du réactif",
     "RegularDistribution": "Équipartition",
     "TanFixed": "tan(φ) fixe",
     "ConstantQWithoutUnit": "Q constant",

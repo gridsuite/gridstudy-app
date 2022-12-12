@@ -8,7 +8,6 @@
 import React, { useEffect, useState } from 'react';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
-import { Box, makeStyles } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { gridItem, GridSection } from './dialogUtils';
@@ -29,6 +28,7 @@ import {
     useOptionalEnumValue,
     useRadioValue,
 } from './inputs/input-hooks';
+import { makeStyles } from '@mui/styles';
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
@@ -52,6 +52,9 @@ export const useStyles = makeStyles((theme) => ({
         margin: 3,
         maxWidth: 200,
     },
+    padding: {
+        padding: '5px',
+    },
 }));
 
 const ACTIVE_VAR_MODE_DEFAULT_VALUE = 'PROPORTIONAL';
@@ -66,24 +69,23 @@ const VariationSection = ({
 }) => {
     const classes = useStyles();
 
-    const [filtre, FiltreField] = useDirectoryElements({
+    const [filtres, filtresField] = useDirectoryElements({
+        id: index,
         label: 'filter',
-        initialValues: defaultValue.monitoredBranches
-            ? defaultValue.monitoredBranches
-            : [],
+        initialValues: defaultValue.filtres ? defaultValue.filtres : [],
         elementType: elementType.FILTER,
-        equipmentTypes: ['LINE', 'TWO_WINDINGS_TRANSFORMER'],
+        equipmentTypes: ['LOAD'],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
 
-    const [DeltaTargetP, DeltaTargetPField] = useIntegerValue({
-        id: 'DeltaTargetP',
-        label: 'DeltaTargetP',
+    const [deltaTargetP, deltaTargetPField] = useIntegerValue({
+        id: 'DeltaTargetP' + index,
+        label: 'DeltaPTarget',
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue,
+        defaultValue: defaultValue?.deltaTargetP,
         inputForm: inputForm,
     });
 
@@ -93,7 +95,7 @@ const VariationSection = ({
             inputForm: inputForm,
             enumObjects: ACTIVE_VARIATION_MODE,
             validation: {
-                isFieldRequired: false,
+                isFieldRequired: true,
             },
             defaultValue: ACTIVE_VAR_MODE_DEFAULT_VALUE,
         });
@@ -104,33 +106,33 @@ const VariationSection = ({
             inputForm: inputForm,
             enumObjects: REACTIVE_VARIATION_MODE,
             validation: {
-                isFieldRequired: false,
+                isFieldRequired: true,
             },
             defaultValue: REACTIVE_VAR_MODE_DEFAULT_VALUE,
         });
 
     useEffect(() => {
         onChange(index, {
-            filtre,
-            DeltaTargetP,
+            filtres,
+            deltaTargetP,
             activeVariationMode,
             reactiveVariationMode,
         });
     }, [
+        activeVariationMode,
+        deltaTargetP,
+        filtres,
         index,
         onChange,
-        filtre,
-        DeltaTargetP,
-        activeVariationMode,
         reactiveVariationMode,
     ]);
 
     return (
         <>
-            {gridItem(FiltreField, 4)}
-            {gridItem(DeltaTargetPField, 2)}
-            {gridItem(activeVariationModeField, 2.5)}
-            {gridItem(reactiveVariationModeField, 3.5)}
+            {gridItem(filtresField, 2)}
+            {gridItem(deltaTargetPField, 2.5)}
+            {gridItem(activeVariationModeField, 3.5)}
+            {gridItem(reactiveVariationModeField, 3)}
         </>
     );
 };
@@ -158,6 +160,8 @@ const LoadScalableDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
+    const classes = useStyles();
+
     useEffect(() => {
         if (editData) {
             setFormValues(editData);
@@ -167,12 +171,12 @@ const LoadScalableDialog = ({
     function validateVariation(values) {
         const res = new Map();
         const idMap = values.reduce(
-            (m, v) => m.set(v.id, (m.get(v.id) || 0) + 1),
+            (m, v) => m.set(v.id, m.get(v.id) || 0),
             new Map()
         );
 
         values.forEach((val, idx) => {
-            const errorId = idMap.get(val.id) > 1;
+            const errorId = idMap.get(val.id);
             if (errorId)
                 res.set(idx, {
                     error: true,
@@ -234,13 +238,11 @@ const LoadScalableDialog = ({
             titleId="LoadScalable"
             {...dialogProps}
         >
-            <Grid container spacing={2}>
+            <Grid className={classes.padding}>
                 {gridItem(loadScalableRadioButton, 8)}
-                <Box sx={{ width: '100%' }} />
             </Grid>
             <GridSection title="Variations" />
-            <Grid container spacing={2}>
-                <Box sx={{ width: '100%' }} />
+            <Grid container className={classes.padding}>
                 {gridItem(variationsField, 12)}
             </Grid>
         </ModificationDialog>

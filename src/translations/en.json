@@ -629,7 +629,7 @@
     "ReactivePowerSetpointMVAR": "Reactive power set point (MVAR)",
     "EmptyList/bbs": "Bus Bar list is empty",
     "EmptyList/connections": "Connections list is empty",
-
+    "EmptyList/variations": "Variations list is empty",
     "UnsupportedView": "Search is unavailable in tree view",
 
     "resultsThreshold": "Minimum sensitivity threshold",
@@ -662,8 +662,10 @@
     "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value",
     "DeltaP": "Δ P",
     "PTarget": "Target P",
+    "DeltaPTarget": "Delta P / Target P",
     "CreateVariation": "Add Variation",
     "ActiveVariationMode": "Active variation mode",
+    "ReactiveVariationMode": "Reactive variation mode",
     "RegularDistribution": "Regular distribution",
     "TanFixed": "tan(φ) fixed",
     "ConstantQWithoutUnit": "Constant Q",
