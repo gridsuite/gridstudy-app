@@ -349,6 +349,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             svgPreferredHeight,
             headerPreferredHeight
         );
+
         if (typeof sizes != 'undefined') {
             if (
                 !fullScreenSldId &&
@@ -542,6 +543,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             if (svgDraw.current && svgUrl.current === svg.svgUrl) {
                 sldViewer.setViewBox(svgDraw.current.getViewBox());
             }
+
+            // on sld resizing, we need to refresh zoom to avoid exceeding max or min zoom
+            // this is due to a svg.panzoom.js package's behaviour
+            sldViewer.refreshZoom();
+
             svgUrl.current = svg.svgUrl;
             svgDraw.current = sldViewer;
         }
