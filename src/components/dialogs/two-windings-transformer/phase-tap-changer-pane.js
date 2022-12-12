@@ -86,7 +86,7 @@ const PhaseTapChangerPane = (props) => {
     };
 
     const generateTapRows = () => {
-        if (highTapPosition - lowTapPosition > MAX_TAP_NUMBER) {
+        if (highTapPosition - lowTapPosition + 1 > MAX_TAP_NUMBER) {
             setRatioError(
                 intl.formatMessage(
                     { id: 'TapPositionValueError' },
