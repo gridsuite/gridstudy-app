@@ -158,7 +158,6 @@ class SubstationLayer extends CompositeLayer {
                         getPosition: [
                             this.props.geoData.substationPositionsById,
                             this.props.network.substations,
-                            this.props.geoData.geoDataUpdated,
                         ],
                     },
                 })
@@ -191,7 +190,6 @@ class SubstationLayer extends CompositeLayer {
                         this.props.useName,
                         this.props.geoData.substationPositionsById,
                         this.props.network.substations,
-                        this.props.geoData.geoDataUpdated,
                     ],
                 },
             })

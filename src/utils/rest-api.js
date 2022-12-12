@@ -374,7 +374,6 @@ export function fetchSvg(svgUrl) {
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
-    console.info('constructor 222222')
     return fetchEquipments(
         studyUuid,
         currentNodeUuid,

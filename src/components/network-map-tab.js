@@ -6,7 +6,7 @@
  */
 
 import NetworkMap from './network/network-map';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchLinePositions,
@@ -208,56 +208,6 @@ export const NetworkMapTab = ({
         },
         [studyUuid, currentNode?.id]
     );
-
-    // const getMissingSubstationsPositions = useCallback(
-    //     (foundSubstationPositions, allSubstations) => {
-    //         if (!foundSubstationPositions.size) {
-    //             return Promise.resolve([]);
-    //         }
-    //         let notFoundSubstationIds = [];
-    //         const foundSubstationsIds = Array.from(
-    //             foundSubstationPositions.keys()
-    //         );
-    //         allSubstations.forEach((s) => {
-    //             if (!foundSubstationsIds.includes(s.id)) {
-    //                 notFoundSubstationIds.push(s.id);
-    //             }
-    //         });
-    //         if (notFoundSubstationIds.length === 0) {
-    //             return Promise.resolve([]);
-    //         }
-    //         return fetchSubstationPositionsByIds(
-    //             studyUuid,
-    //             currentNode?.id,
-    //             notFoundSubstationIds
-    //         );
-    //     },
-    //     [studyUuid, currentNode?.id]
-    // );
-    //
-    // const getMissingLinesPositions = useCallback(
-    //     (foundLinesPositions, allLines) => {
-    //         if (!foundLinesPositions.size) {
-    //             return Promise.resolve([]);
-    //         }
-    //         let notFoundLinesIds = [];
-    //         const foundLinesIds = Array.from(foundLinesPositions.keys());
-    //         allLines.forEach((s) => {
-    //             if (!foundLinesIds.includes(s.id)) {
-    //                 notFoundLinesIds.push(s.id);
-    //             }
-    //         });
-    //         if (notFoundLinesIds.length === 0) {
-    //             return Promise.resolve([]);
-    //         }
-    //         return fetchLinePositionsByIds(
-    //             studyUuid,
-    //             currentNode?.id,
-    //             notFoundLinesIds
-    //         );
-    //     },
-    //     [studyUuid, currentNode]
-    // );
 
     const reloadMapGeoData = useCallback(() => {
         if (studyUuid && currentNode) {

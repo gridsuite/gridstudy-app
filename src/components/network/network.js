@@ -306,11 +306,7 @@ export default class Network {
     }
 
     getSubstations() {
-        return Array.from(this.substationsById.values());
-    }
-
-    getLines() {
-        return this.lines;
+        return this.substations;
     }
 
     getSubstation(id) {
@@ -319,6 +315,10 @@ export default class Network {
 
     getNominalVoltages() {
         return this.nominalVoltages;
+    }
+
+    getLines() {
+        return this.lines;
     }
 
     getLine(id) {
@@ -460,6 +460,7 @@ export default class Network {
         );
 
         this.dispatch = dispatch;
+
         if (prefetch !== undefined) {
             this.prefetch(prefetch.equipments);
         }
