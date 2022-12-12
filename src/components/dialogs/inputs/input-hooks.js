@@ -31,6 +31,7 @@ import {
     Grid,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
+import FolderIcon from '@mui/icons-material/Folder';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
@@ -44,7 +45,7 @@ import {
 import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useParameterState } from '../parameters/parameters';
@@ -57,6 +58,8 @@ import { useAutocompleteField } from './use-autocomplete-field';
 import RegulatingTerminalEdition, {
     makeRefreshRegulatingTerminalSectionsCallback,
 } from '../regulating-terminal-edition';
+import Chip from '@mui/material/Chip';
+import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
 
 export const useInputForm = () => {
@@ -650,9 +653,9 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
                         }
                         setChecking(false);
                     })
-                    .catch((errorMessage) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'NodeUpdateError',
                         });
                     });
@@ -688,7 +691,136 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     return [error, field, isValidName, name];
 };
 
-export const useCSVPicker = ({ label, header, resetTrigger }) => {
+export const useDirectoryElements = ({
+    label,
+    initialValues,
+    elementType,
+    equipmentTypes,
+    titleId,
+    elementClassName,
+}) => {
+    const classes = useStyles();
+    const [values, setValues] = useState(initialValues);
+    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] =
+        useState(false);
+    const intl = useIntl();
+    const { snackError } = useSnackMessage();
+
+    useEffect(() => {
+        if (initialValues !== null) {
+            setValues(initialValues);
+        }
+    }, [initialValues]);
+
+    const handleDelete = useCallback(
+        (item, index) => {
+            let arr = [...values];
+            arr.splice(index, 1);
+            setValues(arr);
+        },
+        [values]
+    );
+
+    const addElements = useCallback(
+        (elements) => {
+            let elementsToAdd = [];
+            elements.forEach((element) => {
+                const { icon, children, ...elementRest } = element;
+                // check if element is already present
+                if (values.find((v) => v.id === elementRest.id) !== undefined) {
+                    snackError({
+                        messageTxt: '',
+                        headerId: 'ElementAlreadyUsed',
+                    });
+                } else {
+                    elementsToAdd.push(elementRest);
+                }
+            });
+            if (elementsToAdd.length > 0) {
+                setValues(values.concat(elementsToAdd));
+            }
+
+            setDirectoryItemSelectorOpen(false);
+        },
+        [values, snackError]
+    );
+
+    const field = useMemo(() => {
+        return (
+            <>
+                <FormControl className={classes.formDirectoryElements1}>
+                    <Grid container>
+                        <Grid item>
+                            <InputLabel
+                                id="elements"
+                                className={classes.labelDirectoryElements}
+                            >
+                                <FieldLabel label={label} optional={false} />
+                            </InputLabel>
+                        </Grid>
+                        <Grid item xs>
+                            <Grid container direction="row-reverse">
+                                <IconButton
+                                    className={classes.addDirectoryElements}
+                                    size={'small'}
+                                    onClick={() =>
+                                        setDirectoryItemSelectorOpen(true)
+                                    }
+                                >
+                                    <FolderIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <FormControl className={classes.formDirectoryElements2}>
+                        <div>
+                            {values.map((item, index) => (
+                                <Chip
+                                    className={elementClassName}
+                                    key={label + '_' + index}
+                                    size="small"
+                                    onDelete={() => handleDelete(item, index)}
+                                    label={
+                                        <OverflowableText
+                                            text={item.name}
+                                            style={{ width: '100%' }}
+                                        />
+                                    }
+                                />
+                            ))}
+                        </div>
+                    </FormControl>
+                </FormControl>
+                <DirectoryItemSelector
+                    open={directoryItemSelectorOpen}
+                    onClose={addElements}
+                    types={[elementType]}
+                    equipmentTypes={equipmentTypes}
+                    title={intl.formatMessage({ id: titleId })}
+                />
+            </>
+        );
+    }, [
+        classes.formDirectoryElements1,
+        classes.formDirectoryElements2,
+        classes.labelDirectoryElements,
+        classes.addDirectoryElements,
+        values,
+        addElements,
+        handleDelete,
+        directoryItemSelectorOpen,
+        elementType,
+        equipmentTypes,
+        intl,
+        titleId,
+        label,
+        elementClassName,
+    ]);
+
+    return [values, field];
+};
+
+export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber }) => {
     const intl = useIntl();
 
     const { CSVReader } = useCSVReader();
@@ -720,6 +852,15 @@ export const useCSVPicker = ({ label, header, resetTrigger }) => {
                                 })
                             );
                         }
+
+                        if (results.data.length > maxTapNumber) {
+                            setFileError(
+                                intl.formatMessage(
+                                    { id: 'TapPositionValueError' },
+                                    { value: maxTapNumber }
+                                )
+                            );
+                        }
                     }}
                 >
                     {({ getRootProps, acceptedFile }) => (
@@ -744,7 +885,7 @@ export const useCSVPicker = ({ label, header, resetTrigger }) => {
                 </CSVReader>
             </>
         );
-    }, [header, intl, label]);
+    }, [header, intl, label, maxTapNumber]);
 
     return [_acceptedFile, field, fileError];
 };
