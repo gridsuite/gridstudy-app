@@ -707,7 +707,10 @@ const TwoWindingsTransformerCreationDialog = ({
                     return false;
                 } else if (rows[0][columnName] < rows[1][columnName]) {
                     for (let index = 0; index < rows.length - 1; index++) {
-                        if (rows[index][columnName] >= rows[index + 1][columnName]) {
+                        if (
+                            rows[index][columnName] >=
+                            rows[index + 1][columnName]
+                        ) {
                             setCellIndexError(index + 1);
                             setCreationError(error);
                             return false;
@@ -715,7 +718,10 @@ const TwoWindingsTransformerCreationDialog = ({
                     }
                 } else if (rows[0][columnName] > rows[1][columnName]) {
                     for (let index = 0; index < rows.length - 1; index++) {
-                        if (rows[index][columnName] <= rows[index + 1][columnName]) {
+                        if (
+                            rows[index][columnName] <=
+                            rows[index + 1][columnName]
+                        ) {
                             setCellIndexError(index + 1);
                             setCreationError(error);
                             return false;
@@ -827,7 +833,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (
                 !validateTableRows(
                     ratioTapRows,
-                    "ratio",
+                    'ratio',
                     setRatioCellIndexError,
                     intl.formatMessage({ id: 'RatioValuesError' })
                 )
@@ -858,7 +864,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (
                 !validateTableRows(
                     phaseTapRows,
-                    "alpha",
+                    'alpha',
                     setPhaseCellIndexError,
                     intl.formatMessage({ id: 'PhaseShiftValuesError' })
                 )
