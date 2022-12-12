@@ -1459,7 +1459,20 @@ export function modifyGenerator(
     voltageSetpoint,
     voltageLevelId,
     busOrBusbarSectionId,
-    modificationId
+    modificationId,
+    qPercent,
+    marginalCost,
+    transientReactance,
+    transformerReactance,
+    regulatingTerminalId,
+    regulatingTerminalType,
+    regulatingTerminalVlId,
+    isReactiveCapabilityCurveOn,
+    frequencyRegulation,
+    droop,
+    maximumReactivePower,
+    minimumReactivePower,
+    reactiveCapabilityCurve
 ) {
     console.info('Modifying generator ');
     const idUrl =
@@ -1485,6 +1498,22 @@ export function modifyGenerator(
         voltageSetpoint: toModificationOperation(voltageSetpoint),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+        qPercent: toModificationOperation(qPercent),
+        marginalCost: toModificationOperation(marginalCost),
+        transientReactance: toModificationOperation(transientReactance),
+        stepUpTransformerReactance:
+            toModificationOperation(transformerReactance),
+        regulatingTerminalId: toModificationOperation(regulatingTerminalId),
+        regulatingTerminalType: toModificationOperation(regulatingTerminalType),
+        regulatingTerminalVlId: toModificationOperation(regulatingTerminalVlId),
+        reactiveCapabilityCurve: toModificationOperation(
+            isReactiveCapabilityCurveOn
+        ),
+        participate: toModificationOperation(frequencyRegulation),
+        droop: toModificationOperation(droop),
+        maximumReactivePower: toModificationOperation(maximumReactivePower),
+        minimumReactivePower: toModificationOperation(minimumReactivePower),
+        reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
     };
     return backendFetchText(modificationUrl, {
         method: 'PUT',

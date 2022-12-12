@@ -20,6 +20,7 @@ export const ReactiveCapabilityCurveReactiveRange = ({
     defaultValue,
     inputForm,
     isFieldRequired,
+    previousValue,
     disabled = false,
     customPLabel = undefined,
 }) => {
@@ -31,6 +32,7 @@ export const ReactiveCapabilityCurveReactiveRange = ({
         inputForm: inputForm,
         defaultValue: defaultValue?.p ?? '',
         formProps: { disabled: disabled },
+        previousValue: previousValue?.p,
     });
     const [qminP, qminPField] = useDoubleValue({
         label: 'QminP',
@@ -40,6 +42,7 @@ export const ReactiveCapabilityCurveReactiveRange = ({
         inputForm: inputForm,
         defaultValue: defaultValue?.qminP ?? '',
         formProps: { disabled: disabled },
+        previousValue: previousValue?.qminP,
     });
 
     const [qmaxP, qmaxPField] = useDoubleValue({
@@ -50,6 +53,7 @@ export const ReactiveCapabilityCurveReactiveRange = ({
         inputForm: inputForm,
         defaultValue: defaultValue?.qmaxP ?? '',
         formProps: { disabled: disabled },
+        previousValue: previousValue?.qmaxP,
     });
 
     useEffect(() => {

@@ -33,6 +33,17 @@ function hasValueCorrectFormat(valueToTest, index) {
     );
 }
 
+function getPreviousValue(previousValues, displayedValues, index) {
+    if (previousValues) {
+        if (index === 0) {
+            return previousValues[0];
+        } else if (index === displayedValues.length - 1) {
+            return previousValues[previousValues.length - 1];
+        }
+        return null;
+    }
+}
+
 function enforceMinimumValues(valueToTest) {
     // The goal here is to verify that there are at least two items with the correct format
     // in the provided array.
@@ -60,6 +71,7 @@ export const useReactiveCapabilityCurveTableValues = ({
     Field,
     inputForm,
     defaultValues, // format : either undefined or [{ p: '', qminP: '', qmaxP: '' }, { p: '', qminP: '', qmaxP: '' }]
+    previousValues,
     isReactiveCapabilityCurveOn,
     disabled = false,
 }) => {
@@ -162,6 +174,11 @@ export const useReactiveCapabilityCurveTableValues = ({
                                 isFieldRequired={isReactiveCapabilityCurveOn}
                                 disabled={disabled}
                                 customPLabel={customPLabel}
+                                previousValue={getPreviousValue(
+                                    previousValues,
+                                    displayedValues,
+                                    index
+                                )}
                             />
                             <Grid item xs={1}>
                                 <IconButton
@@ -196,15 +213,16 @@ export const useReactiveCapabilityCurveTableValues = ({
             </Grid>
         );
     }, [
+        tableHeadersIds,
         displayedValues,
+        previousValues,
+        handleSetValue,
+        inputForm,
+        isReactiveCapabilityCurveOn,
+        disabled,
         classes.icon,
         handleAddValue,
         handleDeleteItem,
-        handleSetValue,
-        inputForm,
-        tableHeadersIds,
-        isReactiveCapabilityCurveOn,
-        disabled,
     ]);
 
     return [values, field];

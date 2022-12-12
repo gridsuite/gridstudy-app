@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
@@ -17,6 +17,9 @@ import {
     useOptionalEnumValue,
     useInputForm,
     useTextValue,
+    useRadioValue,
+    useEnumValue,
+    useRegulatingTerminalValue,
 } from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
@@ -29,12 +32,27 @@ import {
     ReactivePowerAdornment,
     sanitizeString,
     VoltageAdornment,
+    GridSection,
+    percentageTextField,
+    OhmAdornment,
 } from './dialogUtils';
 import { Box } from '@mui/system';
-import { ENERGY_SOURCES, getEnergySourceLabel } from '../network/constants';
+import {
+    ENERGY_SOURCES,
+    getEnergySourceLabel,
+    REACTIVE_LIMIT_TYPES,
+    REGULATION_TYPES,
+} from '../network/constants';
+import {
+    REGULATING_EQUIPMENT,
+    REGULATING_VOLTAGE_LEVEL,
+} from './regulating-terminal-edition';
 import { useNullableBooleanValue } from './inputs/boolean';
 import { modifyGenerator } from '../../utils/rest-api';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import { useReactiveCapabilityCurveTableValues } from './inputs/reactive-capability-curve-table';
+import { ReactiveCapabilityCurveReactiveRange } from './reactive-capability-curve-reactive-range';
+import { checkReactiveCapabilityCurve } from '../util/validation-functions';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -62,6 +80,8 @@ const GeneratorModificationDialog = ({
     editData,
     currentNodeUuid,
     equipmentOptionsPromise,
+    voltageLevelOptionsPromise,
+    voltageLevelsEquipmentsOptionsPromise,
     ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -77,6 +97,15 @@ const GeneratorModificationDialog = ({
     const [formValues, setFormValues] = useState({});
 
     const [equipmentOptions, setEquipmentOptions] = useState([]);
+
+    const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
+
+    const [reactiveCapabilityCurveErrors, setReactiveCapabilityCurveErrors] =
+        useState([]);
+
+    const isDistantRegulation = (regulationType) => {
+        return regulationType === REGULATION_TYPES.DISTANT.id;
+    };
 
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
@@ -168,6 +197,66 @@ const GeneratorModificationDialog = ({
         clearable: true,
     });
 
+    const headerIds = [
+        'ActivePowerText',
+        'MinimumReactivePower',
+        'MaximumReactivePower',
+    ];
+
+    const [
+        reactiveCapabilityCurveChoice,
+        reactiveCapabilityCurveChoiceRadioButton,
+    ] = useRadioValue({
+        inputForm: inputForm,
+        defaultValue:
+            (getValueOrNull(formValues?.reactiveCapabilityCurve) === null &&
+                generatorInfos?.minMaxReactiveLimits !== undefined) ||
+            getValueOrNull(formValues?.reactiveCapabilityCurve) === false
+                ? 'MINMAX'
+                : 'CURVE',
+        possibleValues: REACTIVE_LIMIT_TYPES,
+    });
+
+    const isReactiveCapabilityCurveOn = useCallback(() => {
+        return reactiveCapabilityCurveChoice === 'CURVE';
+    }, [reactiveCapabilityCurveChoice]);
+
+    const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
+        useReactiveCapabilityCurveTableValues({
+            tableHeadersIds: headerIds,
+            inputForm: inputForm,
+            Field: ReactiveCapabilityCurveReactiveRange,
+            defaultValues: formValues?.reactiveCapabilityCurvePoints,
+            isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn(),
+            previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
+        });
+
+    const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
+        label: 'MinimumReactivePower',
+        validation: { isFieldRequired: reactivePowerRequired },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.minimumReactivePower),
+        previousValue:
+            generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
+    });
+
+    const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
+        label: 'MaximumReactivePower',
+        validation: { isFieldRequired: reactivePowerRequired },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.maximumReactivePower),
+        previousValue:
+            generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
+    });
+
+    useEffect(() => {
+        setReactivePowerRequired(
+            minimumReactivePower !== '' || maximumReactivePower !== ''
+        );
+    }, [minimumReactivePower, maximumReactivePower]);
+
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
         validation: {
@@ -210,9 +299,173 @@ const GeneratorModificationDialog = ({
         }
     );
 
+    const [qPercent, qPercentField] = useDoubleValue({
+        label: 'QPercentText',
+        validation: {
+            isFieldRequired: false,
+            valueGreaterThanOrEqualTo: '0',
+            valueLessThanOrEqualTo: '100',
+            errorMsgId: 'NormalizedPercentage',
+        },
+        adornment: percentageTextField,
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.qPercent),
+        previousValue: generatorInfos?.qPercent,
+    });
+
+    const withVoltageRegulationInputs = () => {
+        return (
+            <>
+                {gridItem(voltageRegulationTypeField, 4)}
+                <Box sx={{ width: '100%' }} />
+                <Grid item xs={4} justifySelf={'end'} />
+                {gridItem(voltageSetpointField, 4)}
+                <Box sx={{ width: '100%' }} />
+                {(voltageRegulation || voltageRegulation === null) &&
+                    isDistantRegulation(voltageRegulationType) && (
+                        <>
+                            <Grid item xs={4} justifySelf={'end'}>
+                                <FormattedMessage id="RegulatingTerminalGenerator" />
+                            </Grid>
+                            {gridItem(regulatingTerminalField, 8)}
+                            <Grid item xs={4} justifySelf={'end'} />
+                            {gridItem(qPercentField, 4)}
+                        </>
+                    )}
+            </>
+        );
+    };
+
+    function isPreviousRegulationDistant(generatorInfos) {
+        return getPreviousRegulationType(generatorInfos) ===
+            REGULATION_TYPES.DISTANT
+            ? true
+            : false;
+    }
+
+    function getPreviousRegulationType(generatorInfos) {
+        if (generatorInfos?.voltageRegulatorOn) {
+            return generatorInfos?.regulatingTerminalId ||
+                generatorInfos?.regulatingTerminalConnectableId
+                ? REGULATION_TYPES.DISTANT
+                : REGULATION_TYPES.LOCAL;
+        } else {
+            return null;
+        }
+    }
+
+    const [voltageRegulationType, voltageRegulationTypeField] = useEnumValue({
+        label: 'RegulationTypeText',
+        inputForm: inputForm,
+        enumValues: Object.values(REGULATION_TYPES),
+        validation: {
+            isFieldRequired: voltageRegulation,
+        },
+        defaultValue:
+            getValue(formValues?.regulatingTerminalId) ||
+            getValue(formValues?.regulatingTerminalConnectableId) ||
+            isPreviousRegulationDistant(generatorInfos)
+                ? REGULATION_TYPES.DISTANT.id
+                : REGULATION_TYPES.LOCAL.id,
+        previousValue: getPreviousRegulationType(generatorInfos),
+    });
+
+    const [regulatingTerminal, regulatingTerminalField] =
+        useRegulatingTerminalValue({
+            label: 'RegulatingTerminalGenerator',
+            validation: {
+                isFieldRequired:
+                    voltageRegulation &&
+                    isDistantRegulation(voltageRegulationType),
+            },
+            inputForm: inputForm,
+            disabled:
+                (voltageRegulation !== null && !voltageRegulation) ||
+                !isDistantRegulation(voltageRegulationType),
+            voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
+            voltageLevelIdDefaultValue:
+                getValue(formValues?.regulatingTerminalVlId) || null,
+            equipmentSectionTypeDefaultValue:
+                getValue(formValues?.regulatingTerminalConnectableType) ||
+                getValue(formValues?.regulatingTerminalType) ||
+                null,
+            equipmentSectionIdDefaultValue:
+                getValue(formValues?.regulatingTerminalConnectableId) ||
+                getValue(formValues?.regulatingTerminalId) ||
+                null,
+            previousRegulatingTerminalValue:
+                generatorInfos?.regulatingTerminalVlId,
+            previousEquipmentSectionTypeValue:
+                generatorInfos?.regulatingTerminalConnectableType +
+                ' : ' +
+                generatorInfos?.regulatingTerminalConnectableId,
+        });
+
+    useEffect(() => {
+        if (!voltageRegulation || !isDistantRegulation(voltageRegulationType)) {
+            inputForm.removeValidation(REGULATING_VOLTAGE_LEVEL);
+            inputForm.removeValidation(REGULATING_EQUIPMENT);
+        }
+    }, [voltageRegulation, voltageRegulationType, inputForm]);
+
+    let previousFrequencyRegulation = '';
+    if (generatorInfos?.activePowerControlOn)
+        previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
+    else if (
+        generatorInfos?.activePowerControlOn === false ||
+        generatorInfos?.activePowerControlOn === undefined
+    )
+        previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
+
+    const [frequencyRegulation, frequencyRegulationField] =
+        useNullableBooleanValue({
+            label: 'FrequencyRegulation',
+            inputForm: inputForm,
+            defaultValue: getValueOrNull(formValues?.participate),
+            previousValue: previousFrequencyRegulation,
+            clearable: true,
+        });
+
+    const [droop, droopField] = useDoubleValue({
+        label: 'Droop',
+        validation: { isFieldRequired: frequencyRegulation },
+        adornment: percentageTextField,
+        inputForm: inputForm,
+        formProps: {
+            disabled: frequencyRegulation !== null && !frequencyRegulation,
+        },
+        defaultValue: getValue(formValues?.droop),
+        previousValue: generatorInfos?.droop,
+    });
+
+    const [transientReactance, transientReactanceField] = useDoubleValue({
+        label: 'TransientReactance',
+        validation: { isFieldRequired: false },
+        adornment: OhmAdornment,
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.transientReactance),
+        previousValue: generatorInfos?.transientReactance,
+    });
+
+    const [transformerReactance, transformerReactanceField] = useDoubleValue({
+        label: 'TransformerReactance',
+        validation: { isFieldRequired: false },
+        adornment: OhmAdornment,
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.stepUpTransformerReactance),
+        previousValue: generatorInfos?.stepUpTransformerReactance,
+    });
+    const [marginalCost, marginalCostField] = useDoubleValue({
+        label: 'MarginalCost',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.marginalCost),
+        previousValue: generatorInfos?.marginalCost,
+    });
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
         label: 'VoltageText',
         validation: {
+            isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
             valueGreaterThan: '0',
             errorMsgId: 'VoltageGreaterThanZero',
@@ -239,8 +492,39 @@ const GeneratorModificationDialog = ({
     });
 
     const handleValidation = () => {
-        return inputForm.validate();
+        // ReactiveCapabilityCurveCreation validation
+        let isReactiveCapabilityCurveValid = true;
+        if (isReactiveCapabilityCurveOn()) {
+            const errorMessages = checkReactiveCapabilityCurve(
+                reactiveCapabilityCurve
+            );
+            isReactiveCapabilityCurveValid = errorMessages.length === 0;
+            setReactiveCapabilityCurveErrors(errorMessages);
+        } else {
+            setReactiveCapabilityCurveErrors([]);
+        }
+        return (
+            inputForm.validate() &&
+            (!isReactiveCapabilityCurveOn() || isReactiveCapabilityCurveValid)
+        );
     };
+
+    function isVoltageRegulationOn() {
+        return (
+            voltageRegulation === true ||
+            (voltageRegulation === null &&
+                generatorInfos?.voltageRegulatorOn === true)
+        );
+    }
+
+    function isFrequencyRegulationOn() {
+        return (
+            frequencyRegulation === true ||
+            (frequencyRegulation === null &&
+                generatorInfos?.activePowerControlOn === true)
+        );
+    }
+
     const handleSave = () => {
         modifyGenerator(
             studyUuid,
@@ -252,12 +536,37 @@ const GeneratorModificationDialog = ({
             maximumActivePower,
             ratedNominalPower,
             activePowerSetpoint,
-            reactivePowerSetpoint,
+            !isVoltageRegulationOn() ? reactivePowerSetpoint : null,
             voltageRegulation,
-            voltageSetpoint,
+            isVoltageRegulationOn() ? voltageSetpoint : null,
             undefined,
             undefined,
-            editData?.uuid
+            editData?.uuid,
+            isVoltageRegulationOn() &&
+                isDistantRegulation(voltageRegulationType)
+                ? qPercent
+                : null,
+            marginalCost ? marginalCost : null,
+            transientReactance ? transientReactance : null,
+            transformerReactance ? transformerReactance : null,
+            isVoltageRegulationOn() &&
+                isDistantRegulation(voltageRegulationType)
+                ? regulatingTerminal?.equipmentSection?.id
+                : null,
+            isVoltageRegulationOn() &&
+                isDistantRegulation(voltageRegulationType)
+                ? regulatingTerminal?.equipmentSection?.type
+                : null,
+            isVoltageRegulationOn() &&
+                isDistantRegulation(voltageRegulationType)
+                ? regulatingTerminal?.voltageLevel?.id
+                : null,
+            isReactiveCapabilityCurveOn(),
+            frequencyRegulation,
+            isFrequencyRegulationOn() ? droop : null,
+            isReactiveCapabilityCurveOn() ? null : maximumReactivePower,
+            isReactiveCapabilityCurveOn() ? null : minimumReactivePower,
+            isReactiveCapabilityCurveOn() ? reactiveCapabilityCurve : null
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -294,12 +603,52 @@ const GeneratorModificationDialog = ({
                         <h3 className={classes.h3}>
                             <FormattedMessage id="Limits" />
                         </h3>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="ActiveLimits" />
+                        </h4>
                     </Grid>
                 </Grid>
                 <Grid container spacing={2}>
                     {gridItem(minimumActivePowerField, 4)}
                     {gridItem(maximumActivePowerField, 4)}
                     {gridItem(ratedNominalPowerField, 4)}
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="ReactiveLimits" />
+                        </h4>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    {gridItem(reactiveCapabilityCurveChoiceRadioButton, 12)}
+                    {!isReactiveCapabilityCurveOn() &&
+                        gridItem(minimumReactivePowerField, 4)}
+                    {!isReactiveCapabilityCurveOn() &&
+                        gridItem(maximumReactivePowerField, 4)}
+                    {isReactiveCapabilityCurveOn() &&
+                        reactiveCapabilityCurveErrors.length > 0 && (
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    {reactiveCapabilityCurveErrors.map(
+                                        (messageDescriptorId) => (
+                                            <div
+                                                key={messageDescriptorId}
+                                                className={
+                                                    classes.midFormErrorMessage
+                                                }
+                                            >
+                                                <FormattedMessage
+                                                    id={messageDescriptorId}
+                                                />
+                                            </div>
+                                        )
+                                    )}
+                                </Grid>
+                            </Grid>
+                        )}
+                    {isReactiveCapabilityCurveOn() &&
+                        gridItem(reactiveCapabilityCurveField, 12)}
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -310,7 +659,6 @@ const GeneratorModificationDialog = ({
                 </Grid>
                 <Grid container spacing={2}>
                     {gridItem(activePowerSetpointField, 4)}
-                    {gridItem(reactivePowerSetpointField, 4)}
                     <Box sx={{ width: '100%' }} />
                     {gridItemWithTooltip(
                         voltageRegulationField,
@@ -321,7 +669,31 @@ const GeneratorModificationDialog = ({
                         ),
                         4
                     )}
-                    {gridItem(voltageSetpointField, 4)}
+                    {isVoltageRegulationOn()
+                        ? withVoltageRegulationInputs()
+                        : gridItem(reactivePowerSetpointField, 4)}
+                    <Box sx={{ width: '100%' }} />
+                    {gridItemWithTooltip(
+                        frequencyRegulationField,
+                        frequencyRegulation !== null ? (
+                            ''
+                        ) : (
+                            <FormattedMessage id={'NoModification'} />
+                        ),
+                        4
+                    )}
+                    {isFrequencyRegulationOn() && gridItem(droopField, 4)}
+                </Grid>
+                {/* Short-circuit part */}
+                <GridSection title="ShortCircuit" />
+                <Grid container spacing={2}>
+                    {gridItem(transientReactanceField, 4)}
+                    {gridItem(transformerReactanceField, 4)}
+                </Grid>
+                {/* Cost of start part */}
+                <GridSection title="MarginalCost" />
+                <Grid container spacing={2}>
+                    {gridItem(marginalCostField, 4)}
                 </Grid>
             </div>
         </ModificationDialog>
@@ -332,6 +704,14 @@ GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
     currentNodeUuid: PropTypes.string,
     equipmentOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
+    voltageLevelOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
+    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
