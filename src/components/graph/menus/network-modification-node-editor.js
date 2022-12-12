@@ -640,7 +640,7 @@ const NetworkModificationNodeEditor = () => {
             .then((res) => {
                 res.json().then((data) => {
                     //remove all null values to avoid showing a "null" in the forms
-                    setEditData(removeNullFields(data[0]));
+                    setEditData(removeNullFields(data));
                 });
             })
             .catch((error) => {

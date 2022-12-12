@@ -7,6 +7,7 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
+import { MODIFICATION_TYPE } from '../components/network/constants';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -730,12 +731,22 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
     console.info('updating switch ' + switchId + ' ...');
     const updateSwitchUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/switches/' +
-        encodeURIComponent(switchId) +
-        '?' +
-        new URLSearchParams({ open: open }).toString();
+        '/network-modifications';
     console.debug(updateSwitchUrl);
-    return backendFetch(updateSwitchUrl, { method: 'put' });
+    return backendFetch(updateSwitchUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/text',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPE.EQUIPMENT_ATTRIBUTE_MODIFICATION,
+            equipmentType: 'SWITCH',
+            equipmentId: switchId,
+            equipmentAttributeName: 'open',
+            equipmentAttributeValue: open,
+        }),
+    });
 }
 
 export function startLoadFlow(studyUuid, currentNodeUuid) {
@@ -1079,15 +1090,15 @@ export function cutTreeNode(
     });
 }
 
-export function deleteModifications(studyUuid, nodeUuid, modificationUuid) {
+export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modification?' +
-        new URLSearchParams({ modificationsUuids: modificationUuid });
+        '/network-modifications?uuids=' +
+        encodeURIComponent(modificationUuids);
 
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
@@ -1241,18 +1252,21 @@ export function fetchAppsAndUrls() {
 }
 
 export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
-    console.info('request network change');
+    console.info('Creating groovy script (request network change)');
     const changeUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/groovy';
+        '/network-modifications';
     console.debug(changeUrl);
     return backendFetchText(changeUrl, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/text',
         },
-        body: groovyScript,
+        body: JSON.stringify({
+            type: MODIFICATION_TYPE.GROOVY_SCRIPT,
+            script: groovyScript,
+        }),
     });
 }
 
@@ -1304,13 +1318,19 @@ export function getShortCircuitParameters(studyUuid) {
 function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
     const changeLineStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/lines/' +
-        encodeURIComponent(lineId) +
-        '/status';
+        '/network-modifications';
     console.debug('%s with body: %s', changeLineStatusUrl, status);
     return backendFetch(changeLineStatusUrl, {
-        method: 'put',
-        body: status,
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/text',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPE.BRANCH_STATUS,
+            equipmentId: lineId,
+            action: status,
+        }),
     });
 }
 
@@ -1359,19 +1379,15 @@ export function createLoad(
     connectionName,
     connectionPosition
 ) {
-    let createLoadUrl;
+    let createLoadUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (isUpdate) {
+        createLoadUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating load creation');
-        createLoadUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/loads-creation';
     } else {
-        console.info('Creating load ');
-        createLoadUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/loads';
+        console.info('Creating load creation');
     }
 
     return backendFetchText(createLoadUrl, {
@@ -1381,6 +1397,7 @@ export function createLoad(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            type: MODIFICATION_TYPE.LOAD_CREATION,
             equipmentId: id,
             equipmentName: name,
             loadType: loadType,
@@ -1408,29 +1425,25 @@ export function modifyLoad(
     isUpdate = false,
     modificationUuid
 ) {
-    console.info('Modifying load ');
-    let modifyLoadUrl;
+    let modifyLoadUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (isUpdate) {
-        console.info('Updating load creation');
-        modifyLoadUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/loads-modification';
+        modifyLoadUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating load modification');
     } else {
-        console.info('Creating load ');
-        modifyLoadUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/loads';
+        console.info('Creating load modification');
     }
 
     return backendFetchText(modifyLoadUrl, {
-        method: 'PUT',
+        method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            type: MODIFICATION_TYPE.LOAD_MODIFICATION,
             equipmentId: id,
             equipmentName: toModificationOperation(name),
             loadType: toModificationOperation(loadType),
@@ -1465,18 +1478,19 @@ export function modifyGenerator(
     busOrBusbarSectionId,
     modificationId
 ) {
-    console.info('Modifying generator ');
-    const idUrl =
-        modificationId === undefined
-            ? ''
-            : '/' + encodeURIComponent(modificationId);
-
-    const modificationUrl =
+    let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/modifications/generators-modification' +
-        idUrl;
+        '/network-modifications';
+
+    if (modificationId) {
+        modificationUrl += '/' + encodeURIComponent(modificationId);
+        console.info('Updating generator modification');
+    } else {
+        console.info('Creating generator modification');
+    }
 
     const generatorModification = {
+        type: MODIFICATION_TYPE.GENERATOR_MODIFICATION,
         equipmentId: generatorId,
         equipmentName: toModificationOperation(name),
         energySource: toModificationOperation(energySource),
@@ -1491,7 +1505,7 @@ export function modifyGenerator(
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
     };
     return backendFetchText(modificationUrl, {
-        method: 'PUT',
+        method: modificationId ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1534,19 +1548,15 @@ export function createGenerator(
     connectionName,
     connectionPosition
 ) {
-    let createGeneratorUrl;
+    let createGeneratorUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (isUpdate) {
+        createGeneratorUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating generator creation');
-        createGeneratorUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/generators-creation';
     } else {
-        console.info('Creating generator ');
-        createGeneratorUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/generators';
+        console.info('Creating generator creation');
     }
 
     return backendFetchText(createGeneratorUrl, {
@@ -1556,6 +1566,7 @@ export function createGenerator(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            type: MODIFICATION_TYPE.GENERATOR_CREATION,
             equipmentId: id,
             equipmentName: name,
             energySource: energySource,
@@ -1604,19 +1615,15 @@ export function createShuntCompensator(
     connectionName,
     connectionPosition
 ) {
-    let createShuntUrl;
+    let createShuntUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (isUpdate) {
+        createShuntUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating shunt compensator creation');
-        createShuntUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/shunt-compensators-creation';
     } else {
-        console.info('Creating shunt compensator ');
-        createShuntUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/shunt-compensators';
+        console.info('Creating shunt compensator creation');
     }
 
     return backendFetchText(createShuntUrl, {
@@ -1626,6 +1633,7 @@ export function createShuntCompensator(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            type: MODIFICATION_TYPE.SHUNT_COMPENSATOR_CREATION,
             equipmentId: shuntCompensatorId,
             equipmentName: shuntCompensatorName,
             maximumNumberOfSections: maximumNumberOfSections,
@@ -1665,20 +1673,17 @@ export function createLine(
     connectionName2,
     connectionDirection2
 ) {
-    let createLineUrl;
+    let createLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (isUpdate) {
+        createLineUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating line creation');
-        createLineUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/lines-creation';
     } else {
-        console.info('Creating line ');
-        createLineUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/lines';
+        console.info('Creating line creation');
     }
+
     return backendFetchText(createLineUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1686,6 +1691,7 @@ export function createLine(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            type: MODIFICATION_TYPE.LINE_CREATION,
             equipmentId: lineId,
             equipmentName: lineName,
             seriesResistance: seriesResistance,
@@ -1739,19 +1745,16 @@ export function createTwoWindingsTransformer(
     connectionName2,
     connectionDirection2
 ) {
-    let createTwoWindingsTransformerUrl;
+    let createTwoWindingsTransformerUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (isUpdate) {
+        createTwoWindingsTransformerUrl +=
+            '/' + encodeURIComponent(modificationUuid);
         console.info('Updating two windings transformer creation');
-        createTwoWindingsTransformerUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/two-windings-transformers-creation';
     } else {
-        console.info('Creating two windings transformer ');
-        createTwoWindingsTransformerUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/two-windings-transformers';
+        console.info('Creating two windings transformer creation');
     }
 
     return backendFetchText(createTwoWindingsTransformerUrl, {
@@ -1761,6 +1764,7 @@ export function createTwoWindingsTransformer(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            type: MODIFICATION_TYPE.TWO_WINDINGS_TRANSFORMER_CREATION,
             equipmentId: twoWindingsTransformerId,
             equipmentName: twoWindingsTransformerName,
             seriesResistance: seriesResistance,
@@ -1795,19 +1799,15 @@ export function createSubstation(
     isUpdate = false,
     modificationUuid
 ) {
-    let createSubstationUrl;
+    let createSubstationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (isUpdate) {
+        createSubstationUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating substation creation');
-        createSubstationUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/substations-creation';
     } else {
-        console.info('Creating substation ');
-        createSubstationUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/substations';
+        console.info('Creating substation creation');
     }
 
     return backendFetchText(createSubstationUrl, {
@@ -1817,6 +1817,7 @@ export function createSubstation(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            type: MODIFICATION_TYPE.SUBSTATION_CREATION,
             equipmentId: substationId,
             equipmentName: substationName,
             substationCountry:
@@ -1837,22 +1838,19 @@ export function createVoltageLevel({
     isUpdate,
     modificationUuid,
 }) {
-    let createVoltageLevelUrl;
+    let createVoltageLevelUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (isUpdate) {
+        createVoltageLevelUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating voltage level creation');
-        createVoltageLevelUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/voltage-levels-creation';
     } else {
-        console.info('Creating voltage level (stub)');
-        createVoltageLevelUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/voltage-levels';
+        console.info('Creating voltage level creation');
     }
 
     const body = JSON.stringify({
+        type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
         equipmentId: voltageLevelId,
         equipmentName: voltageLevelName,
         nominalVoltage: nominalVoltage,
@@ -1886,6 +1884,7 @@ export function divideLine(
     newLine2Name
 ) {
     const body = JSON.stringify({
+        type: MODIFICATION_TYPE.LINE_SPLIT_WITH_VOLTAGE_LEVEL,
         lineToSplitId,
         percent,
         mayNewVoltageLevelInfos,
@@ -1897,19 +1896,15 @@ export function divideLine(
         newLine2Name,
     });
 
-    let lineSplitUrl;
+    let lineSplitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (modificationUuid) {
-        console.info('Line split with voltage level update', body);
-        lineSplitUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/line-splits';
+        lineSplitUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating line split with voltage level');
     } else {
-        console.info('Line split with voltage level', body);
-        lineSplitUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/line-splits';
+        console.info('Creating line split with voltage level');
     }
 
     return backendFetchText(lineSplitUrl, {
@@ -1940,6 +1935,7 @@ export function attachLine(
     newLine2Name
 ) {
     const body = JSON.stringify({
+        type: MODIFICATION_TYPE.LINE_ATTACH_TO_VOLTAGE_LEVEL,
         lineToAttachToId,
         percent,
         attachmentPointId,
@@ -1954,19 +1950,15 @@ export function attachLine(
         newLine2Name,
     });
 
-    let lineAttachUrl;
+    let lineAttachUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (modificationUuid) {
-        console.info('Line attach to voltage level update', body);
-        lineAttachUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/line-attach';
+        lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating line attach to voltage level');
     } else {
-        console.info('Line attach to voltage level', body);
-        lineAttachUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/line-attach';
+        console.info('Creating line attach to voltage level');
     }
 
     return backendFetchText(lineAttachUrl, {
@@ -1994,6 +1986,7 @@ export function linesAttachToSplitLines(
     replacingLine2Name
 ) {
     const body = JSON.stringify({
+        type: MODIFICATION_TYPE.LINES_ATTACH_TO_SPLIT_LINES,
         lineToAttachTo1Id,
         lineToAttachTo2Id,
         attachedLineId,
@@ -2005,19 +1998,15 @@ export function linesAttachToSplitLines(
         replacingLine2Name,
     });
 
-    let lineAttachUrl;
+    let lineAttachUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (modificationUuid) {
-        console.info('Attaching lines to splitting lines update', body);
-        lineAttachUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/lines-attach-to-split-lines';
+        lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating attaching lines to splitting lines');
     } else {
-        console.info('Attaching lines to splitting lines', body);
-        lineAttachUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/lines-attach-to-split-lines';
+        console.info('Creating attaching lines to splitting lines');
     }
 
     return backendFetchText(lineAttachUrl, {
@@ -2076,28 +2065,28 @@ export function deleteEquipment(
     equipmentId,
     modificationUuid
 ) {
-    let deleteEquipmentUrl;
+    let deleteEquipmentUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
     if (modificationUuid) {
+        deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
         console.info('Updating equipment deletion');
-        deleteEquipmentUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/equipments-deletion/type/' +
-            encodeURIComponent(equipmentType) +
-            '/id/' +
-            encodeURIComponent(equipmentId);
     } else {
         console.info('Creating equipment deletion');
-        deleteEquipmentUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/equipments/type/' +
-            encodeURIComponent(equipmentType) +
-            '/id/' +
-            encodeURIComponent(equipmentId);
     }
+
     return backendFetch(deleteEquipmentUrl, {
-        method: modificationUuid ? 'PUT' : 'DELETE',
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPE.EQUIPMENT_DELETION,
+            equipmentId: equipmentId,
+            equipmentType: equipmentType,
+        }),
     });
 }
 
@@ -2118,7 +2107,7 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modification/modifications';
+        '/network-modifications';
 
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
@@ -2127,7 +2116,7 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
 export function fetchNetworkModification(modificationUuid) {
     const modificationFetchUrl =
         PREFIX_NETWORK_MODIFICATION_QUERIES +
-        '/v1/modifications/' +
+        '/v1/network-modifications/' +
         encodeURIComponent(modificationUuid);
     console.debug(modificationFetchUrl);
     return backendFetch(modificationFetchUrl);
