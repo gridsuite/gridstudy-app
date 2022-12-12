@@ -295,12 +295,12 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingValue',
-                dataKey: 'regulatingValue',
+                dataKey: 'regulationValue',
                 numeric: true,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
                 cellDataGetter: (cellData) => {
-                    return cellData?.phaseTapChanger?.regulatingValue;
+                    return cellData?.phaseTapChanger?.regulationValue;
                 },
             },
         ],

@@ -422,9 +422,9 @@ const NetworkModificationNodeEditor = () => {
                     setModifications(res);
                 }
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                 });
             })
             .finally(() => {
@@ -640,12 +640,12 @@ const NetworkModificationNodeEditor = () => {
             .then((res) => {
                 res.json().then((data) => {
                     //remove all null values to avoid showing a "null" in the forms
-                    setEditData(removeNullFields(data[0]));
+                    setEditData(removeNullFields(data));
                 });
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                 });
             });
     };
@@ -679,9 +679,9 @@ const NetworkModificationNodeEditor = () => {
                 currentTreeNode?.id,
                 item.uuid,
                 before
-            ).catch((errorMessage) => {
+            ).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'errReorderModificationMsg',
                 });
                 setModifications(modifications); // rollback

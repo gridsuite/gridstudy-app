@@ -45,7 +45,7 @@ import {
 import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useParameterState } from '../parameters/parameters';
@@ -60,7 +60,6 @@ import RegulatingTerminalEdition, {
 } from '../regulating-terminal-edition';
 import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
-import { OverflowableText } from '@gridsuite/commons-ui';
 import { useCSVReader } from 'react-papaparse';
 
 export const useInputForm = () => {
@@ -654,9 +653,9 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
                         }
                         setChecking(false);
                     })
-                    .catch((errorMessage) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'NodeUpdateError',
                         });
                     });
