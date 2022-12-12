@@ -493,6 +493,7 @@
     "ReplacingLines": "Replacing lines",
     "LineDivisionError": "Error while puting a voltage level amidst a line",
     "LineAttachmentError": "Error while attaching a voltage level to a line",
+    "LoadScalableError": "Error while creating a load scalable",
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
@@ -657,5 +658,14 @@
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
     "Bottom": "Bottom",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value"
+    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value",
+    "DeltaP": "Δ P",
+    "PTarget": "Target P",
+    "CreateVariation": "Add Variation",
+    "ActiveVariationMode": "Active variation mode",
+    "RegularDistribution": "Regular distribution",
+    "TanFixed": "tan(φ) fixed",
+    "ConstantQWithoutUnit": "Constant Q",
+    "Variations": "Variations",
+    "LoadScalable": "Load scalable"
 }

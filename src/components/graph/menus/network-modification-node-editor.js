@@ -62,6 +62,7 @@ import {
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
+import LoadScalableDialog from '../../dialogs/load-scalable-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -370,6 +371,12 @@ const NetworkModificationNodeEditor = () => {
                     withLines,
                     withSubstations
                 ),
+            icon: <AddIcon />,
+        },
+        LOAD_SCALABLE: {
+            label: 'LoadScalable',
+            dialog: () =>
+                adapt(LoadScalableDialog, withVLs, withLines, withSubstations),
             icon: <AddIcon />,
         },
         EQUIPMENT_DELETION: {

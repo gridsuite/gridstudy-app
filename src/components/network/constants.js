@@ -64,6 +64,22 @@ export const REACTIVE_LIMIT_TYPES = [
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
 ];
 
+export const LOAD_SCALABLE_TYPES = [
+    { id: 'DELTA_P', label: 'DeltaP' },
+    { id: 'TARGET_P', label: 'PTarget' },
+];
+
+export const ACTIVE_VARIATION_MODE = [
+    { id: 'PROPORTIONAL', label: 'Proportional' },
+    { id: 'REGULAR_DISTRIBUTION', label: 'RegularDistribution' },
+    { id: 'VENTILATION', label: 'Ventilation' },
+];
+
+export const REACTIVE_VARIATION_MODE = [
+    { id: 'CONSTANT_Q', label: 'ConstantQ' },
+    { id: 'TAN_FIXED', label: 'TanFixed' },
+];
+
 export function getLoadTypeLabel(loadTypeId) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
 }

@@ -2107,6 +2107,47 @@ export function attachLine(
     );
 }
 
+export function loadScalable(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    loadScalableChoice,
+    variations
+) {
+    const body = JSON.stringify({
+        loadScalableChoice,
+        variations,
+    });
+
+    let lineAttachUrl;
+    if (modificationUuid) {
+        console.info('load scalable update', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/load-scalable';
+    } else {
+        console.info('create load scalable', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modification/load-scalable';
+    }
+
+    return backendFetch(lineAttachUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function linesAttachToSplitLines(
     studyUuid,
     currentNodeUuid,

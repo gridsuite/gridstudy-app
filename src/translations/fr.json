@@ -493,6 +493,7 @@
     "ReplacingLines": "Liaisons de remplacement",
     "LineDivisionError": "Erreur lors de la création d'une coupure",
     "LineAttachmentError": "Erreur lors de la création d'un piquage",
+    "LoadScalableError": "Erreur lors de la création de Variation plan de consommation",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
@@ -657,5 +658,14 @@
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
     "Bottom": "Bas",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut"
+    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
+    "DeltaP": "Δ P",
+    "PTarget": "P cible",
+    "CreateVariation": "Ajouter Variation",
+    "ActiveVariationMode": "Mode variation de l'actif",
+    "RegularDistribution": "Équipartition",
+    "TanFixed": "tan(φ) fixe",
+    "ConstantQWithoutUnit": "Q constant",
+    "Variations": "Variations",
+    "LoadScalable": "Variation plan de consommation"
 }
