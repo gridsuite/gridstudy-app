@@ -1265,7 +1265,7 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
             type: MODIFICATION_TYPE.GROOVY_SCRIPT,
             script: groovyScript,
         }),
-    })
+    });
 }
 
 export function setLoadFlowParameters(studyUuid, newParams) {
