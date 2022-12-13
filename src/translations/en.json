@@ -529,7 +529,7 @@
     "IncoherentRatioRegulatingTerminalError": "The ratio tap Regulating terminal value must be filled",
     "IncoherentPhaseRegulatingTerminalError": "The phase tap Regulating terminal value must be filled",
     "RatioValuesError": "The values of the ratio tap ratios must be ordered and without duplicates",
-    "PhaseShiftValuesError": "The values of the phase tap ratios must be ordered and without duplicates",
+    "PhaseShiftValuesError": "The values of the phase tap shifts must be ordered and without duplicates",
     "TapPositionValueError": "The high tap position must not exceed the value {value}",
 
     "Tap":"Tap",

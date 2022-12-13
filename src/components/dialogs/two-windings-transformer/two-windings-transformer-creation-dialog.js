@@ -4,21 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Tab, Tabs, Grid, Alert } from '@mui/material';
+import { Alert, Box, Grid, Tab, Tabs } from '@mui/material';
 import ModificationDialog from '../modificationDialog';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage, EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
 import { createTwoWindingsTransformer } from '../../../utils/rest-api';
 import {
     useDoubleValue,
     useEnumValue,
+    useInputForm,
     useIntegerValue,
     useRegulatingTerminalValue,
     useTextValue,
-    useInputForm,
 } from '../inputs/input-hooks';
 import EquipmentSearchDialog from '../equipment-search-dialog';
 import { useFormSearchCopy } from '../form-search-copy-hook';
@@ -30,12 +30,12 @@ import {
     ActivePowerAdornment,
     AmpereAdornment,
     filledTextField,
+    MicroSusceptanceAdornment,
     MVAPowerAdornment,
     OhmAdornment,
-    MicroSusceptanceAdornment,
-    VoltageAdornment,
     sanitizeString,
     toIntOrEmptyValue,
+    VoltageAdornment,
 } from '../dialogUtils';
 import {
     REGULATION_MODES,
@@ -698,32 +698,41 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     }, [editData]);
 
-    const validateTableRows = useCallback((rows, setCellIndexError, error) => {
-        if (rows.length > 1) {
-            if (rows[0].ratio === rows[1].ratio) {
-                setCellIndexError(1);
-                setCreationError(error);
-                return false;
-            } else if (rows[0].ratio < rows[1].ratio) {
-                for (let index = 0; index < rows.length - 1; index++) {
-                    if (rows[index].ratio >= rows[index + 1].ratio) {
-                        setCellIndexError(index + 1);
-                        setCreationError(error);
-                        return false;
+    const validateTableRows = useCallback(
+        (rows, columnName, setCellIndexError, error) => {
+            if (rows.length > 1) {
+                if (rows[0][columnName] === rows[1][columnName]) {
+                    setCellIndexError(1);
+                    setCreationError(error);
+                    return false;
+                } else if (rows[0][columnName] < rows[1][columnName]) {
+                    for (let index = 0; index < rows.length - 1; index++) {
+                        if (
+                            rows[index][columnName] >=
+                            rows[index + 1][columnName]
+                        ) {
+                            setCellIndexError(index + 1);
+                            setCreationError(error);
+                            return false;
+                        }
                     }
-                }
-            } else if (rows[0].ratio > rows[1].ratio) {
-                for (let index = 0; index < rows.length - 1; index++) {
-                    if (rows[index].ratio <= rows[index + 1].ratio) {
-                        setCellIndexError(index + 1);
-                        setCreationError(error);
-                        return false;
+                } else if (rows[0][columnName] > rows[1][columnName]) {
+                    for (let index = 0; index < rows.length - 1; index++) {
+                        if (
+                            rows[index][columnName] <=
+                            rows[index + 1][columnName]
+                        ) {
+                            setCellIndexError(index + 1);
+                            setCreationError(error);
+                            return false;
+                        }
                     }
                 }
             }
-        }
-        return true;
-    }, []);
+            return true;
+        },
+        []
+    );
 
     const validateTapRows = useCallback(() => {
         setCreationError();
@@ -824,6 +833,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (
                 !validateTableRows(
                     ratioTapRows,
+                    'ratio',
                     setRatioCellIndexError,
                     intl.formatMessage({ id: 'RatioValuesError' })
                 )
@@ -854,6 +864,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (
                 !validateTableRows(
                     phaseTapRows,
+                    'alpha',
                     setPhaseCellIndexError,
                     intl.formatMessage({ id: 'PhaseShiftValuesError' })
                 )
