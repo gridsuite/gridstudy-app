@@ -45,7 +45,8 @@ import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 
-const loadingWidth = 150;
+const loadingWidth = 200;
+const loadingHeight = 250;
 const maxWidth = 1200;
 const maxHeight = 650;
 const minWidth = 500;
@@ -62,17 +63,12 @@ const useStyles = makeStyles((theme) => ({
             display: 'block',
             width: '100%',
         },
-        '&  .nad-text-nodes': {
-            fill: theme.palette.text.primary,
+        '& .nad-label-box': {
+            color: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
-
-        '&  .nad-edge-infos text': {
-            stroke: theme.palette.background.default,
-        },
-
-        '&  .nad-branch-edges circle': {
-            fill: theme.palette.background.default,
+        '& .nad-text-edges': {
+            stroke: theme.palette.text.primary,
         },
 
         overflow: 'hidden',
@@ -388,9 +384,9 @@ const SizedNetworkAreaDiagram = (props) => {
             className={classes.paperBorders}
             style={{
                 pointerEvents: 'auto',
-                width: sizeWidth,
+                width: loadingState ? loadingWidth : sizeWidth,
                 minWidth: loadingState ? loadingWidth : 0,
-                height: sizeHeight,
+                height: loadingState ? loadingHeight : sizeHeight,
                 position: 'relative',
                 direction: 'ltr',
                 overflow: 'hidden',
@@ -485,8 +481,11 @@ const SizedNetworkAreaDiagram = (props) => {
 };
 
 const NetworkAreaDiagram = (props) => {
+    // Hack : A key is added to the AutoSizer to force an update when the panel's size changes,
+    // instead of only calculating the size on first load and keeping it after that.
+    const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     return (
-        <AutoSizer>
+        <AutoSizer key={studyDisplayMode}>
             {({ width, height }) => (
                 <SizedNetworkAreaDiagram
                     totalWidth={width}

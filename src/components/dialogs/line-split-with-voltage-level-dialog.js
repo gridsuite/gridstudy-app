@@ -39,6 +39,7 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import { MODIFICATION_TYPE } from '../network/constants';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -352,6 +353,7 @@ const LineSplitWithVoltageLevelDialog = ({
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
+                    type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
@@ -372,9 +374,10 @@ const LineSplitWithVoltageLevelDialog = ({
                     setBusOrBusbarSectionOptions(busbarSections);
                     setBbsOrNodeId(busbarSections[0].id);
                 }
+                inputForm.setHasChanged(true);
             });
         },
-        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId]
+        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId, inputForm]
     );
 
     const onVoltageLevelDialogClose = () => {
