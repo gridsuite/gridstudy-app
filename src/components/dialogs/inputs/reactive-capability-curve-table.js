@@ -145,12 +145,11 @@ export const useReactiveCapabilityCurveTableValues = ({
 
                 {displayedValues.map((value, index, displayedValues) => {
                     const id = getId(value);
-                    const labelSuffix =
-                        index === 0
-                            ? 'min'
-                            : index === displayedValues.length - 1
-                            ? 'max'
-                            : index;
+                    let labelSuffix;
+                    if (index === 0) labelSuffix = 'min';
+                    else if (index === displayedValues.length - 1)
+                        labelSuffix = 'max';
+                    else labelSuffix = index.toString();
                     return (
                         <Grid key={id + index} container spacing={3} item>
                             <Field
