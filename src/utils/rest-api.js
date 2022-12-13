@@ -1327,7 +1327,7 @@ function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
         body: JSON.stringify({
             type: MODIFICATION_TYPE.BRANCH_STATUS,
             equipmentId: lineId,
-            action: status,
+            action: status.toUpperCase(),
         }),
     });
 }
