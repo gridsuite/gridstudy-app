@@ -6,35 +6,16 @@
  */
 
 import { useNodeData } from './study-container';
-import {
-    fetchSensitivityAnalysisResult,
-    fetchSensitivityAnalysisResultTabbed,
-} from '../utils/rest-api';
+import { fetchSensitivityAnalysisResultTabbed } from '../utils/rest-api';
 import WaitingLoader from './util/waiting-loader';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import ReactJson from 'react-json-view';
-import {
-    CHANGE_WAYS,
-    KeyedColumnsRowIndexer,
-    LIGHT_THEME,
-} from '@gridsuite/commons-ui';
+import { CHANGE_WAYS, KeyedColumnsRowIndexer } from '@gridsuite/commons-ui';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { useSelector } from 'react-redux';
-import { PARAM_THEME } from '../utils/config-params';
 import { FormattedMessage } from 'react-intl/lib';
-import makeStyles from '@mui/styles/makeStyles';
 import { TablePagination } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
-
-const useStyles = makeStyles((theme) => ({
-    jsonResult: {
-        overflowY: 'auto',
-        maxHeight: '60rem',
-        lineHeight: 'normal',
-    },
-}));
 
 const sensitivityAnalysisResultInvalidations = ['sensitivityAnalysisResult'];
 
@@ -54,8 +35,6 @@ const PAGE_OPTIONS = Object.freeze([
 const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[1];
 
 export const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
-    const selectedTheme = useSelector((state) => state[PARAM_THEME]);
-
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKindIndex, setSensiKindIndex] = useState(0);
 
@@ -65,7 +44,7 @@ export const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         () => (
             <>
                 <PagedSensitivityResult
-                    nOrNkIndex={nOrNkIndex - 1}
+                    nOrNkIndex={nOrNkIndex}
                     sensiKindIndex={sensiKindIndex}
                     studyUuid={studyUuid}
                     nodeUuid={nodeUuid}
@@ -77,28 +56,18 @@ export const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
 
     return (
         <>
+            <SensibilityTabs
+                sensiKindIndex={sensiKindIndex}
+                setSensiKindIndex={setSensiKindIndex}
+            />
             <Tabs
                 value={nOrNkIndex}
                 onChange={(event, newTabIndex) => setNOrNkIndex(newTabIndex)}
             >
-                <Tab label="all json" />
                 <Tab label="N" />
                 <Tab label="N-K" />
             </Tabs>
-            {nOrNkIndex > 0 && (
-                <SensibilityTabs
-                    sensiKindIndex={sensiKindIndex}
-                    setSensiKindIndex={setSensiKindIndex}
-                />
-            )}
-            {nOrNkIndex === 0 && (
-                <JsonTree
-                    selectedTheme={selectedTheme}
-                    studyUuid={studyUuid}
-                    nodeUuid={nodeUuid}
-                />
-            )}
-            {nOrNkIndex > 0 && pagedSensitivityResult}
+            {pagedSensitivityResult}
         </>
     );
 };
@@ -367,37 +336,5 @@ function SensibilityTabs({ sensiKindIndex, setSensiKindIndex }) {
             <Tab label={<FormattedMessage id={'SensitivityInDeltaA'} />} />
             <Tab label={<FormattedMessage id={'SensitivityAtNode'} />} />
         </Tabs>
-    );
-}
-
-function JsonTree({ selectedTheme, studyUuid, nodeUuid }) {
-    const fetcher = useCallback((studyUuid, nodeUuid) => {
-        return fetchSensitivityAnalysisResult(studyUuid, nodeUuid);
-    }, []);
-
-    const [fetched, isLoading] = useNodeData(
-        studyUuid,
-        nodeUuid,
-        fetcher,
-        sensitivityAnalysisResultInvalidations
-    );
-
-    const classes = useStyles();
-    return (
-        <WaitingLoader message={'LoadingRemoteData'} loading={isLoading}>
-            <div className={classes.jsonResult}>
-                <ReactJson
-                    src={fetched}
-                    onEdit={false}
-                    onAdd={false}
-                    onDelete={false}
-                    theme={
-                        selectedTheme === LIGHT_THEME
-                            ? 'rjv-default'
-                            : 'monokai'
-                    }
-                />
-            </div>
-        </WaitingLoader>
     );
 }
