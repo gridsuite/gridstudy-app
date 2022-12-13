@@ -1010,6 +1010,8 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const handlePhaseTapRows = (rows) => {
         setPhaseTapRows(rows);
+        // temp fix to be able to validate form when the rows change
+        phaseTapInputForm.setHasChanged(true);
     };
 
     const getTabIndicatorClass = (index) =>
