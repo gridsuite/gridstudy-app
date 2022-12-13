@@ -229,9 +229,9 @@ const SubstationCreationDialog = ({
             editData ? true : false,
             editData ? editData.uuid : undefined,
             additionalProps
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'SubstationCreationError',
             });
         });

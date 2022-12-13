@@ -521,6 +521,7 @@
     "LowTapPosition":"Prise min",
     "HighTapPosition":"Prise max",
     "TapPosition":"Prise courante",
+    "HighTapPositionError": "La valeur de la prise max doit être comprise entre la prise min et 100",
     "TapPositionBetweenLowAndHighTapPositionValue": "La valeur de la prise courante doit être comprise entre la valeur de Prise min et Prise max",
     "TerminalRef":"Terminal réglé",
     "GenerateRatioTapRowsError": "Veuillez générer les prises du régleur",
@@ -532,7 +533,7 @@
     "IncoherentRatioRegulatingTerminalError": "La valeur du Terminal distant réglé du régleur doit être renseignée",
     "IncoherentPhaseRegulatingTerminalError": "La valeur du Terminal distant réglé du déphaseur doit être renseignée",
     "RatioValuesError": "Les rapports de transformation doivent être ordonnés et sans duplication",
-    "PhaseShiftValuesError": "les valeurs de déphasage doivent être ordonnés et sans duplication",
+    "PhaseShiftValuesError": "Les valeurs de déphasage doivent être ordonnés et sans duplication",
     "TapPositionValueError": "La prise maximale ne doit pas dépasser la valeur {value}",
 
     "Tap":"Prise",

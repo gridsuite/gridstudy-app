@@ -4,21 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Tab, Tabs, Grid, Alert } from '@mui/material';
+import { Alert, Box, Grid, Tab, Tabs } from '@mui/material';
 import ModificationDialog from '../modificationDialog';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
 import { createTwoWindingsTransformer } from '../../../utils/rest-api';
 import {
     useDoubleValue,
     useEnumValue,
+    useInputForm,
     useIntegerValue,
     useRegulatingTerminalValue,
     useTextValue,
-    useInputForm,
 } from '../inputs/input-hooks';
 import EquipmentSearchDialog from '../equipment-search-dialog';
 import { useFormSearchCopy } from '../form-search-copy-hook';
@@ -30,18 +30,18 @@ import {
     ActivePowerAdornment,
     AmpereAdornment,
     filledTextField,
+    MicroSusceptanceAdornment,
     MVAPowerAdornment,
     OhmAdornment,
-    MicroSusceptanceAdornment,
-    VoltageAdornment,
     sanitizeString,
+    toIntOrEmptyValue,
+    VoltageAdornment,
 } from '../dialogUtils';
 import {
     REGULATION_MODES,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../../network/constants';
 import { useBooleanValue } from '../inputs/boolean';
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import clsx from 'clsx';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -112,6 +112,13 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [ratioCellIndexError, setRatioCellIndexError] = useState(undefined);
     const [phaseCellIndexError, setPhaseCellIndexError] = useState(undefined);
+
+    const computeHighTapPosition = (steps) => {
+        const values = steps?.map((step) => step.tap);
+        return Array.isArray(values) && values.length > 0
+            ? Math.max(...values)
+            : undefined;
+    };
 
     // CHARACTERISTICS TAP PANE
 
@@ -344,11 +351,12 @@ const TwoWindingsTransformerCreationDialog = ({
                 formValues?.ratioTapChanger?.regulatingTerminalId ?? '',
         });
 
-    const [ratioLowTapPosition, ratioLowTapPositionField] = useDoubleValue({
+    const [ratioLowTapPosition, ratioLowTapPositionField] = useIntegerValue({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.lowTapPosition,
         formProps: {
@@ -356,13 +364,18 @@ const TwoWindingsTransformerCreationDialog = ({
         },
     });
 
-    const [ratioHighTapPosition, ratioHighTapPositionField] = useDoubleValue({
+    const [ratioHighTapPosition, ratioHighTapPositionField] = useIntegerValue({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
-            isValueLessOrEqualTo: MAX_TAP_NUMBER,
+            valueLessThanOrEqualTo: MAX_TAP_NUMBER,
+            valueGreaterThanOrEqualTo: ratioLowTapPosition,
+            errorMsgId: 'HighTapPositionError',
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
+        defaultValue:
+            (isCopy || editData) && computeHighTapPosition(ratioTapRows),
         formProps: {
             disabled: !ratioTapChangerEnabled,
         },
@@ -372,10 +385,13 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
-            valueGreaterThan: ratioLowTapPosition - 1,
-            valueLessThanOrEqualTo: ratioHighTapPosition,
+            valueGreaterThanOrEqualTo: ratioLowTapPosition,
+            valueLessThanOrEqualTo: ratioHighTapPosition
+                ? ratioHighTapPosition
+                : computeHighTapPosition(ratioTapRows),
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.tapPosition,
         formProps: {
@@ -491,33 +507,43 @@ const TwoWindingsTransformerCreationDialog = ({
                 formValues?.phaseTapChanger?.regulatingTerminalId ?? '',
         });
 
-    const [phaseLowTapPosition, phaseLowTapPositionField] = useDoubleValue({
+    const [phaseLowTapPosition, phaseLowTapPositionField] = useIntegerValue({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.lowTapPosition,
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
-    const [phaseHighTapPosition, phaseHighTapPositionField] = useDoubleValue({
+    const [phaseHighTapPosition, phaseHighTapPositionField] = useIntegerValue({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled && !editData && !isCopy,
+            valueLessThanOrEqualTo: MAX_TAP_NUMBER,
+            valueGreaterThanOrEqualTo: phaseLowTapPosition,
+            errorMsgId: 'HighTapPositionError',
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
+        defaultValue:
+            (isCopy || editData) && computeHighTapPosition(phaseTapRows),
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
-    const [phaseTapPosition, phaseTapPositionField] = useDoubleValue({
+    const [phaseTapPosition, phaseTapPositionField] = useIntegerValue({
         label: 'TapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
-            valueGreaterThan: phaseLowTapPosition - 1,
-            valueLessThanOrEqualTo: phaseHighTapPosition,
+            valueGreaterThanOrEqualTo: phaseLowTapPosition,
+            valueLessThanOrEqualTo: phaseHighTapPosition
+                ? phaseHighTapPosition
+                : computeHighTapPosition(phaseTapRows),
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.tapPosition,
         formProps: { disabled: !phaseTapChangerEnabled },
@@ -539,6 +565,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     };
                 })
             );
+        } else {
+            setRatioTapRows([]);
         }
 
         if (twt.phaseTapChanger?.steps) {
@@ -556,6 +584,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     };
                 })
             );
+        } else {
+            setPhaseTapRows([]);
         }
 
         setIsCopy(true);
@@ -668,32 +698,41 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     }, [editData]);
 
-    const validateTableRows = useCallback((rows, setCellIndexError, error) => {
-        if (rows.length > 1) {
-            if (rows[0].ratio === rows[1].ratio) {
-                setCellIndexError(1);
-                setCreationError(error);
-                return false;
-            } else if (rows[0].ratio < rows[1].ratio) {
-                for (let index = 0; index < rows.length - 1; index++) {
-                    if (rows[index].ratio >= rows[index + 1].ratio) {
-                        setCellIndexError(index + 1);
-                        setCreationError(error);
-                        return false;
+    const validateTableRows = useCallback(
+        (rows, columnName, setCellIndexError, error) => {
+            if (rows.length > 1) {
+                if (rows[0][columnName] === rows[1][columnName]) {
+                    setCellIndexError(1);
+                    setCreationError(error);
+                    return false;
+                } else if (rows[0][columnName] < rows[1][columnName]) {
+                    for (let index = 0; index < rows.length - 1; index++) {
+                        if (
+                            rows[index][columnName] >=
+                            rows[index + 1][columnName]
+                        ) {
+                            setCellIndexError(index + 1);
+                            setCreationError(error);
+                            return false;
+                        }
                     }
-                }
-            } else if (rows[0].ratio > rows[1].ratio) {
-                for (let index = 0; index < rows.length - 1; index++) {
-                    if (rows[index].ratio <= rows[index + 1].ratio) {
-                        setCellIndexError(index + 1);
-                        setCreationError(error);
-                        return false;
+                } else if (rows[0][columnName] > rows[1][columnName]) {
+                    for (let index = 0; index < rows.length - 1; index++) {
+                        if (
+                            rows[index][columnName] <=
+                            rows[index + 1][columnName]
+                        ) {
+                            setCellIndexError(index + 1);
+                            setCreationError(error);
+                            return false;
+                        }
                     }
                 }
             }
-        }
-        return true;
-    }, []);
+            return true;
+        },
+        []
+    );
 
     const validateTapRows = useCallback(() => {
         setCreationError();
@@ -794,6 +833,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (
                 !validateTableRows(
                     ratioTapRows,
+                    'ratio',
                     setRatioCellIndexError,
                     intl.formatMessage({ id: 'RatioValuesError' })
                 )
@@ -824,6 +864,7 @@ const TwoWindingsTransformerCreationDialog = ({
             if (
                 !validateTableRows(
                     phaseTapRows,
+                    'alpha',
                     setPhaseCellIndexError,
                     intl.formatMessage({ id: 'PhaseShiftValuesError' })
                 )
@@ -948,9 +989,9 @@ const TwoWindingsTransformerCreationDialog = ({
             connectivity2?.connectionName?.id ?? null,
             connectivity2?.connectionDirection?.id ??
                 UNDEFINED_CONNECTION_DIRECTION
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'TwoWindingsTransformerCreationError',
             });
         });
