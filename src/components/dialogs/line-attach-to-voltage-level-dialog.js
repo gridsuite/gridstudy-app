@@ -39,6 +39,7 @@ import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import { MODIFICATION_TYPE } from '../network/constants';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -271,11 +272,16 @@ const LineAttachToVoltageLevelDialog = ({
         return lineData;
     }, [attachmentLine, formValues]);
 
+    // This field has to be disabled but must be validated, because
+    // it is automatically filled when creating an attached line.
     const [, lineToIdField] = useTextValue({
         id: 'attachedLineId',
         label: 'AttachedLineId',
         inputForm: inputForm,
-        validation: { isFieldRequired: true },
+        validation: {
+            forceValidation: true,
+            isFieldRequired: true,
+        },
         defaultValue: lineToEdit?.equipmentId,
         formProps: { disabled: true },
     });
@@ -353,9 +359,9 @@ const LineAttachToVoltageLevelDialog = ({
             newLine1Name || null,
             newLine2Id,
             newLine2Name || null
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'LineAttachmentError',
             });
         });
@@ -379,6 +385,7 @@ const LineAttachToVoltageLevelDialog = ({
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
+                    type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
@@ -399,9 +406,10 @@ const LineAttachToVoltageLevelDialog = ({
                     setBusOrBusbarSectionOptions(busbarSections);
                     setBbsOrNodeId(busbarSections[0].id);
                 }
+                inputForm.setHasChanged(true);
             });
         },
-        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId]
+        [bbsOrNodeId, setBbsOrNodeId, setVoltageLevelOrId, inputForm]
     );
 
     const onVoltageLevelDialogClose = () => {
@@ -435,6 +443,7 @@ const LineAttachToVoltageLevelDialog = ({
         ) => {
             return new Promise(() => {
                 const preparedLine = {
+                    type: MODIFICATION_TYPE.LINE_CREATION,
                     equipmentId: lineId,
                     equipmentName: lineName,
                     seriesResistance: seriesResistance,
@@ -451,9 +460,10 @@ const LineAttachToVoltageLevelDialog = ({
                     },
                 };
                 setAttachmentLine(preparedLine);
+                inputForm.setHasChanged(true);
             });
         },
-        []
+        [inputForm]
     );
 
     const onLineDialogClose = () => {

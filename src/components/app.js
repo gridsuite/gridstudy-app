@@ -29,7 +29,6 @@ import {
     selectDiagonalLabelState,
     selectDisplayOverloadTableState,
     selectFavoriteContingencyLists,
-    selectFavoriteSensiContingencyLists,
     selectLanguage,
     selectLineFlowAlertThreshold,
     selectLineFlowColorMode,
@@ -40,8 +39,6 @@ import {
     selectTheme,
     selectUseName,
     selectFluxConvention,
-    selectFavoriteSensiVariablesFiltersLists,
-    selectFavoriteSensiBranchFiltersLists,
     selectMapManualRefresh,
     selectEnableDeveloperMode,
 } from '../redux/actions';
@@ -52,6 +49,7 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     setShowAuthenticationRouterLogin,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -82,9 +80,6 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FLUX_CONVENTION,
-    PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
-    PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
@@ -96,7 +91,6 @@ import {
 } from './network/config-tables';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import { StudyContainer } from './study-container';
 
 const noUserManager = { instance: null, error: null };
@@ -221,27 +215,6 @@ const App = () => {
                             )
                         );
                         break;
-                    case PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS:
-                        dispatch(
-                            selectFavoriteSensiVariablesFiltersLists(
-                                param.value.split(',')
-                            )
-                        );
-                        break;
-                    case PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS:
-                        dispatch(
-                            selectFavoriteSensiContingencyLists(
-                                param.value.split(',')
-                            )
-                        );
-                        break;
-                    case PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS:
-                        dispatch(
-                            selectFavoriteSensiBranchFiltersLists(
-                                param.value.split(',')
-                            )
-                        );
-                        break;
                     default:
                         if (
                             param.name.startsWith(
@@ -314,9 +287,9 @@ const App = () => {
             if (eventData.headers && eventData.headers['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
                     .then((param) => updateParams([param]))
-                    .catch((errorMessage) =>
+                    .catch((error) =>
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'paramsRetrievingError',
                         })
                     );
@@ -394,9 +367,9 @@ const App = () => {
         if (user !== null) {
             fetchConfigParameters(COMMON_APP_NAME)
                 .then((params) => updateParams(params))
-                .catch((errorMessage) =>
+                .catch((error) =>
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'paramsRetrievingError',
                     })
                 );
@@ -424,16 +397,16 @@ const App = () => {
                             );
                             updateParams(params);
                         })
-                        .catch((errorMessage) => {
+                        .catch((error) => {
                             snackError({
-                                messageTxt: errorMessage,
+                                messageTxt: error.message,
                                 headerId: 'paramsRetrievingError',
                             });
                         });
                 })
-                .catch((errorMessage) =>
+                .catch((error) =>
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'paramsRetrievingError',
                     })
                 );

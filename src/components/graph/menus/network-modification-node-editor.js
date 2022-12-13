@@ -171,6 +171,7 @@ const NetworkModificationNodeEditor = () => {
 
     const cleanClipboard = () => {
         if (copiedModifications.length <= 0) return;
+        setCopyInfos(null);
         setCopiedModifications([]);
         snackInfo({
             messageId: 'CopiedModificationInvalidationMessage',
@@ -318,6 +319,7 @@ const NetworkModificationNodeEditor = () => {
             icon: <AddIcon />,
         },
         TWO_WINDINGS_TRANSFORMER_CREATION: {
+            onlyDeveloperMode: true,
             label: 'CreateTwoWindingsTransformer',
             dialog: () =>
                 adapt(
@@ -409,6 +411,8 @@ const NetworkModificationNodeEditor = () => {
     );
 
     const dofetchNetworkModifications = useCallback(() => {
+        // Do not fetch modifications on the root node
+        if (currentTreeNode?.type !== 'NETWORK_MODIFICATION') return;
         setLaunchLoader(true);
         fetchNetworkModifications(studyUuid, currentTreeNode?.id)
             .then((res) => {
@@ -418,9 +422,9 @@ const NetworkModificationNodeEditor = () => {
                     setModifications(res);
                 }
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                 });
             })
             .finally(() => {
@@ -428,7 +432,13 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentTreeNode.id, snackError, dispatch]);
+    }, [
+        studyUuid,
+        currentTreeNode.id,
+        currentTreeNode.type,
+        snackError,
+        dispatch,
+    ]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -630,12 +640,12 @@ const NetworkModificationNodeEditor = () => {
             .then((res) => {
                 res.json().then((data) => {
                     //remove all null values to avoid showing a "null" in the forms
-                    setEditData(removeNullFields(data[0]));
+                    setEditData(removeNullFields(data));
                 });
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                 });
             });
     };
@@ -669,9 +679,9 @@ const NetworkModificationNodeEditor = () => {
                 currentTreeNode?.id,
                 item.uuid,
                 before
-            ).catch((errorMessage) => {
+            ).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'errReorderModificationMsg',
                 });
                 setModifications(modifications); // rollback

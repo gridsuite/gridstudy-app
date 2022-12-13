@@ -27,8 +27,19 @@ export const TapChangerSelector = ({
 }) => {
     return (
         <Select
-            defaultValue={defaultValue}
-            onChange={(ev) => setter(ev.target.value)}
+            defaultValue={
+                /*
+                the generic caller code uses the 'numeric' attributes of the column
+                to chose for the defaultValue prop either the raw value
+                (here and object with a tapPosition field)
+                or the formatted value (using cellDataGetter, here the tapPosition integer)
+                so to avoid problems if this logic ever changes, don't use defaultValue here
+                */
+                tapChanger.tapPosition
+            }
+            onChange={(ev) => {
+                setter({ ...tapChanger, tapPosition: ev.target.value });
+            }}
             size={'medium'}
             margin={'none'}
             MenuProps={{
@@ -66,6 +77,7 @@ export const NumericalField = ({
     columnDefinition,
     setter,
     style,
+    inputProps,
     ...props
 }) => {
     const [error, setError] = useState(false);
@@ -160,6 +172,7 @@ export const NumericalField = ({
                     max: { max },
                     step: 'any',
                     lang: 'en-US', // to have . as decimal separator
+                    ...inputProps,
                 }}
             />
         );
