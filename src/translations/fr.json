@@ -529,7 +529,7 @@
     "IncoherentRatioRegulatingTerminalError": "La valeur du Terminal distant réglé du régleur doit être renseignée",
     "IncoherentPhaseRegulatingTerminalError": "La valeur du Terminal distant réglé du déphaseur doit être renseignée",
     "RatioValuesError": "Les rapports de transformation doivent être ordonnés et sans duplication",
-    "PhaseShiftValuesError": "les valeurs de déphasage doivent être ordonnés et sans duplication",
+    "PhaseShiftValuesError": "Les valeurs de déphasage doivent être ordonnés et sans duplication",
     "TapPositionValueError": "Le nombre de prises ne doit pas dépasser la valeur {value}",
 
     "Tap":"Prise",

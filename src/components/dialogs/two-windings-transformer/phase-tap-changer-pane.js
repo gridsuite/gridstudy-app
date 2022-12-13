@@ -251,7 +251,7 @@ const PhaseTapChangerPane = (props) => {
                 let style;
                 if (
                     phaseCellIndexError === rowData.rowIndex &&
-                    COLUMNS_DEFINITIONS[index].id === 'ratio'
+                    COLUMNS_DEFINITIONS[index].id === 'alpha'
                 ) {
                     style = {
                         color: 'red',
