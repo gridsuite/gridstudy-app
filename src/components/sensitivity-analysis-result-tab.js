@@ -141,7 +141,7 @@ function addIndexerParamsToSelector(indexer, selector) {
 
 const tellDiff = (what, was, now) => {
     if (was !== now) {
-        console.debug(what + 'has changed', was, now);
+        console.debug(what + ' has changed', was, now);
         return true;
     }
     return false;
