@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
@@ -217,7 +217,7 @@ const GeneratorModificationDialog = ({
         possibleValues: REACTIVE_LIMIT_TYPES,
     });
 
-    const isReactiveCapabilityCurveOn = useCallback(() => {
+    const isReactiveCapabilityCurveOn = useMemo(() => {
         return reactiveCapabilityCurveChoice === 'CURVE';
     }, [reactiveCapabilityCurveChoice]);
 
@@ -227,7 +227,7 @@ const GeneratorModificationDialog = ({
             inputForm: inputForm,
             Field: ReactiveCapabilityCurveReactiveRange,
             defaultValues: formValues?.reactiveCapabilityCurvePoints,
-            isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn(),
+            isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
             previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
         });
 
@@ -396,9 +396,11 @@ const GeneratorModificationDialog = ({
             previousRegulatingTerminalValue:
                 generatorInfos?.regulatingTerminalVlId,
             previousEquipmentSectionTypeValue:
-                generatorInfos?.regulatingTerminalConnectableType +
-                ' : ' +
-                generatorInfos?.regulatingTerminalConnectableId,
+                generatorInfos?.regulatingTerminalConnectableType
+                    ? generatorInfos?.regulatingTerminalConnectableType +
+                      ' : ' +
+                      generatorInfos?.regulatingTerminalConnectableId
+                    : null,
         });
 
     useEffect(() => {
@@ -494,7 +496,7 @@ const GeneratorModificationDialog = ({
     const handleValidation = () => {
         // ReactiveCapabilityCurveCreation validation
         let isReactiveCapabilityCurveValid = true;
-        if (isReactiveCapabilityCurveOn()) {
+        if (isReactiveCapabilityCurveOn) {
             const errorMessages = checkReactiveCapabilityCurve(
                 reactiveCapabilityCurve
             );
@@ -505,25 +507,25 @@ const GeneratorModificationDialog = ({
         }
         return (
             inputForm.validate() &&
-            (!isReactiveCapabilityCurveOn() || isReactiveCapabilityCurveValid)
+            (!isReactiveCapabilityCurveOn || isReactiveCapabilityCurveValid)
         );
     };
 
-    function isVoltageRegulationOn() {
+    const isVoltageRegulationOn = useMemo(() => {
         return (
             voltageRegulation === true ||
             (voltageRegulation === null &&
                 generatorInfos?.voltageRegulatorOn === true)
         );
-    }
+    }, [voltageRegulation, generatorInfos?.voltageRegulatorOn]);
 
-    function isFrequencyRegulationOn() {
+    const isFrequencyRegulationOn = useMemo(() => {
         return (
             frequencyRegulation === true ||
             (frequencyRegulation === null &&
                 generatorInfos?.activePowerControlOn === true)
         );
-    }
+    }, [frequencyRegulation, generatorInfos?.activePowerControlOn]);
 
     const handleSave = () => {
         modifyGenerator(
@@ -536,37 +538,33 @@ const GeneratorModificationDialog = ({
             maximumActivePower,
             ratedNominalPower,
             activePowerSetpoint,
-            !isVoltageRegulationOn() ? reactivePowerSetpoint : null,
+            !isVoltageRegulationOn ? reactivePowerSetpoint : null,
             voltageRegulation,
-            isVoltageRegulationOn() ? voltageSetpoint : null,
+            isVoltageRegulationOn ? voltageSetpoint : null,
             undefined,
             undefined,
             editData?.uuid,
-            isVoltageRegulationOn() &&
-                isDistantRegulation(voltageRegulationType)
+            isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
                 ? qPercent
                 : null,
             marginalCost ? marginalCost : null,
             transientReactance ? transientReactance : null,
             transformerReactance ? transformerReactance : null,
-            isVoltageRegulationOn() &&
-                isDistantRegulation(voltageRegulationType)
+            isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
                 ? regulatingTerminal?.equipmentSection?.id
                 : null,
-            isVoltageRegulationOn() &&
-                isDistantRegulation(voltageRegulationType)
+            isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
                 ? regulatingTerminal?.equipmentSection?.type
                 : null,
-            isVoltageRegulationOn() &&
-                isDistantRegulation(voltageRegulationType)
+            isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
                 ? regulatingTerminal?.voltageLevel?.id
                 : null,
-            isReactiveCapabilityCurveOn(),
+            isReactiveCapabilityCurveOn,
             frequencyRegulation,
-            isFrequencyRegulationOn() ? droop : null,
-            isReactiveCapabilityCurveOn() ? null : maximumReactivePower,
-            isReactiveCapabilityCurveOn() ? null : minimumReactivePower,
-            isReactiveCapabilityCurveOn() ? reactiveCapabilityCurve : null
+            isFrequencyRegulationOn ? droop : null,
+            isReactiveCapabilityCurveOn ? null : maximumReactivePower,
+            isReactiveCapabilityCurveOn ? null : minimumReactivePower,
+            isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -622,11 +620,11 @@ const GeneratorModificationDialog = ({
                 </Grid>
                 <Grid container spacing={2}>
                     {gridItem(reactiveCapabilityCurveChoiceRadioButton, 12)}
-                    {!isReactiveCapabilityCurveOn() &&
+                    {!isReactiveCapabilityCurveOn &&
                         gridItem(minimumReactivePowerField, 4)}
-                    {!isReactiveCapabilityCurveOn() &&
+                    {!isReactiveCapabilityCurveOn &&
                         gridItem(maximumReactivePowerField, 4)}
-                    {isReactiveCapabilityCurveOn() &&
+                    {isReactiveCapabilityCurveOn &&
                         reactiveCapabilityCurveErrors.length > 0 && (
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
@@ -647,7 +645,7 @@ const GeneratorModificationDialog = ({
                                 </Grid>
                             </Grid>
                         )}
-                    {isReactiveCapabilityCurveOn() &&
+                    {isReactiveCapabilityCurveOn &&
                         gridItem(reactiveCapabilityCurveField, 12)}
                 </Grid>
                 <Grid container spacing={2}>
@@ -669,7 +667,7 @@ const GeneratorModificationDialog = ({
                         ),
                         4
                     )}
-                    {isVoltageRegulationOn()
+                    {isVoltageRegulationOn
                         ? withVoltageRegulationInputs()
                         : gridItem(reactivePowerSetpointField, 4)}
                     <Box sx={{ width: '100%' }} />
@@ -682,7 +680,7 @@ const GeneratorModificationDialog = ({
                         ),
                         4
                     )}
-                    {isFrequencyRegulationOn() && gridItem(droopField, 4)}
+                    {isFrequencyRegulationOn && gridItem(droopField, 4)}
                 </Grid>
                 {/* Short-circuit part */}
                 <GridSection title="ShortCircuit" />
