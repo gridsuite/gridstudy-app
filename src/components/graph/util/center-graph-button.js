@@ -11,7 +11,9 @@ import { ControlButton, useReactFlow } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import {
-    ROOT_NODE_TYPE,
+    rootNodeType,
+    spaceNodeHeight,
+    spaceNodeWidth,
     spaceRootNodeX,
     spaceRootNodeY,
 } from './model-constants';
@@ -22,13 +24,16 @@ const CenterGraphButton = ({ currentNode }) => {
 
     const focusNode = useCallback(() => {
         const x =
-            currentNode?.type === ROOT_NODE_TYPE
+            currentNode?.type === rootNodeType
                 ? currentNode.position.x / 2.0 + spaceRootNodeX
-                : currentNode.width / 2.0 + currentNode.position.x;
+                : (currentNode.width ?? spaceNodeWidth) / 2.0 +
+                  currentNode.position.x;
+
         const y =
-            currentNode?.type === ROOT_NODE_TYPE
+            currentNode?.type === rootNodeType
                 ? currentNode.position.y + spaceRootNodeY
-                : currentNode.height / 2.0 + currentNode.position.y;
+                : (currentNode.height ?? spaceNodeHeight) / 2.0 +
+                  currentNode.position.y;
 
         setCenter(x, y, { zoom: getZoom() });
     }, [setCenter, currentNode, getZoom]);

@@ -18,4 +18,6 @@ export const nodeHeight = 50;
 export const spaceRootNodeX = 55;
 export const spaceRootNodeY = 60;
 export const rootNodeWidth = 60;
-export const ROOT_NODE_TYPE = 'ROOT';
+export const spaceNodeWidth = 180;
+export const spaceNodeHeight = 60;
+export const rootNodeType = 'ROOT';
