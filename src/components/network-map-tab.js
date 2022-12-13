@@ -231,19 +231,20 @@ export const NetworkMapTab = ({
                     missingSubstationPositions,
                     missingLinesPositions,
                 ]).then((positions) => {
-                    if (
-                        positions &&
-                        (positions[0].length > 0 || positions[1].length > 0)
-                    ) {
-                        const newGeoData = new GeoData(
-                            geoData.substationPositionsById,
-                            geoData.linePositionsById
-                        );
-                        newGeoData.addSubstationPositions(positions[0]);
-                        newGeoData.addLinePositions(positions[1]);
-                        setGeoData(newGeoData);
-                        setWaitingLoadGeoData(false);
-                    }
+                    geoData.addSubstationPositions(positions[0]);
+                    geoData.addLinePositions(positions[1]);
+                    // If there is new substation positions, we instantiate a new Map so that the substations layer is rendering is triggered.
+                    // Same for line positions.
+                    const newGeoData = new GeoData(
+                        positions[0].length > 0
+                            ? new Map(geoData.substationPositionsById)
+                            : geoData.substationPositionsById,
+                        positions[1].length > 0
+                            ? new Map(geoData.linePositionsById)
+                            : geoData.linePositionsById
+                    );
+                    setGeoData(newGeoData);
+                    setWaitingLoadGeoData(false);
                 });
             } else {
                 console.info(`Loading geo data of study '${studyUuid}'...`);
@@ -288,7 +289,7 @@ export const NetworkMapTab = ({
         geoData,
     ]);
 
-    const reloadMapGeoDataRef = useRef(null);
+    const reloadMapGeoDataRef = useRef();
     reloadMapGeoDataRef.current = reloadMapGeoData;
 
     useEffect(() => {
