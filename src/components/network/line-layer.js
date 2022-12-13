@@ -224,7 +224,7 @@ class LineLayer extends CompositeLayer {
         let linesConnection;
         let linesStatus;
 
-        if (changeFlags.dataChanged) {
+        if (true) {
             compositeData = [];
 
             linesConnection = new Map();

@@ -231,9 +231,17 @@ export const NetworkMapTab = ({
                     missingSubstationPositions,
                     missingLinesPositions,
                 ]).then((positions) => {
-                    if (positions) {
-                        geoData.addSubstationPositions(positions[0]);
-                        geoData.addLinePositions(positions[1]);
+                    if (
+                        positions &&
+                        (positions[0].length > 0 || positions[1].length > 0)
+                    ) {
+                        const newGeoData = new GeoData(
+                            geoData.substationPositionsById,
+                            geoData.linePositionsById
+                        );
+                        newGeoData.addSubstationPositions(positions[0]);
+                        newGeoData.addLinePositions(positions[1]);
+                        setGeoData(newGeoData);
                         setWaitingLoadGeoData(false);
                     }
                 });
@@ -351,8 +359,8 @@ export const NetworkMapTab = ({
     const renderMap = () => (
         <NetworkMap
             network={network}
-            substations={network ? [...network.substations] : []}
-            lines={network ? [...network.lines] : []}
+            substations={network ? network.substations : []}
+            lines={network ? network.lines : []}
             updatedLines={updatedLines}
             geoData={geoData}
             waitingLoadGeoData={waitingLoadGeoData}

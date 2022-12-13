@@ -26,6 +26,11 @@ export default class GeoData {
 
     linePositionsById = new Map();
 
+    constructor(substationPositionsById, linePositionsById) {
+        this.substationPositionsById = substationPositionsById;
+        this.linePositionsById = linePositionsById;
+    }
+
     setSubstationPositions(positions) {
         // index positions by substation id
         this.substationPositionsById = positions.reduce(
@@ -58,9 +63,9 @@ export default class GeoData {
     }
 
     addLinePositions(positions) {
-        positions.forEach((pos) =>
-            this.linePositionsById.set(pos.id, pos.coordinate)
-        );
+        positions.forEach((pos) => {
+            this.linePositionsById.set(pos.id, pos.coordinates);
+        });
     }
 
     /**
