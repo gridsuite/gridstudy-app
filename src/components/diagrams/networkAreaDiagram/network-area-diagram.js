@@ -413,35 +413,21 @@ const SizedNetworkAreaDiagram = (props) => {
                     </IconButton>
                 </Box>
             </Box>
-            {loadingState && (
-                <Box height={2}>
-                    <LinearProgress />
-                </Box>
-            )}
+            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             {disabled ? (
                 <Box position="relative" left={0} right={0} top={0}>
                     <AlertInvalidNode noMargin={true} />
                 </Box>
             ) : (
                 <Box position="relative">
-                    <Box position="relative" left={0} right={0} top={0}>
-                        {loadingState && (
-                            <Box height={2}>
-                                <LinearProgress />
-                            </Box>
-                        )}
-                    </Box>
-                    {
-                        <div
-                            id="nad-svg"
-                            ref={svgRef}
-                            className={clsx(classes.divNad, {
-                                [classes.divInvalid]:
-                                    loadFlowStatus !== RunningStatus.SUCCEED,
-                            })}
-                        />
-                    }
-
+                    <div
+                        id="nad-svg"
+                        ref={svgRef}
+                        className={clsx(classes.divNad, {
+                            [classes.divInvalid]:
+                                loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
+                    />
                     {!loadingState && (
                         <div style={{ display: 'flex' }}>
                             <Typography className={classes.depth}>
