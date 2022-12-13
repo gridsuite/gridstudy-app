@@ -53,7 +53,7 @@ const SensitivityAnalysisResult = ({
     result,
     nOrNkIndex,
     sensiToIndex,
-    sorter,
+    indexer,
 }) => {
     console.debug('SensitivityAnalysisResult', nOrNkIndex, sensiToIndex);
 
@@ -78,7 +78,7 @@ const SensitivityAnalysisResult = ({
                 name="Nom"
                 rows={rows}
                 columns={columns}
-                indexer={sorter}
+                indexer={indexer}
                 sortable={true}
                 defersFilterChanges
             />
