@@ -422,7 +422,6 @@
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "NormalizedPercentage": "This percentage must be between 0 and 100",
     "GeneratorModificationError": "Error while modifying generator",
-    "ActivePowerBetweenMaxAndMin": "The active power setpoint must be between minimum active power and maximum active power values",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "The table of reactive capability curve must have at least four points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Each active power value must be a valid unique number.",
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the min P and max P values.",
