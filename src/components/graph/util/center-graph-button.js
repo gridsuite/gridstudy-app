@@ -10,30 +10,14 @@ import React, { useCallback } from 'react';
 import { ControlButton, useReactFlow } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
-import {
-    rootNodeType,
-    spaceNodeHeight,
-    spaceNodeWidth,
-    spaceRootNodeX,
-    spaceRootNodeY,
-} from './model-constants';
 
 const CenterGraphButton = ({ currentNode }) => {
     const { setCenter, getZoom } = useReactFlow();
     const intl = useIntl();
 
     const focusNode = useCallback(() => {
-        const x =
-            currentNode?.type === rootNodeType
-                ? currentNode.position.x / 2.0 + spaceRootNodeX
-                : (currentNode.width ?? spaceNodeWidth) / 2.0 +
-                  currentNode.position.x;
-
-        const y =
-            currentNode?.type === rootNodeType
-                ? currentNode.position.y + spaceRootNodeY
-                : (currentNode.height ?? spaceNodeHeight) / 2.0 +
-                  currentNode.position.y;
+        const x = currentNode.style.width / 2.0 + currentNode.position.x;
+        const y = currentNode.style.height / 2.0 + currentNode.position.y;
 
         setCenter(x, y, { zoom: getZoom() });
     }, [setCenter, currentNode, getZoom]);
