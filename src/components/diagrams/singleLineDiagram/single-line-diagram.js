@@ -103,9 +103,10 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
     },
     divInvalid: {
-        '& .sld-arrow-p, .sld-arrow-q': {
-            opacity: INVALID_LOADFLOW_OPACITY,
-        },
+        '& .sld-arrow-p, .sld-arrow-q, .sld-voltage, .sld-angle, .sld-out, .sld-in':
+            {
+                opacity: INVALID_LOADFLOW_OPACITY,
+            },
     },
     close: {
         padding: 0,
