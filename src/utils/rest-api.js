@@ -1172,7 +1172,7 @@ export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
     const wsadress =
         wsbase +
         PREFIX_DIRECTORY_NOTIFICATION_WS +
-        '/notify?updateType=deleteStudy&studyUuid=' +
+        '/notify?updateType=deleteStudy&elementUuid=' +
         studyUuid;
 
     const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
