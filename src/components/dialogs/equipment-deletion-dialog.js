@@ -38,55 +38,55 @@ import ModificationDialog from './modificationDialog';
 const equipmentTypes = {
     LINE: {
         label: 'LINE',
-        fetcher: fetchLines,
+        fetchers: [fetchLines],
     },
     TWO_WINDINGS_TRANSFORMER: {
         label: 'TWO_WINDINGS_TRANSFORMER',
-        fetcher: fetchTwoWindingsTransformers,
+        fetchers: [fetchTwoWindingsTransformers],
     },
     THREE_WINDINGS_TRANSFORMER: {
         label: 'THREE_WINDINGS_TRANSFORMER',
-        fetcher: fetchThreeWindingsTransformers,
+        fetchers: [fetchThreeWindingsTransformers],
     },
     GENERATOR: {
         label: 'GENERATOR',
-        fetcher: fetchGenerators,
+        fetchers: [fetchGenerators],
     },
     LOAD: {
         label: 'LOAD',
-        fetcher: fetchLoads,
+        fetchers: [fetchLoads],
     },
     BATTERY: {
         label: 'BATTERY',
-        fetcher: fetchBatteries,
+        fetchers: [fetchBatteries],
     },
     DANGLING_LINE: {
         label: 'DANGLING_LINE',
-        fetcher: fetchDanglingLines,
+        fetchers: [fetchDanglingLines],
     },
     HVDC_LINE: {
         label: 'HVDC_LINE',
-        fetcher: fetchHvdcLines,
+        fetchers: [fetchHvdcLines],
     },
     HVDC_CONVERTER_STATION: {
         label: 'HVDC_CONVERTER_STATION',
-        fetcher: [fetchLccConverterStations, fetchVscConverterStations],
+        fetchers: [fetchLccConverterStations, fetchVscConverterStations],
     },
     SHUNT_COMPENSATOR: {
         label: 'SHUNT_COMPENSATOR',
-        fetcher: fetchShuntCompensators,
+        fetchers: [fetchShuntCompensators],
     },
     STATIC_VAR_COMPENSATOR: {
         label: 'STATIC_VAR_COMPENSATOR',
-        fetcher: fetchStaticVarCompensators,
+        fetchers: [fetchStaticVarCompensators],
     },
     SUBSTATION: {
         label: 'SUBSTATION',
-        fetcher: fetchSubstations,
+        fetchers: [fetchSubstations],
     },
     VOLTAGE_LEVEL: {
         label: 'VOLTAGE_LEVEL',
-        fetcher: fetchVoltageLevels,
+        fetchers: [fetchVoltageLevels],
     },
 };
 
@@ -120,20 +120,21 @@ const EquipmentDeletionDialog = ({
 
     useEffect(() => {
         setEquipmentsFound([]);
-        if (Array.isArray(equipmentType.fetcher)) {
-            Promise.all(
-                equipmentType.fetcher.map((fetchPromise) =>
-                    fetchPromise(studyUuid, currentNodeUuid)
-                )
-            ).then((vals) => {
-                setEquipmentsFound(vals?.flat().sort(compareById));
+        Promise.all(
+            equipmentType.fetchers.map((fetchPromise) =>
+                fetchPromise(studyUuid, currentNodeUuid)
+            )
+        )
+            .then((vals) => {
+                setEquipmentsFound(vals.flat().sort(compareById));
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'equipmentsLoadingError',
+                });
             });
-        } else {
-            equipmentType.fetcher(studyUuid, currentNodeUuid).then((vals) => {
-                setEquipmentsFound(vals?.sort(compareById));
-            });
-        }
-    }, [equipmentType, currentNodeUuid, studyUuid]);
+    }, [equipmentType, currentNodeUuid, studyUuid, snackError]);
 
     const [equipmentOrId, equipmentField, setEquipmentOrId] =
         useAutocompleteField({
@@ -233,20 +234,15 @@ const EquipmentDeletionDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            {Object.entries(equipmentTypes).map(
-                                ([id, values]) => {
-                                    return (
-                                        <MenuItem
-                                            key={values.label}
-                                            value={values}
-                                        >
-                                            {intl.formatMessage({
-                                                id: values.label,
-                                            })}
-                                        </MenuItem>
-                                    );
-                                }
-                            )}
+                            {Object.values(equipmentTypes).map((values) => {
+                                return (
+                                    <MenuItem key={values.label} value={values}>
+                                        {intl.formatMessage({
+                                            id: values.label,
+                                        })}
+                                    </MenuItem>
+                                );
+                            })}
                         </Select>
                     </FormControl>
                 </Grid>
