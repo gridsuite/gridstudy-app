@@ -659,6 +659,7 @@
     "Top": "Top",
     "Bottom": "Bottom",
     "DeleteVoltageLevelOnLine": "Delete a voltage level on a line",
+    "DeleteAttachingLine": "Delete attaching line",
     "ReplacingLine": "Replacing line",
     "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value"
 }
