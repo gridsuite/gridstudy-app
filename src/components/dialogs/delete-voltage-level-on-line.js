@@ -19,8 +19,6 @@ import {
 import { deleteVoltageLevelOnLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import EquipmentSearchDialog from './equipment-search-dialog';
-import { useFormSearchCopy } from './form-search-copy-hook';
 import ModificationDialog from './modificationDialog';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
@@ -78,12 +76,6 @@ const DeleteVoltageLevelOnLineDialog = ({
             : { id: '' };
     }, [formValues]);
 
-    const formValueAttachedLineId = useMemo(() => {
-        return formValues?.attachedLineId
-            ? { id: formValues?.attachedLineId }
-            : { id: '' };
-    }, [formValues]);
-
     const [lineToAttachTo1, lineToAttachTo1Field] = useAutocompleteField({
         id: 'lineToAttachTo1',
         label: 'ID',
@@ -114,21 +106,6 @@ const DeleteVoltageLevelOnLineDialog = ({
         loading: loadingLineOptions,
     });
 
-    const [attachedLine, attachedLineField] = useAutocompleteField({
-        id: 'attachedLine',
-        label: 'ID',
-        validation: { isFieldRequired: true },
-        inputForm: inputForm,
-        values: lineOptions?.sort(compareById),
-        allowNewValue: true,
-        getLabel: getId,
-        defaultValue:
-            lineOptions.find(
-                (value) => value.id === formValues?.attachedLineId
-            ) || formValueAttachedLineId,
-        loading: loadingLineOptions,
-    });
-
     const [newLine1Id, newLine1IdField] = useTextValue({
         id: 'replacingLine1Id',
         label: 'ID',
@@ -145,26 +122,6 @@ const DeleteVoltageLevelOnLineDialog = ({
         defaultValue: formValues?.replacingLine1Name,
     });
 
-    const toFormValues = (deleteVoltageLevelOnLine) => {
-        return {
-            lineToAttachTo1: deleteVoltageLevelOnLine.lineToAttachTo1 + '(1)',
-            lineToAttachTo2: deleteVoltageLevelOnLine.lineToAttachTo2,
-            attachedLine: deleteVoltageLevelOnLine.attachedLine,
-            newLine1Id: deleteVoltageLevelOnLine.newLine1Id,
-            newLine1Name: deleteVoltageLevelOnLine.newLine1Name,
-        };
-    };
-
-    const equipmentPath = 'delete-voltage-level-on-line';
-
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        equipmentPath,
-        toFormValues,
-        setFormValues,
-    });
-
     const handleSave = () => {
         if (inputForm.validate()) {
             deleteVoltageLevelOnLine(
@@ -173,7 +130,6 @@ const DeleteVoltageLevelOnLineDialog = ({
                 editData ? editData.uuid : undefined,
                 lineToAttachTo1.id || lineToAttachTo1,
                 lineToAttachTo2.id || lineToAttachTo2,
-                attachedLine.id || attachedLine,
                 newLine1Id,
                 sanitizeString(newLine1Name)
             ).catch((errorMessage) => {
@@ -204,7 +160,6 @@ const DeleteVoltageLevelOnLineDialog = ({
             aria-labelledby="dialog-delete-voltage-level-on-line"
             maxWidth={'md'}
             titleId="DeleteVoltageLevelOnLine"
-            searchCopy={searchCopy}
             {...dialogProps}
         >
             <GridSection title="Line1" />
@@ -215,22 +170,11 @@ const DeleteVoltageLevelOnLineDialog = ({
             <Grid container spacing={2} alignItems="center">
                 {gridItem(lineToAttachTo2Field, 5)}
             </Grid>
-            <GridSection title="LineAttached" />
-            <Grid container spacing={2} alignItems="center">
-                {gridItem(attachedLineField, 5)}
-            </Grid>
             <GridSection title="ReplacingLines" />
             <Grid container spacing={2}>
                 {gridItem(newLine1IdField, 6)}
                 {gridItem(newLine1NameField, 6)}
             </Grid>
-            <EquipmentSearchDialog
-                open={searchCopy.isDialogSearchOpen}
-                onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'LOAD'}
-                onSelectionChange={searchCopy.handleSelectionChange}
-                currentNodeUuid={currentNodeUuid}
-            />
         </ModificationDialog>
     );
 };

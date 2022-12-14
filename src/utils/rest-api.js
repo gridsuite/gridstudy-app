@@ -2017,7 +2017,6 @@ export function deleteVoltageLevelOnLine(
     modificationUuid,
     lineToAttachTo1Id,
     lineToAttachTo2Id,
-    attachedLineId,
     replacingLine1Id,
     replacingLine1Name
 ) {
@@ -2025,7 +2024,6 @@ export function deleteVoltageLevelOnLine(
         type: MODIFICATION_TYPE.DELETE_VOLTAGE_LEVEL_ON_LINE,
         lineToAttachTo1Id,
         lineToAttachTo2Id,
-        attachedLineId,
         replacingLine1Id,
         replacingLine1Name,
     });
