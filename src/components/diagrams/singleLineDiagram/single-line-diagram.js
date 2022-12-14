@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
         '& polyline': {
             pointerEvents: 'none',
         },
-        '& .sld-label, .sld-graph-label': {
+        '& .sld-label, .sld-graph-label, .sld-legend': {
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
@@ -767,11 +767,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     </Box>
                 </Box>
             </Box>
-            {loadingState && (
-                <Box height={2}>
-                    <LinearProgress />
-                </Box>
-            )}
+            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             {disabled ? (
                 <Box position="relative" left={0} right={0} top={0}>
                     <AlertInvalidNode noMargin={true} />
