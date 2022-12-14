@@ -31,9 +31,9 @@ export const useGetShortCircuitParameters = () => {
         if (studyUuid) {
             getShortCircuitParameters(studyUuid)
                 .then((params) => setShortCircuitParams(params))
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'paramsRetrievingError',
                     });
                 });
@@ -185,15 +185,13 @@ export const ShortCircuitParameters = ({
         (newParams) => {
             let oldParams = { ...shortCircuitParams };
             setShortCircuitParams(newParams);
-            setShortCircuitParameters(studyUuid, newParams).catch(
-                (errorMessage) => {
-                    setShortCircuitParams(oldParams);
-                    snackError({
-                        messageTxt: errorMessage,
-                        headerId: 'paramsChangingError',
-                    });
-                }
-            );
+            setShortCircuitParameters(studyUuid, newParams).catch((error) => {
+                setShortCircuitParams(oldParams);
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'paramsChangingError',
+                });
+            });
         },
         [snackError, studyUuid, shortCircuitParams, setShortCircuitParams]
     );
@@ -203,16 +201,16 @@ export const ShortCircuitParameters = ({
             .then(() => {
                 return getShortCircuitParameters(studyUuid)
                     .then((params) => setShortCircuitParams(params))
-                    .catch((errorMessage) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'paramsRetrievingError',
                         });
                     });
             })
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'paramsChangingError',
                 });
             });

@@ -205,7 +205,10 @@ export function SingleLineDiagramPane({
                 ?.ref?.current?.reloadSvg();
         } else
             viewsRef.current.forEach((sld) => {
-                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+                if (
+                    sld.svgUrl &&
+                    sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1
+                ) {
                     sld.ref?.current?.reloadSvg();
                 }
             });
@@ -215,24 +218,21 @@ export function SingleLineDiagramPane({
 
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
-                (response) => {
-                    if (!response.ok) {
-                        console.error(response);
-                        setUpdateSwitchMsg(
-                            response.status + ' : ' + response.statusText
-                        );
-                    }
-                }
-            );
+            updateSwitchState(
+                studyUuid,
+                currentNode?.id,
+                breakerId,
+                open
+            ).catch((error) => {
+                console.error(error.message);
+                setUpdateSwitchMsg(error.message);
+            });
         },
         [studyUuid, currentNode]
     );
 
     useEffect(() => {
-        // We use isNodeBuilt here instead of the "disabled" props to avoid
-        // triggering this effect when changing current node
-        if (isNodeBuilt(currentNodeRef.current) && visible) {
+        if (visible) {
             const viewsFromSldState = [];
             sldState.forEach((currentState) => {
                 let currentView = createView(currentState);

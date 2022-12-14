@@ -6,7 +6,12 @@
  */
 
 import dagre from 'dagre';
-import { nodeWidth, nodeHeight, rootNodeWidth } from './util/model-constants';
+import {
+    nodeWidth,
+    nodeHeight,
+    rootNodeWidth,
+    rootNodeHeight,
+} from './util/model-constants';
 
 export function getLayoutedNodes(nodes, edges) {
     const dagreGraph = new dagre.graphlib.Graph();
@@ -14,7 +19,10 @@ export function getLayoutedNodes(nodes, edges) {
     dagreGraph.setGraph({ direction: 'TB', align: 'UL' });
 
     nodes.forEach((node) => {
-        dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+        dagreGraph.setNode(node.id, {
+            width: node?.type === 'ROOT' ? rootNodeWidth : nodeWidth,
+            height: node?.type === 'ROOT' ? rootNodeHeight : nodeHeight,
+        });
     });
     edges.forEach((edge) => {
         dagreGraph.setEdge(edge.source, edge.target);
@@ -27,12 +35,17 @@ export function getLayoutedNodes(nodes, edges) {
         el.targetPosition = 'top';
         el.sourcePosition = 'bottom';
         const width = el?.type === 'ROOT' ? rootNodeWidth : nodeWidth;
+        const height = el?.type === 'ROOT' ? rootNodeHeight : nodeHeight;
 
         el.position = {
             x: nodeWithPosition.x - width / 2,
-            y: nodeWithPosition.y - nodeHeight / 2,
+            y: nodeWithPosition.y - height / 2,
         };
-
+        // To init react flow node style
+        el.style = {
+            width: width,
+            height: height,
+        };
         return el;
     });
 }
