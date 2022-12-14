@@ -513,10 +513,7 @@ export function DiagramPane({
                                 isComputationRunning={isComputationRunning}
                                 key={diagram.id}
                                 loadFlowStatus={loadFlowStatus}
-                                numberToDisplay={
-                                    displayedDiagrams.length// +
-                                    //(voltageLevelsIds?.length > 0 ? 1 : 0)
-                                }
+                                numberToDisplay={displayedDiagrams.length}
                                 onBreakerClick={handleUpdateSwitchState}
                                 //onClose={handleCloseDiagram}
                                 onMinimize={minimizeDiagramView}
@@ -536,38 +533,6 @@ export function DiagramPane({
                                 updateSwitchMsg={updateSwitchMsg}
                             />
                         ))}
-                        {/*voltageLevelsIds?.length > 0 && (
-                            <Diagram
-                                computedHeight={computedHeight}
-                                currentNode={currentNode}
-                                depth={depth}
-                                diagramTitle={nadTitle}
-                                disabled={disabled}
-                                loadFlowStatus={loadFlowStatus}
-                                diagramId={voltageLevelsIds[0]}
-                                numberToDisplay={
-                                    displayedSLD.length +
-                                    (voltageLevelsIds?.length > 0 ? 1 : 0)
-                                }
-                                //onClose={closeNetworkAreaDiagram}
-                                setDepth={setDepth}
-                                //studyUuid={studyUuid}
-                                svgUrl={nadUrl}
-                                totalHeight={height}
-                                totalWidth={width}
-                                isComputationRunning={isComputationRunning}
-                                onMinimize={minimizeDiagramView}
-                                onNextVoltageLevelClick={handleOpenView}
-                                onTogglePin={togglePinDiagramView}
-                                //pinned={sld.state === ViewState.PINNED} // TODO
-                                setDisplayedDiagramHeights={
-                                    setDisplayedSldHeights
-                                } // TODO recalculer en incluant le NAD ?
-                                showInSpreadsheet={showInSpreadsheet}
-                                //sldId={sld.id}
-                                svgType={SvgType.NETWORK_AREA_DIAGRAM}
-                            />
-                        )*/}
                         <Stack
                             direction={{ xs: 'column', sm: 'row' }}
                             spacing={1}

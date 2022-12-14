@@ -24,10 +24,7 @@ import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
-import {
-    fetchNADSvg,
-    fetchSvg,
-} from '../../utils/rest-api';
+import { fetchSvg } from '../../utils/rest-api';
 import {
     setFullScreenDiagramId,
     openNetworkAreaDiagram,
@@ -349,79 +346,40 @@ const Diagram = forwardRef((props, ref) => {
         diagramId,
     ]);
 
-    // MIX EN COURS
-
     useEffect(() => {
-        // We use isNodeBuilt here instead of the "disabled" props to avoid
-        // triggering this effect when changing current node
         if (props.svgUrl) {
+
+            const isDiagramTypeSld = diagramType() === 'SLD';
+            const acceptJson = isDiagramTypeSld;
+
             updateLoadingState(true);
-
-            // MIX
-
-            if (diagramType() === 'SLD') {
-                fetchSvg(props.svgUrl)
-                    .then((data) => {
-                        setSvg({
-                            svg: data.svg,
-                            metadata: data.metadata,
-                            error: null,
-                            svgUrl: props.svgUrl,
-                        });
-                        updateLoadingState(false);
-                        setLocallySwitchedBreaker();
-                    })
-                    .catch((error) => {
-                        console.error(error.message);
-                        setSvg({
-                            svg: null,
-                            metadata: null,
-                            error: error.message,
-                            svgUrl: props.svgUrl,
-                        });
-                        snackError({
-                            messageTxt: error.message,
-                        });
-                        updateLoadingState(false);
-                        setLocallySwitchedBreaker();
+            fetchSvg(props.svgUrl, acceptJson)
+                .then((data) => {
+                    setSvg({
+                        svg: acceptJson ? data.svg : data,
+                        metadata: isDiagramTypeSld ? data.metadata : null,
+                        error: null,
+                        svgUrl: props.svgUrl,
                     });
-            } else if (diagramType() === 'NAD') {
-                setSvg(noSvg);
-                svgRef.current.innerHTML = ''; // clear the previous svg before replacing
-                fetchNADSvg(props.svgUrl)
-                    .then((svg) => {
-                        setSvg({
-                            svg: svg,
-                            metadata: null,
-                            error: null,
-                            svgUrl: props.svgUrl,
-                        });
-                        updateLoadingState(false);
-                    })
-                    .catch((error) => {
-                        console.error(error.message);
-                        snackError({
-                            messageTxt: error.message,
-                        });
-                        updateLoadingState(false);
-                        setSvg({
-                            svg:
-                                '<svg width="' +
-                                minWidth +
-                                '" height="' +
-                                minHeight +
-                                '" xmlns="http://www.w3.org/2000/svg" ' +
-                                'viewBox="0 0 0 0">' +
-                                '</svg>',
-                            metadata: null,
-                            error: null,
-                            svgUrl: props.svgUrl,
-                        });
+                })
+                .catch((error) => {
+                    console.error(error.message);
+                    setSvg({
+                        svg: null,
+                        metadata: null,
+                        error: error.message,
+                        svgUrl: props.svgUrl,
                     });
-            } else {
-                console.error('diagramType manquant #1');
-                alert('check console');
-            }
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                })
+                .finally(() => {
+                    updateLoadingState(false);
+                    if (isDiagramTypeSld) {
+                        setLocallySwitchedBreaker();
+                    }
+                });
         } else {
             setSvg(noSvg);
         }

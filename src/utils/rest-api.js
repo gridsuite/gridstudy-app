@@ -339,7 +339,7 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
-export function fetchNADSvg(svgUrl) {
+export function fetchNADSvg(svgUrl) { // TODO To remove after the NAD/SLD refacto
     console.debug(svgUrl);
     return backendFetchText(svgUrl);
 }
@@ -369,9 +369,9 @@ export function fetchReport(studyUuid, currentNodeUuid, nodeOnlyReport) {
     );
 }
 
-export function fetchSvg(svgUrl) {
+export function fetchSvg(svgUrl, acceptJson = true) {
     console.debug(svgUrl);
-    return backendFetchJson(svgUrl);
+    return acceptJson ? backendFetchJson(svgUrl) : backendFetchText(svgUrl);
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
