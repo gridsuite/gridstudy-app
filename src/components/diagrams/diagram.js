@@ -22,19 +22,16 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import {
     fetchNADSvg,
     fetchSvg,
-    getVoltageLevelSingleLineDiagram,
 } from '../../utils/rest-api';
 import {
     setFullScreenDiagramId,
     openNetworkAreaDiagram,
 } from '../../redux/actions';
-//import { fullScreenSingleLineDiagramId } from '../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -45,7 +42,6 @@ import { AutoSizer } from 'react-virtualized';
 import { useIntl } from 'react-intl';
 
 import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
-import { NAD_INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import AlertInvalidNode from '../util/alert-invalid-node';
@@ -55,21 +51,17 @@ import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import BaseEquipmentMenu from '../menus/base-equipment-menu';
 import withEquipmentMenu from '../menus/equipment-menu';
 import withLineMenu from '../menus/line-menu';
-
 import { equipments } from '../network/network-equipments';
-import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
-
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
-
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
+import { isNodeReadOnly } from '../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
     SvgType,
     useStyles,
     getEquipmentTypeFromFeederType,
-    useSingleLineDiagram,
+    useDiagram,
 } from './diagram-common';
 
 // NAD
@@ -181,8 +173,7 @@ const Diagram = forwardRef((props, ref) => {
         totalWidth,
     } = props;
 
-    const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
-        useSingleLineDiagram();
+    const [closeDiagramView] = useDiagram();
 
     const diagramType = useCallback(() => {
         switch (svgType) {
@@ -704,10 +695,10 @@ const Diagram = forwardRef((props, ref) => {
         dispatch(setFullScreenDiagramId(undefined));
         if (diagramType() === 'SLD') {
             console.error('CHARLY onCloseHandler SLD');
-            closeVoltageLevelDiagram(diagramId);
+            closeDiagramView(diagramId);
         } else {
             console.error('CHARLY onCloseHandler NAD');
-            dispatch(openNetworkAreaDiagram([]));
+            dispatch(openNetworkAreaDiagram([])); // TODO CHARLY corriger ça
             setDepth(0);
         }
     };

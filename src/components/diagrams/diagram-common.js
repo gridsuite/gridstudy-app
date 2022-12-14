@@ -10,12 +10,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-    closeSld,
-    minimizeSld,
-    openSld,
-    togglePinSld,
+    closeDiagram,
+    minimizeDiagram,
+    openDiagram,
+    togglePinDiagram,
 } from '../../redux/actions';
-import { syncSldStateWithSessionStorage } from '../../redux/session-storage';
+import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
 import {
     INVALID_LOADFLOW_OPACITY,
     NAD_INVALID_LOADFLOW_OPACITY,
@@ -183,67 +183,75 @@ export function getEquipmentTypeFromFeederType(feederType) {
     }
 }
 
-export const useSingleLineDiagram = () => {
+export const useDiagram = () => {
     const dispatch = useDispatch();
-    const sldState = useSelector((state) => state.sldState);
+    const diagramStates = useSelector((state) => state.diagramStates);
     const studyUuid = useSelector((state) => state.studyUuid);
 
     useEffect(() => {
-        syncSldStateWithSessionStorage(sldState, studyUuid);
-    }, [sldState, studyUuid]);
+        syncDiagramStateWithSessionStorage(diagramStates, studyUuid);
+    }, [diagramStates, studyUuid]);
 
-    const openSldView = useCallback(
+    const openDiagramView = useCallback(
         (type, id) => {
-            dispatch(openSld(id, type));
+            dispatch(openDiagram(id, type));
         },
         [dispatch]
     );
 
-    const togglePinSldView = useCallback(
+    const togglePinDiagramView = useCallback( // TODO CHARLY ajouter le type en paramètre
         (id) => {
-            dispatch(togglePinSld(id));
+            dispatch(togglePinDiagram(id));
         },
         [dispatch]
     );
 
-    const minimizeSldView = useCallback(
+    const minimizeDiagramView = useCallback( // TODO CHARLY ajouter le type en paramètre
         (id) => {
-            dispatch(minimizeSld(id));
+            dispatch(minimizeDiagram(id));
         },
         [dispatch]
     );
 
-    const showVoltageLevelDiagram = useCallback(
+    const showVoltageLevelDiagramView = useCallback(
         (voltageLevelId) => {
-            openSldView(SvgType.VOLTAGE_LEVEL, voltageLevelId);
+            openDiagramView(SvgType.VOLTAGE_LEVEL, voltageLevelId);
         },
-        [openSldView]
+        [openDiagramView]
     );
 
-    const showSubstationDiagram = useCallback(
+    const showSubstationDiagramView = useCallback(
         (substationId) => {
-            openSldView(SvgType.SUBSTATION, substationId);
+            openDiagramView(SvgType.SUBSTATION, substationId);
         },
-        [openSldView]
+        [openDiagramView]
     );
 
-    const closeDiagram = useCallback(
+    const showNetworkAreaDiagramView = useCallback( // TODO CHARLY Vérifier si la fonction du NAD est compatible avec ce code copié/collé
+        (nadId) => {
+            openDiagramView(SvgType.NETWORK_AREA_DIAGRAM, nadId);
+        },
+        [openDiagramView]
+    );
+
+    const closeDiagramView = useCallback( // TODO CHARLY ajouter le type en paramètre ATTENTION ici on gère une liste
         (idsToRemove) => {
             const toRemove = Array.isArray(idsToRemove)
                 ? idsToRemove
                 : [idsToRemove];
 
-            dispatch(closeSld(toRemove));
+            dispatch(closeDiagram(toRemove));
         },
         [dispatch]
     );
 
     return [
-        closeDiagram,
-        showVoltageLevelDiagram,
-        showSubstationDiagram,
-        togglePinSldView,
-        minimizeSldView,
+        closeDiagramView,
+        showVoltageLevelDiagramView,
+        showSubstationDiagramView,
+        showNetworkAreaDiagramView,
+        togglePinDiagramView,
+        minimizeDiagramView,
     ];
 };
 

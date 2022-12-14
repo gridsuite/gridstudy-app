@@ -20,15 +20,13 @@ import {
     updateSwitchState,
 } from '../../utils/rest-api';
 import { getNetworkAreaDiagramUrl } from '../../utils/rest-api';
-//import SingleLineDiagram, { SvgType } from './singleLineDiagram/single-line-diagram';
-//import NetworkAreaDiagram from './networkAreaDiagram/network-area-diagram';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     getNameOrId,
-    useSingleLineDiagram,
+    useDiagram,
     ViewState,
     SvgType,
 } from './diagram-common';
@@ -96,6 +94,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         ]
     );
 
+    const getNetworkAreaDiagramUrl = useCallback(() => {console.error("CHARLY PAS ENCORE IMPLEMENTE")}, []); // TODO CHARLY ici get NAD url ?
+
     return useCallback(
         (view) => {
             function createSubstationSLD(substationId, state) {
@@ -142,11 +142,20 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 };
             }
 
+            function createNetworkAreaDiagram(nadId, state) {
+                console.error("CHARLY PAS ENCORE IMPLEMENTE 2"); // TODO CHARLY
+            }
+
             if (!network) return;
             if (view.type === SvgType.VOLTAGE_LEVEL)
                 return createVoltageLevelSLD(view.id, view.state);
             else if (view.type === SvgType.SUBSTATION)
                 return createSubstationSLD(view.id, view.state);
+            else if (view.type === SvgType.NETWORK_AREA_DIAGRAM)
+                return createNetworkAreaDiagram(view.id, view.state);
+            else {
+                console.error("diagram-pane:useDisplayView => Missing view.type !");
+            }
         },
         [
             network,
@@ -192,18 +201,19 @@ export function DiagramPane({
 
     const dispatch = useDispatch();
 
-    const sldState = useSelector((state) => state.sldState);
+    const diagramStates = useSelector((state) => state.diagramStates);
 
     const viewsRef = useRef();
     viewsRef.current = views;
 
     const [
-        closeView,
-        openVoltageLevel,
-        openSubstation,
-        togglePinSld,
-        minimizeSld,
-    ] = useSingleLineDiagram();
+        closeDiagramView,
+        showVoltageLevelDiagramView,
+        showSubstationDiagramView,
+        showNetworkAreaDiagramView,
+        togglePinDiagramView,
+        minimizeDiagramView,
+    ] = useDiagram();
 
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
@@ -285,37 +295,43 @@ export function DiagramPane({
 
     // OLD SLD
 
-    useEffect(() => {
+    useEffect(() => {// TODO CHARLY revoir cette fonction avec diagramStates à la place de sldState
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
         if (isNodeBuilt(currentNodeRef.current) && visible) {
-            const viewsFromSldState = [];
-            sldState.forEach((currentState) => {
+            const viewsFromDiagramStates = [];
+            diagramStates.forEach((currentState) => {
                 let currentView = createView(currentState);
                 // if current view cannot be found, it return undefined
-                // in this case, we remove it from SLD state
-                if (currentView) viewsFromSldState.push(currentView);
+                // in this case, we remove it from diagram states
+                if (currentView) viewsFromDiagramStates.push(currentView);
                 else {
-                    closeView(currentState.id);
+                    closeDiagramView(currentState.id);
                 }
             });
-            setViews(viewsFromSldState);
+            setViews(viewsFromDiagramStates);
         }
-    }, [sldState, visible, disabled, closeView, createView, dispatch]);
+    }, [diagramStates, visible, disabled, closeDiagramView, createView, dispatch]);
 
-    const handleCloseSLD = useCallback(
+    const handleCloseDiagram = useCallback(
         (id) => {
-            closeView(id);
+            closeDiagramView(id);
         },
-        [closeView]
+        [closeDiagramView]
     );
 
     const handleOpenView = useCallback(
-        (id, type = SvgType.VOLTAGE_LEVEL) => {
-            if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
-            else if (type === SvgType.SUBSTATION) openSubstation(id);
+        (id, type) => {
+            if (!network) return;
+            if (type === SvgType.VOLTAGE_LEVEL) showVoltageLevelDiagramView(id);
+            else if (type === SvgType.SUBSTATION) showSubstationDiagramView(id);
+            else if (type === SvgType.NETWORK_AREA_DIAGRAM) showNetworkAreaDiagramView(id);
+            else {
+                console.error("diagram-pane:handleOpenView => Missing type !");
+                console.error("CHARLY => type : ", type);
+            }
         },
-        [openSubstation, openVoltageLevel]
+        [network, showSubstationDiagramView, showVoltageLevelDiagramView, showNetworkAreaDiagramView]
     );
 
     useEffect(() => {
@@ -339,7 +355,7 @@ export function DiagramPane({
                             vl.substationId === deletedId || vl.id === deletedId
                     );
                     if (vlToClose.length > 0)
-                        closeView([...vlToClose, deletedId]);
+                        closeDiagramView([...vlToClose, deletedId]);
 
                     const substationsIds =
                         studyUpdatedForce.eventData.headers['substationsIds'];
@@ -365,7 +381,7 @@ export function DiagramPane({
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView, network]);
+    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeDiagramView, network]);
 
     useEffect(() => {
         setDisplayedSld(
@@ -434,10 +450,10 @@ export function DiagramPane({
                                     (voltageLevelsIds?.length > 0 ? 1 : 0)
                                 }
                                 onBreakerClick={handleUpdateSwitchState}
-                                //onClose={handleCloseSLD}
-                                onMinimize={minimizeSld}
+                                //onClose={handleCloseDiagram}
+                                onMinimize={minimizeDiagramView}
                                 onNextVoltageLevelClick={handleOpenView}
-                                onTogglePin={togglePinSld}
+                                onTogglePin={togglePinDiagramView}
                                 pinned={sld.state === ViewState.PINNED}
                                 ref={sld.ref}
                                 setDisplayedDiagramHeights={
@@ -472,9 +488,9 @@ export function DiagramPane({
                                 totalHeight={height}
                                 totalWidth={width}
                                 isComputationRunning={isComputationRunning}
-                                onMinimize={minimizeSld}
+                                onMinimize={minimizeDiagramView}
                                 onNextVoltageLevelClick={handleOpenView}
-                                onTogglePin={togglePinSld}
+                                onTogglePin={togglePinDiagramView}
                                 //pinned={sld.state === ViewState.PINNED} // TODO
                                 setDisplayedDiagramHeights={
                                     setDisplayedSldHeights
@@ -500,7 +516,7 @@ export function DiagramPane({
                                     onClick={() =>
                                         handleOpenView(view.id, view.type)
                                     }
-                                    onDelete={() => handleCloseSLD(view.id)}
+                                    onDelete={() => handleCloseDiagram(view.id)}
                                 />
                             ))}
                         </Stack>

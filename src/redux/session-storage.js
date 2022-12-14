@@ -7,15 +7,15 @@
 
 import { APP_NAME } from '../utils/config-params';
 
-export const SESSION_STORAGE_SLD_STATE_KEY_PREFIX = (
+export const SESSION_STORAGE_SLD_STATE_KEY_PREFIX = ( // TODO to remove after the SLD/NAD refactorization
     APP_NAME + '_SLD_STATE_'
 ).toUpperCase();
 
-const getSldStateKeyPrefixFromStudyUuid = (studyUuid) => {
+const getSldStateKeyPrefixFromStudyUuid = (studyUuid) => { // TODO to remove after the SLD/NAD refactorization
     return SESSION_STORAGE_SLD_STATE_KEY_PREFIX + studyUuid;
 };
 
-export const syncSldStateWithSessionStorage = (sldState, studyUuid) => {
+export const syncSldStateWithSessionStorage = (sldState, studyUuid) => { // TODO to remove after the SLD/NAD refactorization
     if (studyUuid == null) {
         return;
     }
@@ -26,7 +26,7 @@ export const syncSldStateWithSessionStorage = (sldState, studyUuid) => {
     );
 };
 
-export const loadSldStateFromSessionStorage = (studyUuid) => {
+export const loadSldStateFromSessionStorage = (studyUuid) => { // TODO to remove after the SLD/NAD refactorization
     const sldState = JSON.parse(
         sessionStorage.getItem(getSldStateKeyPrefixFromStudyUuid(studyUuid))
     );
@@ -36,4 +36,35 @@ export const loadSldStateFromSessionStorage = (studyUuid) => {
     }
 
     return sldState;
+};
+
+export const SESSION_STORAGE_DIAGRAM_STATE_KEY_PREFIX = (
+    APP_NAME + '_DIAGRAM_STATE_'
+).toUpperCase();
+
+const getDiagramStateKeyPrefixFromStudyUuid = (studyUuid) => {
+    return SESSION_STORAGE_DIAGRAM_STATE_KEY_PREFIX + studyUuid;
+};
+
+export const syncDiagramStateWithSessionStorage = (diagramState, studyUuid) => {
+    if (studyUuid == null) {
+        return;
+    }
+
+    sessionStorage.setItem(
+        getDiagramStateKeyPrefixFromStudyUuid(studyUuid),
+        JSON.stringify(diagramState)
+    );
+};
+
+export const loadDiagramStateFromSessionStorage = (studyUuid) => {
+    const diagramState = JSON.parse(
+        sessionStorage.getItem(getDiagramStateKeyPrefixFromStudyUuid(studyUuid))
+    );
+
+    if (diagramState === null) {
+        return [];
+    }
+
+    return diagramState;
 };

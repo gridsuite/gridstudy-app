@@ -38,7 +38,7 @@ import {
     MAP_MANUAL_REFRESH,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
-    FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
+    FULLSCREEN_SINGLE_LINE_DIAGRAM_ID, // TODO to remove after the SLD/NAD refactorization
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
     CHANGE_REORDERED_COLUMNS,
@@ -60,15 +60,19 @@ import {
     ADD_NOTIFICATION,
     REMOVE_NOTIFICATION_BY_NODE,
     OPEN_NETWORK_AREA_DIAGRAM,
-    FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
+    FULLSCREEN_NETWORK_AREA_DIAGRAM_ID, // TODO to remove after the SLD/NAD refactorization
     CURRENT_TREE_NODE,
     SET_MODIFICATIONS_IN_PROGRESS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
-    OPEN_SLD,
-    MINIMIZE_SLD,
-    TOGGLE_PIN_SLD,
-    CLOSE_SLD,
+    OPEN_SLD, // TODO to remove after the SLD/NAD refactorization
+    MINIMIZE_SLD, // TODO to remove after the SLD/NAD refactorization
+    TOGGLE_PIN_SLD, // TODO to remove after the SLD/NAD refactorization
+    CLOSE_SLD, // TODO to remove after the SLD/NAD refactorization
+    OPEN_DIAGRAM,
+    MINIMIZE_DIAGRAM,
+    TOGGLE_PIN_DIAGRAM,
+    CLOSE_DIAGRAM,
     ADD_SHORT_CIRCUIT_NOTIF,
     RESET_SHORT_CIRCUIT_NOTIF,
     RESET_MAP_RELOADED,
@@ -108,7 +112,8 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
-import { loadSldStateFromSessionStorage } from './session-storage';
+import { loadSldStateFromSessionStorage, // TODO to remove after the SLD/NAD refactorization
+    loadDiagramStateFromSessionStorage } from './session-storage';
 import { ViewState } from '../components/diagrams/diagram-common';
 
 const paramsInitialState = {
@@ -148,20 +153,21 @@ const initialState = {
     sensiNotif: false,
     shortCircuitNotif: false,
     filteredNominalVoltages: null,
-    fullScreenSldId: null,
-    fullScreenNadId: null,
+    fullScreenSldId: null, // TODO to remove after the SLD/NAD refactorization
+    fullScreenNadId: null, // TODO to remove after the SLD/NAD refactorization
     fullScreenDiagramId: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
     allReorderedTableDefinitionIndexes: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
-    voltageLevelsIdsForNad: [],
+    voltageLevelsIdsForNad: [], // TODO CHARLY incorporer les IDs multiples dans le diagram NAD
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
-    sldState: [],
+    sldState: [], // TODO to remove after the SLD/NAD refactorization
+    diagramStates: [],
     reloadMap: true,
     networkReloadNeeded: false,
     forceReloadNetwork: true,
@@ -176,7 +182,8 @@ export const reducer = createReducer(initialState, {
         state.studyUuid = action.studyRef[0];
 
         if (action.studyRef[0] != null) {
-            state.sldState = loadSldStateFromSessionStorage(action.studyRef[0]);
+            state.sldState = loadSldStateFromSessionStorage(action.studyRef[0]); // TODO to remove after the SLD/NAD refactorization
+            state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
         }
     },
 
@@ -465,11 +472,11 @@ export const reducer = createReducer(initialState, {
         state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
     },
 
-    [FULLSCREEN_SINGLE_LINE_DIAGRAM_ID]: (state, action) => {
+    [FULLSCREEN_SINGLE_LINE_DIAGRAM_ID]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
         state.fullScreenSldId = action.fullScreenSldId;
     },
 
-    [FULLSCREEN_NETWORK_AREA_DIAGRAM_ID]: (state, action) => {
+    [FULLSCREEN_NETWORK_AREA_DIAGRAM_ID]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
         state.fullScreenNadId = action.fullScreenNadId;
     },
 
@@ -551,7 +558,7 @@ export const reducer = createReducer(initialState, {
             state.studyDisplayMode = action.studyDisplayMode;
         }
     },
-    [OPEN_SLD]: (state, action) => {
+    [OPEN_SLD]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
         const sldState = state.sldState;
         const sldToOpenIndex = sldState.findIndex(
             (sld) => sld.id === action.id
@@ -588,7 +595,7 @@ export const reducer = createReducer(initialState, {
 
         state.sldState = sldState;
     },
-    [MINIMIZE_SLD]: (state, action) => {
+    [MINIMIZE_SLD]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
         const sldState = state.sldState;
         const sldToMinizeIndex = sldState.findIndex(
             (sld) => sld.id === action.id
@@ -599,7 +606,7 @@ export const reducer = createReducer(initialState, {
 
         state.sldState = sldState;
     },
-    [TOGGLE_PIN_SLD]: (state, action) => {
+    [TOGGLE_PIN_SLD]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
         const sldState = state.sldState;
         // search targeted sld among the sldState
         const sldToPinToggleIndex = sldState.findIndex(
@@ -625,9 +632,100 @@ export const reducer = createReducer(initialState, {
 
         state.sldState = sldState;
     },
-    [CLOSE_SLD]: (state, action) => {
+    [CLOSE_SLD]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
         state.sldState = state.sldState.filter(
             (sld) => !action.ids.includes(sld.id)
+        );
+    },
+    [OPEN_DIAGRAM]: (state, action) => {
+        console.error("CHARLY OPEN_DIAGRAM");
+        console.error("CHARLY state : ", state);
+        console.error("CHARLY action : ", action);
+        const diagramStates = state.diagramStates;
+        const diagramToOpenIndex = diagramStates.findIndex(
+            (diagram) => diagram.id === action.id // TODO CHARLY ajouter un test sur le type, afin de gérer la différence entre NAD et SLD
+        );
+
+        // if diagram was in states already, and was PINNED or OPENED, nothing happens
+        if (
+            diagramToOpenIndex >= 0 &&
+            [ViewState.OPENED, ViewState.PINNED].includes(
+                diagramStates[diagramToOpenIndex].state
+            )
+        ) {
+            return;
+        }
+
+        // in the other cases, we will open the targeted diagram
+        // previously opened diagram is now MINIMIZED
+        const previouslyOpenedDiagramIndex = diagramStates.findIndex(
+            (diagram) => diagram.state === ViewState.OPENED
+        );
+        if (previouslyOpenedDiagramIndex >= 0) {
+            diagramStates[previouslyOpenedDiagramIndex].state = ViewState.MINIMIZED;
+        }
+        // if the target diagram was already in the state, hence in MINIMIZED state, we change its state to OPENED
+        if (diagramToOpenIndex >= 0) {
+            diagramStates[diagramToOpenIndex].state = ViewState.OPENED;
+        } else {
+            diagramStates.push({
+                id: action.id,
+                type: action.svgType,
+                state: ViewState.OPENED,
+            });
+        }
+
+        state.diagramStates = diagramStates;
+    },
+    [MINIMIZE_DIAGRAM]: (state, action) => {
+        console.error("CHARLY MINIMIZE_DIAGRAM");
+        console.error("CHARLY state : ", state);
+        console.error("CHARLY action : ", action);
+        const diagramStates = state.diagramStates;
+        const diagramToMinizeIndex = diagramStates.findIndex(
+            (diagram) => diagram.id === action.id // TODO CHARLY ajouter un test sur le type, afin de gérer la différence entre NAD et SLD
+        );
+        if (diagramToMinizeIndex >= 0) {
+            diagramStates[diagramToMinizeIndex].state = ViewState.MINIMIZED;
+        }
+
+        state.diagramStates = diagramStates;
+    },
+    [TOGGLE_PIN_DIAGRAM]: (state, action) => {
+        console.error("CHARLY TOGGLE_PIN_DIAGRAM");
+        console.error("CHARLY state : ", state);
+        console.error("CHARLY action : ", action);
+        const diagramStates = state.diagramStates;
+        // search targeted diagram among the diagramStates
+        const diagramToPinToggleIndex = diagramStates.findIndex(
+            (diagram) => diagram.id === action.id // TODO CHARLY ajouter un test sur le type, afin de gérer la différence entre NAD et SLD
+        );
+        if (diagramToPinToggleIndex >= 0) {
+            // when found, if was opened, it's now PINNED
+            const diagramToPinState = diagramStates[diagramToPinToggleIndex].state;
+            if (diagramToPinState === ViewState.OPENED) {
+                diagramStates[diagramToPinToggleIndex].state = ViewState.PINNED;
+            } else if (diagramToPinState === ViewState.PINNED) {
+                // if diagram is unpinned, the diagram that had the state OPENED is now MINIMIZED
+                const currentlyOpenedDiagramIndex = diagramStates.findIndex(
+                    (diagram) => diagram.state === ViewState.OPENED
+                );
+                if (currentlyOpenedDiagramIndex >= 0) {
+                    diagramStates[currentlyOpenedDiagramIndex].state =
+                        ViewState.MINIMIZED;
+                }
+                diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
+            }
+        }
+
+        state.diagramStates = diagramStates;
+    },
+    [CLOSE_DIAGRAM]: (state, action) => {
+        console.error("CHARLY CLOSE_DIAGRAM");
+        console.error("CHARLY state : ", state);
+        console.error("CHARLY action : ", action);
+        state.diagramStates = state.diagramStates.filter(
+            (diagram) => !action.ids.includes(diagram.id) // TODO CHARLY ajouter un test sur le type, afin de gérer la différence entre NAD et SLD
         );
     },
 });

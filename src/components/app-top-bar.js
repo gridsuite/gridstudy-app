@@ -53,7 +53,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import { useSingleLineDiagram } from './diagrams/diagram-common';
+import { useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
@@ -180,7 +180,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [isParametersOpen, setParametersOpen] = useState(false);
-    const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
+    const [, showVoltageLevelDiagramView, showSubstationDiagramView] = useDiagram();
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
@@ -232,12 +232,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (optionInfos) => {
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
             if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
-                showSubstation(optionInfos.id);
+                showSubstationDiagramView(optionInfos.id);
             } else {
-                showVoltageLevel(optionInfos.voltageLevelId);
+                showVoltageLevelDiagramView(optionInfos.voltageLevelId);
             }
         },
-        [onChangeTab, showSubstation, showVoltageLevel]
+        [onChangeTab, showSubstationDiagramView, showVoltageLevelDiagramView]
     );
 
     useEffect(() => {

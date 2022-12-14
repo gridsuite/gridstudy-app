@@ -359,7 +359,7 @@ export function selectComponentLibrary(componentLibrary) {
 }
 
 export const FULLSCREEN_SINGLE_LINE_DIAGRAM_ID =
-    'FULLSCREEN_SINGLE_LINE_DIAGRAM_ID';
+    'FULLSCREEN_SINGLE_LINE_DIAGRAM_ID'; // TODO to remove after the SLD/NAD refactorization
 
 export function fullScreenSingleLineDiagramId(fullScreenSldId) {
     return {
@@ -369,7 +369,7 @@ export function fullScreenSingleLineDiagramId(fullScreenSldId) {
 }
 
 export const FULLSCREEN_NETWORK_AREA_DIAGRAM_ID =
-    'FULLSCREEN_NETWORK_AREA_DIAGRAM_ID';
+    'FULLSCREEN_NETWORK_AREA_DIAGRAM_ID'; // TODO to remove after the SLD/NAD refactorization
 
 export function fullScreenNetworkAreaDiagramId(fullScreenNadId) {
     return {
@@ -468,12 +468,12 @@ export function removeNotificationByNode(notificationId) {
     };
 }
 
-export const OPEN_NETWORK_AREA_DIAGRAM = 'OPEN_NETWORK_AREA_DIAGRAM';
+export const OPEN_NETWORK_AREA_DIAGRAM = 'OPEN_NETWORK_AREA_DIAGRAM'; // TODO to remove after the SLD/NAD refactorization
 
 export function openNetworkAreaDiagram(voltageLevelsIds) {
     return {
         type: OPEN_NETWORK_AREA_DIAGRAM,
-        voltageLevelsIdsForNad: voltageLevelsIds,
+        voltageLevelsIdsForNad: voltageLevelsIds, // TODO CHARLY incorporer les ID multiples dans le diagram NAD
     };
 }
 
@@ -501,7 +501,7 @@ export function setStudyDisplayMode(studyDisplayMode) {
     };
 }
 
-export const OPEN_SLD = 'OPEN_SLD';
+export const OPEN_SLD = 'OPEN_SLD'; // TODO to remove after the SLD/NAD refactorization
 
 export function openSld(id, svgType) {
     return {
@@ -511,7 +511,7 @@ export function openSld(id, svgType) {
     };
 }
 
-export const MINIMIZE_SLD = 'MINIMIZE_SLD';
+export const MINIMIZE_SLD = 'MINIMIZE_SLD'; // TODO to remove after the SLD/NAD refactorization
 
 export function minimizeSld(id) {
     return {
@@ -520,7 +520,7 @@ export function minimizeSld(id) {
     };
 }
 
-export const TOGGLE_PIN_SLD = 'TOGGLE_PIN_SLD';
+export const TOGGLE_PIN_SLD = 'TOGGLE_PIN_SLD'; // TODO to remove after the SLD/NAD refactorization
 
 export function togglePinSld(id) {
     return {
@@ -529,11 +529,48 @@ export function togglePinSld(id) {
     };
 }
 
-export const CLOSE_SLD = 'CLOSE_SLD';
+export const CLOSE_SLD = 'CLOSE_SLD'; // TODO to remove after the SLD/NAD refactorization
 
 export function closeSld(idsToClose) {
     return {
         type: CLOSE_SLD,
+        ids: idsToClose,
+    };
+}
+
+export const OPEN_DIAGRAM = 'OPEN_DIAGRAM';
+
+export function openDiagram(id, svgType) {
+    return {
+        type: OPEN_DIAGRAM,
+        id: id,
+        svgType: svgType,
+    };
+}
+
+export const MINIMIZE_DIAGRAM = 'MINIMIZE_DIAGRAM';
+
+export function minimizeDiagram(id) {
+    return {
+        type: MINIMIZE_DIAGRAM,
+        id: id,
+    };
+}
+
+export const TOGGLE_PIN_DIAGRAM = 'TOGGLE_PIN_DIAGRAM';
+
+export function togglePinDiagram(id) {
+    return {
+        type: TOGGLE_PIN_DIAGRAM,
+        id: id,
+    };
+}
+
+export const CLOSE_DIAGRAM = 'CLOSE_DIAGRAM';
+
+export function closeDiagram(idsToClose) {
+    return {
+        type: CLOSE_DIAGRAM,
         ids: idsToClose,
     };
 }

@@ -13,7 +13,7 @@ import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     filteredNominalVoltagesUpdated,
-    fullScreenNetworkAreaDiagramId,
+    fullScreenNetworkAreaDiagramId, // TODO to remove after SLD/NAD refacto
     openNetworkAreaDiagram,
     setForceNetworkReload,
     STUDY_DISPLAY_MODE,
@@ -40,7 +40,8 @@ import { DiagramPane } from './diagrams/diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { useSingleLineDiagram } from './diagrams/diagram-common';
+import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
+import { useDiagram } from './diagrams/diagram-common';
 import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
 import { isNodeBuilt } from './graph/util/model-functions';
 
@@ -103,6 +104,9 @@ const StudyPane = ({
     setErrorMessage,
     ...props
 }) => {
+
+    const [useRefactoDiagram, setUseRefactoDiagram] = useState(true); // TODO REMOVE THIS HACK
+
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
@@ -146,7 +150,12 @@ const StudyPane = ({
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram();
 
-    function closeNetworkAreaDiagram() {
+    // TODO ICI CORRECT const [, showVoltageLevelDiagramView] = useDiagram(); // We only use the second function here
+    // TODO ci dessous version temporaire
+    const [closeDiagramView, showVoltageLevelDiagramView] = useDiagram(); // We only use the second function here
+    // TODO FIN version temporaire
+
+    function closeNetworkAreaDiagram() { // TODO CHARLY Is this useless ?
         dispatch(fullScreenNetworkAreaDiagramId(null));
         dispatch(openNetworkAreaDiagram([]));
     }
@@ -165,22 +174,20 @@ const StudyPane = ({
         }
     }, [network, filteredNominalVoltages, dispatch]);
 
-    function openVoltageLevelDiagram(vlId, substationId) {
-        // TODO CHARLY voir ce qu'on doit faire des NAD ici
+    function openVoltageLevelDiagram(vlId) {
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
             props.onChangeTab(0); // switch to map view
-            showVoltageLevelDiagram(vlId); // show voltage level
+            showVoltageLevelDiagramView(vlId); // show voltage level
         }
     }
 
     const openVoltageLevel = useCallback(
-        // TODO CHARLY voir ce qu'on doit faire des NAD ici
         (vlId) => {
             if (!network) return;
-            showVoltageLevelDiagram(vlId);
+            showVoltageLevelDiagramView(vlId);
         },
-        [network, showVoltageLevelDiagram]
+        [network, showVoltageLevelDiagramView]
     );
 
     useEffect(() => {
@@ -206,9 +213,22 @@ const StudyPane = ({
     }
 
     function renderMapView() {
-        let useRefactoDiagram = true; // TODO CHARLY remove this
         return (
             <ReactFlowProvider>
+                {/* // TODO REMOVE THIS HACK */}
+                <div style={{
+                    display: 'block',
+                    position: 'absolute',
+                    zIndex: '99999',
+                    padding: '5px',
+                    top: '0',
+                    left: '0',
+                    backgroundColor: 'red',
+                }}>
+                    <button onClick={() => setUseRefactoDiagram(!useRefactoDiagram)}
+                    >REFACTO MODE : {useRefactoDiagram ? 'true' : 'false'}</button>
+                </div>
+                {/* // TODO END OF HACK */}
                 <div
                     style={{
                         display: 'flex',
@@ -325,7 +345,7 @@ const StudyPane = ({
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
                 */}
-                            {!useRefactoDiagram && (
+                            {!useRefactoDiagram && (// TODO REMOVE THIS HACK
                                 <SingleLineDiagramPane
                                     studyUuid={studyUuid}
                                     network={network}
@@ -341,11 +361,11 @@ const StudyPane = ({
                                     visible={
                                         props.view === StudyView.MAP &&
                                         studyDisplayMode !==
-                                            STUDY_DISPLAY_MODE.TREE
+                                        STUDY_DISPLAY_MODE.TREE
                                     }
                                 />
                             )}
-                            {!useRefactoDiagram && (
+                            {!useRefactoDiagram && (// TODO REMOVE THIS HACK
                                 <NetworkAreaDiagramPane
                                     studyUuid={studyUuid}
                                     network={network}
@@ -363,12 +383,14 @@ const StudyPane = ({
                                     }
                                 />
                             )}
+
                             {useRefactoDiagram && (
                                 <DiagramPane
                                     studyUuid={studyUuid}
                                     network={network}
                                     //onClose={closeVoltageLevelDiagram} // was useless
-                                    openVoltageLevel={openVoltageLevel}
+                                    //onClose={closeNetworkAreaDiagram} // seems useless
+                                    //openVoltageLevel={openVoltageLevel} // seems useless
                                     isComputationRunning={isComputationRunning}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -379,7 +401,7 @@ const StudyPane = ({
                                     visible={
                                         props.view === StudyView.MAP &&
                                         studyDisplayMode !==
-                                            STUDY_DISPLAY_MODE.TREE
+                                        STUDY_DISPLAY_MODE.TREE
                                     }
                                 />
                             )}

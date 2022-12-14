@@ -19,17 +19,12 @@ import {
     getVoltageLevelSingleLineDiagram,
     updateSwitchState,
 } from '../../../utils/rest-api';
-import SingleLineDiagram from './single-line-diagram';
+import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import {
-    getNameOrId,
-    useSingleLineDiagram,
-    ViewState,
-    SvgType,
-} from '../diagram-common';
+import { getNameOrId, useSingleLineDiagram, ViewState } from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 

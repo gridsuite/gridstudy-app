@@ -53,7 +53,6 @@ import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
-import { SvgType } from '../diagram-common';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -61,6 +60,11 @@ export const SubstationLayout = {
     SMART: 'smart',
     SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
     SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
+};
+
+export const SvgType = {
+    VOLTAGE_LEVEL: 'voltage-level',
+    SUBSTATION: 'substation',
 };
 
 const loadingWidth = 150;
