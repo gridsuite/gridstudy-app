@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { gridItem, GridSection } from './dialogUtils';
-import { loadScalable } from '../../utils/rest-api';
+import { loadScaling } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { elementType } from '@gridsuite/commons-ui';
 import {
@@ -60,23 +60,21 @@ export const useStyles = makeStyles((theme) => ({
 const ACTIVE_VAR_MODE_DEFAULT_VALUE = 'PROPORTIONAL';
 const REACTIVE_VAR_MODE_DEFAULT_VALUE = 'TAN_FIXED';
 
-const VariationSection = ({
-    index,
-    onChange,
-    defaultValue,
-    inputForm,
-    errors,
-}) => {
+const VariationSection = ({ index, onChange, defaultValue, inputForm }) => {
     const classes = useStyles();
 
     const [filtres, filtresField] = useDirectoryElements({
         id: index,
         label: 'filter',
         initialValues: defaultValue.filtres ? defaultValue.filtres : [],
+        validation: {
+            isFieldRequired: true,
+        },
         elementType: elementType.FILTER,
         equipmentTypes: ['LOAD'],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
+        inputForm: inputForm,
     });
 
     const [deltaTargetP, deltaTargetPField] = useIntegerValue({
@@ -138,20 +136,12 @@ const VariationSection = ({
 };
 
 /**
- * Dialog to Load Scalable.
- * @param lineOptionsPromise Promise handling list of network lines
- * @param voltageLevelOptionsPromise Promise handling list of network voltage levels
+ * Dialog to Load Scaling.
  * @param currentNodeUuid the currently selected tree node
  * @param editData the possible line split with voltage level creation record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
-const LoadScalableDialog = ({
-    lineOptionsPromise,
-    voltageLevelOptionsPromise,
-    currentNodeUuid,
-    editData,
-    ...dialogProps
-}) => {
+const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { snackError } = useSnackMessage();
@@ -207,7 +197,7 @@ const LoadScalableDialog = ({
     };
 
     const handleSave = () => {
-        loadScalable(
+        loadScaling(
             studyUuid,
             currentNodeUuid,
             editData ? editData.uuid : undefined,
@@ -249,7 +239,7 @@ const LoadScalableDialog = ({
     );
 };
 
-LoadScalableDialog.propTypes = {
+LoadScalingDialog.propTypes = {
     currentNodeUuid: PropTypes.string,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
@@ -262,4 +252,4 @@ LoadScalableDialog.propTypes = {
     editData: PropTypes.object,
 };
 
-export default LoadScalableDialog;
+export default LoadScalingDialog;

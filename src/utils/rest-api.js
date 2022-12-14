@@ -1963,34 +1963,33 @@ export function attachLine(
     });
 }
 
-export function loadScalable(
+export function loadScaling(
     studyUuid,
     currentNodeUuid,
     modificationUuid,
-    loadScalableChoice,
+    loadScalingChoice,
     variations
 ) {
     const body = JSON.stringify({
-        loadScalableChoice,
+        loadScalingChoice,
         variations,
     });
 
-    let lineAttachUrl;
+    let loadScalingUrl;
     if (modificationUuid) {
-        console.info('load scalable update', body);
-        lineAttachUrl =
+        console.info('load scaling update', body);
+        loadScalingUrl =
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/modifications/' +
-            encodeURIComponent(modificationUuid) +
-            '/load-scalable';
+            '/network-modifications/' +
+            encodeURIComponent(modificationUuid);
     } else {
-        console.info('create load scalable', body);
-        lineAttachUrl =
+        console.info('create load scaling', body);
+        loadScalingUrl =
             getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modification/load-scalable';
+            '/network-modifications';
     }
 
-    return backendFetch(lineAttachUrl, {
+    return backendFetch(loadScalingUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
