@@ -896,17 +896,6 @@ export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching sensitivity analysis on ${studyUuid} and node ${currentNodeUuid}  ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensitivity-analysis/result';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
 export function fetchSensitivityAnalysisResultTabbed(
     studyUuid,
     currentNodeUuid,
