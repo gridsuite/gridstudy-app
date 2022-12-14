@@ -59,6 +59,13 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
         marginTop: 4,
     },
+
+    midFormErrorMessage: {
+        color: theme.palette.error.main,
+        fontSize: 'small',
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
+    },
 }));
 
 function getValue(val) {
@@ -275,6 +282,10 @@ const GeneratorModificationDialog = ({
         label: 'ActivePowerText',
         validation: {
             isFieldNumeric: true,
+            valueGreaterThanOrEqualTo:
+                minimumActivePower || generatorInfos?.minP,
+            valueLessThanOrEqualTo: maximumActivePower || generatorInfos?.maxP,
+            errorMsgId: 'ActivePowerBetweenMaxAndMin',
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
@@ -370,13 +381,58 @@ const GeneratorModificationDialog = ({
         previousValue: getPreviousRegulationType(generatorInfos),
     });
 
+    let previousFrequencyRegulation = '';
+    if (generatorInfos?.activePowerControlOn)
+        previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
+    else if (
+        generatorInfos?.activePowerControlOn === false ||
+        generatorInfos?.activePowerControlOn === undefined
+    )
+        previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
+
+    const [frequencyRegulation, frequencyRegulationField] =
+        useNullableBooleanValue({
+            label: 'FrequencyRegulation',
+            inputForm: inputForm,
+            defaultValue: getValueOrNull(formValues?.participate),
+            previousValue: previousFrequencyRegulation,
+            clearable: true,
+        });
+
+    const isVoltageRegulationOn = useMemo(() => {
+        return (
+            voltageRegulation === true ||
+            (voltageRegulation === null &&
+                generatorInfos?.voltageRegulatorOn === true)
+        );
+    }, [voltageRegulation, generatorInfos?.voltageRegulatorOn]);
+
+    const isFrequencyRegulationOn = useMemo(() => {
+        return (
+            frequencyRegulation === true ||
+            (frequencyRegulation === null &&
+                generatorInfos?.activePowerControlOn === true)
+        );
+    }, [frequencyRegulation, generatorInfos?.activePowerControlOn]);
+
+    useEffect(() => {
+        if (
+            !isVoltageRegulationOn ||
+            !isDistantRegulation(voltageRegulationType)
+        ) {
+            inputForm.removeValidation(REGULATING_VOLTAGE_LEVEL);
+            inputForm.removeValidation(REGULATING_EQUIPMENT);
+        }
+    }, [isVoltageRegulationOn, voltageRegulationType, inputForm]);
+
     const [regulatingTerminal, regulatingTerminalField] =
         useRegulatingTerminalValue({
             label: 'RegulatingTerminalGenerator',
             validation: {
                 isFieldRequired:
-                    voltageRegulation &&
-                    isDistantRegulation(voltageRegulationType),
+                    isVoltageRegulationOn &&
+                    isDistantRegulation(voltageRegulationType) &&
+                    !isPreviousRegulationDistant(generatorInfos),
             },
             inputForm: inputForm,
             disabled:
@@ -401,31 +457,6 @@ const GeneratorModificationDialog = ({
                       ' : ' +
                       generatorInfos?.regulatingTerminalConnectableId
                     : null,
-        });
-
-    useEffect(() => {
-        if (!voltageRegulation || !isDistantRegulation(voltageRegulationType)) {
-            inputForm.removeValidation(REGULATING_VOLTAGE_LEVEL);
-            inputForm.removeValidation(REGULATING_EQUIPMENT);
-        }
-    }, [voltageRegulation, voltageRegulationType, inputForm]);
-
-    let previousFrequencyRegulation = '';
-    if (generatorInfos?.activePowerControlOn)
-        previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
-    else if (
-        generatorInfos?.activePowerControlOn === false ||
-        generatorInfos?.activePowerControlOn === undefined
-    )
-        previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
-
-    const [frequencyRegulation, frequencyRegulationField] =
-        useNullableBooleanValue({
-            label: 'FrequencyRegulation',
-            inputForm: inputForm,
-            defaultValue: getValueOrNull(formValues?.participate),
-            previousValue: previousFrequencyRegulation,
-            clearable: true,
         });
 
     const [droop, droopField] = useDoubleValue({
@@ -510,22 +541,6 @@ const GeneratorModificationDialog = ({
             (!isReactiveCapabilityCurveOn || isReactiveCapabilityCurveValid)
         );
     };
-
-    const isVoltageRegulationOn = useMemo(() => {
-        return (
-            voltageRegulation === true ||
-            (voltageRegulation === null &&
-                generatorInfos?.voltageRegulatorOn === true)
-        );
-    }, [voltageRegulation, generatorInfos?.voltageRegulatorOn]);
-
-    const isFrequencyRegulationOn = useMemo(() => {
-        return (
-            frequencyRegulation === true ||
-            (frequencyRegulation === null &&
-                generatorInfos?.activePowerControlOn === true)
-        );
-    }, [frequencyRegulation, generatorInfos?.activePowerControlOn]);
 
     const handleSave = () => {
         modifyGenerator(
