@@ -46,7 +46,11 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
 
-    const getVoltageLevelSingleLineDiagramUrl = useCallback(
+    const voltageLevelsIdsForNad = useSelector(
+        (state) => state.voltageLevelsIdsForNad
+    );
+
+    const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
             isNodeBuilt(currentNode)
                 ? getVoltageLevelSingleLineDiagram(
@@ -69,7 +73,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         ]
     );
 
-    const getSubstationSingleLineDiagramUrl = useCallback(
+    const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
             isNodeBuilt(currentNode)
                 ? getSubstationSingleLineDiagram(
@@ -94,7 +98,21 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         ]
     );
 
-    const getNetworkAreaDiagramUrl = useCallback(() => {console.error("CHARLY PAS ENCORE IMPLEMENTE")}, []); // TODO CHARLY ici get NAD url ?
+    const checkAndGetNetworkAreaDiagramUrl = useCallback(
+        (voltageLevelsIds, depth) =>
+            isNodeBuilt(currentNode)
+                ? getNetworkAreaDiagramUrl(
+                    studyUuid,
+                    currentNode?.id,
+                    voltageLevelsIds,
+                    depth
+                )
+                : null,
+        [
+            studyUuid,
+            currentNode,
+        ]
+    );
 
     return useCallback(
         (view) => {
@@ -107,7 +125,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 if (countryName) {
                     name += ' \u002D ' + countryName;
                 }
-                const svgUrl = getSubstationSingleLineDiagramUrl(substationId);
+                const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(substationId);
 
                 return {
                     id: substationId,
@@ -129,7 +147,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 if (countryName) {
                     name += ' \u002D ' + countryName;
                 }
-                const svgUrl = getVoltageLevelSingleLineDiagramUrl(vlId);
+                const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(vlId);
 
                 return {
                     id: vlId,
@@ -142,8 +160,33 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 };
             }
 
-            function createNetworkAreaDiagram(nadId, state) {
-                console.error("CHARLY PAS ENCORE IMPLEMENTE 2"); // TODO CHARLY
+            function createNetworkAreaDiagram(state, depth=0) { // TODO CHARLY en cours de remix
+                let displayedVoltageLevels = [];
+                let nadTitle = '';
+                if (voltageLevelsIdsForNad) {
+                    voltageLevelsIdsForNad.forEach((id) =>
+                        displayedVoltageLevels.push(network.getVoltageLevel(id))
+                    );
+                }
+
+                if (displayedVoltageLevels.length === 0) return;
+                displayedVoltageLevels.forEach((vl) => {
+                    const name = useName && vl?.name ? vl?.name : vl?.id;
+                    if (name !== undefined) {
+                        nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
+                    }
+                });
+
+                const svgUrl = checkAndGetNetworkAreaDiagramUrl(voltageLevelsIdsForNad, depth); // TODO CHARLY passer le depth correctement
+
+                return {
+                    id: voltageLevelsIdsForNad[0], // TODO CHARLY est-ce correct ou bien nadTitle mieux ici ?
+                    ref: React.createRef(),
+                    state,
+                    nadTitle,
+                    svgUrl,
+                    type: SvgType.NETWORK_AREA_DIAGRAM,
+                };
             }
 
             if (!network) return;
@@ -152,7 +195,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             else if (view.type === SvgType.SUBSTATION)
                 return createSubstationSLD(view.id, view.state);
             else if (view.type === SvgType.NETWORK_AREA_DIAGRAM)
-                return createNetworkAreaDiagram(view.id, view.state);
+                return createNetworkAreaDiagram(view.state);
             else {
                 console.error("diagram-pane:useDisplayView => Missing view.type !");
             }
@@ -160,8 +203,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         [
             network,
             useName,
-            getSubstationSingleLineDiagramUrl,
-            getVoltageLevelSingleLineDiagramUrl,
+            checkAndGetSubstationSingleLineDiagramUrl,
+            checkAndGetVoltageLevelSingleLineDiagramUrl,
+            checkAndGetNetworkAreaDiagramUrl,
+            voltageLevelsIdsForNad,
         ]
     );
 };
@@ -192,7 +237,7 @@ export function DiagramPane({
     const [views, setViews] = useState([]);
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
-    const [displayedSLD, setDisplayedSld] = useState([]);
+    const [displayedDiagrams, setDisplayedDiagrams] = useState([]);
     const [displayedSldHeights, setDisplayedSldHeights] = useState([]);
     const displayedSldHeightsRef = useRef();
     displayedSldHeightsRef.current = displayedSldHeights;
@@ -257,6 +302,7 @@ export function DiagramPane({
     const voltageLevelsIds = useSelector(
         (state) => state.voltageLevelsIdsForNad
     );
+    console.error("CHARLY state.voltageLevelsIdsForNad", voltageLevelsIds);
 
     const fullScreenNadId = useSelector((state) => state.fullScreenNadId);
 
@@ -300,6 +346,7 @@ export function DiagramPane({
         // triggering this effect when changing current node
         if (isNodeBuilt(currentNodeRef.current) && visible) {
             const viewsFromDiagramStates = [];
+            console.error("CHARLY + + + diagramStates", diagramStates);
             diagramStates.forEach((currentState) => {
                 let currentView = createView(currentState);
                 // if current view cannot be found, it return undefined
@@ -309,9 +356,29 @@ export function DiagramPane({
                     closeDiagramView(currentState.id);
                 }
             });
+
+            if(voltageLevelsIds.length > 0) {
+
+                let nadView = createView({ id:voltageLevelsIds[0], state: ViewState.OPENED, type: SvgType.NETWORK_AREA_DIAGRAM });
+
+                viewsFromDiagramStates.push(nadView);
+            }
+            /*voltageLevelsIds.forEach((currentId) => {
+                let currentView = createView(currentState);
+                // if current view cannot be found, it return undefined
+                // in this case, we remove it from diagram states
+                if (currentView) viewsFromDiagramStates.push(currentView);
+                else {
+                    closeDiagramView(currentState.id);
+                }
+            });*/
+
+            console.error("CHARLY - - - setViews en cours", viewsFromDiagramStates);
             setViews(viewsFromDiagramStates);
         }
-    }, [diagramStates, visible, disabled, closeDiagramView, createView, dispatch]);
+    }, [diagramStates, visible, disabled, closeDiagramView, createView, dispatch,
+        voltageLevelsIds // TODO CHARLY est-ce nécessaire ?
+    ]);
 
     const handleCloseDiagram = useCallback(
         (id) => {
@@ -322,6 +389,7 @@ export function DiagramPane({
 
     const handleOpenView = useCallback(
         (id, type) => {
+            console.error("handleOpenView", id, type);
             if (!network) return;
             if (type === SvgType.VOLTAGE_LEVEL) showVoltageLevelDiagramView(id);
             else if (type === SvgType.SUBSTATION) showSubstationDiagramView(id);
@@ -384,14 +452,15 @@ export function DiagramPane({
     }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeDiagramView, network]);
 
     useEffect(() => {
-        setDisplayedSld(
+        //console.error("CHARLY update displayedDiagram via views", views);
+        setDisplayedDiagrams(
             views.filter((view) =>
                 [ViewState.OPENED, ViewState.PINNED].includes(view.state)
             )
         );
     }, [views]);
 
-    const displayedIds = new Set(displayedSLD.map(({ id }) => id));
+    const displayedIds = new Set(displayedDiagrams.map(({ id }) => id));
     const minimized = views.filter(({ id }) => !displayedIds.has(id));
     const [computedHeight, setComputedHeight] = useState();
 
@@ -432,43 +501,42 @@ export function DiagramPane({
     return (
         <AutoSizer>
             {({ width, height }) => {
-                //console.error("CHARLY SLD PANE AutoSizer :", { width, height })
                 return (
                     <div
                         style={{ flexDirection: 'row', display: 'inline-flex' }}
                     >
-                        {displayedSLD.map((sld) => (
+                        {displayedDiagrams.map((diagram) => (
                             <Diagram
                                 computedHeight={computedHeight}
-                                diagramTitle={getNameOrId(sld)}
+                                diagramTitle={getNameOrId(diagram)}
                                 disabled={disabled}
                                 isComputationRunning={isComputationRunning}
-                                key={sld.id}
+                                key={diagram.id}
                                 loadFlowStatus={loadFlowStatus}
                                 numberToDisplay={
-                                    displayedSLD.length +
-                                    (voltageLevelsIds?.length > 0 ? 1 : 0)
+                                    displayedDiagrams.length// +
+                                    //(voltageLevelsIds?.length > 0 ? 1 : 0)
                                 }
                                 onBreakerClick={handleUpdateSwitchState}
                                 //onClose={handleCloseDiagram}
                                 onMinimize={minimizeDiagramView}
                                 onNextVoltageLevelClick={handleOpenView}
                                 onTogglePin={togglePinDiagramView}
-                                pinned={sld.state === ViewState.PINNED}
-                                ref={sld.ref}
+                                pinned={diagram.state === ViewState.PINNED}
+                                ref={diagram.ref}
                                 setDisplayedDiagramHeights={
                                     setDisplayedSldHeights
                                 }
                                 showInSpreadsheet={showInSpreadsheet}
-                                diagramId={sld.id}
-                                svgType={sld.type}
-                                svgUrl={sld.svgUrl}
+                                diagramId={diagram.id}
+                                svgType={diagram.type}
+                                svgUrl={diagram.svgUrl}
                                 totalHeight={height}
                                 totalWidth={width}
                                 updateSwitchMsg={updateSwitchMsg}
                             />
                         ))}
-                        {voltageLevelsIds?.length > 0 && (
+                        {/*voltageLevelsIds?.length > 0 && (
                             <Diagram
                                 computedHeight={computedHeight}
                                 currentNode={currentNode}
@@ -499,7 +567,7 @@ export function DiagramPane({
                                 //sldId={sld.id}
                                 svgType={SvgType.NETWORK_AREA_DIAGRAM}
                             />
-                        )}
+                        )*/}
                         <Stack
                             direction={{ xs: 'column', sm: 'row' }}
                             spacing={1}

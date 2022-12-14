@@ -259,7 +259,7 @@ export function fetchPath(studyUuid) {
     return backendFetchJson(fetchPathUrl);
 }
 
-export function getVoltageLevelSingleLineDiagram(
+export function getVoltageLevelSingleLineDiagram( // TODO rename this to getVoltageLevelSingleLineDiagramUrl
     studyUuid,
     currentNodeUuid,
     voltageLevelId,
@@ -288,7 +288,7 @@ export function getVoltageLevelSingleLineDiagram(
     );
 }
 
-export function getSubstationSingleLineDiagram(
+export function getSubstationSingleLineDiagram( // TODO rename this to getSubstationSingleLineDiagramUrl
     studyUuid,
     currentNodeUuid,
     substationId,
