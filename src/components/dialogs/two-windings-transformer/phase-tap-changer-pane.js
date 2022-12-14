@@ -1,16 +1,19 @@
 import VirtualizedTable from '../../util/virtualized-table';
-import { Button, Grid, IconButton } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { gridItem } from '../dialogUtils';
-import EditIcon from '@mui/icons-material/Edit';
 import { NumericalField } from '../../network/equipment-table-editors';
 import { REGULATION_MODES } from '../../network/constants';
 import Papa from 'papaparse';
 import makeStyles from '@mui/styles/makeStyles';
-import { PHASE_TAP } from './two-windings-transformer-creation-dialog';
+import {
+    MAX_TAP_NUMBER,
+    PHASE_TAP,
+} from './two-windings-transformer-creation-dialog';
 import { CreateRuleDialog } from './create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
+import Alert from '@mui/material/Alert';
 
 const useStyles = makeStyles((theme) => ({
     center: {
@@ -54,6 +57,7 @@ const PhaseTapChangerPane = (props) => {
         highTapPosition,
         tapPositionField,
         regulatingField,
+        phaseCellIndexError,
     } = props;
 
     const classes = useStyles();
@@ -65,13 +69,7 @@ const PhaseTapChangerPane = (props) => {
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
 
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
-
-    const isLineOnEditMode = useCallback(
-        (rowData) => {
-            return lineEdit && rowData.rowIndex === lineEdit.id;
-        },
-        [lineEdit]
-    );
+    const [ratioError, setRatioError] = useState('');
 
     const generateNewTapData = (index) => {
         return {
@@ -88,6 +86,15 @@ const PhaseTapChangerPane = (props) => {
     };
 
     const generateTapRows = () => {
+        if (highTapPosition - lowTapPosition + 1 > MAX_TAP_NUMBER) {
+            setRatioError(
+                intl.formatMessage(
+                    { id: 'TapPositionValueError' },
+                    { value: MAX_TAP_NUMBER }
+                )
+            );
+            return;
+        }
         let tempRows = [];
         const rowNumber =
             highTapPosition - lowTapPosition > 0
@@ -160,18 +167,20 @@ const PhaseTapChangerPane = (props) => {
                 label: intl.formatMessage({ id: 'Ratio' }).toUpperCase(),
                 id: 'ratio',
                 dataKey: 'ratio',
+                editor: NumericalField,
             },
             {
                 label: intl.formatMessage({ id: 'Alpha' }).toUpperCase(),
                 id: 'alpha',
                 dataKey: 'alpha',
+                editor: NumericalField,
             },
         ];
     }, [intl]);
 
     const setColumnInError = useCallback(
         (dataKey) => {
-            if (!lineEdit.errors.has(dataKey)) {
+            if (!lineEdit?.errors.has(dataKey)) {
                 let newLineEdit = { ...lineEdit };
                 newLineEdit.errors.set(dataKey, true);
                 setLineEdit(newLineEdit);
@@ -182,36 +191,13 @@ const PhaseTapChangerPane = (props) => {
 
     const resetColumnInError = useCallback(
         (dataKey) => {
-            if (lineEdit.errors.has(dataKey)) {
+            if (lineEdit?.errors.has(dataKey)) {
                 let newLineEdit = { ...lineEdit };
                 newLineEdit.errors.delete(dataKey);
                 setLineEdit(newLineEdit);
             }
         },
         [lineEdit]
-    );
-
-    const editCellRender = useCallback(
-        (rowData) => {
-            return (
-                <div className={classes.tableCell}>
-                    <IconButton
-                        size={'small'}
-                        onClick={() => {
-                            setLineEdit({
-                                oldValues: {},
-                                newValues: {},
-                                id: rowData.rowIndex,
-                                errors: new Map(),
-                            });
-                        }}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </div>
-            );
-        },
-        [classes.tableCell]
     );
 
     const defaultCellRender = useCallback(
@@ -234,9 +220,19 @@ const PhaseTapChangerPane = (props) => {
 
     const handleEditCell = useCallback(
         (rowData, newVal) => {
-            const parsedVal = parseInt(newVal);
+            setLineEdit({
+                oldValues: {},
+                newValues: {},
+                id: rowData.rowIndex,
+                errors: new Map(),
+            });
+            const parsedVal = parseFloat(newVal);
 
-            if (!isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100) {
+            if (
+                !isNaN(parsedVal) &&
+                parsedVal >= 0 &&
+                parsedVal <= MAX_TAP_NUMBER
+            ) {
                 let tempRows = phaseTapRows;
                 const column = rowData.dataKey;
                 tempRows[rowData.rowIndex][column] = parsedVal;
@@ -249,31 +245,33 @@ const PhaseTapChangerPane = (props) => {
 
     const editableCellRender = useCallback(
         (rowData) => {
-            if (isLineOnEditMode(rowData)) {
-                const index = rowData.columnIndex - 1;
-                const Editor = COLUMNS_DEFINITIONS[index].editor;
-                if (Editor) {
-                    return (
-                        <>
-                            <div className={classes.tableCell}>
-                                <Editor
-                                    key={rowData.dataKey + index}
-                                    columnDefinition={
-                                        COLUMNS_DEFINITIONS[index]
-                                    }
-                                    defaultValue={rowData.cellData}
-                                    setColumnError={(k) => setColumnInError(k)}
-                                    resetColumnError={(k) =>
-                                        resetColumnInError(k)
-                                    }
-                                    setter={(val) =>
-                                        handleEditCell(rowData, val)
-                                    }
-                                />
-                            </div>
-                        </>
-                    );
+            const index = rowData.columnIndex;
+            const Editor = COLUMNS_DEFINITIONS[index].editor;
+            if (Editor) {
+                let style;
+                if (
+                    phaseCellIndexError === rowData.rowIndex &&
+                    COLUMNS_DEFINITIONS[index].id === 'alpha'
+                ) {
+                    style = {
+                        color: 'red',
+                    };
                 }
+                return (
+                    <>
+                        <div className={classes.tableCell}>
+                            <Editor
+                                key={rowData.dataKey + index}
+                                columnDefinition={COLUMNS_DEFINITIONS[index]}
+                                defaultValue={rowData.cellData}
+                                setColumnError={(k) => setColumnInError(k)}
+                                resetColumnError={(k) => resetColumnInError(k)}
+                                setter={(val) => handleEditCell(rowData, val)}
+                                inputProps={{ style }}
+                            />
+                        </div>
+                    </>
+                );
             }
             return defaultCellRender(rowData);
         },
@@ -282,9 +280,9 @@ const PhaseTapChangerPane = (props) => {
             classes.tableCell,
             defaultCellRender,
             handleEditCell,
-            isLineOnEditMode,
             resetColumnInError,
             setColumnInError,
+            phaseCellIndexError,
         ]
     );
 
@@ -296,18 +294,16 @@ const PhaseTapChangerPane = (props) => {
             return c;
         });
 
-        tableColumns.unshift({
-            id: 'edit',
-            dataKey: 'edit',
-            label: '',
-            minWidth: 75,
-            locked: true,
-            editColumn: true,
-            cellRenderer: (rowData, rowIndex) =>
-                editCellRender(rowData, rowIndex),
-        });
-
         return tableColumns;
+    };
+
+    const generateTableKey = () => {
+        // We generate a unique key for the table because when we change alpha value by creating a new rule for example,
+        // the table does not update only by scrolling. With this key we make sure it is updated when creating a new rule
+        return (
+            phaseTapRows[0]?.alpha +
+            phaseTapRows[phaseTapRows.length - 1]?.alpha
+        );
     };
 
     const getCSVColumns = () => {
@@ -327,7 +323,7 @@ const PhaseTapChangerPane = (props) => {
         return isNaN(intValue) ? defaultValue : intValue;
     };
 
-    const handleImportTapRule = (selectedFile) => {
+    const handleImportTapRule = (selectedFile, setFileParseError) => {
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
@@ -428,6 +424,10 @@ const PhaseTapChangerPane = (props) => {
 
             tempRows.forEach((row, index) => {
                 tempRows[index].alpha = currentAlpha;
+
+                // When creating a new rule, the index does not change because we keep the same number of rows.
+                // We set the key to currentAlpha because it is unique, and we can't have duplicate
+                tempRows[index].key = currentAlpha;
                 currentAlpha += alphaInterval;
             });
             handlePhaseTapRows(tempRows);
@@ -451,34 +451,40 @@ const PhaseTapChangerPane = (props) => {
                         {regulatingField}
                     </Grid>
 
-                    <Grid item xs={4}>
-                        {regulationMode !==
-                            REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
-                            currentLimiterRegulatingValueField}
-                        {regulationMode ===
-                            REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
-                            flowSetPointRegulatingValueField}
-                    </Grid>
-                    <Grid item xs={4}>
-                        {targetDeadbandField}
-                    </Grid>
+                    {regulationMode !== REGULATION_MODES.FIXED_TAP.id && (
+                        <Grid item xs={4}>
+                            {regulationMode !==
+                                REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
+                                currentLimiterRegulatingValueField}
+                            {regulationMode ===
+                                REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
+                                flowSetPointRegulatingValueField}
+                        </Grid>
+                    )}
+                    {regulationMode !== REGULATION_MODES.FIXED_TAP.id && (
+                        <Grid item xs={4}>
+                            {targetDeadbandField}
+                        </Grid>
+                    )}
                 </Grid>
 
-                <Grid item container spacing={2}>
-                    <Grid
-                        item
-                        xs={4}
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <FormattedMessage id="TerminalRef" />
-                    </Grid>
+                {regulationMode !== REGULATION_MODES.FIXED_TAP.id && (
+                    <Grid item container spacing={2}>
+                        <Grid
+                            item
+                            xs={4}
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <FormattedMessage id="TerminalRef" />
+                        </Grid>
 
-                    {gridItem(regulatingTerminalField, 8)}
-                </Grid>
+                        {gridItem(regulatingTerminalField, 8)}
+                    </Grid>
+                )}
 
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
@@ -504,6 +510,7 @@ const PhaseTapChangerPane = (props) => {
                         <VirtualizedTable
                             rows={phaseTapRows}
                             columns={generateTableColumns()}
+                            key={generateTableKey()}
                         />
                     </Grid>
                     <Grid container item spacing={2} xs direction={'column'}>
@@ -542,10 +549,16 @@ const PhaseTapChangerPane = (props) => {
                         </Grid>
                     </Grid>
                 </Grid>
+                {ratioError && (
+                    <Grid item xs={12}>
+                        <Alert severity="error">{ratioError}</Alert>
+                    </Grid>
+                )}
             </Grid>
 
             <CreateRuleDialog
                 ruleType={PHASE_TAP}
+                allowNegativeValues={true}
                 openCreateRuleDialog={openCreateRuleDialog}
                 setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                 handleCreateTapRule={handleCreateAlphaTapRule}

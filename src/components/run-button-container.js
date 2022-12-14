@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import SensiParametersSelector from './dialogs/sensi-parameters-selector';
+import SensiParametersSelector from './dialogs/sensi/sensi-parameters-selector';
 import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -33,7 +33,7 @@ import {
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { useSnackMessage } from '../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 
@@ -145,11 +145,7 @@ export function RunButtonContainer({
         startSecurityAnalysis(studyUuid, currentNode?.id, contingencyListNames);
     };
 
-    const handleStartSensi = (
-        variablesFiltersUuids,
-        contingencyListUuids,
-        branchFiltersUuids
-    ) => {
+    const handleStartSensi = (sensiConfiguration) => {
         // close the contingency list selection window
         setShowSensiParametersSelector(false);
 
@@ -159,9 +155,7 @@ export function RunButtonContainer({
         startSensitivityAnalysis(
             studyUuid,
             currentNode?.id,
-            variablesFiltersUuids,
-            contingencyListUuids,
-            branchFiltersUuids
+            sensiConfiguration
         );
     };
 
@@ -169,9 +163,9 @@ export function RunButtonContainer({
         if (action === runnable.LOADFLOW) {
             startLoadFlow(studyUuid, currentNode?.id)
                 .then(setRanLoadflow(true))
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'startLoadFlowError',
                     });
                 });
@@ -184,9 +178,9 @@ export function RunButtonContainer({
         } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(setRanShortCircuit(true))
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'ShortCircuitError',
                     });
                 });
@@ -271,12 +265,16 @@ export function RunButtonContainer({
                         onStart={handleStartSecurityAnalysis}
                         currentNodeUuid={currentNode?.id}
                     />
-                    <SensiParametersSelector
-                        open={showSensiParametersSelector}
-                        onClose={() => setShowSensiParametersSelector(false)}
-                        onStart={handleStartSensi}
-                        currentNodeUuid={currentNode?.id}
-                    />
+                    {showSensiParametersSelector && (
+                        <SensiParametersSelector
+                            open={showSensiParametersSelector}
+                            onClose={() =>
+                                setShowSensiParametersSelector(false)
+                            }
+                            onStart={handleStartSensi}
+                            currentNodeUuid={currentNode?.id}
+                        />
+                    )}
                 </div>
             )}
         </>

@@ -13,25 +13,29 @@ import {
     DialogTitle,
     Grid,
 } from '@mui/material';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useCSVReader } from '../inputs/input-hooks';
+import { useCSVPicker } from '../inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
-import { PHASE_TAP } from './two-windings-transformer-creation-dialog';
+import {
+    MAX_TAP_NUMBER,
+    PHASE_TAP,
+} from './two-windings-transformer-creation-dialog';
 
 export const ImportRuleDialog = (props) => {
     const handleCloseDialog = () => {
         props.setOpenImportRuleDialog(false);
     };
 
-    const [selectedFile, setSelectedFile, FileField, selectedFileError] =
-        useCSVReader({
-            label:
-                props.ruleType === PHASE_TAP
-                    ? 'ImportDephasingRule'
-                    : 'ImportRegulationRule',
-            header: props.csvColumns,
-        });
+    const [selectedFile, FileField, selectedFileError] = useCSVPicker({
+        label:
+            props.ruleType === PHASE_TAP
+                ? 'ImportDephasingRule'
+                : 'ImportRegulationRule',
+        header: props.csvColumns,
+        resetTrigger: props.openImportRuleDialog,
+        maxTapNumber: MAX_TAP_NUMBER,
+    });
 
     const handleSave = () => {
         if (!selectedFileError) {
@@ -39,12 +43,6 @@ export const ImportRuleDialog = (props) => {
             handleCloseDialog();
         }
     };
-
-    useEffect(() => {
-        if (props.openImportRuleDialog) {
-            setSelectedFile();
-        }
-    }, [props.openImportRuleDialog, setSelectedFile]);
 
     const isInvalid = useMemo(() => {
         return (
@@ -69,6 +67,7 @@ export const ImportRuleDialog = (props) => {
                     <Grid item>
                         <CsvDownloader
                             columns={props.csvColumns}
+                            datas={[]}
                             filename={
                                 props.ruleType === PHASE_TAP
                                     ? 'tap-dephasing-rule'

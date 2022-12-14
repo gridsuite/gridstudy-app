@@ -5,16 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import React, { useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
 import {
     gridItem,
@@ -25,6 +19,9 @@ import {
 import { deleteVoltageLevelOnLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
+import ModificationDialog from './modificationDialog';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -35,13 +32,13 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * @param lineOptionsPromise Promise handling list of network lines
  * @param currentNodeUuid the currently selected tree node
  * @param editData record to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const DeleteVoltageLevelOnLineDialog = ({
-    open,
-    onClose,
     lineOptionsPromise,
     currentNodeUuid,
     editData,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -54,10 +51,6 @@ const DeleteVoltageLevelOnLineDialog = ({
     const [lineOptions, setLineOptions] = useState([]);
 
     const [loadingLineOptions, setLoadingLineOptions] = useState(true);
-
-    const clearValues = () => {
-        setFormValues(null);
-    };
 
     useEffect(() => {
         if (editData) {
@@ -152,6 +145,26 @@ const DeleteVoltageLevelOnLineDialog = ({
         defaultValue: formValues?.replacingLine1Name,
     });
 
+    const toFormValues = (deleteVoltageLevelOnLine) => {
+        return {
+            lineToAttachTo1: deleteVoltageLevelOnLine.lineToAttachTo1 + '(1)',
+            lineToAttachTo2: deleteVoltageLevelOnLine.lineToAttachTo2,
+            attachedLine: deleteVoltageLevelOnLine.attachedLine,
+            newLine1Id: deleteVoltageLevelOnLine.newLine1Id,
+            newLine1Name: deleteVoltageLevelOnLine.newLine1Name,
+        };
+    };
+
+    const equipmentPath = 'delete-voltage-level-on-line';
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        currentNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+    });
+
     const handleSave = () => {
         if (inputForm.validate()) {
             deleteVoltageLevelOnLine(
@@ -169,75 +182,56 @@ const DeleteVoltageLevelOnLineDialog = ({
                     headerId: 'DeleteVoltageLevelOnLineError',
                 });
             });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
         }
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleValidation = () => {
+        return inputForm.validate();
+    };
 
-    const handleCloseAndClear = () => {
-        clearValues();
-        handleClose();
+    const clear = () => {
+        inputForm.reset();
+        setFormValues(null);
     };
 
     return (
-        <>
-            <Dialog
-                fullWidth
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-delete-voltage-level-on-line"
-                maxWidth={'md'}
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={12}>
-                            <FormattedMessage id="DeleteVoltageLevelOnLine" />
-                        </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <GridSection title="Line1" />
-                    <Grid container spacing={2} alignItems="center">
-                        {gridItem(lineToAttachTo1Field, 5)}
-                    </Grid>
-                    <GridSection title="Line2" />
-                    <Grid container spacing={2} alignItems="center">
-                        {gridItem(lineToAttachTo2Field, 5)}
-                    </Grid>
-                    <GridSection title="LineAttached" />
-                    <Grid container spacing={2} alignItems="center">
-                        {gridItem(attachedLineField, 5)}
-                    </Grid>
-                    <GridSection title="ReplacingLines" />
-                    <Grid container spacing={2}>
-                        {gridItem(newLine1IdField, 6)}
-                        {gridItem(newLine1NameField, 6)}
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear} variant="text">
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        variant="text"
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
+        <ModificationDialog
+            fullWidth
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            aria-labelledby="dialog-delete-voltage-level-on-line"
+            maxWidth={'md'}
+            titleId="DeleteVoltageLevelOnLine"
+            searchCopy={searchCopy}
+            {...dialogProps}
+        >
+            <GridSection title="Line1" />
+            <Grid container spacing={2} alignItems="center">
+                {gridItem(lineToAttachTo1Field, 5)}
+            </Grid>
+            <GridSection title="Line2" />
+            <Grid container spacing={2} alignItems="center">
+                {gridItem(lineToAttachTo2Field, 5)}
+            </Grid>
+            <GridSection title="LineAttached" />
+            <Grid container spacing={2} alignItems="center">
+                {gridItem(attachedLineField, 5)}
+            </Grid>
+            <GridSection title="ReplacingLines" />
+            <Grid container spacing={2}>
+                {gridItem(newLine1IdField, 6)}
+                {gridItem(newLine1NameField, 6)}
+            </Grid>
+            <EquipmentSearchDialog
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
+                equipmentType={'LOAD'}
+                onSelectionChange={searchCopy.handleSelectionChange}
+                currentNodeUuid={currentNodeUuid}
+            />
+        </ModificationDialog>
     );
 };
 

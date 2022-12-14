@@ -18,6 +18,17 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
+const nonEditableModificationTypes = new Set([
+    'EQUIPMENT_ATTRIBUTE_MODIFICATION',
+    'GROOVY_SCRIPT',
+    'BRANCH_STATUS',
+]);
+
+const isEditableModification = (modif) => {
+    if (!modif) return false;
+    return !nonEditableModificationTypes.has(modif.type);
+};
+
 const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
@@ -162,15 +173,18 @@ export const ModificationListItem = ({
                             className={classes.label}
                             text={getLabel()}
                         />
-                        {!isOneNodeBuilding && hover && !isDragging && (
-                            <IconButton
-                                onClick={() => onEdit(modif.uuid)}
-                                size={'small'}
-                                className={classes.iconEdit}
-                            >
-                                <EditIcon />
-                            </IconButton>
-                        )}
+                        {!isOneNodeBuilding &&
+                            hover &&
+                            !isDragging &&
+                            isEditableModification(modif) && (
+                                <IconButton
+                                    onClick={() => onEdit(modif.uuid)}
+                                    size={'small'}
+                                    className={classes.iconEdit}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            )}
                     </ListItem>
                     <Divider />
                 </div>

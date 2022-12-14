@@ -1,15 +1,18 @@
 import VirtualizedTable from '../../util/virtualized-table';
-import { Button, Grid, IconButton } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { gridItem } from '../dialogUtils';
-import EditIcon from '@mui/icons-material/Edit';
 import { NumericalField } from '../../network/equipment-table-editors';
 import Papa from 'papaparse';
 import makeStyles from '@mui/styles/makeStyles';
-import { RATIO_TAP } from './two-windings-transformer-creation-dialog';
+import {
+    MAX_TAP_NUMBER,
+    RATIO_TAP,
+} from './two-windings-transformer-creation-dialog';
 import { CreateRuleDialog } from './create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
+import Alert from '@mui/material/Alert';
 
 const useStyles = makeStyles((theme) => ({
     center: {
@@ -50,7 +53,9 @@ const RatioTapChangerPane = (props) => {
         highTapPosition,
         tapPositionField,
         loadTapChangingCapabilitiesField,
+        ratioTapLoadTapChangingCapabilities,
         regulatingField,
+        ratioCellIndexError,
     } = props;
 
     const classes = useStyles();
@@ -62,13 +67,7 @@ const RatioTapChangerPane = (props) => {
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
 
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
-
-    const isLineOnEditMode = useCallback(
-        (rowData) => {
-            return lineEdit && rowData.rowIndex === lineEdit.id;
-        },
-        [lineEdit]
-    );
+    const [ratioError, setRatioError] = useState('');
 
     const generateNewTapData = (index) => {
         return {
@@ -84,6 +83,15 @@ const RatioTapChangerPane = (props) => {
     };
 
     const generateTapRows = () => {
+        if (highTapPosition - lowTapPosition + 1 > MAX_TAP_NUMBER) {
+            setRatioError(
+                intl.formatMessage(
+                    { id: 'TapPositionValueError' },
+                    { value: MAX_TAP_NUMBER }
+                )
+            );
+            return;
+        }
         let tempRows = [];
         const rowNumber =
             highTapPosition - lowTapPosition > 0
@@ -166,13 +174,14 @@ const RatioTapChangerPane = (props) => {
                 dataKey: 'ratio',
                 numeric: true,
                 fractionDigits: 5,
+                editor: NumericalField,
             },
         ];
     }, [intl]);
 
     const setColumnInError = useCallback(
         (dataKey) => {
-            if (!lineEdit.errors.has(dataKey)) {
+            if (!lineEdit?.errors.has(dataKey)) {
                 let newLineEdit = { ...lineEdit };
                 newLineEdit.errors.set(dataKey, true);
                 setLineEdit(newLineEdit);
@@ -183,36 +192,13 @@ const RatioTapChangerPane = (props) => {
 
     const resetColumnInError = useCallback(
         (dataKey) => {
-            if (lineEdit.errors.has(dataKey)) {
+            if (lineEdit?.errors.has(dataKey)) {
                 let newLineEdit = { ...lineEdit };
                 newLineEdit.errors.delete(dataKey);
                 setLineEdit(newLineEdit);
             }
         },
         [lineEdit]
-    );
-
-    const editCellRender = useCallback(
-        (rowData) => {
-            return (
-                <div className={classes.tableCell}>
-                    <IconButton
-                        size={'small'}
-                        onClick={() => {
-                            setLineEdit({
-                                oldValues: {},
-                                newValues: {},
-                                id: rowData.rowIndex,
-                                errors: new Map(),
-                            });
-                        }}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </div>
-            );
-        },
-        [classes.tableCell]
     );
 
     const defaultCellRender = useCallback(
@@ -235,9 +221,19 @@ const RatioTapChangerPane = (props) => {
 
     const handleEditCell = useCallback(
         (rowData, newVal) => {
-            const parsedVal = parseInt(newVal);
+            setLineEdit({
+                oldValues: {},
+                newValues: {},
+                id: rowData.rowIndex,
+                errors: new Map(),
+            });
+            const parsedVal = parseFloat(newVal);
 
-            if (!isNaN(parsedVal) && parsedVal >= 0 && parsedVal <= 100) {
+            if (
+                !isNaN(parsedVal) &&
+                parsedVal >= 0 &&
+                parsedVal <= MAX_TAP_NUMBER
+            ) {
                 let tempRows = ratioTapRows;
                 const column = rowData.dataKey;
                 tempRows[rowData.rowIndex][column] = parsedVal;
@@ -250,23 +246,31 @@ const RatioTapChangerPane = (props) => {
 
     const editableCellRender = useCallback(
         (rowData) => {
-            if (isLineOnEditMode(rowData)) {
-                const index = rowData.columnIndex - 1;
-                const Editor = COLUMNS_DEFINITIONS[index].editor;
-                if (Editor) {
-                    return (
-                        <div className={classes.tableCell}>
-                            <Editor
-                                key={rowData.dataKey + index}
-                                columnDefinition={COLUMNS_DEFINITIONS[index]}
-                                defaultValue={rowData.cellData}
-                                setColumnError={(k) => setColumnInError(k)}
-                                resetColumnError={(k) => resetColumnInError(k)}
-                                setter={(val) => handleEditCell(rowData, val)}
-                            />
-                        </div>
-                    );
+            const index = rowData.columnIndex;
+            const Editor = COLUMNS_DEFINITIONS[index].editor;
+            if (Editor) {
+                let style;
+                if (
+                    ratioCellIndexError === rowData.rowIndex &&
+                    COLUMNS_DEFINITIONS[index].id === 'ratio'
+                ) {
+                    style = {
+                        color: 'red',
+                    };
                 }
+                return (
+                    <div className={classes.tableCell}>
+                        <Editor
+                            key={rowData.dataKey + index}
+                            columnDefinition={COLUMNS_DEFINITIONS[index]}
+                            defaultValue={rowData.cellData}
+                            setColumnError={(k) => setColumnInError(k)}
+                            resetColumnError={(k) => resetColumnInError(k)}
+                            setter={(val) => handleEditCell(rowData, val)}
+                            inputProps={{ style }}
+                        />
+                    </div>
+                );
             }
             return defaultCellRender(rowData);
         },
@@ -275,9 +279,9 @@ const RatioTapChangerPane = (props) => {
             classes.tableCell,
             defaultCellRender,
             handleEditCell,
-            isLineOnEditMode,
             resetColumnInError,
             setColumnInError,
+            ratioCellIndexError,
         ]
     );
 
@@ -288,18 +292,16 @@ const RatioTapChangerPane = (props) => {
             }
             return c;
         });
-
-        tableColumns.unshift({
-            id: 'edit',
-            dataKey: 'edit',
-            label: '',
-            minWidth: 75,
-            locked: true,
-            editColumn: true,
-            cellRenderer: (rowData, rowIndex) =>
-                editCellRender(rowData, rowIndex),
-        });
         return tableColumns;
+    };
+
+    const generateTableKey = () => {
+        // We generate a unique key for the table because when we change alpha value by creating a new rule for example,
+        // the table does not update only by scrolling. With this key we make sure it is updated when creating a new rule
+        return (
+            ratioTapRows[0]?.ratio +
+            ratioTapRows[ratioTapRows.length - 1]?.ratio
+        );
     };
 
     const getCSVColumns = () => {
@@ -318,11 +320,20 @@ const RatioTapChangerPane = (props) => {
         return isNaN(intValue) ? defaultValue : intValue;
     };
 
-    const handleImportTapRule = (selectedFile) => {
+    const handleImportTapRule = (selectedFile, setFileParseError) => {
         Papa.parse(selectedFile, {
             header: true,
             skipEmptyLines: true,
             complete: function (results) {
+                if (results.data.length > MAX_TAP_NUMBER) {
+                    setFileParseError(
+                        intl.formatMessage(
+                            { id: 'TapPositionValueError' },
+                            { value: MAX_TAP_NUMBER }
+                        )
+                    );
+                    return;
+                }
                 let rows = results.data.map((val) => {
                     return {
                         key: results.data.indexOf(val),
@@ -400,6 +411,10 @@ const RatioTapChangerPane = (props) => {
 
             tempRows.forEach((row, index) => {
                 tempRows[index].ratio = currentRatio;
+
+                // When creating a new rule, the index does not change because we keep the same number of rows.
+                // We set the key to currentRatio because it is unique, and we can't have duplicate
+                tempRows[index].key = currentRatio;
                 currentRatio += ratioInterval;
             });
             handleRatioTapRows(tempRows);
@@ -419,35 +434,42 @@ const RatioTapChangerPane = (props) => {
                         {loadTapChangingCapabilitiesField}
                     </Grid>
                 </Grid>
-
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
                         {regulatingField}
                     </Grid>
 
-                    <Grid item xs={4}>
-                        {targetVoltage1Field}
-                    </Grid>
-                    <Grid item xs={4}>
-                        {targetDeadbandField}
-                    </Grid>
+                    {ratioTapLoadTapChangingCapabilities && (
+                        <Grid item xs={4}>
+                            {targetVoltage1Field}
+                        </Grid>
+                    )}
+                    {ratioTapLoadTapChangingCapabilities && (
+                        <Grid item xs={4}>
+                            {targetDeadbandField}
+                        </Grid>
+                    )}
                 </Grid>
+                {ratioTapLoadTapChangingCapabilities && (
+                    <Grid item container spacing={2}>
+                        <Grid
+                            item
+                            xs={4}
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <FormattedMessage
+                                id="TerminalRef"
+                                disabled={true}
+                            />
+                        </Grid>
 
-                <Grid item container spacing={2}>
-                    <Grid
-                        item
-                        xs={4}
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <FormattedMessage id="TerminalRef" disabled={true} />
+                        {gridItem(regulatingTerminalField, 8)}
                     </Grid>
-
-                    {gridItem(regulatingTerminalField, 8)}
-                </Grid>
+                )}
 
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
@@ -473,6 +495,7 @@ const RatioTapChangerPane = (props) => {
                         <VirtualizedTable
                             rows={ratioTapRows}
                             columns={generateTableColumns()}
+                            key={generateTableKey()}
                         />
                     </Grid>
                     <Grid container item spacing={2} xs direction={'column'}>
@@ -511,6 +534,11 @@ const RatioTapChangerPane = (props) => {
                         </Grid>
                     </Grid>
                 </Grid>
+                {ratioError && (
+                    <Grid item xs={12}>
+                        <Alert severity="error">{ratioError}</Alert>
+                    </Grid>
+                )}
             </Grid>
 
             <CreateRuleDialog
@@ -518,6 +546,7 @@ const RatioTapChangerPane = (props) => {
                 openCreateRuleDialog={openCreateRuleDialog}
                 setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                 handleCreateTapRule={handleCreateRatioTapRule}
+                allowNegativeValues={false}
             />
 
             <ImportRuleDialog

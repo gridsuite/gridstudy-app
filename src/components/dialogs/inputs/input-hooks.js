@@ -28,8 +28,10 @@ import {
     Tooltip,
     Button,
     FormControlLabel,
+    Grid,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
+import FolderIcon from '@mui/icons-material/Folder';
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
@@ -43,7 +45,7 @@ import {
 import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import { useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useParameterState } from '../parameters/parameters';
@@ -56,7 +58,9 @@ import { useAutocompleteField } from './use-autocomplete-field';
 import RegulatingTerminalEdition, {
     makeRefreshRegulatingTerminalSectionsCallback,
 } from '../regulating-terminal-edition';
-import Papa from 'papaparse';
+import Chip from '@mui/material/Chip';
+import DirectoryItemSelector from '../../directory-item-selector';
+import { useCSVReader } from 'react-papaparse';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -130,13 +134,17 @@ export const useTextValue = ({
 
     useEffect(() => {
         function validate() {
-            const res = validateField(value, validationRef.current);
+            const res = validateField(
+                value,
+                validationRef.current,
+                formProps?.disabled
+            );
             setError(res?.errorMsgId);
             return !res.error;
         }
 
         inputForm.addValidation(id ? id : label, validate);
-    }, [label, inputForm, value, id, validation]);
+    }, [label, inputForm, value, id, validation, formProps?.disabled]);
 
     const handleChangeValue = useCallback(
         (event) => {
@@ -645,9 +653,9 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
                         }
                         setChecking(false);
                     })
-                    .catch((errorMessage) => {
+                    .catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'NodeUpdateError',
                         });
                     });
@@ -683,73 +691,203 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     return [error, field, isValidName, name];
 };
 
-export const useCSVReader = ({ label, header }) => {
+export const useDirectoryElements = ({
+    label,
+    initialValues,
+    elementType,
+    equipmentTypes,
+    titleId,
+    elementClassName,
+}) => {
+    const classes = useStyles();
+    const [values, setValues] = useState(initialValues);
+    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] =
+        useState(false);
+    const intl = useIntl();
+    const { snackError } = useSnackMessage();
+
+    useEffect(() => {
+        if (initialValues !== null) {
+            setValues(initialValues);
+        }
+    }, [initialValues]);
+
+    const handleDelete = useCallback(
+        (item, index) => {
+            let arr = [...values];
+            arr.splice(index, 1);
+            setValues(arr);
+        },
+        [values]
+    );
+
+    const addElements = useCallback(
+        (elements) => {
+            let elementsToAdd = [];
+            elements.forEach((element) => {
+                const { icon, children, ...elementRest } = element;
+                // check if element is already present
+                if (values.find((v) => v.id === elementRest.id) !== undefined) {
+                    snackError({
+                        messageTxt: '',
+                        headerId: 'ElementAlreadyUsed',
+                    });
+                } else {
+                    elementsToAdd.push(elementRest);
+                }
+            });
+            if (elementsToAdd.length > 0) {
+                setValues(values.concat(elementsToAdd));
+            }
+
+            setDirectoryItemSelectorOpen(false);
+        },
+        [values, snackError]
+    );
+
+    const field = useMemo(() => {
+        return (
+            <>
+                <FormControl className={classes.formDirectoryElements1}>
+                    <Grid container>
+                        <Grid item>
+                            <InputLabel
+                                id="elements"
+                                className={classes.labelDirectoryElements}
+                            >
+                                <FieldLabel label={label} optional={false} />
+                            </InputLabel>
+                        </Grid>
+                        <Grid item xs>
+                            <Grid container direction="row-reverse">
+                                <IconButton
+                                    className={classes.addDirectoryElements}
+                                    size={'small'}
+                                    onClick={() =>
+                                        setDirectoryItemSelectorOpen(true)
+                                    }
+                                >
+                                    <FolderIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <FormControl className={classes.formDirectoryElements2}>
+                        <div>
+                            {values.map((item, index) => (
+                                <Chip
+                                    className={elementClassName}
+                                    key={label + '_' + index}
+                                    size="small"
+                                    onDelete={() => handleDelete(item, index)}
+                                    label={
+                                        <OverflowableText
+                                            text={item.name}
+                                            style={{ width: '100%' }}
+                                        />
+                                    }
+                                />
+                            ))}
+                        </div>
+                    </FormControl>
+                </FormControl>
+                <DirectoryItemSelector
+                    open={directoryItemSelectorOpen}
+                    onClose={addElements}
+                    types={[elementType]}
+                    equipmentTypes={equipmentTypes}
+                    title={intl.formatMessage({ id: titleId })}
+                />
+            </>
+        );
+    }, [
+        classes.formDirectoryElements1,
+        classes.formDirectoryElements2,
+        classes.labelDirectoryElements,
+        classes.addDirectoryElements,
+        values,
+        addElements,
+        handleDelete,
+        directoryItemSelectorOpen,
+        elementType,
+        equipmentTypes,
+        intl,
+        titleId,
+        label,
+        elementClassName,
+    ]);
+
+    return [values, field];
+};
+
+export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber }) => {
     const intl = useIntl();
 
-    const [selectedFile, setSelectedFile] = useState();
+    const { CSVReader } = useCSVReader();
+    const [_acceptedFile, setAcceptedFile] = useState();
     const [fileError, setFileError] = useState();
 
     const equals = (a, b) =>
         a.length === b.length && a.every((v, i) => v === b[i]);
 
-    const handleFileUpload = useCallback((e) => {
-        let files = e.target.files;
-        if (files.size === 0) {
-            setSelectedFile();
-        } else {
-            setSelectedFile(files[0]);
-        }
-    }, []);
+    useEffect(() => {
+        setAcceptedFile();
+    }, [resetTrigger]);
 
     const field = useMemo(() => {
         return (
             <>
-                <Button variant="contained" color="primary" component="label">
-                    <FormattedMessage id={label} />
-                    <input
-                        type="file"
-                        name="file"
-                        onChange={(e) => handleFileUpload(e)}
-                        style={{ display: 'none' }}
-                    />
-                </Button>
-                {selectedFile?.name === undefined ? (
-                    <FormattedMessage id="uploadMessage" />
-                ) : (
-                    selectedFile.name
-                )}
+                <CSVReader
+                    onUploadAccepted={(results, acceptedFile) => {
+                        setAcceptedFile(acceptedFile);
+                        if (
+                            results?.data.length > 0 &&
+                            equals(header, results.data[0])
+                        ) {
+                            setFileError();
+                        } else {
+                            setFileError(
+                                intl.formatMessage({
+                                    id: 'InvalidRuleHeader',
+                                })
+                            );
+                        }
+
+                        if (results.data.length > maxTapNumber) {
+                            setFileError(
+                                intl.formatMessage(
+                                    { id: 'TapPositionValueError' },
+                                    { value: maxTapNumber }
+                                )
+                            );
+                        }
+                    }}
+                >
+                    {({ getRootProps, acceptedFile }) => (
+                        <Grid item>
+                            <Button {...getRootProps()} variant={'contained'}>
+                                <FormattedMessage id={label} />
+                            </Button>
+                            <span
+                                style={{
+                                    marginLeft: '10px',
+                                    fontWeight: 'bold',
+                                }}
+                            >
+                                {acceptedFile
+                                    ? acceptedFile.name
+                                    : intl.formatMessage({
+                                          id: 'uploadMessage',
+                                      })}
+                            </span>
+                        </Grid>
+                    )}
+                </CSVReader>
             </>
         );
-    }, [handleFileUpload, label, selectedFile?.name]);
+    }, [header, intl, label, maxTapNumber]);
 
-    useEffect(() => {
-        if (selectedFile?.type === 'text/csv') {
-            Papa.parse(selectedFile, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function (results) {
-                    if (equals(header, results.meta.fields)) {
-                        setFileError();
-                    } else {
-                        setFileError(
-                            intl.formatMessage({
-                                id: 'InvalidRuleHeader',
-                            })
-                        );
-                    }
-                },
-            });
-        } else if (selectedFile) {
-            setFileError(
-                intl.formatMessage({
-                    id: 'InvalidRuleUploadType',
-                })
-            );
-        } else {
-            setFileError();
-        }
-    }, [selectedFile, intl, header]);
-    return [selectedFile, setSelectedFile, field, fileError];
+    return [_acceptedFile, field, fileError];
 };
 
 export const useRadioValue = ({
@@ -757,7 +895,6 @@ export const useRadioValue = ({
     possibleValues = [],
     defaultValue,
     id,
-    validation = {},
     inputForm,
     doTranslation = true,
 }) => {
@@ -771,14 +908,6 @@ export const useRadioValue = ({
         }
     }, [defaultValue]);
 
-    useEffect(() => {
-        function validate() {
-            return true;
-        }
-
-        inputForm.addValidation(id ? id : label, validate);
-    }, [label, validation, inputForm, value, id]);
-
     const handleChangeValue = useCallback(
         (event) => {
             setValue(event.target.value);
@@ -789,7 +918,11 @@ export const useRadioValue = ({
 
     const field = useMemo(() => {
         return (
-            <FormControl>
+            <FormControl
+                style={{
+                    marginTop: '-12px',
+                }}
+            >
                 {label && (
                     <FormLabel id={id ? id : label}>
                         <FormattedMessage id={label} />

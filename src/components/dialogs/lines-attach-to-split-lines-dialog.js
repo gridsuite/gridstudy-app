@@ -5,23 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-    useRef,
-} from 'react';
-import { FormattedMessage } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
+import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
 import {
     gridItem,
@@ -38,21 +27,18 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
  * @param lineOptionsPromise Promise handling list of network lines
  * @param voltageLevelOptionsPromise Promise handling list of network voltage levels
  * @param currentNodeUuid the currently selected tree node
- * @param substationOptionsPromise Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LinesAttachToSplitLinesDialog = ({
-    open,
-    onClose,
     lineOptionsPromise,
     voltageLevelOptionsPromise,
     currentNodeUuid,
     editData,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -76,10 +62,6 @@ const LinesAttachToSplitLinesDialog = ({
 
     const [loadingVoltageLevelOptions, setLoadingVoltageLevelOptions] =
         useState(true);
-
-    const clearValues = () => {
-        setFormValues(null);
-    };
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
 
@@ -293,111 +275,79 @@ const LinesAttachToSplitLinesDialog = ({
         defaultValue: formValues?.replacingLine2Name,
     });
 
-    const handleSave = () => {
-        if (inputForm.validate()) {
-            linesAttachToSplitLines(
-                studyUuid,
-                currentNodeUuid,
-                editData ? editData.uuid : undefined,
-                lineToAttachTo1.id || lineToAttachTo1,
-                lineToAttachTo2.id || lineToAttachTo2,
-                attachedLine.id || attachedLine,
-                voltageLevelOrId?.id || voltageLevelOrId,
-                bbsOrNodeId?.id || bbsOrNodeId,
-                newLine1Id,
-                sanitizeString(newLine1Name),
-                newLine2Id,
-                sanitizeString(newLine2Name)
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'LineAttachmentError',
-                });
-            });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
-        }
+    const handleValidation = () => {
+        return inputForm.validate();
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                inputForm.reset();
-                onClose();
-            }
-        },
-        [inputForm, onClose]
-    );
+    const handleSave = () => {
+        linesAttachToSplitLines(
+            studyUuid,
+            currentNodeUuid,
+            editData ? editData.uuid : undefined,
+            lineToAttachTo1.id || lineToAttachTo1,
+            lineToAttachTo2.id || lineToAttachTo2,
+            attachedLine.id || attachedLine,
+            voltageLevelOrId?.id || voltageLevelOrId,
+            bbsOrNodeId?.id || bbsOrNodeId,
+            newLine1Id,
+            sanitizeString(newLine1Name),
+            newLine2Id,
+            sanitizeString(newLine2Name)
+        ).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'LineAttachmentError',
+            });
+        });
+    };
 
-    const handleCloseAndClear = () => {
-        clearValues();
-        handleClose();
+    const clear = () => {
+        inputForm.reset();
+        setFormValues(null);
     };
 
     return (
-        <>
-            <Dialog
-                fullWidth
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-attach-lines-to-split-lines"
-                maxWidth={'md'}
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={12}>
-                            <FormattedMessage id="LinesAttachToSplitLines" />
-                        </Grid>
-                    </Grid>
-                </DialogTitle>
-                <DialogContent>
-                    <GridSection title="Line1" />
-                    <Grid container spacing={2} alignItems="center">
-                        {gridItem(lineToAttachTo1Field, 5)}
-                    </Grid>
-                    <GridSection title="Line2" />
-                    <Grid container spacing={2} alignItems="center">
-                        {gridItem(lineToAttachTo2Field, 5)}
-                    </Grid>
-                    <GridSection title="LineAttached" />
-                    <Grid container spacing={2} alignItems="center">
-                        {gridItem(attachedLineField, 5)}
-                    </Grid>
-                    <GridSection title="VoltageLevel" />
-                    <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField)}
-                        {gridItem(bbsOrNodeIdField)}
-                    </Grid>
-                    <GridSection title="ReplacingLines" />
-                    <Grid container spacing={2}>
-                        {gridItem(newLine1IdField, 6)}
-                        {gridItem(newLine1NameField, 6)}
-                        <Box sx={{ width: '100%' }} />
-                        {gridItem(newLine2IdField, 6)}
-                        {gridItem(newLine2NameField, 6)}
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear} variant="text">
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        variant="text"
-                        disabled={!inputForm.hasChanged}
-                    >
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
+        <ModificationDialog
+            fullWidth
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={!inputForm.hasChanged}
+            aria-labelledby="dialog-attach-lines-to-split-lines"
+            maxWidth={'md'}
+            titleId="LinesAttachToSplitLines"
+            {...dialogProps}
+        >
+            <GridSection title="Line1" />
+            <Grid container spacing={2} alignItems="center">
+                {gridItem(lineToAttachTo1Field, 5)}
+            </Grid>
+            <GridSection title="Line2" />
+            <Grid container spacing={2} alignItems="center">
+                {gridItem(lineToAttachTo2Field, 5)}
+            </Grid>
+            <GridSection title="LineAttached" />
+            <Grid container spacing={2} alignItems="center">
+                {gridItem(attachedLineField, 5)}
+            </Grid>
+            <GridSection title="VoltageLevel" />
+            <Grid container spacing={2}>
+                {gridItem(voltageLevelIdField)}
+                {gridItem(bbsOrNodeIdField)}
+            </Grid>
+            <GridSection title="ReplacingLines" />
+            <Grid container spacing={2}>
+                {gridItem(newLine1IdField, 6)}
+                {gridItem(newLine1NameField, 6)}
+                <Box sx={{ width: '100%' }} />
+                {gridItem(newLine2IdField, 6)}
+                {gridItem(newLine2NameField, 6)}
+            </Grid>
+        </ModificationDialog>
     );
 };
 
 LinesAttachToSplitLinesDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    lineOptions: PropTypes.arrayOf(PropTypes.object),
     currentNodeUuid: PropTypes.string,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,

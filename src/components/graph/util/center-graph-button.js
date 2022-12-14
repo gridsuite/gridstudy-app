@@ -7,25 +7,20 @@
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { Tooltip } from '@mui/material';
 import React, { useCallback } from 'react';
-import { ControlButton, useStore, useReactFlow } from 'react-flow-renderer';
+import { ControlButton, useReactFlow } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
-import { nodeHeight, nodeWidth } from './model-constants';
 
 const CenterGraphButton = ({ currentNode }) => {
-    const { setCenter } = useReactFlow();
-
-    // Use of hook useStore to get tree internal state and retrieve current zoom
-    // Must be used inside a child component of the ReactFlow component
-    const [, , zoom] = useStore((state) => state.transform);
+    const { setCenter, getZoom } = useReactFlow();
     const intl = useIntl();
 
     const focusNode = useCallback(() => {
-        // if no selected node, center on Root
-        const x = currentNode ? currentNode.position.x + nodeWidth / 2.0 : 0;
-        const y = currentNode ? currentNode.position.y + nodeHeight / 2.0 : 0;
-        setCenter(x, y, zoom);
-    }, [setCenter, currentNode, zoom]);
+        const x = currentNode.style.width / 2.0 + currentNode.position.x;
+        const y = currentNode.style.height / 2.0 + currentNode.position.y;
+
+        setCenter(x, y, { zoom: getZoom() });
+    }, [setCenter, currentNode, getZoom]);
 
     return (
         <Tooltip

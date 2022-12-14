@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     fetchContingencyAndFiltersLists,
     updateConfigParameter,
@@ -52,9 +52,9 @@ const ContingenciesFiltersSelector = ({
     const saveFavorite = (newList) => {
         updateConfigParameter(paramName, newList)
             .then()
-            .catch((errorMessage) => {
+            .catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'paramsChangingError',
                 });
             });

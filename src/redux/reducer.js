@@ -9,10 +9,10 @@ import { createReducer } from '@reduxjs/toolkit';
 
 import {
     USER,
-    SIGNIN_CALLBACK_ERROR,
     UNAUTHORIZED_USER_INFO,
     LOGOUT_ERROR,
     USER_VALIDATION_ERROR,
+    RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
 } from '@gridsuite/commons-ui';
 
@@ -63,9 +63,6 @@ import {
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
     SET_MODIFICATIONS_IN_PROGRESS,
-    FAVORITE_SENSI_CONTINGENCY_LISTS,
-    FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
     OPEN_SLD,
@@ -79,6 +76,7 @@ import {
     SET_NETWORK_RELOAD_NEEDED,
     SET_FORCE_NETWORK_RELOAD,
     RESET_NETWORK_RELOAD,
+    NETWORK_MODIFICATION_TREE_NODE_MOVED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -105,9 +103,6 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
-    PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS,
-    PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS,
-    PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS,
     PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -131,9 +126,6 @@ const paramsInitialState = {
     [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
     [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
-    [PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS]: [],
-    [PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS]: [],
-    [PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
 };
@@ -218,6 +210,30 @@ export const reducer = createReducer(initialState, {
         if (state.networkModificationTreeModel) {
             let newModel =
                 state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.addChild(
+                action.networkModificationTreeNode,
+                action.parentNodeId,
+                action.insertMode
+            );
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
+            // check if added node is the new parent of the current Node
+            if (
+                action.networkModificationTreeNode?.childrenIds.includes(
+                    state.currentTreeNode?.id
+                )
+            ) {
+                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
+            }
+        }
+    },
+
+    [NETWORK_MODIFICATION_TREE_NODE_MOVED]: (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel =
+                state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.removeNodes([action.networkModificationTreeNode.id]);
             newModel.addChild(
                 action.networkModificationTreeNode,
                 action.parentNodeId,
@@ -356,10 +372,6 @@ export const reducer = createReducer(initialState, {
             action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
     },
 
-    [SIGNIN_CALLBACK_ERROR]: (state, action) => {
-        state.signInCallbackError = action.signInCallbackError;
-    },
-
     [UNAUTHORIZED_USER_INFO]: (state, action) => {
         state.authenticationRouterError = action.authenticationRouterError;
     },
@@ -370,6 +382,10 @@ export const reducer = createReducer(initialState, {
 
     [USER_VALIDATION_ERROR]: (state, action) => {
         state.authenticationRouterError = action.authenticationRouterError;
+    },
+
+    [RESET_AUTHENTICATION_ROUTER_ERROR]: (state, action) => {
+        state.authenticationRouterError = null;
     },
 
     [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
@@ -485,18 +501,6 @@ export const reducer = createReducer(initialState, {
     [FAVORITE_CONTINGENCY_LISTS]: (state, action) => {
         state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
             action[PARAM_FAVORITE_CONTINGENCY_LISTS];
-    },
-    [FAVORITE_SENSI_VARIABLES_FILTERS_LISTS]: (state, action) => {
-        state[PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS] =
-            action[PARAM_FAVORITE_SENSI_VARIABLES_FILTERS_LISTS];
-    },
-    [FAVORITE_SENSI_CONTINGENCY_LISTS]: (state, action) => {
-        state[PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS] =
-            action[PARAM_FAVORITE_SENSI_CONTINGENCY_LISTS];
-    },
-    [FAVORITE_SENSI_BRANCH_FILTERS_LISTS]: (state, action) => {
-        state[PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS] =
-            action[PARAM_FAVORITE_SENSI_BRANCH_FILTERS_LISTS];
     },
     [CURRENT_TREE_NODE]: (state, action) => {
         state.currentTreeNode = action.currentTreeNode;

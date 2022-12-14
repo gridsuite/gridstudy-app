@@ -42,9 +42,8 @@ import {
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
-import { OverflowableText } from '@gridsuite/commons-ui';
 import SearchIcon from '@mui/icons-material/Search';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import LockIcon from '@mui/icons-material/Lock';
@@ -680,8 +679,26 @@ const NetworkTable = (props) => {
                 "('" +
                 lineEdit.id.replace(/'/g, "\\'") +
                 "')\n";
+
+            const isTransformer =
+                lineEdit?.equipmentType ===
+                    TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS
+                        .modifiableEquipmentType ||
+                lineEdit?.equipmentType ===
+                    TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS
+                        .modifiableEquipmentType;
+
             Object.values(lineEdit.newValues).forEach((cr) => {
-                groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
+                //TODO this is when we change transformer, in case we want to change the tap position from spreadsheet, we set it inside
+                // tapChanger object. so we extract the value from the object before registering a change request.
+                // this part should be removed if we don't pass tapPosition inside another Object anymore
+
+                const val =
+                    isTransformer && cr.value?.tapPosition
+                        ? cr.value?.tapPosition
+                        : cr.value;
+
+                groovyCr += cr.changeCmd.replace(/\{\}/g, val) + '\n';
             });
 
             Promise.resolve(
@@ -1211,13 +1228,13 @@ const NetworkTable = (props) => {
             DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
             JSON.stringify([...selectedColumnsNames])
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
             setSelectedColumnsNames(
                 new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
             );
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'paramsChangingError',
             });
         });
@@ -1228,13 +1245,13 @@ const NetworkTable = (props) => {
             LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
             JSON.stringify(lockedColumnsToSave)
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             const allLockedTemp = allLockedColumnsNames[tabIndex];
             setLockedColumnsNames(
                 new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
             );
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'paramsChangingError',
             });
         });
@@ -1244,9 +1261,9 @@ const NetworkTable = (props) => {
             REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
             JSON.stringify(reorderedTableDefinitionIndexes)
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'paramsChangingError',
             });
         });

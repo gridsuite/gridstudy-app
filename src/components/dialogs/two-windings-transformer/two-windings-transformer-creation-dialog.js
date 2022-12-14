@@ -4,28 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    Box,
-    Tab,
-    Tabs,
-    Grid,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Button,
-    Alert,
-} from '@mui/material';
+import { Alert, Box, Grid, Tab, Tabs } from '@mui/material';
+import ModificationDialog from '../modificationDialog';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '../../../utils/messages';
+import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
 import { createTwoWindingsTransformer } from '../../../utils/rest-api';
 import {
-    useButtonWithTooltip,
     useDoubleValue,
     useEnumValue,
+    useInputForm,
     useIntegerValue,
     useRegulatingTerminalValue,
     useTextValue,
@@ -33,7 +23,6 @@ import {
 import EquipmentSearchDialog from '../equipment-search-dialog';
 import { useFormSearchCopy } from '../form-search-copy-hook';
 import TwoWindingsTransformerPane from './two-windings-transformer-pane';
-import { useInputForm } from '../inputs/input-hooks';
 import RatioTapChangerPane from './ratio-tap-changer-pane';
 import PhaseTapChangerPane from './phase-tap-changer-pane';
 import { useConnectivityValue } from '../connectivity-edition';
@@ -41,32 +30,24 @@ import {
     ActivePowerAdornment,
     AmpereAdornment,
     filledTextField,
+    MicroSusceptanceAdornment,
     MVAPowerAdornment,
     OhmAdornment,
-    MicroSusceptanceAdornment,
-    VoltageAdornment,
     sanitizeString,
+    toIntOrEmptyValue,
+    VoltageAdornment,
 } from '../dialogUtils';
 import {
     REGULATION_MODES,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../../network/constants';
 import { useBooleanValue } from '../inputs/boolean';
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import clsx from 'clsx';
 import makeStyles from '@mui/styles/makeStyles';
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
-
-/**
- * Dialog to create a two windings transformer in the network
- * @param {Boolean} open Is the dialog open ?
- * @param {EventListener} onClose Event to close the dialog
- * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid the node we are currently working on
- * @param editData the data to edit
- */
+export const MAX_TAP_NUMBER = 100;
 
 const useStyles = makeStyles((theme) => ({
     tabWithError: {
@@ -84,13 +65,20 @@ const DialogTab = {
     PHASE_TAP_TAB: 2,
 };
 
+/**
+ * Dialog to create a two windings transformer in the network
+ * @param voltageLevelOptionsPromise Promise handling list of voltage level options
+ * @param voltageLevelsEquipmentsOptionsPromise Promise handling list of Equipment by voltage level options
+ * @param currentNodeUuid the node we are currently working on
+ * @param editData the data to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ */
 const TwoWindingsTransformerCreationDialog = ({
     editData,
-    open,
-    onClose,
     voltageLevelOptionsPromise,
     voltageLevelsEquipmentsOptionsPromise,
     currentNodeUuid,
+    ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -118,13 +106,19 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
-    const clearValues = () => {
-        setFormValues(null);
-    };
-
     const [isCopy, setIsCopy] = useState(false);
 
     const [creationError, setCreationError] = useState(undefined);
+
+    const [ratioCellIndexError, setRatioCellIndexError] = useState(undefined);
+    const [phaseCellIndexError, setPhaseCellIndexError] = useState(undefined);
+
+    const computeHighTapPosition = (steps) => {
+        const values = steps?.map((step) => step.tap);
+        return Array.isArray(values) && values.length > 0
+            ? Math.max(...values)
+            : undefined;
+    };
 
     // CHARACTERISTICS TAP PANE
 
@@ -176,7 +170,7 @@ const TwoWindingsTransformerCreationDialog = ({
         validation: {
             isFieldRequired: false,
             isFieldNumeric: true,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
         adornment: MVAPowerAdornment,
@@ -216,7 +210,7 @@ const TwoWindingsTransformerCreationDialog = ({
             label: 'PermanentCurrentLimitText1',
             validation: {
                 isFieldRequired: false,
-                isValueGreaterThan: '0',
+                valueGreaterThan: '0',
                 errorMsgId: 'permanentCurrentLimitGreaterThanZero',
             },
             adornment: AmpereAdornment,
@@ -229,7 +223,7 @@ const TwoWindingsTransformerCreationDialog = ({
             label: 'PermanentCurrentLimitText2',
             validation: {
                 isFieldRequired: false,
-                isValueGreaterThan: '0',
+                valueGreaterThan: '0',
                 errorMsgId: 'permanentCurrentLimitGreaterThanZero',
             },
             adornment: AmpereAdornment,
@@ -280,16 +274,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     : false,
         });
 
-    const [ratioTapRegulating, ratioTapRegulatingField] = useBooleanValue({
-        label: 'VoltageRegulation',
-        formProps: {
-            disabled: !ratioTapChangerEnabled,
-        },
-        validation: { isFieldRequired: true },
-        inputForm: ratioTapInputForm,
-        defaultValue: formValues?.ratioTapChanger?.regulating ?? false,
-    });
-
     const [
         ratioTapLoadTapChangingCapabilities,
         ratioTapLoadTapChangingCapabilitiesField,
@@ -304,6 +288,17 @@ const TwoWindingsTransformerCreationDialog = ({
             formValues?.ratioTapChanger?.loadTapChangingCapabilities ?? false,
     });
 
+    const [ratioTapRegulating, ratioTapRegulatingField] = useBooleanValue({
+        label: 'VoltageRegulation',
+        formProps: {
+            disabled:
+                !ratioTapChangerEnabled || !ratioTapLoadTapChangingCapabilities,
+        },
+        validation: { isFieldRequired: true },
+        inputForm: ratioTapInputForm,
+        defaultValue: formValues?.ratioTapChanger?.regulating ?? false,
+    });
+
     const [targetVoltage, targetVoltage1Field] = useDoubleValue({
         label: 'TargetVoltage',
         id: 'TargetVoltage',
@@ -312,7 +307,7 @@ const TwoWindingsTransformerCreationDialog = ({
         },
         validation: {
             isFieldRequired: ratioTapRegulating && ratioTapChangerEnabled,
-            isValueGreaterThan: '0',
+            valueGreaterThan: '0',
             errorMsgId: 'TargetVoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
@@ -329,12 +324,16 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isValueGreaterThan: '-1',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                valueGreaterThan: '0',
+                errorMsgId: 'TargetDeadbandGreaterThanZero',
             },
             adornment: VoltageAdornment,
             inputForm: ratioTapInputForm,
-            defaultValue: formValues?.ratioTapChanger?.targetDeadband,
+            defaultValue:
+                formValues?.ratioTapChanger?.targetDeadband &&
+                formValues.ratioTapChanger.targetDeadband !== '0'
+                    ? formValues.ratioTapChanger.targetDeadband
+                    : '',
         });
 
     const [ratioTapRegulatingTerminal, ratioTapRegulatingTerminalField] =
@@ -352,11 +351,12 @@ const TwoWindingsTransformerCreationDialog = ({
                 formValues?.ratioTapChanger?.regulatingTerminalId ?? '',
         });
 
-    const [ratioLowTapPosition, ratioLowTapPositionField] = useDoubleValue({
+    const [ratioLowTapPosition, ratioLowTapPositionField] = useIntegerValue({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.lowTapPosition,
         formProps: {
@@ -364,12 +364,18 @@ const TwoWindingsTransformerCreationDialog = ({
         },
     });
 
-    const [ratioHighTapPosition, ratioHighTapPositionField] = useDoubleValue({
+    const [ratioHighTapPosition, ratioHighTapPositionField] = useIntegerValue({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
+            valueLessThanOrEqualTo: MAX_TAP_NUMBER,
+            valueGreaterThanOrEqualTo: ratioLowTapPosition,
+            errorMsgId: 'HighTapPositionError',
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
+        defaultValue:
+            (isCopy || editData) && computeHighTapPosition(ratioTapRows),
         formProps: {
             disabled: !ratioTapChangerEnabled,
         },
@@ -379,10 +385,13 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'TapPosition',
         validation: {
             isFieldRequired: ratioTapChangerEnabled,
-            isValueGreaterThan: ratioLowTapPosition - 1,
-            isValueLessOrEqualTo: ratioHighTapPosition,
+            valueGreaterThanOrEqualTo: ratioLowTapPosition,
+            valueLessThanOrEqualTo: ratioHighTapPosition
+                ? ratioHighTapPosition
+                : computeHighTapPosition(ratioTapRows),
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: ratioTapInputForm,
         defaultValue: formValues?.ratioTapChanger?.tapPosition,
         formProps: {
@@ -398,9 +407,7 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true },
             inputForm: phaseTapInputForm,
             defaultValue:
-                formValues?.phaseTapChanger?.tapPosition !== undefined
-                    ? true
-                    : false,
+                formValues?.phaseTapChanger?.tapPosition !== undefined,
         });
 
     const [regulationMode, regulationModeField] = useEnumValue({
@@ -438,8 +445,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 isFieldRequired:
                     regulationMode === REGULATION_MODES.CURRENT_LIMITER.id &&
                     phaseTapRegulating,
-                isValueGreaterThan: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                valueGreaterThan: '0',
+                errorMsgId: 'CurrentLimiterGreaterThanZero',
             },
             adornment: AmpereAdornment,
             inputForm: phaseTapInputForm,
@@ -458,8 +465,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     regulationMode ===
                         REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
                     phaseTapRegulating,
-                isValueGreaterThan: '0',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
             },
             adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
@@ -475,12 +480,16 @@ const TwoWindingsTransformerCreationDialog = ({
             },
             validation: {
                 isFieldRequired: false,
-                isValueGreaterThan: '-1',
-                errorMsgId: 'TargetDeadbandGreaterEqualThanZero',
+                valueGreaterThan: '0',
+                errorMsgId: 'TargetDeadbandGreaterThanZero',
             },
             adornment: ActivePowerAdornment,
             inputForm: phaseTapInputForm,
-            defaultValue: formValues?.phaseTapChanger?.targetDeadband,
+            defaultValue:
+                formValues?.phaseTapChanger?.targetDeadband &&
+                formValues.phaseTapChanger.targetDeadband !== '0'
+                    ? formValues.phaseTapChanger.targetDeadband
+                    : '',
         });
 
     const [phaseTapRegulatingTerminal, phaseTapRegulatingTerminalField] =
@@ -498,33 +507,43 @@ const TwoWindingsTransformerCreationDialog = ({
                 formValues?.phaseTapChanger?.regulatingTerminalId ?? '',
         });
 
-    const [phaseLowTapPosition, phaseLowTapPositionField] = useDoubleValue({
+    const [phaseLowTapPosition, phaseLowTapPositionField] = useIntegerValue({
         label: 'LowTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.lowTapPosition,
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
-    const [phaseHighTapPosition, phaseHighTapPositionField] = useDoubleValue({
+    const [phaseHighTapPosition, phaseHighTapPositionField] = useIntegerValue({
         label: 'HighTapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled && !editData && !isCopy,
+            valueLessThanOrEqualTo: MAX_TAP_NUMBER,
+            valueGreaterThanOrEqualTo: phaseLowTapPosition,
+            errorMsgId: 'HighTapPositionError',
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
+        defaultValue:
+            (isCopy || editData) && computeHighTapPosition(phaseTapRows),
         formProps: { disabled: !phaseTapChangerEnabled },
     });
 
-    const [phaseTapPosition, phaseTapPositionField] = useDoubleValue({
+    const [phaseTapPosition, phaseTapPositionField] = useIntegerValue({
         label: 'TapPosition',
         validation: {
             isFieldRequired: phaseTapChangerEnabled,
-            isValueGreaterThan: phaseLowTapPosition - 1,
-            isValueLessOrEqualTo: phaseHighTapPosition,
+            valueGreaterThanOrEqualTo: phaseLowTapPosition,
+            valueLessThanOrEqualTo: phaseHighTapPosition
+                ? phaseHighTapPosition
+                : computeHighTapPosition(phaseTapRows),
             errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
         },
+        transformValue: toIntOrEmptyValue,
         inputForm: phaseTapInputForm,
         defaultValue: formValues?.phaseTapChanger?.tapPosition,
         formProps: { disabled: !phaseTapChangerEnabled },
@@ -546,6 +565,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     };
                 })
             );
+        } else {
+            setRatioTapRows([]);
         }
 
         if (twt.phaseTapChanger?.steps) {
@@ -563,6 +584,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     };
                 })
             );
+        } else {
+            setPhaseTapRows([]);
         }
 
         setIsCopy(true);
@@ -634,12 +657,6 @@ const TwoWindingsTransformerCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
-        clearValues,
-    });
-
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     useEffect(() => {
@@ -680,6 +697,42 @@ const TwoWindingsTransformerCreationDialog = ({
             setFormValues(editData);
         }
     }, [editData]);
+
+    const validateTableRows = useCallback(
+        (rows, columnName, setCellIndexError, error) => {
+            if (rows.length > 1) {
+                if (rows[0][columnName] === rows[1][columnName]) {
+                    setCellIndexError(1);
+                    setCreationError(error);
+                    return false;
+                } else if (rows[0][columnName] < rows[1][columnName]) {
+                    for (let index = 0; index < rows.length - 1; index++) {
+                        if (
+                            rows[index][columnName] >=
+                            rows[index + 1][columnName]
+                        ) {
+                            setCellIndexError(index + 1);
+                            setCreationError(error);
+                            return false;
+                        }
+                    }
+                } else if (rows[0][columnName] > rows[1][columnName]) {
+                    for (let index = 0; index < rows.length - 1; index++) {
+                        if (
+                            rows[index][columnName] <=
+                            rows[index + 1][columnName]
+                        ) {
+                            setCellIndexError(index + 1);
+                            setCreationError(error);
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        },
+        []
+    );
 
     const validateTapRows = useCallback(() => {
         setCreationError();
@@ -725,7 +778,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         id: 'IncoherentPhaseLowTapPositionError',
                     });
                 }
-                if (!tapValues.includes(phaseTapPosition)) {
+                if (!tapValues.includes(parseInt(phaseTapPosition))) {
                     creationError = intl.formatMessage({
                         id: 'IncoherentPhaseTapPositionError',
                     });
@@ -750,7 +803,7 @@ const TwoWindingsTransformerCreationDialog = ({
         ratioTapRows,
     ]);
 
-    const handleSave = () => {
+    const handleValidation = () => {
         setCreationError();
         let isFormValid = true;
         let tabWithErrorList = [];
@@ -759,7 +812,6 @@ const TwoWindingsTransformerCreationDialog = ({
             tabWithErrorList.push(DialogTab.CHARACTERISTICS_TAB);
         }
 
-        let ratioTap = undefined;
         if (ratioTapChangerEnabled && !ratioTapInputForm.validate()) {
             isFormValid = false;
             tabWithErrorList.push(DialogTab.RATIO_TAP_TAB);
@@ -778,7 +830,58 @@ const TwoWindingsTransformerCreationDialog = ({
                 tabWithErrorList.push(DialogTab.RATIO_TAP_TAB);
             }
 
-            let formatedRatioTapSteps = ratioTapRows.map((row) => {
+            if (
+                !validateTableRows(
+                    ratioTapRows,
+                    'ratio',
+                    setRatioCellIndexError,
+                    intl.formatMessage({ id: 'RatioValuesError' })
+                )
+            ) {
+                isFormValid = false;
+                tabWithErrorList.push(DialogTab.RATIO_TAP_TAB);
+            }
+        }
+
+        if (phaseTapChangerEnabled && !phaseTapInputForm.validate()) {
+            isFormValid = false;
+            tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
+        } else if (phaseTapChangerEnabled && phaseTapInputForm.validate()) {
+            if (
+                phaseTapRegulating &&
+                (!phaseTapRegulatingTerminal?.equipmentSection ||
+                    !phaseTapRegulatingTerminal?.voltageLevel)
+            ) {
+                setCreationError(
+                    intl.formatMessage({
+                        id: 'IncoherentPhaseRegulatingTerminalError',
+                    })
+                );
+                isFormValid = false;
+                tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
+            }
+
+            if (
+                !validateTableRows(
+                    phaseTapRows,
+                    'alpha',
+                    setPhaseCellIndexError,
+                    intl.formatMessage({ id: 'PhaseShiftValuesError' })
+                )
+            ) {
+                isFormValid = false;
+                tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
+            }
+        }
+        setTabIndexesWithError(tabWithErrorList);
+
+        return isFormValid && validateTapRows();
+    };
+
+    const handleSave = () => {
+        let ratioTap = undefined;
+        if (ratioTapChangerEnabled) {
+            const formatedRatioTapSteps = ratioTapRows.map((row) => {
                 return {
                     index: row.tap,
                     r: row.resistance,
@@ -812,25 +915,8 @@ const TwoWindingsTransformerCreationDialog = ({
         }
 
         let phaseTap = undefined;
-        if (phaseTapChangerEnabled && !phaseTapInputForm.validate()) {
-            isFormValid = false;
-            tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
-        } else if (phaseTapChangerEnabled && phaseTapInputForm.validate()) {
-            if (
-                phaseTapRegulating &&
-                (!phaseTapRegulatingTerminal?.equipmentSection ||
-                    !phaseTapRegulatingTerminal?.voltageLevel)
-            ) {
-                setCreationError(
-                    intl.formatMessage({
-                        id: 'IncoherentPhaseRegulatingTerminalError',
-                    })
-                );
-                isFormValid = false;
-                tabWithErrorList.push(DialogTab.PHASE_TAP_TAB);
-            }
-
-            let formatedPhaseTapSteps = phaseTapRows.map((row) => {
+        if (phaseTapChangerEnabled) {
+            const formatedPhaseTapSteps = phaseTapRows.map((row) => {
                 return {
                     index: row.tap,
                     r: row.resistance,
@@ -867,76 +953,55 @@ const TwoWindingsTransformerCreationDialog = ({
                 steps: formatedPhaseTapSteps,
             };
         }
+        const currentLimits1 = {
+            permanentLimit: permanentCurrentLimit1,
+        };
 
-        if (isFormValid && validateTapRows()) {
-            let currentLimits1 = {
-                permanentLimit: permanentCurrentLimit1,
-            };
+        const currentLimits2 = {
+            permanentLimit: permanentCurrentLimit2,
+        };
 
-            let currentLimits2 = {
-                permanentLimit: permanentCurrentLimit2,
-            };
-
-            createTwoWindingsTransformer(
-                studyUuid,
-                currentNodeUuid,
-                twoWindingsTransformerId,
-                sanitizeString(twoWindingsTransformerName),
-                seriesResistance,
-                seriesReactance,
-                magnetizingConductance,
-                magnetizingSusceptance,
-                ratedS,
-                ratedVoltage1,
-                ratedVoltage2,
-                currentLimits1,
-                currentLimits2,
-                connectivity1.voltageLevel.id,
-                connectivity1.busOrBusbarSection.id,
-                connectivity2.voltageLevel.id,
-                connectivity2.busOrBusbarSection.id,
-                ratioTap,
-                phaseTap,
-                editData ? true : false,
-                editData ? editData.uuid : undefined,
-                connectivity1?.connectionName?.id ?? null,
-                connectivity1?.connectionDirection?.id ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                connectivity2?.connectionName?.id ?? null,
-                connectivity2?.connectionDirection?.id ??
-                    UNDEFINED_CONNECTION_DIRECTION
-            ).catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
-                    headerId: 'TwoWindingsTransformerCreationError',
-                });
+        createTwoWindingsTransformer(
+            studyUuid,
+            currentNodeUuid,
+            twoWindingsTransformerId,
+            sanitizeString(twoWindingsTransformerName),
+            seriesResistance,
+            seriesReactance,
+            magnetizingConductance,
+            magnetizingSusceptance,
+            ratedS,
+            ratedVoltage1,
+            ratedVoltage2,
+            currentLimits1,
+            currentLimits2,
+            connectivity1.voltageLevel.id,
+            connectivity1.busOrBusbarSection.id,
+            connectivity2.voltageLevel.id,
+            connectivity2.busOrBusbarSection.id,
+            ratioTap,
+            phaseTap,
+            editData ? true : false,
+            editData ? editData.uuid : undefined,
+            connectivity1?.connectionName?.id ?? null,
+            connectivity1?.connectionDirection?.id ??
+                UNDEFINED_CONNECTION_DIRECTION,
+            connectivity2?.connectionName?.id ?? null,
+            connectivity2?.connectionDirection?.id ??
+                UNDEFINED_CONNECTION_DIRECTION
+        ).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'TwoWindingsTransformerCreationError',
             });
-            handleCloseAndClear();
-        }
-
-        setTabIndexesWithError(tabWithErrorList);
+        });
     };
 
-    const handleClose = useCallback(
-        (event, reason) => {
-            if (reason !== 'backdropClick') {
-                characteristicsInputForm.reset();
-                ratioTapInputForm.reset();
-                phaseTapInputForm.reset();
-                onClose();
-            }
-        },
-        [
-            characteristicsInputForm,
-            phaseTapInputForm,
-            ratioTapInputForm,
-            onClose,
-        ]
-    );
-
-    const handleCloseAndClear = () => {
-        clearValues();
-        handleClose();
+    const clear = () => {
+        characteristicsInputForm.reset();
+        ratioTapInputForm.reset();
+        phaseTapInputForm.reset();
+        setFormValues(null);
     };
 
     const handleRatioTapRows = (rows) => {
@@ -959,164 +1024,141 @@ const TwoWindingsTransformerCreationDialog = ({
             [classes.tabWithError]: tabIndexesWithError.includes(index),
         });
 
+    const disabledSave =
+        !characteristicsInputForm.hasChanged &&
+        !ratioTapInputForm.hasChanged &&
+        !phaseTapInputForm.hasChanged;
+
+    const renderSubtitle = () => {
+        return (
+            <Grid container>
+                <Tabs
+                    value={tabIndex}
+                    variant="scrollable"
+                    onChange={(event, newValue) => setTabIndex(newValue)}
+                    classes={getTabIndicatorClass(tabIndex)}
+                >
+                    <Tab
+                        label={
+                            <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
+                        }
+                        className={getTabClass(DialogTab.CHARACTERISTICS_TAB)}
+                        onClick={() => setDialogWidth('sm')}
+                    />
+                    <Tab
+                        onClick={() => setDialogWidth('xl')}
+                        label={
+                            <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
+                        }
+                        className={getTabClass(DialogTab.RATIO_TAP_TAB)}
+                    />
+                    <Tab
+                        onClick={() => setDialogWidth('xl')}
+                        label={
+                            <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
+                        }
+                        className={getTabClass(DialogTab.PHASE_TAP_TAB)}
+                    />
+                </Tabs>
+            </Grid>
+        );
+    };
+
     return (
-        <>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="dialog-create-two-windings-transformer"
-                fullWidth={true}
-                maxWidth={dialogWidth}
-            >
-                <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
-                            <FormattedMessage id="CreateTwoWindingsTransformer" />
-                        </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
-                    </Grid>
-                    <Grid container>
-                        <Tabs
-                            value={tabIndex}
-                            variant="scrollable"
-                            onChange={(event, newValue) =>
-                                setTabIndex(newValue)
-                            }
-                            classes={getTabIndicatorClass(tabIndex)}
-                        >
-                            <Tab
-                                label={
-                                    <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
-                                }
-                                className={getTabClass(
-                                    DialogTab.CHARACTERISTICS_TAB
-                                )}
-                                onClick={() => setDialogWidth('sm')}
-                            />
-                            <Tab
-                                onClick={() => setDialogWidth('xl')}
-                                label={
-                                    <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
-                                }
-                                className={getTabClass(DialogTab.RATIO_TAP_TAB)}
-                            />
-                            <Tab
-                                onClick={() => setDialogWidth('xl')}
-                                label={
-                                    <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
-                                }
-                                className={getTabClass(DialogTab.PHASE_TAP_TAB)}
-                            />
-                        </Tabs>
-                    </Grid>
-                </DialogTitle>
+        <ModificationDialog
+            onClear={clear}
+            onValidation={handleValidation}
+            onSave={handleSave}
+            disabledSave={disabledSave}
+            aria-labelledby="dialog-create-two-windings-transformer"
+            fullWidth={true}
+            maxWidth={dialogWidth}
+            titleId="CreateTwoWindingsTransformer"
+            subtitle={renderSubtitle()}
+            searchCopy={searchCopy}
+            {...dialogProps}
+        >
+            <Box hidden={tabIndex !== DialogTab.CHARACTERISTICS_TAB} p={1}>
+                <TwoWindingsTransformerPane
+                    twoWindingsTransformerIdField={
+                        twoWindingsTransformerIdField
+                    }
+                    twoWindingsTransformerNameField={
+                        twoWindingsTransformerNameField
+                    }
+                    seriesResistanceField={seriesResistanceField}
+                    seriesReactanceField={seriesReactanceField}
+                    magnetizingConductanceField={magnetizingConductanceField}
+                    ratedSField={ratedSField}
+                    magnetizingSusceptanceField={magnetizingSusceptanceField}
+                    ratedVoltage1Field={ratedVoltage1Field}
+                    ratedVoltage2Field={ratedVoltage2Field}
+                    permanentCurrentLimit1Field={permanentCurrentLimit1Field}
+                    permanentCurrentLimit2Field={permanentCurrentLimit2Field}
+                    connectivity1Field={connectivity1Field}
+                    connectivity2Field={connectivity2Field}
+                />
+            </Box>
 
-                <DialogContent>
-                    <Box
-                        hidden={tabIndex !== DialogTab.CHARACTERISTICS_TAB}
-                        p={1}
-                    >
-                        <TwoWindingsTransformerPane
-                            twoWindingsTransformerIdField={
-                                twoWindingsTransformerIdField
-                            }
-                            twoWindingsTransformerNameField={
-                                twoWindingsTransformerNameField
-                            }
-                            seriesResistanceField={seriesResistanceField}
-                            seriesReactanceField={seriesReactanceField}
-                            magnetizingConductanceField={
-                                magnetizingConductanceField
-                            }
-                            ratedSField={ratedSField}
-                            magnetizingSusceptanceField={
-                                magnetizingSusceptanceField
-                            }
-                            ratedVoltage1Field={ratedVoltage1Field}
-                            ratedVoltage2Field={ratedVoltage2Field}
-                            permanentCurrentLimit1Field={
-                                permanentCurrentLimit1Field
-                            }
-                            permanentCurrentLimit2Field={
-                                permanentCurrentLimit2Field
-                            }
-                            connectivity1Field={connectivity1Field}
-                            connectivity2Field={connectivity2Field}
-                        />
-                    </Box>
+            <Box hidden={tabIndex !== DialogTab.RATIO_TAP_TAB} p={1}>
+                <RatioTapChangerPane
+                    formValues={formValues}
+                    setFormValues={setFormValues}
+                    loadTapChangingCapabilitiesField={
+                        ratioTapLoadTapChangingCapabilitiesField
+                    }
+                    ratioTapLoadTapChangingCapabilities={
+                        ratioTapLoadTapChangingCapabilities
+                    }
+                    regulatingField={ratioTapRegulatingField}
+                    handleRatioTapRows={handleRatioTapRows}
+                    ratioTapChangerEnabledField={ratioTapChangerEnabledField}
+                    ratioTapChangerEnabled={ratioTapChangerEnabled}
+                    targetVoltage1Field={targetVoltage1Field}
+                    targetDeadbandField={ratioTapTargetDeadbandField}
+                    regulatingTerminalField={ratioTapRegulatingTerminalField}
+                    lowTapPositionField={ratioLowTapPositionField}
+                    lowTapPosition={ratioLowTapPosition}
+                    highTapPositionField={ratioHighTapPositionField}
+                    highTapPosition={ratioHighTapPosition}
+                    tapPositionField={ratioTapPositionField}
+                    ratioTapRows={ratioTapRows}
+                    ratioCellIndexError={ratioCellIndexError}
+                />
+            </Box>
 
-                    <Box hidden={tabIndex !== DialogTab.RATIO_TAP_TAB} p={1}>
-                        <RatioTapChangerPane
-                            formValues={formValues}
-                            setFormValues={setFormValues}
-                            loadTapChangingCapabilitiesField={
-                                ratioTapLoadTapChangingCapabilitiesField
-                            }
-                            regulatingField={ratioTapRegulatingField}
-                            handleRatioTapRows={handleRatioTapRows}
-                            ratioTapChangerEnabledField={
-                                ratioTapChangerEnabledField
-                            }
-                            ratioTapChangerEnabled={ratioTapChangerEnabled}
-                            targetVoltage1Field={targetVoltage1Field}
-                            targetDeadbandField={ratioTapTargetDeadbandField}
-                            regulatingTerminalField={
-                                ratioTapRegulatingTerminalField
-                            }
-                            lowTapPositionField={ratioLowTapPositionField}
-                            lowTapPosition={ratioLowTapPosition}
-                            highTapPositionField={ratioHighTapPositionField}
-                            highTapPosition={ratioHighTapPosition}
-                            tapPositionField={ratioTapPositionField}
-                            ratioTapRows={ratioTapRows}
-                        />
-                    </Box>
-
-                    <Box hidden={tabIndex !== DialogTab.PHASE_TAP_TAB} p={1}>
-                        <PhaseTapChangerPane
-                            formValues={formValues}
-                            setFormValues={setFormValues}
-                            phaseTapRows={phaseTapRows}
-                            handlePhaseTapRows={handlePhaseTapRows}
-                            phaseTapChangerEnabled={phaseTapChangerEnabled}
-                            phaseTapChangerEnabledField={
-                                phaseTapChangerEnabledField
-                            }
-                            regulationModeField={regulationModeField}
-                            regulationMode={regulationMode}
-                            currentLimiterRegulatingValueField={
-                                currentLimiterRegulatingValueField
-                            }
-                            flowSetPointRegulatingValueField={
-                                flowSetPointRegulatingValueField
-                            }
-                            targetDeadbandField={phaseTapTargetDeadbandField}
-                            regulatingTerminalField={
-                                phaseTapRegulatingTerminalField
-                            }
-                            lowTapPositionField={phaseLowTapPositionField}
-                            lowTapPosition={phaseLowTapPosition}
-                            highTapPositionField={phaseHighTapPositionField}
-                            highTapPosition={phaseHighTapPosition}
-                            tapPositionField={phaseTapPositionField}
-                            regulatingField={phaseTapRegulatingField}
-                        />
-                    </Box>
-                    {creationError && (
-                        <Grid item>
-                            <Alert severity="error">{creationError}</Alert>
-                        </Grid>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseAndClear}>
-                        <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button onClick={handleSave}>
-                        <FormattedMessage id="validate" />
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <Box hidden={tabIndex !== DialogTab.PHASE_TAP_TAB} p={1}>
+                <PhaseTapChangerPane
+                    formValues={formValues}
+                    setFormValues={setFormValues}
+                    phaseTapRows={phaseTapRows}
+                    handlePhaseTapRows={handlePhaseTapRows}
+                    phaseTapChangerEnabled={phaseTapChangerEnabled}
+                    phaseTapChangerEnabledField={phaseTapChangerEnabledField}
+                    regulationModeField={regulationModeField}
+                    regulationMode={regulationMode}
+                    currentLimiterRegulatingValueField={
+                        currentLimiterRegulatingValueField
+                    }
+                    flowSetPointRegulatingValueField={
+                        flowSetPointRegulatingValueField
+                    }
+                    targetDeadbandField={phaseTapTargetDeadbandField}
+                    regulatingTerminalField={phaseTapRegulatingTerminalField}
+                    lowTapPositionField={phaseLowTapPositionField}
+                    lowTapPosition={phaseLowTapPosition}
+                    highTapPositionField={phaseHighTapPositionField}
+                    highTapPosition={phaseHighTapPosition}
+                    tapPositionField={phaseTapPositionField}
+                    regulatingField={phaseTapRegulatingField}
+                    phaseCellIndexError={phaseCellIndexError}
+                />
+            </Box>
+            {creationError && (
+                <Grid item>
+                    <Alert severity="error">{creationError}</Alert>
+                </Grid>
+            )}
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
@@ -1124,15 +1166,17 @@ const TwoWindingsTransformerCreationDialog = ({
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />
-        </>
+        </ModificationDialog>
     );
 };
 
 TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
     voltageLevelOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
+    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

@@ -17,6 +17,7 @@ import {
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
+    networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
@@ -29,7 +30,7 @@ import NetworkModificationTree from './network-modification-tree';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import { useIntlRef, useSnackMessage } from '../utils/messages';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
@@ -135,6 +136,22 @@ export const NetworkModificationTreePane = ({
                 });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeMoved'
+            ) {
+                fetchNetworkModificationTreeNode(
+                    studyUuid,
+                    studyUpdatedForce.eventData.headers['movedNode']
+                ).then((node) => {
+                    dispatch(
+                        networkModificationTreeNodeMoved(
+                            node,
+                            studyUpdatedForce.eventData.headers['parentNode'],
+                            studyUpdatedForce.eventData.headers['insertMode']
+                        )
+                    );
+                });
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeDeleted'
             ) {
                 dispatch(
@@ -179,16 +196,16 @@ export const NetworkModificationTreePane = ({
                         name: response,
                         type: type,
                         buildStatus: 'NOT_BUILT',
-                    }).catch((errorMessage) => {
+                    }).catch((error) => {
                         snackError({
-                            messageTxt: errorMessage,
+                            messageTxt: error.message,
                             headerId: 'NodeCreateError',
                         });
                     })
                 )
-                .catch((errorMessage) => {
+                .catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'NodeCreateError',
                     });
                 });
@@ -220,27 +237,24 @@ export const NetworkModificationTreePane = ({
                     selectedNodeIdForCopy,
                     referenceNodeId,
                     insertMode
-                )
-                    .then(() => {
-                        //After the first CUT / PASTE operation, we can't paste anymore
-                        setSelectedNodeIdForCopy(null);
-                        setCopyType(null);
-                    })
-                    .catch((errorMessage) => {
-                        snackError({
-                            messageTxt: errorMessage,
-                            headerId: 'NodeCreateError',
-                        });
+                ).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'NodeCreateError',
                     });
+                });
+                //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
+                setSelectedNodeIdForCopy(null);
+                setCopyType(null);
             } else {
                 copyTreeNode(
                     studyUuid,
                     selectedNodeIdForCopy,
                     referenceNodeId,
                     insertMode
-                ).catch((errorMessage) => {
+                ).catch((error) => {
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                         headerId: 'NodeCreateError',
                     });
                 });
@@ -251,9 +265,9 @@ export const NetworkModificationTreePane = ({
 
     const handleRemoveNode = useCallback(
         (element) => {
-            deleteTreeNode(studyUuid, element.id).catch((errorMessage) => {
+            deleteTreeNode(studyUuid, element.id).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'NodeDeleteError',
                 });
             });
@@ -263,9 +277,9 @@ export const NetworkModificationTreePane = ({
 
     const handleBuildNode = useCallback(
         (element) => {
-            buildNode(studyUuid, element.id).catch((errorMessage) => {
+            buildNode(studyUuid, element.id).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'NodeBuildingError',
                 });
             });
@@ -298,7 +312,6 @@ export const NetworkModificationTreePane = ({
     }, []);
 
     const closeCreateNodeMenu = useCallback(() => {
-        // setActiveNode(null);
         setCreateNodeMenu({
             display: false,
         });
@@ -319,20 +332,18 @@ export const NetworkModificationTreePane = ({
                     prevTreeDisplay={prevTreeDisplay}
                 />
 
-                {currentNode && currentNode.type === 'NETWORK_MODIFICATION' && (
-                    <StudyDrawer
-                        open={isModificationsDrawerOpen}
-                        drawerClassName={classes.nodeEditor}
-                        drawerShiftClassName={classes.nodeEditorShift}
-                        anchor={
-                            prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
-                                ? 'right'
-                                : 'left'
-                        }
-                    >
-                        <NodeEditor />
-                    </StudyDrawer>
-                )}
+                <StudyDrawer
+                    open={isModificationsDrawerOpen}
+                    drawerClassName={classes.nodeEditor}
+                    drawerShiftClassName={classes.nodeEditorShift}
+                    anchor={
+                        prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
+                            ? 'right'
+                            : 'left'
+                    }
+                >
+                    <NodeEditor />
+                </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
                 <CreateNodeMenu

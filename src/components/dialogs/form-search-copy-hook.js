@@ -8,7 +8,7 @@
 import { useIntl } from 'react-intl';
 import { useState } from 'react';
 import { fetchEquipmentInfos } from '../../utils/rest-api';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export const useFormSearchCopy = ({
     studyUuid,
@@ -31,29 +31,28 @@ export const useFormSearchCopy = ({
             equipmentPath,
             element.id,
             true
-        ).then((response) => {
-            if (response.status === 200) {
-                response.json().then((equipment) => {
-                    const equipmentFormValues = toFormValues(equipment);
-                    setFormValues(equipmentFormValues);
+        )
+            .then((response) => {
+                const equipmentFormValues = toFormValues(response);
+                setFormValues(equipmentFormValues);
 
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopied' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                    snackInfo({
-                        messageTxt: msg,
-                    });
-                });
-            } else {
-                console.error(
-                    'error while fetching equipment {equipmentId} : status = {status}',
-                    element.id,
-                    response.status
+                msg = intl.formatMessage(
+                    { id: 'EquipmentCopied' },
+                    {
+                        equipmentId: element.id,
+                    }
                 );
-                if (response.status === 404) {
+                snackInfo({
+                    messageTxt: msg,
+                });
+            })
+            .catch((error) => {
+                console.error(
+                    'error while fetching equipment {equipmentId} : message = {message}',
+                    element.id,
+                    error.message
+                );
+                if (error.status === 404) {
                     msg = intl.formatMessage(
                         { id: 'EquipmentCopyFailed404' },
                         {
@@ -61,19 +60,21 @@ export const useFormSearchCopy = ({
                         }
                     );
                 } else {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
+                    msg =
+                        intl.formatMessage(
+                            { id: 'EquipmentCopyFailed' },
+                            {
+                                equipmentId: element.id,
+                            }
+                        ) +
+                        ' ' +
+                        error.message;
                 }
                 snackError({
                     messageTxt: msg,
                 });
-            }
-            handleCloseSearchDialog();
-        });
+                handleCloseSearchDialog();
+            });
     };
 
     const handleCloseSearchDialog = () => {

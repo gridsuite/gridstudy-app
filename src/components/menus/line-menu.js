@@ -29,11 +29,12 @@ import {
 } from '../../utils/rest-api';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useSnackMessage } from '../../utils/messages';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { useParameterState } from '../dialogs/parameters/parameters';
+import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -60,7 +61,6 @@ const withLineMenu =
     }) => {
         const classes = useStyles();
         const intl = useIntl();
-
         const studyUuid = decodeURIComponent(useParams().studyUuid);
 
         const { snackInfo } = useSnackMessage();
@@ -86,7 +86,7 @@ const withLineMenu =
         const getLineDescriptor = useCallback(
             (voltageLevelId) => {
                 return displayUseName
-                    ? network.getVoltageLevel(voltageLevelId).name
+                    ? getNameOrId(network.getVoltageLevel(voltageLevelId))
                     : voltageLevelId;
             },
             [displayUseName, network]
