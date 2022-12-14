@@ -301,6 +301,7 @@ const PhaseTapChangerPane = (props) => {
         // We generate a unique key for the table because when we change alpha value by creating a new rule for example,
         // the table does not update only by scrolling. With this key we make sure it is updated when creating a new rule
         return (
+            '' +
             phaseTapRows[0]?.alpha +
             phaseTapRows[phaseTapRows.length - 1]?.alpha
         );

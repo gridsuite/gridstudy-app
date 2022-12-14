@@ -299,6 +299,7 @@ const RatioTapChangerPane = (props) => {
         // We generate a unique key for the table because when we change alpha value by creating a new rule for example,
         // the table does not update only by scrolling. With this key we make sure it is updated when creating a new rule
         return (
+            '' +
             ratioTapRows[0]?.ratio +
             ratioTapRows[ratioTapRows.length - 1]?.ratio
         );
