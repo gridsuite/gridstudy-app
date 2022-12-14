@@ -408,8 +408,14 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         error: error.message,
                         svgUrl: props.svgUrl,
                     });
+                    let msg;
+                    if (error.status === 404) {
+                        msg = `Voltage level ${sldId} not found`;
+                    } else {
+                        msg = error.message;
+                    }
                     snackError({
-                        messageTxt: error.message,
+                        messageTxt: msg,
                     });
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
@@ -417,7 +423,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef]);
+    }, [props.svgUrl, forceState, snackError, intlRef, sldId]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
