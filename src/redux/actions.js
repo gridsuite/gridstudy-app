@@ -274,6 +274,14 @@ export function selectMapManualRefresh(mapManualRefresh) {
     };
 }
 
+export const RESET_MAP_RELOADED = 'RESET_MAP_RELOADED';
+
+export function resetMapReloaded() {
+    return {
+        type: RESET_MAP_RELOADED,
+    };
+}
+
 export const ADD_LOADFLOW_NOTIF = 'ADD_LOADFLOW_NOTIF';
 
 export function addLoadflowNotif() {

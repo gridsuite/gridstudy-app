@@ -28,7 +28,7 @@ import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import { setForceNetworkReload } from '../redux/actions';
+import { resetMapReloaded, setForceNetworkReload } from '../redux/actions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -227,19 +227,24 @@ export const NetworkMapTab = ({
 
                 Promise.all([missingSubstationPositions, missingLinesPositions])
                     .then((positions) => {
-                        geoData.addSubstationPositions(positions[0]);
-                        geoData.addLinePositions(positions[1]);
-                        // If there is new substation positions, we instantiate a new Map so that the substations layer rendering is triggered.
-                        // Same for line positions.
-                        const newGeoData = new GeoData(
-                            positions[0].length > 0
-                                ? new Map(geoData.substationPositionsById)
-                                : geoData.substationPositionsById,
+                        if (
+                            positions[0].length > 0 ||
                             positions[1].length > 0
-                                ? new Map(geoData.linePositionsById)
-                                : geoData.linePositionsById
-                        );
-                        setGeoData(newGeoData);
+                        ) {
+                            geoData.addSubstationPositions(positions[0]);
+                            geoData.addLinePositions(positions[1]);
+                            // If there is new substation positions, we instantiate a new Map so that the substations layer rendering is triggered.
+                            // Same for line positions.
+                            const newGeoData = new GeoData(
+                                positions[0].length > 0
+                                    ? new Map(geoData.substationPositionsById)
+                                    : geoData.substationPositionsById,
+                                positions[1].length > 0
+                                    ? new Map(geoData.linePositionsById)
+                                    : geoData.linePositionsById
+                            );
+                            setGeoData(newGeoData);
+                        }
                         setWaitingLoadGeoData(false);
                     })
                     .catch(function (error) {
@@ -283,9 +288,11 @@ export const NetworkMapTab = ({
                         );
                     });
             }
+            dispatch(resetMapReloaded());
         }
     }, [
         currentNode,
+        dispatch,
         intlRef,
         lineFullPath,
         setErrorMessage,
