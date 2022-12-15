@@ -45,7 +45,6 @@ export const useFormSearchCopy = ({
                 snackInfo({
                     messageTxt: msg,
                 });
-                handleCloseSearchDialog();
             })
             .catch((error) => {
                 console.error(
@@ -74,8 +73,8 @@ export const useFormSearchCopy = ({
                 snackError({
                     messageTxt: msg,
                 });
-                handleCloseSearchDialog();
-            });
+            })
+            .finally(() => handleCloseSearchDialog());
     };
 
     const handleCloseSearchDialog = () => {
