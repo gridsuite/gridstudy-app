@@ -29,7 +29,6 @@ function makeColumns(nOrNkIndex, functionTypeIndex, intl) {
         ret.push(makeColumn(false, 'ContingencyId', 'contingencyId', intl));
     }
 
-    console.debug('funcTypeIndex', functionTypeIndex, nOrNkIndex);
     let suffix1 = 'In' + ['kW', 'kA', 'kV'][functionTypeIndex];
     let suffix = suffix1 + (nOrNkIndex !== 1 ? '' : 'BeforeContingency');
     ret.push(makeColumn(true, 'ValRef' + suffix, 'functionReference', intl));
@@ -55,8 +54,6 @@ const SensitivityAnalysisResult = ({
     sensiToIndex,
     indexer,
 }) => {
-    console.debug('SensitivityAnalysisResult', nOrNkIndex, sensiToIndex);
-
     const intl = useIntl();
 
     const sensiNotif = useSelector((state) => state.sensiNotif);
@@ -69,8 +66,6 @@ const SensitivityAnalysisResult = ({
         () => makeRows(result, nOrNkIndex, sensiToIndex),
         [result, nOrNkIndex, sensiToIndex]
     );
-
-    console.debug('col, row', sensiNotif, rows?.length, columns);
 
     return (
         <div style={{ flexGrow: 1 }}>
