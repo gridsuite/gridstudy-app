@@ -520,7 +520,10 @@ const PhaseTapChangerPane = (props) => {
                                 onClick={() => generateTapRows()}
                                 disabled={
                                     !phaseTapChangerEnabled ||
-                                    !(lowTapPosition && highTapPosition)
+                                    !(
+                                        lowTapPosition !== '' &&
+                                        highTapPosition !== ''
+                                    )
                                 }
                             >
                                 <FormattedMessage id="GenerateTapRows" />

@@ -505,7 +505,10 @@ const RatioTapChangerPane = (props) => {
                                 onClick={() => generateTapRows()}
                                 disabled={
                                     !ratioTapChangerEnabled ||
-                                    !(lowTapPosition && highTapPosition)
+                                    !(
+                                        lowTapPosition !== '' &&
+                                        highTapPosition !== ''
+                                    )
                                 }
                             >
                                 <FormattedMessage id="GenerateTapRows" />
