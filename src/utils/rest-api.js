@@ -739,9 +739,7 @@ export function fetchSubstationPositionsByIds(
         getQueryParamsList(substationsIds, 'substationId');
 
     console.debug(fetchSubstationPositionsUrl);
-    return backendFetch(fetchSubstationPositionsUrl).then((response) =>
-        response.json()
-    );
+    return backendFetchJson(fetchSubstationPositionsUrl);
 }
 
 export function fetchLinePositionsByIds(studyUuid, currentNodeUuid, linesIds) {
@@ -754,9 +752,7 @@ export function fetchLinePositionsByIds(studyUuid, currentNodeUuid, linesIds) {
         getQueryParamsList(linesIds, 'lineId');
 
     console.debug(fetchLinePositionsUrl);
-    return backendFetch(fetchLinePositionsUrl).then((response) =>
-        response.json()
-    );
+    return backendFetchJson(fetchLinePositionsUrl);
 }
 
 export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
