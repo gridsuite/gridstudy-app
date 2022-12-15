@@ -132,9 +132,9 @@ const DeleteVoltageLevelOnLineDialog = ({
                 lineToAttachTo2.id || lineToAttachTo2,
                 newLine1Id,
                 sanitizeString(newLine1Name)
-            ).catch((errorMessage) => {
+            ).catch((error) => {
                 snackError({
-                    messageTxt: errorMessage,
+                    messageTxt: error.message,
                     headerId: 'DeleteVoltageLevelOnLineError',
                 });
             });
