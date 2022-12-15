@@ -143,6 +143,7 @@ const GeneratorCreationDialog = ({
             qPercent: generator.qPercent,
             connectionDirection: generator.connectionDirection,
             connectionName: generator.connectionName,
+            connectionPosition: generator.connectionPosition,
         };
     };
 
@@ -418,6 +419,7 @@ const GeneratorCreationDialog = ({
             ? formValues.connectionDirection
             : '',
         connectionNameValue: formValues?.connectionName,
+        connectionPositionValue: formValues?.connectionPosition,
         withPosition: true,
     });
 
@@ -488,7 +490,8 @@ const GeneratorCreationDialog = ({
             isReactiveCapabilityCurveOn() ? reactiveCapabilityCurve : null,
             connectivity?.connectionDirection?.id ??
                 UNDEFINED_CONNECTION_DIRECTION,
-            connectivity?.connectionName?.id ?? null
+            connectivity?.connectionName?.id ?? null,
+            connectivity?.connectionPosition?.id ?? null
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -548,7 +551,7 @@ const GeneratorCreationDialog = ({
                 {/* Connectivity part */}
                 <GridSection title="Connectivity" />
                 <Grid container spacing={2}>
-                    {gridItem(connectivityField, 8)}
+                    {gridItem(connectivityField, 12)}
                 </Grid>
 
                 {/* Limits part */}

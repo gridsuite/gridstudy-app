@@ -6,7 +6,6 @@
  */
 
 import { useCallback } from 'react';
-import { SvgType } from './single-line-diagram';
 import { useDispatch } from 'react-redux';
 import {
     closeSld,
@@ -17,6 +16,101 @@ import {
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { syncSldStateWithSessionStorage } from '../../../redux/session-storage';
+import { Paper } from '@mui/material';
+
+export const LOADING_WIDTH = 150;
+export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
+export const MAX_HEIGHT_VOLTAGE_LEVEL = 700;
+export const MAX_WIDTH_SUBSTATION = 1200;
+export const MAX_HEIGHT_SUBSTATION = 700;
+
+// To allow controls that are in the corners of the map to not be hidden in normal mode
+// (but they are still hidden in fullscreen mode)
+export const MAP_RIGHT_OFFSET = 120;
+export const MAP_BOTTOM_OFFSET = 80;
+export const BORDERS = 2; // we use content-size: border-box so this needs to be included..
+
+export const commonSldStyle = (theme, customSldStyle) => {
+    return {
+        '& svg': {
+            // necessary because the default (inline-block) adds vertical space
+            // to our otherwise pixel accurate computations (this makes a
+            // scrollbar appear in fullscreen mode)
+            display: 'block',
+        },
+        '& polyline': {
+            pointerEvents: 'none',
+        },
+        '& .sld-label, .sld-graph-label, .sld-legend': {
+            fill: theme.palette.text.primary,
+            'font-family': theme.typography.fontFamily,
+        },
+        '& .sld-disconnector:not(.sld-fictitious), :not(.sld-breaker):not(.sld-disconnector):not(.sld-load-break-switch).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
+            {
+                stroke: theme.palette.text.primary,
+            },
+
+        '& .sld-flash, .sld-lock': {
+            stroke: 'none',
+            fill: theme.palette.text.primary,
+        },
+        overflow: 'hidden',
+        ...customSldStyle,
+    };
+};
+
+export const commonStyle = (theme, customStyle) => {
+    return {
+        close: {
+            padding: 0,
+            borderRight: theme.spacing(1),
+        },
+        header: {
+            padding: 5,
+            display: 'flex',
+            flexDirection: 'row',
+            wordBreak: 'break-all',
+            backgroundColor: theme.palette.background.default,
+        },
+        paperBorders: {
+            borderLeft: '1px solid ' + theme.palette.action.disabled,
+            borderBottom:
+                '1px solid ' + theme.palette.action.disabledBackground,
+            borderRight: '1px solid ' + theme.palette.action.hover,
+        },
+        ...customStyle,
+    };
+};
+
+export function renderIntoPaperWrapper(
+    svg,
+    ref,
+    classes,
+    sizeWidth,
+    sizeHeight,
+    diagram
+) {
+    return !svg.error ? (
+        <Paper
+            ref={ref}
+            elevation={4}
+            square={true}
+            className={classes.paperBorders}
+            style={{
+                pointerEvents: 'auto',
+                width: sizeWidth,
+                minWidth: LOADING_WIDTH,
+                height: sizeHeight,
+                position: 'relative',
+                overflow: 'hidden',
+            }}
+        >
+            {diagram}
+        </Paper>
+    ) : (
+        <></>
+    );
+}
 
 export const ViewState = {
     PINNED: 'pinned',
@@ -96,6 +190,21 @@ export const useSingleLineDiagram = () => {
 export function getNameOrId(value) {
     return value?.name ?? value?.id;
 }
+
+export const SubstationLayout = {
+    HORIZONTAL: 'horizontal',
+    VERTICAL: 'vertical',
+    SMART: 'smart',
+    SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
+    SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
+};
+
+export const SvgType = {
+    VOLTAGE_LEVEL: 'voltage-level',
+    SUBSTATION: 'substation',
+};
+
+export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
 export function getSubstationNameOrId(value) {
     return value?.substationName ?? value?.substationId;
