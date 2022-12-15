@@ -78,9 +78,10 @@ const customSldStyle = (theme) => {
 const customStyle = (theme) => {
     return {
         divInvalid: {
-            '& .sld-arrow-p, .sld-arrow-q': {
-                opacity: INVALID_LOADFLOW_OPACITY,
-            },
+            '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle':
+                {
+                    opacity: INVALID_LOADFLOW_OPACITY,
+                },
         },
         actionIcon: {
             padding: 0,
