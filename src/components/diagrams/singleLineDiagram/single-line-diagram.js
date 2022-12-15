@@ -103,10 +103,9 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
     },
     divInvalid: {
-        '& .sld-arrow-p, .sld-arrow-q, .sld-voltage, .sld-angle, .sld-out, .sld-in':
-            {
-                opacity: INVALID_LOADFLOW_OPACITY,
-            },
+        '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle': {
+            opacity: INVALID_LOADFLOW_OPACITY,
+        },
     },
     close: {
         padding: 0,
@@ -402,6 +401,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
+                    console.log(data.svg);
                     setSvg({
                         svg: data.svg,
                         metadata: data.metadata,
