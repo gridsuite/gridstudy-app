@@ -299,6 +299,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         []
     );
 
+    const hasSldSizeRemainedTheSame = (
+        oldWidth,
+        oldHeight,
+        newWidth,
+        newHeight
+    ) => {
+        return oldWidth === newWidth && oldHeight === newHeight;
+    };
+
     const closeEquipmentMenu = useCallback(() => {
         setEquipmentMenu({
             display: false,
@@ -350,6 +359,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             svgPreferredHeight,
             headerPreferredHeight
         );
+
         if (typeof sizes != 'undefined') {
             if (
                 !fullScreenSldId &&
@@ -540,9 +550,23 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 }
             }
 
-            if (svgDraw.current && svgUrl.current === svg.svgUrl) {
+            //if original sld size has not changed (sld structure has remained the same), we keep the same zoom
+            if (
+                svgDraw.current &&
+                hasSldSizeRemainedTheSame(
+                    svgDraw.current.getOriginalWidth(),
+                    svgDraw.current.getOriginalHeight(),
+                    sldViewer.getOriginalWidth(),
+                    sldViewer.getOriginalHeight()
+                )
+            ) {
                 sldViewer.setViewBox(svgDraw.current.getViewBox());
             }
+
+            // on sld resizing, we need to refresh zoom to avoid exceeding max or min zoom
+            // this is due to a svg.panzoom.js package's behaviour
+            sldViewer.refreshZoom();
+
             svgUrl.current = svg.svgUrl;
             svgDraw.current = sldViewer;
         }
@@ -844,7 +868,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
-    svgUrl: PropTypes.string.isRequired,
+    svgUrl: PropTypes.string,
     sldId: PropTypes.string,
     numberToDisplay: PropTypes.number,
     onClose: PropTypes.func,
