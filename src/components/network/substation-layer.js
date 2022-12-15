@@ -38,6 +38,7 @@ class SubstationLayer extends CompositeLayer {
     updateState({ props, oldProps, changeFlags }) {
         if (changeFlags.dataChanged) {
             let metaVoltageLevelsByNominalVoltage = new Map();
+
             if (props.network != null && props.geoData != null) {
                 // create meta voltage levels
                 // a meta voltage level is made of:

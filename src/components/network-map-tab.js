@@ -233,7 +233,7 @@ export const NetworkMapTab = ({
                 ]).then((positions) => {
                     geoData.addSubstationPositions(positions[0]);
                     geoData.addLinePositions(positions[1]);
-                    // If there is new substation positions, we instantiate a new Map so that the substations layer is rendering is triggered.
+                    // If there is new substation positions, we instantiate a new Map so that the substations layer rendering is triggered.
                     // Same for line positions.
                     const newGeoData = new GeoData(
                         positions[0].length > 0
@@ -256,7 +256,7 @@ export const NetworkMapTab = ({
 
                 const linePositions = lineFullPath
                     ? fetchLinePositions(studyUuid, currentNode?.id)
-                    : [];
+                    : Promise.resolve([]);
 
                 Promise.all([substationPositions, linePositions])
                     .then((values) => {
