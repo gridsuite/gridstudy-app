@@ -193,6 +193,8 @@ const SizedNetworkAreaDiagram = (props) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
+    const nadRef = useRef();
+
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
@@ -293,6 +295,15 @@ const SizedNetworkAreaDiagram = (props) => {
         // Note: studyUuid, and loadNetwork don't change
     }, [studyUpdatedForce, updateNad]);
 
+    const hasNadSizeRemainedTheSame = (
+        oldWidth,
+        oldHeight,
+        newWidth,
+        newHeight
+    ) => {
+        return oldWidth === newWidth && oldHeight === newHeight;
+    };
+
     useLayoutEffect(() => {
         if (svg.svg) {
             const nad = new NetworkAreaDiagramViewer(
@@ -305,6 +316,21 @@ const SizedNetworkAreaDiagram = (props) => {
             );
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
+
+            //if original nad size has not changed (nad structure has remained the same), we keep the same zoom
+            if (
+                nadRef.current &&
+                hasNadSizeRemainedTheSame(
+                    nadRef.current.getOriginalWidth(),
+                    nadRef.current.getOriginalHeight(),
+                    nad.getOriginalWidth(),
+                    nad.getOriginalHeight()
+                )
+            ) {
+                nad.setViewBox(nadRef.current.getViewBox());
+            }
+
+            nadRef.current = nad;
         }
     }, [network, svg, currentNode, theme, nadId, svgUrl]);
 
