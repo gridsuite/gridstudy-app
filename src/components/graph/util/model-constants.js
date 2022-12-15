@@ -13,6 +13,7 @@ export const nodeTypes = {
     NETWORK_MODIFICATION: NetworkModificationNode,
 };
 
-export const nodeWidth = 200;
-export const nodeHeight = 50;
-export const rootNodeWidth = 60;
+export const nodeWidth = 180;
+export const nodeHeight = 60;
+export const rootNodeWidth = 40;
+export const rootNodeHeight = 40;
