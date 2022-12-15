@@ -51,7 +51,7 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeReadOnly } from '../../graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 
 export const SubstationLayout = {
@@ -715,6 +715,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         sizeWidth = initialWidth;
     } else {
         sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
+    }
+
+    if (!isNodeBuilt(currentNode)) {
+        sizeWidth = totalWidth / numberToDisplay;
     }
 
     if (sizeWidth !== undefined) {
