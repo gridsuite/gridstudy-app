@@ -532,6 +532,9 @@
     "TapPositionValueError": "The number of taps must not exceed the value {value}",
 
     "GeneratorScalable": "Generator scalable",
+    "DeltaP": "Δ P",
+    "TargetP": "Target P",
+    "IterativeLabel": "Iterative",
 
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",

@@ -18,12 +18,11 @@ const GeneratorScalableDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const [scalableRadioChoice, scalableRadioField] = useRadioValue({
-        label: 'labelplaceholder',
+    const [generatorScalableRadioChoice, generatorScalableRadioField] = useRadioValue({
         defaultValue: 'deltaP',
         possibleValues: [
-            {id: "deltaP", label:'A P'},
-            {id: "targetP", label: 'Target P'},
+            {id: "deltaP", label:'DeltaP'},
+            {id: "targetP", label: 'TargetP'},
         ]
     })
 
@@ -57,7 +56,7 @@ const GeneratorScalableDialog = ({
             {...dialogProps}
         >
             <Grid container>
-                {gridItem(scalableRadioField, 12)}
+                {gridItem(generatorScalableRadioField, 12)}
                 {gridItem(iterativeField, 12)}
             </Grid>
             <GridSection title="Variations" />
