@@ -91,6 +91,7 @@ function ided(objOrId) {
  * @param connectionNameValue
  * @param connectionPositionValue
  * @param withPosition
+ * @param withDirectionsInfos
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const useConnectivityValue = ({
