@@ -449,6 +449,10 @@
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
+    "AdditionalInformations": "Additional informations",
+    "AddProperty": "Add property",
+    "PropertyName": "Property name",
+    "PropertyValue": "Property value",
 
     "CreateVoltageLevel": "Create a voltage level",
     "Substation": "Substation",
