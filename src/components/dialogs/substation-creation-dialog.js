@@ -7,18 +7,112 @@
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { createSubstation } from '../../utils/rest-api';
+import { createSubstation, fetchAppsAndUrls } from '../../utils/rest-api';
 import {
     useCountryValue,
     useInputForm,
     useTextValue,
 } from './inputs/input-hooks';
-import { filledTextField, gridItem, sanitizeString } from './dialogUtils';
+import {
+    filledTextField,
+    gridItem,
+    GridSection,
+    sanitizeString,
+} from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { useExpandableValues } from './inputs/use-expandable-values';
+import { useAutocompleteField } from './inputs/use-autocomplete-field';
+
+const validateStringPair = (values) => {
+    const res = new Map();
+    const idMap = values.reduce(
+        (m, v) => m.set(v.name, (m.get(v.name) || 0) + 1),
+        new Map()
+    );
+
+    values.forEach((val, idx) => {
+        const errorId = idMap.get(val.name) > 1;
+        if (errorId)
+            res.set(idx, {
+                error: true,
+                ...(errorId && { name: 'DuplicateId' }),
+            });
+    });
+    return res;
+};
+
+const NonNullStringPair = ({
+    index,
+    onChange,
+    defaultValue,
+    inputForm,
+    fieldProps,
+    errors,
+}) => {
+    const predefined = fieldProps?.predefined;
+    const predefinedNames = useMemo(() => {
+        return Object.keys(predefined ?? {}).sort();
+    }, [predefined]);
+
+    const [name, nameField] = useAutocompleteField({
+        id: 'pairKey' + index,
+        label: 'PropertyName',
+        formProps: filledTextField,
+        validation: { isFieldRequired: true },
+        values: predefinedNames,
+        allowNewValue: true,
+        defaultValue: defaultValue?.name || '',
+        inputForm: inputForm,
+        errorMsg: errors?.name,
+    });
+
+    const predefinedValues = useMemo(() => {
+        return predefined?.[name]?.sort() ?? [];
+    }, [name, predefined]);
+
+    const [value, valueField] = useAutocompleteField({
+        id: 'pairValue' + index,
+        label: 'PropertyValue',
+        formProps: filledTextField,
+        validation: { isFieldRequired: true },
+        values: predefinedValues,
+        allowNewValue: true,
+        defaultValue: defaultValue?.value || '',
+        inputForm: inputForm,
+        errorMsg: errors?.value,
+    });
+
+    useEffect(() => {
+        onChange(index, {
+            name,
+            value,
+        });
+    }, [index, name, value, onChange]);
+
+    return (
+        <>
+            {gridItem(nameField, 5)}
+            {gridItem(valueField, 5)}
+        </>
+    );
+};
+
+const fetchPredefinedProperties = () => {
+    return fetchAppsAndUrls().then((res) => {
+        const studyMetadata = res.find((metadata) => metadata.name === 'Study');
+        if (!studyMetadata) {
+            return Promise.reject(
+                'Study entry could not be found in metadatas'
+            );
+        }
+
+        return Promise.resolve(studyMetadata.predefinedEquipmentProperties);
+    });
+};
 
 /**
  * Dialog to create a substation in the network
@@ -39,6 +133,8 @@ const SubstationCreationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
+    const [predefinedProperties, setPredefinedProperties] = useState();
+
     const equipmentPath = 'substations';
 
     const toFormValues = (substation) => {
@@ -57,6 +153,17 @@ const SubstationCreationDialog = ({
         toFormValues,
         setFormValues,
     });
+
+    useEffect(() => {
+        const fetchPromise = fetchPredefinedProperties();
+        if (fetchPromise) {
+            fetchPromise.then((res) => {
+                if (res?.substation) {
+                    setPredefinedProperties(res.substation);
+                }
+            });
+        }
+    }, []);
 
     useEffect(() => {
         if (editData) {
@@ -89,6 +196,25 @@ const SubstationCreationDialog = ({
         defaultLabelValue: formValues?.substationCountryLabel ?? null,
     });
 
+    const fromFormProperties = useMemo(() => {
+        return !formValues?.properties
+            ? null
+            : Object.entries(formValues.properties).map((p) => {
+                  return { name: p[0], value: p[1] };
+              });
+    }, [formValues?.properties]);
+
+    const [additionalProps, AdditionalProps] = useExpandableValues({
+        id: 'additionalProps',
+        labelAddValue: 'AddProperty',
+        validateItem: validateStringPair,
+        inputForm: inputForm,
+        Field: NonNullStringPair,
+        defaultValues: fromFormProperties,
+        fieldProps: { predefined: predefinedProperties },
+        isRequired: false,
+    });
+
     const handleValidation = () => {
         return inputForm.validate();
     };
@@ -101,7 +227,8 @@ const SubstationCreationDialog = ({
             sanitizeString(substationName),
             substationCountry,
             editData ? true : false,
-            editData ? editData.uuid : undefined
+            editData ? editData.uuid : undefined,
+            additionalProps
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -131,6 +258,11 @@ const SubstationCreationDialog = ({
                 {gridItem(substationIdField, 4)}
                 {gridItem(substationNameField, 4)}
                 {gridItem(substationCountryField, 4)}
+            </Grid>
+
+            <Grid container>
+                <GridSection title={'AdditionalInformations'} />
+                {AdditionalProps}
             </Grid>
 
             <EquipmentSearchDialog
