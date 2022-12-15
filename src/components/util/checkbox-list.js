@@ -14,24 +14,23 @@ const CheckboxList = ({
     values,
     onChecked,
     initialSelection,
+    itemComparator = (a, b) => a.id === b.id,
     ...props
 }) => {
     const [checked, setChecked] = useState(new Set(initialSelection));
-    const idField = values?.every((val) => val.uuid) ? 'uuid' : 'id';
 
     useEffect(() => {
         const newChecked = new Set(
             [...checked].filter((element) => {
-                return values.some(
-                    (existingValue) =>
-                        existingValue[idField] === element[idField]
+                return values.some((existingValue) =>
+                    itemComparator(existingValue, element)
                 );
             })
         );
         if (newChecked.size !== checked.size) {
             setChecked(newChecked);
         }
-    }, [values, checked, setChecked, idField]);
+    }, [values, checked, setChecked, itemComparator]);
 
     const refVals = useRef();
     refVals.current = { values, onChecked };
@@ -48,8 +47,8 @@ const CheckboxList = ({
     const handleToggle = useCallback(
         (value) => {
             const newChecked = new Set(checked);
-            const valueToDelete = [...checked].find(
-                (e) => e[idField] === value[idField]
+            const valueToDelete = [...checked].find((e) =>
+                itemComparator(e, value)
             );
 
             const isValueDeleted = newChecked.delete(valueToDelete);
@@ -62,14 +61,14 @@ const CheckboxList = ({
                 onChecked([...newChecked]);
             }
         },
-        [checked, onChecked, idField]
+        [checked, onChecked, itemComparator]
     );
 
     useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
 
     const isCheckboxInCheckedSet = (checkedSet, checkBoxToCheck) => {
-        return Array.from(checkedSet).some(
-            (element) => element[idField] === checkBoxToCheck[idField]
+        return Array.from(checkedSet).some((element) =>
+            itemComparator(element, checkBoxToCheck)
         );
     };
 
