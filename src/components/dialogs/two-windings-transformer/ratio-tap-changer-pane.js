@@ -83,7 +83,7 @@ const RatioTapChangerPane = (props) => {
     };
 
     const generateTapRows = () => {
-        if (highTapPosition > MAX_TAP_NUMBER) {
+        if (highTapPosition - lowTapPosition + 1 > MAX_TAP_NUMBER) {
             setRatioError(
                 intl.formatMessage(
                     { id: 'TapPositionValueError' },
@@ -505,7 +505,8 @@ const RatioTapChangerPane = (props) => {
                                 onClick={() => generateTapRows()}
                                 disabled={
                                     !ratioTapChangerEnabled ||
-                                    !(lowTapPosition && highTapPosition)
+                                    lowTapPosition === '' ||
+                                    highTapPosition === ''
                                 }
                             >
                                 <FormattedMessage id="GenerateTapRows" />
