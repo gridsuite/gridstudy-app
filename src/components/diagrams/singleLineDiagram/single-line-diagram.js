@@ -401,7 +401,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
-                    console.log(data.svg);
                     setSvg({
                         svg: data.svg,
                         metadata: data.metadata,
