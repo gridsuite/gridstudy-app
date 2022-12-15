@@ -193,53 +193,55 @@ export const useDiagram = () => {
     }, [diagramStates, studyUuid]);
 
     const openDiagramView = useCallback(
-        (type, id) => {
+        (id, type) => {
             dispatch(openDiagram(id, type));
         },
         [dispatch]
     );
 
-    const togglePinDiagramView = useCallback( // TODO CHARLY ajouter le type en paramètre
-        (id) => {
-            dispatch(togglePinDiagram(id));
+    const togglePinDiagramView = useCallback(
+        (id, type) => {
+            dispatch(togglePinDiagram(id, type));
         },
         [dispatch]
     );
 
-    const minimizeDiagramView = useCallback( // TODO CHARLY ajouter le type en paramètre
-        (id) => {
-            dispatch(minimizeDiagram(id));
+    const minimizeDiagramView = useCallback(
+        (id, type) => {
+            dispatch(minimizeDiagram(id, type));
         },
         [dispatch]
     );
 
     const showVoltageLevelDiagramView = useCallback(
         (voltageLevelId) => {
-            openDiagramView(SvgType.VOLTAGE_LEVEL, voltageLevelId);
+            openDiagramView(voltageLevelId, SvgType.VOLTAGE_LEVEL);
         },
         [openDiagramView]
     );
 
     const showSubstationDiagramView = useCallback(
         (substationId) => {
-            openDiagramView(SvgType.SUBSTATION, substationId);
+            openDiagramView(substationId, SvgType.SUBSTATION);
         },
         [openDiagramView]
     );
 
     const showNetworkAreaDiagramView = useCallback( // TODO CHARLY Vérifier si la fonction du NAD est compatible avec ce code copié/collé
         (nadId) => {
-            openDiagramView(SvgType.NETWORK_AREA_DIAGRAM, nadId);
+            console.error("CHARLY ** This is working ** #1");
+            openDiagramView(nadId, SvgType.NETWORK_AREA_DIAGRAM);
         },
         [openDiagramView]
     );
 
     const closeDiagramView = useCallback( // TODO CHARLY ajouter le type en paramètre ATTENTION ici on gère une liste
-        (idsToRemove) => {
-            const toRemove = Array.isArray(idsToRemove)
-                ? idsToRemove
-                : [idsToRemove];
-
+        (elementsToRemove) => {
+            console.error("CHARLY closeDiagramView(elementsToRemove=", elementsToRemove);
+            const toRemove = Array.isArray(elementsToRemove)
+                ? elementsToRemove
+                : [elementsToRemove];
+            console.error("CHARLY suite ", toRemove);
             dispatch(closeDiagram(toRemove));
         },
         [dispatch]

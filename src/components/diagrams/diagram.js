@@ -651,14 +651,16 @@ const Diagram = forwardRef((props, ref) => {
     // SLD
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagramId(undefined));
-        if (diagramType() === 'SLD') {
-            console.error('CHARLY onCloseHandler SLD');
-            closeDiagramView(diagramId);
-        } else {
-            console.error('CHARLY onCloseHandler NAD');
-            dispatch(openNetworkAreaDiagram([])); // TODO CHARLY corriger ça
-            setDepth(0);
-        }
+        //if (diagramType() === 'SLD') {
+        //    console.error('CHARLY onCloseHandler SLD');
+            closeDiagramView({id:diagramId, type:svgType});
+        //} else {
+        //    console.error('CHARLY onCloseHandler NAD');
+            if (svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                dispatch(openNetworkAreaDiagram([])); // TODO CHARLY corriger ça [MAYBE DONE]
+                setDepth(0);
+            }
+        //}
     };
 
     const showFullScreen = useCallback(
@@ -739,16 +741,19 @@ const Diagram = forwardRef((props, ref) => {
         sizeHeight = computedHeight;
     }
 
-    // SLD
     const pinDiagram = useCallback(
-        () => onTogglePin(diagramId),
-        [diagramId, onTogglePin]
+        () => {
+            console.error("diagram.js:pinDiagram", diagramId, svgType);
+            onTogglePin(diagramId, svgType);
+            },
+        [diagramId, svgType, onTogglePin]
     );
 
     const minimizeDiagram = useCallback(() => {
-        onMinimize(diagramId);
+        console.error("diagram.js:minimizeDiagram", diagramId, svgType);
+        onMinimize(diagramId, svgType);
         hideFullScreen();
-    }, [onMinimize, diagramId, hideFullScreen]);
+    }, [onMinimize, diagramId, svgType, hideFullScreen]);
 
     // MIX EN COURS
     return !svg.error ? (

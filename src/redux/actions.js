@@ -550,27 +550,30 @@ export function openDiagram(id, svgType) {
 
 export const MINIMIZE_DIAGRAM = 'MINIMIZE_DIAGRAM';
 
-export function minimizeDiagram(id) {
+export function minimizeDiagram(id, svgType) {
     return {
         type: MINIMIZE_DIAGRAM,
         id: id,
+        svgType: svgType,
     };
 }
 
 export const TOGGLE_PIN_DIAGRAM = 'TOGGLE_PIN_DIAGRAM';
 
-export function togglePinDiagram(id) {
+export function togglePinDiagram(id, svgType) {
     return {
         type: TOGGLE_PIN_DIAGRAM,
         id: id,
+        svgType: svgType,
     };
 }
 
 export const CLOSE_DIAGRAM = 'CLOSE_DIAGRAM';
 
-export function closeDiagram(idsToClose) {
+export function closeDiagram(elementsToClose) {
+    console.error("actions.js::closeDiagram", elementsToClose);
     return {
         type: CLOSE_DIAGRAM,
-        ids: idsToClose,
+        elementsToClose: elementsToClose,
     };
 }

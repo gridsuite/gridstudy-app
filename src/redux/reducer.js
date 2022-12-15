@@ -643,7 +643,7 @@ export const reducer = createReducer(initialState, {
         console.error("CHARLY action : ", action);
         const diagramStates = state.diagramStates;
         const diagramToOpenIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id // TODO CHARLY ajouter un test sur le type, afin de gérer la différence entre NAD et SLD
+            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
         );
 
         // if diagram was in states already, and was PINNED or OPENED, nothing happens
@@ -683,7 +683,7 @@ export const reducer = createReducer(initialState, {
         console.error("CHARLY action : ", action);
         const diagramStates = state.diagramStates;
         const diagramToMinizeIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id // TODO CHARLY ajouter un test sur le type, afin de gérer la différence entre NAD et SLD
+            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
         );
         if (diagramToMinizeIndex >= 0) {
             diagramStates[diagramToMinizeIndex].state = ViewState.MINIMIZED;
@@ -698,7 +698,7 @@ export const reducer = createReducer(initialState, {
         const diagramStates = state.diagramStates;
         // search targeted diagram among the diagramStates
         const diagramToPinToggleIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id // TODO CHARLY ajouter un test sur le type, afin de gérer la différence entre NAD et SLD
+            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
         );
         if (diagramToPinToggleIndex >= 0) {
             // when found, if was opened, it's now PINNED
@@ -717,16 +717,22 @@ export const reducer = createReducer(initialState, {
                 diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
             }
         }
-
+        console.error("CHARLY --> togglePinDiagram result : ", diagramStates);
         state.diagramStates = diagramStates;
     },
     [CLOSE_DIAGRAM]: (state, action) => {
         console.error("CHARLY CLOSE_DIAGRAM");
         console.error("CHARLY state : ", state);
         console.error("CHARLY action : ", action);
-        state.diagramStates = state.diagramStates.filter(
-            (diagram) => !action.ids.includes(diagram.id) // TODO CHARLY ajouter un test sur le type, afin de gérer la différence entre NAD et SLD
-        );
+
+        let filteredDiagramStates = state.diagramStates;
+
+        action.elementsToClose.forEach((elementToClose) => {
+            console.error("CHARLY --> toClose : ", elementToClose);
+            filteredDiagramStates = filteredDiagramStates.filter((diagram) => !(diagram.id === elementToClose.id && diagram.svgType === elementToClose.svgType));
+        });
+
+        state.diagramStates = filteredDiagramStates;
     },
 });
 

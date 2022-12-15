@@ -180,7 +180,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 const svgUrl = checkAndGetNetworkAreaDiagramUrl(voltageLevelsIdsForNad, depth); // TODO CHARLY passer le depth correctement
 
                 return {
-                    id: voltageLevelsIdsForNad[0], // TODO CHARLY est-ce correct ou bien nadTitle mieux ici ?
+                    id: nadTitle,
                     ref: React.createRef(),
                     state,
                     nadTitle,
@@ -302,7 +302,7 @@ export function DiagramPane({
     const voltageLevelsIds = useSelector(
         (state) => state.voltageLevelsIdsForNad
     );
-    console.error("CHARLY state.voltageLevelsIdsForNad", voltageLevelsIds);
+    //console.error("CHARLY state.voltageLevelsIdsForNad", voltageLevelsIds);
 
     const fullScreenNadId = useSelector((state) => state.fullScreenNadId);
 
@@ -353,7 +353,7 @@ export function DiagramPane({
                 // in this case, we remove it from diagram states
                 if (currentView) viewsFromDiagramStates.push(currentView);
                 else {
-                    closeDiagramView(currentState.id);
+                    closeDiagramView({id:currentState.id, type:currentState.type});
                 }
             });
 
@@ -381,8 +381,8 @@ export function DiagramPane({
     ]);
 
     const handleCloseDiagram = useCallback(
-        (id) => {
-            closeDiagramView(id);
+        (id, type) => {
+            closeDiagramView({id:id, type:type});
         },
         [closeDiagramView]
     );
@@ -422,8 +422,10 @@ export function DiagramPane({
                         (vl) =>
                             vl.substationId === deletedId || vl.id === deletedId
                     );
-                    if (vlToClose.length > 0)
-                        closeDiagramView([...vlToClose, deletedId]);
+                    if (vlToClose.length > 0) {
+                        console.error("closeDiagramView from diagram-pane:useEffect");
+                        closeDiagramView([...vlToClose, deletedId]); // TODO NOW ajouter type ici
+                    }
 
                     const substationsIds =
                         studyUpdatedForce.eventData.headers['substationsIds'];
@@ -549,7 +551,7 @@ export function DiagramPane({
                                     onClick={() =>
                                         handleOpenView(view.id, view.type)
                                     }
-                                    onDelete={() => handleCloseDiagram(view.id)}
+                                    onDelete={() => handleCloseDiagram(view.id, view.type)}
                                 />
                             ))}
                         </Stack>

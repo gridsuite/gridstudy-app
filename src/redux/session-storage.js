@@ -65,6 +65,6 @@ export const loadDiagramStateFromSessionStorage = (studyUuid) => {
     if (diagramState === null) {
         return [];
     }
-
+    console.error("CHARLY INIT loadDiagramStateFromSessionStorage", diagramState);
     return diagramState;
 };
