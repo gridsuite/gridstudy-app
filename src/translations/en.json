@@ -531,6 +531,8 @@
     "PhaseShiftValuesError": "The values of the phase tap shifts must be ordered and without duplicates",
     "TapPositionValueError": "The number of taps must not exceed the value {value}",
 
+    "GeneratorScalable": "Generator scalable",
+
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",
     "DeltaReactance":"Δ Reactance (%)",

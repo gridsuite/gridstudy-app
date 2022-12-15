@@ -22,7 +22,7 @@ const CheckboxList = ({
         const newChecked = new Set(
             [...checked].filter((element) => {
                 return values.some(
-                    (existingValue) => existingValue.uuid === element.uuid
+                    (existingValue) => existingValue.id === element.id
                 );
             })
         );
@@ -46,10 +46,9 @@ const CheckboxList = ({
     const handleToggle = useCallback(
         (value) => {
             const newChecked = new Set(checked);
-            const valueToDelete = [...checked].find(
-                (e) => e.uuid === value?.uuid
-            );
-            if (!newChecked.delete(valueToDelete)) {
+            const valueToDelete = [...checked].find((e) => e.id === value?.id);
+            const isDeleted = newChecked.delete(valueToDelete);
+            if (!isDeleted) {
                 newChecked.add(value);
             }
             setChecked(newChecked);
@@ -64,9 +63,9 @@ const CheckboxList = ({
     useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
 
     const isCheckboxInCheckedSet = (checkedSet, checkBoxToCheck) => {
-        return Array.from(checkedSet).some(
-            (element) => element?.uuid === checkBoxToCheck?.uuid
-        );
+        return Array.from(checkedSet).some((element) => {
+            return element?.id === checkBoxToCheck?.id;
+        });
     };
 
     return (
