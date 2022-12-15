@@ -71,7 +71,6 @@ import {
     CLOSE_SLD,
     ADD_SHORT_CIRCUIT_NOTIF,
     RESET_SHORT_CIRCUIT_NOTIF,
-    RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
     SET_NETWORK_RELOAD_NEEDED,
     SET_FORCE_NETWORK_RELOAD,
@@ -413,10 +412,6 @@ export const reducer = createReducer(initialState, {
     [RESET_NETWORK_RELOAD]: (state) => {
         state.networkReloadNeeded = false;
         state.forceReloadNetwork = false;
-    },
-
-    [RESET_MAP_RELOADED]: (state) => {
-        state.reloadMap = false;
     },
 
     [ADD_LOADFLOW_NOTIF]: (state) => {
