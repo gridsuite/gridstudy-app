@@ -41,7 +41,7 @@ export const commonSldStyle = (theme, customSldStyle) => {
         '& polyline': {
             pointerEvents: 'none',
         },
-        '& .sld-label, .sld-graph-label': {
+        '& .sld-label, .sld-graph-label, .sld-legend': {
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },

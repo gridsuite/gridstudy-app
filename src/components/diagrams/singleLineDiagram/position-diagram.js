@@ -7,7 +7,6 @@
 
 import React, {
     forwardRef,
-    useCallback,
     useEffect,
     useLayoutEffect,
     useRef,
@@ -179,14 +178,14 @@ const PositionDiagram = forwardRef((props, ref) => {
 
     const classes = useStyles();
 
-    const onCloseHandler = useCallback(() => {
+    const onCloseHandler = () => {
         if (props.onClose !== null) {
             setSvg(NoSvg);
             props.onClose();
         }
-    }, [props]);
+    };
 
-    const PositionDiagramElement = useCallback(() => {
+    const PositionDiagramElement = () => {
         return (
             <>
                 <Box>
@@ -225,7 +224,7 @@ const PositionDiagram = forwardRef((props, ref) => {
                 </Box>
             </>
         );
-    }, [classes, loadingState, props.diagramTitle, svg.svg, onCloseHandler]);
+    };
 
     return renderIntoPaperWrapper(
         svg,

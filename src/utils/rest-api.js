@@ -1174,7 +1174,7 @@ export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
     const wsadress =
         wsbase +
         PREFIX_DIRECTORY_NOTIFICATION_WS +
-        '/notify?updateType=deleteStudy&studyUuid=' +
+        '/notify?updateType=deleteStudy&elementUuid=' +
         studyUuid;
 
     const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
@@ -1329,7 +1329,7 @@ function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
         body: JSON.stringify({
             type: MODIFICATION_TYPE.BRANCH_STATUS,
             equipmentId: lineId,
-            action: status,
+            action: status.toUpperCase(),
         }),
     });
 }
@@ -1797,7 +1797,8 @@ export function createSubstation(
     substationName,
     substationCountry,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let createSubstationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1810,19 +1811,26 @@ export function createSubstation(
         console.info('Creating substation creation');
     }
 
+    const asObj = !properties
+        ? undefined
+        : Object.fromEntries(properties.map((p) => [p.name, p.value]));
+
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.SUBSTATION_CREATION,
+        equipmentId: substationId,
+        equipmentName: substationName,
+        substationCountry: substationCountry === '' ? null : substationCountry,
+        properties: asObj,
+    });
+    console.debug('createSubstation body', properties, body);
+
     return backendFetchText(createSubstationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPE.SUBSTATION_CREATION,
-            equipmentId: substationId,
-            equipmentName: substationName,
-            substationCountry:
-                substationCountry === '' ? null : substationCountry,
-        }),
+        body: body,
     });
 }
 

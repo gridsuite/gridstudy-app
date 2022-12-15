@@ -271,9 +271,6 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
-            valueGreaterThanOrEqualTo: minimumActivePower,
-            valueLessThanOrEqualTo: maximumActivePower,
-            errorMsgId: 'ActivePowerBetweenMaxAndMin',
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,

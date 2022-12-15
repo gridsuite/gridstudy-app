@@ -19,7 +19,9 @@ import {
     useIntegerValue,
     useTextValue,
 } from './inputs/input-hooks';
-import InfoIcon from '@mui/icons-material/Info';
+import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
+import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined';
+
 import PositionDiagramPane from '../diagrams/singleLineDiagram/position-diagram-pane';
 import { Tooltip } from '@mui/material';
 import {
@@ -27,6 +29,7 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../network/constants';
 import { useIntl } from 'react-intl';
+import { isNodeBuilt } from '../graph/util/model-functions';
 
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
@@ -117,6 +120,7 @@ export const useConnectivityValue = ({
     );
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     useEffect(() => {
         if (!voltageLevelOptionsPromise) return;
@@ -286,22 +290,28 @@ export const useConnectivityValue = ({
                                         item
                                         xs={(5 * gridSize) / 100}
                                         align="start"
+                                        display="flex"
+                                        alignItems="center"
                                     >
-                                        {
-                                            <Tooltip
-                                                title={intl.formatMessage({
-                                                    id: 'DisplayTakenPositions',
-                                                })}
-                                            >
-                                                <InfoIcon
+                                        <Tooltip
+                                            title={intl.formatMessage({
+                                                id: !isNodeBuilt(currentNode)
+                                                    ? 'NodeNotBuildPositionMessage'
+                                                    : 'DisplayTakenPositions',
+                                            })}
+                                        >
+                                            {!isNodeBuilt(currentNode) ? (
+                                                <ExploreOffOutlinedIcon color="action" />
+                                            ) : (
+                                                <ExploreOutlinedIcon
                                                     onClick={
                                                         handleClickOpenDiagramPane
                                                     }
                                                     color="action"
                                                     cursor="pointer"
                                                 />
-                                            </Tooltip>
-                                        }
+                                            )}
+                                        </Tooltip>
                                     </Grid>
                                 </>
                             )}
@@ -318,16 +328,17 @@ export const useConnectivityValue = ({
             </>
         );
     }, [
-        direction,
         withPosition,
         withDirectionsInfos,
         gridSize,
+        direction,
         voltageLevelField,
         busOrBusbarSectionField,
         connectionNameField,
         connectionDirectionField,
         connectionPositionField,
         intl,
+        currentNode,
         studyUuid,
         isDiagramPaneOpen,
         voltageLevelObjOrId,
