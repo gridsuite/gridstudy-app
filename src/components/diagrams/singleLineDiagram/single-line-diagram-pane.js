@@ -174,6 +174,9 @@ export function SingleLineDiagramPane({
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
     const [displayedSLD, setDisplayedSld] = useState([]);
+    const [displayedSldHeights, setDisplayedSldHeights] = useState([]);
+    const displayedSldHeightsRef = useRef();
+    displayedSldHeightsRef.current = displayedSldHeights;
 
     const createView = useDisplayView(network, studyUuid, currentNode);
 
@@ -202,7 +205,10 @@ export function SingleLineDiagramPane({
                 ?.ref?.current?.reloadSvg();
         } else
             viewsRef.current.forEach((sld) => {
-                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+                if (
+                    sld.svgUrl &&
+                    sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1
+                ) {
                     sld.ref?.current?.reloadSvg();
                 }
             });
@@ -212,24 +218,21 @@ export function SingleLineDiagramPane({
 
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
-                (response) => {
-                    if (!response.ok) {
-                        console.error(response);
-                        setUpdateSwitchMsg(
-                            response.status + ' : ' + response.statusText
-                        );
-                    }
-                }
-            );
+            updateSwitchState(
+                studyUuid,
+                currentNode?.id,
+                breakerId,
+                open
+            ).catch((error) => {
+                console.error(error.message);
+                setUpdateSwitchMsg(error.message);
+            });
         },
         [studyUuid, currentNode]
     );
 
     useEffect(() => {
-        // We use isNodeBuilt here instead of the "disabled" props to avoid
-        // triggering this effect when changing current node
-        if (isNodeBuilt(currentNodeRef.current) && visible) {
+        if (visible) {
             const viewsFromSldState = [];
             sldState.forEach((currentState) => {
                 let currentView = createView(currentState);
@@ -318,6 +321,33 @@ export function SingleLineDiagramPane({
 
     const displayedIds = new Set(displayedSLD.map(({ id }) => id));
     const minimized = views.filter(({ id }) => !displayedIds.has(id));
+    const [computedHeight, setComputedHeight] = useState();
+
+    useEffect(() => {
+        let displayedSldHeights_ = displayedSldHeightsRef.current?.filter(
+            (displayedHeight) =>
+                views
+                    .filter((sld) => sld.state !== ViewState.MINIMIZED)
+                    .map((sld) => sld.id)
+                    .includes(displayedHeight.id)
+        );
+
+        setDisplayedSldHeights(displayedSldHeights_);
+    }, [views]);
+
+    useEffect(() => {
+        const initialHeights = [
+            ...displayedSldHeights.map(
+                (displayedHeight) => displayedHeight.initialHeight
+            ),
+        ];
+        if (initialHeights.length > 0) {
+            const newComputedHeight = Math.max(...initialHeights);
+            if (newComputedHeight) {
+                setComputedHeight(newComputedHeight);
+            }
+        }
+    }, [displayedSldHeights]);
 
     return (
         <AutoSizer>
@@ -345,6 +375,8 @@ export function SingleLineDiagramPane({
                             disabled={disabled}
                             totalWidth={width}
                             totalHeight={height}
+                            computedHeight={computedHeight}
+                            setDisplayedSldHeights={setDisplayedSldHeights}
                         />
                     ))}
                     <Stack

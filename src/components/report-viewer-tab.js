@@ -8,8 +8,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchReport } from '../utils/rest-api';
 import Paper from '@mui/material/Paper';
 import clsx from 'clsx';
-import { ReportViewer } from '@gridsuite/commons-ui';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ReportViewer, useSnackMessage } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import WaitingLoader from './util/waiting-loader';
 import AlertInvalidNode from './util/alert-invalid-node';
@@ -96,9 +95,9 @@ export const ReportViewerTab = ({
                         setReport(globalReport);
                     }
                 })
-                .catch((errorMessage) =>
+                .catch((error) =>
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                     })
                 )
                 .finally(() => {

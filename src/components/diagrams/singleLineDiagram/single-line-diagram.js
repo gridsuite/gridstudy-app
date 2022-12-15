@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
         '& polyline': {
             pointerEvents: 'none',
         },
-        '& .sld-label, .sld-graph-label': {
+        '& .sld-label, .sld-graph-label, .sld-legend': {
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
@@ -249,6 +249,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         onTogglePin,
         onMinimize,
         disabled,
+        computedHeight,
+        setDisplayedSldHeights,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -335,6 +337,17 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const [svgFinalWidth, setSvgFinalWidth] = useState();
     const [svgFinalHeight, setSvgFinalHeight] = useState();
 
+    useEffect(() => {
+        if (finalPaperHeight) {
+            setDisplayedSldHeights((displayedSldHeights) => {
+                return [
+                    ...displayedSldHeights.filter((sld) => sld.id !== sldId),
+                    { id: sldId, initialHeight: finalPaperHeight },
+                ];
+            });
+        }
+    }, [finalPaperHeight, setDisplayedSldHeights, sldId]);
+
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
             fullScreenSldId,
@@ -397,16 +410,16 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
                 })
-                .catch((errorMessage) => {
-                    console.error(errorMessage);
+                .catch((error) => {
+                    console.error(error.message);
                     setSvg({
                         svg: null,
                         metadata: null,
-                        error: errorMessage,
+                        error: error.message,
                         svgUrl: props.svgUrl,
                     });
                     snackError({
-                        messageTxt: errorMessage,
+                        messageTxt: error.message,
                     });
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
@@ -589,7 +602,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
                 if (svgEl != null) {
                     svgEl.setAttribute('width', svgFinalWidth);
-                    svgEl.setAttribute('height', svgFinalHeight);
+                    svgEl.setAttribute(
+                        'height',
+                        computedHeight ? computedHeight : svgFinalHeight
+                    );
                 }
             }
             setModificationInProgress(false);
@@ -614,6 +630,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         isAnyNodeBuilding,
         network,
         ref,
+        computedHeight,
     ]);
 
     const classes = useStyles();
@@ -696,6 +713,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         initialHeight = sizeHeight; // setting initial height for the next SLD.
     }
 
+    if (!fullScreenSldId && computedHeight) {
+        sizeHeight = computedHeight;
+    }
+
     const pinSld = useCallback(() => onTogglePin(sldId), [sldId, onTogglePin]);
 
     const minimizeSld = useCallback(() => {
@@ -765,17 +786,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     </Box>
                 </Box>
             </Box>
-            {loadingState && (
-                <Box height={2}>
-                    <LinearProgress />
-                </Box>
-            )}
+            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             {disabled ? (
                 <Box position="relative" left={0} right={0} top={0}>
                     <AlertInvalidNode noMargin={true} />
                 </Box>
             ) : (
-                <Box position="relative">
+                <Box>
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
@@ -845,7 +862,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
-    svgUrl: PropTypes.string.isRequired,
+    svgUrl: PropTypes.string,
     sldId: PropTypes.string,
     numberToDisplay: PropTypes.number,
     onClose: PropTypes.func,

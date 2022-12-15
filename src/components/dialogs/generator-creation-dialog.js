@@ -270,9 +270,6 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: true,
             isFieldNumeric: true,
-            valueGreaterThanOrEqualTo: minimumActivePower,
-            valueLessThanOrEqualTo: maximumActivePower,
-            errorMsgId: 'ActivePowerBetweenMaxAndMin',
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
@@ -492,9 +489,9 @@ const GeneratorCreationDialog = ({
             connectivity?.connectionDirection?.id ??
                 UNDEFINED_CONNECTION_DIRECTION,
             connectivity?.connectionName?.id ?? null
-        ).catch((errorMessage) => {
+        ).catch((error) => {
             snackError({
-                messageTxt: errorMessage,
+                messageTxt: error.message,
                 headerId: 'GeneratorCreationError',
             });
         });

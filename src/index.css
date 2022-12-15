@@ -150,6 +150,11 @@ code {
     fill: black;
     font: 14px 'Verdana';
 }
+.sld-legend {
+    stroke: none;
+    fill: black;
+    font: 11px Verdana
+}
 .sld-node {
     stroke: none;
     fill: black;

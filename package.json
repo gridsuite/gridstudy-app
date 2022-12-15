@@ -6,8 +6,8 @@
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
-        "@gridsuite/commons-ui": "0.29.0",
-        "@powsybl/diagram-viewer": "0.1.5",
+        "@gridsuite/commons-ui": "0.29.2",
+        "@powsybl/diagram-viewer": "0.1.6",
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.5.3",
