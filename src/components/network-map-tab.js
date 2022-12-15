@@ -10,9 +10,7 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchLinePositions,
-    fetchLinePositionsByIds,
     fetchSubstationPositions,
-    fetchSubstationPositionsByIds,
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
@@ -218,13 +216,13 @@ export const NetworkMapTab = ({
                     getMissingEquipmentsPositions(
                         geoData.substationPositionsById,
                         network.getSubstations(),
-                        fetchSubstationPositionsByIds
+                        fetchSubstationPositions
                     );
 
                 const missingLinesPositions = getMissingEquipmentsPositions(
                     geoData.linePositionsById,
                     network.getLines(),
-                    fetchLinePositionsByIds
+                    fetchLinePositions
                 );
 
                 Promise.all([
