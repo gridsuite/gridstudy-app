@@ -86,3 +86,11 @@ export const MODIFICATION_TYPE = {
     BRANCH_STATUS: 'BRANCH_STATUS',
     EQUIPMENT_ATTRIBUTE_MODIFICATION: 'EQUIPMENT_ATTRIBUTE_MODIFICATION',
 };
+
+export const VARIATION_MODE = {
+    PROPORTIONAL:  {id: 'proportional', label: 'Proportional'},
+    PROPORTIONAL_TO_P_MAX: {id: 'proportionalToPMax', label: 'ProportionalToPMax'},
+    REGULAR_DISTRIBUTION: {id: 'regularDistribution', label: 'RegularDistribution'},
+    STACKING_UP: {id: 'stackingUp', label: 'StackingUp'},
+    VENTILATION: {id: 'ventilation', label: 'Ventilation'}
+}

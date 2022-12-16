@@ -535,6 +535,13 @@
     "DeltaP": "Δ P",
     "TargetP": "Target P",
     "IterativeLabel": "Iterative",
+    "VariationMode": "Variation mode",
+    "Proportional": "Proportional",
+    "ProportionalToPMax": "Proportional to P max",
+    "RegularDistribution": "Regular distribution",
+    "StackingUp": "Stacking up",
+    "Ventilation": "Ventilation",
+
 
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",
