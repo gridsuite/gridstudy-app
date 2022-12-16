@@ -91,9 +91,6 @@ export const NetworkMapTab = ({
     showInSpreadsheet,
     setErrorMessage,
 }) => {
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const UPDATE_TYPE_HEADER = 'updateType';
-
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const dispatch = useDispatch();
 
@@ -305,11 +302,7 @@ export const NetworkMapTab = ({
     }, [deletedEquipment, mapEquipments]);
 
     const handleFullMapReload = useCallback(() => {
-        if (
-            !mapEquipments ||
-            refIsMapManualRefreshEnabled.current ||
-            !isInitialized
-        ) {
+        if (refIsMapManualRefreshEnabled.current || !isInitialized) {
             loadMapEquipments();
         }
         loadMapGeoData();
