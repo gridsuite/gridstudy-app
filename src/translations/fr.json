@@ -541,6 +541,8 @@
     "RegularDistribution": "Équipartition",
     "StackingUp": "Empilement",
     "Ventilation": "Ventilation",
+    "variations": "Variations",
+    "CreateVariation": "Ajouter variation",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",
