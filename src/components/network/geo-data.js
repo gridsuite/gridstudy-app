@@ -16,7 +16,7 @@ const substationPositionByIdIndexer = (map, substation) => {
     return map;
 };
 
-const linePositionIndexer = (map, line) => {
+const linePositionByIdIndexer = (map, line) => {
     map.set(line.id, line.coordinates);
     return map;
 };
@@ -45,10 +45,10 @@ export default class GeoData {
         );
     }
 
-    getSubstationPosition(substation) {
-        const position = this.substationPositionsById.get(substation);
+    getSubstationPosition(substationId) {
+        const position = this.substationPositionsById.get(substationId);
         if (!position) {
-            console.warn(`Position not found for ${substation}`);
+            console.warn(`Position not found for ${substationId}`);
             return [0, 0];
         }
         return [position.lon, position.lat];
@@ -57,7 +57,7 @@ export default class GeoData {
     setLinePositions(positions) {
         // index positions by line id
         this.linePositionsById = positions.reduce(
-            linePositionIndexer,
+            linePositionByIdIndexer,
             new Map()
         );
     }
