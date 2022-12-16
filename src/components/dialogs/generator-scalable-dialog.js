@@ -25,7 +25,7 @@ const GeneratorScalableVariation = ({
 }) => {
     const [filter, filterField] = useDirectoryElements({
         label: 'filter',
-        initialValues: defaultValue.filter ?? {name: ''},
+        initialValues: defaultValue.filter ?? [],
         validation: {
             isFieldRequired: true,
         },
