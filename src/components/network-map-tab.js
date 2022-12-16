@@ -282,31 +282,24 @@ export const NetworkMapTab = ({
     );
 
     useEffect(() => {
-        if (refIsMapManualRefreshEnabled.current) {
-            return;
-        }
-
-        if (updatedSubstationsIds?.length > 0) {
-            loadMapEquipments(updatedSubstationsIds);
-        }
-    }, [loadMapEquipments, updatedSubstationsIds]);
-
-    useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
             return;
         }
-        mapEquipments?.removeEquipment(
-            deletedEquipment?.type,
-            deletedEquipment?.id
-        );
+        if (deletedEquipment) {
+            mapEquipments?.removeEquipment(
+                deletedEquipment?.type,
+                deletedEquipment?.id
+            );
+        }
     }, [deletedEquipment, mapEquipments]);
 
-    const handleFullMapReload = useCallback(() => {
-        if (refIsMapManualRefreshEnabled.current || !isInitialized) {
-            loadMapEquipments();
-        }
-        loadMapGeoData();
-    }, [isInitialized, loadMapEquipments, loadMapGeoData]);
+    const handleFullMapReload = useCallback(
+        (updatedSubstationsIds) => {
+            loadMapEquipments(updatedSubstationsIds);
+            loadMapGeoData();
+        },
+        [loadMapEquipments, loadMapGeoData]
+    );
 
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
@@ -318,7 +311,11 @@ export const NetworkMapTab = ({
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
         if (!reloadMapNeeded) return;
-        handleFullMapReload();
+        handleFullMapReload(
+            updatedSubstationsIds?.length > 0
+                ? updatedSubstationsIds
+                : undefined
+        );
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
@@ -328,6 +325,7 @@ export const NetworkMapTab = ({
         handleFullMapReload,
         isInitialized,
         reloadMapNeeded,
+        updatedSubstationsIds,
     ]);
 
     useEffect(() => {

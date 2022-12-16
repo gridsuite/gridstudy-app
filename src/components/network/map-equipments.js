@@ -190,7 +190,7 @@ export default class MapEquipments {
         }
 
         // add more infos
-        this.completeSubstationsInfos(fullReload ? undefined : substations);
+        this.completeSubstationsInfos(fullReload ? [] : substations);
     }
 
     completeLinesInfos(equipementsToIndex) {
