@@ -171,10 +171,10 @@ code {
     stroke: #003700;
     stroke-dasharray: 1, 10;
 }
-.sld-arrow-p {
+.sld-active-power {
     fill: black;
 }
-.sld-arrow-q {
+.sld-reactive-power {
     fill: blue;
 }
 .sld-frame {
@@ -216,10 +216,10 @@ code {
 .sld-bottom-feeder .sld-label {
     dominant-baseline: hanging;
 }
-.sld-arrow-p .sld-label {
+.sld-active-power .sld-label {
     dominant-baseline: middle;
 }
-.sld-arrow-q .sld-label {
+.sld-reactive-power .sld-label {
     dominant-baseline: middle;
 }
 
