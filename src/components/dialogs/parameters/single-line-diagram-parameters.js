@@ -8,7 +8,6 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
-import { SubstationLayout } from '../../diagrams/singleLineDiagram/single-line-diagram';
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
@@ -19,6 +18,7 @@ import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { getAvailableComponentLibraries } from '../../../utils/rest-api';
+import { SubstationLayout } from '../../diagrams/singleLineDiagram/utils';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);

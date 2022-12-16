@@ -673,7 +673,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 })
                 .catch(function (error) {
                     console.error(error.message);
-                    setNetworkLoadingFailMessage(error.message);
                 });
             //.finally(() => setIsNetworkPending(false));
             // Note: studyUuid don't change
