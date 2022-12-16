@@ -181,8 +181,8 @@ export const NetworkMapTab = ({
         []
     );
 
-    const getMissingEquipmentsPositions = useCallback(
-        (foundEquipmentPositions, allEquipments, fetchEquipmentCB) => {
+    const getEquipmentsNotFoundIds = useCallback(
+        (foundEquipmentPositions, allEquipments) => {
             let notFoundEquipmentsIds = [];
             const foundEquipmentsIds = Array.from(
                 foundEquipmentPositions.keys()
@@ -192,10 +192,17 @@ export const NetworkMapTab = ({
                     notFoundEquipmentsIds.push(s.id);
                 }
             });
+            return notFoundEquipmentsIds;
+        },
+        []
+    );
+
+    const getMissingEquipmentsPositions = useCallback(
+        (notFoundEquipmentsIds, fetchEquipmentCB) => {
             if (notFoundEquipmentsIds.length === 0) {
                 return Promise.resolve([]);
             }
-            setWaitingLoadGeoData(true);
+
             return fetchEquipmentCB(
                 studyUuid,
                 currentNode?.id,
@@ -212,51 +219,79 @@ export const NetworkMapTab = ({
                 (geoData.substationPositionsById.size > 0 ||
                     geoData.linePositionsById.size > 0)
             ) {
-                const missingSubstationPositions =
-                    getMissingEquipmentsPositions(
-                        geoData.substationPositionsById,
-                        network.getSubstations(),
-                        fetchSubstationPositions
-                    );
-
-                const missingLinesPositions = getMissingEquipmentsPositions(
-                    geoData.linePositionsById,
-                    network.getLines(),
-                    fetchLinePositions
+                const notFoundSubstationIds = getEquipmentsNotFoundIds(
+                    geoData.substationPositionsById,
+                    network.getSubstations()
                 );
 
-                Promise.all([missingSubstationPositions, missingLinesPositions])
-                    .then((positions) => {
-                        if (
-                            positions[0].length > 0 ||
-                            positions[1].length > 0
-                        ) {
-                            geoData.addSubstationPositions(positions[0]);
-                            geoData.addLinePositions(positions[1]);
-                            // If there is new substation positions, we instantiate a new Map so that the substations layer rendering is triggered.
-                            // Same for line positions.
-                            const newGeoData = new GeoData(
-                                positions[0].length > 0
-                                    ? new Map(geoData.substationPositionsById)
-                                    : geoData.substationPositionsById,
+                const notFoundLinesIds = getEquipmentsNotFoundIds(
+                    geoData.linePositionsById,
+                    network.getLines()
+                );
+
+                if (
+                    notFoundSubstationIds.length > 0 ||
+                    notFoundLinesIds.length > 0
+                ) {
+                    console.info(
+                        `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLinesIds}'...`
+                    );
+                    setWaitingLoadGeoData(true);
+
+                    const missingSubstationPositions =
+                        notFoundSubstationIds.length > 0
+                            ? getMissingEquipmentsPositions(
+                                  notFoundSubstationIds,
+                                  fetchSubstationPositions
+                              )
+                            : Promise.resolve([]);
+
+                    const missingLinesPositions =
+                        lineFullPath && notFoundLinesIds.length > 0
+                            ? getMissingEquipmentsPositions(
+                                  notFoundLinesIds,
+                                  fetchLinePositions
+                              )
+                            : Promise.resolve([]);
+
+                    Promise.all([
+                        missingSubstationPositions,
+                        missingLinesPositions,
+                    ])
+                        .then((positions) => {
+                            if (
+                                positions[0].length > 0 ||
                                 positions[1].length > 0
-                                    ? new Map(geoData.linePositionsById)
-                                    : geoData.linePositionsById
+                            ) {
+                                geoData.addSubstationPositions(positions[0]);
+                                geoData.addLinePositions(positions[1]);
+                                // If there is new substation positions, we instantiate a new Map so that the substations layer rendering is triggered.
+                                // Same for line positions.
+                                const newGeoData = new GeoData(
+                                    positions[0].length > 0
+                                        ? new Map(
+                                              geoData.substationPositionsById
+                                          )
+                                        : geoData.substationPositionsById,
+                                    positions[1].length > 0
+                                        ? new Map(geoData.linePositionsById)
+                                        : geoData.linePositionsById
+                                );
+                                setGeoData(newGeoData);
+                            }
+                            setWaitingLoadGeoData(false);
+                        })
+                        .catch(function (error) {
+                            console.error(error.message);
+                            setWaitingLoadGeoData(false);
+                            setErrorMessage(
+                                intlRef.current.formatMessage(
+                                    { id: 'geoDataLoadingFail' },
+                                    { studyUuid: studyUuid }
+                                )
                             );
-                            setGeoData(newGeoData);
-                        }
-                        setWaitingLoadGeoData(false);
-                    })
-                    .catch(function (error) {
-                        console.error(error.message);
-                        setWaitingLoadGeoData(false);
-                        setErrorMessage(
-                            intlRef.current.formatMessage(
-                                { id: 'geoDataLoadingFail' },
-                                { studyUuid: studyUuid }
-                            )
-                        );
-                    });
+                        });
+                }
             } else {
                 console.info(`Loading geo data of study '${studyUuid}'...`);
                 setWaitingLoadGeoData(true);
@@ -300,6 +335,7 @@ export const NetworkMapTab = ({
         getMissingEquipmentsPositions,
         network,
         geoData,
+        getEquipmentsNotFoundIds,
     ]);
 
     const reloadMapGeoDataRef = useRef();
