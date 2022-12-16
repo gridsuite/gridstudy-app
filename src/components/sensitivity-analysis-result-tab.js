@@ -148,14 +148,10 @@ function PagedSensitivityResult({
     next.version = prev?.version;
 
     if (
-        sensiKindIndex !== prev?.sensiKindIndex ||
-        nOrNkIndex !== prev?.nOrNkIndex ||
-        nodeUuid !== prev?.nodeUuid
+        tellDiff('node', prev?.nodeUuid, nodeUuid) ||
+        tellDiff('sensi kind ', prev?.sensiKindIndex, sensiKindIndex) ||
+        tellDiff('pre/post aleas', prev?.nOrNkIndex, nOrNkIndex)
     ) {
-        tellDiff('node', prev?.nodeUuid, nodeUuid);
-        tellDiff('sensi kind ', prev?.sensiKindIndex, sensiKindIndex);
-        tellDiff('pre/post aleas', prev?.nOrNkIndex, nOrNkIndex);
-
         setUserRowsPerPage(DEFAULT_PAGE_COUNT);
         setPage(0);
         setOverAllCount(null);

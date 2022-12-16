@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import VirtualizedTable from './util/virtualized-table';
 import { useMemo } from 'react';
@@ -55,8 +54,6 @@ const SensitivityAnalysisResult = ({
     indexer,
 }) => {
     const intl = useIntl();
-
-    const sensiNotif = useSelector((state) => state.sensiNotif);
 
     let columns = useMemo(
         () => makeColumns(nOrNkIndex, sensiToIndex, intl),
