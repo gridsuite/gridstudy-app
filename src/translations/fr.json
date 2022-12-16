@@ -676,5 +676,9 @@
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
     "Bottom": "Bas",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut"
+    "ConnectionPosition": "Position départ",
+    "ErrorNoVoltageSelected": "Aucun poste sélectionné, veuillez en sélectionner un avant",
+    "DisplayTakenPositions": "Afficher les positions prises",
+    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
+    "NodeNotBuildPositionMessage": "Veuillez réaliser le nœud actuel pour afficher les positions"
 }
