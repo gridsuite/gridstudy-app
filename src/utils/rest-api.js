@@ -266,7 +266,8 @@ export function getVoltageLevelSingleLineDiagram(
     useName,
     centerLabel,
     diagonalLabel,
-    componentLibrary
+    componentLibrary,
+    sldDisplayMode
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -284,6 +285,7 @@ export function getVoltageLevelSingleLineDiagram(
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
+            sldDisplayMode: sldDisplayMode,
         }).toString()
     );
 }
@@ -1374,7 +1376,8 @@ export function createLoad(
     isUpdate = false,
     modificationUuid,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1404,6 +1407,7 @@ export function createLoad(
             busOrBusbarSectionId: busOrBusbarSectionId,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
+            connectionPosition: connectionPosition,
         }),
     });
 }
@@ -1541,7 +1545,8 @@ export function createGenerator(
     minimumReactivePower,
     reactiveCapabilityCurve,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1589,6 +1594,7 @@ export function createGenerator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+            connectionPosition: connectionPosition,
         }),
     });
 }
@@ -1606,7 +1612,8 @@ export function createShuntCompensator(
     isUpdate,
     modificationUuid,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1637,6 +1644,7 @@ export function createShuntCompensator(
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
+            connectionPosition: connectionPosition,
         }),
     });
 }
