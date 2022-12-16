@@ -26,13 +26,9 @@ export default class MapEquipments {
 
     voltageLevelsById = new Map();
 
-    voltageLevelsByNominalVoltage = new Map();
-
     nominalVoltages = [];
 
     intlRef = undefined;
-
-    deletionsBuffer = new Map();
 
     initEquipments(studyUuid, currentNodeUuid) {
         fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false)
@@ -79,17 +75,17 @@ export default class MapEquipments {
         );
         const isFullReload = substationsIds ? false : true;
 
-        Promise.all([updatedEquipments])
+        updatedEquipments
             .then((values) => {
                 this.updateSubstations(
-                    this.checkAndGetValues(values[0].substations),
+                    this.checkAndGetValues(values.substations),
                     isFullReload
                 );
                 this.updateLines(
-                    this.checkAndGetValues(values[0].lines),
+                    this.checkAndGetValues(values.lines),
                     isFullReload
                 );
-                handleUpdatedLines(values[0].lines);
+                handleUpdatedLines(values.lines);
             })
             .catch((error) => {
                 console.error(error.message);
@@ -103,11 +99,18 @@ export default class MapEquipments {
             });
     }
 
-    completeSubstationsInfos() {
+    completeSubstationsInfos(equipementsToIndex) {
         const nominalVoltagesSet = new Set();
-        this.substationsById = new Map();
-        this.voltageLevelsById = new Map();
-        this.substations.forEach((substation) => {
+        if (equipementsToIndex?.length === 0) {
+            this.substationsById = new Map();
+            this.voltageLevelsById = new Map();
+        }
+        const substations =
+            equipementsToIndex?.length > 0
+                ? equipementsToIndex
+                : this.substations;
+
+        substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
             substation.voltageLevels = substation.voltageLevels.sort(
                 (voltageLevel1, voltageLevel2) =>
@@ -115,27 +118,22 @@ export default class MapEquipments {
             );
 
             this.substationsById.set(substation.id, substation);
-
             substation.voltageLevels.forEach((voltageLevel, index) => {
-                // add substation id and name
                 voltageLevel.substationId = substation.id;
                 voltageLevel.substationName = substation.name;
 
-                // add the current item into the VL map by id
                 this.voltageLevelsById.set(voltageLevel.id, voltageLevel);
-
                 nominalVoltagesSet.add(voltageLevel.nominalVoltage);
             });
         });
 
         this.voltageLevels = Array.from(this.voltageLevelsById.values());
-
         this.nominalVoltages = Array.from(nominalVoltagesSet).sort(
             (a, b) => b - a
         );
     }
 
-    updateEquipments(currentEquipments, newEquipements, equipmentType) {
+    updateEquipments(currentEquipments, newEquipements) {
         // replace current modified equipments
         currentEquipments.forEach((equipment1, index) => {
             const found = newEquipements.filter(
@@ -192,11 +190,17 @@ export default class MapEquipments {
         }
 
         // add more infos
-        this.completeSubstationsInfos();
+        this.completeSubstationsInfos(fullReload ? undefined : substations);
     }
 
-    completeLinesInfos() {
-        this.linesById = this.lines.reduce(elementIdIndexer, new Map());
+    completeLinesInfos(equipementsToIndex) {
+        if (equipementsToIndex?.length > 0) {
+            equipementsToIndex.forEach((line) => {
+                this.linesById?.set(line.id, line);
+            });
+        } else {
+            this.linesById = this.lines.reduce(elementIdIndexer, new Map());
+        }
     }
 
     updateLines(lines, fullReload) {
@@ -204,24 +208,27 @@ export default class MapEquipments {
             this.lines = [];
         }
         this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
-
-        // add more infos
-        this.completeLinesInfos();
+        this.completeLinesInfos(fullReload ? [] : lines);
     }
 
     removeBranchesOfVoltageLevel(branchesList, voltageLevelId) {
-        return branchesList.filter(
+        const remainingLines = branchesList.filter(
             (l) =>
                 l.voltageLevelId1 !== voltageLevelId &&
                 l.voltageLevelId2 !== voltageLevelId
         );
+        branchesList
+            .filter((l) => !remainingLines.includes(l))
+            .map((l) => this.linesById.delete(l.id));
+
+        return remainingLines;
     }
 
     removeEquipment(equipmentType, equipmentId) {
         switch (equipmentType) {
             case 'LINE':
                 this.lines = this.lines.filter((l) => l.id !== equipmentId);
-                this.completeLinesInfos();
+                this.linesById.delete(equipmentId);
                 break;
             case 'VOLTAGE_LEVEL':
                 const substationId =
@@ -235,7 +242,6 @@ export default class MapEquipments {
                     voltageLevelsOfSubstation;
 
                 this.removeBranchesOfVoltageLevel(this.lines, equipmentId);
-                this.completeLinesInfos();
                 //New reference on substations to trigger reload of NetworkExplorer and NetworkMap
                 this.substations = [...this.substations];
                 break;
@@ -244,12 +250,11 @@ export default class MapEquipments {
                     (l) => l.id !== equipmentId
                 );
 
-                this.substationsById
-                    .get(equipmentId)
-                    .voltageLevels.map((vl) =>
-                        this.removeEquipment('VOLTAGE_LEVEL', vl.id)
-                    );
-                this.completeSubstationsInfos();
+                const substation = this.substationsById.get(equipmentId);
+                substation.voltageLevels.map((vl) =>
+                    this.removeEquipment('VOLTAGE_LEVEL', vl.id)
+                );
+                this.completeSubstationsInfos([...substation]);
                 break;
             default:
         }

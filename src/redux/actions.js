@@ -510,3 +510,21 @@ export function closeSld(idsToClose) {
         ids: idsToClose,
     };
 }
+
+export const SET_UPDATED_SUBSTATIONS_IDS = 'SET_UPDATED_SUBSTATIONS_IDS';
+
+export function setUpdatedSubstationsIds(updatedSubstationsIds) {
+    return {
+        type: SET_UPDATED_SUBSTATIONS_IDS,
+        updatedSubstationsIds: updatedSubstationsIds,
+    };
+}
+
+export const SET_DELETED_EQUIPMENT = 'SET_DELETED_EQUIPMENT';
+
+export function setDeletedEquipment(deletedEquipment) {
+    return {
+        type: SET_DELETED_EQUIPMENT,
+        deletedEquipment: deletedEquipment,
+    };
+}

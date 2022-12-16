@@ -116,6 +116,11 @@ export const NetworkMapTab = ({
 
     const [geoData, setGeoData] = useState();
 
+    const deletedEquipment = useSelector((state) => state.deletedEquipment);
+    const updatedSubstationsIds = useSelector(
+        (state) => state.updatedSubstationsIds
+    );
+
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
         equipment: null,
@@ -279,66 +284,32 @@ export const NetworkMapTab = ({
         ]
     );
 
-    function parseStudyNotification(studyUpdatedForce) {
-        const substationsIds =
-            studyUpdatedForce.eventData.headers['substationsIds'];
-        const substationsIdsArray = substationsIds
-            .substring(1, substationsIds.length - 1)
-            .split(', ');
+    useEffect(() => {
+        if (refIsMapManualRefreshEnabled.current) {
+            return;
+        }
 
-        const deletedEquipmentId =
-            studyUpdatedForce.eventData.headers['deletedEquipmentId'];
-        const deletedEquipmentType =
-            studyUpdatedForce.eventData.headers['deletedEquipmentType'];
-
-        return [substationsIdsArray, deletedEquipmentId, deletedEquipmentType];
-    }
+        if (updatedSubstationsIds?.length > 0) {
+            loadMapEquipments(updatedSubstationsIds);
+        }
+    }, [loadMapEquipments, updatedSubstationsIds]);
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'study'
-            ) {
-                if (refIsMapManualRefreshEnabled.current) {
-                    return;
-                }
-
-                const [
-                    substationsIds,
-                    deletedEquipmentId,
-                    deletedEquipmentType,
-                ] = parseStudyNotification(studyUpdatedForce);
-
-                if (deletedEquipmentId && deletedEquipmentType) {
-                    console.info(
-                        'removing equipment with id=',
-                        deletedEquipmentId,
-                        ' and type=',
-                        deletedEquipmentType,
-                        ' from the mapData'
-                    );
-                    mapEquipments.removeEquipment(
-                        deletedEquipmentType,
-                        deletedEquipmentId
-                    );
-                }
-
-                if (substationsIds?.length > 0) {
-                    loadMapEquipments(substationsIds);
-                }
-            }
+        if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
+            return;
         }
-    }, [
-        mapEquipments,
-        dispatch,
-        studyUpdatedForce,
-        studyUpdatedForce.eventData.headers,
-        loadMapEquipments,
-    ]);
+        mapEquipments?.removeEquipment(
+            deletedEquipment?.type,
+            deletedEquipment?.id
+        );
+    }, [deletedEquipment, mapEquipments]);
 
     const handleFullMapReload = useCallback(() => {
-        if (refIsMapManualRefreshEnabled.current || !isInitialized) {
+        if (
+            !mapEquipments ||
+            refIsMapManualRefreshEnabled.current ||
+            !isInitialized
+        ) {
             loadMapEquipments();
         }
         loadMapGeoData();

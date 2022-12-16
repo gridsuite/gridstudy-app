@@ -37,6 +37,8 @@ import {
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
+    setDeletedEquipment,
+    setUpdatedSubstationsIds,
 } from '../redux/actions';
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
@@ -488,7 +490,10 @@ export function StudyContainer({ view, onChangeTab }) {
         const deletedEquipmentType =
             studyUpdatedForce.eventData.headers['deletedEquipmentType'];
 
-        return [substationsIdsArray, deletedEquipmentId, deletedEquipmentType];
+        return [
+            substationsIdsArray,
+            { id: deletedEquipmentId, type: deletedEquipmentType },
+        ];
     }
 
     useEffect(() => {
@@ -499,11 +504,8 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
-                const [
-                    substationsIds,
-                    deletedEquipmentId,
-                    deletedEquipmentType,
-                ] = parseStudyNotification(studyUpdatedForce);
+                const [substationsIds, deletedEquipment] =
+                    parseStudyNotification(studyUpdatedForce);
 
                 // removing square brackets
                 if (substationsIds?.length > 0) {
@@ -512,19 +514,22 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
 
                 // removing deleted equipment from the network
-                if (deletedEquipmentId && deletedEquipmentType) {
+                if (deletedEquipment?.id && deletedEquipment?.type) {
                     console.info(
                         'removing equipment with id=',
-                        deletedEquipmentId,
+                        deletedEquipment?.id,
                         ' and type=',
-                        deletedEquipmentType,
+                        deletedEquipment?.type,
                         ' from the network'
                     );
                     network.removeEquipment(
-                        deletedEquipmentType,
-                        deletedEquipmentId
+                        deletedEquipment?.type,
+                        deletedEquipment?.id
                     );
                 }
+
+                dispatch(setUpdatedSubstationsIds(substationsIds));
+                dispatch(setDeletedEquipment(deletedEquipment));
             }
         }
     }, [studyUpdatedForce, network, dispatch]);

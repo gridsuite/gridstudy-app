@@ -75,6 +75,8 @@ import {
     ENABLE_DEVELOPER_MODE,
     MAP_EQUIPMENTS_CREATED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
+    SET_UPDATED_SUBSTATIONS_IDS,
+    SET_DELETED_EQUIPMENT,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -160,6 +162,8 @@ const initialState = {
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     sldState: [],
     reloadMap: true,
+    updatedSubstationsIds: [],
+    deletedEquipment: {},
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -405,6 +409,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_MAP_RELOADED]: (state) => {
         state.reloadMap = false;
+    },
+
+    [SET_UPDATED_SUBSTATIONS_IDS]: (state, action) => {
+        state.updatedSubstationsIds = action.updatedSubstationsIds;
+    },
+
+    [SET_DELETED_EQUIPMENT]: (state, action) => {
+        state.deletedEquipment = action.deletedEquipment;
     },
 
     [ADD_LOADFLOW_NOTIF]: (state) => {

@@ -37,6 +37,9 @@ class SubstationLayer extends CompositeLayer {
 
     updateState({ props, oldProps, changeFlags }) {
         if (changeFlags.dataChanged) {
+            console.log(
+                'SUBSTATIONS CHANGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEED'
+            );
             let metaVoltageLevelsByNominalVoltage = new Map();
 
             if (props.network != null && props.geoData != null) {
