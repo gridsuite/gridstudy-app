@@ -50,7 +50,7 @@ export const syncDiagramStateWithSessionStorage = (diagramState, studyUuid) => {
     if (studyUuid == null) {
         return;
     }
-
+    console.error("CHARLY SAVE syncDiagramStateWithSessionStorage", diagramState);
     sessionStorage.setItem(
         getDiagramStateKeyPrefixFromStudyUuid(studyUuid),
         JSON.stringify(diagramState)

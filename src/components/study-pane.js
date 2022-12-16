@@ -13,8 +13,8 @@ import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     filteredNominalVoltagesUpdated,
-    fullScreenNetworkAreaDiagramId, // TODO to remove after SLD/NAD refacto
-    openNetworkAreaDiagram,
+    //fullScreenNetworkAreaDiagramId,
+    //openNetworkAreaDiagram,
     setForceNetworkReload,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
@@ -35,14 +35,14 @@ import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
-import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
+//import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
 import { DiagramPane } from './diagrams/diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { useDiagram } from './diagrams/diagram-common';
-import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
+//import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
 import { isNodeBuilt } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
@@ -105,8 +105,6 @@ const StudyPane = ({
     ...props
 }) => {
 
-    const [useRefactoDiagram, setUseRefactoDiagram] = useState(true); // TODO REMOVE THIS HACK
-
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
@@ -155,10 +153,10 @@ const StudyPane = ({
     const [closeDiagramView, showVoltageLevelDiagramView] = useDiagram(); // We only use the second function here
     // TODO FIN version temporaire
 
-    function closeNetworkAreaDiagram() { // TODO CHARLY Is this useless ?
+    /*function closeNetworkAreaDiagram() { // TODO CHARLY Is this useless ?
         dispatch(fullScreenNetworkAreaDiagramId(null));
         dispatch(openNetworkAreaDiagram([]));
-    }
+    }*/
 
     const disabled = !isNodeBuilt(currentNode);
 
@@ -215,20 +213,6 @@ const StudyPane = ({
     function renderMapView() {
         return (
             <ReactFlowProvider>
-                {/* // TODO REMOVE THIS HACK */}
-                <div style={{
-                    display: 'block',
-                    position: 'absolute',
-                    zIndex: '99999',
-                    padding: '5px',
-                    top: '0',
-                    left: '0',
-                    backgroundColor: 'red',
-                }}>
-                    <button onClick={() => setUseRefactoDiagram(!useRefactoDiagram)}
-                    >REFACTO MODE : {useRefactoDiagram ? 'true' : 'false'}</button>
-                </div>
-                {/* // TODO END OF HACK */}
                 <div
                     style={{
                         display: 'flex',
@@ -342,69 +326,28 @@ const StudyPane = ({
                             </div>
 
                             {/*
-                Rendering single line diagram only in map view and if
-                displayed voltage level or substation id has been set
-                */}
-                            {!useRefactoDiagram && (// TODO REMOVE THIS HACK
-                                <SingleLineDiagramPane
-                                    studyUuid={studyUuid}
-                                    network={network}
-                                    onClose={closeVoltageLevelDiagram}
-                                    openVoltageLevel={openVoltageLevel}
-                                    isComputationRunning={isComputationRunning}
-                                    showInSpreadsheet={showInSpreadsheet}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
-                                    currentNode={currentNode}
-                                    disabled={disabled}
-                                    visible={
-                                        props.view === StudyView.MAP &&
-                                        studyDisplayMode !==
-                                        STUDY_DISPLAY_MODE.TREE
-                                    }
-                                />
-                            )}
-                            {!useRefactoDiagram && (// TODO REMOVE THIS HACK
-                                <NetworkAreaDiagramPane
-                                    studyUuid={studyUuid}
-                                    network={network}
-                                    currentNode={currentNode}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
-                                    onClose={closeNetworkAreaDiagram}
-                                    disabled={disabled}
-                                    align="right"
-                                    visible={
-                                        props.view === StudyView.MAP &&
-                                        studyDisplayMode !==
-                                            STUDY_DISPLAY_MODE.TREE
-                                    }
-                                />
-                            )}
-
-                            {useRefactoDiagram && (
-                                <DiagramPane
-                                    studyUuid={studyUuid}
-                                    network={network}
-                                    //onClose={closeVoltageLevelDiagram} // was useless
-                                    //onClose={closeNetworkAreaDiagram} // seems useless
-                                    //openVoltageLevel={openVoltageLevel} // seems useless
-                                    isComputationRunning={isComputationRunning}
-                                    showInSpreadsheet={showInSpreadsheet}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
-                                    currentNode={currentNode}
-                                    disabled={disabled}
-                                    visible={
-                                        props.view === StudyView.MAP &&
-                                        studyDisplayMode !==
-                                        STUDY_DISPLAY_MODE.TREE
-                                    }
-                                />
-                            )}
+                            Rendering single line diagram only in map view and if
+                            displayed voltage level or substation id has been set
+                            */}
+                            <DiagramPane
+                                studyUuid={studyUuid}
+                                network={network}
+                                //onClose={closeVoltageLevelDiagram} // was useless
+                                //onClose={closeNetworkAreaDiagram} // seems useless
+                                //openVoltageLevel={openVoltageLevel} // seems useless
+                                isComputationRunning={isComputationRunning}
+                                showInSpreadsheet={showInSpreadsheet}
+                                loadFlowStatus={getLoadFlowRunningStatus(
+                                    loadFlowInfos?.loadFlowStatus
+                                )}
+                                currentNode={currentNode}
+                                disabled={disabled}
+                                visible={
+                                    props.view === StudyView.MAP &&
+                                    studyDisplayMode !==
+                                    STUDY_DISPLAY_MODE.TREE
+                                }
+                            />
                         </div>
                     </div>
                 </div>

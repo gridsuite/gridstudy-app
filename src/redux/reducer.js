@@ -639,8 +639,6 @@ export const reducer = createReducer(initialState, {
     },
     [OPEN_DIAGRAM]: (state, action) => {
         console.error("CHARLY OPEN_DIAGRAM");
-        console.error("CHARLY state : ", state);
-        console.error("CHARLY action : ", action);
         const diagramStates = state.diagramStates;
         const diagramToOpenIndex = diagramStates.findIndex(
             (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
@@ -670,7 +668,7 @@ export const reducer = createReducer(initialState, {
         } else {
             diagramStates.push({
                 id: action.id,
-                type: action.svgType,
+                svgType: action.svgType,
                 state: ViewState.OPENED,
             });
         }
@@ -679,8 +677,6 @@ export const reducer = createReducer(initialState, {
     },
     [MINIMIZE_DIAGRAM]: (state, action) => {
         console.error("CHARLY MINIMIZE_DIAGRAM");
-        console.error("CHARLY state : ", state);
-        console.error("CHARLY action : ", action);
         const diagramStates = state.diagramStates;
         const diagramToMinizeIndex = diagramStates.findIndex(
             (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
@@ -693,8 +689,6 @@ export const reducer = createReducer(initialState, {
     },
     [TOGGLE_PIN_DIAGRAM]: (state, action) => {
         console.error("CHARLY TOGGLE_PIN_DIAGRAM");
-        console.error("CHARLY state : ", state);
-        console.error("CHARLY action : ", action);
         const diagramStates = state.diagramStates;
         // search targeted diagram among the diagramStates
         const diagramToPinToggleIndex = diagramStates.findIndex(
@@ -722,8 +716,6 @@ export const reducer = createReducer(initialState, {
     },
     [CLOSE_DIAGRAM]: (state, action) => {
         console.error("CHARLY CLOSE_DIAGRAM");
-        console.error("CHARLY state : ", state);
-        console.error("CHARLY action : ", action);
 
         let filteredDiagramStates = state.diagramStates;
 

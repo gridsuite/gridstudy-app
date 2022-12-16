@@ -651,16 +651,11 @@ const Diagram = forwardRef((props, ref) => {
     // SLD
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagramId(undefined));
-        //if (diagramType() === 'SLD') {
-        //    console.error('CHARLY onCloseHandler SLD');
-            closeDiagramView({id:diagramId, type:svgType});
-        //} else {
-        //    console.error('CHARLY onCloseHandler NAD');
-            if (svgType === SvgType.NETWORK_AREA_DIAGRAM) {
-                dispatch(openNetworkAreaDiagram([])); // TODO CHARLY corriger ça [MAYBE DONE]
-                setDepth(0);
-            }
-        //}
+        closeDiagramView({id:diagramId, svgType:svgType});
+        if (svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            dispatch(openNetworkAreaDiagram([])); // TODO CHARLY corriger ça [MAYBE DONE]
+            setDepth(0); // TODO CHARLY goes nowhere, A CORRIGER
+        }
     };
 
     const showFullScreen = useCallback(

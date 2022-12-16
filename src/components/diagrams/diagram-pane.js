@@ -132,7 +132,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     ref: React.createRef(),
                     state,
                     name,
-                    type: SvgType.SUBSTATION,
+                    svgType: SvgType.SUBSTATION,
                     svgUrl,
                 };
             }
@@ -155,7 +155,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state,
                     name,
                     svgUrl,
-                    type: SvgType.VOLTAGE_LEVEL,
+                    svgType: SvgType.VOLTAGE_LEVEL,
                     substationId: substation?.id,
                 };
             }
@@ -185,19 +185,19 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state,
                     nadTitle,
                     svgUrl,
-                    type: SvgType.NETWORK_AREA_DIAGRAM,
+                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
                 };
             }
 
             if (!network) return;
-            if (view.type === SvgType.VOLTAGE_LEVEL)
+            if (view.svgType === SvgType.VOLTAGE_LEVEL)
                 return createVoltageLevelSLD(view.id, view.state);
-            else if (view.type === SvgType.SUBSTATION)
+            else if (view.svgType === SvgType.SUBSTATION)
                 return createSubstationSLD(view.id, view.state);
-            else if (view.type === SvgType.NETWORK_AREA_DIAGRAM)
+            else if (view.svgType === SvgType.NETWORK_AREA_DIAGRAM)
                 return createNetworkAreaDiagram(view.state);
             else {
-                console.error("diagram-pane:useDisplayView => Missing view.type !");
+                console.error("diagram-pane:useDisplayView => Missing view.svgType !");
             }
         },
         [
@@ -353,13 +353,13 @@ export function DiagramPane({
                 // in this case, we remove it from diagram states
                 if (currentView) viewsFromDiagramStates.push(currentView);
                 else {
-                    closeDiagramView({id:currentState.id, type:currentState.type});
+                    closeDiagramView({id:currentState.id, svgType:currentState.svgType});
                 }
             });
 
             if(voltageLevelsIds.length > 0) {
 
-                let nadView = createView({ id:voltageLevelsIds[0], state: ViewState.OPENED, type: SvgType.NETWORK_AREA_DIAGRAM });
+                let nadView = createView({ id:voltageLevelsIds[0], state: ViewState.OPENED, svgType: SvgType.NETWORK_AREA_DIAGRAM });
 
                 viewsFromDiagramStates.push(nadView);
             }
@@ -380,12 +380,12 @@ export function DiagramPane({
         voltageLevelsIds // TODO CHARLY est-ce nécessaire ?
     ]);
 
-    const handleCloseDiagram = useCallback(
-        (id, type) => {
-            closeDiagramView({id:id, type:type});
+    /*const handleCloseDiagram = useCallback( // TODO CHARLY to remove, it is now useless
+        (id, svgType) => {
+            closeDiagramView({id:id, svgType:svgType});
         },
         [closeDiagramView]
-    );
+    );*/
 
     const handleOpenView = useCallback(
         (id, type) => {
@@ -528,7 +528,7 @@ export function DiagramPane({
                                 }
                                 showInSpreadsheet={showInSpreadsheet}
                                 diagramId={diagram.id}
-                                svgType={diagram.type}
+                                svgType={diagram.svgType}
                                 svgUrl={diagram.svgUrl}
                                 totalHeight={height}
                                 totalWidth={width}
@@ -549,9 +549,9 @@ export function DiagramPane({
                                     icon={<ArrowUpwardIcon />}
                                     label={getNameOrId(view)}
                                     onClick={() =>
-                                        handleOpenView(view.id, view.type)
+                                        handleOpenView(view.id, view.svgType) // TODO CHARLY A voir : est-ce qu'on doit passer par le handler ou bien on peut simplifier comme pour le close juste en dessous ?
                                     }
-                                    onDelete={() => handleCloseDiagram(view.id, view.type)}
+                                    onDelete={() => closeDiagramView({id:view.id, svgType:view.svgType})}
                                 />
                             ))}
                         </Stack>
