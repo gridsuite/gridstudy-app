@@ -239,7 +239,7 @@ function PagedSensitivityResult({
         next.fetcher = () => {
             const selector = {
                 isJustBefore: nOrNkIndex === 0,
-                functionType: FUNCTION_TYPES.at(sensiKindIndex),
+                functionType: FUNCTION_TYPES[sensiKindIndex],
                 offset: page * userRowsPerPage,
                 chunkSize: userRowsPerPage,
             };
