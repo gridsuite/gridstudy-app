@@ -199,7 +199,7 @@ const LineCreationDialog = ({
             formValues?.busOrBusbarSectionId1 || null,
         connectionDirectionValue: formValues?.connectionDirection1 ?? '',
         connectionNameValue: formValues?.connectionName1,
-        withPosition: false,
+        withPosition: true,
         connectionPositionValue: formValues?.connectionPosition1,
     });
 
@@ -216,7 +216,7 @@ const LineCreationDialog = ({
             formValues?.busOrBusbarSectionId2 || null,
         connectionDirectionValue: formValues?.connectionDirection2 ?? '',
         connectionNameValue: formValues?.connectionName2,
-        withPosition: false,
+        withPosition: true,
         connectionPositionValue: formValues?.connectionPosition2,
     });
 
