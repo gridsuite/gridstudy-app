@@ -246,40 +246,38 @@ export const NetworkMapTab = ({
         studyUuid,
     ]);
 
-    const loadMapEquipments = useCallback(
-        (substationsIds) => {
-            if (!isNodeBuilt(currentNode) || !studyUuid) {
-                return;
-            }
-            if (!isInitialized) {
-                const initialMapEquipments = new MapEquipments(
-                    studyUuid,
-                    currentNode?.id,
-                    setErrorMessage,
-                    dispatch,
-                    intlRef
-                );
-                dispatch(mapEquipmentsCreated(initialMapEquipments));
-            } else {
-                console.info('Reload map equipments');
-                mapEquipments.reloadImpactedSubstationsEquipments(
-                    studyUuid,
-                    currentNode,
-                    substationsIds,
-                    setUpdatedLines
-                );
-            }
-        },
-        [
-            currentNode,
-            dispatch,
-            intlRef,
-            isInitialized,
-            mapEquipments,
-            setErrorMessage,
-            studyUuid,
-        ]
-    );
+    const loadMapEquipments = useCallback(() => {
+        if (!isNodeBuilt(currentNode) || !studyUuid) {
+            return;
+        }
+        if (!isInitialized) {
+            const initialMapEquipments = new MapEquipments(
+                studyUuid,
+                currentNode?.id,
+                setErrorMessage,
+                dispatch,
+                intlRef
+            );
+            dispatch(mapEquipmentsCreated(initialMapEquipments));
+        } else {
+            console.info('Reload map equipments');
+            mapEquipments.reloadImpactedSubstationsEquipments(
+                studyUuid,
+                currentNode,
+                updatedSubstationsIds,
+                setUpdatedLines
+            );
+        }
+    }, [
+        currentNode,
+        dispatch,
+        intlRef,
+        isInitialized,
+        mapEquipments,
+        setErrorMessage,
+        studyUuid,
+        updatedSubstationsIds,
+    ]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
@@ -293,13 +291,10 @@ export const NetworkMapTab = ({
         }
     }, [deletedEquipment, mapEquipments]);
 
-    const handleFullMapReload = useCallback(
-        (updatedSubstationsIds) => {
-            loadMapEquipments(updatedSubstationsIds);
-            loadMapGeoData();
-        },
-        [loadMapEquipments, loadMapGeoData]
-    );
+    const handleFullMapReload = useCallback(() => {
+        loadMapEquipments();
+        loadMapGeoData();
+    }, [loadMapEquipments, loadMapGeoData]);
 
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
