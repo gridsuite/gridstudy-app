@@ -50,7 +50,7 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeReadOnly } from '../../graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
     BORDERS,
@@ -685,6 +685,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             )
         );
     };
+
+    if (!isNodeBuilt(currentNode)) {
+        sizeWidth = totalWidth / numberToDisplay;
+    }
 
     if (sizeWidth !== undefined) {
         initialWidth = sizeWidth; // setting initial width for the next SLD.
