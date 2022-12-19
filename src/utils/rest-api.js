@@ -266,7 +266,8 @@ export function getVoltageLevelSingleLineDiagram( // TODO rename this to getVolt
     useName,
     centerLabel,
     diagonalLabel,
-    componentLibrary
+    componentLibrary,
+    sldDisplayMode
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -284,6 +285,7 @@ export function getVoltageLevelSingleLineDiagram( // TODO rename this to getVolt
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
+            sldDisplayMode: sldDisplayMode,
         }).toString()
     );
 }
@@ -1374,7 +1376,8 @@ export function createLoad(
     isUpdate = false,
     modificationUuid,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1404,6 +1407,7 @@ export function createLoad(
             busOrBusbarSectionId: busOrBusbarSectionId,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
+            connectionPosition: connectionPosition,
         }),
     });
 }
@@ -1541,7 +1545,8 @@ export function createGenerator(
     minimumReactivePower,
     reactiveCapabilityCurve,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1589,6 +1594,7 @@ export function createGenerator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+            connectionPosition: connectionPosition,
         }),
     });
 }
@@ -1606,7 +1612,8 @@ export function createShuntCompensator(
     isUpdate,
     modificationUuid,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1637,6 +1644,7 @@ export function createShuntCompensator(
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
+            connectionPosition: connectionPosition,
         }),
     });
 }
@@ -1789,7 +1797,8 @@ export function createSubstation(
     substationName,
     substationCountry,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let createSubstationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1802,19 +1811,26 @@ export function createSubstation(
         console.info('Creating substation creation');
     }
 
+    const asObj = !properties
+        ? undefined
+        : Object.fromEntries(properties.map((p) => [p.name, p.value]));
+
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.SUBSTATION_CREATION,
+        equipmentId: substationId,
+        equipmentName: substationName,
+        substationCountry: substationCountry === '' ? null : substationCountry,
+        properties: asObj,
+    });
+    console.debug('createSubstation body', properties, body);
+
     return backendFetchText(createSubstationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPE.SUBSTATION_CREATION,
-            equipmentId: substationId,
-            equipmentName: substationName,
-            substationCountry:
-                substationCountry === '' ? null : substationCountry,
-        }),
+        body: body,
     });
 }
 

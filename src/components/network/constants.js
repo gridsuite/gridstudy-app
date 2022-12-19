@@ -68,6 +68,11 @@ export function getLoadTypeLabel(loadTypeId) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
 }
 
+export const SLD_DISPLAY_MODE = {
+    FEEDER_POSITION: 'FEEDER_POSITION',
+    STATE_VARIABLE: 'STATE_VARIABLE',
+};
+
 export const MODIFICATION_TYPE = {
     GROOVY_SCRIPT: 'GROOVY_SCRIPT',
     LOAD_CREATION: 'LOAD_CREATION',

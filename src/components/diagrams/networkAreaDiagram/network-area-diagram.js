@@ -193,6 +193,8 @@ const SizedNetworkAreaDiagram = (props) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
+    const nadRef = useRef();
+
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
@@ -293,6 +295,15 @@ const SizedNetworkAreaDiagram = (props) => {
         // Note: studyUuid, and loadNetwork don't change
     }, [studyUpdatedForce, updateNad]);
 
+    const hasNadSizeRemainedTheSame = (
+        oldWidth,
+        oldHeight,
+        newWidth,
+        newHeight
+    ) => {
+        return oldWidth === newWidth && oldHeight === newHeight;
+    };
+
     useLayoutEffect(() => {
         if (svg.svg) {
             const nad = new NetworkAreaDiagramViewer(
@@ -305,6 +316,21 @@ const SizedNetworkAreaDiagram = (props) => {
             );
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
+
+            //if original nad size has not changed (nad structure has remained the same), we keep the same zoom
+            if (
+                nadRef.current &&
+                hasNadSizeRemainedTheSame(
+                    nadRef.current.getOriginalWidth(),
+                    nadRef.current.getOriginalHeight(),
+                    nad.getOriginalWidth(),
+                    nad.getOriginalHeight()
+                )
+            ) {
+                nad.setViewBox(nadRef.current.getViewBox());
+            }
+
+            nadRef.current = nad;
         }
     }, [network, svg, currentNode, theme, nadId, svgUrl]);
 
@@ -413,35 +439,21 @@ const SizedNetworkAreaDiagram = (props) => {
                     </IconButton>
                 </Box>
             </Box>
-            {loadingState && (
-                <Box height={2}>
-                    <LinearProgress />
-                </Box>
-            )}
+            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             {disabled ? (
                 <Box position="relative" left={0} right={0} top={0}>
                     <AlertInvalidNode noMargin={true} />
                 </Box>
             ) : (
                 <Box position="relative">
-                    <Box position="relative" left={0} right={0} top={0}>
-                        {loadingState && (
-                            <Box height={2}>
-                                <LinearProgress />
-                            </Box>
-                        )}
-                    </Box>
-                    {
-                        <div
-                            id="nad-svg"
-                            ref={svgRef}
-                            className={clsx(classes.divNad, {
-                                [classes.divInvalid]:
-                                    loadFlowStatus !== RunningStatus.SUCCEED,
-                            })}
-                        />
-                    }
-
+                    <div
+                        id="nad-svg"
+                        ref={svgRef}
+                        className={clsx(classes.divNad, {
+                            [classes.divInvalid]:
+                                loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
+                    />
                     {!loadingState && (
                         <div style={{ display: 'flex' }}>
                             <Typography className={classes.depth}>

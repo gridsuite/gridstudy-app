@@ -33,6 +33,7 @@ import {
 import { isNodeBuilt } from '../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
+import { SLD_DISPLAY_MODE } from '../network/constants';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -60,7 +61,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       useName,
                       centerName,
                       diagonalName,
-                      componentLibrary
+                      componentLibrary,
+                      SLD_DISPLAY_MODE.STATE_VARIABLE
                   )
                 : null,
         [
@@ -270,7 +272,10 @@ export function DiagramPane({
                 ?.ref?.current?.reloadSvg();
         } else
             viewsRef.current.forEach((sld) => {
-                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+                if (
+                    sld.svgUrl &&
+                    sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1
+                ) {
                     sld.ref?.current?.reloadSvg();
                 }
             });
@@ -342,9 +347,7 @@ export function DiagramPane({
     // OLD SLD
 
     useEffect(() => {// TODO CHARLY revoir cette fonction avec diagramStates à la place de sldState
-        // We use isNodeBuilt here instead of the "disabled" props to avoid
-        // triggering this effect when changing current node
-        if (isNodeBuilt(currentNodeRef.current) && visible) {
+        if (visible) {
             const viewsFromDiagramStates = [];
             console.error("CHARLY + + + diagramStates", diagramStates);
             diagramStates.forEach((currentState) => {
@@ -363,15 +366,6 @@ export function DiagramPane({
 
                 viewsFromDiagramStates.push(nadView);
             }
-            /*voltageLevelsIds.forEach((currentId) => {
-                let currentView = createView(currentState);
-                // if current view cannot be found, it return undefined
-                // in this case, we remove it from diagram states
-                if (currentView) viewsFromDiagramStates.push(currentView);
-                else {
-                    closeDiagramView(currentState.id);
-                }
-            });*/
 
             console.error("CHARLY - - - setViews en cours", viewsFromDiagramStates);
             setViews(viewsFromDiagramStates);
@@ -379,13 +373,6 @@ export function DiagramPane({
     }, [diagramStates, visible, disabled, closeDiagramView, createView, dispatch,
         voltageLevelsIds // TODO CHARLY est-ce nécessaire ?
     ]);
-
-    /*const handleCloseDiagram = useCallback( // TODO CHARLY to remove, it is now useless
-        (id, svgType) => {
-            closeDiagramView({id:id, svgType:svgType});
-        },
-        [closeDiagramView]
-    );*/
 
     const handleOpenView = useCallback(
         (id, type) => {

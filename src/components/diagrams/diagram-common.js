@@ -22,6 +22,135 @@ import {
 } from '../../utils/colors';
 import { equipments } from '../network/network-equipments';
 
+export const LOADING_WIDTH = 150;
+export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
+export const MAX_HEIGHT_VOLTAGE_LEVEL = 700;
+export const MAX_WIDTH_SUBSTATION = 1200;
+export const MAX_HEIGHT_SUBSTATION = 700;
+export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = 1200;
+export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
+
+// To allow controls that are in the corners of the map to not be hidden in normal mode
+// (but they are still hidden in fullscreen mode)
+export const MAP_RIGHT_OFFSET = 120;
+export const MAP_BOTTOM_OFFSET = 80;
+export const BORDERS = 2; // we use content-size: border-box so this needs to be included..
+
+export const commonSldStyle = (theme, customStyle) => {
+    return {
+        '& svg': {
+            // necessary because the default (inline-block) adds vertical space
+            // to our otherwise pixel accurate computations (this makes a
+            // scrollbar appear in fullscreen mode)
+            display: 'block',
+        },
+        '& polyline': {
+            pointerEvents: 'none',
+        },
+        '& .sld-label, .sld-graph-label, .sld-legend': {
+            fill: theme.palette.text.primary,
+            'font-family': theme.typography.fontFamily,
+        },
+        '& .sld-disconnector:not(.sld-fictitious), :not(.sld-breaker):not(.sld-disconnector):not(.sld-load-break-switch).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
+            {
+                stroke: theme.palette.text.primary,
+            },
+
+        '& .sld-flash, .sld-lock': {
+            stroke: 'none',
+            fill: theme.palette.text.primary,
+        },
+        overflow: 'hidden',
+        ...customStyle,
+    };
+};
+
+export const commonNadStyle = (theme, customStyle) => {
+    return {
+        '& svg': {
+            // necessary because the default (inline-block) adds vertical space
+            // to our otherwise pixel accurate computations (this makes a
+            // scrollbar appear in fullscreen mode)
+            display: 'block',
+            width: '100%',
+        },
+        '& .nad-label-box': {
+            color: theme.palette.text.primary,
+            'font-family': theme.typography.fontFamily,
+        },
+        '& .nad-text-edges': {
+            stroke: theme.palette.text.primary,
+        },
+        overflow: 'hidden',
+        ...customStyle,
+    };
+};
+
+export const commonDiagramStyle = (theme, customStyle) => {
+    return {
+        divInvalid: {
+            '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle': { // TODO CHARLY Voir avec Ahmed pourquoi ce changement de règles
+                opacity: INVALID_LOADFLOW_OPACITY,
+            },
+            '& .sld-arrow-p, .sld-arrow-q': {
+                opacity: INVALID_LOADFLOW_OPACITY,
+            },
+            '& .nad-edge-infos': {
+                opacity: NAD_INVALID_LOADFLOW_OPACITY,
+            },
+        },
+        actionIcon: {
+            padding: 0,
+            borderRight: theme.spacing(1),
+        },
+        pinRotate: {
+            padding: 0,
+            borderRight: theme.spacing(1),
+            transform: 'rotate(45deg)',
+        },
+        fullScreenIcon: {
+            bottom: 5,
+            right: 5,
+            position: 'absolute',
+            cursor: 'pointer',
+        },
+        close: {
+            padding: 0,
+            borderRight: theme.spacing(1),
+        },
+        header: {
+            padding: 5,
+            display: 'flex',
+            flexDirection: 'row',
+            wordBreak: 'break-all',
+            backgroundColor: theme.palette.background.default,
+        },
+        paperBorders: {
+            borderLeft: '1px solid ' + theme.palette.action.disabled,
+            borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
+            borderRight: '1px solid ' + theme.palette.action.hover,
+        },
+        plusIcon: {
+            bottom: 5,
+            left: 30,
+            position: 'absolute',
+            cursor: 'pointer',
+        },
+        lessIcon: {
+            bottom: 5,
+            left: 5,
+            position: 'absolute',
+            cursor: 'pointer',
+        },
+        depth: {
+            bottom: 25,
+            left: 5,
+            position: 'absolute',
+        },
+        ...customStyle,
+    };
+};
+
 export const ViewState = {
     PINNED: 'pinned',
     MINIMIZED: 'minimized',
@@ -41,110 +170,6 @@ export const SvgType = {
     SUBSTATION: 'substation',
     NETWORK_AREA_DIAGRAM: 'network-area-diagram',
 };
-
-export const useStyles = makeStyles((theme) => ({
-    divNad: {
-        '& svg': {
-            // necessary because the default (inline-block) adds vertical space
-            // to our otherwise pixel accurate computations (this makes a
-            // scrollbar appear in fullscreen mode)
-            display: 'block',
-            width: '100%',
-        },
-        '& .nad-label-box': {
-            color: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
-        },
-
-        '& .nad-text-edges': {
-            stroke: theme.palette.text.primary,
-        },
-
-        overflow: 'hidden',
-    },
-    divSld: {
-        '& svg': {
-            // necessary because the default (inline-block) adds vertical space
-            // to our otherwise pixel accurate computations (this makes a
-            // scrollbar appear in fullscreen mode)
-            display: 'block',
-        },
-        '& polyline': {
-            pointerEvents: 'none',
-        },
-        '& .sld-label, .sld-graph-label, .sld-legend': {
-            fill: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
-        },
-        '& .sld-disconnector:not(.sld-fictitious), :not(.sld-breaker):not(.sld-disconnector):not(.sld-load-break-switch).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
-            {
-                stroke: theme.palette.text.primary,
-            },
-        '& .arrow': {
-            fill: theme.palette.text.primary,
-        },
-        '& .sld-flash, .sld-lock': {
-            stroke: 'none',
-            fill: theme.palette.text.primary,
-        },
-        overflow: 'hidden',
-    },
-    divInvalid: {
-        '& .nad-edge-infos': {
-            opacity: NAD_INVALID_LOADFLOW_OPACITY,
-        },
-        '& .sld-arrow-p, .sld-arrow-q': {
-            opacity: INVALID_LOADFLOW_OPACITY,
-        },
-    },
-    close: {
-        padding: 0,
-    },
-    actionIcon: {
-        padding: 0,
-        borderRight: theme.spacing(1),
-    },
-    pinRotate: {
-        padding: 0,
-        borderRight: theme.spacing(1),
-        transform: 'rotate(45deg)',
-    },
-    header: {
-        padding: 5,
-        display: 'flex',
-        flexDirection: 'row',
-        wordBreak: 'break-all',
-        backgroundColor: theme.palette.background.default,
-    },
-    fullScreenIcon: {
-        bottom: 5,
-        right: 5,
-        position: 'absolute',
-        cursor: 'pointer',
-    },
-    plusIcon: {
-        bottom: 5,
-        left: 30,
-        position: 'absolute',
-        cursor: 'pointer',
-    },
-    lessIcon: {
-        bottom: 5,
-        left: 5,
-        position: 'absolute',
-        cursor: 'pointer',
-    },
-    depth: {
-        bottom: 25,
-        left: 5,
-        position: 'absolute',
-    },
-    paperBorders: {
-        borderLeft: '1px solid ' + theme.palette.action.disabled,
-        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
-        borderRight: '1px solid ' + theme.palette.action.hover,
-    },
-}));
 
 export function getEquipmentTypeFromFeederType(feederType) {
     switch (feederType) {
@@ -264,3 +289,5 @@ export function getNameOrId(value) {
 export function getSubstationNameOrId(value) {
     return value?.substationName ?? value?.substationId;
 }
+
+export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
