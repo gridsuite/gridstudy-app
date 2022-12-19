@@ -104,7 +104,6 @@ const StudyPane = ({
     setErrorMessage,
     ...props
 }) => {
-
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
@@ -344,8 +343,7 @@ const StudyPane = ({
                                 disabled={disabled}
                                 visible={
                                     props.view === StudyView.MAP &&
-                                    studyDisplayMode !==
-                                    STUDY_DISPLAY_MODE.TREE
+                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
                                 }
                             />
                         </div>

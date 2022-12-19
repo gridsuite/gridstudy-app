@@ -24,12 +24,7 @@ import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import {
-    getNameOrId,
-    useDiagram,
-    ViewState,
-    SvgType,
-} from './diagram-common';
+import { getNameOrId, useDiagram, ViewState, SvgType } from './diagram-common';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
@@ -104,16 +99,13 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (voltageLevelsIds, depth) =>
             isNodeBuilt(currentNode)
                 ? getNetworkAreaDiagramUrl(
-                    studyUuid,
-                    currentNode?.id,
-                    voltageLevelsIds,
-                    depth
-                )
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelsIds,
+                      depth
+                  )
                 : null,
-        [
-            studyUuid,
-            currentNode,
-        ]
+        [studyUuid, currentNode]
     );
 
     return useCallback(
@@ -127,7 +119,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 if (countryName) {
                     name += ' \u002D ' + countryName;
                 }
-                const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(substationId);
+                const svgUrl =
+                    checkAndGetSubstationSingleLineDiagramUrl(substationId);
 
                 return {
                     id: substationId,
@@ -149,7 +142,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 if (countryName) {
                     name += ' \u002D ' + countryName;
                 }
-                const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(vlId);
+                const svgUrl =
+                    checkAndGetVoltageLevelSingleLineDiagramUrl(vlId);
 
                 return {
                     id: vlId,
@@ -162,7 +156,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 };
             }
 
-            function createNetworkAreaDiagram(state, depth=0) { // TODO CHARLY en cours de remix
+            function createNetworkAreaDiagram(state, depth = 0) {
+                // TODO CHARLY en cours de remix
                 let displayedVoltageLevels = [];
                 let nadTitle = '';
                 if (voltageLevelsIdsForNad) {
@@ -175,11 +170,15 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 displayedVoltageLevels.forEach((vl) => {
                     const name = useName && vl?.name ? vl?.name : vl?.id;
                     if (name !== undefined) {
-                        nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
+                        nadTitle =
+                            nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
                     }
                 });
 
-                const svgUrl = checkAndGetNetworkAreaDiagramUrl(voltageLevelsIdsForNad, depth); // TODO CHARLY passer le depth correctement
+                const svgUrl = checkAndGetNetworkAreaDiagramUrl(
+                    voltageLevelsIdsForNad,
+                    depth
+                ); // TODO CHARLY passer le depth correctement
 
                 return {
                     id: nadTitle,
@@ -199,7 +198,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             else if (view.svgType === SvgType.NETWORK_AREA_DIAGRAM)
                 return createNetworkAreaDiagram(view.state);
             else {
-                console.error("diagram-pane:useDisplayView => Missing view.svgType !");
+                console.error(
+                    'diagram-pane:useDisplayView => Missing view.svgType !'
+                );
             }
         },
         [
@@ -346,47 +347,69 @@ export function DiagramPane({
 
     // OLD SLD
 
-    useEffect(() => {// TODO CHARLY revoir cette fonction avec diagramStates à la place de sldState
+    useEffect(() => {
+        // TODO CHARLY revoir cette fonction avec diagramStates à la place de sldState
         if (visible) {
             const viewsFromDiagramStates = [];
-            console.error("CHARLY + + + diagramStates", diagramStates);
+            console.error('CHARLY + + + diagramStates', diagramStates);
             diagramStates.forEach((currentState) => {
                 let currentView = createView(currentState);
                 // if current view cannot be found, it return undefined
                 // in this case, we remove it from diagram states
                 if (currentView) viewsFromDiagramStates.push(currentView);
                 else {
-                    closeDiagramView({id:currentState.id, svgType:currentState.svgType});
+                    closeDiagramView({
+                        id: currentState.id,
+                        svgType: currentState.svgType,
+                    });
                 }
             });
 
-            if(voltageLevelsIds.length > 0) {
-
-                let nadView = createView({ id:voltageLevelsIds[0], state: ViewState.OPENED, svgType: SvgType.NETWORK_AREA_DIAGRAM });
+            if (voltageLevelsIds.length > 0) {
+                let nadView = createView({
+                    id: voltageLevelsIds[0],
+                    state: ViewState.OPENED,
+                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                });
 
                 viewsFromDiagramStates.push(nadView);
             }
 
-            console.error("CHARLY - - - setViews en cours", viewsFromDiagramStates);
+            console.error(
+                'CHARLY - - - setViews en cours',
+                viewsFromDiagramStates
+            );
             setViews(viewsFromDiagramStates);
         }
-    }, [diagramStates, visible, disabled, closeDiagramView, createView, dispatch,
-        voltageLevelsIds // TODO CHARLY est-ce nécessaire ?
+    }, [
+        diagramStates,
+        visible,
+        disabled,
+        closeDiagramView,
+        createView,
+        dispatch,
+        voltageLevelsIds, // TODO CHARLY est-ce nécessaire ?
     ]);
 
     const handleOpenView = useCallback(
         (id, type) => {
-            console.error("handleOpenView", id, type);
+            console.error('handleOpenView', id, type);
             if (!network) return;
             if (type === SvgType.VOLTAGE_LEVEL) showVoltageLevelDiagramView(id);
             else if (type === SvgType.SUBSTATION) showSubstationDiagramView(id);
-            else if (type === SvgType.NETWORK_AREA_DIAGRAM) showNetworkAreaDiagramView(id);
+            else if (type === SvgType.NETWORK_AREA_DIAGRAM)
+                showNetworkAreaDiagramView(id);
             else {
-                console.error("diagram-pane:handleOpenView => Missing type !");
-                console.error("CHARLY => type : ", type);
+                console.error('diagram-pane:handleOpenView => Missing type !');
+                console.error('CHARLY => type : ', type);
             }
         },
-        [network, showSubstationDiagramView, showVoltageLevelDiagramView, showNetworkAreaDiagramView]
+        [
+            network,
+            showSubstationDiagramView,
+            showVoltageLevelDiagramView,
+            showNetworkAreaDiagramView,
+        ]
     );
 
     useEffect(() => {
@@ -410,7 +433,9 @@ export function DiagramPane({
                             vl.substationId === deletedId || vl.id === deletedId
                     );
                     if (vlToClose.length > 0) {
-                        console.error("closeDiagramView from diagram-pane:useEffect");
+                        console.error(
+                            'closeDiagramView from diagram-pane:useEffect'
+                        );
                         closeDiagramView([...vlToClose, deletedId]); // TODO NOW ajouter type ici
                     }
 
@@ -438,7 +463,14 @@ export function DiagramPane({
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeDiagramView, network]);
+    }, [
+        studyUpdatedForce,
+        dispatch,
+        studyUuid,
+        updateSld,
+        closeDiagramView,
+        network,
+    ]);
 
     useEffect(() => {
         //console.error("CHARLY update displayedDiagram via views", views);
@@ -535,10 +567,19 @@ export function DiagramPane({
                                     key={view.id}
                                     icon={<ArrowUpwardIcon />}
                                     label={getNameOrId(view)}
-                                    onClick={() =>
-                                        handleOpenView(view.id, view.svgType) // TODO CHARLY A voir : est-ce qu'on doit passer par le handler ou bien on peut simplifier comme pour le close juste en dessous ?
+                                    onClick={
+                                        () =>
+                                            handleOpenView(
+                                                view.id,
+                                                view.svgType
+                                            ) // TODO CHARLY A voir : est-ce qu'on doit passer par le handler ou bien on peut simplifier comme pour le close juste en dessous ?
                                     }
-                                    onDelete={() => closeDiagramView({id:view.id, svgType:view.svgType})}
+                                    onDelete={() =>
+                                        closeDiagramView({
+                                            id: view.id,
+                                            svgType: view.svgType,
+                                        })
+                                    }
                                 />
                             ))}
                         </Stack>

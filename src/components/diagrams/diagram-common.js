@@ -89,9 +89,11 @@ export const commonNadStyle = (theme, customStyle) => {
 export const commonDiagramStyle = (theme, customStyle) => {
     return {
         divInvalid: {
-            '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle': { // TODO CHARLY Voir avec Ahmed pourquoi ce changement de règles
-                opacity: INVALID_LOADFLOW_OPACITY,
-            },
+            '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle':
+                {
+                    // TODO CHARLY Voir avec Ahmed pourquoi ce changement de règles
+                    opacity: INVALID_LOADFLOW_OPACITY,
+                },
             '& .sld-arrow-p, .sld-arrow-q': {
                 opacity: INVALID_LOADFLOW_OPACITY,
             },
@@ -127,7 +129,8 @@ export const commonDiagramStyle = (theme, customStyle) => {
         },
         paperBorders: {
             borderLeft: '1px solid ' + theme.palette.action.disabled,
-            borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
+            borderBottom:
+                '1px solid ' + theme.palette.action.disabledBackground,
             borderRight: '1px solid ' + theme.palette.action.hover,
         },
         plusIcon: {
@@ -252,21 +255,26 @@ export const useDiagram = () => {
         [openDiagramView]
     );
 
-    const showNetworkAreaDiagramView = useCallback( // TODO CHARLY Vérifier si la fonction du NAD est compatible avec ce code copié/collé
+    const showNetworkAreaDiagramView = useCallback(
+        // TODO CHARLY Vérifier si la fonction du NAD est compatible avec ce code copié/collé
         (nadId) => {
-            console.error("CHARLY ** This is working ** #1");
+            console.error('CHARLY ** This is working ** #1');
             openDiagramView(nadId, SvgType.NETWORK_AREA_DIAGRAM);
         },
         [openDiagramView]
     );
 
-    const closeDiagramView = useCallback( // TODO CHARLY ajouter le type en paramètre ATTENTION ici on gère une liste
+    const closeDiagramView = useCallback(
+        // TODO CHARLY ajouter le type en paramètre ATTENTION ici on gère une liste
         (elementsToRemove) => {
-            console.error("CHARLY closeDiagramView(elementsToRemove=", elementsToRemove);
+            console.error(
+                'CHARLY closeDiagramView(elementsToRemove=',
+                elementsToRemove
+            );
             const toRemove = Array.isArray(elementsToRemove)
                 ? elementsToRemove
                 : [elementsToRemove];
-            console.error("CHARLY suite ", toRemove);
+            console.error('CHARLY suite ', toRemove);
             dispatch(closeDiagram(toRemove));
         },
         [dispatch]

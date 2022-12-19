@@ -7,15 +7,17 @@
 
 import { APP_NAME } from '../utils/config-params';
 
-export const SESSION_STORAGE_SLD_STATE_KEY_PREFIX = ( // TODO to remove after the SLD/NAD refactorization
-    APP_NAME + '_SLD_STATE_'
-).toUpperCase();
+export const SESSION_STORAGE_SLD_STATE_KEY_PREFIX =
+    // TODO to remove after the SLD/NAD refactorization
+    (APP_NAME + '_SLD_STATE_').toUpperCase();
 
-const getSldStateKeyPrefixFromStudyUuid = (studyUuid) => { // TODO to remove after the SLD/NAD refactorization
+const getSldStateKeyPrefixFromStudyUuid = (studyUuid) => {
+    // TODO to remove after the SLD/NAD refactorization
     return SESSION_STORAGE_SLD_STATE_KEY_PREFIX + studyUuid;
 };
 
-export const syncSldStateWithSessionStorage = (sldState, studyUuid) => { // TODO to remove after the SLD/NAD refactorization
+export const syncSldStateWithSessionStorage = (sldState, studyUuid) => {
+    // TODO to remove after the SLD/NAD refactorization
     if (studyUuid == null) {
         return;
     }
@@ -26,7 +28,8 @@ export const syncSldStateWithSessionStorage = (sldState, studyUuid) => { // TODO
     );
 };
 
-export const loadSldStateFromSessionStorage = (studyUuid) => { // TODO to remove after the SLD/NAD refactorization
+export const loadSldStateFromSessionStorage = (studyUuid) => {
+    // TODO to remove after the SLD/NAD refactorization
     const sldState = JSON.parse(
         sessionStorage.getItem(getSldStateKeyPrefixFromStudyUuid(studyUuid))
     );
@@ -50,7 +53,10 @@ export const syncDiagramStateWithSessionStorage = (diagramState, studyUuid) => {
     if (studyUuid == null) {
         return;
     }
-    console.error("CHARLY SAVE syncDiagramStateWithSessionStorage", diagramState);
+    console.error(
+        'CHARLY SAVE syncDiagramStateWithSessionStorage',
+        diagramState
+    );
     sessionStorage.setItem(
         getDiagramStateKeyPrefixFromStudyUuid(studyUuid),
         JSON.stringify(diagramState)
@@ -65,6 +71,9 @@ export const loadDiagramStateFromSessionStorage = (studyUuid) => {
     if (diagramState === null) {
         return [];
     }
-    console.error("CHARLY INIT loadDiagramStateFromSessionStorage", diagramState);
+    console.error(
+        'CHARLY INIT loadDiagramStateFromSessionStorage',
+        diagramState
+    );
     return diagramState;
 };

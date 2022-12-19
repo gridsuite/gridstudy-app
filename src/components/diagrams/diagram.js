@@ -52,7 +52,10 @@ import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
-import { NetworkAreaDiagramViewer, SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
+import {
+    NetworkAreaDiagramViewer,
+    SingleLineDiagramViewer,
+} from '@powsybl/diagram-viewer';
 import {
     SvgType,
     getEquipmentTypeFromFeederType,
@@ -70,9 +73,9 @@ import {
     MAX_WIDTH_VOLTAGE_LEVEL,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     NoSvg,
-    LOADING_WIDTH
-} from "./diagram-common";
-import makeStyles from "@mui/styles/makeStyles";
+    LOADING_WIDTH,
+} from './diagram-common';
+import makeStyles from '@mui/styles/makeStyles';
 
 const customSldStyle = (theme) => {
     return {
@@ -346,7 +349,6 @@ const Diagram = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (props.svgUrl) {
-
             const isDiagramTypeSld = diagramType() === 'SLD';
             const acceptJson = isDiagramTypeSld;
 
@@ -500,17 +502,17 @@ const Diagram = forwardRef((props, ref) => {
                     !modificationInProgress &&
                     !loadingState
                         ? (breakerId, newSwitchState, switchElement) => {
-                            if (!modificationInProgress) {
-                                setModificationInProgress(true);
-                                updateLoadingState(true);
-                                setLocallySwitchedBreaker(switchElement);
-                                onBreakerClick(
-                                    breakerId,
-                                    newSwitchState,
-                                    switchElement
-                                );
-                            }
-                        }
+                              if (!modificationInProgress) {
+                                  setModificationInProgress(true);
+                                  updateLoadingState(true);
+                                  setLocallySwitchedBreaker(switchElement);
+                                  onBreakerClick(
+                                      breakerId,
+                                      newSwitchState,
+                                      switchElement
+                                  );
+                              }
+                          }
                         : null;
                 let onEquipmentMenuCallback =
                     !isComputationRunning &&
@@ -547,7 +549,11 @@ const Diagram = forwardRef((props, ref) => {
                     const breakerToSwitchDom = document.getElementById(
                         locallySwitchedBreaker.id
                     );
-                    if (breakerToSwitchDom.classList.value.includes('sld-closed')) {
+                    if (
+                        breakerToSwitchDom.classList.value.includes(
+                            'sld-closed'
+                        )
+                    ) {
                         breakerToSwitchDom.classList.replace(
                             'sld-closed',
                             'sld-open'
@@ -662,7 +668,7 @@ const Diagram = forwardRef((props, ref) => {
     // SLD
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagramId(undefined));
-        closeDiagramView({id:diagramId, svgType:svgType});
+        closeDiagramView({ id: diagramId, svgType: svgType });
         if (svgType === SvgType.NETWORK_AREA_DIAGRAM) {
             dispatch(openNetworkAreaDiagram([])); // TODO CHARLY corriger ça [MAYBE DONE]
             setDepth(0); // TODO CHARLY goes nowhere, A CORRIGER
@@ -751,16 +757,13 @@ const Diagram = forwardRef((props, ref) => {
         sizeHeight = computedHeight;
     }
 
-    const pinDiagram = useCallback(
-        () => {
-            console.error("diagram.js:pinDiagram", diagramId, svgType);
-            onTogglePin(diagramId, svgType);
-            },
-        [diagramId, svgType, onTogglePin]
-    );
+    const pinDiagram = useCallback(() => {
+        console.error('diagram.js:pinDiagram', diagramId, svgType);
+        onTogglePin(diagramId, svgType);
+    }, [diagramId, svgType, onTogglePin]);
 
     const minimizeDiagram = useCallback(() => {
-        console.error("diagram.js:minimizeDiagram", diagramId, svgType);
+        console.error('diagram.js:minimizeDiagram', diagramId, svgType);
         onMinimize(diagramId, svgType);
         hideFullScreen();
     }, [onMinimize, diagramId, svgType, hideFullScreen]);

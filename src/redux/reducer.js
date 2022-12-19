@@ -112,8 +112,10 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
-import { loadSldStateFromSessionStorage, // TODO to remove after the SLD/NAD refactorization
-    loadDiagramStateFromSessionStorage } from './session-storage';
+import {
+    loadSldStateFromSessionStorage, // TODO to remove after the SLD/NAD refactorization
+    loadDiagramStateFromSessionStorage,
+} from './session-storage';
 import { ViewState } from '../components/diagrams/diagram-common';
 
 const paramsInitialState = {
@@ -183,7 +185,9 @@ export const reducer = createReducer(initialState, {
 
         if (action.studyRef[0] != null) {
             state.sldState = loadSldStateFromSessionStorage(action.studyRef[0]); // TODO to remove after the SLD/NAD refactorization
-            state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
+            state.diagramStates = loadDiagramStateFromSessionStorage(
+                action.studyRef[0]
+            );
         }
     },
 
@@ -472,11 +476,13 @@ export const reducer = createReducer(initialState, {
         state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
     },
 
-    [FULLSCREEN_SINGLE_LINE_DIAGRAM_ID]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
+    [FULLSCREEN_SINGLE_LINE_DIAGRAM_ID]: (state, action) => {
+        // TODO to remove after the SLD/NAD refactorization
         state.fullScreenSldId = action.fullScreenSldId;
     },
 
-    [FULLSCREEN_NETWORK_AREA_DIAGRAM_ID]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
+    [FULLSCREEN_NETWORK_AREA_DIAGRAM_ID]: (state, action) => {
+        // TODO to remove after the SLD/NAD refactorization
         state.fullScreenNadId = action.fullScreenNadId;
     },
 
@@ -558,7 +564,8 @@ export const reducer = createReducer(initialState, {
             state.studyDisplayMode = action.studyDisplayMode;
         }
     },
-    [OPEN_SLD]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
+    [OPEN_SLD]: (state, action) => {
+        // TODO to remove after the SLD/NAD refactorization
         const sldState = state.sldState;
         const sldToOpenIndex = sldState.findIndex(
             (sld) => sld.id === action.id
@@ -595,7 +602,8 @@ export const reducer = createReducer(initialState, {
 
         state.sldState = sldState;
     },
-    [MINIMIZE_SLD]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
+    [MINIMIZE_SLD]: (state, action) => {
+        // TODO to remove after the SLD/NAD refactorization
         const sldState = state.sldState;
         const sldToMinizeIndex = sldState.findIndex(
             (sld) => sld.id === action.id
@@ -606,7 +614,8 @@ export const reducer = createReducer(initialState, {
 
         state.sldState = sldState;
     },
-    [TOGGLE_PIN_SLD]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
+    [TOGGLE_PIN_SLD]: (state, action) => {
+        // TODO to remove after the SLD/NAD refactorization
         const sldState = state.sldState;
         // search targeted sld among the sldState
         const sldToPinToggleIndex = sldState.findIndex(
@@ -632,16 +641,18 @@ export const reducer = createReducer(initialState, {
 
         state.sldState = sldState;
     },
-    [CLOSE_SLD]: (state, action) => { // TODO to remove after the SLD/NAD refactorization
+    [CLOSE_SLD]: (state, action) => {
+        // TODO to remove after the SLD/NAD refactorization
         state.sldState = state.sldState.filter(
             (sld) => !action.ids.includes(sld.id)
         );
     },
     [OPEN_DIAGRAM]: (state, action) => {
-        console.error("CHARLY OPEN_DIAGRAM");
+        console.error('CHARLY OPEN_DIAGRAM');
         const diagramStates = state.diagramStates;
         const diagramToOpenIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
+            (diagram) =>
+                diagram.id === action.id && diagram.svgType === action.svgType
         );
 
         // if diagram was in states already, and was PINNED or OPENED, nothing happens
@@ -660,7 +671,8 @@ export const reducer = createReducer(initialState, {
             (diagram) => diagram.state === ViewState.OPENED
         );
         if (previouslyOpenedDiagramIndex >= 0) {
-            diagramStates[previouslyOpenedDiagramIndex].state = ViewState.MINIMIZED;
+            diagramStates[previouslyOpenedDiagramIndex].state =
+                ViewState.MINIMIZED;
         }
         // if the target diagram was already in the state, hence in MINIMIZED state, we change its state to OPENED
         if (diagramToOpenIndex >= 0) {
@@ -676,10 +688,11 @@ export const reducer = createReducer(initialState, {
         state.diagramStates = diagramStates;
     },
     [MINIMIZE_DIAGRAM]: (state, action) => {
-        console.error("CHARLY MINIMIZE_DIAGRAM");
+        console.error('CHARLY MINIMIZE_DIAGRAM');
         const diagramStates = state.diagramStates;
         const diagramToMinizeIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
+            (diagram) =>
+                diagram.id === action.id && diagram.svgType === action.svgType
         );
         if (diagramToMinizeIndex >= 0) {
             diagramStates[diagramToMinizeIndex].state = ViewState.MINIMIZED;
@@ -688,15 +701,17 @@ export const reducer = createReducer(initialState, {
         state.diagramStates = diagramStates;
     },
     [TOGGLE_PIN_DIAGRAM]: (state, action) => {
-        console.error("CHARLY TOGGLE_PIN_DIAGRAM");
+        console.error('CHARLY TOGGLE_PIN_DIAGRAM');
         const diagramStates = state.diagramStates;
         // search targeted diagram among the diagramStates
         const diagramToPinToggleIndex = diagramStates.findIndex(
-            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
+            (diagram) =>
+                diagram.id === action.id && diagram.svgType === action.svgType
         );
         if (diagramToPinToggleIndex >= 0) {
             // when found, if was opened, it's now PINNED
-            const diagramToPinState = diagramStates[diagramToPinToggleIndex].state;
+            const diagramToPinState =
+                diagramStates[diagramToPinToggleIndex].state;
             if (diagramToPinState === ViewState.OPENED) {
                 diagramStates[diagramToPinToggleIndex].state = ViewState.PINNED;
             } else if (diagramToPinState === ViewState.PINNED) {
@@ -711,17 +726,23 @@ export const reducer = createReducer(initialState, {
                 diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
             }
         }
-        console.error("CHARLY --> togglePinDiagram result : ", diagramStates);
+        console.error('CHARLY --> togglePinDiagram result : ', diagramStates);
         state.diagramStates = diagramStates;
     },
     [CLOSE_DIAGRAM]: (state, action) => {
-        console.error("CHARLY CLOSE_DIAGRAM");
+        console.error('CHARLY CLOSE_DIAGRAM');
 
         let filteredDiagramStates = state.diagramStates;
 
         action.elementsToClose.forEach((elementToClose) => {
-            console.error("CHARLY --> toClose : ", elementToClose);
-            filteredDiagramStates = filteredDiagramStates.filter((diagram) => !(diagram.id === elementToClose.id && diagram.svgType === elementToClose.svgType));
+            console.error('CHARLY --> toClose : ', elementToClose);
+            filteredDiagramStates = filteredDiagramStates.filter(
+                (diagram) =>
+                    !(
+                        diagram.id === elementToClose.id &&
+                        diagram.svgType === elementToClose.svgType
+                    )
+            );
         });
 
         state.diagramStates = filteredDiagramStates;

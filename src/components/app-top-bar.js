@@ -180,7 +180,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [isParametersOpen, setParametersOpen] = useState(false);
-    const [, showVoltageLevelDiagramView, showSubstationDiagramView] = useDiagram();
+    const [, showVoltageLevelDiagramView, showSubstationDiagramView] =
+        useDiagram();
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);

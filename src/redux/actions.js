@@ -571,7 +571,7 @@ export function togglePinDiagram(id, svgType) {
 export const CLOSE_DIAGRAM = 'CLOSE_DIAGRAM';
 
 export function closeDiagram(elementsToClose) {
-    console.error("actions.js::closeDiagram", elementsToClose);
+    console.error('actions.js::closeDiagram', elementsToClose);
     return {
         type: CLOSE_DIAGRAM,
         elementsToClose: elementsToClose,

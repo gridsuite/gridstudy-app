@@ -341,7 +341,8 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
-export function fetchNADSvg(svgUrl) { // TODO To remove after the NAD/SLD refacto
+export function fetchNADSvg(svgUrl) {
+    // TODO To remove after the NAD/SLD refacto
     console.debug(svgUrl);
     return backendFetchText(svgUrl);
 }
