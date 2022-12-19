@@ -224,10 +224,12 @@ export const NetworkMapTab = ({
                     network.getSubstations()
                 );
 
-                const notFoundLinesIds = getEquipmentsNotFoundIds(
-                    geoData.linePositionsById,
-                    network.getLines()
-                );
+                const notFoundLinesIds = lineFullPath
+                    ? getEquipmentsNotFoundIds(
+                          geoData.linePositionsById,
+                          network.getLines()
+                      )
+                    : [];
 
                 if (
                     notFoundSubstationIds.length > 0 ||
@@ -247,7 +249,7 @@ export const NetworkMapTab = ({
                             : Promise.resolve([]);
 
                     const missingLinesPositions =
-                        lineFullPath && notFoundLinesIds.length > 0
+                        notFoundLinesIds.length > 0
                             ? getMissingEquipmentsPositions(
                                   notFoundLinesIds,
                                   fetchLinePositions
@@ -274,7 +276,9 @@ export const NetworkMapTab = ({
                                           )
                                         : geoData.substationPositionsById,
                                     // If lineFullPath is off, we need to render the lines layer when there are some new subsation positions
-                                    positions[1].length > 0 || (lineFullPath && notFoundLinesIds.length > 0)
+                                    positions[1].length > 0 ||
+                                    (!lineFullPath &&
+                                        positions[0].length > 0)
                                         ? new Map(geoData.linePositionsById)
                                         : geoData.linePositionsById
                                 );
