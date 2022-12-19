@@ -277,8 +277,7 @@ export const NetworkMapTab = ({
                                         : geoData.substationPositionsById,
                                     // If lineFullPath is off, we need to render the lines layer when there are some new subsation positions
                                     positions[1].length > 0 ||
-                                    (!lineFullPath &&
-                                        positions[0].length > 0)
+                                    (!lineFullPath && positions[0].length > 0)
                                         ? new Map(geoData.linePositionsById)
                                         : geoData.linePositionsById
                                 );
