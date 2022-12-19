@@ -306,11 +306,7 @@ export const NetworkMapTab = ({
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
         if (!reloadMapNeeded) return;
-        handleFullMapReload(
-            updatedSubstationsIds?.length > 0
-                ? updatedSubstationsIds
-                : undefined
-        );
+        handleFullMapReload();
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
