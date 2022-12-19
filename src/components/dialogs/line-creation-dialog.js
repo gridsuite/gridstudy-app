@@ -277,7 +277,9 @@ const LineCreationDialog = ({
                 UNDEFINED_CONNECTION_DIRECTION,
             connectivity2?.connectionName?.id ?? null,
             connectivity2?.connectionDirection?.id ??
-                UNDEFINED_CONNECTION_DIRECTION
+                UNDEFINED_CONNECTION_DIRECTION,
+            connectivity1?.connectionPosition?.id ?? null,
+            connectivity2?.connectionPosition?.id ?? null
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,

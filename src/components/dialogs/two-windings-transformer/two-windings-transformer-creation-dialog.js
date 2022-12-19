@@ -243,7 +243,8 @@ const TwoWindingsTransformerCreationDialog = ({
             formValues?.busOrBusbarSectionId1 || null,
         connectionDirectionValue: formValues?.connectionDirection1 ?? '',
         connectionNameValue: formValues?.connectionName1,
-        withPosition: false,
+        withPosition: true,
+        connectionPositionValue: formValues?.connectionPosition1,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -258,7 +259,8 @@ const TwoWindingsTransformerCreationDialog = ({
             formValues?.busOrBusbarSectionId2 || null,
         connectionDirectionValue: formValues?.connectionDirection2 ?? '',
         connectionNameValue: formValues?.connectionName2,
-        withPosition: false,
+        withPosition: true,
+        connectionPositionValue: formValues?.connectionPosition2,
     });
 
     // RATIO TAP PANE
@@ -988,7 +990,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 UNDEFINED_CONNECTION_DIRECTION,
             connectivity2?.connectionName?.id ?? null,
             connectivity2?.connectionDirection?.id ??
-                UNDEFINED_CONNECTION_DIRECTION
+                UNDEFINED_CONNECTION_DIRECTION,
+            connectivity1?.connectionPosition?.id ?? null,
+            connectivity2?.connectionPosition?.id ?? null
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
