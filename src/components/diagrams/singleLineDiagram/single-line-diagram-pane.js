@@ -19,14 +19,15 @@ import {
     getVoltageLevelSingleLineDiagram,
     updateSwitchState,
 } from '../../../utils/rest-api';
-import SingleLineDiagram, { SvgType } from './single-line-diagram';
+import SingleLineDiagram from './single-line-diagram';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import { getNameOrId, useSingleLineDiagram, ViewState } from './utils';
+import { getNameOrId, SvgType, useSingleLineDiagram, ViewState } from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
+import { SLD_DISPLAY_MODE } from '../../network/constants';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -50,7 +51,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       useName,
                       centerName,
                       diagonalName,
-                      componentLibrary
+                      componentLibrary,
+                      SLD_DISPLAY_MODE.STATE_VARIABLE
                   )
                 : null,
         [
@@ -205,7 +207,10 @@ export function SingleLineDiagramPane({
                 ?.ref?.current?.reloadSvg();
         } else
             viewsRef.current.forEach((sld) => {
-                if (sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1) {
+                if (
+                    sld.svgUrl &&
+                    sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1
+                ) {
                     sld.ref?.current?.reloadSvg();
                 }
             });
@@ -229,9 +234,7 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        // We use isNodeBuilt here instead of the "disabled" props to avoid
-        // triggering this effect when changing current node
-        if (isNodeBuilt(currentNodeRef.current) && visible) {
+        if (visible) {
             const viewsFromSldState = [];
             sldState.forEach((currentState) => {
                 let currentView = createView(currentState);
