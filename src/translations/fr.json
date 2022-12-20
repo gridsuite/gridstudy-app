@@ -665,7 +665,6 @@
     "DeleteVoltageLevelOnLine": "Supprimer une coupure",
     "DeleteAttachingLine": "Supprimer un piquage",
     "ReplacingLine": "Liaison de remplacement",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut"
     "ConnectionPosition": "Position départ",
     "ErrorNoVoltageSelected": "Aucun poste sélectionné, veuillez en sélectionner un avant",
     "DisplayTakenPositions": "Afficher les positions prises",

@@ -665,7 +665,6 @@
     "DeleteVoltageLevelOnLine": "Delete a voltage level on a line",
     "DeleteAttachingLine": "Delete attaching line",
     "ReplacingLine": "Replacing line",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value"
     "ConnectionPosition": "Connection position",
     "ErrorNoVoltageSelected": "No voltage level selected, please select one before",
     "DisplayTakenPositions": "Display taken positions",
