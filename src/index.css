@@ -56,7 +56,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-body > iframe {
+body > iframe[style*='visibility: hidden; position: absolute;'] {
     top: 0;
 }
 
