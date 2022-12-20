@@ -42,10 +42,6 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
 
-    const voltageLevelsIdsForNad = useSelector(
-        (state) => state.voltageLevelsIdsForNad
-    );
-
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
             isNodeBuilt(currentNode)
@@ -156,12 +152,12 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 };
             }
 
-            function createNetworkAreaDiagram(state, depth = 0) {
+            function createNetworkAreaDiagram(ids, state, depth = 0) {
                 // TODO CHARLY en cours de remix
                 let displayedVoltageLevels = [];
                 let nadTitle = '';
-                if (voltageLevelsIdsForNad) {
-                    voltageLevelsIdsForNad.forEach((id) =>
+                if (ids) {
+                    ids.forEach((id) =>
                         displayedVoltageLevels.push(network.getVoltageLevel(id))
                     );
                 }
@@ -175,13 +171,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     }
                 });
 
-                const svgUrl = checkAndGetNetworkAreaDiagramUrl(
-                    voltageLevelsIdsForNad,
-                    depth
-                ); // TODO CHARLY passer le depth correctement
+                const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth); // TODO CHARLY passer le depth correctement
 
                 return {
-                    id: nadTitle,
+                    id: displayedVoltageLevels[0]?.id, // TODO CHARLY test undefined ? Semble un peu à l'arrache
                     ref: React.createRef(),
                     state,
                     nadTitle,
@@ -196,7 +189,11 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             else if (view.svgType === SvgType.SUBSTATION)
                 return createSubstationSLD(view.id, view.state);
             else if (view.svgType === SvgType.NETWORK_AREA_DIAGRAM)
-                return createNetworkAreaDiagram(view.state);
+                return createNetworkAreaDiagram(
+                    view.ids,
+                    view.state,
+                    view.depth
+                );
             else {
                 console.error(
                     'diagram-pane:useDisplayView => Missing view.svgType !'
@@ -209,7 +206,6 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             checkAndGetSubstationSingleLineDiagramUrl,
             checkAndGetVoltageLevelSingleLineDiagramUrl,
             checkAndGetNetworkAreaDiagramUrl,
-            voltageLevelsIdsForNad,
         ]
     );
 };
@@ -238,7 +234,9 @@ export function DiagramPane({
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const [views, setViews] = useState([]);
-    const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
+    const fullScreenDiagramId = useSelector(
+        (state) => state.fullScreenDiagramId
+    );
 
     const [displayedDiagrams, setDisplayedDiagrams] = useState([]);
     const [displayedSldHeights, setDisplayedSldHeights] = useState([]);
@@ -302,84 +300,51 @@ export function DiagramPane({
 
     // OLD NAD
 
-    const useName = useSelector((state) => state[PARAM_USE_NAME]);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]); // TODO CHARLY check unused
     const [depth, setDepth] = useState(0);
 
-    const voltageLevelsIds = useSelector(
-        (state) => state.voltageLevelsIdsForNad
-    );
-    //console.error("CHARLY state.voltageLevelsIdsForNad", voltageLevelsIds);
-
-    const fullScreenNadId = useSelector((state) => state.fullScreenNadId);
-
-    const displayedVoltageLevelIdRef = useRef();
-    displayedVoltageLevelIdRef.current = voltageLevelsIds[0];
-
-    let displayedVoltageLevels = [];
-    let nadTitle = '';
-    let nadUrl = '';
-
-    if (visible) {
-        if (network) {
-            if (voltageLevelsIds) {
-                voltageLevelsIds.forEach((id) =>
-                    displayedVoltageLevels.push(network.getVoltageLevel(id))
-                );
-            }
-        }
-
-        if (displayedVoltageLevels.length > 0) {
-            displayedVoltageLevels.forEach((vl) => {
-                const name = useName && vl?.name ? vl?.name : vl?.id;
-                if (name !== undefined) {
-                    nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
-                }
-            });
-
-            nadUrl = getNetworkAreaDiagramUrl(
-                studyUuid,
-                currentNode?.id,
-                voltageLevelsIds,
-                depth
-            );
-        }
-    }
-
-    // OLD SLD
-
+    // Here, the goal is to setView with a list of view, each view corresponding to a diagram.
+    // We get the diagram data from the redux store.
+    // In the case of SLD, each SLD corresponds to one view, but in the case of NAD, each open NAD is merged
+    // into one view.
     useEffect(() => {
-        // TODO CHARLY revoir cette fonction avec diagramStates à la place de sldState
         if (visible) {
-            const viewsFromDiagramStates = [];
-            console.error('CHARLY + + + diagramStates', diagramStates);
-            diagramStates.forEach((currentState) => {
-                let currentView = createView(currentState);
-                // if current view cannot be found, it return undefined
-                // in this case, we remove it from diagram states
-                if (currentView) viewsFromDiagramStates.push(currentView);
-                else {
-                    closeDiagramView({
-                        id: currentState.id,
-                        svgType: currentState.svgType,
-                    });
+            const views = [];
+            const networkAreaIds = [];
+            let networkAreaViewState = ViewState.OPENED;
+
+            diagramStates.forEach((diagramState) => {
+                if (diagramState.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                    networkAreaIds.push(diagramState.id);
+                    networkAreaViewState = diagramState.state; // They should all be the same value
+                } else {
+                    let singleLineDiagramView = createView(diagramState);
+                    // if current view cannot be found, it return undefined
+                    // in this case, we remove it from diagram states
+                    if (singleLineDiagramView) {
+                        views.push(singleLineDiagramView);
+                    } else {
+                        closeDiagramView({
+                            id: diagramState.id,
+                            svgType: diagramState.svgType,
+                        });
+                    }
                 }
             });
 
-            if (voltageLevelsIds.length > 0) {
-                let nadView = createView({
-                    id: voltageLevelsIds[0],
-                    state: ViewState.OPENED,
+            if (networkAreaIds.length > 0) {
+                let networkAreaDiagramView = createView({
+                    ids: networkAreaIds,
+                    state: networkAreaViewState,
                     svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    depth: depth,
                 });
 
-                viewsFromDiagramStates.push(nadView);
+                views.push(networkAreaDiagramView);
             }
 
-            console.error(
-                'CHARLY - - - setViews en cours',
-                viewsFromDiagramStates
-            );
-            setViews(viewsFromDiagramStates);
+            console.error('CHARLY - - - setViews en cours', views);
+            setViews(views);
         }
     }, [
         diagramStates,
@@ -388,7 +353,7 @@ export function DiagramPane({
         closeDiagramView,
         createView,
         dispatch,
-        voltageLevelsIds, // TODO CHARLY est-ce nécessaire ?
+        depth,
     ]);
 
     const handleOpenView = useCallback(
@@ -398,7 +363,9 @@ export function DiagramPane({
             if (type === SvgType.VOLTAGE_LEVEL) showVoltageLevelDiagramView(id);
             else if (type === SvgType.SUBSTATION) showSubstationDiagramView(id);
             else if (type === SvgType.NETWORK_AREA_DIAGRAM)
-                showNetworkAreaDiagramView(id);
+                showNetworkAreaDiagramView(
+                    id
+                ); // TODO CHARLY attention ici, si on a plusieurs NAD ouverts, l'ID passé est "TABARP6 + TABARP7 + TOTOHELLO".
             else {
                 console.error('diagram-pane:handleOpenView => Missing type !');
                 console.error('CHARLY => type : ', type);
@@ -552,6 +519,8 @@ export function DiagramPane({
                                 totalHeight={height}
                                 totalWidth={width}
                                 updateSwitchMsg={updateSwitchMsg}
+                                depth={depth}
+                                setDepth={setDepth}
                             />
                         ))}
                         <Stack
@@ -559,7 +528,7 @@ export function DiagramPane({
                             spacing={1}
                             className={classes.minimizedSLD}
                             style={{
-                                display: !fullScreenSldId ? '' : 'none',
+                                display: !fullScreenDiagramId ? '' : 'none',
                             }}
                         >
                             {minimized.map((view) => (

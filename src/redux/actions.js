@@ -468,15 +468,6 @@ export function removeNotificationByNode(notificationId) {
     };
 }
 
-export const OPEN_NETWORK_AREA_DIAGRAM = 'OPEN_NETWORK_AREA_DIAGRAM'; // TODO to remove after the SLD/NAD refactorization
-
-export function openNetworkAreaDiagram(voltageLevelsIds) {
-    return {
-        type: OPEN_NETWORK_AREA_DIAGRAM,
-        voltageLevelsIdsForNad: voltageLevelsIds, // TODO CHARLY incorporer les ID multiples dans le diagram NAD
-    };
-}
-
 export const SET_MODIFICATIONS_IN_PROGRESS = 'SET_MODIFICATIONS_IN_PROGRESS';
 
 export function setModificationsInProgress(isModificationsInProgress) {

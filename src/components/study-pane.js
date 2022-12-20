@@ -13,8 +13,6 @@ import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     filteredNominalVoltagesUpdated,
-    //fullScreenNetworkAreaDiagramId,
-    //openNetworkAreaDiagram,
     setForceNetworkReload,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
@@ -151,11 +149,6 @@ const StudyPane = ({
     // TODO ci dessous version temporaire
     const [closeDiagramView, showVoltageLevelDiagramView] = useDiagram(); // We only use the second function here
     // TODO FIN version temporaire
-
-    /*function closeNetworkAreaDiagram() { // TODO CHARLY Is this useless ?
-        dispatch(fullScreenNetworkAreaDiagramId(null));
-        dispatch(openNetworkAreaDiagram([]));
-    }*/
 
     const disabled = !isNodeBuilt(currentNode);
 

@@ -91,12 +91,8 @@ export const commonDiagramStyle = (theme, customStyle) => {
         divInvalid: {
             '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle':
                 {
-                    // TODO CHARLY Voir avec Ahmed pourquoi ce changement de règles
                     opacity: INVALID_LOADFLOW_OPACITY,
                 },
-            '& .sld-arrow-p, .sld-arrow-q': {
-                opacity: INVALID_LOADFLOW_OPACITY,
-            },
             '& .nad-edge-infos': {
                 opacity: NAD_INVALID_LOADFLOW_OPACITY,
             },
@@ -258,7 +254,7 @@ export const useDiagram = () => {
     const showNetworkAreaDiagramView = useCallback(
         // TODO CHARLY Vérifier si la fonction du NAD est compatible avec ce code copié/collé
         (nadId) => {
-            console.error('CHARLY ** This is working ** #1');
+            console.error('CHARLY ** showNetworkAreaDiagramView', nadId);
             openDiagramView(nadId, SvgType.NETWORK_AREA_DIAGRAM);
         },
         [openDiagramView]

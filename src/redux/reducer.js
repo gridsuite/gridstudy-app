@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer, current } from '@reduxjs/toolkit';
 
 import {
     USER,
@@ -59,7 +59,6 @@ import {
     CENTER_ON_SUBSTATION,
     ADD_NOTIFICATION,
     REMOVE_NOTIFICATION_BY_NODE,
-    OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID, // TODO to remove after the SLD/NAD refactorization
     CURRENT_TREE_NODE,
     SET_MODIFICATIONS_IN_PROGRESS,
@@ -116,7 +115,7 @@ import {
     loadSldStateFromSessionStorage, // TODO to remove after the SLD/NAD refactorization
     loadDiagramStateFromSessionStorage,
 } from './session-storage';
-import { ViewState } from '../components/diagrams/diagram-common';
+import { SvgType, ViewState } from '../components/diagrams/diagram-common';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -545,9 +544,6 @@ export const reducer = createReducer(initialState, {
             ),
         ];
     },
-    [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
-        state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;
-    },
     [SET_MODIFICATIONS_IN_PROGRESS]: (state, action) => {
         state.isModificationsInProgress = action.isModificationsInProgress;
     },
@@ -647,61 +643,117 @@ export const reducer = createReducer(initialState, {
             (sld) => !action.ids.includes(sld.id)
         );
     },
+    /*
+     * The following functions' goal are to update state.diagramStates with nodes of the following type :
+     * { id: 'diagramID', svgType: 'SvgType of the diagram', state: 'ViewState of the diagram' }
+     *
+     * Depending on the diagram's svgType, the state.diagramStates is different.
+     * For Network Area Diagrams (SvgType.NETWORK_AREA_DIAGRAM), all the states should be the same.
+     * If one is PINNED, then all of them are.
+     * For Single Line Diagrams (SvgType.VOLTAGE_LEVEL or SvgType.SUBSTATION), each diagram has its own state.
+     */
     [OPEN_DIAGRAM]: (state, action) => {
         console.error('CHARLY OPEN_DIAGRAM');
+        console.error('state.diagramStates = ', current(state.diagramStates));
+        console.error('action = ', action);
         const diagramStates = state.diagramStates;
         const diagramToOpenIndex = diagramStates.findIndex(
             (diagram) =>
                 diagram.id === action.id && diagram.svgType === action.svgType
         );
 
-        // if diagram was in states already, and was PINNED or OPENED, nothing happens
-        if (
-            diagramToOpenIndex >= 0 &&
-            [ViewState.OPENED, ViewState.PINNED].includes(
-                diagramStates[diagramToOpenIndex].state
-            )
-        ) {
-            return;
-        }
-
-        // in the other cases, we will open the targeted diagram
-        // previously opened diagram is now MINIMIZED
-        const previouslyOpenedDiagramIndex = diagramStates.findIndex(
-            (diagram) => diagram.state === ViewState.OPENED
-        );
-        if (previouslyOpenedDiagramIndex >= 0) {
-            diagramStates[previouslyOpenedDiagramIndex].state =
-                ViewState.MINIMIZED;
-        }
-        // if the target diagram was already in the state, hence in MINIMIZED state, we change its state to OPENED
-        if (diagramToOpenIndex >= 0) {
-            diagramStates[diagramToOpenIndex].state = ViewState.OPENED;
+        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            // First, we check if there is already a Network Area Diagram in the diagramStates.
+            const firstNadIndex = diagramStates.findIndex(
+                (diagram) => diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM
+            );
+            if (firstNadIndex < 0) {
+                // If there is no NAD, then we add the new one.
+                diagramStates.push({
+                    id: action.id,
+                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    state: ViewState.OPENED,
+                });
+            } else {
+                // If there is already at least one NAD, and if it is minimized, then we change all of them to opened.
+                if (
+                    diagramStates[firstNadIndex].state === ViewState.MINIMIZED
+                ) {
+                    diagramStates.forEach((diagram) => {
+                        if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                            diagram.state = ViewState.OPENED;
+                        }
+                    });
+                }
+                // If the NAD to open is not already in the diagramStates, we add it.
+                if (diagramToOpenIndex < 0) {
+                    diagramStates.push({
+                        id: action.id,
+                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                        state: diagramStates[firstNadIndex].state,
+                    });
+                }
+            }
         } else {
-            diagramStates.push({
-                id: action.id,
-                svgType: action.svgType,
-                state: ViewState.OPENED,
-            });
+            // We check if the SLD to open is already in the diagramStates.
+            if (diagramToOpenIndex >= 0) {
+                // If the SLD to open is already in the diagramStates and it is minimized, then we change it to opened.
+                if (
+                    diagramStates[diagramToOpenIndex].state ===
+                    ViewState.MINIMIZED
+                ) {
+                    diagramStates[diagramToOpenIndex].state = ViewState.OPENED;
+                }
+            } else {
+                diagramStates.push({
+                    id: action.id,
+                    svgType: action.svgType,
+                    state: ViewState.OPENED,
+                });
+            }
         }
-
         state.diagramStates = diagramStates;
+        console.error(
+            'END OPEN_DIAGRAM => state.diagramStates = ',
+            current(state.diagramStates)
+        );
     },
     [MINIMIZE_DIAGRAM]: (state, action) => {
         console.error('CHARLY MINIMIZE_DIAGRAM');
+        console.error('state.diagramStates = ', current(state.diagramStates));
+        console.error('action = ', action);
         const diagramStates = state.diagramStates;
-        const diagramToMinizeIndex = diagramStates.findIndex(
-            (diagram) =>
-                diagram.id === action.id && diagram.svgType === action.svgType
-        );
-        if (diagramToMinizeIndex >= 0) {
-            diagramStates[diagramToMinizeIndex].state = ViewState.MINIMIZED;
-        }
 
+        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            // For network area diagrams, the ID is irrelevant, we will minimize all the NAD in the state.diagramStates.
+            diagramStates.forEach((diagram) => {
+                if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                    diagram.state = ViewState.MINIMIZED;
+                }
+            });
+        } else {
+            // For single line diagram, we will update the corresponding diagram.
+            const diagramToMinimizeIndex = diagramStates.findIndex(
+                (diagram) =>
+                    diagram.id === action.id &&
+                    diagram.svgType === action.svgType
+            );
+            if (diagramToMinimizeIndex >= 0) {
+                diagramStates[diagramToMinimizeIndex].state =
+                    ViewState.MINIMIZED;
+            }
+        }
         state.diagramStates = diagramStates;
+        console.error(
+            'END MINIMIZE_DIAGRAM => state.diagramStates = ',
+            current(state.diagramStates)
+        );
     },
     [TOGGLE_PIN_DIAGRAM]: (state, action) => {
+        // TODO CHARLY NOW ASAP
         console.error('CHARLY TOGGLE_PIN_DIAGRAM');
+        console.error('state.diagramStates = ', current(state.diagramStates));
+        console.error('action = ', action);
         const diagramStates = state.diagramStates;
         // search targeted diagram among the diagramStates
         const diagramToPinToggleIndex = diagramStates.findIndex(
@@ -726,11 +778,17 @@ export const reducer = createReducer(initialState, {
                 diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
             }
         }
-        console.error('CHARLY --> togglePinDiagram result : ', diagramStates);
         state.diagramStates = diagramStates;
+        console.error(
+            'END TOGGLE_PIN_DIAGRAM => state.diagramStates = ',
+            current(state.diagramStates)
+        );
     },
     [CLOSE_DIAGRAM]: (state, action) => {
+        // TODO CHARLY NOW ASAP ici on doit faire la maintenance et nettoyage
         console.error('CHARLY CLOSE_DIAGRAM');
+        console.error('state.diagramStates = ', current(state.diagramStates));
+        console.error('action = ', action);
 
         let filteredDiagramStates = state.diagramStates;
 
@@ -746,6 +804,10 @@ export const reducer = createReducer(initialState, {
         });
 
         state.diagramStates = filteredDiagramStates;
+        console.error(
+            'END CLOSE_DIAGRAM => state.diagramStates = ',
+            current(state.diagramStates)
+        );
     },
 });
 

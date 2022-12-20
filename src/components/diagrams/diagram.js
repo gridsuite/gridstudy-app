@@ -25,10 +25,7 @@ import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchSvg } from '../../utils/rest-api';
-import {
-    setFullScreenDiagramId,
-    openNetworkAreaDiagram,
-} from '../../redux/actions';
+import { setFullScreenDiagramId } from '../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -195,8 +192,6 @@ const Diagram = forwardRef((props, ref) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    //const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
-    //const fullScreenNadId = useSelector((state) => state.fullScreenNadId);
     const fullScreenDiagramId = useSelector(
         (state) => state.fullScreenDiagramId
     );
@@ -583,7 +578,7 @@ const Diagram = forwardRef((props, ref) => {
 
                 // on sld resizing, we need to refresh zoom to avoid exceeding max or min zoom
                 // this is due to a svg.panzoom.js package's behaviour
-                //sldViewer.refreshZoom(); // TODO CHARLY Voir avec Kevin pourquoi ça ne fonctionne pas ici
+                sldViewer.refreshZoom();
 
                 svgUrl.current = svg.svgUrl;
                 svgDraw.current = sldViewer;
@@ -668,10 +663,10 @@ const Diagram = forwardRef((props, ref) => {
     // SLD
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagramId(undefined));
-        closeDiagramView({ id: diagramId, svgType: svgType });
+        // TODO CHARLY NOW closeDiagram : si on met juste le type, ferme tous du type
+        closeDiagramView({ id: diagramId, svgType: svgType }); // TODO CHARLY NOW c'est sûrement le close qui doit aller faire la maintenance de la liste des NAD ouverts
         if (svgType === SvgType.NETWORK_AREA_DIAGRAM) {
-            dispatch(openNetworkAreaDiagram([])); // TODO CHARLY corriger ça [MAYBE DONE]
-            setDepth(0); // TODO CHARLY goes nowhere, A CORRIGER
+            setDepth(0); // TODO CHARLY vérifier si c'est encore utilisé. Voir si c'est le meilleur endroit.
         }
     };
 

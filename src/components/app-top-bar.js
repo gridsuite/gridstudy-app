@@ -43,7 +43,7 @@ import {
     addSensiNotif,
     addShortCircuitNotif,
     centerOnSubstation,
-    openNetworkAreaDiagram,
+    openDiagram,
     resetLoadflowNotif,
     resetSANotif,
     resetSensiNotif,
@@ -53,7 +53,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import { useDiagram } from './diagrams/diagram-common';
+import { SvgType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
@@ -84,10 +84,6 @@ const CustomSuffixRenderer = ({ props, element }) => {
     const equipmentClasses = useEquipmentStyles();
     const network = useSelector((state) => state.network);
 
-    const voltageLevelsIdsForNad = useSelector(
-        (state) => state.voltageLevelsIdsForNad
-    );
-
     const enterOnSubstationCB = useCallback(
         (e, element) => {
             const substationId =
@@ -103,15 +99,11 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const openNetworkAreaDiagramCB = useCallback(
         (e, element) => {
-            dispatch(
-                openNetworkAreaDiagram(
-                    voltageLevelsIdsForNad.concat([element.id])
-                )
-            );
+            dispatch(openDiagram(element.id, SvgType.NETWORK_AREA_DIAGRAM));
             props.onClose && props.onClose();
             e.stopPropagation();
         },
-        [dispatch, props, voltageLevelsIdsForNad]
+        [dispatch, props]
     );
 
     if (
