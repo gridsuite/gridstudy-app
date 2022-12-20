@@ -267,7 +267,8 @@ export function getVoltageLevelSingleLineDiagram(
     centerLabel,
     diagonalLabel,
     componentLibrary,
-    sldDisplayMode
+    sldDisplayMode,
+    language
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -286,6 +287,7 @@ export function getVoltageLevelSingleLineDiagram(
                 componentLibrary: componentLibrary,
             }),
             sldDisplayMode: sldDisplayMode,
+            language,
         }).toString()
     );
 }
@@ -298,7 +300,8 @@ export function getSubstationSingleLineDiagram(
     centerLabel,
     diagonalLabel,
     substationLayout,
-    componentLibrary
+    componentLibrary,
+    language
 ) {
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -317,6 +320,7 @@ export function getSubstationSingleLineDiagram(
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
+            language,
         }).toString()
     );
 }

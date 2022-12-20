@@ -27,6 +27,7 @@ const PositionDiagramPane = ({
     voltageLevelId,
     currentNodeUuid,
     studyUuid,
+    language,
 }) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
@@ -52,7 +53,8 @@ const PositionDiagramPane = ({
                 centerName,
                 diagonalName,
                 componentLibrary,
-                SLD_DISPLAY_MODE.FEEDER_POSITION
+                SLD_DISPLAY_MODE.FEEDER_POSITION,
+                language
             ),
         [
             studyUuid,
@@ -62,6 +64,7 @@ const PositionDiagramPane = ({
             centerName,
             diagonalName,
             componentLibrary,
+            language,
         ]
     );
 
