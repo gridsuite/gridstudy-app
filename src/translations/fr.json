@@ -448,6 +448,10 @@
 
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
+    "AdditionalInformations": "Informations complémentaires",
+    "AddProperty": "Ajouter une propriété",
+    "PropertyName": "Nom de la propriété",
+    "PropertyValue": "Valeur de la propriété",
 
     "CreateVoltageLevel": "Créer un poste",
     "Substation": "Site",
@@ -662,4 +666,9 @@
     "DeleteAttachingLine": "Supprimer un piquage",
     "ReplacingLine": "Liaison de remplacement",
     "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut"
+    "ConnectionPosition": "Position départ",
+    "ErrorNoVoltageSelected": "Aucun poste sélectionné, veuillez en sélectionner un avant",
+    "DisplayTakenPositions": "Afficher les positions prises",
+    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
+    "NodeNotBuildPositionMessage": "Veuillez réaliser le nœud actuel pour afficher les positions"
 }

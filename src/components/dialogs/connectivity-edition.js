@@ -15,10 +15,22 @@ import { getIdOrSelf } from './dialogUtils';
 import { useSelector } from 'react-redux';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import {
+    useOptionalEnumValue,
+    useIntegerValue,
+    useTextValue,
+} from './inputs/input-hooks';
+import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
+import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined';
+
+import PositionDiagramPane from '../diagrams/singleLineDiagram/position-diagram-pane';
+import { Tooltip } from '@mui/material';
+import {
     CONNECTION_DIRECTIONS,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../network/constants';
-import { useOptionalEnumValue, useTextValue } from './inputs/input-hooks';
+import { useIntl } from 'react-intl';
+import { isNodeBuilt } from '../graph/util/model-functions';
+
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
  * Usable firstly for giving to hereunder ConnectivityEdition.
@@ -77,7 +89,9 @@ function ided(objOrId) {
  * @param busOrBusbarSectionIdDefaultValue
  * @param connectionDirectionValue
  * @param connectionNameValue
+ * @param connectionPositionValue
  * @param withPosition
+ * @param withDirectionsInfos
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const useConnectivityValue = ({
@@ -94,6 +108,8 @@ export const useConnectivityValue = ({
     busOrBusbarSectionIdDefaultValue,
     connectionDirectionValue,
     connectionNameValue,
+    connectionPositionValue,
+    withDirectionsInfos = true,
     withPosition = false,
 }) => {
     const [bbsIdInitOver, setBbsIdInitOver] = useState(null);
@@ -103,6 +119,9 @@ export const useConnectivityValue = ({
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
         []
     );
+    const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
+    const intl = useIntl();
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     useEffect(() => {
         if (!voltageLevelOptionsPromise) return;
@@ -159,6 +178,13 @@ export const useConnectivityValue = ({
         defaultValue: connectionNameValue,
     });
 
+    const [connectionPosition, connectionPositionField] = useIntegerValue({
+        label: 'ConnectionPosition',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        defaultValue: connectionPositionValue,
+    });
+
     useEffect(() => {
         setBbsIdInitOver(busOrBusbarSectionIdDefaultValue);
     }, [
@@ -198,6 +224,7 @@ export const useConnectivityValue = ({
                 busOrBusbarSection: null,
                 connectionDirection: null,
                 connectionName: null,
+                connectionPosition: null,
             };
 
         const ret = {
@@ -205,6 +232,7 @@ export const useConnectivityValue = ({
             busOrBusbarSection: ided(busOrBusbarSectionObjOrId),
             connectionDirection: ided(connectionDirection),
             connectionName: ided(connectionName),
+            connectionPosition: ided(connectionPosition),
         };
         return ret;
     }, [
@@ -212,37 +240,110 @@ export const useConnectivityValue = ({
         busOrBusbarSectionObjOrId,
         connectionDirection,
         connectionName,
+        connectionPosition,
     ]);
 
+    const handleClickOpenDiagramPane = () => {
+        setIsDiagramPaneOpen(true);
+    };
+
+    const handleCloseDiagramPane = () => {
+        setIsDiagramPaneOpen(false);
+    };
+
     const render = useMemo(() => {
+        const conditionalSize =
+            withPosition && withDirectionsInfos ? 4 : gridSize;
         return (
-            <Grid container direction={direction || 'row'} spacing={2}>
-                <Grid item xs={gridSize} align="start">
-                    {voltageLevelField}
+            <>
+                <Grid container direction={direction || 'row'} spacing={2}>
+                    <Grid item xs={conditionalSize} align="start">
+                        {voltageLevelField}
+                    </Grid>
+                    <Grid item xs={conditionalSize} align="start">
+                        {busOrBusbarSectionField}
+                    </Grid>
+
+                    {withDirectionsInfos && (
+                        <>
+                            {withPosition && (
+                                <>
+                                    <Grid item xs={gridSize} align="start" />
+                                    <Grid item xs={gridSize} align="start" />
+                                </>
+                            )}
+                            <Grid item xs={conditionalSize} align="start">
+                                {connectionNameField}
+                            </Grid>
+                            <Grid item xs={conditionalSize} align="start">
+                                {connectionDirectionField}
+                            </Grid>
+                            {withPosition && (
+                                <>
+                                    <Grid
+                                        item
+                                        xs={(60 * gridSize) / 100}
+                                        align="start"
+                                    >
+                                        {connectionPositionField}
+                                    </Grid>
+                                    <Grid
+                                        item
+                                        xs={(5 * gridSize) / 100}
+                                        align="start"
+                                        display="flex"
+                                        alignItems="center"
+                                    >
+                                        <Tooltip
+                                            title={intl.formatMessage({
+                                                id: !isNodeBuilt(currentNode)
+                                                    ? 'NodeNotBuildPositionMessage'
+                                                    : 'DisplayTakenPositions',
+                                            })}
+                                        >
+                                            {!isNodeBuilt(currentNode) ? (
+                                                <ExploreOffOutlinedIcon color="action" />
+                                            ) : (
+                                                <ExploreOutlinedIcon
+                                                    onClick={
+                                                        handleClickOpenDiagramPane
+                                                    }
+                                                    color="action"
+                                                    cursor="pointer"
+                                                />
+                                            )}
+                                        </Tooltip>
+                                    </Grid>
+                                </>
+                            )}
+                        </>
+                    )}
                 </Grid>
-                <Grid item xs={gridSize} align="start">
-                    {busOrBusbarSectionField}
-                </Grid>
-                {withPosition && (
-                    <>
-                        <Grid item xs={gridSize} align="start">
-                            {connectionNameField}
-                        </Grid>
-                        <Grid item xs={gridSize} align="start">
-                            {connectionDirectionField}
-                        </Grid>
-                    </>
-                )}
-            </Grid>
+                <PositionDiagramPane
+                    studyUuid={studyUuid}
+                    open={isDiagramPaneOpen}
+                    onClose={handleCloseDiagramPane}
+                    voltageLevelId={voltageLevelObjOrId}
+                    currentNodeUuid={currentNodeUuid}
+                />
+            </>
         );
     }, [
-        direction,
+        withPosition,
+        withDirectionsInfos,
         gridSize,
+        direction,
         voltageLevelField,
         busOrBusbarSectionField,
-        withPosition,
         connectionNameField,
         connectionDirectionField,
+        connectionPositionField,
+        intl,
+        currentNode,
+        studyUuid,
+        isDiagramPaneOpen,
+        voltageLevelObjOrId,
+        currentNodeUuid,
     ]);
 
     return [connectivity, render];

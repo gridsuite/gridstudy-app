@@ -73,8 +73,8 @@ export const useFormSearchCopy = ({
                 snackError({
                     messageTxt: msg,
                 });
-                handleCloseSearchDialog();
-            });
+            })
+            .finally(() => handleCloseSearchDialog());
     };
 
     const handleCloseSearchDialog = () => {
