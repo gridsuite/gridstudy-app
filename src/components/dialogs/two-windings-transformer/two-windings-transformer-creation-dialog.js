@@ -243,7 +243,7 @@ const TwoWindingsTransformerCreationDialog = ({
             formValues?.busOrBusbarSectionId1 || null,
         connectionDirectionValue: formValues?.connectionDirection1 ?? '',
         connectionNameValue: formValues?.connectionName1,
-        withPosition: true,
+        withPosition: false,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -258,7 +258,7 @@ const TwoWindingsTransformerCreationDialog = ({
             formValues?.busOrBusbarSectionId2 || null,
         connectionDirectionValue: formValues?.connectionDirection2 ?? '',
         connectionNameValue: formValues?.connectionName2,
-        withPosition: true,
+        withPosition: false,
     });
 
     // RATIO TAP PANE
@@ -1006,10 +1006,14 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const handleRatioTapRows = (rows) => {
         setRatioTapRows(rows);
+        // temp fix to be able to validate form when the rows change
+        ratioTapInputForm.setHasChanged(true);
     };
 
     const handlePhaseTapRows = (rows) => {
         setPhaseTapRows(rows);
+        // temp fix to be able to validate form when the rows change
+        phaseTapInputForm.setHasChanged(true);
     };
 
     const getTabIndicatorClass = (index) =>
