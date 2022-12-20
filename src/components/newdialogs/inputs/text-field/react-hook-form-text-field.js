@@ -1,16 +1,19 @@
 import { TextField } from '@mui/material';
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { FieldLabel } from '../../../dialogs/inputs/hooks-helpers';
+import {
+    FieldLabel,
+    genHelperError,
+} from '../../../dialogs/inputs/hooks-helpers';
 
-export function ReactHookFormTextField({
+export const ReactHookFormTextField = ({
     name,
     label,
     required,
     control,
-    yupErrors,
+    errorMessage,
     ...rest
-}) {
+}) => {
     return (
         <Controller
             control={control}
@@ -22,11 +25,10 @@ export function ReactHookFormTextField({
                     value={value}
                     onChange={onChange}
                     label={FieldLabel({ label: label, optional: !required })}
-                    helperText={yupErrors?.[name]?.message}
-                    error={yupErrors?.[name]?.message}
+                    {...genHelperError(errorMessage)}
                     {...rest}
                 />
             )}
         />
     );
-}
+};

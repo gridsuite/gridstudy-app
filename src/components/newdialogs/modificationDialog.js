@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../dialogs/inputs/input-hooks';
+import { useFormContext } from 'react-hook-form';
 
 /**
  * Generic Modification Dialog which manage basic common behaviors
@@ -43,6 +44,9 @@ const ModificationDialog = ({
     subtitle,
     ...dialogProps
 }) => {
+    const methods = useFormContext();
+    const { handleSubmit } = methods;
+
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog,
@@ -65,12 +69,12 @@ const ModificationDialog = ({
         closeAndClear(event, 'cancelButtonClick');
     };
 
-    const handleValidate = (event) => {
+    const handleValidate = (data) => {
         if (onValidation()) {
             onValidated && onValidated();
-            onSave();
+            onSave(data);
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            closeAndClear(event, 'validateButtonClick');
+            closeAndClear(data, 'validateButtonClick');
         }
     };
 
@@ -94,7 +98,10 @@ const ModificationDialog = ({
                 <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleValidate} disabled={disabledSave}>
+                <Button
+                    onClick={handleSubmit(handleValidate)}
+                    disabled={disabledSave}
+                >
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>

@@ -2,17 +2,20 @@ import { TextField } from '@mui/material';
 import React from 'react';
 import { Controller } from 'react-hook-form';
 import { toFloatValue } from '../../../dialogs/dialogUtils';
-import { FieldLabel } from '../../../dialogs/inputs/hooks-helpers';
+import {
+    FieldLabel,
+    genHelperError,
+} from '../../../dialogs/inputs/hooks-helpers';
 import { isFloatNumber } from '../../../dialogs/inputs/input-hooks';
 
-export function ReactHookFormNumberTextField({
+export const ReactHookFormNumberTextField = ({
     name,
     label,
     required,
     control,
-    yupErrors,
+    errorMessage,
     ...rest
-}) {
+}) => {
     return (
         <Controller
             control={control}
@@ -28,11 +31,10 @@ export function ReactHookFormNumberTextField({
                         else return;
                     }}
                     label={FieldLabel({ label: label, optional: !required })}
-                    helperText={yupErrors?.[name]?.message}
-                    error={yupErrors?.[name]?.message}
+                    {...genHelperError(errorMessage)}
                     {...rest}
                 />
             )}
         />
     );
-}
+};
