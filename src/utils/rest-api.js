@@ -2222,12 +2222,16 @@ export function fetchMapEquipments(
         );
     }
 
+    const paramsList =
+        substationsIds && substationsIds.length > 0
+            ? '?' + getQueryParamsList(substationsIds, 'substationId')
+            : '';
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/map-equipments-data?' +
-        getQueryParamsList(substationsIds, 'substationId');
+        '/network-map/map-equipments-data' +
+        paramsList;
     console.debug(fetchEquipmentsUrl);
-    return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
+    return backendFetchJson(fetchEquipmentsUrl);
 }
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {

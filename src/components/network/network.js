@@ -492,46 +492,42 @@ export default class Network {
                 currentNode?.id,
                 substationsIds
             );
-            Promise.all([updatedEquipments])
+            updatedEquipments
                 .then((values) => {
                     this.updateSubstations(
-                        this.checkAndGetValues(values[0].substations)
+                        this.checkAndGetValues(values.substations)
                     );
-                    this.updateLines(this.checkAndGetValues(values[0].lines));
+                    this.updateLines(this.checkAndGetValues(values.lines));
                     this.updateTwoWindingsTransformers(
-                        this.checkAndGetValues(
-                            values[0].twoWindingsTransformers
-                        )
+                        this.checkAndGetValues(values.twoWindingsTransformers)
                     );
                     this.updateThreeWindingsTransformers(
-                        this.checkAndGetValues(
-                            values[0].threeWindingsTransformers
-                        )
+                        this.checkAndGetValues(values.threeWindingsTransformers)
                     );
                     this.updateGenerators(
-                        this.checkAndGetValues(values[0].generators)
+                        this.checkAndGetValues(values.generators)
                     );
-                    this.updateLoads(this.checkAndGetValues(values[0].loads));
+                    this.updateLoads(this.checkAndGetValues(values.loads));
                     this.updateBatteries(
-                        this.checkAndGetValues(values[0].batteries)
+                        this.checkAndGetValues(values.batteries)
                     );
                     this.updateDanglingLines(
-                        this.checkAndGetValues(values[0].danglingLines)
+                        this.checkAndGetValues(values.danglingLines)
                     );
                     this.updateLccConverterStations(
-                        this.checkAndGetValues(values[0].lccConverterStations)
+                        this.checkAndGetValues(values.lccConverterStations)
                     );
                     this.updateVscConverterStations(
-                        this.checkAndGetValues(values[0].vscConverterStations)
+                        this.checkAndGetValues(values.vscConverterStations)
                     );
                     this.updateHvdcLines(
-                        this.checkAndGetValues(values[0].hvdcLines)
+                        this.checkAndGetValues(values.hvdcLines)
                     );
                     this.updateShuntCompensators(
-                        this.checkAndGetValues(values[0].shuntCompensators)
+                        this.checkAndGetValues(values.shuntCompensators)
                     );
                     this.updateStaticVarCompensators(
-                        this.checkAndGetValues(values[0].staticVarCompensators)
+                        this.checkAndGetValues(values.staticVarCompensators)
                     );
                 })
                 .catch(function (error) {
