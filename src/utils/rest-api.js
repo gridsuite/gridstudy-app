@@ -287,7 +287,7 @@ export function getVoltageLevelSingleLineDiagram(
                 componentLibrary: componentLibrary,
             }),
             sldDisplayMode: sldDisplayMode,
-            language,
+            language: language,
         }).toString()
     );
 }
@@ -320,7 +320,7 @@ export function getSubstationSingleLineDiagram(
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
-            language,
+            language: language,
         }).toString()
     );
 }

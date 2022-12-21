@@ -30,7 +30,6 @@ import {
 } from '../network/constants';
 import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../graph/util/model-functions';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
 
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
@@ -123,7 +122,6 @@ export const useConnectivityValue = ({
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
     const intl = useIntl();
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const language = useSelector((state) => state[PARAM_LANGUAGE]);
 
     useEffect(() => {
         if (!voltageLevelOptionsPromise) return;
@@ -327,7 +325,6 @@ export const useConnectivityValue = ({
                     onClose={handleCloseDiagramPane}
                     voltageLevelId={voltageLevelObjOrId}
                     currentNodeUuid={currentNodeUuid}
-                    language={language}
                 />
             </>
         );
@@ -347,7 +344,6 @@ export const useConnectivityValue = ({
         isDiagramPaneOpen,
         voltageLevelObjOrId,
         currentNodeUuid,
-        language,
     ]);
 
     return [connectivity, render];

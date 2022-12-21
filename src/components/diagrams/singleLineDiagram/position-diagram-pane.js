@@ -14,6 +14,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
+    PARAM_LANGUAGE,
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
 import PositionDiagram from './position-diagram';
@@ -27,7 +28,6 @@ const PositionDiagramPane = ({
     voltageLevelId,
     currentNodeUuid,
     studyUuid,
-    language,
 }) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
@@ -35,6 +35,7 @@ const PositionDiagramPane = ({
     const componentLibrary = useSelector(
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
+    const language = useSelector((state) => state[PARAM_LANGUAGE]);
 
     const [svgUrl, setSvgUrl] = useState(null);
     const intl = useIntl();
