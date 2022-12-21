@@ -92,10 +92,16 @@ export const MODIFICATION_TYPE = {
     EQUIPMENT_ATTRIBUTE_MODIFICATION: 'EQUIPMENT_ATTRIBUTE_MODIFICATION',
 };
 
-export const VARIATION_MODE = {
-    PROPORTIONAL:  {id: 'proportional', label: 'Proportional'},
-    PROPORTIONAL_TO_P_MAX: {id: 'proportionalToPMax', label: 'ProportionalToPMax'},
-    REGULAR_DISTRIBUTION: {id: 'regularDistribution', label: 'RegularDistribution'},
-    STACKING_UP: {id: 'stackingUp', label: 'StackingUp'},
-    VENTILATION: {id: 'ventilation', label: 'Ventilation'}
-}
+export const VARIATION_MODE = [
+    { id: 'proportional', label: 'Proportional' },
+    {
+        id: 'proportionalToPMax',
+        label: 'ProportionalToPMax',
+    },
+    {
+        id: 'regularDistribution',
+        label: 'RegularDistribution',
+    },
+    { id: 'stackingUp', label: 'StackingUp' },
+    { id: 'ventilation', label: 'Ventilation' },
+];

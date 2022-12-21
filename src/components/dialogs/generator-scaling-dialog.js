@@ -30,7 +30,8 @@ const GeneratorScalingVariation = ({
             isFieldRequired: true,
         },
         elementType: elementType.FILTER,
-        equipmentTypes: EquipmentType.GENERATOR,
+        titleId: 'FiltersListsSelection',
+        equipmentTypes: [EquipmentType.GENERATOR],
     });
 
     const [pValue, pField] = useDoubleValue({
@@ -44,7 +45,7 @@ const GeneratorScalingVariation = ({
 
     const [variationMode, variationModeField] = useOptionalEnumValue({
         label: 'VariationMode',
-        defaultValue: defaultValue.variationMode ?? VARIATION_MODE.PROPORTIONAL_TO_P_MAX.label,
+        defaultValue: defaultValue?.variationMode ?? 'proportionalToPMax',
         enumObjects: VARIATION_MODE
     })
 
@@ -54,27 +55,30 @@ const GeneratorScalingVariation = ({
 
     return (
         <>
-            {gridItem(filterField, 4)}
-            {gridItem(pField, 4)}
-            {gridItem(variationModeField, 4)}
+            {gridItem(filterField, 3)}
+            {gridItem(pField, 3)}
+            {gridItem(variationModeField, 3)}
         </>
     );
 }
 
 const GeneratorScalingDialog = ({
+    currentNodeUuid,
     editData,
     ...dialogProps
 }) => {
-    //const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    //const { snackError } = useSnackMessage();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
     const [formValues, setFormValues] = useState(undefined);
 
     useEffect(() => {
+        console.log('test 1')
         if (editData) {
+            console.log('test 2')
             setFormValues(editData);
         }
     }, [editData]);
