@@ -597,14 +597,23 @@ const GeneratorModificationDialog = ({
         } else {
             const pointsToStore = [];
             reactiveCapabilityCurve.forEach((point, index) => {
-                if (point && displayedPreviousValues) {
+                if (point) {
                     let pointToStore = {
                         p: point.p,
-                        oldP: displayedPreviousValues[index]?.p,
+                        oldP:
+                            displayedPreviousValues !== undefined
+                                ? displayedPreviousValues[index]?.p
+                                : null,
                         qminP: point.qminP,
-                        oldQminP: displayedPreviousValues[index]?.qminP,
+                        oldQminP:
+                            displayedPreviousValues !== undefined
+                                ? displayedPreviousValues[index]?.qminP
+                                : null,
                         qmaxP: point.qmaxP,
-                        oldQmaxP: displayedPreviousValues[index]?.qmaxP,
+                        oldQmaxP:
+                            displayedPreviousValues !== undefined
+                                ? displayedPreviousValues[index]?.qmaxP
+                                : null,
                     };
 
                     pointsToStore.push(pointToStore);
