@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     closeDiagram,
+    closeDiagrams,
     minimizeDiagram,
     openDiagram,
     togglePinDiagram,
@@ -237,52 +236,26 @@ export const useDiagram = () => {
         [dispatch]
     );
 
-    const showVoltageLevelDiagramView = useCallback(
-        (voltageLevelId) => {
-            openDiagramView(voltageLevelId, SvgType.VOLTAGE_LEVEL);
-        },
-        [openDiagramView]
-    );
-
-    const showSubstationDiagramView = useCallback(
-        (substationId) => {
-            openDiagramView(substationId, SvgType.SUBSTATION);
-        },
-        [openDiagramView]
-    );
-
-    const showNetworkAreaDiagramView = useCallback(
-        // TODO CHARLY Vérifier si la fonction du NAD est compatible avec ce code copié/collé
-        (nadId) => {
-            console.error('CHARLY ** showNetworkAreaDiagramView', nadId);
-            openDiagramView(nadId, SvgType.NETWORK_AREA_DIAGRAM);
-        },
-        [openDiagramView]
-    );
-
     const closeDiagramView = useCallback(
-        // TODO CHARLY ajouter le type en paramètre ATTENTION ici on gère une liste
-        (elementsToRemove) => {
-            console.error(
-                'CHARLY closeDiagramView(elementsToRemove=',
-                elementsToRemove
-            );
-            const toRemove = Array.isArray(elementsToRemove)
-                ? elementsToRemove
-                : [elementsToRemove];
-            console.error('CHARLY suite ', toRemove);
-            dispatch(closeDiagram(toRemove));
+        (id, type) => {
+            dispatch(closeDiagram(id, type));
+        },
+        [dispatch]
+    );
+
+    const closeDiagramViews = useCallback(
+        (idsToRemove) => {
+            dispatch(closeDiagrams(idsToRemove));
         },
         [dispatch]
     );
 
     return [
-        closeDiagramView,
-        showVoltageLevelDiagramView,
-        showSubstationDiagramView,
-        showNetworkAreaDiagramView,
-        togglePinDiagramView,
+        openDiagramView,
         minimizeDiagramView,
+        togglePinDiagramView,
+        closeDiagramView,
+        closeDiagramViews,
     ];
 };
 
@@ -295,3 +268,57 @@ export function getSubstationNameOrId(value) {
 }
 
 export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
+
+// Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
+export const computePaperAndSvgSizesIfReady = (
+    // TODO déplacer dans le diagram-common ?
+    isFullScreenActive,
+    svgType,
+    totalWidth,
+    totalHeight,
+    svgPreferredWidth,
+    svgPreferredHeight,
+    headerPreferredHeight
+) => {
+    if (
+        typeof svgPreferredWidth != 'undefined' &&
+        typeof headerPreferredHeight != 'undefined'
+    ) {
+        let paperWidth, paperHeight, svgWidth, svgHeight;
+        if (isFullScreenActive) {
+            paperWidth = totalWidth;
+            paperHeight = totalHeight;
+            svgWidth = totalWidth - BORDERS;
+            svgHeight = totalHeight - headerPreferredHeight - BORDERS;
+        } else {
+            let tempMaxWidth, tempMaxHeight;
+            if (svgType === SvgType.VOLTAGE_LEVEL) {
+                tempMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
+                tempMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
+            } else if (svgType === SvgType.SUBSTATION) {
+                tempMaxWidth = MAX_WIDTH_SUBSTATION;
+                tempMaxHeight = MAX_HEIGHT_SUBSTATION;
+            } else if (svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                tempMaxWidth = MAX_WIDTH_NETWORK_AREA_DIAGRAM;
+                tempMaxHeight = MAX_HEIGHT_NETWORK_AREA_DIAGRAM;
+            } else {
+                console.error('type inconnu svgType');
+            }
+            svgWidth = Math.min(
+                svgPreferredWidth,
+                svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                    ? totalWidth //- MAP_RIGHT_OFFSET
+                    : totalWidth, // MAP_RIGHT_OFFSET = 120 pour SLD, 0 pour NAD
+                tempMaxWidth
+            );
+            svgHeight = Math.min(
+                svgPreferredHeight,
+                totalHeight - MAP_BOTTOM_OFFSET - headerPreferredHeight,
+                tempMaxHeight
+            );
+            paperWidth = svgWidth + BORDERS;
+            paperHeight = svgHeight + headerPreferredHeight + BORDERS;
+        }
+        return { paperWidth, paperHeight, svgWidth, svgHeight };
+    }
+};

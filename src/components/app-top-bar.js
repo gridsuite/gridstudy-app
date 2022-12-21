@@ -172,8 +172,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [isParametersOpen, setParametersOpen] = useState(false);
-    const [, showVoltageLevelDiagramView, showSubstationDiagramView] =
-        useDiagram();
+    const [openDiagramView] = useDiagram();
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
@@ -225,12 +224,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (optionInfos) => {
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
             if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
-                showSubstationDiagramView(optionInfos.id);
+                openDiagramView(optionInfos.id, SvgType.SUBSTATION);
             } else {
-                showVoltageLevelDiagramView(optionInfos.voltageLevelId);
+                openDiagramView(optionInfos.id, SvgType.VOLTAGE_LEVEL);
             }
         },
-        [onChangeTab, showSubstationDiagramView, showVoltageLevelDiagramView]
+        [onChangeTab, openDiagramView]
     );
 
     useEffect(() => {

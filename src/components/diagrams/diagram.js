@@ -25,7 +25,7 @@ import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchSvg } from '../../utils/rest-api';
-import { setFullScreenDiagramId } from '../../redux/actions';
+import { setFullScreenDiagram } from '../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -57,12 +57,10 @@ import {
     SvgType,
     getEquipmentTypeFromFeederType,
     useDiagram,
-    BORDERS,
+    computePaperAndSvgSizesIfReady,
     commonDiagramStyle,
     commonSldStyle,
     commonNadStyle,
-    MAP_BOTTOM_OFFSET,
-    //MAP_RIGHT_OFFSET,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
@@ -89,60 +87,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 let initialWidth, initialHeight;
-
-// Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
-const computePaperAndSvgSizesIfReady = (
-    // TODO déplacer dans le diagram-common ?
-    fullScreen,
-    svgType,
-    totalWidth,
-    totalHeight,
-    svgPreferredWidth,
-    svgPreferredHeight,
-    headerPreferredHeight
-) => {
-    if (
-        typeof svgPreferredWidth != 'undefined' &&
-        typeof headerPreferredHeight != 'undefined'
-    ) {
-        let paperWidth, paperHeight, svgWidth, svgHeight;
-        if (fullScreen) {
-            paperWidth = totalWidth;
-            paperHeight = totalHeight;
-            svgWidth = totalWidth - BORDERS;
-            svgHeight = totalHeight - headerPreferredHeight - BORDERS;
-        } else {
-            let tempMaxWidth, tempMaxHeight;
-            if (svgType === SvgType.VOLTAGE_LEVEL) {
-                tempMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
-                tempMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
-            } else if (svgType === SvgType.SUBSTATION) {
-                tempMaxWidth = MAX_WIDTH_SUBSTATION;
-                tempMaxHeight = MAX_HEIGHT_SUBSTATION;
-            } else if (svgType === SvgType.NETWORK_AREA_DIAGRAM) {
-                tempMaxWidth = MAX_WIDTH_NETWORK_AREA_DIAGRAM;
-                tempMaxHeight = MAX_HEIGHT_NETWORK_AREA_DIAGRAM;
-            } else {
-                console.error('type inconnu svgType');
-            }
-            svgWidth = Math.min(
-                svgPreferredWidth,
-                svgType !== SvgType.NETWORK_AREA_DIAGRAM
-                    ? totalWidth //- MAP_RIGHT_OFFSET
-                    : totalWidth, // MAP_RIGHT_OFFSET = 120 pour SLD, 0 pour NAD
-                tempMaxWidth
-            );
-            svgHeight = Math.min(
-                svgPreferredHeight,
-                totalHeight - MAP_BOTTOM_OFFSET - headerPreferredHeight,
-                tempMaxHeight
-            );
-            paperWidth = svgWidth + BORDERS;
-            paperHeight = svgHeight + headerPreferredHeight + BORDERS;
-        }
-        return { paperWidth, paperHeight, svgWidth, svgHeight };
-    }
-};
 
 const Diagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
@@ -174,7 +118,7 @@ const Diagram = forwardRef((props, ref) => {
         totalWidth,
     } = props;
 
-    const [closeDiagramView] = useDiagram();
+    const [, , , closeDiagramView] = useDiagram(); // We only use this function (the fourth)
 
     const diagramType = useCallback(() => {
         switch (svgType) {
@@ -192,9 +136,7 @@ const Diagram = forwardRef((props, ref) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const fullScreenDiagramId = useSelector(
-        (state) => state.fullScreenDiagramId
-    );
+    const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
 
     const [forceState, updateState] = useState(false);
 
@@ -298,7 +240,7 @@ const Diagram = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
-            fullScreenDiagramId,
+            fullScreenDiagram?.id,
             svgType,
             totalWidth,
             totalHeight,
@@ -309,7 +251,7 @@ const Diagram = forwardRef((props, ref) => {
 
         if (sizes) {
             if (
-                !fullScreenDiagramId &&
+                !fullScreenDiagram?.id &&
                 sizes.svgWidth * numberToDisplay > totalWidth
             ) {
                 setSvgFinalWidth(totalWidth / numberToDisplay);
@@ -331,7 +273,7 @@ const Diagram = forwardRef((props, ref) => {
             }
         }
     }, [
-        fullScreenDiagramId,
+        fullScreenDiagram,
         totalWidth,
         totalHeight,
         svgType,
@@ -384,7 +326,7 @@ const Diagram = forwardRef((props, ref) => {
         } else {
             setSvg(NoSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef, diagramId]);
+    }, [props.svgUrl, forceState, snackError, intlRef, diagramId, diagramType]);
 
     // SLD
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
@@ -608,6 +550,7 @@ const Diagram = forwardRef((props, ref) => {
         modificationInProgress,
         loadingState,
         locallySwitchedBreaker,
+        diagramType,
     ]);
 
     useLayoutEffect(() => {
@@ -648,36 +591,25 @@ const Diagram = forwardRef((props, ref) => {
         isAnyNodeBuilding,
         network,
         ref,
-        fullScreenDiagramId,
+        fullScreenDiagram,
         computedHeight,
     ]);
 
-    // NAD // TODO CHARLY adapter ça
-    /*const onCloseHandlerNAD = () => {
-        if (onClose !== null) {
-            onClose(); // TODO CHARLY
-            setDepth(0); // TODO CHARLY
-        }
-    };*/
-
-    // SLD
     const onCloseHandler = () => {
-        dispatch(setFullScreenDiagramId(undefined));
-        // TODO CHARLY NOW closeDiagram : si on met juste le type, ferme tous du type
-        closeDiagramView({ id: diagramId, svgType: svgType }); // TODO CHARLY NOW c'est sûrement le close qui doit aller faire la maintenance de la liste des NAD ouverts
+        dispatch(setFullScreenDiagram(null));
+        closeDiagramView(diagramId, svgType);
         if (svgType === SvgType.NETWORK_AREA_DIAGRAM) {
-            setDepth(0); // TODO CHARLY vérifier si c'est encore utilisé. Voir si c'est le meilleur endroit.
+            setDepth(0);
         }
     };
 
     const showFullScreen = useCallback(
-        // TODO CHARLY ajouter un type ici ?
-        () => dispatch(setFullScreenDiagramId(diagramId)),
-        [dispatch, diagramId]
+        () => dispatch(setFullScreenDiagram(diagramId, svgType)),
+        [dispatch, diagramId, svgType]
     );
 
     const hideFullScreen = useCallback(
-        () => dispatch(setFullScreenDiagramId(undefined)),
+        () => dispatch(setFullScreenDiagram(null)),
         [dispatch]
     );
 
@@ -719,7 +651,6 @@ const Diagram = forwardRef((props, ref) => {
         );
     };
 
-    // COMMUN
     let sizeWidth,
         sizeHeight = initialHeight;
     if (svg.error) {
@@ -748,22 +679,19 @@ const Diagram = forwardRef((props, ref) => {
         initialHeight = sizeHeight; // setting initial height for the next SLD.
     }
 
-    if (!fullScreenDiagramId && computedHeight) {
+    if (!fullScreenDiagram?.id && computedHeight) {
         sizeHeight = computedHeight;
     }
 
     const pinDiagram = useCallback(() => {
-        console.error('diagram.js:pinDiagram', diagramId, svgType);
         onTogglePin(diagramId, svgType);
     }, [diagramId, svgType, onTogglePin]);
 
     const minimizeDiagram = useCallback(() => {
-        console.error('diagram.js:minimizeDiagram', diagramId, svgType);
         onMinimize(diagramId, svgType);
         hideFullScreen();
     }, [onMinimize, diagramId, svgType, hideFullScreen]);
 
-    // MIX EN COURS
     return !svg.error ? (
         <Paper
             ref={ref}
@@ -777,8 +705,11 @@ const Diagram = forwardRef((props, ref) => {
                 height: sizeHeight,
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
                 overflow: 'hidden',
+                // We hide this diagram if another diagram is in fullscreen mode.
                 display:
-                    !fullScreenDiagramId || diagramId === fullScreenDiagramId // TODO CHARLY ici faire la différence entre un diagramID de type NAD et SLD, pour éviter de fermer le mauvais si SLD et NAD du meme truc sont ouverts
+                    !fullScreenDiagram?.id ||
+                    (diagramId === fullScreenDiagram.id &&
+                        svgType === fullScreenDiagram.svgType)
                         ? ''
                         : 'none',
             }}
@@ -809,20 +740,22 @@ const Diagram = forwardRef((props, ref) => {
                             >
                                 <MinimizeIcon />
                             </IconButton>
-                            <IconButton
-                                className={
-                                    pinned
-                                        ? classes.actionIcon
-                                        : classes.pinRotate
-                                }
-                                onClick={pinDiagram}
-                            >
-                                {pinned ? (
-                                    <PushPinIcon />
-                                ) : (
-                                    <PushPinOutlinedIcon />
-                                )}
-                            </IconButton>
+                            {diagramType() === 'SLD' && (
+                                <IconButton
+                                    className={
+                                        pinned
+                                            ? classes.actionIcon
+                                            : classes.pinRotate
+                                    }
+                                    onClick={pinDiagram}
+                                >
+                                    {pinned ? (
+                                        <PushPinIcon />
+                                    ) : (
+                                        <PushPinOutlinedIcon />
+                                    )}
+                                </IconButton>
+                            )}
                             <IconButton
                                 className={classes.close}
                                 onClick={onCloseHandler}
@@ -937,7 +870,7 @@ const Diagram = forwardRef((props, ref) => {
                                     />
                                 </>
                             )}
-                            {fullScreenDiagramId ? (
+                            {fullScreenDiagram?.id ? (
                                 <FullscreenExitIcon
                                     onClick={hideFullScreen}
                                     className={classes.fullScreenIcon}
@@ -959,7 +892,6 @@ const Diagram = forwardRef((props, ref) => {
 });
 
 Diagram.propTypes = {
-    //depth: PropTypes.number.isRequired, // TODO maybe not required
     depth: PropTypes.number,
     diagramTitle: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
@@ -968,15 +900,12 @@ Diagram.propTypes = {
     numberToDisplay: PropTypes.number,
     onBreakerClick: PropTypes.func,
     loadFlowStatus: PropTypes.any,
-    //studyUuid: PropTypes.string.isRequired,
-    //onClose: PropTypes.func,
     onNextVoltageLevelClick: PropTypes.func,
     pin: PropTypes.func,
     pinned: PropTypes.bool,
     diagramId: PropTypes.string,
     svgType: PropTypes.string.isRequired,
     svgUrl: PropTypes.string,
-    //updateSwitchMsg: PropTypes.string.isRequired, // TODO was required for SLD
     updateSwitchMsg: PropTypes.string,
 };
 

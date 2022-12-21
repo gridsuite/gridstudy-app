@@ -53,10 +53,6 @@ export const syncDiagramStateWithSessionStorage = (diagramState, studyUuid) => {
     if (studyUuid == null) {
         return;
     }
-    console.error(
-        'CHARLY SAVE syncDiagramStateWithSessionStorage',
-        diagramState
-    );
     sessionStorage.setItem(
         getDiagramStateKeyPrefixFromStudyUuid(studyUuid),
         JSON.stringify(diagramState)
@@ -67,13 +63,8 @@ export const loadDiagramStateFromSessionStorage = (studyUuid) => {
     const diagramState = JSON.parse(
         sessionStorage.getItem(getDiagramStateKeyPrefixFromStudyUuid(studyUuid))
     );
-
     if (diagramState === null) {
         return [];
     }
-    console.error(
-        'CHARLY INIT loadDiagramStateFromSessionStorage',
-        diagramState
-    );
     return diagramState;
 };

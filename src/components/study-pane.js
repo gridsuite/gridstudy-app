@@ -33,14 +33,11 @@ import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
-//import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
 import { DiagramPane } from './diagrams/diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
-import { useDiagram } from './diagrams/diagram-common';
-//import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
+import { SvgType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
@@ -142,13 +139,7 @@ const StudyPane = ({
 
     const classes = useStyles();
 
-    const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
-        useSingleLineDiagram();
-
-    // TODO ICI CORRECT const [, showVoltageLevelDiagramView] = useDiagram(); // We only use the second function here
-    // TODO ci dessous version temporaire
-    const [closeDiagramView, showVoltageLevelDiagramView] = useDiagram(); // We only use the second function here
-    // TODO FIN version temporaire
+    const [openDiagramView] = useDiagram();
 
     const disabled = !isNodeBuilt(currentNode);
 
@@ -168,16 +159,16 @@ const StudyPane = ({
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
             props.onChangeTab(0); // switch to map view
-            showVoltageLevelDiagramView(vlId); // show voltage level
+            openDiagramView(vlId, SvgType.VOLTAGE_LEVEL);
         }
     }
 
     const openVoltageLevel = useCallback(
         (vlId) => {
             if (!network) return;
-            showVoltageLevelDiagramView(vlId);
+            openDiagramView(vlId, SvgType.VOLTAGE_LEVEL);
         },
-        [network, showVoltageLevelDiagramView]
+        [network, openDiagramView]
     );
 
     useEffect(() => {
@@ -324,9 +315,6 @@ const StudyPane = ({
                             <DiagramPane
                                 studyUuid={studyUuid}
                                 network={network}
-                                //onClose={closeVoltageLevelDiagram} // was useless
-                                //onClose={closeNetworkAreaDiagram} // seems useless
-                                //openVoltageLevel={openVoltageLevel} // seems useless
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
                                 loadFlowStatus={getLoadFlowRunningStatus(

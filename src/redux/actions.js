@@ -378,12 +378,13 @@ export function fullScreenNetworkAreaDiagramId(fullScreenNadId) {
     };
 }
 
-export const SET_FULLSCREEN_DIAGRAM_ID = 'SET_FULLSCREEN_DIAGRAM_ID';
+export const SET_FULLSCREEN_DIAGRAM = 'SET_FULLSCREEN_DIAGRAM';
 
-export function setFullScreenDiagramId(diagramIdParam) {
+export function setFullScreenDiagram(diagramIdParam, svgTypeParam = undefined) {
     return {
-        type: SET_FULLSCREEN_DIAGRAM_ID,
-        fullScreenDiagramId: diagramIdParam,
+        type: SET_FULLSCREEN_DIAGRAM,
+        diagramId: diagramIdParam,
+        svgType: svgTypeParam,
     };
 }
 
@@ -561,10 +562,19 @@ export function togglePinDiagram(id, svgType) {
 
 export const CLOSE_DIAGRAM = 'CLOSE_DIAGRAM';
 
-export function closeDiagram(elementsToClose) {
-    console.error('actions.js::closeDiagram', elementsToClose);
+export function closeDiagram(id, svgType) {
     return {
         type: CLOSE_DIAGRAM,
-        elementsToClose: elementsToClose,
+        id: id,
+        svgType: svgType,
+    };
+}
+
+export const CLOSE_DIAGRAMS = 'CLOSE_DIAGRAMS';
+
+export function closeDiagrams(ids) {
+    return {
+        type: CLOSE_DIAGRAMS,
+        ids: ids,
     };
 }
