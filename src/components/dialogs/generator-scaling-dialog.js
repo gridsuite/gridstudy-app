@@ -16,7 +16,7 @@ import {ActivePowerAdornment, gridItem, GridSection} from "./dialogUtils";
 import {EquipmentType} from "./sensi/sensi-parameters-selector";
 import {VARIATION_MODE} from "../network/constants";
 import {useExpandableValues} from "./inputs/use-expandable-values";
-const GeneratorScalableVariation = ({
+const GeneratorScalingVariation = ({
    index,
    onChange,
    defaultValue,
@@ -61,7 +61,7 @@ const GeneratorScalableVariation = ({
     );
 }
 
-const GeneratorScalableDialog = ({
+const GeneratorScalingDialog = ({
     editData,
     ...dialogProps
 }) => {
@@ -117,7 +117,7 @@ const GeneratorScalableDialog = ({
         validateItem: validateVariation,
         inputForm: inputForm,
         defaultValues: formValues?.variation,
-        Field: GeneratorScalableVariation,
+        Field: GeneratorScalingVariation,
         isRequired: true,
     });
 
@@ -161,4 +161,4 @@ const GeneratorScalableDialog = ({
     )
 };
 
-export default GeneratorScalableDialog;
+export default GeneratorScalingDialog;

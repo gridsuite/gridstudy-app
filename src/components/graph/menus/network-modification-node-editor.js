@@ -62,7 +62,7 @@ import {
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
-import GeneratorScalableDialog from "../../dialogs/generator-scalable-dialog";
+import GeneratorScalingDialog from "../../dialogs/generator-scaling-dialog";
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -375,7 +375,7 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_SCALABLE: {
             label: 'GeneratorScalable',
-            dialog: () => adapt(GeneratorScalableDialog),
+            dialog: () => adapt(GeneratorScalingDialog),
             icon: <AddIcon />,
         },
         EQUIPMENT_DELETION: {
