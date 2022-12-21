@@ -448,6 +448,10 @@
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
+    "AdditionalInformations": "Additional informations",
+    "AddProperty": "Add property",
+    "PropertyName": "Property name",
+    "PropertyValue": "Property value",
 
     "CreateVoltageLevel": "Create a voltage level",
     "Substation": "Substation",
@@ -670,5 +674,9 @@
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
     "Bottom": "Bottom",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value"
+    "ConnectionPosition": "Connection position",
+    "ErrorNoVoltageSelected": "No voltage level selected, please select one before",
+    "DisplayTakenPositions": "Display taken positions",
+    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value",
+    "NodeNotBuildPositionMessage": "Must build current node to show positions"
 }

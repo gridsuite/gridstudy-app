@@ -724,6 +724,7 @@ const NetworkModificationNodeEditor = () => {
                                 className={classes.list}
                                 onChecked={setSelectedItems}
                                 values={modifications}
+                                itemComparator={(a, b) => a.uuid === b.uuid}
                                 itemRenderer={(props) => (
                                     <ModificationListItem
                                         key={props.item.uuid}

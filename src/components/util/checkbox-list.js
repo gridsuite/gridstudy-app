@@ -14,6 +14,7 @@ const CheckboxList = ({
     values,
     onChecked,
     initialSelection,
+    itemComparator = (a, b) => a.id === b.id,
     ...props
 }) => {
     const [checked, setChecked] = useState(new Set(initialSelection));
@@ -21,15 +22,15 @@ const CheckboxList = ({
     useEffect(() => {
         const newChecked = new Set(
             [...checked].filter((element) => {
-                return values.some(
-                    (existingValue) => existingValue.id === element.id
+                return values.some((existingValue) =>
+                    itemComparator(existingValue, element)
                 );
             })
         );
         if (newChecked.size !== checked.size) {
             setChecked(newChecked);
         }
-    }, [values, checked, setChecked]);
+    }, [values, checked, setChecked, itemComparator]);
 
     const refVals = useRef();
     refVals.current = { values, onChecked };
@@ -46,9 +47,12 @@ const CheckboxList = ({
     const handleToggle = useCallback(
         (value) => {
             const newChecked = new Set(checked);
-            const valueToDelete = [...checked].find((e) => e.id === value?.id);
-            const isDeleted = newChecked.delete(valueToDelete);
-            if (!isDeleted) {
+            const valueToDelete = [...checked].find((e) =>
+                itemComparator(e, value)
+            );
+
+            const isValueDeleted = newChecked.delete(valueToDelete);
+            if (!isValueDeleted) {
                 newChecked.add(value);
             }
             setChecked(newChecked);
@@ -57,15 +61,15 @@ const CheckboxList = ({
                 onChecked([...newChecked]);
             }
         },
-        [checked, onChecked]
+        [checked, onChecked, itemComparator]
     );
 
     useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
 
     const isCheckboxInCheckedSet = (checkedSet, checkBoxToCheck) => {
-        return Array.from(checkedSet).some((element) => {
-            return element?.id === checkBoxToCheck?.id;
-        });
+        return Array.from(checkedSet).some((element) =>
+            itemComparator(element, checkBoxToCheck)
+        );
     };
 
     return (
