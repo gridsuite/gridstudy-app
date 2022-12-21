@@ -6,36 +6,26 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
 } from '../../utils/rest-api';
-import { getIdOrSelf } from '../../components/dialogs/dialogUtils';
 import { useSelector } from 'react-redux';
-import { useAutocompleteField } from '../../components/dialogs/inputs/use-autocomplete-field';
-import {
-    useOptionalEnumValue,
-    useIntegerValue,
-    useTextValue,
-} from '../../components/dialogs/inputs/input-hooks';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined';
 
 import PositionDiagramPane from '../diagrams/singleLineDiagram/position-diagram-pane';
 import { Tooltip } from '@mui/material';
-import {
-    CONNECTION_DIRECTIONS,
-    UNDEFINED_CONNECTION_DIRECTION,
-} from '../network/constants';
+import { CONNECTION_DIRECTIONS } from '../network/constants';
 import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../graph/util/model-functions';
-import { ReactHookFormTextField } from './inputs/text-field/react-hook-form-text-field';
+import ReactHookFormTextField from './inputs/text-field/react-hook-form-text-field';
 import { useFormContext } from 'react-hook-form';
 import * as yup from 'yup';
-import { ReactHookFormAutocomplete } from './inputs/select-field/react-hook-form-autocomplete';
-import { ReactHookFormSelect } from './inputs/select-field/react-hook-form-select';
-import { ReactHookFormNumberTextField } from './inputs/text-field/react-hook-form-number-text-field';
+import ReactHookFormAutocomplete from './inputs/select-field/react-hook-form-autocomplete';
+import ReactHookFormSelect from './inputs/select-field/react-hook-form-select';
+import ReactHookFormIntegerNumberTextField from './inputs/text-field/react-hook-form-integer-number-text-field';
 
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
@@ -83,22 +73,20 @@ function ided(objOrId) {
 }
 
 const connectivityValidationSchema = {
-    connectivity: yup.object().shape({
-        voltageLevel: yup.object().nullable().required().shape({
-            id: yup.string(),
-            name: yup.string(),
-            substationId: yup.string(),
-            nominalVoltage: yup.string(),
-            topologyKind: yup.string(),
-        }),
-        busOrBusbarSection: yup.object().nullable().required().shape({
-            id: yup.string(),
-            name: yup.string(),
-        }),
-        connectionDirection: yup.string(),
-        connectionName: yup.string(),
-        connectionPosition: yup.string(),
+    voltageLevel: yup.object().nullable().required().shape({
+        id: yup.string(),
+        name: yup.string(),
+        substationId: yup.string(),
+        nominalVoltage: yup.string(),
+        topologyKind: yup.string(),
     }),
+    busOrBusbarSection: yup.object().nullable().required().shape({
+        id: yup.string(),
+        name: yup.string(),
+    }),
+    connectionDirection: yup.string(),
+    connectionName: yup.string(),
+    connectionPosition: yup.string(),
 };
 
 export const getConnectivityFormValidationSchema = () => {
@@ -110,7 +98,6 @@ export const getConnectivityFormValidationSchema = () => {
  * @param label optional label, no more so useful, except for debug purpose
  * @param id optional id that has to be defined if the hook is used more than once in a form
  * @param validation field validation option
- * @param inputForm optional form for inputs basis
  * @param voltageLevelOptionsPromise a promise that will bring available voltage levels
  * @param currentNodeUuid current node id
  * @param direction direction of placement. Either 'row' or 'column', 'row' by default.
@@ -124,20 +111,12 @@ export const getConnectivityFormValidationSchema = () => {
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const ConnectivityForm = ({
-    label,
     id,
-    validation = {
-        isFieldRequired: true,
-    },
-    inputForm,
     voltageLevelOptionsPromise,
     currentNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
     busOrBusbarSectionIdDefaultValue,
-    connectionDirectionValue,
-    connectionNameValue,
-    connectionPositionValue,
     withDirectionsInfos = true,
     withPosition = false,
 }) => {
@@ -159,7 +138,7 @@ export const ConnectivityForm = ({
         watch,
     } = methods;
 
-    const watchVoltageLevel = watch('connectivity.voltageLevel');
+    const watchVoltageLevel = watch('voltageLevel');
 
     useEffect(() => {
         if (!voltageLevelOptionsPromise) return;
@@ -174,38 +153,57 @@ export const ConnectivityForm = ({
     const newVoltageLevelField = (
         <ReactHookFormAutocomplete
             id={id ? id + '/voltage-level' : 'voltage-level'}
-            validation={validation}
-            values={voltageLevelOptions}
-            defaultValue={voltageLevelIdDefaultValue}
-            getLabel={getIdOrSelf}
-            allowNewValue={true}
-            inputForm={inputForm}
-            name="connectivity.voltageLevel"
+            options={voltageLevelOptions.map((bbs) => {
+                return { id: bbs.id, label: bbs.id };
+            })}
+            name="voltageLevel"
             label="VoltageLevel"
             control={control}
             errorMessage={yupErrors?.connectivity?.voltageLevel?.message}
         />
+
+        // <ReactHookFormAutocomplete
+        //     id={id ? id + '/voltage-level' : 'voltage-level'}
+        //     validation={validation}
+        //     values={voltageLevelOptions}
+        //     defaultValue={voltageLevelIdDefaultValue}
+        //     getLabel={getIdOrSelf}
+        //     allowNewValue={true}
+        //     name="voltageLevel"
+        //     label="VoltageLevel"
+        //     control={control}
+        //     errorMessage={yupErrors?.connectivity?.voltageLevel?.message}
+        // />
     );
 
     const newBusOrBusbarSectionField = (
         <ReactHookFormAutocomplete
             id={id ? id + '/bus-bar-bus' : 'bus-bar-bus'}
-            validation={validation}
-            values={busOrBusbarSectionOptions}
-            defaultValue={bbsIdInitOver}
-            getLabel={getIdOrSelf}
-            allowNewValue={true}
-            inputForm={inputForm}
-            name="connectivity.busOrBusbarSection"
+            options={busOrBusbarSectionOptions.map((bbs) => {
+                return { id: bbs.id, label: bbs.id };
+            })}
+            name="busOrBusbarSection"
             label="BusBarBus"
             control={control}
             errorMessage={yupErrors?.connectivity?.busOrBusbarSection?.message}
         />
+        // <ReactHookFormAutocomplete
+        //     id={id ? id + '/bus-bar-bus' : 'bus-bar-bus'}
+        //     validation={validation}
+        //     values={busOrBusbarSectionOptions}
+        //     defaultValue={bbsIdInitOver}
+        //     getLabel={getIdOrSelf}
+        //     allowNewValue={true}
+        //     name="busOrBusbarSection"
+        //     label="BusBarBus"
+        //     control={control}
+        //     errorMessage={yupErrors?.connectivity?.busOrBusbarSection?.message}
+        // />
     );
 
     const newConnectionNameField = (
         <ReactHookFormTextField
-            name="connectivity.connectionName"
+            name="connectionName"
             label="ConnectionName"
             control={control}
             errorMessage={yupErrors?.connectivity?.connectionName?.message}
@@ -214,7 +212,7 @@ export const ConnectivityForm = ({
 
     const newConnectionDirectionField = (
         <ReactHookFormSelect
-            name="connectivity.connectionDirection"
+            name="connectionDirection"
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
             size="small"
@@ -225,65 +223,13 @@ export const ConnectivityForm = ({
     );
 
     const newConnectionPositionField = (
-        <ReactHookFormNumberTextField
-            name="connectivity.connectionPosition"
+        <ReactHookFormIntegerNumberTextField
+            name="connectionPosition"
             label="ConnectionPosition"
             control={control}
             errorMessage={yupErrors?.connectivity?.connectionPosition?.message}
         />
     );
-
-    // const [voltageLevelObjOrId, voltageLevelField] = useAutocompleteField({
-    //     id: id ? id + '/voltage-level' : 'voltage-level',
-    //     label: 'VoltageLevel',
-    //     validation: validation,
-    //     values: voltageLevelOptions,
-    //     defaultValue: voltageLevelIdDefaultValue,
-    //     getLabel: getIdOrSelf,
-    //     allowNewValue: true,
-    //     inputForm: inputForm,
-    // });
-
-    // const [busOrBusbarSectionObjOrId, busOrBusbarSectionField] =
-    //     useAutocompleteField({
-    //         id: id ? id + '/bus-bar-bus' : 'bus-bar-bus',
-    //         label: 'BusBarBus',
-    //         validation: validation,
-    //         values: busOrBusbarSectionOptions,
-    //         defaultValue: bbsIdInitOver,
-    //         getLabel: getIdOrSelf,
-    //         allowNewValue: true,
-    //         inputForm: inputForm,
-    //     });
-
-    // const [connectionDirection, connectionDirectionField] =
-    //     useOptionalEnumValue({
-    //         label: 'ConnectionDirection',
-    //         inputForm: inputForm,
-    //         enumObjects: CONNECTION_DIRECTIONS,
-    //         validation: {
-    //             isFieldRequired: false,
-    //         },
-    //         defaultValue:
-    //             connectionDirectionValue &&
-    //             connectionDirectionValue !== UNDEFINED_CONNECTION_DIRECTION
-    //                 ? connectionDirectionValue
-    //                 : null,
-    //     });
-
-    // const [connectionName, connectionNameField] = useTextValue({
-    //     label: 'ConnectionName',
-    //     validation: { isFieldRequired: false },
-    //     inputForm: inputForm,
-    //     defaultValue: connectionNameValue,
-    // });
-
-    // const [connectionPosition, connectionPositionField] = useIntegerValue({
-    //     label: 'ConnectionPosition',
-    //     validation: { isFieldRequired: false },
-    //     inputForm: inputForm,
-    //     defaultValue: connectionPositionValue,
-    // });
 
     useEffect(() => {
         setBbsIdInitOver(busOrBusbarSectionIdDefaultValue);

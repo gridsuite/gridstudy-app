@@ -16,12 +16,6 @@ import {
     UNDEFINED_LOAD_TYPE,
 } from '../../network/constants';
 import {
-    useDoubleValue,
-    useOptionalEnumValue,
-    useInputForm,
-    useTextValue,
-} from '../../dialogs/inputs/input-hooks';
-import {
     ActivePowerAdornment,
     filledTextField,
     gridItem,
@@ -33,18 +27,16 @@ import {
 import { createLoad } from '../../../utils/rest-api';
 import EquipmentSearchDialog from '../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../dialogs/form-search-copy-hook';
-import { useConnectivityValue } from '../../dialogs/connectivity-edition';
-import { ReactHookFormTextField } from '../inputs/text-field/react-hook-form-text-field';
+import ReactHookFormTextField from '../inputs/text-field/react-hook-form-text-field';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button } from '@mui/material';
-import { ReactHookFormSelect } from '../inputs/select-field/react-hook-form-select';
-import { ReactHookFormNumberTextField } from '../inputs/text-field/react-hook-form-number-text-field';
+import ReactHookFormSelect from '../inputs/select-field/react-hook-form-select';
 import {
     ConnectivityForm,
     getConnectivityFormValidationSchema,
 } from '../connectivity-form';
+import ReactHookFormFloatNumberTextField from '../inputs/text-field/react-hook-form-float-number-text-field';
 
 /**
  * Dialog to create a load in the network
@@ -58,7 +50,7 @@ const EQUIPMENT_ID_FIELD = 'equipmentId';
 const EQUIPMENT_NAME_FIELD = 'equipmentName';
 const EQUIPMENT_TYPE_FIELD = 'loadType';
 const ACTIVE_POWER_FIELD = 'activePower';
-const REACTIVE_POWER_FIELD = 'activePower';
+const REACTIVE_POWER_FIELD = 'reactivePower';
 
 const LoadCreationDialog = ({
     editData,
@@ -69,8 +61,6 @@ const LoadCreationDialog = ({
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { snackError } = useSnackMessage();
-
-    const inputForm = useInputForm();
 
     const [formValues, setFormValues] = useState(undefined);
 
@@ -84,7 +74,9 @@ const LoadCreationDialog = ({
             [EQUIPMENT_TYPE_FIELD]: yup.string(),
             [ACTIVE_POWER_FIELD]: yup.string().min(0).required(),
             [REACTIVE_POWER_FIELD]: yup.string().min(0).required(),
-            ...getConnectivityFormValidationSchema(),
+            connectivity: {
+                ...getConnectivityFormValidationSchema(),
+            },
         })
         .required();
 
@@ -170,13 +162,13 @@ const LoadCreationDialog = ({
         <ReactHookFormTextField
             name={EQUIPMENT_ID_FIELD}
             label="ID"
-            variant="filled"
             required={
                 yup.reach(schema, EQUIPMENT_ID_FIELD)?.exclusiveTests
                     ?.required === true
             }
             control={control}
             errorMessage={yupErrors?.id?.message}
+            {...filledTextField}
         />
     );
 
@@ -184,13 +176,13 @@ const LoadCreationDialog = ({
         <ReactHookFormTextField
             name={EQUIPMENT_NAME_FIELD}
             label="Name"
-            variant="filled"
             control={control}
             errorMessage={yupErrors?.name?.message}
             required={
                 yup.reach(schema, EQUIPMENT_NAME_FIELD)?.exclusiveTests
                     ?.required === true
             }
+            {...filledTextField}
         />
     );
 
@@ -200,7 +192,6 @@ const LoadCreationDialog = ({
             label="Type"
             options={LOAD_TYPES}
             size="small"
-            variant="filled"
             fullWidth
             control={control}
             errorMessage={yupErrors?.type?.message}
@@ -208,11 +199,12 @@ const LoadCreationDialog = ({
                 yup.reach(schema, EQUIPMENT_TYPE_FIELD)?.exclusiveTests
                     ?.required === true
             }
+            {...filledTextField}
         />
     );
 
     const newActivePowerField = (
-        <ReactHookFormNumberTextField
+        <ReactHookFormFloatNumberTextField
             name={ACTIVE_POWER_FIELD}
             label="ActivePowerText"
             control={control}
@@ -225,7 +217,7 @@ const LoadCreationDialog = ({
     );
 
     const newReactivePowerField = (
-        <ReactHookFormNumberTextField
+        <ReactHookFormFloatNumberTextField
             name={REACTIVE_POWER_FIELD}
             label="ReactivePowerText"
             control={control}
@@ -240,49 +232,11 @@ const LoadCreationDialog = ({
     const connectivityForm = (
         <ConnectivityForm
             label={'Connectivity'}
-            inputForm={inputForm}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             currentNodeUuid={currentNodeUuid}
-            voltageLevelIdDefaultValue={formValues?.voltageLevelId || null}
-            busOrBusbarSectionIdDefaultValue={
-                formValues?.busOrBusbarSectionId || null
-            }
-            connectionDirectionValue={
-                formValues ? formValues.connectionDirection : ''
-            }
-            connectionNameValue={formValues?.connectionName}
-            connectionPositionValue={formValues?.connectionPosition}
             withPosition={true}
         />
     );
-
-    // const [loadId, loadIdField] = useTextValue({
-    //     label: 'ID',
-    //     validation: { isFieldRequired: true },
-    //     inputForm: inputForm,
-    //     formProps: filledTextField,
-    //     defaultValue: formValues?.equipmentId,
-    // });
-
-    // const [loadName, loadNameField] = useTextValue({
-    //     label: 'Name',
-    //     validation: { isFieldRequired: false },
-    //     inputForm: inputForm,
-    //     formProps: filledTextField,
-    //     defaultValue: formValues?.equipmentName,
-    // });
-
-    // const [loadType, loadTypeField] = useOptionalEnumValue({
-    //     label: 'Type',
-    //     validation: { isFieldRequired: false },
-    //     inputForm: inputForm,
-    //     formProps: filledTextField,
-    //     enumObjects: LOAD_TYPES,
-    //     defaultValue:
-    //         formValues?.loadType && formValues.loadType !== UNDEFINED_LOAD_TYPE
-    //             ? formValues.loadType
-    //             : null,
-    // });
 
     // const [activePower, activePowerField] = useDoubleValue({
     //     label: 'ActivePowerText',
@@ -323,7 +277,6 @@ const LoadCreationDialog = ({
     // });
 
     const handleValidation = () => {
-        console.log('IS VALID ', isValid);
         return isValid;
     };
 
@@ -355,34 +308,8 @@ const LoadCreationDialog = ({
         });
     };
 
-    // const handleSave = () => {
-    //     createLoad(
-    //         studyUuid,
-    //         currentNodeUuid,
-    //         loadId,
-    //         sanitizeString(loadName),
-    //         !loadType ? UNDEFINED_LOAD_TYPE : loadType,
-    //         activePower,
-    //         reactivePower,
-    //         connectivity.voltageLevel.id,
-    //         connectivity.busOrBusbarSection.id,
-    //         editData ? true : false,
-    //         editData ? editData.uuid : undefined,
-    //         connectivity?.connectionDirection?.id ??
-    //             UNDEFINED_CONNECTION_DIRECTION,
-    //         connectivity?.connectionName?.id ?? null,
-    //         connectivity?.connectionPosition?.id ?? null
-    //     ).catch((error) => {
-    //         snackError({
-    //             messageTxt: error.message,
-    //             headerId: 'LoadCreationError',
-    //         });
-    //     });
-    // };
-
     const clear = () => {
-        inputForm.reset();
-        setFormValues(null);
+        reset();
     };
 
     return (

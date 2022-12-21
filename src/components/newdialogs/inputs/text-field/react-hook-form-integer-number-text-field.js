@@ -1,66 +1,61 @@
-import { MenuItem, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { FieldLabel } from '../../../dialogs/inputs/hooks-helpers';
-import { FormattedMessage } from 'react-intl';
+import { toIntOrEmptyValue } from '../../../dialogs/dialogUtils';
+import {
+    FieldLabel,
+    genHelperError,
+} from '../../../dialogs/inputs/hooks-helpers';
+import { validateValueIsANumber } from '../../../util/validation-functions';
 import PropTypes from 'prop-types';
 
 /**
- * Textfield used as select input controlled by react hook form
+ * Textfield only accepting integers as input controlled by react hook form
  * @param name field name, will be the name of the input returned when submiting the form
  * @param label field label id, will be translated
  * @param required required state to append '(optional)' to the end of the label
- * @param options select options, each option needs a label that will be translated and an id
  * @param control object used by react hook form to control the mui component
  * @param errorMessage errorMessage that will be displayed if not empty
  * @param rest input props to enhance the component
  * @returns
  */
-const ReactHookFormSelect = ({
+const ReactHookFormIntegerNumberTextField = ({
     name,
     label,
     required = false,
-    options,
     control,
     errorMessage,
     ...rest
 }) => {
-    const hasError = !!errorMessage;
-
     return (
         <Controller
             control={control}
             name={name}
             render={({ field: { onChange, value } }) => (
                 <TextField
-                    select
+                    size="small"
+                    fullWidth
                     value={value}
+                    onChange={(e) => {
+                        if (validateValueIsANumber(e.target.value))
+                            onChange(toIntOrEmptyValue(e.target.value));
+                        else return;
+                    }}
                     label={FieldLabel({ label: label, optional: !required })}
-                    onChange={onChange}
-                    error={hasError}
+                    {...genHelperError(errorMessage)}
                     {...rest}
-                >
-                    {options.map((option) => (
-                        <MenuItem value={option.id}>
-                            <FormattedMessage id={option.label} />
-                        </MenuItem>
-                    ))}
-                </TextField>
+                />
             )}
         />
     );
 };
 
-ReactHookFormSelect.propTypes = {
+ReactHookFormIntegerNumberTextField.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    options: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        label: PropTypes.string.isRequired,
-    }).isRequired,
     control: PropTypes.object.isRequired,
     errorMessage: PropTypes.string,
 };
 
-export default ReactHookFormSelect;
+export default ReactHookFormIntegerNumberTextField;
