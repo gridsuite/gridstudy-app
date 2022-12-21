@@ -107,6 +107,9 @@ const GeneratorModificationDialog = ({
 
     const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
 
+    const [isRegulatingTerminalRequired, setIsRegulatingTerminalRequired] =
+        useState(false);
+
     const [reactiveCapabilityCurveErrors, setReactiveCapabilityCurveErrors] =
         useState([]);
 
@@ -114,6 +117,22 @@ const GeneratorModificationDialog = ({
         return regulationType === REGULATION_TYPES.DISTANT.id;
     };
 
+    const defaultVoltageRegulationType = () => {
+        if (getValueOrNull(formValues?.voltageRegulationOn) !== null) {
+            if (
+                (formValues?.voltageRegulationOn &&
+                    getValue(formValues?.regulatingTerminalId)) ||
+                getValue(formValues?.regulatingTerminalConnectableId)
+            ) {
+                return REGULATION_TYPES.DISTANT.id;
+            } else {
+                return REGULATION_TYPES.LOCAL.id;
+            }
+        } else if (isPreviousRegulationDistant(generatorInfos)) {
+            return REGULATION_TYPES.DISTANT.id;
+        }
+        return REGULATION_TYPES.LOCAL.id;
+    };
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
@@ -224,19 +243,30 @@ const GeneratorModificationDialog = ({
         possibleValues: REACTIVE_LIMIT_TYPES,
     });
 
+    const isPreviousReactiveCapabilityCurveOn = useMemo(() => {
+        return generatorInfos?.reactiveCapabilityCurvePoints !== undefined;
+    }, [generatorInfos?.reactiveCapabilityCurvePoints]);
+
     const isReactiveCapabilityCurveOn = useMemo(() => {
         return reactiveCapabilityCurveChoice === 'CURVE';
     }, [reactiveCapabilityCurveChoice]);
 
-    const [reactiveCapabilityCurve, reactiveCapabilityCurveField] =
-        useReactiveCapabilityCurveTableValues({
-            tableHeadersIds: headerIds,
-            inputForm: inputForm,
-            Field: ReactiveCapabilityCurveReactiveRange,
-            defaultValues: formValues?.reactiveCapabilityCurvePoints,
-            isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
-            previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
-        });
+    const [
+        reactiveCapabilityCurve,
+        reactiveCapabilityCurveField,
+        displayedPreviousValues,
+    ] = useReactiveCapabilityCurveTableValues({
+        tableHeadersIds: headerIds,
+        inputForm: inputForm,
+        Field: ReactiveCapabilityCurveReactiveRange,
+        defaultValues: formValues?.reactiveCapabilityCurvePoints,
+        isReactiveCapabilityCurveOn:
+            isReactiveCapabilityCurveOn && !isPreviousReactiveCapabilityCurveOn
+                ? true
+                : undefined,
+        isModificationForm: true,
+        previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
+    });
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
         label: 'MinimumReactivePower',
@@ -372,12 +402,7 @@ const GeneratorModificationDialog = ({
         validation: {
             isFieldRequired: voltageRegulation,
         },
-        defaultValue:
-            getValue(formValues?.regulatingTerminalId) ||
-            getValue(formValues?.regulatingTerminalConnectableId) ||
-            isPreviousRegulationDistant(generatorInfos)
-                ? REGULATION_TYPES.DISTANT.id
-                : REGULATION_TYPES.LOCAL.id,
+        defaultValue: defaultVoltageRegulationType(),
         previousValue: getPreviousRegulationType(generatorInfos),
     });
 
@@ -432,7 +457,10 @@ const GeneratorModificationDialog = ({
                 isFieldRequired:
                     isVoltageRegulationOn &&
                     isDistantRegulation(voltageRegulationType) &&
-                    !isPreviousRegulationDistant(generatorInfos),
+                    !(
+                        isPreviousRegulationDistant(generatorInfos) &&
+                        isRegulatingTerminalRequired
+                    ),
             },
             inputForm: inputForm,
             disabled:
@@ -458,6 +486,13 @@ const GeneratorModificationDialog = ({
                       generatorInfos?.regulatingTerminalConnectableId
                     : null,
         });
+
+    useEffect(() => {
+        setIsRegulatingTerminalRequired(
+            regulatingTerminal?.equipmentSection === null &&
+                regulatingTerminal?.voltageLevel === null
+        );
+    }, [regulatingTerminal]);
 
     const [droop, droopField] = useDoubleValue({
         label: 'Droop',
@@ -524,12 +559,76 @@ const GeneratorModificationDialog = ({
         clearable: true,
     });
 
+    const buildCurvePointsToCheck = useMemo(() => {
+        const pointsToCheck = [];
+        reactiveCapabilityCurve.forEach((point, index) => {
+            if (point && displayedPreviousValues) {
+                let pointToStore = {
+                    p: point.p ? point.p : displayedPreviousValues[index]?.p,
+                    oldP: displayedPreviousValues[index]?.p,
+                    qminP: point.qminP
+                        ? point.qminP
+                        : displayedPreviousValues[index]?.qminP,
+                    oldQminP: displayedPreviousValues[index]?.qminP,
+                    qmaxP: point.qmaxP
+                        ? point.qmaxP
+                        : displayedPreviousValues[index]?.qmaxP,
+                    oldQmaxP: displayedPreviousValues[index]?.qmaxP,
+                };
+
+                pointsToCheck.push(pointToStore);
+            }
+        });
+        return pointsToCheck;
+    }, [reactiveCapabilityCurve, displayedPreviousValues]);
+
+    const buildCurvePointsToStore = useMemo(() => {
+        if (
+            displayedPreviousValues &&
+            reactiveCapabilityCurve &&
+            reactiveCapabilityCurve.length ===
+                generatorInfos?.reactiveCapabilityCurvePoints?.length &&
+            reactiveCapabilityCurve.filter(
+                (point) =>
+                    point.p !== '' && point.qminP !== '' && point.qmaxP !== ''
+            ).length === 0
+        ) {
+            return null;
+        } else {
+            const pointsToStore = [];
+            reactiveCapabilityCurve.forEach((point, index) => {
+                if (point && displayedPreviousValues) {
+                    let pointToStore = {
+                        p: point.p,
+                        oldP: displayedPreviousValues[index]?.p,
+                        qminP: point.qminP,
+                        oldQminP: displayedPreviousValues[index]?.qminP,
+                        qmaxP: point.qmaxP,
+                        oldQmaxP: displayedPreviousValues[index]?.qmaxP,
+                    };
+
+                    pointsToStore.push(pointToStore);
+                }
+            });
+            return pointsToStore;
+        }
+    }, [displayedPreviousValues, reactiveCapabilityCurve, generatorInfos]);
+
     const handleValidation = () => {
         // ReactiveCapabilityCurveCreation validation
         let isReactiveCapabilityCurveValid = true;
-        if (isReactiveCapabilityCurveOn) {
+        if (
+            isReactiveCapabilityCurveOn &&
+            !isPreviousReactiveCapabilityCurveOn
+        ) {
             const errorMessages = checkReactiveCapabilityCurve(
                 reactiveCapabilityCurve
+            );
+            isReactiveCapabilityCurveValid = errorMessages.length === 0;
+            setReactiveCapabilityCurveErrors(errorMessages);
+        } else if (isPreviousReactiveCapabilityCurveOn) {
+            const errorMessages = checkReactiveCapabilityCurve(
+                buildCurvePointsToCheck
             );
             isReactiveCapabilityCurveValid = errorMessages.length === 0;
             setReactiveCapabilityCurveErrors(errorMessages);
@@ -579,7 +678,7 @@ const GeneratorModificationDialog = ({
             isFrequencyRegulationOn ? droop : null,
             isReactiveCapabilityCurveOn ? null : maximumReactivePower,
             isReactiveCapabilityCurveOn ? null : minimumReactivePower,
-            isReactiveCapabilityCurveOn ? reactiveCapabilityCurve : null
+            isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
