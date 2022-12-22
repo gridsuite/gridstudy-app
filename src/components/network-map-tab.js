@@ -264,7 +264,9 @@ export const NetworkMapTab = ({
             mapEquipments.reloadImpactedSubstationsEquipments(
                 studyUuid,
                 currentNode,
-                updatedSubstationsIds,
+                refIsMapManualRefreshEnabled.current
+                    ? undefined
+                    : updatedSubstationsIds,
                 setUpdatedLines
             );
         }

@@ -2226,14 +2226,20 @@ export function fetchMapEquipments(
         );
     }
 
-    const paramsList =
-        substationsIds && substationsIds.length > 0
-            ? '?' + getQueryParamsList(substationsIds, 'substationId')
-            : '';
-    const fetchEquipmentsUrl =
+    const substationParams = getQueryParamsList(substationsIds, 'substationId');
+
+    let fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/map-equipments' +
-        paramsList;
+        '/network-map/map-equipments';
+    if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
+        fetchEquipmentsUrl += '?';
+        fetchEquipmentsUrl += urlSearchParams.toString();
+        fetchEquipmentsUrl +=
+            urlSearchParams.toString().length > 0 && substationParams.length > 0
+                ? '&' + substationParams
+                : substationParams;
+    }
+
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
 }
