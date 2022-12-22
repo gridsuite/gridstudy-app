@@ -271,7 +271,6 @@ export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
 export const computePaperAndSvgSizesIfReady = (
-    // TODO déplacer dans le diagram-common ?
     isFullScreenActive,
     svgType,
     totalWidth,

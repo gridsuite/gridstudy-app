@@ -779,13 +779,13 @@ export const reducer = createReducer(initialState, {
                     diagramStates[diagramToPinToggleIndex].state =
                         ViewState.PINNED;
                 } else {
-                    // If the current SLD is pinned, we check if there is already another SLD visible. If there is, then we
-                    // minimize the current SLD. If none, we open it.
-                    const currentlyVisibleDiagramIndex =
+                    // If the current SLD is pinned, we check if there is already another SLD opened (there can only be one
+                    // SLD opened -not pinned- at a time). If there is, then we minimize the current SLD. If none, we open it.
+                    const currentlyOpenedDiagramIndex =
                         diagramStates.findIndex(
-                            (diagram) => diagram.state !== ViewState.MINIMIZED
+                            (diagram) => diagram.state === ViewState.OPENED
                         );
-                    if (currentlyVisibleDiagramIndex >= 0) {
+                    if (currentlyOpenedDiagramIndex >= 0) {
                         diagramStates[diagramToPinToggleIndex].state =
                             ViewState.MINIMIZED;
                     } else {

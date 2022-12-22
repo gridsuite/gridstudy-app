@@ -24,6 +24,7 @@ import { getNetworkAreaDiagramUrl } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import TimelineIcon from '@mui/icons-material/Timeline';
 import makeStyles from '@mui/styles/makeStyles';
 import { useDiagram, ViewState, SvgType } from './diagram-common';
 import { isNodeBuilt } from '../graph/util/model-functions';
@@ -522,7 +523,7 @@ export function DiagramPane({
                             {minimizedDiagrams.map((diagramView) => (
                                 <Chip
                                     key={diagramView.svgType + diagramView.id}
-                                    icon={<ArrowUpwardIcon />}
+                                    icon={diagramView.svgType === SvgType.NETWORK_AREA_DIAGRAM ? <><ArrowUpwardIcon /><TimelineIcon /></> : <ArrowUpwardIcon />}
                                     label={diagramView.name}
                                     onClick={() =>
                                         handleOpenView(
