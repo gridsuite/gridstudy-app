@@ -516,17 +516,27 @@ export const reducer = createReducer(initialState, {
         state.centerOnSubstation = action.centerOnSubstation;
     },
     [ADD_NOTIFICATION]: (state, action) => {
+        console.log("******** ADD_NOTIFICATION state before : ", state.notificationIdList);
+        console.log("******** ADD_NOTIFICATION action.notificationIds : ", action.notificationIds);
+
         state.notificationIdList = [
             ...state.notificationIdList,
-            action.notificationId,
+            ...action.notificationIds,
         ];
+
+        console.log("******** ADD_NOTIFICATION state after : ", state.notificationIdList);
     },
     [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
+        console.log("******** REMOVE_NOTIFICATION state before : ", state.notificationIdList);
+        console.log("******** REMOVE_NOTIFICATION action.notificationIds : ", action.notificationIds);
+
         state.notificationIdList = [
             ...state.notificationIdList.filter(
-                (nodeId) => nodeId !== action.notificationId
+                (nodeId) => !action.notificationIds.includes(nodeId)
             ),
         ];
+
+        console.log("******** REMOVE_NOTIFICATION state after : ", state.notificationIdList);
     },
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
         state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;

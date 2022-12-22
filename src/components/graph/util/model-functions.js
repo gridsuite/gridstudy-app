@@ -86,3 +86,8 @@ export function isNodeRenamed(node1, node2) {
         isSameNode(node1, node2) && node1?.data?.label !== node2?.data?.label
     );
 }
+
+export function isNodeInNotificationList(node, notificationIdList) {
+    if (!node || !notificationIdList) return false;
+    return notificationIdList.includes(node.id);
+}

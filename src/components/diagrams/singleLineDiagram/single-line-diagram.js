@@ -50,7 +50,7 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeBuilt, isNodeReadOnly } from '../../graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly, isNodeInNotificationList } from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
     BORDERS,
@@ -221,6 +221,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
+    const notificationIdList = useSelector((state) => state.notificationIdList);
+
     const [forceState, updateState] = useState(false);
 
     const [loadingState, updateLoadingState] = useState(false);
@@ -367,7 +369,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (props.svgUrl) {
+        if (
+            props.svgUrl &&
+            !isNodeInNotificationList(currentNode, notificationIdList)
+        ) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -403,7 +408,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(NoSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef, sldId]);
+    }, [
+        props.svgUrl,
+        forceState,
+        snackError,
+        intlRef,
+        sldId,
+        currentNode,
+        notificationIdList,
+    ]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;

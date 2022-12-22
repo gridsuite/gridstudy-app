@@ -25,8 +25,11 @@ import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import { getNameOrId, SvgType, useSingleLineDiagram, ViewState } from './utils';
-import { isNodeBuilt } from '../../graph/util/model-functions';
+import { getNameOrId, useSingleLineDiagram, ViewState, SvgType} from './utils';
+import {
+    isNodeBuilt,
+    isNodeInNotificationList,
+} from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
 
@@ -41,10 +44,12 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
+    const notificationIdList = useSelector((state) => state.notificationIdList);
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode)
+            isNodeBuilt(currentNode) &&
+            !isNodeInNotificationList(currentNode, notificationIdList)
                 ? getVoltageLevelSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -65,12 +70,14 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             diagonalName,
             componentLibrary,
             language,
+            notificationIdList,
         ]
     );
 
     const getSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode)
+            isNodeBuilt(currentNode) &&
+            !isNodeInNotificationList(currentNode, notificationIdList)
                 ? getSubstationSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -92,6 +99,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             useName,
             currentNode,
             language,
+            notificationIdList,
         ]
     );
 
