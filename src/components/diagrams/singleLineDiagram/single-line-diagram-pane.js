@@ -10,6 +10,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
+    PARAM_LANGUAGE,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
@@ -36,10 +37,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
     const substationLayout = useSelector(
         (state) => state[PARAM_SUBSTATION_LAYOUT]
     );
-
     const componentLibrary = useSelector(
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
+    const language = useSelector((state) => state[PARAM_LANGUAGE]);
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
@@ -52,7 +53,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       centerName,
                       diagonalName,
                       componentLibrary,
-                      SLD_DISPLAY_MODE.STATE_VARIABLE
+                      SLD_DISPLAY_MODE.STATE_VARIABLE,
+                      language
                   )
                 : null,
         [
@@ -62,6 +64,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             centerName,
             diagonalName,
             componentLibrary,
+            language,
         ]
     );
 
@@ -76,7 +79,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       centerName,
                       diagonalName,
                       substationLayout,
-                      componentLibrary
+                      componentLibrary,
+                      language
                   )
                 : null,
         [
@@ -87,6 +91,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             substationLayout,
             useName,
             currentNode,
+            language,
         ]
     );
 
