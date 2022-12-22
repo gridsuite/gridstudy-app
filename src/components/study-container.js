@@ -165,6 +165,7 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_failed',
 ];
 const UPDATE_TYPE_HEADER = 'updateType';
+const ERROR_HEADER = 'error';
 // the delay before we consider the WS truly connected
 const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
@@ -259,24 +260,29 @@ export function StudyContainer({ view, onChangeTab }) {
     const checkFailNotifications = useCallback(
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const errorMessage = eventData.headers[ERROR_HEADER];
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
                     headerId: 'NodeBuildingError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'securityAnalysis_failed') {
                 snackError({
                     headerId: 'securityAnalysisError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'sensitivityAnalysis_failed') {
                 snackError({
                     headerId: 'sensitivityAnalysisError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
                 snackError({
-                    headerId: 'shortCircuitAnalysisError',
+                    headerId: 'ShortCircuitAnalysisError',
+                    messageTxt: errorMessage,
                 });
             }
         },

@@ -159,7 +159,7 @@
     "ShortCircuitAnalysis": "Analyse de court-circuit",
     "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
     "ShortCircuitAnalysisResults": "Résultats de l'analyse de court-circuit",
-    "ShortCircuitError": "Une erreur est survenue lors de l'exécution de l'analyse de court-circuit",
+    "ShortCircuitAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de court-circuit",
 
     "LimitType": "Type de limite",
     "Value": "Valeur",
