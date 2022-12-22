@@ -2232,7 +2232,7 @@ export function fetchMapEquipments(
             : '';
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/map-equipments-data' +
+        '/network-map/map-equipments' +
         paramsList;
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
