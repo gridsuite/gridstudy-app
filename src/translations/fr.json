@@ -164,7 +164,7 @@
     "LimitType": "Type de limite",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
-    "ComputationOk": "Calcul OK",
+    "ComputationStatus": "Statut",
     "true": "oui",
     "false": "non",
     "Loading": "Charge (%)",

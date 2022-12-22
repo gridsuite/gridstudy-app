@@ -164,7 +164,7 @@
     "LimitType": "Limit type",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
-    "ComputationOk": "Computation OK",
+    "ComputationStatus": "Status",
     "true": "true",
     "false": "false",
     "Loading": "Loading",
