@@ -698,6 +698,7 @@ export const useDirectoryElements = ({
     equipmentTypes,
     titleId,
     elementClassName,
+    filterResults = undefined,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(initialValues);
@@ -797,6 +798,7 @@ export const useDirectoryElements = ({
                     types={[elementType]}
                     equipmentTypes={equipmentTypes}
                     title={intl.formatMessage({ id: titleId })}
+                    filterResults={filterResults}
                 />
             </>
         );

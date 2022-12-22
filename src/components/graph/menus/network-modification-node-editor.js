@@ -62,7 +62,7 @@ import {
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
-import GeneratorScalingDialog from "../../dialogs/generator-scaling-dialog";
+import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {

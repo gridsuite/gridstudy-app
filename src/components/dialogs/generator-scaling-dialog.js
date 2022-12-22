@@ -16,6 +16,8 @@ import {ActivePowerAdornment, gridItem, GridSection} from "./dialogUtils";
 import {EquipmentType} from "./sensi/sensi-parameters-selector";
 import {VARIATION_MODE} from "../network/constants";
 import {useExpandableValues} from "./inputs/use-expandable-values";
+
+const filterResults = null;
 const GeneratorScalingVariation = ({
    index,
    onChange,
@@ -32,6 +34,7 @@ const GeneratorScalingVariation = ({
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
         equipmentTypes: [EquipmentType.GENERATOR],
+        filterResults: filterResults,
     });
 
     const [pValue, pField] = useDoubleValue({
