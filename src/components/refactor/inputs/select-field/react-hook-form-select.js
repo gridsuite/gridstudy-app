@@ -1,7 +1,10 @@
 import { MenuItem, TextField } from '@mui/material';
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { FieldLabel } from '../../../dialogs/inputs/hooks-helpers';
+import {
+    FieldLabel,
+    genHelperError,
+} from '../../../dialogs/inputs/hooks-helpers';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
@@ -22,31 +25,33 @@ const ReactHookFormSelect = ({
     required = false,
     options,
     control,
-    errorMessage,
     ...rest
 }) => {
-    const hasError = !!errorMessage;
-
     return (
         <Controller
             control={control}
             name={name}
-            render={({ field: { onChange, value } }) => (
-                <TextField
-                    select
-                    value={value}
-                    label={FieldLabel({ label: label, optional: !required })}
-                    onChange={onChange}
-                    error={hasError}
-                    {...rest}
-                >
-                    {options.map((option) => (
-                        <MenuItem value={option.id}>
-                            <FormattedMessage id={option.label} />
-                        </MenuItem>
-                    ))}
-                </TextField>
-            )}
+            render={({ field: { onChange, value }, fieldState: { error } }) => {
+                return (
+                    <TextField
+                        select
+                        value={value}
+                        label={FieldLabel({
+                            label: label,
+                            optional: !required,
+                        })}
+                        onChange={onChange}
+                        {...genHelperError(error?.message)}
+                        {...rest}
+                    >
+                        {options.map((option) => (
+                            <MenuItem key={option.id} value={option.id}>
+                                <FormattedMessage id={option.label} />
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                );
+            }}
         />
     );
 };
@@ -55,12 +60,13 @@ ReactHookFormSelect.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    options: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        label: PropTypes.string.isRequired,
-    }).isRequired,
+    options: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            label: PropTypes.string.isRequired,
+        })
+    ).isRequired,
     control: PropTypes.object.isRequired,
-    errorMessage: PropTypes.string,
 };
 
 export default ReactHookFormSelect;

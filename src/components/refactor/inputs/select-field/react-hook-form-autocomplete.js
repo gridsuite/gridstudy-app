@@ -1,7 +1,10 @@
 import { Autocomplete, TextField } from '@mui/material';
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { FieldLabel } from '../../../dialogs/inputs/hooks-helpers';
+import {
+    FieldLabel,
+    genHelperError,
+} from '../../../dialogs/inputs/hooks-helpers';
 import PropTypes from 'prop-types';
 
 /**
@@ -21,33 +24,34 @@ const ReactHookFormAutocomplete = ({
     required = false,
     options,
     control,
-    errorMessage,
     ...rest
 }) => {
     return (
         <Controller
             control={control}
             name={name}
-            render={({ field: { onChange } }) => (
-                <Autocomplete
-                    size="small"
-                    fullWidth
-                    onChange={onChange}
-                    options={options}
-                    renderInput={(params) => (
-                        <TextField
-                            label={FieldLabel({
-                                label: label,
-                                optional: !required,
-                            })}
-                            error={!!errorMessage}
-                            helperText={errorMessage}
-                            {...params}
-                            {...rest}
-                        />
-                    )}
-                />
-            )}
+            render={({ field: { value, onChange }, fieldState: { error } }) => {
+                return (
+                    <Autocomplete
+                        value={value}
+                        size="small"
+                        fullWidth
+                        onChange={(event, data) => onChange(data)}
+                        options={options}
+                        renderInput={(params) => (
+                            <TextField
+                                label={FieldLabel({
+                                    label: label,
+                                    optional: !required,
+                                })}
+                                {...genHelperError(error?.message)}
+                                {...params}
+                            />
+                        )}
+                        {...rest}
+                    />
+                );
+            }}
         />
     );
 };
@@ -56,12 +60,8 @@ ReactHookFormAutocomplete.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
-    options: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        label: PropTypes.string.isRequired,
-    }).isRequired,
+    options: PropTypes.array.isRequired,
     control: PropTypes.object.isRequired,
-    errorMessage: PropTypes.string,
 };
 
 export default ReactHookFormAutocomplete;

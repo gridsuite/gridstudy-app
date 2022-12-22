@@ -7,14 +7,14 @@
 import ModificationDialog from '../modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     LOAD_TYPES,
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,
-} from '../../network/constants';
+} from '../../../network/constants';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -22,25 +22,27 @@ import {
     GridSection,
     ReactivePowerAdornment,
     sanitizeString,
-} from '../../dialogs/dialogUtils';
+} from '../../../dialogs/dialogUtils';
 
-import { createLoad } from '../../../utils/rest-api';
-import EquipmentSearchDialog from '../../dialogs/equipment-search-dialog';
-import { useFormSearchCopy } from '../../dialogs/form-search-copy-hook';
-import ReactHookFormTextField from '../inputs/text-field/react-hook-form-text-field';
+import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
+import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
+import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
+import ReactHookFormTextField from '../../inputs/text-field/react-hook-form-text-field';
 import { FormProvider, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import ReactHookFormSelect from '../inputs/select-field/react-hook-form-select';
+import ReactHookFormSelect from '../../inputs/select-field/react-hook-form-select';
+import { ConnectivityForm } from '../connectivity/connectivity-form';
 import {
-    ConnectivityForm,
+    getConnectivityEmptyFormData,
+    getConnectivityFormData,
     getConnectivityFormValidationSchema,
-} from '../connectivity-form';
-import ReactHookFormFloatNumberTextField from '../inputs/text-field/react-hook-form-float-number-text-field';
+} from '../connectivity/connectivity-form-utils';
+import ReactHookFormFloatNumberTextField from '../../inputs/text-field/react-hook-form-float-number-text-field';
+import { InputAdornment } from '@mui/material';
 
 /**
  * Dialog to create a load in the network
- * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param currentNodeUuid The node we are currently working on
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -52,19 +54,27 @@ const EQUIPMENT_TYPE_FIELD = 'loadType';
 const ACTIVE_POWER_FIELD = 'activePower';
 const REACTIVE_POWER_FIELD = 'reactivePower';
 
-const LoadCreationDialog = ({
-    editData,
-    voltageLevelOptionsPromise,
-    currentNodeUuid,
-    ...dialogProps
-}) => {
+const emptyFormData = {
+    [EQUIPMENT_ID_FIELD]: '',
+    [EQUIPMENT_NAME_FIELD]: '',
+    [EQUIPMENT_TYPE_FIELD]: '',
+    [ACTIVE_POWER_FIELD]: '',
+    [REACTIVE_POWER_FIELD]: '',
+    ...getConnectivityEmptyFormData(),
+};
+
+const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { snackError } = useSnackMessage();
 
-    const [formValues, setFormValues] = useState(undefined);
-
     const equipmentPath = 'loads';
+
+    yup.setLocale({
+        mixed: {
+            required: 'FieldIsRequired',
+        },
+    });
 
     const schema = yup
         .object()
@@ -72,91 +82,97 @@ const LoadCreationDialog = ({
             [EQUIPMENT_ID_FIELD]: yup.string().required(),
             [EQUIPMENT_NAME_FIELD]: yup.string(),
             [EQUIPMENT_TYPE_FIELD]: yup.string(),
-            [ACTIVE_POWER_FIELD]: yup.string().min(0).required(),
-            [REACTIVE_POWER_FIELD]: yup.string().min(0).required(),
-            connectivity: {
-                ...getConnectivityFormValidationSchema(),
-            },
+            [ACTIVE_POWER_FIELD]: yup.number().min(0).required(),
+            [REACTIVE_POWER_FIELD]: yup
+                .number()
+                .integer('FieldIsRequired')
+                .min(0, 'FieldIsRequired')
+                .required(),
+            ...getConnectivityFormValidationSchema(),
         })
         .required();
 
     const methods = useForm({
-        defaultValues: {
-            [EQUIPMENT_ID_FIELD]: '',
-            [EQUIPMENT_NAME_FIELD]: '',
-            [EQUIPMENT_TYPE_FIELD]: '',
-            [ACTIVE_POWER_FIELD]: '',
-            [REACTIVE_POWER_FIELD]: '',
-            connectivity: {
-                voltageLevel: null,
-                busOrBusbarSection: null,
-                connectionDirection: '',
-                connectionName: '',
-                connectionPosition: '',
-            },
-        },
+        defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
 
     const {
         control,
-        watch,
         reset,
-        formState: { errors: yupErrors, isValid, isDirty, dirtyFields },
+        formState: { isDirty },
     } = methods;
 
-    const object = watch();
-
-    console.log('dirtyFields ', dirtyFields, isDirty, yupErrors, object);
-
     const fromSearchCopyToFormValues = (load) => {
-        console.log('FORM VALUES ', load);
-        reset({
-            [EQUIPMENT_ID_FIELD]: load.id + '(1)',
-            [EQUIPMENT_NAME_FIELD]: load.name ?? '',
-            [EQUIPMENT_TYPE_FIELD]: load.type,
-            [ACTIVE_POWER_FIELD]: load.p0,
-            [REACTIVE_POWER_FIELD]: load.q0,
-            connectivity: {
-                voltageLevel: load.voltageLevelId,
-                busOrBusbarSection: null,
-                connectionDirection: load.connectionDirection,
-                connectionName: load.connectionName,
-                connectionPosition: load.connectionPosition,
-            },
+        fetchEquipmentInfos(
+            studyUuid,
+            currentNodeUuid,
+            'voltage-levels',
+            load.voltageLevelId,
+            true
+        ).then((vlResult) => {
+            reset({
+                [EQUIPMENT_ID_FIELD]: load.id + '(1)',
+                [EQUIPMENT_NAME_FIELD]: load.name ?? '',
+                [EQUIPMENT_TYPE_FIELD]: load.type,
+                [ACTIVE_POWER_FIELD]: load.p0,
+                [REACTIVE_POWER_FIELD]: load.q0,
+                ...getConnectivityFormData({
+                    voltageLevelId: load.voltageLevelId,
+                    voltageLevelTopologyKind: vlResult.topologyKind,
+                    voltageLevelName: vlResult.name,
+                    voltageLevelNominalVoltage: vlResult.nominalVoltage,
+                    voltageLevelSubstationId: vlResult.substationId,
+                }),
+            });
         });
     };
 
-    const fromEditDataToFormValues = (load) => {
-        return {
-            [EQUIPMENT_ID_FIELD]: load.equipmentId,
-            [EQUIPMENT_NAME_FIELD]: load.equipmentName ?? '',
-            [EQUIPMENT_TYPE_FIELD]: load.loadType,
-            [ACTIVE_POWER_FIELD]: load.activePower,
-            [REACTIVE_POWER_FIELD]: load.reactivePower,
-            connectivity: {
-                voltageLevel: load.voltageLevelId,
-                busOrBusbarSection: load.busOrBusbarSectionId,
-                connectionDirection: load.connectionDirection,
-                connectionName: load.connectionName,
-                connectionPosition: load.connectionPosition,
-            },
-        };
-    };
+    const fromEditDataToFormValues = useCallback(
+        (load) => {
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNodeUuid,
+                'voltage-levels',
+                load.voltageLevelId,
+                true
+            ).then((vlResult) => {
+                reset({
+                    [EQUIPMENT_ID_FIELD]: load.equipmentId,
+                    [EQUIPMENT_NAME_FIELD]: load.equipmentName ?? '',
+                    [EQUIPMENT_TYPE_FIELD]: load.loadType,
+                    [ACTIVE_POWER_FIELD]: load.activePower,
+                    [REACTIVE_POWER_FIELD]: load.reactivePower,
+                    ...getConnectivityFormData({
+                        voltageLevelId: load.voltageLevelId,
+                        voltageLevelTopologyKind: vlResult.topologyKind,
+                        voltageLevelName: vlResult.name,
+                        voltageLevelNominalVoltage: vlResult.nominalVoltage,
+                        voltageLevelSubstationId: vlResult.substationId,
+                        busbarSectionId: load.busOrBusbarSectionId,
+                        connectionDirection: load.connectionDirection,
+                        connectionName: load.connectionName,
+                        connectionPosition: load.connectionPosition,
+                    }),
+                });
+            });
+        },
+        [studyUuid, currentNodeUuid, reset]
+    );
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
         equipmentPath,
-        toFormValues: fromSearchCopyToFormValues,
-        setFormValues,
+        toFormValues: (data) => data,
+        setFormValues: fromSearchCopyToFormValues,
     });
 
     useEffect(() => {
         if (editData) {
-            reset(fromEditDataToFormValues(editData));
+            fromEditDataToFormValues(editData);
         }
-    }, [editData]);
+    }, [fromEditDataToFormValues, editData]);
 
     const newLoadIdField = (
         <ReactHookFormTextField
@@ -167,7 +183,6 @@ const LoadCreationDialog = ({
                     ?.required === true
             }
             control={control}
-            errorMessage={yupErrors?.id?.message}
             {...filledTextField}
         />
     );
@@ -177,7 +192,6 @@ const LoadCreationDialog = ({
             name={EQUIPMENT_NAME_FIELD}
             label="Name"
             control={control}
-            errorMessage={yupErrors?.name?.message}
             required={
                 yup.reach(schema, EQUIPMENT_NAME_FIELD)?.exclusiveTests
                     ?.required === true
@@ -194,7 +208,6 @@ const LoadCreationDialog = ({
             size="small"
             fullWidth
             control={control}
-            errorMessage={yupErrors?.type?.message}
             required={
                 yup.reach(schema, EQUIPMENT_TYPE_FIELD)?.exclusiveTests
                     ?.required === true
@@ -208,11 +221,16 @@ const LoadCreationDialog = ({
             name={ACTIVE_POWER_FIELD}
             label="ActivePowerText"
             control={control}
-            errorMessage={yupErrors?.activePower?.message}
             required={
                 yup.reach(schema, ACTIVE_POWER_FIELD)?.exclusiveTests
                     ?.required === true
             }
+            InputProps={{
+                endAdornment: (
+                    <InputAdornment position="end">mW</InputAdornment>
+                ),
+            }}
+            sx={{ input: { textAlign: 'end' } }}
         />
     );
 
@@ -221,7 +239,6 @@ const LoadCreationDialog = ({
             name={REACTIVE_POWER_FIELD}
             label="ReactivePowerText"
             control={control}
-            errorMessage={yupErrors?.reactivePower?.message}
             required={
                 yup.reach(schema, REACTIVE_POWER_FIELD)?.exclusiveTests
                     ?.required === true
@@ -230,58 +247,10 @@ const LoadCreationDialog = ({
     );
 
     const connectivityForm = (
-        <ConnectivityForm
-            label={'Connectivity'}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-            currentNodeUuid={currentNodeUuid}
-            withPosition={true}
-        />
+        <ConnectivityForm label={'Connectivity'} withPosition={true} />
     );
 
-    // const [activePower, activePowerField] = useDoubleValue({
-    //     label: 'ActivePowerText',
-    //     validation: {
-    //         isFieldRequired: true,
-    //         isFieldNumeric: true,
-    //     },
-    //     adornment: ActivePowerAdornment,
-    //     inputForm: inputForm,
-    //     defaultValue: formValues ? String(formValues.activePower) : undefined,
-    // });
-
-    // const [reactivePower, reactivePowerField] = useDoubleValue({
-    //     label: 'ReactivePowerText',
-    //     validation: {
-    //         isFieldRequired: true,
-    //         isFieldNumeric: true,
-    //     },
-    //     adornment: ReactivePowerAdornment,
-    //     inputForm: inputForm,
-    //     defaultValue: formValues ? String(formValues.reactivePower) : undefined,
-    // });
-
-    // const [connectivity, connectivityField] = useConnectivityValue({
-    //     label: 'Connectivity',
-    //     inputForm: inputForm,
-    //     voltageLevelOptionsPromise: voltageLevelOptionsPromise,
-    //     currentNodeUuid: currentNodeUuid,
-    //     voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
-    //     busOrBusbarSectionIdDefaultValue:
-    //         formValues?.busOrBusbarSectionId || null,
-    //     connectionDirectionValue: formValues
-    //         ? formValues.connectionDirection
-    //         : '',
-    //     connectionNameValue: formValues?.connectionName,
-    //     connectionPositionValue: formValues?.connectionPosition,
-    //     withPosition: true,
-    // });
-
-    const handleValidation = () => {
-        return isValid;
-    };
-
     const onSubmit = (load) => {
-        console.log(load);
         createLoad(
             studyUuid,
             currentNodeUuid,
@@ -309,7 +278,7 @@ const LoadCreationDialog = ({
     };
 
     const clear = () => {
-        reset();
+        reset(emptyFormData);
     };
 
     return (
@@ -317,7 +286,6 @@ const LoadCreationDialog = ({
             <ModificationDialog
                 fullWidth
                 onClear={clear}
-                onValidation={handleValidation}
                 onSave={onSubmit}
                 disabledSave={!isDirty}
                 aria-labelledby="dialog-create-load"
@@ -355,10 +323,6 @@ const LoadCreationDialog = ({
 
 LoadCreationDialog.propTypes = {
     editData: PropTypes.object,
-    voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
     currentNodeUuid: PropTypes.string,
 };
 

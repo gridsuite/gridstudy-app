@@ -16,16 +16,14 @@ import {
     DialogActions,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useButtonWithTooltip } from '../dialogs/inputs/input-hooks';
+import { useButtonWithTooltip } from '../../dialogs/inputs/input-hooks';
 import { useFormContext } from 'react-hook-form';
 
 /**
  * Generic Modification Dialog which manage basic common behaviors
  * @param {String} titleId id for title translation
  * @param {EventListener} onClose Event to close the dialog
- * @param {CallbackEvent} onValidated callback call when the dialog is validated
  * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
- * @param {CallbackEvent} onValidation callback when validation needs to be computed
  * @param {CallbackEvent} onSave callback when saving the modification
  * @param {Boolean} disabledSave to control disabled prop of the validate button
  * @param {Object} searchCopy Object managing search equipments for copy
@@ -35,13 +33,12 @@ import { useFormContext } from 'react-hook-form';
 const ModificationDialog = ({
     titleId,
     onClose,
-    onValidated,
     onClear,
-    onValidation,
     onSave,
     disabledSave,
     searchCopy,
     subtitle,
+    onValidated,
     ...dialogProps
 }) => {
     const methods = useFormContext();
@@ -70,12 +67,10 @@ const ModificationDialog = ({
     };
 
     const handleValidate = (data) => {
-        if (onValidation()) {
-            onValidated && onValidated();
-            onSave(data);
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            closeAndClear(data, 'validateButtonClick');
-        }
+        onValidated();
+        onSave(data);
+        // do not wait fetch response and close dialog, errors will be shown in snackbar.
+        closeAndClear(data, 'validateButtonClick');
     };
 
     return (
@@ -112,10 +107,9 @@ const ModificationDialog = ({
 ModificationDialog.propTypes = {
     titleId: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,
-    onValidated: PropTypes.func,
     onClear: PropTypes.func.isRequired,
-    onValidation: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
+    onValidated: PropTypes.func.isRequired,
     disabledSave: PropTypes.bool.isRequired,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,

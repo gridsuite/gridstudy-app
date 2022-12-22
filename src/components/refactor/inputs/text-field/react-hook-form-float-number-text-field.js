@@ -1,14 +1,16 @@
 import { TextField } from '@mui/material';
 import React from 'react';
 import { Controller } from 'react-hook-form';
+import { toFloatValue } from '../../../dialogs/dialogUtils';
 import {
     FieldLabel,
     genHelperError,
 } from '../../../dialogs/inputs/hooks-helpers';
+import { isFloatNumber } from '../../../dialogs/inputs/input-hooks';
 import PropTypes from 'prop-types';
 
 /**
- * Textfield input controlled by react hook form
+ * Textfield only accepting floats as input controlled by react hook form
  * @param name field name, will be the name of the input returned when submiting the form
  * @param label field label id, will be translated
  * @param required required state to append '(optional)' to the end of the label
@@ -17,27 +19,29 @@ import PropTypes from 'prop-types';
  * @param rest input props to enhance the component
  * @returns
  */
-
-const ReactHookFormTextField = ({
+const ReactHookFormFloatNumberTextField = ({
     name,
     label,
     required = false,
     control,
-    errorMessage,
     ...rest
 }) => {
     return (
         <Controller
             control={control}
             name={name}
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <TextField
                     size="small"
                     fullWidth
                     value={value}
-                    onChange={onChange}
+                    onChange={(e) => {
+                        if (isFloatNumber(e.target.value))
+                            onChange(toFloatValue(e.target.value));
+                        else return;
+                    }}
                     label={FieldLabel({ label: label, optional: !required })}
-                    {...genHelperError(errorMessage)}
+                    {...genHelperError(error?.message)}
                     {...rest}
                 />
             )}
@@ -45,12 +49,11 @@ const ReactHookFormTextField = ({
     );
 };
 
-ReactHookFormTextField.propTypes = {
+ReactHookFormFloatNumberTextField.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
     control: PropTypes.object.isRequired,
-    errorMessage: PropTypes.string,
 };
 
-export default ReactHookFormTextField;
+export default ReactHookFormFloatNumberTextField;

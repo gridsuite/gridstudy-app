@@ -24,14 +24,13 @@ const ReactHookFormIntegerNumberTextField = ({
     label,
     required = false,
     control,
-    errorMessage,
     ...rest
 }) => {
     return (
         <Controller
             control={control}
             name={name}
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <TextField
                     size="small"
                     fullWidth
@@ -42,7 +41,7 @@ const ReactHookFormIntegerNumberTextField = ({
                         else return;
                     }}
                     label={FieldLabel({ label: label, optional: !required })}
-                    {...genHelperError(errorMessage)}
+                    {...genHelperError(error?.message)}
                     {...rest}
                 />
             )}
@@ -55,7 +54,6 @@ ReactHookFormIntegerNumberTextField.propTypes = {
     label: PropTypes.string.isRequired,
     required: PropTypes.bool,
     control: PropTypes.object.isRequired,
-    errorMessage: PropTypes.string,
 };
 
 export default ReactHookFormIntegerNumberTextField;
