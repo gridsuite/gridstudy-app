@@ -304,6 +304,7 @@ const LineCreationDialog = ({
                 disabledSave={!inputForm.hasChanged}
                 aria-labelledby="dialog-create-line"
                 fullWidth={true}
+                maxWidth={'md'}
                 titleId="CreateLine"
                 searchCopy={searchCopy}
                 {...dialogProps}

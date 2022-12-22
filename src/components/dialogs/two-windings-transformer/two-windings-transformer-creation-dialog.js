@@ -98,7 +98,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [phaseTapRows, setPhaseTapRows] = useState([]);
 
-    const [dialogWidth, setDialogWidth] = useState('sm');
+    const [dialogWidth, setDialogWidth] = useState('md');
 
     const equipmentPath = '2-windings-transformers';
 
