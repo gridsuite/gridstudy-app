@@ -650,6 +650,8 @@ const TwoWindingsTransformerCreationDialog = ({
             connectionName1: twt.connectionName1,
             connectionDirection2: twt.connectionDirection2,
             connectionName2: twt.connectionName2,
+            connectionPosition1: twt.connectionPosition1,
+            connectionPosition2: twt.connectionPosition2,
         };
     };
 

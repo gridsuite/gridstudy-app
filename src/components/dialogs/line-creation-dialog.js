@@ -99,6 +99,8 @@ const LineCreationDialog = ({
             connectionName1: line.connectionName1,
             connectionDirection2: line.connectionDirection2,
             connectionName2: line.connectionName2,
+            connectionPosition1: line.connectionPosition1,
+            connectionPosition2: line.connectionPosition2,
         };
     };
 
