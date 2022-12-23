@@ -696,16 +696,6 @@ export const reducer = createReducer(initialState, {
                 }
             }
         } else {
-            // We minimize all the other OPENED SLD.
-            diagramStates.forEach((diagram) => {
-                if (
-                    diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
-                    diagram.state === ViewState.OPENED
-                ) {
-                    diagram.state = ViewState.MINIMIZED;
-                }
-            });
-
             // We check if the SLD to open is already in the diagramStates.
             if (diagramToOpenIndex >= 0) {
                 // If the SLD to open is already in the diagramStates and it is minimized, then we change it to opened.
@@ -713,9 +703,37 @@ export const reducer = createReducer(initialState, {
                     diagramStates[diagramToOpenIndex].state ===
                     ViewState.MINIMIZED
                 ) {
+                    // We minimize all the other OPENED SLD.
+                    diagramStates.forEach((diagram) => {
+                        if (
+                            diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
+                            diagram.state === ViewState.OPENED
+                        ) {
+                            diagram.state = ViewState.MINIMIZED;
+                        }
+                    });
+                    // And update the one to open.
                     diagramStates[diagramToOpenIndex].state = ViewState.OPENED;
+                } else {
+                    console.info(
+                        'Diagram already opened : ' +
+                            diagramStates[diagramToOpenIndex].id +
+                            ' (' +
+                            diagramStates[diagramToOpenIndex].svgType +
+                            ')'
+                    );
                 }
             } else {
+                // We minimize all the other OPENED SLD.
+                diagramStates.forEach((diagram) => {
+                    if (
+                        diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
+                        diagram.state === ViewState.OPENED
+                    ) {
+                        diagram.state = ViewState.MINIMIZED;
+                    }
+                });
+                // And we add the new one.
                 diagramStates.push({
                     id: action.id,
                     svgType: action.svgType,

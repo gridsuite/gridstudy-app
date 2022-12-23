@@ -225,7 +225,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 };
 
 const useStyles = makeStyles(() => ({
-    minimizedSLD: {
+    minimizedDiagram: {
         bottom: '60px',
         position: 'absolute',
     },
@@ -363,10 +363,31 @@ export function DiagramPane({
         depth,
     ]);
 
-    const handleOpenView = useCallback(
+    const handleCloseDiagramView = useCallback(
         (id, type) => {
-            if (!network) return;
+            closeDiagramView(id, type);
+        },
+        [closeDiagramView]
+    );
+
+    const handleOpenDiagramView = useCallback(
+        (id, type) => {
+            if (!network) {
+                return;
+            }
             openDiagramView(id, type);
+        },
+        [network, openDiagramView]
+    );
+
+    const handleOpenVoltageLevelView = useCallback(
+        (id) => {
+            // This function is called by powsybl-diagram-viewer when clicking on a navigation arrow in a single line diagram.
+            // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
+            if (!network) {
+                return;
+            }
+            openDiagramView(id, SvgType.VOLTAGE_LEVEL);
         },
         [network, openDiagramView]
     );
@@ -482,7 +503,7 @@ export function DiagramPane({
                             numberToDisplay={displayedDiagrams.length}
                             onBreakerClick={handleUpdateSwitchState}
                             onMinimize={minimizeDiagramView}
-                            onNextVoltageLevelClick={handleOpenView}
+                            onNextVoltageLevelClick={handleOpenVoltageLevelView}
                             onTogglePin={togglePinDiagramView}
                             pinned={diagramView.state === ViewState.PINNED}
                             ref={diagramView.ref}
@@ -503,7 +524,7 @@ export function DiagramPane({
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                         spacing={1}
-                        className={classes.minimizedSLD}
+                        className={classes.minimizedDiagram}
                         style={{
                             display: !fullScreenDiagram?.id ? '' : 'none', // We hide this stack if a diagram is in fullscreen
                         }}
@@ -524,13 +545,13 @@ export function DiagramPane({
                                 }
                                 label={diagramView.name}
                                 onClick={() =>
-                                    handleOpenView(
+                                    handleOpenDiagramView(
                                         diagramView.id,
                                         diagramView.svgType
                                     )
                                 }
                                 onDelete={() =>
-                                    closeDiagramView(
+                                    handleCloseDiagramView(
                                         diagramView.id,
                                         diagramView.svgType
                                     )
