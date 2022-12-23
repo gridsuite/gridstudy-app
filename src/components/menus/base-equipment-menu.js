@@ -18,13 +18,9 @@ import { NestedMenuItem } from 'mui-nested-menu';
 import { useIntl } from 'react-intl';
 import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
-import { PARAM_USE_NAME } from '../../utils/config-params';
-import {
-    getNameOrId,
-    getSubstationNameOrId,
-} from '../diagrams/singleLineDiagram/utils';
+import { useNameOrId } from '../util/equipmentInfosHandler';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     menuItem: {
         padding: '0px',
         margin: '7px',
@@ -67,7 +63,6 @@ const BaseEquipmentMenu = ({
     equipmentType,
     handleViewInSpreadsheet,
 }) => {
-    const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const intl = useIntl();
 
     const network = useSelector((state) => state.network);
@@ -81,9 +76,8 @@ const BaseEquipmentMenu = ({
             return null;
         }
     }
-
     const equipment = getEquipment(equipmentType, equipmentId);
-
+    const { getNameOrId } = useNameOrId();
     return (
         <>
             {/* menus for equipment other than substation and voltage level */}
@@ -110,9 +104,10 @@ const BaseEquipmentMenu = ({
                         <ItemViewInSpreadsheet
                             equipmentType={equipmentType}
                             equipmentId={equipment.id}
-                            itemText={
-                                useName ? getNameOrId(equipment) : equipment.id
-                            }
+                            itemText={getNameOrId(
+                                equipment?.name,
+                                equipment?.id
+                            )}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
 
@@ -121,7 +116,7 @@ const BaseEquipmentMenu = ({
                             <ItemViewInSpreadsheet
                                 equipmentType={equipments.voltageLevels}
                                 equipmentId={v.id}
-                                itemText={useName ? getNameOrId(v) : v.id}
+                                itemText={getNameOrId(v?.name, v?.id)}
                                 handleViewInSpreadsheet={
                                     handleViewInSpreadsheet
                                 }
@@ -142,20 +137,20 @@ const BaseEquipmentMenu = ({
                         <ItemViewInSpreadsheet
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
-                            itemText={
-                                useName
-                                    ? getSubstationNameOrId(equipment)
-                                    : equipment.substationId
-                            }
+                            itemText={getNameOrId(
+                                equipment?.substationName,
+                                equipment?.substationId
+                            )}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {/* menus for the voltage level */}
                         <ItemViewInSpreadsheet
                             equipmentType={equipments.voltageLevels}
                             equipmentId={equipment.id}
-                            itemText={
-                                useName ? getNameOrId(equipment) : equipment.id
-                            }
+                            itemText={getNameOrId(
+                                equipment?.name,
+                                equipment?.id
+                            )}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                     </NestedMenuItem>

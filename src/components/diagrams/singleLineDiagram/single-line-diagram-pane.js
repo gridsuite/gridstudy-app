@@ -29,6 +29,7 @@ import { getNameOrId, SvgType, useSingleLineDiagram, ViewState } from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
+import { useNameOrId } from '../../util/equipmentInfosHandler';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -41,6 +42,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
+    const { getNameOrId } = useNameOrId();
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
@@ -100,8 +102,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createSubstationSLD(substationId, state) {
                 const substation = network.getSubstation(substationId);
                 if (!substation) return;
-                let name =
-                    useName && substation.name ? substation.name : substationId;
+                let name = getNameOrId(substation?.name, substationId);
                 const countryName = substation?.countryName;
                 if (countryName) {
                     name += ' \u002D ' + countryName;
@@ -121,7 +122,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createVoltageLevelSLD(vlId, state) {
                 const vl = network.getVoltageLevel(vlId);
                 if (!vl) return;
-                let name = useName ? vl.name : vlId;
+                let name = getNameOrId(vl?.name, vlId);
 
                 const substation = network.getSubstation(vlId);
                 const countryName = substation?.countryName;
@@ -149,9 +150,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         },
         [
             network,
-            useName,
             getSubstationSingleLineDiagramUrl,
             getVoltageLevelSingleLineDiagramUrl,
+            getNameOrId,
         ]
     );
 };
@@ -224,7 +225,7 @@ export function SingleLineDiagramPane({
     const classes = useStyles();
 
     const handleUpdateSwitchState = useCallback(
-        (breakerId, open, switchElement) => {
+        (breakerId, open) => {
             updateSwitchState(
                 studyUuid,
                 currentNode?.id,
