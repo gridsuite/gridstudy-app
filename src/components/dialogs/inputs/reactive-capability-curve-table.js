@@ -12,6 +12,7 @@ import { useStyles } from '../dialogUtils';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
+import { validateValueIsANumber } from '../../util/validation-functions';
 
 const minimalValue = { p: '', qminP: '', qmaxP: '' };
 
@@ -33,23 +34,10 @@ function hasValueCorrectFormat(valueToTest, index) {
     );
 }
 
-function getPreviousValue(displayedPreviousValues, displayedValues, index) {
+function getPreviousValue(displayedPreviousValues, index) {
     if (
         displayedPreviousValues !== undefined &&
-        displayedValues &&
-        index === displayedValues.length - 1
-    ) {
-        return {
-            p: displayedPreviousValues[displayedPreviousValues.length - 1].p,
-            qminP: displayedPreviousValues[displayedPreviousValues.length - 1]
-                .qminP,
-            qmaxP: displayedPreviousValues[displayedPreviousValues.length - 1]
-                .qmaxP,
-        };
-    } else if (
-        displayedPreviousValues !== undefined &&
-        displayedPreviousValues[index] &&
-        index < displayedPreviousValues.length - 1
+        index <= displayedPreviousValues.length - 1
     ) {
         return {
             p: displayedPreviousValues[index].p,
@@ -62,11 +50,14 @@ function getPreviousValue(displayedPreviousValues, displayedValues, index) {
 }
 
 function fixValuesFormat(valuesToFix) {
+    // The goal here is to verify that the provided array has the correct format.
+    // If the format is not correct, then the value is replaced by an empty string.
+    // This is done to avoid errors when the user has not modified all values on a diagram line.
     return valuesToFix.map((v) => {
         return {
-            p: v.p ? v.p : '',
-            qminP: v.qminP ? v.qminP : '',
-            qmaxP: v.qmaxP ? v.qmaxP : '',
+            p: validateValueIsANumber(v.p) ? v.p : '',
+            qminP: validateValueIsANumber(v.qminP) ? v.qminP : '',
+            qmaxP: validateValueIsANumber(v.qmaxP) ? v.qmaxP : '',
         };
     });
 }
@@ -301,7 +292,6 @@ export const useReactiveCapabilityCurveTableValues = ({
                                 customPLabel={customPLabel}
                                 previousValue={getPreviousValue(
                                     displayedPreviousValues,
-                                    displayedValues,
                                     index
                                 )}
                             />

@@ -118,16 +118,11 @@ const GeneratorModificationDialog = ({
     };
 
     const defaultVoltageRegulationType = () => {
-        if (getValueOrNull(formValues?.voltageRegulationOn) !== null) {
-            if (
-                (formValues?.voltageRegulationOn &&
-                    getValue(formValues?.regulatingTerminalId)) ||
-                getValue(formValues?.regulatingTerminalConnectableId)
-            ) {
-                return REGULATION_TYPES.DISTANT.id;
-            } else {
-                return REGULATION_TYPES.LOCAL.id;
-            }
+        if (formValues?.voltageRegulationType) {
+            return formValues?.voltageRegulationType.value ===
+                REGULATION_TYPES.DISTANT.id
+                ? REGULATION_TYPES.DISTANT.id
+                : REGULATION_TYPES.LOCAL.id;
         } else if (isPreviousRegulationDistant(generatorInfos)) {
             return REGULATION_TYPES.DISTANT.id;
         }
@@ -235,8 +230,7 @@ const GeneratorModificationDialog = ({
     ] = useRadioValue({
         inputForm: inputForm,
         defaultValue:
-            (getValueOrNull(formValues?.reactiveCapabilityCurve) === null &&
-                generatorInfos?.minMaxReactiveLimits !== undefined) ||
+            generatorInfos?.minMaxReactiveLimits !== undefined ||
             getValueOrNull(formValues?.reactiveCapabilityCurve) === false
                 ? 'MINMAX'
                 : 'CURVE',
@@ -411,7 +405,8 @@ const GeneratorModificationDialog = ({
         previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
     else if (
         generatorInfos?.activePowerControlOn === false ||
-        generatorInfos?.activePowerControlOn === undefined
+        (generatorInfos?.id !== '' &&
+            generatorInfos?.activePowerControlOn === undefined)
     )
         previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
 
@@ -673,6 +668,7 @@ const GeneratorModificationDialog = ({
             marginalCost ? marginalCost : null,
             transientReactance ? transientReactance : null,
             transformerReactance ? transformerReactance : null,
+            voltageRegulationType,
             isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
                 ? regulatingTerminal?.equipmentSection?.id
                 : null,

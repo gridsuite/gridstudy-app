@@ -1477,6 +1477,7 @@ export function modifyGenerator(
     marginalCost,
     transientReactance,
     transformerReactance,
+    voltageRegulationType,
     regulatingTerminalId,
     regulatingTerminalType,
     regulatingTerminalVlId,
@@ -1517,6 +1518,7 @@ export function modifyGenerator(
         transientReactance: toModificationOperation(transientReactance),
         stepUpTransformerReactance:
             toModificationOperation(transformerReactance),
+        voltageRegulationType: toModificationOperation(voltageRegulationType),
         regulatingTerminalId: toModificationOperation(regulatingTerminalId),
         regulatingTerminalType: toModificationOperation(regulatingTerminalType),
         regulatingTerminalVlId: toModificationOperation(regulatingTerminalVlId),

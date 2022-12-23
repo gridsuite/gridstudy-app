@@ -437,7 +437,7 @@ export const useEnumValue = ({
                 </Select>
                 {previousValue && (
                     <FormHelperText>
-                        {previousValue && doTranslation ? (
+                        {doTranslation ? (
                             <FormattedMessage
                                 id={getEnumLabel(previousValue)}
                             />

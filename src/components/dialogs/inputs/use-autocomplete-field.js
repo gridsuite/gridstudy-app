@@ -106,7 +106,7 @@ export const useAutocompleteField = ({
 
     useEffect(() => {
         function validate() {
-            const res = validateField(value, validationRef.current);
+            const res = validateField(value?.id, validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }
