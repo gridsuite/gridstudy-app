@@ -29,6 +29,7 @@ import {
     useRadioValue,
 } from './inputs/input-hooks';
 import { makeStyles } from '@mui/styles';
+import { EquipmentType } from './sensi/sensi-parameters-selector';
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
@@ -63,22 +64,20 @@ const REACTIVE_VAR_MODE_DEFAULT_VALUE = 'TAN_FIXED';
 const VariationSection = ({ index, onChange, defaultValue, inputForm }) => {
     const classes = useStyles();
 
-    const [filtres, filtresField] = useDirectoryElements({
-        id: index,
+    const [filters, filtersField] = useDirectoryElements({
         label: 'filter',
-        initialValues: defaultValue.filtres ? defaultValue.filtres : [],
+        initialValues: defaultValue.filters ? defaultValue.filters : [],
         validation: {
             isFieldRequired: true,
         },
         elementType: elementType.FILTER,
-        equipmentTypes: ['LOAD'],
+        equipmentTypes: [EquipmentType.LOAD],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
-        inputForm: inputForm,
     });
 
     const [deltaTargetP, deltaTargetPField] = useIntegerValue({
-        id: 'DeltaTargetP' + index,
+        id: 'DeltaTargetP',
         label: 'DeltaPTarget',
         validation: {
             isFieldRequired: true,
@@ -111,7 +110,7 @@ const VariationSection = ({ index, onChange, defaultValue, inputForm }) => {
 
     useEffect(() => {
         onChange(index, {
-            filtres,
+            filters,
             deltaTargetP,
             activeVariationMode,
             reactiveVariationMode,
@@ -119,7 +118,7 @@ const VariationSection = ({ index, onChange, defaultValue, inputForm }) => {
     }, [
         activeVariationMode,
         deltaTargetP,
-        filtres,
+        filters,
         index,
         onChange,
         reactiveVariationMode,
@@ -127,7 +126,7 @@ const VariationSection = ({ index, onChange, defaultValue, inputForm }) => {
 
     return (
         <>
-            {gridItem(filtresField, 2)}
+            {gridItem(filtersField, 2)}
             {gridItem(deltaTargetPField, 2.5)}
             {gridItem(activeVariationModeField, 3.5)}
             {gridItem(reactiveVariationModeField, 3)}

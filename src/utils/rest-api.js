@@ -1971,6 +1971,7 @@ export function loadScaling(
     variations
 ) {
     const body = JSON.stringify({
+        type: MODIFICATION_TYPE.LOAD_SCALING,
         loadScalingChoice,
         variations,
     });

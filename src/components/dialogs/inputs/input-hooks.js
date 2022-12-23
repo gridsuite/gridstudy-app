@@ -705,12 +705,14 @@ export const useDirectoryElements = ({
         useState(false);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const refInitialValues = useRef();
+    refInitialValues.current = initialValues;
 
     useEffect(() => {
-        if (initialValues !== null) {
-            setValues(initialValues);
+        if (refInitialValues.current !== null) {
+            setValues(refInitialValues.current);
         }
-    }, [initialValues]);
+    }, []);
 
     const handleDelete = useCallback(
         (item, index) => {
