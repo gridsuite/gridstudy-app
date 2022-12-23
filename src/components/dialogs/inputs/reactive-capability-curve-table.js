@@ -273,13 +273,11 @@ export const useReactiveCapabilityCurveTableValues = ({
 
                 {displayedValues.map((value, index, displayedValues) => {
                     const id = getId(value);
-                    // We change the P label on the first and last lines of the array
-                    const customPLabel =
-                        index === 0
-                            ? 'MinP'
-                            : index === displayedValues.length - 1
-                            ? 'MaxP'
-                            : undefined;
+                    let labelSuffix;
+                    if (index === 0) labelSuffix = 'min';
+                    else if (index === displayedValues.length - 1)
+                        labelSuffix = 'max';
+                    else labelSuffix = index.toString();
                     return (
                         <Grid key={id + index} container spacing={3} item>
                             <Field
@@ -289,7 +287,7 @@ export const useReactiveCapabilityCurveTableValues = ({
                                 inputForm={inputForm}
                                 isFieldRequired={isRequired(index)}
                                 disabled={disabled}
-                                customPLabel={customPLabel}
+                                labelSuffix={labelSuffix}
                                 previousValue={getPreviousValue(
                                     displayedPreviousValues,
                                     index

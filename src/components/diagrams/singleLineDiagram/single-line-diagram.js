@@ -21,7 +21,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
@@ -51,92 +50,61 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeReadOnly } from '../../graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
+import {
+    BORDERS,
+    commonStyle,
+    commonSldStyle,
+    MAP_BOTTOM_OFFSET,
+    MAP_RIGHT_OFFSET,
+    MAX_HEIGHT_SUBSTATION,
+    MAX_HEIGHT_VOLTAGE_LEVEL,
+    MAX_WIDTH_SUBSTATION,
+    MAX_WIDTH_VOLTAGE_LEVEL,
+    SvgType,
+    NoSvg,
+    LOADING_WIDTH,
+} from './utils';
+import { Paper } from '@mui/material';
 
-export const SubstationLayout = {
-    HORIZONTAL: 'horizontal',
-    VERTICAL: 'vertical',
-    SMART: 'smart',
-    SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
-    SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
-};
-
-export const SvgType = {
-    VOLTAGE_LEVEL: 'voltage-level',
-    SUBSTATION: 'substation',
-};
-
-const loadingWidth = 150;
-const maxWidthVoltageLevel = 800;
-const maxHeightVoltageLevel = 700;
-const maxWidthSubstation = 1200;
-const maxHeightSubstation = 700;
-const errorWidth = maxWidthVoltageLevel;
-
-const useStyles = makeStyles((theme) => ({
-    divSld: {
-        '& svg': {
-            // necessary because the default (inline-block) adds vertical space
-            // to our otherwise pixel accurate computations (this makes a
-            // scrollbar appear in fullscreen mode)
-            display: 'block',
-        },
-        '& polyline': {
-            pointerEvents: 'none',
-        },
-        '& .sld-label, .sld-graph-label, .sld-legend': {
-            fill: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
-        },
-        '& .sld-disconnector:not(.sld-fictitious), :not(.sld-breaker):not(.sld-disconnector):not(.sld-load-break-switch).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
-            {
-                stroke: theme.palette.text.primary,
-            },
+const customSldStyle = (theme) => {
+    return {
         '& .arrow': {
             fill: theme.palette.text.primary,
         },
-        '& .sld-flash, .sld-lock': {
-            stroke: 'none',
-            fill: theme.palette.text.primary,
+    };
+};
+
+const customStyle = (theme) => {
+    return {
+        divInvalid: {
+            '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle':
+                {
+                    opacity: INVALID_LOADFLOW_OPACITY,
+                },
         },
-        overflow: 'hidden',
-    },
-    divInvalid: {
-        '& .sld-arrow-p, .sld-arrow-q': {
-            opacity: INVALID_LOADFLOW_OPACITY,
+        actionIcon: {
+            padding: 0,
+            borderRight: theme.spacing(1),
         },
-    },
-    close: {
-        padding: 0,
-    },
-    actionIcon: {
-        padding: 0,
-        borderRight: theme.spacing(1),
-    },
-    pinRotate: {
-        padding: 0,
-        borderRight: theme.spacing(1),
-        transform: 'rotate(45deg)',
-    },
-    header: {
-        padding: 5,
-        display: 'flex',
-        flexDirection: 'row',
-        wordBreak: 'break-all',
-        backgroundColor: theme.palette.background.default,
-    },
-    fullScreenIcon: {
-        bottom: 5,
-        right: 5,
-        position: 'absolute',
-        cursor: 'pointer',
-    },
-    paperBorders: {
-        borderLeft: '1px solid ' + theme.palette.action.disabled,
-        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
-        borderRight: '1px solid ' + theme.palette.action.hover,
-    },
+        pinRotate: {
+            padding: 0,
+            borderRight: theme.spacing(1),
+            transform: 'rotate(45deg)',
+        },
+        fullScreenIcon: {
+            bottom: 5,
+            right: 5,
+            position: 'absolute',
+            cursor: 'pointer',
+        },
+    };
+};
+
+const useStyles = makeStyles((theme) => ({
+    divSld: commonSldStyle(theme, customSldStyle(theme)),
+    ...commonStyle(theme, customStyle(theme)),
 }));
 
 function getEquipmentTypeFromFeederType(feederType) {
@@ -176,14 +144,8 @@ function getEquipmentTypeFromFeederType(feederType) {
     }
 }
 
-const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
-
 let initialWidth, initialHeight;
-// To allow controls that are in the corners of the map to not be hidden in normal mode
-// (but they are still hidden in fullscreen mode)
-const mapRightOffset = 120;
-const mapBottomOffset = 80;
-const borders = 2; // we use content-size: border-box so this needs to be included..
+
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
 const computePaperAndSvgSizesIfReady = (
     fullScreen,
@@ -202,36 +164,36 @@ const computePaperAndSvgSizesIfReady = (
         if (fullScreen) {
             paperWidth = totalWidth;
             paperHeight = totalHeight;
-            svgWidth = totalWidth - borders;
-            svgHeight = totalHeight - headerPreferredHeight - borders;
+            svgWidth = totalWidth - BORDERS;
+            svgHeight = totalHeight - headerPreferredHeight - BORDERS;
         } else {
             let maxWidth, maxHeight;
             if (svgType === SvgType.VOLTAGE_LEVEL) {
-                maxWidth = maxWidthVoltageLevel;
-                maxHeight = maxHeightVoltageLevel;
+                maxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
+                maxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
             } else {
-                maxWidth = maxWidthSubstation;
-                maxHeight = maxHeightSubstation;
+                maxWidth = MAX_WIDTH_SUBSTATION;
+                maxHeight = MAX_HEIGHT_SUBSTATION;
             }
             svgWidth = Math.min(
                 svgPreferredWidth,
-                totalWidth - mapRightOffset,
+                totalWidth - MAP_RIGHT_OFFSET,
                 maxWidth
             );
             svgHeight = Math.min(
                 svgPreferredHeight,
-                totalHeight - mapBottomOffset - headerPreferredHeight,
+                totalHeight - MAP_BOTTOM_OFFSET - headerPreferredHeight,
                 maxHeight
             );
-            paperWidth = svgWidth + borders;
-            paperHeight = svgHeight + headerPreferredHeight + borders;
+            paperWidth = svgWidth + BORDERS;
+            paperHeight = svgHeight + headerPreferredHeight + BORDERS;
         }
         return { paperWidth, paperHeight, svgWidth, svgHeight };
     }
 };
 
 const SingleLineDiagram = forwardRef((props, ref) => {
-    const [svg, setSvg] = useState(noSvg);
+    const [svg, setSvg] = useState(NoSvg);
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const dispatch = useDispatch();
@@ -273,6 +235,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const [modificationInProgress, setModificationInProgress] = useState(false);
 
+    const errorWidth = MAX_WIDTH_VOLTAGE_LEVEL;
+
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
@@ -298,16 +262,25 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         []
     );
 
+    const hasSldSizeRemainedTheSame = (
+        oldWidth,
+        oldHeight,
+        newWidth,
+        newHeight
+    ) => {
+        return oldWidth === newWidth && oldHeight === newHeight;
+    };
+
     const closeEquipmentMenu = useCallback(() => {
         setEquipmentMenu({
             display: false,
         });
     }, []);
 
-    function handleViewInSpreadsheet() {
+    const handleViewInSpreadsheet = () => {
         props.showInSpreadsheet(equipmentMenu);
         closeEquipmentMenu();
-    }
+    };
 
     useImperativeHandle(
         ref,
@@ -347,9 +320,16 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
-            headerPreferredHeight
+            headerPreferredHeight,
+            BORDERS,
+            MAX_WIDTH_VOLTAGE_LEVEL,
+            MAX_HEIGHT_VOLTAGE_LEVEL,
+            MAX_WIDTH_SUBSTATION,
+            MAX_HEIGHT_SUBSTATION,
+            MAP_RIGHT_OFFSET,
+            MAP_BOTTOM_OFFSET
         );
-        if (typeof sizes != 'undefined') {
+        if (sizes) {
             if (
                 !fullScreenSldId &&
                 sizes.svgWidth * numberToDisplay > totalWidth
@@ -408,16 +388,22 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         error: error.message,
                         svgUrl: props.svgUrl,
                     });
+                    let msg;
+                    if (error.status === 404) {
+                        msg = `Voltage level ${sldId} not found`;
+                    } else {
+                        msg = error.message;
+                    }
                     snackError({
-                        messageTxt: error.message,
+                        messageTxt: msg,
                     });
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
                 });
         } else {
-            setSvg(noSvg);
+            setSvg(NoSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef]);
+    }, [props.svgUrl, forceState, snackError, intlRef, sldId]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -457,12 +443,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
             let viewboxMaxWidth =
                 svgType === SvgType.VOLTAGE_LEVEL
-                    ? maxWidthVoltageLevel
-                    : maxWidthSubstation;
+                    ? MAX_WIDTH_VOLTAGE_LEVEL
+                    : MAX_WIDTH_SUBSTATION;
             let viewboxMaxHeight =
                 svgType === SvgType.VOLTAGE_LEVEL
-                    ? maxHeightVoltageLevel
-                    : maxHeightSubstation;
+                    ? MAX_HEIGHT_VOLTAGE_LEVEL
+                    : MAX_HEIGHT_SUBSTATION;
             let onNextVoltageCallback =
                 !isComputationRunning &&
                 !isAnyNodeBuilding &&
@@ -539,9 +525,23 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 }
             }
 
-            if (svgDraw.current && svgUrl.current === svg.svgUrl) {
+            //if original sld size has not changed (sld structure has remained the same), we keep the same zoom
+            if (
+                svgDraw.current &&
+                hasSldSizeRemainedTheSame(
+                    svgDraw.current.getOriginalWidth(),
+                    svgDraw.current.getOriginalHeight(),
+                    sldViewer.getOriginalWidth(),
+                    sldViewer.getOriginalHeight()
+                )
+            ) {
                 sldViewer.setViewBox(svgDraw.current.getViewBox());
             }
+
+            // on sld resizing, we need to refresh zoom to avoid exceeding max or min zoom
+            // this is due to a svg.panzoom.js package's behaviour
+            sldViewer.refreshZoom();
+
             svgUrl.current = svg.svgUrl;
             svgDraw.current = sldViewer;
         }
@@ -633,7 +633,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         [dispatch]
     );
 
-    function displayMenuLine() {
+    const displayMenuLine = () => {
         return (
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.lines && (
@@ -650,9 +650,25 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 />
             )
         );
+    };
+
+    let sizeWidth,
+        sizeHeight = initialHeight;
+    if (svg.error) {
+        sizeWidth = errorWidth;
+    } else if (
+        typeof finalPaperWidth != 'undefined' &&
+        typeof finalPaperHeight != 'undefined'
+    ) {
+        sizeWidth = finalPaperWidth;
+        sizeHeight = finalPaperHeight;
+    } else if (initialWidth !== undefined || loadingState) {
+        sizeWidth = initialWidth;
+    } else {
+        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
     }
 
-    function displayMenu(equipmentType, menuId) {
+    const displayMenu = (equipmentType, menuId) => {
         const Menu = withEquipmentMenu(
             BaseEquipmentMenu,
             menuId,
@@ -669,22 +685,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 />
             )
         );
-    }
+    };
 
-    let sizeWidth,
-        sizeHeight = initialHeight;
-    if (svg.error) {
-        sizeWidth = errorWidth;
-    } else if (
-        typeof finalPaperWidth != 'undefined' &&
-        typeof finalPaperHeight != 'undefined'
-    ) {
-        sizeWidth = finalPaperWidth;
-        sizeHeight = finalPaperHeight;
-    } else if (initialWidth !== undefined || loadingState) {
-        sizeWidth = initialWidth;
-    } else {
-        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
+    if (!isNodeBuilt(currentNode)) {
+        sizeWidth = totalWidth / numberToDisplay;
     }
 
     if (sizeWidth !== undefined) {
@@ -714,9 +718,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             style={{
                 pointerEvents: 'auto',
                 width: sizeWidth,
-                minWidth: loadingWidth,
+                minWidth: LOADING_WIDTH,
                 height: sizeHeight,
-                position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
+                position: 'relative',
                 overflow: 'hidden',
                 display:
                     !fullScreenSldId || sldId === fullScreenSldId ? '' : 'none',
@@ -736,7 +740,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         <Typography>{props.diagramTitle}</Typography>
                     </Box>
                     <Box>
-                        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                            }}
+                        >
                             <IconButton
                                 className={classes.actionIcon}
                                 onClick={minimizeSld}
@@ -767,11 +776,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     </Box>
                 </Box>
             </Box>
-            {loadingState && (
-                <Box height={2}>
-                    <LinearProgress />
-                </Box>
-            )}
+            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             {disabled ? (
                 <Box position="relative" left={0} right={0} top={0}>
                     <AlertInvalidNode noMargin={true} />
@@ -788,7 +793,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                                 [classes.divInvalid]:
                                     loadFlowStatus !== RunningStatus.SUCCEED,
                             })}
-                            dangerouslySetInnerHTML={{ __html: svg.svg }}
+                            dangerouslySetInnerHTML={{
+                                __html: svg.svg,
+                            }}
                         />
                     }
                     {displayMenuLine()}
@@ -847,7 +854,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
-    svgUrl: PropTypes.string.isRequired,
+    svgUrl: PropTypes.string,
     sldId: PropTypes.string,
     numberToDisplay: PropTypes.number,
     onClose: PropTypes.func,

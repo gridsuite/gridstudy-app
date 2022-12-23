@@ -164,7 +164,7 @@
     "LimitType": "Limit type",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
-    "ComputationOk": "Computation OK",
+    "ComputationStatus": "Status",
     "true": "true",
     "false": "false",
     "Loading": "Loading",
@@ -325,6 +325,7 @@
     "exportCaseOnNode": "Export case",
     "nodeNameAlreadyUsed": "This name is already used",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
+    "MapEquipmentsLoadError": "An error occured while loading network map",
     "CaseNameLoadError": "An error occured while loading case name",
     "StudyUnrecoverableStateRecreate": "Your study has a problem. Please recreate it",
     "NodeCreateError": "An error occured while creating node",
@@ -422,7 +423,6 @@
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "NormalizedPercentage": "This percentage must be between 0 and 100",
     "GeneratorModificationError": "Error while modifying generator",
-    "ActivePowerBetweenMaxAndMin": "The active power setpoint must be between minimum active power and maximum active power values",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "The table of reactive capability curve must have at least four points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Each active power value must be a valid unique number.",
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the min P and max P values.",
@@ -449,6 +449,10 @@
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
+    "AdditionalInformations": "Additional informations",
+    "AddProperty": "Add property",
+    "PropertyName": "Property name",
+    "PropertyValue": "Property value",
 
     "CreateVoltageLevel": "Create a voltage level",
     "Substation": "Substation",
@@ -530,7 +534,7 @@
     "IncoherentPhaseRegulatingTerminalError": "The phase tap Regulating terminal value must be filled",
     "RatioValuesError": "The values of the ratio tap ratios must be ordered and without duplicates",
     "PhaseShiftValuesError": "The values of the phase tap shifts must be ordered and without duplicates",
-    "TapPositionValueError": "The high tap position must not exceed the value {value}",
+    "TapPositionValueError": "The number of taps must not exceed the value {value}",
 
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",
@@ -592,7 +596,6 @@
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
-    "InvalidData": "Data has been invalidated",
 
     "depth": "Depth",
 
@@ -658,5 +661,9 @@
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
     "Bottom": "Bottom",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value"
+    "ConnectionPosition": "Connection position",
+    "ErrorNoVoltageSelected": "No voltage level selected, please select one before",
+    "DisplayTakenPositions": "Display taken positions",
+    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value",
+    "NodeNotBuildPositionMessage": "Must build current node to show positions"
 }

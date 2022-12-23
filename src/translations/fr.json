@@ -164,7 +164,7 @@
     "LimitType": "Type de limite",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
-    "ComputationOk": "Calcul OK",
+    "ComputationStatus": "Statut",
     "true": "oui",
     "false": "non",
     "Loading": "Charge (%)",
@@ -325,6 +325,7 @@
     "exportCaseOnNode": "Exporter la situation",
     "nodeNameAlreadyUsed": "Ce nom est déjà utilisé",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
+    "MapEquipmentsLoadError": "Une erreur est survenue lors du chargement des données de l'image réseau",
     "CaseNameLoadError": "Une erreur est survenue lors de la récupération du nom de la situation",
     "StudyUnrecoverableStateRecreate": "Votre étude a un problème. Veuillez la recréer",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
@@ -422,7 +423,6 @@
     "VoltageGreaterThanZero": "La valeur de la tension doit être strictement positive",
     "NormalizedPercentage": "Ce pourcentage doit être compris entre 0 et 100",
     "GeneratorModificationError": "Erreur lors de la modification d'un générateur ",
-    "ActivePowerBetweenMaxAndMin": "La consigne de puissance active doit être comprise entre les puissances actives minimale et maximale",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "Le tableau des limites de réactifs par diagramme doit comporter au moins quatre points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Chaque valeur de puissance active doit être un nombre unique et valide.",
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Chaque valeur de puissance active doit être comprise entre les valeurs P min et P max.",
@@ -449,6 +449,10 @@
 
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
+    "AdditionalInformations": "Informations complémentaires",
+    "AddProperty": "Ajouter une propriété",
+    "PropertyName": "Nom de la propriété",
+    "PropertyValue": "Valeur de la propriété",
 
     "CreateVoltageLevel": "Créer un poste",
     "Substation": "Site",
@@ -530,7 +534,7 @@
     "IncoherentPhaseRegulatingTerminalError": "La valeur du Terminal distant réglé du déphaseur doit être renseignée",
     "RatioValuesError": "Les rapports de transformation doivent être ordonnés et sans duplication",
     "PhaseShiftValuesError": "Les valeurs de déphasage doivent être ordonnés et sans duplication",
-    "TapPositionValueError": "La prise maximale ne doit pas dépasser la valeur {value}",
+    "TapPositionValueError": "Le nombre de prises ne doit pas dépasser la valeur {value}",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",
@@ -592,7 +596,6 @@
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
-    "InvalidData": "Les données ont été invalidées",
 
     "depth": "Profondeur",
 
@@ -658,5 +661,9 @@
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
     "Bottom": "Bas",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut"
+    "ConnectionPosition": "Position départ",
+    "ErrorNoVoltageSelected": "Aucun poste sélectionné, veuillez en sélectionner un avant",
+    "DisplayTakenPositions": "Afficher les positions prises",
+    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
+    "NodeNotBuildPositionMessage": "Veuillez réaliser le nœud actuel pour afficher les positions"
 }

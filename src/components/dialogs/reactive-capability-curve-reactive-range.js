@@ -22,10 +22,10 @@ export const ReactiveCapabilityCurveReactiveRange = ({
     isFieldRequired,
     previousValue,
     disabled = false,
-    customPLabel = undefined,
+    labelSuffix = '',
 }) => {
     const [p, pField] = useDoubleValue({
-        label: customPLabel !== undefined ? customPLabel : 'P',
+        label: 'P' + labelSuffix,
         id: 'P' + index,
         validation: { isFieldRequired: isFieldRequired },
         adornment: ActivePowerAdornment,
@@ -35,7 +35,7 @@ export const ReactiveCapabilityCurveReactiveRange = ({
         previousValue: previousValue?.p,
     });
     const [qminP, qminPField] = useDoubleValue({
-        label: 'QminP',
+        label: 'QminP' + labelSuffix,
         id: 'QminP' + index,
         validation: { isFieldRequired: isFieldRequired },
         adornment: ReactivePowerAdornment,
@@ -46,7 +46,7 @@ export const ReactiveCapabilityCurveReactiveRange = ({
     });
 
     const [qmaxP, qmaxPField] = useDoubleValue({
-        label: 'QmaxP',
+        label: 'QmaxP' + labelSuffix,
         id: 'QmaxP' + index,
         validation: { isFieldRequired: isFieldRequired },
         adornment: ReactivePowerAdornment,
