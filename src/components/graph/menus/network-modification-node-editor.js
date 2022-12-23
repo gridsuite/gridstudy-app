@@ -384,9 +384,12 @@ const NetworkModificationNodeEditor = () => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
-            console.log('*********** fillNotification : parentNode = ', study.eventData.headers['parentNode']);
-            console.log('*********** fillNotification : nodes = ', study.eventData.headers['nodes']);
-            dispatch(addNotification([study.eventData.headers['parentNode'], ...study.eventData.headers['nodes']]));
+            dispatch(
+                addNotification([
+                    study.eventData.headers['parentNode'],
+                    ...study.eventData.headers['nodes'],
+                ])
+            );
         },
         [dispatch]
     );
@@ -489,8 +492,9 @@ const NetworkModificationNodeEditor = () => {
                 dofetchNetworkModifications();
                 dispatch(
                     removeNotificationByNode([
-                        studyUpdatedForce.eventData.headers['parentNode'], ...studyUpdatedForce.eventData.headers['nodes']]
-                    )
+                        studyUpdatedForce.eventData.headers['parentNode'],
+                        ...studyUpdatedForce.eventData.headers['nodes'],
+                    ])
                 );
             }
         }

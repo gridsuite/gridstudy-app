@@ -50,7 +50,11 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeBuilt, isNodeReadOnly, isNodeInNotificationList } from '../../graph/util/model-functions';
+import {
+    isNodeBuilt,
+    isNodeReadOnly,
+    isNodeInNotificationList,
+} from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
     BORDERS,
@@ -376,12 +380,16 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
-                    setSvg({
-                        svg: data.svg,
-                        metadata: data.metadata,
-                        error: null,
-                        svgUrl: props.svgUrl,
-                    });
+                    if (data !== null) {
+                        setSvg({
+                            svg: data.svg,
+                            metadata: data.metadata,
+                            error: null,
+                            svgUrl: props.svgUrl,
+                        });
+                    } else {
+                        setSvg(NoSvg);
+                    }
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
                 })

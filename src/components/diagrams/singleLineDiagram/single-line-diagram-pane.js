@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import { getNameOrId, useSingleLineDiagram, ViewState, SvgType} from './utils';
+import { getNameOrId, useSingleLineDiagram, ViewState, SvgType } from './utils';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
