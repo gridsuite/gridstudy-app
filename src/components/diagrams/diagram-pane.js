@@ -250,9 +250,9 @@ export function DiagramPane({
 
     const [displayedDiagrams, setDisplayedDiagrams] = useState([]);
     const [minimizedDiagrams, setMinimizedDiagrams] = useState([]);
-    const [displayedSldHeights, setDisplayedSldHeights] = useState([]);
-    const displayedSldHeightsRef = useRef();
-    displayedSldHeightsRef.current = displayedSldHeights;
+    const [displayedDiagramHeights, setDisplayedDiagramHeights] = useState([]);
+    const displayedDiagramHeightsRef = useRef();
+    displayedDiagramHeightsRef.current = displayedDiagramHeights;
 
     const createView = useDisplayView(network, studyUuid, currentNode);
 
@@ -296,16 +296,15 @@ export function DiagramPane({
 
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
-                (response) => {
-                    if (!response.ok) {
-                        console.error(response);
-                        setUpdateSwitchMsg(
-                            response.status + ' : ' + response.statusText
-                        );
-                    }
-                }
-            );
+            updateSwitchState(
+                studyUuid,
+                currentNode?.id,
+                breakerId,
+                open
+            ).catch((error) => {
+                console.error(error.message);
+                setUpdateSwitchMsg(error.message);
+            });
         },
         [studyUuid, currentNode]
     );
@@ -443,106 +442,104 @@ export function DiagramPane({
     const [computedHeight, setComputedHeight] = useState();
 
     useEffect(() => {
-        let displayedSldHeights_ = displayedSldHeightsRef.current;
-        viewsRef.current.forEach((sld) => {
-            if (sld.state === ViewState.MINIMIZED) {
-                displayedSldHeights_ = displayedSldHeights_.filter(
-                    (displayedHeight) => displayedHeight.id !== sld.id
-                );
-            }
-        });
-        displayedSldHeights_ = displayedSldHeights_.filter((displayedHeight) =>
-            viewsRef.current.map((sld) => sld.id).includes(displayedHeight.id)
-        );
+        let displayedDiagramHeights_ =
+            displayedDiagramHeightsRef.current?.filter((displayedHeight) =>
+                views
+                    .filter((sld) => sld.state !== ViewState.MINIMIZED)
+                    .map((sld) => sld.id)
+                    .includes(displayedHeight.id)
+            );
 
-        setDisplayedSldHeights(displayedSldHeights_);
+        setDisplayedDiagramHeights(displayedDiagramHeights_);
     }, [views]);
 
     useEffect(() => {
-        if (displayedSldHeights.length === 0) {
-            setComputedHeight();
-        }
-
         const initialHeights = [
-            ...displayedSldHeights.map(
+            ...displayedDiagramHeights.map(
                 (displayedHeight) => displayedHeight.initialHeight
             ),
         ];
         if (initialHeights.length > 0) {
             const newComputedHeight = Math.max(...initialHeights);
-            if (newComputedHeight && !isNaN(newComputedHeight)) {
+            if (newComputedHeight) {
                 setComputedHeight(newComputedHeight);
             }
         }
-    }, [displayedSldHeights]);
+    }, [displayedDiagramHeights]);
 
     return (
         <AutoSizer>
-            {({ width, height }) => {
-                return (
-                    <div
-                        style={{ flexDirection: 'row', display: 'inline-flex' }}
+            {({ width, height }) => (
+                <div style={{ flexDirection: 'row', display: 'inline-flex' }}>
+                    {displayedDiagrams.map((diagramView) => (
+                        <Diagram
+                            computedHeight={computedHeight}
+                            diagramTitle={diagramView.name}
+                            disabled={disabled}
+                            isComputationRunning={isComputationRunning}
+                            key={diagramView.svgType + diagramView.id}
+                            loadFlowStatus={loadFlowStatus}
+                            numberToDisplay={displayedDiagrams.length}
+                            onBreakerClick={handleUpdateSwitchState}
+                            onMinimize={minimizeDiagramView}
+                            onNextVoltageLevelClick={handleOpenView}
+                            onTogglePin={togglePinDiagramView}
+                            pinned={diagramView.state === ViewState.PINNED}
+                            ref={diagramView.ref}
+                            setDisplayedDiagramHeights={
+                                setDisplayedDiagramHeights
+                            }
+                            showInSpreadsheet={showInSpreadsheet}
+                            diagramId={diagramView.id}
+                            svgType={diagramView.svgType}
+                            svgUrl={diagramView.svgUrl}
+                            totalHeight={height}
+                            totalWidth={width}
+                            updateSwitchMsg={updateSwitchMsg}
+                            depth={depth}
+                            setDepth={setDepth}
+                        />
+                    ))}
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        spacing={1}
+                        className={classes.minimizedSLD}
+                        style={{
+                            display: !fullScreenDiagram?.id ? '' : 'none', // We hide this stack if a diagram is in fullscreen
+                        }}
                     >
-                        {displayedDiagrams.map((diagramView) => (
-                            <Diagram
-                                computedHeight={computedHeight}
-                                diagramTitle={diagramView.name}
-                                disabled={disabled}
-                                isComputationRunning={isComputationRunning}
+                        {minimizedDiagrams.map((diagramView) => (
+                            <Chip
                                 key={diagramView.svgType + diagramView.id}
-                                loadFlowStatus={loadFlowStatus}
-                                numberToDisplay={displayedDiagrams.length}
-                                onBreakerClick={handleUpdateSwitchState}
-                                onMinimize={minimizeDiagramView}
-                                onNextVoltageLevelClick={handleOpenView}
-                                onTogglePin={togglePinDiagramView}
-                                pinned={diagramView.state === ViewState.PINNED}
-                                ref={diagramView.ref}
-                                setDisplayedDiagramHeights={
-                                    setDisplayedSldHeights
+                                icon={
+                                    diagramView.svgType ===
+                                    SvgType.NETWORK_AREA_DIAGRAM ? (
+                                        <>
+                                            <ArrowUpwardIcon />
+                                            <TimelineIcon />
+                                        </>
+                                    ) : (
+                                        <ArrowUpwardIcon />
+                                    )
                                 }
-                                showInSpreadsheet={showInSpreadsheet}
-                                diagramId={diagramView.id}
-                                svgType={diagramView.svgType}
-                                svgUrl={diagramView.svgUrl}
-                                totalHeight={height}
-                                totalWidth={width}
-                                updateSwitchMsg={updateSwitchMsg}
-                                depth={depth}
-                                setDepth={setDepth}
+                                label={diagramView.name}
+                                onClick={() =>
+                                    handleOpenView(
+                                        diagramView.id,
+                                        diagramView.svgType
+                                    )
+                                }
+                                onDelete={() =>
+                                    closeDiagramView(
+                                        diagramView.id,
+                                        diagramView.svgType
+                                    )
+                                }
                             />
                         ))}
-                        <Stack
-                            direction={{ xs: 'column', sm: 'row' }}
-                            spacing={1}
-                            className={classes.minimizedSLD}
-                            style={{
-                                display: !fullScreenDiagram?.id ? '' : 'none', // We hide this stack if a diagram is in fullscreen
-                            }}
-                        >
-                            {minimizedDiagrams.map((diagramView) => (
-                                <Chip
-                                    key={diagramView.svgType + diagramView.id}
-                                    icon={diagramView.svgType === SvgType.NETWORK_AREA_DIAGRAM ? <><ArrowUpwardIcon /><TimelineIcon /></> : <ArrowUpwardIcon />}
-                                    label={diagramView.name}
-                                    onClick={() =>
-                                        handleOpenView(
-                                            diagramView.id,
-                                            diagramView.svgType
-                                        )
-                                    }
-                                    onDelete={() =>
-                                        closeDiagramView(
-                                            diagramView.id,
-                                            diagramView.svgType
-                                        )
-                                    }
-                                />
-                            ))}
-                        </Stack>
-                    </div>
-                );
-            }}
+                    </Stack>
+                </div>
+            )}
         </AutoSizer>
     );
 }

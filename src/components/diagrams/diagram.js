@@ -654,7 +654,6 @@ const Diagram = forwardRef((props, ref) => {
     let sizeWidth,
         sizeHeight = initialHeight;
     if (svg.error) {
-        // TODO CHARLY voir maj Hugo ici (jusqu'au return) maybe (pas clair)
         sizeWidth = errorWidth;
     } else if (
         typeof finalPaperWidth != 'undefined' &&
