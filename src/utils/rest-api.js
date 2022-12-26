@@ -1967,12 +1967,12 @@ export function loadScaling(
     studyUuid,
     currentNodeUuid,
     modificationUuid,
-    loadScalingChoice,
+    variationType,
     variations
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPE.LOAD_SCALING,
-        loadScalingChoice,
+        variationType,
         variations,
     });
 

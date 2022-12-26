@@ -61,7 +61,13 @@ export const useStyles = makeStyles((theme) => ({
 const ACTIVE_VAR_MODE_DEFAULT_VALUE = 'PROPORTIONAL';
 const REACTIVE_VAR_MODE_DEFAULT_VALUE = 'TAN_FIXED';
 
-const VariationSection = ({ index, onChange, defaultValue, inputForm }) => {
+const VariationSection = ({
+    index,
+    onChange,
+    defaultValue,
+    inputForm,
+    errors,
+}) => {
     const classes = useStyles();
 
     const [filters, filtersField] = useDirectoryElements({
@@ -76,14 +82,15 @@ const VariationSection = ({ index, onChange, defaultValue, inputForm }) => {
         elementClassName: classes.chipElement,
     });
 
-    const [deltaTargetP, deltaTargetPField] = useIntegerValue({
+    const [variationValue, variationValueField] = useIntegerValue({
         id: 'DeltaTargetP',
         label: 'DeltaPTarget',
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue?.deltaTargetP,
+        defaultValue: defaultValue?.variationValue,
         inputForm: inputForm,
+        errorMsg: errors?.variationValue,
     });
 
     const [activeVariationMode, activeVariationModeField] =
@@ -111,13 +118,13 @@ const VariationSection = ({ index, onChange, defaultValue, inputForm }) => {
     useEffect(() => {
         onChange(index, {
             filters,
-            deltaTargetP,
+            variationValue,
             activeVariationMode,
             reactiveVariationMode,
         });
     }, [
         activeVariationMode,
-        deltaTargetP,
+        variationValue,
         filters,
         index,
         onChange,
@@ -127,7 +134,7 @@ const VariationSection = ({ index, onChange, defaultValue, inputForm }) => {
     return (
         <>
             {gridItem(filtersField, 2)}
-            {gridItem(deltaTargetPField, 2.5)}
+            {gridItem(variationValueField, 2.5)}
             {gridItem(activeVariationModeField, 3.5)}
             {gridItem(reactiveVariationModeField, 3)}
         </>
@@ -175,7 +182,7 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
         return res;
     }
 
-    const [loadScalableChoice, loadScalableRadioButton] = useRadioValue({
+    const [variationType, variationTypeRadioButton] = useRadioValue({
         inputForm: inputForm,
         defaultValue: 'DELTA_P',
         possibleValues: LOAD_SCALABLE_TYPES,
@@ -200,7 +207,7 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
             studyUuid,
             currentNodeUuid,
             editData ? editData.uuid : undefined,
-            loadScalableChoice,
+            variationType,
             variations
         ).catch((errorMessage) => {
             snackError({
@@ -228,7 +235,7 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
             {...dialogProps}
         >
             <Grid className={classes.padding}>
-                {gridItem(loadScalableRadioButton, 8)}
+                {gridItem(variationTypeRadioButton, 8)}
             </Grid>
             <GridSection title="Variations" />
             <Grid container className={classes.padding}>
