@@ -2247,6 +2247,41 @@ export function getSensiDefaultResultsThreshold() {
     });
 }
 
+export function fetchMapEquipments(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching map equipments data of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
+    const substationParams = getQueryParamsList(substationsIds, 'substationId');
+
+    let fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/map-equipments';
+    if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
+        fetchEquipmentsUrl += '?';
+        fetchEquipmentsUrl += urlSearchParams.toString();
+        fetchEquipmentsUrl +=
+            urlSearchParams.toString().length > 0 && substationParams.length > 0
+                ? '&' + substationParams
+                : substationParams;
+    }
+
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
+}
+
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     console.info('Fetching elements metadata');
     const url =
