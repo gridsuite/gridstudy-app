@@ -170,7 +170,7 @@ const DeleteVoltageLevelOnLineDialog = ({
             <Grid container spacing={2} alignItems="center">
                 {gridItem(lineToAttachTo2Field, 5)}
             </Grid>
-            <GridSection title="ReplacingLines" />
+            <GridSection title="ReplacingLine" />
             <Grid container spacing={2}>
                 {gridItem(newLine1IdField, 6)}
                 {gridItem(newLine1NameField, 6)}
