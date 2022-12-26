@@ -164,7 +164,7 @@
     "LimitType": "Limit type",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
-    "ComputationOk": "Computation OK",
+    "ComputationStatus": "Status",
     "true": "true",
     "false": "false",
     "Loading": "Loading",
@@ -325,6 +325,7 @@
     "exportCaseOnNode": "Export case",
     "nodeNameAlreadyUsed": "This name is already used",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
+    "MapEquipmentsLoadError": "An error occured while loading network map",
     "CaseNameLoadError": "An error occured while loading case name",
     "StudyUnrecoverableStateRecreate": "Your study has a problem. Please recreate it",
     "NodeCreateError": "An error occured while creating node",
@@ -596,7 +597,6 @@
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
-    "InvalidData": "Data has been invalidated",
 
     "depth": "Depth",
 
