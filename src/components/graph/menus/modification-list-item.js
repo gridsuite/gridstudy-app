@@ -73,6 +73,8 @@ export const ModificationListItem = ({
             return modif.lineToAttachToId;
         } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
             return modif.attachedLineId;
+        } else if (modif.type === 'GENERATOR_SCALING') {
+            return modif.uuid;
         } else if (modif.equipmentId) {
             return modif.equipmentId;
         }

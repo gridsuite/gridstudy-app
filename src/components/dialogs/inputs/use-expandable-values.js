@@ -33,10 +33,6 @@ export const useExpandableValues = ({
     });
 
     useEffect(() => {
-        console.log('testing : ', values);
-    }, [values]);
-
-    useEffect(() => {
         if (defaultValues) {
             console.log('testing default : ', defaultValues);
             setValues([...defaultValues]);

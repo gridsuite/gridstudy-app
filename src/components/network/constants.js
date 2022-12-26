@@ -90,18 +90,24 @@ export const MODIFICATION_TYPE = {
     LINES_ATTACH_TO_SPLIT_LINES: 'LINES_ATTACH_TO_SPLIT_LINES',
     BRANCH_STATUS: 'BRANCH_STATUS',
     EQUIPMENT_ATTRIBUTE_MODIFICATION: 'EQUIPMENT_ATTRIBUTE_MODIFICATION',
+    GENERATOR_SCALING: 'GENERATOR_SCALING',
 };
 
+export const VARIATION_TYPE = [
+    {id: "DELTA_P", label:'DeltaP'},
+    {id: "TARGET_P", label: 'TargetP'},
+]
+
 export const VARIATION_MODE = [
-    { id: 'proportional', label: 'Proportional' },
+    { id: 'PROPORTIONAL', label: 'Proportional' },
     {
-        id: 'proportionalToPMax',
+        id: 'PROPORTIONAL_TO_PMAX',
         label: 'ProportionalToPMax',
     },
     {
-        id: 'regularDistribution',
+        id: 'REGULAR_DISTRIBUTION',
         label: 'RegularDistribution',
     },
-    { id: 'stackingUp', label: 'StackingUp' },
-    { id: 'ventilation', label: 'Ventilation' },
+    { id: 'STACKING_UP', label: 'StackingUp' },
+    { id: 'VENTILATION', label: 'Ventilation' },
 ];

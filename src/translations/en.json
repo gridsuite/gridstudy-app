@@ -535,7 +535,7 @@
     "PhaseShiftValuesError": "The values of the phase tap shifts must be ordered and without duplicates",
     "TapPositionValueError": "The number of taps must not exceed the value {value}",
 
-    "GeneratorScalable": "Generator scalable",
+    "GeneratorScaling": "Generator scalable",
     "DeltaP": "Δ P",
     "TargetP": "Target P",
     "IterativeLabel": "Iterative",
@@ -546,6 +546,7 @@
     "StackingUp": "Stacking up",
     "Ventilation": "Ventilation",
     "CreateVariation": "Add variation",
+    "Variations": "Variations",
 
 
     "Tap":"Tap",

@@ -1363,6 +1363,51 @@ export function switchOnLine(studyUuid, currentNodeUuid, lineId) {
     return changeLineStatus(studyUuid, currentNodeUuid, lineId, 'switch_on');
 }
 
+export function generatorScaling(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    variationType,
+    iterative,
+    variations
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.GENERATOR_SCALING,
+        variationType,
+        isIterative: iterative,
+        generatorScalingVariations: variations,
+    });
+
+    let generatorScalingUrl;
+    if (modificationUuid) {
+        console.info('generator scaling update', body);
+        generatorScalingUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modifications/' +
+            encodeURIComponent(modificationUuid);
+    } else {
+        console.info('create generator scaling', body);
+        generatorScalingUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modifications';
+    }
+
+    return backendFetch(generatorScalingUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+
+
 export function createLoad(
     studyUuid,
     currentNodeUuid,

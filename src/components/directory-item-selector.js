@@ -152,6 +152,7 @@ const DirectoryItemSelector = (props) => {
                             props.types,
                             props.equipmentTypes
                         ).then((childrenWithMetada) => {
+                            console.log('fetch elements : ', childrenWithMetada);
                             let finalResult = childrenWithMetada;
                             if (props.filterResults) {
                                 finalResult = finalResult.filter((val) => props.filterResult(val));

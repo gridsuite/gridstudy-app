@@ -706,12 +706,14 @@ export const useDirectoryElements = ({
         useState(false);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const refInitialValues = useRef();
+    refInitialValues.current = initialValues;
 
     useEffect(() => {
-        if (initialValues !== null) {
+        if (refInitialValues.current !== null) {
             setValues(initialValues);
         }
-    }, [initialValues]);
+    }, []);
 
     const handleDelete = useCallback(
         (item, index) => {

@@ -535,7 +535,7 @@
     "PhaseShiftValuesError": "Les valeurs de déphasage doivent être ordonnés et sans duplication",
     "TapPositionValueError": "Le nombre de prises ne doit pas dépasser la valeur {value}",
 
-    "GeneratorScalable": "Variation plan de production",
+    "GeneratorScaling": "Variation plan de production",
     "DeltaP": "Δ P",
     "TargetP": "P cible",
     "IterativeLabel": "Itérative",
@@ -547,6 +547,7 @@
     "Ventilation": "Ventilation",
     "variations": "Variations",
     "CreateVariation": "Ajouter variation",
+    "Variations": "Variations",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",
