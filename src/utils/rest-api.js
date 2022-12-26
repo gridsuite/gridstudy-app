@@ -2080,7 +2080,7 @@ export function deleteAttachingLine(
     replacingLine1Name
 ) {
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.DELETE_VOLTAGE_LEVEL_ON_LINE,
+        type: MODIFICATION_TYPE.DELETE_ATTACHING_LINE,
         lineToAttachTo1Id,
         lineToAttachTo2Id,
         attachedLineId,
@@ -2092,11 +2092,11 @@ export function deleteAttachingLine(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
     if (modificationUuid) {
-        console.info('deleting voltage level on line update', body);
+        console.info('deleting attaching line update', body);
         deleteVoltageLevelOnLineUrl +=
             '/' + encodeURIComponent(modificationUuid);
     } else {
-        console.info('Delete voltage level on line', body);
+        console.info('Delete attaching line', body);
     }
 
     return backendFetchText(deleteVoltageLevelOnLineUrl, {
