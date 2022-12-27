@@ -63,7 +63,12 @@ function handleError(response) {
             error.status = errorJson.status;
         } else {
             error = new Error(
-                errorName + response.status + ' ' + response.statusText
+                errorName +
+                    response.status +
+                    ' ' +
+                    response.statusText +
+                    ', message : ' +
+                    text
             );
             error.status = response.status;
         }
