@@ -1,5 +1,5 @@
 import { TextField } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { toFloatValue } from '../../../dialogs/dialogUtils';
 import {
@@ -24,27 +24,42 @@ const ReactHookFormFloatNumberTextField = ({
     label,
     required = false,
     control,
+    adornmentCallback,
     ...rest
 }) => {
+    const [isFocused, setIsFocused] = useState(false);
+
     return (
         <Controller
             control={control}
             name={name}
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <TextField
-                    size="small"
-                    fullWidth
-                    value={value}
-                    onChange={(e) => {
-                        if (isFloatNumber(e.target.value))
-                            onChange(toFloatValue(e.target.value));
-                        else return;
-                    }}
-                    label={FieldLabel({ label: label, optional: !required })}
-                    {...genHelperError(error?.message)}
-                    {...rest}
-                />
-            )}
+            render={({ field: { onChange, value }, fieldState: { error } }) => {
+                return (
+                    <TextField
+                        size="small"
+                        fullWidth
+                        value={value}
+                        onChange={(e) => {
+                            if (isFloatNumber(e.target.value))
+                                onChange(toFloatValue(e.target.value));
+                            else return;
+                        }}
+                        label={FieldLabel({
+                            label: label,
+                            optional: !required,
+                        })}
+                        onFocus={(e) => setIsFocused(true)}
+                        onBlur={(e) => setIsFocused(false)}
+                        {...adornmentCallback({
+                            value: value,
+                            isFocused: isFocused,
+                            onChange: onChange,
+                        })}
+                        {...genHelperError(error?.message)}
+                        {...rest}
+                    />
+                );
+            }}
         />
     );
 };

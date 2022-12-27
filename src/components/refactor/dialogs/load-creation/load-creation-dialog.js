@@ -40,6 +40,10 @@ import {
 } from '../connectivity/connectivity-form-utils';
 import ReactHookFormFloatNumberTextField from '../../inputs/text-field/react-hook-form-float-number-text-field';
 import { InputAdornment } from '@mui/material';
+import {
+    getAdornmentInputProps,
+    getClearAdornmentInputProps,
+} from '../../inputs/utils';
 
 /**
  * Dialog to create a load in the network
@@ -58,8 +62,8 @@ const emptyFormData = {
     [EQUIPMENT_ID_FIELD]: '',
     [EQUIPMENT_NAME_FIELD]: '',
     [EQUIPMENT_TYPE_FIELD]: '',
-    [ACTIVE_POWER_FIELD]: '',
-    [REACTIVE_POWER_FIELD]: '',
+    [ACTIVE_POWER_FIELD]: 0,
+    [REACTIVE_POWER_FIELD]: 0,
     ...getConnectivityEmptyFormData(),
 };
 
@@ -82,12 +86,8 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
             [EQUIPMENT_ID_FIELD]: yup.string().required(),
             [EQUIPMENT_NAME_FIELD]: yup.string(),
             [EQUIPMENT_TYPE_FIELD]: yup.string(),
-            [ACTIVE_POWER_FIELD]: yup.number().min(0).required(),
-            [REACTIVE_POWER_FIELD]: yup
-                .number()
-                .integer('FieldIsRequired')
-                .min(0, 'FieldIsRequired')
-                .required(),
+            [ACTIVE_POWER_FIELD]: yup.number().required().min(0),
+            [REACTIVE_POWER_FIELD]: yup.number().required().min(0),
             ...getConnectivityFormValidationSchema(),
         })
         .required();
@@ -225,12 +225,7 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                 yup.reach(schema, ACTIVE_POWER_FIELD)?.exclusiveTests
                     ?.required === true
             }
-            InputProps={{
-                endAdornment: (
-                    <InputAdornment position="end">mW</InputAdornment>
-                ),
-            }}
-            sx={{ input: { textAlign: 'end' } }}
+            adornmentCallback={getAdornmentInputProps(ActivePowerAdornment)}
         />
     );
 
@@ -243,6 +238,7 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                 yup.reach(schema, REACTIVE_POWER_FIELD)?.exclusiveTests
                     ?.required === true
             }
+            adornmentCallback={getClearAdornmentInputProps({ position: 'end' })}
         />
     );
 
