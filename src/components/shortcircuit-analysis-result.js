@@ -19,12 +19,23 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         const rows = [];
         shortcutAnalysisResult?.faults?.forEach((f) => {
             const fault = f.fault;
+            const limitViolations = f.limitViolations;
+            let firstLimitViolation;
+            if (limitViolations.length > 0) {
+                firstLimitViolation = {
+                    limitType: limitViolations[0].limitType,
+                    limit: limitViolations[0].limit,
+                    limitName: limitViolations[0].limitName,
+                    value: limitViolations[0].value,
+                };
+                limitViolations.shift();
+            }
             rows.push({
                 faultId: fault.id,
                 elementId: fault.elementId,
                 faultType: fault.faultType,
+                ...firstLimitViolation,
             });
-            const limitViolations = f.limitViolations;
             limitViolations.forEach((lv) => {
                 rows.push({
                     limitType: lv.limitType,
