@@ -431,8 +431,6 @@
     "Characteristics": "Caractéristiques",
     "Side1": "Côté 1",
     "Side2": "Côté 2",
-    "OriginSide": "Côté origine",
-    "ExtrimitySide": "Côté extrémité",
     "SeriesResistanceText": "Résistance série",
     "SeriesReactanceText": "Réactance série",
     "ShuntConductanceText": "Conductance parallèle",
