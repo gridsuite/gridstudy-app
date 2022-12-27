@@ -573,7 +573,7 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchEquipmentsInfos(
+export function searchEquipmentsInfos(
     studyUuid,
     nodeUuid,
     searchTerm,
