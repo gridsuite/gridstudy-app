@@ -1968,12 +1968,12 @@ export function loadScaling(
     currentNodeUuid,
     modificationUuid,
     variationType,
-    variations
+    loadScalingVariations
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPE.LOAD_SCALING,
         variationType,
-        variations,
+        loadScalingVariations,
     });
 
     let loadScalingUrl;

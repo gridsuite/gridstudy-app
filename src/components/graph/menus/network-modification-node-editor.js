@@ -373,8 +373,8 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
-        LOAD_SCALABLE: {
-            label: 'LoadScalable',
+        LOAD_SCALING: {
+            label: 'LoadScaling',
             dialog: () => adapt(LoadScalingDialog),
             icon: <AddIcon />,
         },

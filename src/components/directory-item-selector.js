@@ -152,6 +152,12 @@ const DirectoryItemSelector = (props) => {
                             props.types,
                             props.equipmentTypes
                         ).then((childrenWithMetada) => {
+                            let finalResult = childrenWithMetada;
+                            if (props.filterResults) {
+                                finalResult.filter((val) =>
+                                    props.filterResult(val)
+                                );
+                            }
                             // update directory content
                             addToDirectory(nodeId, childrenWithMetada);
                         });
@@ -166,7 +172,7 @@ const DirectoryItemSelector = (props) => {
                     );
                 });
         },
-        [addToDirectory, contentFilter, props.types, props.equipmentTypes]
+        [props, contentFilter, addToDirectory]
     );
 
     useEffect(() => {

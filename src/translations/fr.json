@@ -492,7 +492,7 @@
     "ReplacingLines": "Liaisons de remplacement",
     "LineDivisionError": "Erreur lors de la création d'une coupure",
     "LineAttachmentError": "Erreur lors de la création d'un piquage",
-    "LoadScalableError": "Erreur lors de la création de Variation plan de consommation",
+    "LoadScalingError": "Erreur lors de la création de Variation plan de consommation",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
@@ -670,5 +670,5 @@
     "TanFixed": "tan(φ) fixe",
     "ConstantQWithoutUnit": "Q constant",
     "Variations": "Variations",
-    "LoadScalable": "Variation plan de consommation"
+    "LoadScaling": "Variation plan de consommation"
 }

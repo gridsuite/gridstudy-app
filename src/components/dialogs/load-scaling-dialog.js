@@ -23,8 +23,8 @@ import {
 import { useExpandableValues } from './inputs/use-expandable-values';
 import {
     useDirectoryElements,
+    useDoubleValue,
     useInputForm,
-    useIntegerValue,
     useOptionalEnumValue,
     useRadioValue,
 } from './inputs/input-hooks';
@@ -54,7 +54,7 @@ export const useStyles = makeStyles((theme) => ({
         maxWidth: 200,
     },
     padding: {
-        padding: '5px',
+        padding: '15px',
     },
 }));
 
@@ -66,6 +66,7 @@ const VariationSection = ({
     onChange,
     defaultValue,
     inputForm,
+    fieldProps,
     errors,
 }) => {
     const classes = useStyles();
@@ -80,17 +81,17 @@ const VariationSection = ({
         equipmentTypes: [EquipmentType.LOAD],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
+        errorMsg: errors?.filtersError,
     });
 
-    const [variationValue, variationValueField] = useIntegerValue({
-        id: 'DeltaTargetP',
-        label: 'DeltaPTarget',
+    const [variationValue, variationValueField] = useDoubleValue({
+        label: fieldProps.isDeltaP ? 'DeltaP' : 'TargetP',
         validation: {
             isFieldRequired: true,
         },
         defaultValue: defaultValue?.variationValue,
         inputForm: inputForm,
-        errorMsg: errors?.variationValue,
+        errorMsg: errors?.variationValueError,
     });
 
     const [activeVariationMode, activeVariationModeField] =
@@ -101,18 +102,25 @@ const VariationSection = ({
             validation: {
                 isFieldRequired: true,
             },
-            defaultValue: ACTIVE_VAR_MODE_DEFAULT_VALUE,
+            defaultValue:
+                defaultValue?.activeVariationMode ??
+                ACTIVE_VAR_MODE_DEFAULT_VALUE,
+            errorMsg: errors?.activeVariationModeError,
         });
 
     const [reactiveVariationMode, reactiveVariationModeField] =
         useOptionalEnumValue({
+            id: 'ReactiveVariationMode',
             label: 'ReactiveVariationMode',
             inputForm: inputForm,
             enumObjects: REACTIVE_VARIATION_MODE,
             validation: {
                 isFieldRequired: true,
             },
-            defaultValue: REACTIVE_VAR_MODE_DEFAULT_VALUE,
+            defaultValue:
+                defaultValue?.reactiveVariationMode ??
+                REACTIVE_VAR_MODE_DEFAULT_VALUE,
+            errorMsg: errors?.reactiveVariationModeError,
         });
 
     useEffect(() => {
@@ -133,10 +141,10 @@ const VariationSection = ({
 
     return (
         <>
-            {gridItem(filtersField, 2)}
-            {gridItem(variationValueField, 2.5)}
-            {gridItem(activeVariationModeField, 3.5)}
-            {gridItem(reactiveVariationModeField, 3)}
+            {gridItem(filtersField, 3.5)}
+            {gridItem(variationValueField, 2)}
+            {gridItem(activeVariationModeField, 3)}
+            {gridItem(reactiveVariationModeField, 2.5)}
         </>
     );
 };
@@ -165,38 +173,61 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
     }, [editData]);
 
     function validateVariation(values) {
+        const newValues = values.map((val) => {
+            val.id = val.id ?? Math.random();
+            return val;
+        });
         const res = new Map();
-        const idMap = values.reduce(
-            (m, v) => m.set(v.id, m.get(v.id) || 0),
-            new Map()
-        );
-
-        values.forEach((val, idx) => {
-            const errorId = idMap.get(val.id);
-            if (errorId)
+        newValues.forEach((val, idx) => {
+            const errorId = 'FieldIsRequired';
+            if (!val.filters || val.filters.length < 1) {
                 res.set(idx, {
                     error: true,
-                    ...errorId,
+                    filtersError: errorId,
                 });
+            }
+            if (!val.variationValue) {
+                res.set(idx, {
+                    ...res.get(idx),
+                    error: true,
+                    variationValueError: errorId,
+                });
+            }
+            if (!val.activeVariationMode) {
+                res.set(idx, {
+                    ...res.get(idx),
+                    error: true,
+                    activeVariationModeError: errorId,
+                });
+            }
+            if (!val.reactiveVariationMode) {
+                res.set(idx, {
+                    ...res.get(idx),
+                    error: true,
+                    reactiveVariationModeError: errorId,
+                });
+            }
         });
         return res;
     }
 
     const [variationType, variationTypeRadioButton] = useRadioValue({
         inputForm: inputForm,
-        defaultValue: 'DELTA_P',
+        defaultValue: formValues?.variationType ?? 'DELTA_P',
         possibleValues: LOAD_SCALABLE_TYPES,
     });
 
-    const [variations, variationsField] = useExpandableValues({
-        id: 'variations',
-        labelAddValue: 'CreateVariation',
-        validateItem: validateVariation,
-        inputForm: inputForm,
-        Field: VariationSection,
-        defaultValues: formValues?.variations,
-        isRequired: true,
-    });
+    const [loadScalingVariations, loadScalingVariationsField] =
+        useExpandableValues({
+            id: 'variations',
+            labelAddValue: 'CreateVariation',
+            validateItem: validateVariation,
+            inputForm: inputForm,
+            Field: VariationSection,
+            defaultValues: formValues?.loadScalingVariations,
+            isRequired: true,
+            fieldProps: { isDeltaP: variationType === 'DELTA_P' },
+        });
 
     const handleValidation = () => {
         return inputForm.validate();
@@ -208,11 +239,11 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
             currentNodeUuid,
             editData ? editData.uuid : undefined,
             variationType,
-            variations
+            loadScalingVariations
         ).catch((errorMessage) => {
             snackError({
                 messageTxt: errorMessage,
-                headerId: 'LoadScalableError',
+                headerId: 'LoadScalingError',
             });
         });
     };
@@ -239,7 +270,7 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
             </Grid>
             <GridSection title="Variations" />
             <Grid container className={classes.padding}>
-                {gridItem(variationsField, 12)}
+                {gridItem(loadScalingVariationsField, 12)}
             </Grid>
         </ModificationDialog>
     );
@@ -247,10 +278,6 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
 
 LoadScalingDialog.propTypes = {
     currentNodeUuid: PropTypes.string,
-    voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
     lineOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
