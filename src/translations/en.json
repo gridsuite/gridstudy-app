@@ -139,6 +139,12 @@
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
 
+    "DynamicSimulation": "Dynamic simulation",
+    "DynamicSimulationParameters": "Dynamic simulation parameters",
+    "DynamicSimulationResults": "Dynamic simulation results",
+    "DynamicSimulationError": "An error occurred while executing the dynamic simulation",
+    "DynamicSimulationParametersSelection": "Dynamic simulation parameters selection",
+
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
     "AddContingencyList": "Add",

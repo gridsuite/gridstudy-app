@@ -962,6 +962,91 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
+// --- Dynamic simulation API - BEGIN
+export function startDynamicSimulation(
+    studyUuid,
+    currentNodeUuid,
+    mappingName,
+    dynamicSimulationConfiguration
+) {
+    console.info(
+        `Running dynamic simulation on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    let startDynamicSimulationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/run?';
+
+    // add request params
+    if (mappingName) {
+        startDynamicSimulationUrl += `mappingName='${mappingName}'`;
+    }
+
+    // add body
+    const body = JSON.stringify(dynamicSimulationConfiguration ?? {});
+
+    console.debug({ startDynamicSimulationUrl, body });
+    return backendFetch(startDynamicSimulationUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
+
+export function stopDynamicSimulation(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping dynamic simulation on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopDynamicSimulationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/stop';
+    console.debug(stopDynamicSimulationUrl);
+    return backendFetch(stopDynamicSimulationUrl, { method: 'put' });
+}
+
+export function fetchDynamicSimulationStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching dynamic simulation status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/status';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchDynamicSimulationResultTimeSeries(
+    studyUuid,
+    currentNodeUuid
+) {
+    console.info(
+        `Fetching dynamic simulation time series result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/result/timeseries';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchDynamicSimulationResultTimeLine(
+    studyUuid,
+    currentNodeUuid
+) {
+    console.info(
+        `Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/result/timeline';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+// --- Dynamic simulation API - END
+
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');
     const url =

@@ -14,9 +14,11 @@ import {
     startSecurityAnalysis,
     startSensitivityAnalysis,
     startShortCircuitAnalysis,
+    startDynamicSimulation,
     stopSecurityAnalysis,
     stopSensitivityAnalysis,
     stopShortCircuitAnalysis,
+    stopDynamicSimulation,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
 import LoopIcon from '@mui/icons-material/Loop';
@@ -30,12 +32,14 @@ import {
     addSANotif,
     addSensiNotif,
     addShortCircuitNotif,
+    addDynamicSimulationNotif,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
+import DynamicSimulationParametersSelector from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -50,6 +54,7 @@ export function RunButtonContainer({
     securityAnalysisStatus,
     sensiStatus,
     shortCircuitStatus,
+    dynamicSimulationStatus,
     setIsComputationRunning,
     runnable,
     disabled,
@@ -62,6 +67,11 @@ export function RunButtonContainer({
     const [showSensiParametersSelector, setShowSensiParametersSelector] =
         useState(false);
 
+    const [
+        showDynamicSimulationParametersSelector,
+        setShowDynamicSimulationParametersSelector,
+    ] = useState(false);
+
     const [computationStopped, setComputationStopped] = useState(false);
 
     const [ranLoadflow, setRanLoadflow] = useState(false);
@@ -71,6 +81,8 @@ export function RunButtonContainer({
     const [ranSensi, setRanSensi] = useState(false);
 
     const [ranShortCircuit, setRanShortCircuit] = useState(false);
+
+    const [ranDynamicSimulation, setRanDynamicSimulation] = useState(false);
 
     const intl = useIntl();
 
@@ -109,6 +121,12 @@ export function RunButtonContainer({
                 'shortCircuitAnalysisResult'
         ) {
             dispatch(addShortCircuitNotif());
+        } else if (
+            ranDynamicSimulation &&
+            studyUpdatedForce?.eventData?.headers?.updateType ===
+                'dynamicSimulationResult'
+        ) {
+            dispatch(addDynamicSimulationNotif());
         }
     }, [
         dispatch,
@@ -117,6 +135,7 @@ export function RunButtonContainer({
         ranLoadflow,
         ranSensi,
         ranShortCircuit,
+        ranDynamicSimulation,
     ]);
 
     const ACTION_ON_RUNNABLES = {
@@ -130,6 +149,9 @@ export function RunButtonContainer({
                 setComputationStopped(!computationStopped);
             } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
                 stopShortCircuitAnalysis(studyUuid, currentNode?.id);
+                setComputationStopped(!computationStopped);
+            } else if (action === runnable.DYNAMIC_SIMULATION) {
+                stopDynamicSimulation(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -159,6 +181,23 @@ export function RunButtonContainer({
         );
     };
 
+    const handleStartDynamicSimulation = ({
+        mappingName,
+        dynamicSimulationConfiguration,
+    }) => {
+        // close the dialog
+        setShowDynamicSimulationParametersSelector(false);
+
+        setComputationStopped(false);
+
+        // start server side dynamic simulation
+        startDynamicSimulation(
+            studyUuid,
+            currentNode?.id,
+            mappingName,
+            dynamicSimulationConfiguration
+        );
+    };
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
             startLoadFlow(studyUuid, currentNode?.id)
@@ -184,6 +223,9 @@ export function RunButtonContainer({
                         headerId: 'ShortCircuitError',
                     });
                 });
+        } else if (action === runnable.DYNAMIC_SIMULATION) {
+            setShowDynamicSimulationParametersSelector(true);
+            setRanDynamicSimulation(true);
         }
     };
 
@@ -197,6 +239,8 @@ export function RunButtonContainer({
                 return sensiStatus;
             } else if (runnableType === runnable.SHORT_CIRCUIT_ANALYSIS) {
                 return shortCircuitStatus;
+            } else if (runnableType === runnable.DYNAMIC_SIMULATION) {
+                return dynamicSimulationStatus;
             }
         },
         [
@@ -204,6 +248,7 @@ export function RunButtonContainer({
             securityAnalysisStatus,
             sensiStatus,
             shortCircuitStatus,
+            dynamicSimulationStatus,
             runnable,
         ]
     );
@@ -233,6 +278,8 @@ export function RunButtonContainer({
             runnables.push(runnable.SENSITIVITY_ANALYSIS);
             // SHORTCIRCUIT is currently a dev feature
             runnables.push(runnable.SHORT_CIRCUIT_ANALYSIS);
+            // DYNAMICSIMULATION is currently a dev feature
+            runnables.push(runnable.DYNAMIC_SIMULATION);
         }
         return runnables;
     }, [runnable, enableDeveloperMode]);
@@ -275,6 +322,18 @@ export function RunButtonContainer({
                             currentNodeUuid={currentNode?.id}
                         />
                     )}
+                    {showDynamicSimulationParametersSelector && (
+                        <DynamicSimulationParametersSelector
+                            open={showDynamicSimulationParametersSelector}
+                            onClose={() =>
+                                setShowDynamicSimulationParametersSelector(
+                                    false
+                                )
+                            }
+                            onStart={handleStartDynamicSimulation}
+                            currentNodeUuid={currentNode?.id}
+                        />
+                    )}
                 </div>
             )}
         </>
@@ -282,7 +341,7 @@ export function RunButtonContainer({
 }
 
 RunButtonContainer.propTypes = {
-    runnables: PropTypes.arrayOf(PropTypes.string),
+    runnable: PropTypes.arrayOf(PropTypes.string),
     actionOnRunnable: PropTypes.shape({
         action: PropTypes.func,
         text: PropTypes.string,
@@ -294,4 +353,5 @@ RunButtonContainer.propTypes = {
     startIcon: PropTypes.func,
     computationStopped: PropTypes.bool,
     disabled: PropTypes.bool,
+    dynamicSimulationStatus: PropTypes.string,
 };

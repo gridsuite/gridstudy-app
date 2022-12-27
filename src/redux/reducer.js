@@ -71,6 +71,8 @@ import {
     CLOSE_SLD,
     ADD_SHORT_CIRCUIT_NOTIF,
     RESET_SHORT_CIRCUIT_NOTIF,
+    ADD_DYNAMIC_SIMULATION_NOTIF,
+    RESET_DYNAMIC_SIMULATION_NOTIF,
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
     MAP_EQUIPMENTS_CREATED,
@@ -147,6 +149,7 @@ const initialState = {
     saNotif: false,
     sensiNotif: false,
     shortCircuitNotif: false,
+    dynamicSimulationNotif: false,
     filteredNominalVoltages: null,
     fullScreenSldId: null,
     fullScreenNadId: null,
@@ -449,6 +452,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SHORT_CIRCUIT_NOTIF]: (state) => {
         state.shortCircuitNotif = false;
+    },
+
+    [ADD_DYNAMIC_SIMULATION_NOTIF]: (state) => {
+        state.dynamicSimulationNotif = true;
+    },
+
+    [RESET_DYNAMIC_SIMULATION_NOTIF]: (state) => {
+        state.dynamicSimulationNotif = false;
     },
 
     [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {

@@ -28,6 +28,7 @@ import {
     fetchSensitivityAnalysisStatus,
     connectDeletedStudyNotificationsWebsocket,
     fetchShortCircuitAnalysisStatus,
+    fetchDynamicSimulationStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -54,6 +55,7 @@ import {
     getSecurityAnalysisRunningStatus,
     getSensiRunningStatus,
     getShortCircuitRunningStatus,
+    getDynamicSimulationRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
@@ -162,6 +164,10 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
 ];
+const dynamicSimulationStatusInvalidations = [
+    'dynamicSimulation_status',
+    'dynamicSimulation_failed',
+];
 const UPDATE_TYPE_HEADER = 'updateType';
 // the delay before we consider the WS truly connected
 const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
@@ -230,6 +236,15 @@ export function StudyContainer({ view, onChangeTab }) {
         getShortCircuitRunningStatus
     );
 
+    const [dynamicSimulationStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchDynamicSimulationStatus,
+        dynamicSimulationStatusInvalidations,
+        RunningStatus.IDLE,
+        getDynamicSimulationRunningStatus
+    );
+
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const loadNetworkRef = useRef();
@@ -263,6 +278,11 @@ export function StudyContainer({ view, onChangeTab }) {
             if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
                 snackError({
                     headerId: 'shortCircuitAnalysisError',
+                });
+            }
+            if (updateTypeHeader === 'dynamicSimulation_failed') {
+                snackError({
+                    headerId: 'dynamicSimulationError',
                 });
             }
         },
@@ -677,6 +697,9 @@ export function StudyContainer({ view, onChangeTab }) {
             SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
                 id: 'ShortCircuitAnalysis',
             }),
+            DYNAMIC_SIMULATION: intl.formatMessage({
+                id: 'DynamicSimulation',
+            }),
         };
     }, [intl]);
 
@@ -698,6 +721,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 securityAnalysisStatus={securityAnalysisStatus}
                 sensiStatus={sensiStatus}
                 shortCircuitStatus={shortCircuitStatus}
+                dynamicSimulationStatus={dynamicSimulationStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />

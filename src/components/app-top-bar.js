@@ -34,6 +34,7 @@ import {
     fetchSecurityAnalysisStatus,
     fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
+    fetchDynamicSimulationStatus,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
@@ -42,12 +43,14 @@ import {
     addSANotif,
     addSensiNotif,
     addShortCircuitNotif,
+    addDynamicSimulationNotif,
     centerOnSubstation,
     openNetworkAreaDiagram,
     resetLoadflowNotif,
     resetSANotif,
     resetSensiNotif,
     resetShortCircuitNotif,
+    resetDynamicSimulationNotif,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
@@ -165,6 +168,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
 
+    const dynamicSimulationNotif = useSelector(
+        (state) => state.dynamicSimulationNotif
+    );
+
     const theme = useSelector((state) => state[PARAM_THEME]);
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
@@ -197,6 +204,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         'shortCircuitAnalysis_status',
         'shortCircuitAnalysis_failed',
     ];
+    const dynamicSimulationStatusInvalidations = [
+        'dynamicSimulation_status',
+        'dynamicSimulation_failed',
+    ];
     const [loadFlowInfosNode] = useNodeData(
         studyUuid,
         currentNode?.id,
@@ -223,6 +234,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         currentNode?.id,
         fetchShortCircuitAnalysisStatus,
         shortCircuitAnalysisStatusInvalidations
+    );
+
+    const [dynamicSimulationStatusNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchDynamicSimulationStatus,
+        dynamicSimulationStatusInvalidations
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
@@ -301,6 +319,18 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             dispatch(resetShortCircuitNotif());
         }
     }, [currentNode, dispatch, shortCircuitAnalysisStatusNode, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            (dynamicSimulationStatusNode === 'CONVERGED' ||
+                dynamicSimulationStatusNode === 'DIVERGED')
+        ) {
+            dispatch(addDynamicSimulationNotif());
+        } else {
+            dispatch(resetDynamicSimulationNotif());
+        }
+    }, [currentNode, dispatch, dynamicSimulationStatusNode, tabIndex, user]);
 
     function showParameters() {
         setParametersOpen(true);
@@ -403,7 +433,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                 (loadflowNotif ||
                                     saNotif ||
                                     sensiNotif ||
-                                    shortCircuitNotif)
+                                    shortCircuitNotif ||
+                                    dynamicSimulationNotif)
                             ) {
                                 label = (
                                     <Badge
@@ -411,7 +442,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                             loadflowNotif +
                                             saNotif +
                                             sensiNotif +
-                                            shortCircuitNotif
+                                            shortCircuitNotif +
+                                            dynamicSimulationNotif
                                         }
                                         color="secondary"
                                     >

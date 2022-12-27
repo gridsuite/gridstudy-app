@@ -95,6 +95,7 @@ const StudyPane = ({
     securityAnalysisStatus,
     sensiStatus,
     shortCircuitStatus,
+    dynamicSimulationStatus,
     runnable,
     setUpdateSwitchMsg,
     setErrorMessage,
@@ -295,6 +296,9 @@ const StudyPane = ({
                                     }
                                     sensiStatus={sensiStatus}
                                     shortCircuitStatus={shortCircuitStatus}
+                                    dynamicSimulationStatus={
+                                        dynamicSimulationStatus
+                                    }
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
@@ -428,6 +432,7 @@ StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func,
+    dynamicSimulationStatus: PropTypes.string,
 };
 
 export default StudyPane;
