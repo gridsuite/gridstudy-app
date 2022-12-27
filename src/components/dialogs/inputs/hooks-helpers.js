@@ -28,10 +28,11 @@ export function genHelperError(...errors) {
     return {};
 }
 
-export const FieldLabel = ({ label, optional }) => {
+export const FieldLabel = ({ label, optional, empty = true }) => {
+    if (!empty) return;
     return (
         <>
-            <FormattedMessage id={label} />
+            <FormattedMessage  id={label} />
             {optional && <FormattedMessage id="Optional" />}
         </>
     );

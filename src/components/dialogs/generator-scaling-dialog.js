@@ -51,9 +51,18 @@ const GeneratorScalingVariation = ({
    onChange,
    defaultValue,
    inputForm,
-   isDeltaP
+   isDeltaP,
+   errors,
 }) => {
     const classes = useStyles();
+
+    useEffect(() => {
+        console.log('errors : ', errors);
+    }, [errors]);
+
+    const onError = (event) => {
+        console.log('event : ', event)
+    }
 
     const [filters, filtersField] = useDirectoryElements({
         label: 'filter',
@@ -66,6 +75,9 @@ const GeneratorScalingVariation = ({
         equipmentTypes: [EquipmentType.GENERATOR],
         filterResults: filterResults,
         elementClassName: classes.chipElement,
+        required: true,
+        errorMsg: errors?.filterError,
+        onError: onError,
     });
 
     const [variationValue, variationValueField] = useDoubleValue({
@@ -75,6 +87,7 @@ const GeneratorScalingVariation = ({
         },
         inputForm: inputForm,
         defaultValue: defaultValue.variationValue ?? '',
+        errorMsg: errors?.validationValueError
     })
 
     const [variationMode, variationModeField] = useOptionalEnumValue({
@@ -123,20 +136,34 @@ const GeneratorScalingDialog = ({
     }, [editData]);
 
     function validateVariation(values) {
-        const res = new Map();
-        const idMap = values.reduce(
-            (m, v) => m.set(v.id, m.get(v.id) || 0),
-            new Map()
-        );
+        console.log('scale test validation values ', values)
+        const newValues = values.map((val) => {
+            val.id = val.id ?? Math.random();
+            return val;
+        })
 
-        values.forEach((val, idx) => {
-            const errorId = idMap.get(val.id);
-            if (errorId)
+        const res = new Map();
+
+        console.log('scale test validation newValues ', newValues)
+        newValues.forEach((val, idx) => {
+            console.log("test val , ", val)
+            const errorId = 'FieldIsRequired';
+            if(!val.filters || val.filters.length < 1) {
                 res.set(idx, {
                     error: true,
-                    ...errorId,
-                });
+                    filterError: errorId,
+                })
+            }
+            if (!val.variationValue) {
+                res.set(idx, {
+                    ...res.get(idx),
+                    error: true,
+                    validationValueError: errorId,
+                })
+            }
         });
+
+        console.log('scale test validation res ', res)
         return res;
     }
 
@@ -172,7 +199,8 @@ const GeneratorScalingDialog = ({
     };
 
     const handleSave = () => {
-        console.log('variation : ', variations);
+        console.log('variation : ', variations, iterativeValue);
+        console.log('variation : ', variations, iterativeValue);
         generatorScaling(
             studyUuid,
             currentNodeUuid,

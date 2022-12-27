@@ -698,7 +698,10 @@ export const useDirectoryElements = ({
     equipmentTypes,
     titleId,
     elementClassName,
+    required = false,
     filterResults = undefined,
+    errorMsg = undefined,
+    onError,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(initialValues);
@@ -748,51 +751,67 @@ export const useDirectoryElements = ({
         [values, snackError]
     );
 
+    useEffect(() => {
+        console.log('error : ', errorMsg)
+        console.log('error : ', onError)
+    }, [errorMsg, onError])
     const field = useMemo(() => {
         return (
             <>
-                <FormControl className={classes.formDirectoryElements1}>
-                    <Grid container>
-                        <Grid item>
-                            <InputLabel
-                                id="elements"
-                                className={classes.labelDirectoryElements}
-                            >
-                                <FieldLabel label={label} optional={false} />
-                            </InputLabel>
-                        </Grid>
-                        <Grid item xs>
-                            <Grid container direction="row-reverse">
-                                <IconButton
-                                    className={classes.addDirectoryElements}
-                                    size={'small'}
-                                    onClick={() =>
-                                        setDirectoryItemSelectorOpen(true)
-                                    }
+                <FormControl
+                    className={classes.formDirectoryElements1}
+                    error={errorMsg ? true : false}
+                    aria-errormessage={errorMsg}
+                    onError={onError}
+                >
+                    {values?.length == 0 && (
+                        <Grid container>
+                            <Grid item>
+                                <InputLabel
+                                    id="elements"
+                                    className={classes.labelDirectoryElements}
+                                    error={errorMsg ? true : false}
+                                    onError={onError}
+                                    aria-errormessage={errorMsg}
                                 >
-                                    <FolderIcon />
-                                </IconButton>
+                                    <FieldLabel label={label} optional={false}/>
+                                </InputLabel>
                             </Grid>
                         </Grid>
+                    )}
+                    {values?.length > 0 && (
+                        <FormControl className={classes.formDirectoryElements2} >
+                            <div>
+                                {values.map((item, index) => (
+                                    <Chip
+                                        className={elementClassName}
+                                        key={label + '_' + index}
+                                        size="small"
+                                        onDelete={() => handleDelete(item, index)}
+                                        label={
+                                            <OverflowableText
+                                                text={item.name}
+                                                style={{ width: '100%' }}
+                                            />
+                                        }
+                                    />
+                                ))}
+                            </div>
+                        </FormControl>
+                    )}
+                    <Grid item xs>
+                        <Grid container direction="row-reverse">
+                            <IconButton
+                                className={classes.addDirectoryElements}
+                                size={'small'}
+                                onClick={() =>
+                                    setDirectoryItemSelectorOpen(true)
+                                }
+                            >
+                                <FolderIcon />
+                            </IconButton>
+                        </Grid>
                     </Grid>
-                    <FormControl className={classes.formDirectoryElements2}>
-                        <div>
-                            {values.map((item, index) => (
-                                <Chip
-                                    className={elementClassName}
-                                    key={label + '_' + index}
-                                    size="small"
-                                    onDelete={() => handleDelete(item, index)}
-                                    label={
-                                        <OverflowableText
-                                            text={item.name}
-                                            style={{ width: '100%' }}
-                                        />
-                                    }
-                                />
-                            ))}
-                        </div>
-                    </FormControl>
                 </FormControl>
                 <DirectoryItemSelector
                     open={directoryItemSelectorOpen}
