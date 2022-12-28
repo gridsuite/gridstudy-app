@@ -198,6 +198,7 @@ export function RunButtonContainer({
             dynamicSimulationConfiguration
         );
     };
+
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
             startLoadFlow(studyUuid, currentNode?.id)

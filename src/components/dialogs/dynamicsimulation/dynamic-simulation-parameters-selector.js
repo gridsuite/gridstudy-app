@@ -27,13 +27,14 @@ function makeButton(onClick, message, disabled) {
 const DynamicSimulationParametersSelector = (props) => {
     const { open, onClose, onStart } = props;
 
-    const { selectedMappingName, setSelectedMappingName } =
-        useState('gautier2');
+    const [mappingName, setMappingName] = useState('gautier2');
 
-    const { configuration, setConfiguration } = useState({
-        startTime: 0,
-        stopTime: 500,
-    });
+    const [dynamicSimulationConfiguration, setDynamicSimulationConfiguration] =
+        useState({
+            startTime: 0,
+            stopTime: 500,
+            withVariant: false,
+        });
 
     const handleClose = () => {
         onClose();
@@ -41,8 +42,8 @@ const DynamicSimulationParametersSelector = (props) => {
 
     const handleStart = () => {
         onStart({
-            mappingName: selectedMappingName,
-            dynamicSimulationConfiguration: configuration,
+            mappingName,
+            dynamicSimulationConfiguration,
         });
     };
 

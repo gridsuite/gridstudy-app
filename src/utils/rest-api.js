@@ -979,7 +979,7 @@ export function startDynamicSimulation(
 
     // add request params
     if (mappingName) {
-        startDynamicSimulationUrl += `mappingName='${mappingName}'`;
+        startDynamicSimulationUrl += `mappingName=${mappingName}`;
     }
 
     // add body
