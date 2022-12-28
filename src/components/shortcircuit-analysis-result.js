@@ -24,9 +24,18 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             if (limitViolations.length > 0) {
                 firstLimitViolation = {
                     limitType: limitViolations[0].limitType,
-                    limit: limitViolations[0].limit,
+                    limitMin:
+                        limitViolations[0].limitType ===
+                        'LOW_SHORT_CIRCUIT_CURRENT'
+                            ? limitViolations[0].limit
+                            : NaN,
+                    limitMax:
+                        limitViolations[0].limitType ===
+                        'HIGH_SHORT_CIRCUIT_CURRENT'
+                            ? limitViolations[0].limit
+                            : NaN,
                     limitName: limitViolations[0].limitName,
-                    value: limitViolations[0].value,
+                    current: limitViolations[0].value,
                 };
                 limitViolations.shift();
             }
@@ -34,6 +43,8 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 faultId: fault.id,
                 elementId: fault.elementId,
                 faultType: fault.faultType,
+                shortCircuitPower: f.shortCircuitPower,
+                current: f.current,
                 ...firstLimitViolation,
             });
             limitViolations.forEach((lv) => {
@@ -66,22 +77,22 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     columns={[
                         {
                             width: 200,
-                            label: intl.formatMessage({ id: 'Equipment' }),
+                            label: intl.formatMessage({ id: 'IDNode' }),
                             dataKey: 'elementId',
                         },
                         {
                             width: 200,
-                            label: intl.formatMessage({ id: 'FaultType' }),
+                            label: intl.formatMessage({ id: 'Type' }),
                             dataKey: 'faultType',
                         },
                         {
                             width: 200,
-                            label: intl.formatMessage({ id: 'ConnectableId' }),
+                            label: intl.formatMessage({ id: 'Feeders' }),
                             dataKey: 'connectableId',
                         },
                         {
                             width: 200,
-                            label: intl.formatMessage({ id: 'Current' }),
+                            label: intl.formatMessage({ id: 'IscKA' }),
                             dataKey: 'current',
                             numeric: true,
                             fractionDigits: 1,
@@ -93,20 +104,24 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                         },
                         {
                             width: 200,
-                            label: intl.formatMessage({ id: 'LimitName' }),
-                            dataKey: 'limitName',
-                        },
-                        {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'Limit' }),
-                            dataKey: 'limit',
+                            label: intl.formatMessage({ id: 'IscMinKA' }),
+                            dataKey: 'limitMin',
                             numeric: true,
+                            nullable: true,
                             fractionDigits: 1,
                         },
                         {
                             width: 200,
-                            label: intl.formatMessage({ id: 'Value' }),
-                            dataKey: 'value',
+                            label: intl.formatMessage({ id: 'IscMaxKA' }),
+                            dataKey: 'limitMax',
+                            numeric: true,
+                            nullable: true,
+                            fractionDigits: 1,
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'PscMVA' }),
+                            dataKey: 'shortCircuitPower',
                             numeric: true,
                             fractionDigits: 1,
                         },

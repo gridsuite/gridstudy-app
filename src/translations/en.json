@@ -161,6 +161,11 @@
     "ShortCircuitAnalysisParameters": "Short circuit analysis parameters",
     "ShortCircuitAnalysisResults": "Short circuit analysis results",
     "ShortCircuitError": "An error occured when executing short circuit analysis",
+    "IDNode": "ID bus",
+    "IscKA": "Isc (kA)",
+    "IscMinKA": "Isc min (kA)",
+    "IscMaxKA": "Isc max (kA)",
+    "PscMVA": "Psc (MVA)",
 
     "LimitType": "Limit type",
     "Value": "Value",
