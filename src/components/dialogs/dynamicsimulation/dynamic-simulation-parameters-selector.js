@@ -8,11 +8,25 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Dialog, DialogContent, DialogTitle } from '@mui/material';
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import {
+    useInputForm,
+    useIntegerValue,
+    useSwitchValue,
+} from '../inputs/input-hooks';
+import { filledTextField, getIdOrSelf, gridItem } from '../dialogUtils';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useAutocompleteField } from '../inputs/use-autocomplete-field';
+import { getDynamicMappings } from '../../../utils/rest-api';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -24,32 +38,119 @@ function makeButton(onClick, message, disabled) {
     );
 }
 
+const MAPPING_SELECTION_LABEL = 'DynamicSimulationMappingSelection';
+const PARAMETER_START_TIME_LABEL = 'DynamicSimulationStartTime';
+const PARAMETER_START_TIME_ERROR_MSG =
+    'DynamicSimulationStartTimeGreaterThanOrEqualDefaultValue';
+const PARAMETER_STOP_TIME_LABEL = 'DynamicSimulationStopTime';
+const PARAMETER_STOP_TIME_ERROR_MSG =
+    'DynamicSimulationStopTimeLessThanOrEqualDefaultValue';
+const PARAMETER_WITH_VARIANT_LABEL = 'DynamicSimulationWithVariant';
+
 const DynamicSimulationParametersSelector = (props) => {
-    const { open, onClose, onStart } = props;
+    const { open, onClose, onStart, studyUuid, currentNodeUuid } = props;
 
-    const [mappingName, setMappingName] = useState('gautier2');
+    const [mappingNames, setMappingNames] = useState(['gautier2', 'gautier3']);
 
-    const [dynamicSimulationConfiguration, setDynamicSimulationConfiguration] =
-        useState({
-            startTime: 0,
-            stopTime: 500,
-            withVariant: false,
-        });
+    const { snackError } = useSnackMessage();
+
+    const inputForm = useInputForm();
+
+    const [mappingName, mappingNameField] = useAutocompleteField({
+        label: MAPPING_SELECTION_LABEL,
+        inputForm: inputForm,
+        values: mappingNames,
+        validation: {
+            isFieldRequired: true,
+        },
+        getLabel: getIdOrSelf,
+    });
+
+    const [startTime, startTimeField] = useIntegerValue({
+        label: PARAMETER_START_TIME_LABEL,
+        validation: {
+            isFieldRequired: true,
+            isFieldNumeric: true,
+            valueGreaterThanOrEqualTo: 0,
+            errorMsgId: PARAMETER_START_TIME_ERROR_MSG,
+        },
+        inputForm: inputForm,
+        defaultValue: 0,
+        formProps: filledTextField,
+    });
+
+    const [stopTime, stopTimeField] = useIntegerValue({
+        label: PARAMETER_STOP_TIME_LABEL,
+        validation: {
+            isFieldRequired: true,
+            isFieldNumeric: true,
+            valueLessThanOrEqualTo: 10000,
+            errorMsgId: PARAMETER_STOP_TIME_ERROR_MSG,
+        },
+        inputForm: inputForm,
+        defaultValue: 500,
+        formProps: filledTextField,
+    });
+
+    const [withVariant, withVariantField] = useSwitchValue({
+        label: PARAMETER_WITH_VARIANT_LABEL,
+        inputFrom: inputForm,
+        defaultValue: false,
+    });
+
+    useEffect(() => {
+        // get all mapping names
+        getDynamicMappings(studyUuid, currentNodeUuid)
+            .then((mappings) =>
+                setMappingNames(mappings.map((mapping) => mapping.name))
+            )
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'mappingsRetrievingError',
+                });
+            });
+    }, [studyUuid, currentNodeUuid, snackError]);
 
     const handleClose = () => {
         onClose();
     };
 
     const handleStart = () => {
-        onStart({
-            mappingName,
-            dynamicSimulationConfiguration,
-        });
+        if (inputForm.validate()) {
+            onStart({
+                mappingName: mappingName,
+                dynamicSimulationConfiguration: {
+                    startTime: startTime,
+                    stopTime: stopTime,
+                    withVariant: withVariant,
+                },
+            });
+        }
     };
+
+    function renderInputs() {
+        return (
+            <Grid
+                container
+                spacing={2}
+                direction="column"
+                item
+                xs={12}
+                justifyContent={'center'}
+            >
+                {/* TODO list mappingName names and two spinners startTime, stopTime and check box withVariant */}
+                <Grid item>{gridItem(mappingNameField, 6)}</Grid>
+                <Grid item>{gridItem(startTimeField, 3)}</Grid>
+                <Grid item>{gridItem(stopTimeField, 3)}</Grid>
+                <Grid item>{gridItem(withVariantField, 6)}</Grid>
+            </Grid>
+        );
+    }
 
     const renderButtons = () => {
         return (
-            <Grid container spacing={1} item justifyContent={'center'}>
+            <Grid container spacing={1} item justifyContent={'right'}>
                 {makeButton(handleClose, 'close', false)}
                 {makeButton(handleStart, 'Execute', false)}
             </Grid>
@@ -69,12 +170,8 @@ const DynamicSimulationParametersSelector = (props) => {
                         <FormattedMessage id="DynamicSimulationParametersSelection" />
                     </Typography>
                 </DialogTitle>
-                <DialogContent>
-                    <Grid container spacing={1} direction="column" item xs={12}>
-                        {/* TODO list mapping names and two spinners startTime, stopTime*/}
-                        {renderButtons()}
-                    </Grid>
-                </DialogContent>
+                <DialogContent>{renderInputs()}</DialogContent>
+                <DialogActions>{renderButtons()}</DialogActions>
             </Dialog>
         </>
     );

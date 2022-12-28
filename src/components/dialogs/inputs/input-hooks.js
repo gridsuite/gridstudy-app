@@ -29,6 +29,7 @@ import {
     Button,
     FormControlLabel,
     Grid,
+    Switch,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import FolderIcon from '@mui/icons-material/Folder';
@@ -959,6 +960,42 @@ export const useRadioValue = ({
         value,
         handleChangeValue,
     ]);
+
+    return [value, field];
+};
+
+export const useSwitchValue = ({
+    label,
+    labelPlacement = 'end',
+    defaultValue = false,
+    inputFrom,
+    formProps,
+    ...props
+}) => {
+    const [value, setValue] = useState(defaultValue);
+
+    const handleChange = useCallback((event) => {
+        setValue(event.target.checked);
+    }, []);
+
+    const field = useMemo(() => {
+        return (
+            <FormControlLabel
+                value="end"
+                control={
+                    <Switch
+                        checked={value}
+                        onChange={handleChange}
+                        value={value}
+                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                        {...formProps}
+                    />
+                }
+                label={FieldLabel({ label })}
+                labelPlacement={labelPlacement}
+            />
+        );
+    }, [value, handleChange, formProps, label, labelPlacement]);
 
     return [value, field];
 };

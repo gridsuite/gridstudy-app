@@ -332,6 +332,7 @@ export function RunButtonContainer({
                                 )
                             }
                             onStart={handleStartDynamicSimulation}
+                            studyUuid={studyUuid}
                             currentNodeUuid={currentNode?.id}
                         />
                     )}
