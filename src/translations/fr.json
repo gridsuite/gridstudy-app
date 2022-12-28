@@ -9,6 +9,7 @@
     "studyDeletedSuccessMsg": "Étude supprimée",
     "deleteStudyError": "Vous ne pouvez pas supprimer une étude dont vous n'êtes pas propriétaire",
     "equipmentsSearchingError": "Une erreur est survenue lors de la recherche des équipements",
+    "equipmentsLoadingError": "Une erreur est survenue lors du chargement des équipements disponibles",
 
     "renameStudyMsg": "Nouveau nom de l'étude\u00a0:",
     "renameStudy": "Renommer l'étude",
@@ -432,8 +433,6 @@
     "Characteristics": "Caractéristiques",
     "Side1": "Côté 1",
     "Side2": "Côté 2",
-    "OriginSide": "Côté origine",
-    "ExtrimitySide": "Côté extrémité",
     "SeriesResistanceText": "Résistance série",
     "SeriesReactanceText": "Réactance série",
     "ShuntConductanceText": "Conductance parallèle",

@@ -45,12 +45,12 @@ const TwoWindingsTransformerPane = (props) => {
             <Grid container spacing={2}>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="OriginSide" />
+                        <FormattedMessage id="Side1" />
                     </h4>
                 </Grid>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="ExtrimitySide" />
+                        <FormattedMessage id="Side2" />
                     </h4>
                 </Grid>
             </Grid>
@@ -83,12 +83,12 @@ const TwoWindingsTransformerPane = (props) => {
             <Grid container spacing={2}>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="OriginSide" />
+                        <FormattedMessage id="Side1" />
                     </h4>
                 </Grid>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="ExtrimitySide" />
+                        <FormattedMessage id="Side2" />
                     </h4>
                 </Grid>
             </Grid>
@@ -107,12 +107,12 @@ const TwoWindingsTransformerPane = (props) => {
             <Grid container spacing={2}>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="OriginSide" />
+                        <FormattedMessage id="Side1" />
                     </h4>
                 </Grid>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="ExtrimitySide" />
+                        <FormattedMessage id="Side2" />
                     </h4>
                 </Grid>
             </Grid>
