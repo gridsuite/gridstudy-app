@@ -69,6 +69,7 @@ const LoadCreationDialog = ({
             busOrBusbarSectionId: null,
             connectionDirection: load.connectionDirection,
             connectionName: load.connectionName,
+            connectionPosition: load.connectionPosition,
         };
     };
 
@@ -148,6 +149,7 @@ const LoadCreationDialog = ({
             ? formValues.connectionDirection
             : '',
         connectionNameValue: formValues?.connectionName,
+        connectionPositionValue: formValues?.connectionPosition,
         withPosition: true,
     });
 
@@ -170,7 +172,8 @@ const LoadCreationDialog = ({
             editData ? editData.uuid : undefined,
             connectivity?.connectionDirection?.id ??
                 UNDEFINED_CONNECTION_DIRECTION,
-            connectivity?.connectionName?.id ?? null
+            connectivity?.connectionName?.id ?? null,
+            connectivity?.connectionPosition?.id ?? null
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -204,14 +207,13 @@ const LoadCreationDialog = ({
             </Grid>
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {gridItem(connectivityField, 8)}
+                {gridItem(connectivityField, 12)}
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
             </Grid>
-
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}

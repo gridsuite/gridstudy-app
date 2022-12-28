@@ -22,7 +22,7 @@ import {
     ActivePowerAdornment,
     compareById,
     filledTextField,
-    getId,
+    getIdOrSelf,
     gridItem,
     gridItemWithTooltip,
     MVAPowerAdornment,
@@ -108,7 +108,7 @@ const GeneratorModificationDialog = ({
         formProps: filledTextField,
         values: equipmentOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue:
             equipmentOptions?.find((e) => e.id === formValueEquipmentId?.id) ||
             formValueEquipmentId,

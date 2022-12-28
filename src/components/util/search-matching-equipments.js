@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchEquipmentsInfos } from '../../utils/rest-api';
+import { searchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
@@ -33,7 +33,7 @@ export const useSearchMatchingEquipments = (
             timer.current = setTimeout(
                 () => {
                     lastSearchTermRef.current = searchTerm;
-                    fetchEquipmentsInfos(
+                    searchEquipmentsInfos(
                         studyUuid,
                         nodeUuid,
                         searchTerm,

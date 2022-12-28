@@ -10,6 +10,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
+    PARAM_LANGUAGE,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
@@ -19,14 +20,15 @@ import {
     getVoltageLevelSingleLineDiagram,
     updateSwitchState,
 } from '../../../utils/rest-api';
-import SingleLineDiagram, { SvgType } from './single-line-diagram';
+import SingleLineDiagram from './single-line-diagram';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import { getNameOrId, useSingleLineDiagram, ViewState } from './utils';
+import { getNameOrId, SvgType, useSingleLineDiagram, ViewState } from './utils';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
+import { SLD_DISPLAY_MODE } from '../../network/constants';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -35,10 +37,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
     const substationLayout = useSelector(
         (state) => state[PARAM_SUBSTATION_LAYOUT]
     );
-
     const componentLibrary = useSelector(
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
+    const language = useSelector((state) => state[PARAM_LANGUAGE]);
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
@@ -50,7 +52,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       useName,
                       centerName,
                       diagonalName,
-                      componentLibrary
+                      componentLibrary,
+                      SLD_DISPLAY_MODE.STATE_VARIABLE,
+                      language
                   )
                 : null,
         [
@@ -60,6 +64,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             centerName,
             diagonalName,
             componentLibrary,
+            language,
         ]
     );
 
@@ -74,7 +79,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       centerName,
                       diagonalName,
                       substationLayout,
-                      componentLibrary
+                      componentLibrary,
+                      language
                   )
                 : null,
         [
@@ -85,6 +91,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             substationLayout,
             useName,
             currentNode,
+            language,
         ]
     );
 

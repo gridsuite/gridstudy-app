@@ -266,7 +266,9 @@ export function getVoltageLevelSingleLineDiagram(
     useName,
     centerLabel,
     diagonalLabel,
-    componentLibrary
+    componentLibrary,
+    sldDisplayMode,
+    language
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -284,6 +286,8 @@ export function getVoltageLevelSingleLineDiagram(
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
+            sldDisplayMode: sldDisplayMode,
+            language: language,
         }).toString()
     );
 }
@@ -296,7 +300,8 @@ export function getSubstationSingleLineDiagram(
     centerLabel,
     diagonalLabel,
     substationLayout,
-    componentLibrary
+    componentLibrary,
+    language
 ) {
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -315,6 +320,7 @@ export function getSubstationSingleLineDiagram(
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
+            language: language,
         }).toString()
     );
 }
@@ -567,7 +573,7 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchEquipmentsInfos(
+export function searchEquipmentsInfos(
     studyUuid,
     nodeUuid,
     searchTerm,
@@ -1374,7 +1380,8 @@ export function createLoad(
     isUpdate = false,
     modificationUuid,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1404,6 +1411,7 @@ export function createLoad(
             busOrBusbarSectionId: busOrBusbarSectionId,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
+            connectionPosition: connectionPosition,
         }),
     });
 }
@@ -1541,7 +1549,8 @@ export function createGenerator(
     minimumReactivePower,
     reactiveCapabilityCurve,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createGeneratorUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1589,6 +1598,7 @@ export function createGenerator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+            connectionPosition: connectionPosition,
         }),
     });
 }
@@ -1606,7 +1616,8 @@ export function createShuntCompensator(
     isUpdate,
     modificationUuid,
     connectionDirection,
-    connectionName
+    connectionName,
+    connectionPosition
 ) {
     let createShuntUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1637,6 +1648,7 @@ export function createShuntCompensator(
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
             connectionDirection: connectionDirection,
             connectionName: connectionName,
+            connectionPosition: connectionPosition,
         }),
     });
 }
@@ -1789,7 +1801,8 @@ export function createSubstation(
     substationName,
     substationCountry,
     isUpdate = false,
-    modificationUuid
+    modificationUuid,
+    properties
 ) {
     let createSubstationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1802,19 +1815,26 @@ export function createSubstation(
         console.info('Creating substation creation');
     }
 
+    const asObj = !properties
+        ? undefined
+        : Object.fromEntries(properties.map((p) => [p.name, p.value]));
+
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.SUBSTATION_CREATION,
+        equipmentId: substationId,
+        equipmentName: substationName,
+        substationCountry: substationCountry === '' ? null : substationCountry,
+        properties: asObj,
+    });
+    console.debug('createSubstation body', properties, body);
+
     return backendFetchText(createSubstationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPE.SUBSTATION_CREATION,
-            equipmentId: substationId,
-            equipmentName: substationName,
-            substationCountry:
-                substationCountry === '' ? null : substationCountry,
-        }),
+        body: body,
     });
 }
 
@@ -2228,6 +2248,41 @@ export function getSensiDefaultResultsThreshold() {
     return backendFetchText(getSensiDefaultResultsThresholdUrl, {
         method: 'get',
     });
+}
+
+export function fetchMapEquipments(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching map equipments data of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
+    const substationParams = getQueryParamsList(substationsIds, 'substationId');
+
+    let fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/map-equipments';
+    if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
+        fetchEquipmentsUrl += '?';
+        fetchEquipmentsUrl += urlSearchParams.toString();
+        fetchEquipmentsUrl +=
+            urlSearchParams.toString().length > 0 && substationParams.length > 0
+                ? '&' + substationParams
+                : substationParams;
+    }
+
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
 }
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
