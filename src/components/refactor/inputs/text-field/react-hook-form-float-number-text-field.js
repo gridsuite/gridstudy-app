@@ -50,11 +50,12 @@ const ReactHookFormFloatNumberTextField = ({
                         })}
                         onFocus={(e) => setIsFocused(true)}
                         onBlur={(e) => setIsFocused(false)}
-                        {...adornmentCallback({
-                            value: value,
-                            isFocused: isFocused,
-                            onChange: onChange,
-                        })}
+                        {...(adornmentCallback &&
+                            adornmentCallback({
+                                value: value,
+                                isFocused: isFocused,
+                                onChange: onChange,
+                            }))}
                         {...genHelperError(error?.message)}
                         {...rest}
                     />

@@ -45,6 +45,7 @@ import {
     getClearAdornmentInputProps,
 } from '../../inputs/utils';
 import { ReactiveCapabilityCurveTable } from '../reactive-capability-curve-reactive-range/reactive-capability-curve-table';
+import PhaseTapChangerPane from '../phase-tap-changer/phase-tap-changer-pane';
 
 /**
  * Dialog to create a load in the network
@@ -336,7 +337,7 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                 onSave={onSubmit}
                 disabledSave={!isDirty}
                 aria-labelledby="dialog-create-load"
-                maxWidth={'md'}
+                maxWidth={'lg'}
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
                 {...dialogProps}
@@ -358,6 +359,10 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                 <GridSection title="Testing" />
                 <Grid container spacing={2}>
                     <ReactiveCapabilityCurveTable tableHeadersIds={headerIds} />
+                </Grid>
+                <GridSection title="Testing 2" />
+                <Grid container spacing={2}>
+                    <PhaseTapChangerPane />
                 </Grid>
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
