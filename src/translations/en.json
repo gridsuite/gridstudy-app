@@ -150,6 +150,12 @@
     "DynamicSimulationStopTimeLessThanOrEqualDefaultValue": "Stop time must be less than or equal to default value",
     "DynamicSimulationWithVariant": "Run simulation with a variant",
     "DynamicSimulationMappingSelection": "Select a mapping",
+    "DynamicSimulationResultReport": "Report",
+    "DynamicSimulationResultChart": "Chart",
+    "DynamicSimulationResultJson": "Data",
+    "DynamicSimulationTimeSeriesLabel": "Time Series",
+    "DynamicSimulationTimeLineLabel": "Time Line",
+    "DynamicSimulationResultTypeLabel": "Result type",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",

@@ -50,7 +50,7 @@ const PARAMETER_WITH_VARIANT_LABEL = 'DynamicSimulationWithVariant';
 const DynamicSimulationParametersSelector = (props) => {
     const { open, onClose, onStart, studyUuid, currentNodeUuid } = props;
 
-    const [mappingNames, setMappingNames] = useState(['gautier2', 'gautier3']);
+    const [mappingNames, setMappingNames] = useState([]);
 
     const { snackError } = useSnackMessage();
 

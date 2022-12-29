@@ -1056,6 +1056,22 @@ export function fetchDynamicSimulationResultTimeLine(
     console.debug(url);
     return backendFetchJson(url);
 }
+
+export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
+    // fetch parallel different results
+    const timeseriesPromise = fetchDynamicSimulationResultTimeSeries(
+        studyUuid,
+        currentNodeUuid
+    );
+    const timelinePromise = fetchDynamicSimulationResultTimeLine(
+        studyUuid,
+        currentNodeUuid
+    );
+    return Promise.all([timeseriesPromise, timelinePromise]).then(
+        ([timeseries, timeline]) => ({ timeseries, timeline })
+    );
+}
+
 // --- Dynamic simulation API - END
 
 export function fetchContingencyAndFiltersLists(listIds) {
