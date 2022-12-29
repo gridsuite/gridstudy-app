@@ -661,7 +661,6 @@
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
     "Bottom": "Bottom",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value",
     "DeltaP": "Δ P",
     "PTarget": "Target P",
     "CreateVariation": "Add Variation",

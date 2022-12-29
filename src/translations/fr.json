@@ -662,7 +662,6 @@
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
     "Bottom": "Bas",
-    "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
     "DeltaP": "Δ P",
     "PTarget": "P cible",
     "CreateVariation": "Ajouter Variation",
