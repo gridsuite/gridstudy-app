@@ -44,6 +44,7 @@ import {
     getAdornmentInputProps,
     getClearAdornmentInputProps,
 } from '../../inputs/utils';
+import { ReactiveCapabilityCurveTable } from '../reactive-capability-curve-reactive-range/reactive-capability-curve-table';
 
 /**
  * Dialog to create a load in the network
@@ -64,6 +65,10 @@ const emptyFormData = {
     [EQUIPMENT_TYPE_FIELD]: '',
     [ACTIVE_POWER_FIELD]: 0,
     [REACTIVE_POWER_FIELD]: 0,
+    reactiveCapabilityCurvePoints: [
+        { p: 0, qminP: 0, qmaxP: 0 },
+        { p: 0, qminP: 0, qmaxP: 0 },
+    ],
     ...getConnectivityEmptyFormData(),
 };
 
@@ -80,6 +85,32 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
         },
     });
 
+    yup.addMethod(yup.array, 'pBetweenMinMax', function (errorMessage) {
+        return this.test(`p-value`, errorMessage, function (items) {
+            const { path, createError } = this;
+            const errors = items
+                .map((item, index) => {
+                    if (
+                        parseInt(item.p) >= parseInt(items[0].p) &&
+                        parseInt(item.p) <= parseInt(items[items.length - 1].p)
+                    ) {
+                        return null;
+                    }
+
+                    return new yup.ValidationError(
+                        `P${index} value should be between pMin and pMax`,
+                        item.p,
+                        `${path}[${index}].p`
+                    );
+                })
+                .filter(Boolean);
+
+            return (
+                errors.length === 0 || createError({ message: () => errors })
+            );
+        });
+    });
+
     const schema = yup
         .object()
         .shape({
@@ -88,6 +119,16 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
             [EQUIPMENT_TYPE_FIELD]: yup.string(),
             [ACTIVE_POWER_FIELD]: yup.number().required().min(0),
             [REACTIVE_POWER_FIELD]: yup.number().required().min(0),
+            reactiveCapabilityCurvePoints: yup
+                .array()
+                .pBetweenMinMax()
+                .of(
+                    yup.object().shape({
+                        p: yup.string().required(),
+                        qminP: yup.string().required(),
+                        qmaxP: yup.string(),
+                    })
+                ),
             ...getConnectivityFormValidationSchema(),
         })
         .required();
@@ -100,9 +141,10 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
     const {
         control,
         reset,
-        formState: { isDirty },
+        formState: { isDirty, errors },
     } = methods;
 
+    console.log('ERRRRORS ', errors);
     const fromSearchCopyToFormValues = (load) => {
         fetchEquipmentInfos(
             studyUuid,
@@ -247,36 +289,45 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
     );
 
     const onSubmit = (load) => {
-        createLoad(
-            studyUuid,
-            currentNodeUuid,
-            load[EQUIPMENT_ID_FIELD],
-            sanitizeString(load[EQUIPMENT_NAME_FIELD]),
-            !load[EQUIPMENT_TYPE_FIELD]
-                ? UNDEFINED_LOAD_TYPE
-                : load[EQUIPMENT_TYPE_FIELD],
-            load[ACTIVE_POWER_FIELD],
-            load[REACTIVE_POWER_FIELD],
-            load.connectivity.voltageLevel.id,
-            load.connectivity.busOrBusbarSection.id,
-            editData ? true : false,
-            editData ? editData.uuid : undefined,
-            load.connectivity?.connectionDirection ??
-                UNDEFINED_CONNECTION_DIRECTION,
-            load.connectivity?.connectionName ?? null,
-            load.connectivity?.connectionPosition ?? null
-        ).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'LoadCreationError',
-            });
-        });
+        console.log('RESULT ', load);
+        // createLoad(
+        //     studyUuid,
+        //     currentNodeUuid,
+        //     load[EQUIPMENT_ID_FIELD],
+        //     sanitizeString(load[EQUIPMENT_NAME_FIELD]),
+        //     !load[EQUIPMENT_TYPE_FIELD]
+        //         ? UNDEFINED_LOAD_TYPE
+        //         : load[EQUIPMENT_TYPE_FIELD],
+        //     load[ACTIVE_POWER_FIELD],
+        //     load[REACTIVE_POWER_FIELD],
+        //     load.connectivity.voltageLevel.id,
+        //     load.connectivity.busOrBusbarSection.id,
+        //     editData ? true : false,
+        //     editData ? editData.uuid : undefined,
+        //     load.connectivity?.connectionDirection ??
+        //         UNDEFINED_CONNECTION_DIRECTION,
+        //     load.connectivity?.connectionName ?? null,
+        //     load.connectivity?.connectionPosition ?? null
+        // ).catch((error) => {
+        //     snackError({
+        //         messageTxt: error.message,
+        //         headerId: 'LoadCreationError',
+        //     });
+        // });
     };
 
     const clear = () => {
         reset(emptyFormData);
     };
 
+    /***TEST */
+    const headerIds = [
+        'ActivePowerText',
+        'MinimumReactivePower',
+        'MaximumReactivePower',
+    ];
+
+    /***END TEST */
     return (
         <FormProvider {...methods}>
             <ModificationDialog
@@ -304,7 +355,10 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                     {gridItem(newActivePowerField, 4)}
                     {gridItem(newReactivePowerField, 4)}
                 </Grid>
-
+                <GridSection title="Testing" />
+                <Grid container spacing={2}>
+                    <ReactiveCapabilityCurveTable tableHeadersIds={headerIds} />
+                </Grid>
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
