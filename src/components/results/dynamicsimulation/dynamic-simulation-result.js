@@ -9,12 +9,18 @@ import { PARAM_THEME } from '../../../utils/config-params';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import ReactJson from 'react-json-view';
 import makeStyles from '@mui/styles/makeStyles';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { MenuItem, Select, Tab, Tabs, Typography } from '@mui/material';
+import { Tab, Tabs } from '@mui/material';
 import { TabContext, TabPanel } from '@mui/lab';
+import DynamicSimulationResultTable from './dynamic-simulation-result-table';
+import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
 
 const useStyles = makeStyles((theme) => ({
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
     tabContainer: {
         display: 'flex',
         position: 'relative',
@@ -25,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         left: 0,
     },
     tabContent: {
-        glexGrow: 1,
+        flexGrow: 1,
     },
     resultTypeSelect: {
         position: 'absolute',
@@ -39,16 +45,43 @@ const DYNAMIC_SIMULATION_RESULT_TYPES = [
     { id: 'timeline', label: 'DynamicSimulationTimeLineLabel' },
 ];
 
-const DynamicSimulationResult = ({ result }) => {
+const DynamicSimulationResult = ({ result = [] }) => {
+    /* fake result status */
+    const componentResults = [
+        {
+            status: 'CONVERGED',
+        },
+    ];
+
+    const transformToRechartSeries = useCallback(
+        (result) => {
+            if (!result) return [];
+            return result
+                .slice(Math.max(result.length - 3, 0)) // select only first 3 elements for demo
+                .map((series) => {
+                    const metadata = series.metadata;
+                    const values = series.chunks[0].values;
+                    return {
+                        name: metadata.name,
+                        data: metadata.irregularIndex.map((time, index) => {
+                            return {
+                                category: `${time}`,
+                                value: values[index],
+                            };
+                        }),
+                    };
+                });
+        },
+        [result]
+    );
+
+    const series = useMemo(() => transformToRechartSeries(result), [result]);
+
     const classes = useStyles();
 
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(0);
-
-    const [resultType, setResultType] = useState(
-        DYNAMIC_SIMULATION_RESULT_TYPES[0].id
-    );
 
     const selectedTheme = useSelector((state) => state[PARAM_THEME]);
 
@@ -56,15 +89,11 @@ const DynamicSimulationResult = ({ result }) => {
         (state) => state.dynamicSimulationNotif
     );
 
-    function renderResultReport() {
+    function renderResultTable() {
         return (
             result &&
             dynamicSimulationNotif && (
-                <>
-                    <Typography variant="h1" component="h2">
-                        Report
-                    </Typography>
-                </>
+                <DynamicSimulationResultTable result={componentResults} />
             )
         );
     }
@@ -88,106 +117,91 @@ const DynamicSimulationResult = ({ result }) => {
         );
     }
 
-    function renderResultChart(result) {
+    function renderResultChart(series) {
+        /*const series = [
+            {
+                name: 'Series 1',
+                data: [
+                    { category: 'A', value: Math.random() },
+                    { category: 'B', value: Math.random() },
+                    { category: 'C', value: Math.random() },
+                ],
+            },
+            {
+                name: 'Series 2',
+                data: [
+                    { category: 'B', value: Math.random() },
+                    { category: 'C', value: Math.random() },
+                    { category: 'D', value: Math.random() },
+                ],
+            },
+            {
+                name: 'Series 3',
+                data: [
+                    { category: 'C', value: Math.random() },
+                    { category: 'D', value: Math.random() },
+                    { category: 'E', value: Math.random() },
+                ],
+            },
+        ];*/
         return (
             result &&
             dynamicSimulationNotif && (
-                <>
-                    <Typography variant="h1" component="h2">
-                        Chart
-                    </Typography>
-                </>
+                <DynamicSimulationResultChart series={series} />
             )
         );
     }
 
-    function handleChangeResultType(event) {
-        setResultType(event.target.value);
+    function renderResultTabs() {
+        return (
+            <TabContext value={`${tabIndex}`}>
+                {/* tab headers */}
+                <Tabs
+                    value={tabIndex}
+                    onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
+                >
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'DynamicSimulationResultChart',
+                        })}
+                    />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'DynamicSimulationResultJson',
+                        })}
+                    />
+                </Tabs>
+                {/* tab contents */}
+                <TabPanel value={'0'}>
+                    {
+                        /* chart tab */
+                        result &&
+                            dynamicSimulationNotif &&
+                            renderResultChart(series)
+                    }
+                </TabPanel>
+                <TabPanel value={'1'}>
+                    {
+                        /* json tab */
+                        result &&
+                            dynamicSimulationNotif &&
+                            renderResultJson(result)
+                    }
+                </TabPanel>
+            </TabContext>
+        );
     }
 
-    function renderTabs() {
+    function renderResult() {
         return (
             <>
-                <TabContext value={`${tabIndex}`}>
-                    {/* tab headers */}
-                    <Tabs
-                        value={tabIndex}
-                        onChange={(event, newTabIndex) =>
-                            setTabIndex(newTabIndex)
-                        }
-                    >
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'DynamicSimulationResultReport',
-                            })}
-                        />
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'DynamicSimulationResultChart',
-                            })}
-                        />
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'DynamicSimulationResultJson',
-                            })}
-                        />
-                    </Tabs>
-                    {/* result type selection */}
-                    {(tabIndex === 1 || tabIndex === 2) && (
-                        <div classeName={classes.resultTypeSelect}>
-                            <Select
-                                labelId={'DynamicSimulationResultTypeLabel'}
-                                value={resultType}
-                                onChange={handleChangeResultType}
-                                autoWidth
-                                size={'small'}
-                            >
-                                {DYNAMIC_SIMULATION_RESULT_TYPES.map(
-                                    (resultType, index) => (
-                                        <MenuItem
-                                            value={resultType.id}
-                                            key={`${resultType.id}_${index}`}
-                                        >
-                                            {intl.formatMessage({
-                                                id: resultType.label,
-                                            })}
-                                        </MenuItem>
-                                    )
-                                )}
-                            </Select>
-                        </div>
-                    )}
-                    {/* tab contents */}
-                    <TabPanel value={'0'}>
-                        {
-                            /* report tab */
-                            result &&
-                                dynamicSimulationNotif &&
-                                renderResultReport()
-                        }
-                    </TabPanel>
-                    <TabPanel value={'1'}>
-                        {
-                            /* chart tab */
-                            result &&
-                                dynamicSimulationNotif &&
-                                renderResultChart(result)
-                        }
-                    </TabPanel>
-                    <TabPanel value={'2'}>
-                        {
-                            /* chart tab */
-                            result &&
-                                dynamicSimulationNotif &&
-                                renderResultJson(result)
-                        }
-                    </TabPanel>
-                </TabContext>
+                {renderResultTable()}
+                {renderResultTabs()}
             </>
         );
     }
 
-    return renderTabs();
+    return renderResult();
 };
 
 export default DynamicSimulationResult;
