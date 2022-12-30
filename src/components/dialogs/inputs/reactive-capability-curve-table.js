@@ -13,7 +13,8 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { validateValueIsANumber } from '../../util/validation-functions';
-
+import { useSelector } from 'react-redux';
+import { isNodeBuilt } from '../../graph/util/model-functions';
 const minimalValue = { p: '', qminP: '', qmaxP: '' };
 
 function getId(value) {
@@ -62,6 +63,39 @@ function fixValuesFormat(valuesToFix) {
     });
 }
 
+function buildPreviousValuesToDisplay(
+    currentNode,
+    defaultValues,
+    previousValues
+) {
+    const valuesToDisplay = [];
+    // If the node is built, then we display previousValues.
+    // otherwise, we display the old values stored in the modification database.
+    if (isNodeBuilt(currentNode)) {
+        defaultValues.forEach((value, index) => {
+            let valueToDisplay = minimalValue;
+            if (previousValues && previousValues.length > 0) {
+                // in case the defaultValues array is shorter than the previousValues array, we display the last value of the previousValues array.
+                if (index === defaultValues.length - 1) {
+                    valueToDisplay = previousValues[previousValues.length - 1];
+                } else if (index < previousValues.length - 1) {
+                    valueToDisplay = previousValues[index];
+                }
+            }
+            valuesToDisplay.push(valueToDisplay);
+        });
+    } else {
+        defaultValues.forEach((value) => {
+            valuesToDisplay.push({
+                p: value.oldP,
+                qminP: value.oldQminP,
+                qmaxP: value.oldQmaxP,
+            });
+        });
+    }
+    return valuesToDisplay;
+}
+
 function enforceMinimumValues(valueToTest) {
     // The goal here is to verify that there are at least two items with the correct format
     // in the provided array.
@@ -94,6 +128,7 @@ export const useReactiveCapabilityCurveTableValues = ({
     isModificationForm = false,
     disabled = false,
 }) => {
+    const currentNode = useSelector((state) => state.currentTreeNode);
     const classes = useStyles();
 
     // Values sent back to the parent component.
@@ -123,15 +158,13 @@ export const useReactiveCapabilityCurveTableValues = ({
             if (defaultValues !== undefined && defaultValues.length > 0) {
                 setValues(fixValuesFormat(defaultValues));
                 setDisplayedValues(fixValuesFormat(defaultValues));
-                const valuesToDisplay = [];
-                defaultValues.forEach((value) => {
-                    valuesToDisplay.push({
-                        p: value.oldP,
-                        qminP: value.oldQminP,
-                        qmaxP: value.oldQmaxP,
-                    });
-                });
-                setDisplayedPreviousValues(valuesToDisplay);
+                setDisplayedPreviousValues(
+                    buildPreviousValuesToDisplay(
+                        currentNode,
+                        defaultValues,
+                        previousValues
+                    )
+                );
             } else if (previousValues && previousValues.length > 0) {
                 const valuesToDisplay = Array(previousValues.length).fill(
                     minimalValue
@@ -141,7 +174,7 @@ export const useReactiveCapabilityCurveTableValues = ({
                 setDisplayedPreviousValues(previousValues);
             }
         }
-    }, [defaultValues, isModificationForm, previousValues]);
+    }, [currentNode, defaultValues, isModificationForm, previousValues]);
 
     const handleDeleteItem = useCallback(
         (index) => {

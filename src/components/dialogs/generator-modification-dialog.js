@@ -585,7 +585,7 @@ const GeneratorModificationDialog = ({
                 generatorInfos?.reactiveCapabilityCurvePoints?.length &&
             reactiveCapabilityCurve.filter(
                 (point) =>
-                    point.p !== '' && point.qminP !== '' && point.qmaxP !== ''
+                    point.p !== '' || point.qminP !== '' || point.qmaxP !== ''
             ).length === 0
         ) {
             return null;
