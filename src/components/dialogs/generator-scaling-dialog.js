@@ -6,7 +6,7 @@ import {
     useOptionalEnumValue,
     useRadioValue
 } from "./inputs/input-hooks";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {elementType, useSnackMessage} from "@gridsuite/commons-ui";
 import {useParams} from "react-router-dom";
 import ModificationDialog from "./modificationDialog";
@@ -45,23 +45,37 @@ export const useStyles = makeStyles((theme) => ({
         padding: '5px',
     },
 }));
-const filterResults = null;
+
+const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
+const VENTILATION = 'VENTILATION';
+const PROPORTIONAL_TO_PMAX = 'PROPORTIONAL_TO_PMAX';
+
 const GeneratorScalingVariation = ({
    index,
    onChange,
    defaultValue,
    inputForm,
-   isDeltaP,
    errors,
+   fieldProps,
 }) => {
     const classes = useStyles();
 
-    useEffect(() => {
-        console.log('errors : ', errors);
-    }, [errors]);
+    const [variationMode, variationModeField] = useOptionalEnumValue({
+        label: 'VariationMode',
+        defaultValue: defaultValue?.variationMode ?? PROPORTIONAL_TO_PMAX,
+        inputForm: inputForm,
+        validation: {
+            isFieldRequired: true,
+        },
+        enumObjects: VARIATION_MODE,
+        errorMsg: errors?.variationModeError
+    })
 
-    const onError = (event) => {
-        console.log('event : ', event)
+    function itemFilter(value) {
+        const isManualFilter = value?.specificMetadata?.type === IDENTIFIER_LIST
+        return variationMode === VENTILATION
+            ? isManualFilter &&  value?.specificMetadata?.filterEquipmentsAttributes?.every((fil) => !!fil.distributionKey)
+            : isManualFilter;
     }
 
     const [filters, filtersField] = useDirectoryElements({
@@ -73,31 +87,20 @@ const GeneratorScalingVariation = ({
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
         equipmentTypes: [EquipmentType.GENERATOR],
-        filterResults: filterResults,
+        itemFilter: itemFilter,
         elementClassName: classes.chipElement,
         required: true,
         errorMsg: errors?.filterError,
-        onError: onError,
     });
 
     const [variationValue, variationValueField] = useDoubleValue({
-        label: isDeltaP ? 'DeltaP' : 'TargetP',
+        label: fieldProps.isDeltaP ? 'DeltaP' : 'TargetPText',
         validation: {
             isFieldRequired: true,
         },
         inputForm: inputForm,
         defaultValue: defaultValue.variationValue ?? '',
-        errorMsg: errors?.validationValueError
-    })
-
-    const [variationMode, variationModeField] = useOptionalEnumValue({
-        label: 'VariationMode',
-        defaultValue: defaultValue?.variationMode ?? 'PROPORTIONAL_TO_PMAX',
-        inputForm: inputForm,
-        validation: {
-            isFieldRequired: true,
-        },
-        enumObjects: VARIATION_MODE
+        errorMsg: errors?.variationValueError
     })
 
     useEffect(() => {
@@ -136,17 +139,8 @@ const GeneratorScalingDialog = ({
     }, [editData]);
 
     function validateVariation(values) {
-        console.log('scale test validation values ', values)
-        const newValues = values.map((val) => {
-            val.id = val.id ?? Math.random();
-            return val;
-        })
-
         const res = new Map();
-
-        console.log('scale test validation newValues ', newValues)
-        newValues.forEach((val, idx) => {
-            console.log("test val , ", val)
+        values.forEach((val, idx) => {
             const errorId = 'FieldIsRequired';
             if(!val.filters || val.filters.length < 1) {
                 res.set(idx, {
@@ -158,8 +152,16 @@ const GeneratorScalingDialog = ({
                 res.set(idx, {
                     ...res.get(idx),
                     error: true,
-                    validationValueError: errorId,
+                    variationValueError: errorId,
                 })
+            }
+
+            if (!val.variationMode) {
+                res.set(idx, {
+                        ...res.get(idx),
+                        error: true,
+                        variationModeError: errorId
+               })
             }
         });
 
@@ -187,6 +189,7 @@ const GeneratorScalingDialog = ({
         defaultValues: formValues?.generatorScalingVariations,
         Field: GeneratorScalingVariation,
         isRequired: true,
+        fieldProps: {isDeltaP: variationType === 'DELTA_P'}
     });
 
     const handleClear = () => {
@@ -199,8 +202,7 @@ const GeneratorScalingDialog = ({
     };
 
     const handleSave = () => {
-        console.log('variation : ', variations, iterativeValue);
-        console.log('variation : ', variations, iterativeValue);
+        console.log('variation : ', variations);
         generatorScaling(
             studyUuid,
             currentNodeUuid,

@@ -537,17 +537,15 @@
 
     "GeneratorScaling": "Generator scalable",
     "DeltaP": "Δ P",
-    "TargetP": "Target P",
+    "TargetPText": "Target P",
     "IterativeLabel": "Iterative",
     "VariationMode": "Variation mode",
-    "Proportional": "Proportional",
     "ProportionalToPMax": "Proportional to P max",
     "RegularDistribution": "Regular distribution",
     "StackingUp": "Stacking up",
-    "Ventilation": "Ventilation",
     "CreateVariation": "Add variation",
     "Variations": "Variations",
-    "validationValueError": "",
+    "GeneratorScalingError" : "Error while creating a generator scaling",
 
 
     "Tap":"Tap",
@@ -646,6 +644,7 @@
     "ReactivePowerSetpointMVAR": "Reactive power set point (MVAR)",
     "EmptyList/bbs": "Bus Bar list is empty",
     "EmptyList/connections": "Connections list is empty",
+    "EmptyList/variations": "Variations list is empty",
 
     "UnsupportedView": "Search is unavailable in tree view",
 

@@ -699,7 +699,7 @@ export const useDirectoryElements = ({
     titleId,
     elementClassName,
     required = false,
-    filterResults = undefined,
+    itemFilter = undefined,
     errorMsg = undefined,
     onError,
 }) => {
@@ -760,17 +760,17 @@ export const useDirectoryElements = ({
             <>
                 <FormControl
                     className={classes.formDirectoryElements1}
-                    error={errorMsg ? true : false}
+                    error={!!errorMsg}
                     aria-errormessage={errorMsg}
                     onError={onError}
                 >
-                    {values?.length == 0 && (
+                    {values?.length === 0 && (
                         <Grid container>
                             <Grid item>
                                 <InputLabel
                                     id="elements"
                                     className={classes.labelDirectoryElements}
-                                    error={errorMsg ? true : false}
+                                    error={!!errorMsg}
                                     onError={onError}
                                     aria-errormessage={errorMsg}
                                 >
@@ -819,7 +819,7 @@ export const useDirectoryElements = ({
                     types={[elementType]}
                     equipmentTypes={equipmentTypes}
                     title={intl.formatMessage({ id: titleId })}
-                    filterResults={filterResults}
+                    itemFilter={itemFilter}
                 />
             </>
         );

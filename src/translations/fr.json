@@ -537,17 +537,16 @@
 
     "GeneratorScaling": "Variation plan de production",
     "DeltaP": "Δ P",
-    "TargetP": "P cible",
+    "TargetPText": "P cible",
     "IterativeLabel": "Itérative",
     "VariationMode": "Mode de variation",
-    "Proportional": "Proportionnel",
     "ProportionalToPMax": "Proportionnel à Pmax",
     "RegularDistribution": "Équipartition",
     "StackingUp": "Empilement",
-    "Ventilation": "Ventilation",
     "variations": "Variations",
     "CreateVariation": "Ajouter variation",
     "Variations": "Variations",
+    "GeneratorScalingError" : "Erreur lors de la création de Variation plan de consommation",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",
@@ -645,6 +644,7 @@
     "ReactivePowerSetpointMVAR": "Consigne de reactif (MVAR)",
     "EmptyList/bbs": "La liste de jeux de barres est vide",
     "EmptyList/connections": "La liste de connexions est vide",
+    "EmptyList/variations": "La liste de variations est vide",
 
     "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
 

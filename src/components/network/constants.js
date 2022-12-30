@@ -95,7 +95,7 @@ export const MODIFICATION_TYPE = {
 
 export const VARIATION_TYPE = [
     {id: "DELTA_P", label:'DeltaP'},
-    {id: "TARGET_P", label: 'TargetP'},
+    {id: "TARGET_P", label: 'TargetPText'},
 ]
 
 export const VARIATION_MODE = [
