@@ -496,7 +496,7 @@
     "ReplacingLines": "Replacing lines",
     "LineDivisionError": "Error while puting a voltage level amidst a line",
     "LineAttachmentError": "Error while attaching a voltage level to a line",
-    "LoadScalingError": "Error while creating a load scalable",
+    "LoadScalingError": "Error while creating a load scaling",
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
@@ -662,7 +662,7 @@
     "Top": "Top",
     "Bottom": "Bottom",
     "DeltaP": "Δ P",
-    "PTarget": "Target P",
+    "TargetPText": "Target P",
     "CreateVariation": "Add Variation",
     "ActiveVariationMode": "Active variation mode",
     "ReactiveVariationMode": "Reactive variation mode",

@@ -663,7 +663,7 @@
     "Top": "Haut",
     "Bottom": "Bas",
     "DeltaP": "Δ P",
-    "PTarget": "P cible",
+    "TargetPText": "P cible",
     "CreateVariation": "Ajouter Variation",
     "ActiveVariationMode": "Mode variation de l'actif",
     "ReactiveVariationMode": "Mode variation du réactif",

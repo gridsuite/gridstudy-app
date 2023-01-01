@@ -698,7 +698,7 @@ export const useDirectoryElements = ({
     equipmentTypes,
     titleId,
     elementClassName,
-    filterResults = undefined,
+    itemFilter = undefined,
     errorMsg = undefined,
 }) => {
     const classes = useStyles();
@@ -754,7 +754,7 @@ export const useDirectoryElements = ({
             <>
                 <FormControl
                     className={classes.formDirectoryElements1}
-                    error={errorMsg ? true : false}
+                    error={!!errorMsg}
                     aria-errormessage={errorMsg}
                 >
                     {values?.length === 0 && (
@@ -763,7 +763,7 @@ export const useDirectoryElements = ({
                                 <InputLabel
                                     id="elements"
                                     className={classes.labelDirectoryElements}
-                                    error={errorMsg ? true : false}
+                                    error={!!errorMsg}
                                     aria-errormessage={errorMsg}
                                 >
                                     <FieldLabel
@@ -816,7 +816,7 @@ export const useDirectoryElements = ({
                     types={[elementType]}
                     equipmentTypes={equipmentTypes}
                     title={intl.formatMessage({ id: titleId })}
-                    filterResults={filterResults}
+                    itemFilter={itemFilter}
                 />
             </>
         );
@@ -834,7 +834,7 @@ export const useDirectoryElements = ({
         equipmentTypes,
         intl,
         titleId,
-        filterResults,
+        itemFilter,
         elementClassName,
         handleDelete,
     ]);

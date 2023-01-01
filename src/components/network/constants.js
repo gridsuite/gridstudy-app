@@ -66,7 +66,7 @@ export const REACTIVE_LIMIT_TYPES = [
 
 export const LOAD_SCALABLE_TYPES = [
     { id: 'DELTA_P', label: 'DeltaP' },
-    { id: 'TARGET_P', label: 'PTarget' },
+    { id: 'TARGET_P', label: 'TargetPText' },
 ];
 
 export const ACTIVE_VARIATION_MODE = [
