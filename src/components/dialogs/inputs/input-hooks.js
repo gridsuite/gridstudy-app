@@ -123,6 +123,7 @@ export const useTextValue = ({
     errorMsg,
     previousValue,
     clearable,
+    customAdornment,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState();
@@ -182,19 +183,18 @@ export const useTextValue = ({
                 FormHelperTextProps={{
                     className: classes.helperText,
                 }}
-                InputProps={
-                    clearable && value
-                        ? {
-                              endAdornment: (
-                                  <InputAdornment position="end">
-                                      <IconButton onClick={handleClearValue}>
-                                          <ClearIcon />
-                                      </IconButton>
-                                  </InputAdornment>
-                              ),
-                          }
-                        : {}
-                }
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            {clearable && value !== undefined && value !== '' && (
+                                <IconButton onClick={handleClearValue}>
+                                    <ClearIcon />
+                                </IconButton>
+                            )}
+                            {customAdornment && { ...customAdornment }}
+                        </InputAdornment>
+                    ),
+                }}
                 {...(clearable &&
                     adornment && { handleClearValue: handleClearValue })}
                 {...genHelperPreviousValue(previousValue, adornment)}
@@ -207,15 +207,16 @@ export const useTextValue = ({
         id,
         label,
         validation.isFieldRequired,
+        formProps,
         value,
-        previousValue,
         handleChangeValue,
         classes.helperText,
-        error,
-        errorMsg,
-        formProps,
         clearable,
         handleClearValue,
+        customAdornment,
+        previousValue,
+        error,
+        errorMsg,
     ]);
 
     useEffect(
@@ -228,12 +229,14 @@ export const useTextValue = ({
 export const useIntegerValue = ({
     transformValue = toIntValue,
     validation,
+    customAdornment,
     ...props
 }) => {
     return useTextValue({
         ...props,
         transformValue: transformValue,
         validation: { ...validation, isFieldNumeric: true },
+        customAdornment,
     });
 };
 
