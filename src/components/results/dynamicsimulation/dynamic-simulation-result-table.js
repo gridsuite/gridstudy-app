@@ -17,7 +17,7 @@ import { green, red } from '@mui/material/colors';
 const useStyles = makeStyles((theme) => ({
     tablePaper: {
         flexGrow: 1,
-        height: 20,
+        height: 100,
     },
     cell: {
         display: 'flex',

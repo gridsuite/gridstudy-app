@@ -11,7 +11,7 @@ import ReactJson from 'react-json-view';
 import makeStyles from '@mui/styles/makeStyles';
 import { useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { Tab, Tabs } from '@mui/material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import { TabContext, TabPanel } from '@mui/lab';
 import DynamicSimulationResultTable from './dynamic-simulation-result-table';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
@@ -55,22 +55,26 @@ const DynamicSimulationResult = ({ result = [] }) => {
 
     const transformToRechartSeries = useCallback(
         (result) => {
+            console.log('transformToRechartSeries is called');
             if (!result) return [];
-            return result
-                .slice(Math.max(result.length - 3, 0)) // select only first 3 elements for demo
-                .map((series) => {
-                    const metadata = series.metadata;
-                    const values = series.chunks[0].values;
-                    return {
-                        name: metadata.name,
-                        data: metadata.irregularIndex.map((time, index) => {
-                            return {
-                                category: `${time}`,
-                                value: values[index],
-                            };
-                        }),
-                    };
-                });
+            return (
+                result
+                    // .slice(Math.max(result.length - 3, 0)) // select only first 3 elements for demo
+                    .map((series, index) => {
+                        const metadata = series.metadata;
+                        const values = series.chunks[0].values;
+                        return {
+                            index: index,
+                            name: metadata.name,
+                            data: metadata.irregularIndex.map((time, index) => {
+                                return {
+                                    category: `${time}`,
+                                    value: values[index],
+                                };
+                            }),
+                        };
+                    })
+            );
         },
         [result]
     );
@@ -194,10 +198,14 @@ const DynamicSimulationResult = ({ result = [] }) => {
 
     function renderResult() {
         return (
-            <>
-                {renderResultTable()}
-                {renderResultTabs()}
-            </>
+            <Grid container justifyContent={'column'} alignItems={'flex-end'}>
+                <Grid item xs={12}>
+                    {renderResultTable()}
+                </Grid>
+                <Grid item xs={12}>
+                    {renderResultTabs()}
+                </Grid>
+            </Grid>
         );
     }
 
