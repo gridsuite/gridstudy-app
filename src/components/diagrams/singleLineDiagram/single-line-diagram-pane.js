@@ -102,10 +102,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createSubstationSLD(substationId, state) {
                 const substation = network.getSubstation(substationId);
                 if (!substation) return;
-                let name = getNameOrId(substation?.name, substationId);
+                let label = getNameOrId(substation?.name, substationId);
                 const countryName = substation?.countryName;
                 if (countryName) {
-                    name += ' \u002D ' + countryName;
+                    label += ' \u002D ' + countryName;
                 }
                 const svgUrl = getSubstationSingleLineDiagramUrl(substationId);
 
@@ -113,7 +113,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     id: substationId,
                     ref: React.createRef(),
                     state,
-                    name,
+                    name: label,
                     type: SvgType.SUBSTATION,
                     svgUrl,
                 };
@@ -122,12 +122,12 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createVoltageLevelSLD(vlId, state) {
                 const vl = network.getVoltageLevel(vlId);
                 if (!vl) return;
-                let name = getNameOrId(vl?.name, vlId);
+                let label = getNameOrId(vl?.name, vlId);
 
                 const substation = network.getSubstation(vlId);
                 const countryName = substation?.countryName;
                 if (countryName) {
-                    name += ' \u002D ' + countryName;
+                    label += ' \u002D ' + countryName;
                 }
                 const svgUrl = getVoltageLevelSingleLineDiagramUrl(vlId);
 
@@ -135,7 +135,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     id: vlId,
                     ref: React.createRef(),
                     state,
-                    name,
+                    name: label,
                     svgUrl,
                     type: SvgType.VOLTAGE_LEVEL,
                     substationId: substation?.id,
@@ -225,7 +225,7 @@ export function SingleLineDiagramPane({
     const classes = useStyles();
 
     const handleUpdateSwitchState = useCallback(
-        (breakerId, open) => {
+        (breakerId, open, switchElement) => {
             updateSwitchState(
                 studyUuid,
                 currentNode?.id,
