@@ -239,7 +239,7 @@ const GeneratorModificationDialog = ({
 
     const isPreviousReactiveCapabilityCurveOn = useMemo(() => {
         return generatorInfos?.reactiveCapabilityCurvePoints !== undefined;
-    }, [generatorInfos?.reactiveCapabilityCurvePoints]);
+    }, [generatorInfos]);
 
     const isReactiveCapabilityCurveOn = useMemo(() => {
         return reactiveCapabilityCurveChoice === 'CURVE';
@@ -284,9 +284,14 @@ const GeneratorModificationDialog = ({
 
     useEffect(() => {
         setReactivePowerRequired(
-            minimumReactivePower !== '' || maximumReactivePower !== ''
+            (minimumReactivePower !== '' || maximumReactivePower !== '') &&
+                reactiveCapabilityCurveChoice === 'MINMAX'
         );
-    }, [minimumReactivePower, maximumReactivePower]);
+    }, [
+        minimumReactivePower,
+        maximumReactivePower,
+        reactiveCapabilityCurveChoice,
+    ]);
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
@@ -380,7 +385,7 @@ const GeneratorModificationDialog = ({
 
     function getPreviousRegulationType(generatorInfos) {
         if (generatorInfos?.voltageRegulatorOn) {
-            return generatorInfos?.regulatingTerminalId ||
+            return generatorInfos?.regulatingTerminalVlId ||
                 generatorInfos?.regulatingTerminalConnectableId
                 ? REGULATION_TYPES.DISTANT
                 : REGULATION_TYPES.LOCAL;
@@ -425,7 +430,7 @@ const GeneratorModificationDialog = ({
             (voltageRegulation === null &&
                 generatorInfos?.voltageRegulatorOn === true)
         );
-    }, [voltageRegulation, generatorInfos?.voltageRegulatorOn]);
+    }, [voltageRegulation, generatorInfos]);
 
     const isFrequencyRegulationOn = useMemo(() => {
         return (
@@ -433,7 +438,7 @@ const GeneratorModificationDialog = ({
             (frequencyRegulation === null &&
                 generatorInfos?.activePowerControlOn === true)
         );
-    }, [frequencyRegulation, generatorInfos?.activePowerControlOn]);
+    }, [frequencyRegulation, generatorInfos]);
 
     useEffect(() => {
         if (
@@ -578,6 +583,7 @@ const GeneratorModificationDialog = ({
     }, [reactiveCapabilityCurve, displayedPreviousValues]);
 
     const buildCurvePointsToStore = useMemo(() => {
+        // if there was no modification on the curve points, we don't store it
         if (
             displayedPreviousValues &&
             reactiveCapabilityCurve &&
@@ -621,6 +627,8 @@ const GeneratorModificationDialog = ({
     const handleValidation = () => {
         // ReactiveCapabilityCurveCreation validation
         let isReactiveCapabilityCurveValid = true;
+        // if the ReactiveCapability Curve is on, we check if it is valid
+        // else if the previous ReactiveCapability Curve was on, we check the modifications that were made
         if (
             isReactiveCapabilityCurveOn &&
             !isPreviousReactiveCapabilityCurveOn

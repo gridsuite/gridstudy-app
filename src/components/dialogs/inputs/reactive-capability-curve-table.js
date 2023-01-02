@@ -74,7 +74,7 @@ function buildPreviousValuesToDisplay(
     if (isNodeBuilt(currentNode)) {
         defaultValues.forEach((value, index) => {
             let valueToDisplay = minimalValue;
-            if (previousValues && previousValues.length > 0) {
+            if (previousValues?.length > 0) {
                 // in case the defaultValues array is shorter than the previousValues array, we display the last value of the previousValues array.
                 if (index === defaultValues.length - 1) {
                     valueToDisplay = previousValues[previousValues.length - 1];
@@ -155,6 +155,7 @@ export const useReactiveCapabilityCurveTableValues = ({
             setValues(enforcedMinimumDefaultValues);
             setDisplayedValues(enforcedMinimumDefaultValues);
         } else {
+            // In the case of a modification form
             if (defaultValues !== undefined && defaultValues.length > 0) {
                 setValues(fixValuesFormat(defaultValues));
                 setDisplayedValues(fixValuesFormat(defaultValues));
@@ -165,7 +166,8 @@ export const useReactiveCapabilityCurveTableValues = ({
                         previousValues
                     )
                 );
-            } else if (previousValues && previousValues.length > 0) {
+            } else if (previousValues?.length > 0) {
+                // We prefill the form with empty lines and with the previous values.
                 const valuesToDisplay = Array(previousValues.length).fill(
                     minimalValue
                 );
@@ -216,9 +218,11 @@ export const useReactiveCapabilityCurveTableValues = ({
                 displayedPreviousValues.length <= values.length
             ) {
                 const newDisplayedPreviousValues = [...displayedPreviousValues];
+                //we find the index of the previous value that is displayed
                 const indexDisplayedPreviousValue = previousValues.findIndex(
                     (v) => v?.p === displayedPreviousValues[index - 1]?.p
                 );
+                //we find the next previous value to display
                 const newValue =
                     indexDisplayedPreviousValue !== -1 &&
                     indexDisplayedPreviousValue + 1 < previousValues.length - 1
@@ -244,6 +248,17 @@ export const useReactiveCapabilityCurveTableValues = ({
         ]);
     }, []);
 
+    const hasPreviousValue = useCallback(
+        (index) => {
+            return (
+                displayedPreviousValues !== undefined &&
+                index < displayedPreviousValues.length - 1 &&
+                displayedPreviousValues[index]?.p !== ''
+            );
+        },
+        [displayedPreviousValues]
+    );
+
     useEffect(() => {
         if (!isReactiveCapabilityCurveOn) {
             // When isReactiveCapabilityCurveOn is false, the reactive capability curve
@@ -251,10 +266,9 @@ export const useReactiveCapabilityCurveTableValues = ({
             // not change the validation of its values and they are still required.
             // we update the validations of reactive capability curve values so they are not required any more.
             values.forEach((value, index) => {
+                // for the modification form, we only update the validations of the values that have previous values
                 if (
-                    (displayedPreviousValues !== undefined &&
-                        index < displayedPreviousValues.length &&
-                        displayedPreviousValues[index]?.p !== '') ||
+                    hasPreviousValue(index) ||
                     index === values.length - 1 ||
                     index === 0 ||
                     !isModificationForm
@@ -271,6 +285,7 @@ export const useReactiveCapabilityCurveTableValues = ({
         isReactiveCapabilityCurveOn,
         displayedPreviousValues,
         isModificationForm,
+        hasPreviousValue,
     ]);
 
     const isRequired = useCallback(
@@ -278,20 +293,15 @@ export const useReactiveCapabilityCurveTableValues = ({
             if (isModificationForm) {
                 return isReactiveCapabilityCurveOn
                     ? true
-                    : !(
-                          (displayedPreviousValues !== undefined &&
-                              index < displayedPreviousValues.length - 1 &&
-                              displayedPreviousValues[index]?.p !== '') ||
-                          index === values.length - 1
-                      );
+                    : !(hasPreviousValue(index) || index === values.length - 1);
             }
             return isReactiveCapabilityCurveOn;
         },
         [
-            displayedPreviousValues,
-            isReactiveCapabilityCurveOn,
             isModificationForm,
-            values.length,
+            isReactiveCapabilityCurveOn,
+            hasPreviousValue,
+            values,
         ]
     );
 
