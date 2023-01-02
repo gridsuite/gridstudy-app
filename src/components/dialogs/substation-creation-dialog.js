@@ -18,6 +18,8 @@ import {
 } from './inputs/input-hooks';
 import {
     filledTextField,
+    func_identity,
+    getIdOrSelf,
     gridItem,
     GridSection,
     sanitizeString,
@@ -58,6 +60,9 @@ const NonNullStringPair = ({
         return Object.keys(predefined ?? {}).sort();
     }, [predefined]);
 
+    const entryToValue = (entry) => {
+        return func_identity(entry);
+    };
     const [name, nameField] = useAutocompleteField({
         id: 'pairKey' + index,
         label: 'PropertyName',
@@ -65,6 +70,8 @@ const NonNullStringPair = ({
         validation: { isFieldRequired: true },
         values: predefinedNames,
         allowNewValue: true,
+        getLabel: getIdOrSelf,
+        newEntryToValue: entryToValue,
         defaultValue: defaultValue?.name || '',
         inputForm: inputForm,
         errorMsg: errors?.name,
@@ -81,6 +88,8 @@ const NonNullStringPair = ({
         validation: { isFieldRequired: true },
         values: predefinedValues,
         allowNewValue: true,
+        getLabel: getIdOrSelf,
+        newEntryToValue: entryToValue,
         defaultValue: defaultValue?.value || '',
         inputForm: inputForm,
         errorMsg: errors?.value,
