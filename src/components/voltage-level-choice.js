@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import { getNominalVoltageColor } from '../utils/colors';
 import { useNameOrId } from './util/equipmentInfosHandler';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     menu: {
         minWidth: 300,
         maxHeight: 800,

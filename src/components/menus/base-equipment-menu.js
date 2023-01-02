@@ -20,7 +20,7 @@ import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../util/equipmentInfosHandler';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     menuItem: {
         padding: '0px',
         margin: '7px',
