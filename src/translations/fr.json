@@ -496,7 +496,7 @@
     "ReplacingLines": "Liaisons de remplacement",
     "LineDivisionError": "Erreur lors de la création d'une coupure",
     "LineAttachmentError": "Erreur lors de la création d'un piquage",
-    "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'un piquage",
+    "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
