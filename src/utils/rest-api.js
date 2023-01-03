@@ -1368,16 +1368,17 @@ export function generatorScaling(
     currentNodeUuid,
     modificationUuid,
     variationType,
-    iterative,
+    iterativeValue,
     variations
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPE.GENERATOR_SCALING,
         variationType,
-        isIterative: iterative,
+        isIterative: iterativeValue,
         generatorScalingVariations: variations,
     });
 
+    console.log('iterative : ', body);
     let generatorScalingUrl;
     if (modificationUuid) {
         console.info('generator scaling update', body);

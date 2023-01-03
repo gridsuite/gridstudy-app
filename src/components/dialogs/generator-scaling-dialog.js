@@ -202,7 +202,7 @@ const GeneratorScalingDialog = ({
     };
 
     const handleSave = () => {
-        console.log('variation : ', variations);
+        console.log('variation : ', iterativeValue);
         generatorScaling(
             studyUuid,
             currentNodeUuid,
