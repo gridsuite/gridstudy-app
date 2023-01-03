@@ -183,7 +183,6 @@ export const NetworkMapTab = ({
 
     const getEquipmentsNotFoundIds = useCallback(
         (foundEquipmentPositions, allEquipments) => {
-            // let notFoundEquipmentsIds = [];
             const foundEquipmentsIds = Array.from(
                 foundEquipmentPositions.keys()
             );
