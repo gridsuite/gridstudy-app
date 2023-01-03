@@ -268,6 +268,7 @@ export const useReactiveCapabilityCurveTableValues = ({
             values.forEach((value, index) => {
                 // for the modification form, we only update the validations of the values that have previous values
                 if (
+                    isReactiveCapabilityCurveOn !== undefined ||
                     hasPreviousValue(index) ||
                     index === values.length - 1 ||
                     index === 0 ||

@@ -105,8 +105,6 @@ const GeneratorModificationDialog = ({
 
     const [equipmentOptions, setEquipmentOptions] = useState([]);
 
-    const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
-
     const [isRegulatingTerminalRequired, setIsRegulatingTerminalRequired] =
         useState(false);
 
@@ -208,7 +206,7 @@ const GeneratorModificationDialog = ({
         label: 'MinimumActivePowerText',
         validation: {
             isFieldNumeric: true,
-            valueLessThanOrEqualTo: maximumActivePower,
+            valueLessThanOrEqualTo: maximumActivePower || generatorInfos?.maxP,
             errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
         adornment: ActivePowerAdornment,
@@ -245,6 +243,21 @@ const GeneratorModificationDialog = ({
         return reactiveCapabilityCurveChoice === 'CURVE';
     }, [reactiveCapabilityCurveChoice]);
 
+    const reactiveCapabilityCurveOn = useMemo(() => {
+        // if the previous value was false, then we reactiveCapabilityCurveOn to true (to activate validation on all fields)
+        // else if the reactiveCapabilityCurveOn is false, then we return false (to deactivate validation on all fields)
+        // else we return undefined so that the validation is set based on the previousValues in : (dialogs/inputs/reactive-capability-curve-table.js)
+        if (
+            isReactiveCapabilityCurveOn &&
+            !isPreviousReactiveCapabilityCurveOn
+        ) {
+            return true;
+        } else if (!isReactiveCapabilityCurveOn) {
+            return false;
+        }
+        return undefined;
+    }, [isReactiveCapabilityCurveOn, isPreviousReactiveCapabilityCurveOn]);
+
     const [
         reactiveCapabilityCurve,
         reactiveCapabilityCurveField,
@@ -254,17 +267,16 @@ const GeneratorModificationDialog = ({
         inputForm: inputForm,
         Field: ReactiveCapabilityCurveReactiveRange,
         defaultValues: formValues?.reactiveCapabilityCurvePoints,
-        isReactiveCapabilityCurveOn:
-            isReactiveCapabilityCurveOn && !isPreviousReactiveCapabilityCurveOn
-                ? true
-                : undefined,
+        isReactiveCapabilityCurveOn: reactiveCapabilityCurveOn,
         isModificationForm: true,
         previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
     });
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
         label: 'MinimumReactivePower',
-        validation: { isFieldRequired: reactivePowerRequired },
+        validation: {
+            isFieldNumeric: true,
+        },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.minimumReactivePower),
@@ -274,24 +286,15 @@ const GeneratorModificationDialog = ({
 
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
         label: 'MaximumReactivePower',
-        validation: { isFieldRequired: reactivePowerRequired },
+        validation: {
+            isFieldNumeric: true,
+        },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.maximumReactivePower),
         previousValue:
             generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
     });
-
-    useEffect(() => {
-        setReactivePowerRequired(
-            (minimumReactivePower !== '' || maximumReactivePower !== '') &&
-                reactiveCapabilityCurveChoice === 'MINMAX'
-        );
-    }, [
-        minimumReactivePower,
-        maximumReactivePower,
-        reactiveCapabilityCurveChoice,
-    ]);
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
@@ -311,10 +314,6 @@ const GeneratorModificationDialog = ({
         label: 'ActivePowerText',
         validation: {
             isFieldNumeric: true,
-            valueGreaterThanOrEqualTo:
-                minimumActivePower || generatorInfos?.minP,
-            valueLessThanOrEqualTo: maximumActivePower || generatorInfos?.maxP,
-            errorMsgId: 'ActivePowerBetweenMaxAndMin',
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
@@ -406,14 +405,15 @@ const GeneratorModificationDialog = ({
     });
 
     let previousFrequencyRegulation = '';
-    if (generatorInfos?.activePowerControlOn)
+    if (generatorInfos?.activePowerControlOn) {
         previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
-    else if (
+    } else if (
         generatorInfos?.activePowerControlOn === false ||
         (generatorInfos?.id !== '' &&
             generatorInfos?.activePowerControlOn === undefined)
-    )
+    ) {
         previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
+    }
 
     const [frequencyRegulation, frequencyRegulationField] =
         useNullableBooleanValue({
@@ -533,7 +533,6 @@ const GeneratorModificationDialog = ({
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
         label: 'VoltageText',
         validation: {
-            isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
             valueGreaterThan: '0',
             errorMsgId: 'VoltageGreaterThanZero',
@@ -638,7 +637,10 @@ const GeneratorModificationDialog = ({
             );
             isReactiveCapabilityCurveValid = errorMessages.length === 0;
             setReactiveCapabilityCurveErrors(errorMessages);
-        } else if (isPreviousReactiveCapabilityCurveOn) {
+        } else if (
+            isPreviousReactiveCapabilityCurveOn &&
+            isReactiveCapabilityCurveOn
+        ) {
             const errorMessages = checkReactiveCapabilityCurve(
                 buildCurvePointsToCheck
             );
