@@ -263,7 +263,7 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                 });
             });
         },
-        [snackError]
+        [editData, studyUuid, currentNodeUuid, snackError]
     );
 
     const clear = useCallback(() => {

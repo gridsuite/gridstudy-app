@@ -6,7 +6,6 @@ import {
     FieldLabel,
     genHelperError,
 } from '../../../dialogs/inputs/hooks-helpers';
-import { validateValueIsANumber } from '../../../util/validation-functions';
 import PropTypes from 'prop-types';
 
 /**
