@@ -29,7 +29,7 @@ import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import ReactHookFormTextField from '../../inputs/text-field/react-hook-form-text-field';
 import { FormProvider, useForm } from 'react-hook-form';
-import * as yup from 'yup';
+import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import ReactHookFormSelect from '../../inputs/select-field/react-hook-form-select';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
@@ -39,11 +39,7 @@ import {
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import ReactHookFormFloatNumberTextField from '../../inputs/text-field/react-hook-form-float-number-text-field';
-import { InputAdornment } from '@mui/material';
-import {
-    getAdornmentInputProps,
-    getClearAdornmentInputProps,
-} from '../../inputs/utils';
+import { getAdornmentInputProps } from '../../inputs/utils';
 
 /**
  * Dialog to create a load in the network
@@ -52,18 +48,18 @@ import {
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
-const EQUIPMENT_ID_FIELD = 'equipmentId';
-const EQUIPMENT_NAME_FIELD = 'equipmentName';
-const EQUIPMENT_TYPE_FIELD = 'loadType';
-const ACTIVE_POWER_FIELD = 'activePower';
-const REACTIVE_POWER_FIELD = 'reactivePower';
+const EQUIPMENT_ID = 'equipmentId';
+const EQUIPMENT_NAME = 'equipmentName';
+const EQUIPMENT_TYPE = 'loadType';
+const ACTIVE_POWER = 'activePower';
+const REACTIVE_POWER = 'reactivePower';
 
 const emptyFormData = {
-    [EQUIPMENT_ID_FIELD]: '',
-    [EQUIPMENT_NAME_FIELD]: '',
-    [EQUIPMENT_TYPE_FIELD]: '',
-    [ACTIVE_POWER_FIELD]: 0,
-    [REACTIVE_POWER_FIELD]: 0,
+    [EQUIPMENT_ID]: '',
+    [EQUIPMENT_NAME]: '',
+    [EQUIPMENT_TYPE]: '',
+    [ACTIVE_POWER]: 0,
+    [REACTIVE_POWER]: 0,
     ...getConnectivityEmptyFormData(),
 };
 
@@ -74,20 +70,14 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
 
     const equipmentPath = 'loads';
 
-    yup.setLocale({
-        mixed: {
-            required: 'FieldIsRequired',
-        },
-    });
-
     const schema = yup
         .object()
         .shape({
-            [EQUIPMENT_ID_FIELD]: yup.string().required(),
-            [EQUIPMENT_NAME_FIELD]: yup.string(),
-            [EQUIPMENT_TYPE_FIELD]: yup.string(),
-            [ACTIVE_POWER_FIELD]: yup.number().required().min(0),
-            [REACTIVE_POWER_FIELD]: yup.number().required().min(0),
+            [EQUIPMENT_ID]: yup.string().required(),
+            [EQUIPMENT_NAME]: yup.string(),
+            [EQUIPMENT_TYPE]: yup.string(),
+            [ACTIVE_POWER]: yup.number().required(),
+            [REACTIVE_POWER]: yup.number().required(),
             ...getConnectivityFormValidationSchema(),
         })
         .required();
@@ -112,11 +102,11 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
             true
         ).then((vlResult) => {
             reset({
-                [EQUIPMENT_ID_FIELD]: load.id + '(1)',
-                [EQUIPMENT_NAME_FIELD]: load.name ?? '',
-                [EQUIPMENT_TYPE_FIELD]: load.type,
-                [ACTIVE_POWER_FIELD]: load.p0,
-                [REACTIVE_POWER_FIELD]: load.q0,
+                [EQUIPMENT_ID]: load.id + '(1)',
+                [EQUIPMENT_NAME]: load.name ?? '',
+                [EQUIPMENT_TYPE]: load.type,
+                [ACTIVE_POWER]: load.p0,
+                [REACTIVE_POWER]: load.q0,
                 ...getConnectivityFormData({
                     voltageLevelId: load.voltageLevelId,
                     voltageLevelTopologyKind: vlResult.topologyKind,
@@ -138,11 +128,11 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                 true
             ).then((vlResult) => {
                 reset({
-                    [EQUIPMENT_ID_FIELD]: load.equipmentId,
-                    [EQUIPMENT_NAME_FIELD]: load.equipmentName ?? '',
-                    [EQUIPMENT_TYPE_FIELD]: load.loadType,
-                    [ACTIVE_POWER_FIELD]: load.activePower,
-                    [REACTIVE_POWER_FIELD]: load.reactivePower,
+                    [EQUIPMENT_ID]: load.equipmentId,
+                    [EQUIPMENT_NAME]: load.equipmentName ?? '',
+                    [EQUIPMENT_TYPE]: load.loadType,
+                    [ACTIVE_POWER]: load.activePower,
+                    [REACTIVE_POWER]: load.reactivePower,
                     ...getConnectivityFormData({
                         voltageLevelId: load.voltageLevelId,
                         voltageLevelTopologyKind: vlResult.topologyKind,
@@ -176,11 +166,11 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
 
     const newLoadIdField = (
         <ReactHookFormTextField
-            name={EQUIPMENT_ID_FIELD}
+            name={EQUIPMENT_ID}
             label="ID"
             required={
-                yup.reach(schema, EQUIPMENT_ID_FIELD)?.exclusiveTests
-                    ?.required === true
+                yup.reach(schema, EQUIPMENT_ID)?.exclusiveTests?.required ===
+                true
             }
             control={control}
             {...filledTextField}
@@ -189,12 +179,12 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
 
     const newLoadNameField = (
         <ReactHookFormTextField
-            name={EQUIPMENT_NAME_FIELD}
+            name={EQUIPMENT_NAME}
             label="Name"
             control={control}
             required={
-                yup.reach(schema, EQUIPMENT_NAME_FIELD)?.exclusiveTests
-                    ?.required === true
+                yup.reach(schema, EQUIPMENT_NAME)?.exclusiveTests?.required ===
+                true
             }
             {...filledTextField}
         />
@@ -202,15 +192,15 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
 
     const newLoadTypeField = (
         <ReactHookFormSelect
-            name={EQUIPMENT_TYPE_FIELD}
+            name={EQUIPMENT_TYPE}
             label="Type"
             options={LOAD_TYPES}
             size="small"
             fullWidth
             control={control}
             required={
-                yup.reach(schema, EQUIPMENT_TYPE_FIELD)?.exclusiveTests
-                    ?.required === true
+                yup.reach(schema, EQUIPMENT_TYPE)?.exclusiveTests?.required ===
+                true
             }
             {...filledTextField}
         />
@@ -218,12 +208,12 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
 
     const newActivePowerField = (
         <ReactHookFormFloatNumberTextField
-            name={ACTIVE_POWER_FIELD}
+            name={ACTIVE_POWER}
             label="ActivePowerText"
             control={control}
             required={
-                yup.reach(schema, ACTIVE_POWER_FIELD)?.exclusiveTests
-                    ?.required === true
+                yup.reach(schema, ACTIVE_POWER)?.exclusiveTests?.required ===
+                true
             }
             adornmentCallback={getAdornmentInputProps(ActivePowerAdornment)}
         />
@@ -231,14 +221,14 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
 
     const newReactivePowerField = (
         <ReactHookFormFloatNumberTextField
-            name={REACTIVE_POWER_FIELD}
+            name={REACTIVE_POWER}
             label="ReactivePowerText"
             control={control}
             required={
-                yup.reach(schema, REACTIVE_POWER_FIELD)?.exclusiveTests
-                    ?.required === true
+                yup.reach(schema, REACTIVE_POWER)?.exclusiveTests?.required ===
+                true
             }
-            adornmentCallback={getClearAdornmentInputProps({ position: 'end' })}
+            adornmentCallback={getAdornmentInputProps(ReactivePowerAdornment)}
         />
     );
 
@@ -246,36 +236,39 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
         <ConnectivityForm label={'Connectivity'} withPosition={true} />
     );
 
-    const onSubmit = (load) => {
-        createLoad(
-            studyUuid,
-            currentNodeUuid,
-            load[EQUIPMENT_ID_FIELD],
-            sanitizeString(load[EQUIPMENT_NAME_FIELD]),
-            !load[EQUIPMENT_TYPE_FIELD]
-                ? UNDEFINED_LOAD_TYPE
-                : load[EQUIPMENT_TYPE_FIELD],
-            load[ACTIVE_POWER_FIELD],
-            load[REACTIVE_POWER_FIELD],
-            load.connectivity.voltageLevel.id,
-            load.connectivity.busOrBusbarSection.id,
-            editData ? true : false,
-            editData ? editData.uuid : undefined,
-            load.connectivity?.connectionDirection ??
-                UNDEFINED_CONNECTION_DIRECTION,
-            load.connectivity?.connectionName ?? null,
-            load.connectivity?.connectionPosition ?? null
-        ).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'LoadCreationError',
+    const onSubmit = useCallback(
+        (load) => {
+            createLoad(
+                studyUuid,
+                currentNodeUuid,
+                load[EQUIPMENT_ID],
+                sanitizeString(load[EQUIPMENT_NAME]),
+                !load[EQUIPMENT_TYPE]
+                    ? UNDEFINED_LOAD_TYPE
+                    : load[EQUIPMENT_TYPE],
+                load[ACTIVE_POWER],
+                load[REACTIVE_POWER],
+                load.connectivity.voltageLevel.id,
+                load.connectivity.busOrBusbarSection.id,
+                editData ? true : false,
+                editData ? editData.uuid : undefined,
+                load.connectivity?.connectionDirection ??
+                    UNDEFINED_CONNECTION_DIRECTION,
+                load.connectivity?.connectionName ?? null,
+                load.connectivity?.connectionPosition ?? null
+            ).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'LoadCreationError',
+                });
             });
-        });
-    };
+        },
+        [snackError]
+    );
 
-    const clear = () => {
+    const clear = useCallback(() => {
         reset(emptyFormData);
-    };
+    }, [reset]);
 
     return (
         <FormProvider {...methods}>

@@ -1,21 +1,43 @@
-import * as yup from 'yup';
+import yup from '../../utils/yup-config';
+
+export const CONNECTIVITY = 'connectivity';
+export const VOLTAGE_LEVEL = 'voltageLevel';
+export const VOLTAGE_LEVEL_ID = 'id';
+export const VOLTAGE_LEVEL_NAME = 'name';
+export const VOLTAGE_LEVEL_SUBSTATION_ID = 'substationId';
+export const VOLTAGE_LEVEL_NOMINAL_VOLTAGE = 'nominalVoltage';
+export const VOLTAGE_LEVEL_TOPOLOGY_KIND = 'topologyKind';
+export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
+export const BUS_OR_BUSBAR_SECTION_ID = 'id';
+export const BUS_OR_BUSBAR_SECTION_NAME = 'name';
+export const CONNECTION_DIRECTION = 'connectionDirection';
+export const CONNECTION_NAME = 'connectionName';
+export const CONNECTION_POSITION = 'connectionPosition';
 
 const connectivityValidationSchema = {
-    connectivity: yup.object().shape({
-        voltageLevel: yup.object().nullable().required().shape({
-            id: yup.string(),
-            name: yup.string(),
-            substationId: yup.string(),
-            nominalVoltage: yup.string(),
-            topologyKind: yup.string(),
-        }),
-        busOrBusbarSection: yup.object().nullable().required().shape({
-            id: yup.string(),
-            name: yup.string(),
-        }),
-        connectionDirection: yup.string(),
-        connectionName: yup.string(),
-        connectionPosition: yup.string(),
+    [CONNECTIVITY]: yup.object().shape({
+        [VOLTAGE_LEVEL]: yup
+            .object()
+            .nullable()
+            .required()
+            .shape({
+                [VOLTAGE_LEVEL_ID]: yup.string(),
+                [VOLTAGE_LEVEL_NAME]: yup.string(),
+                [VOLTAGE_LEVEL_SUBSTATION_ID]: yup.string(),
+                [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
+                [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string(),
+            }),
+        [BUS_OR_BUSBAR_SECTION]: yup
+            .object()
+            .nullable()
+            .required()
+            .shape({
+                [BUS_OR_BUSBAR_SECTION_ID]: yup.string(),
+                [BUS_OR_BUSBAR_SECTION_NAME]: yup.string(),
+            }),
+        [CONNECTION_DIRECTION]: yup.string(),
+        [CONNECTION_NAME]: yup.string(),
+        [CONNECTION_POSITION]: yup.string(),
     }),
 };
 
@@ -30,12 +52,12 @@ export const getConnectivityFormValidation = () => {
 };
 
 const connectivityEmptyFormData = {
-    connectivity: {
-        voltageLevel: null,
-        busOrBusbarSection: null,
-        connectionDirection: '',
-        connectionName: '',
-        connectionPosition: '',
+    [CONNECTIVITY]: {
+        [VOLTAGE_LEVEL]: null,
+        [BUS_OR_BUSBAR_SECTION]: null,
+        [CONNECTION_DIRECTION]: '',
+        [CONNECTION_NAME]: '',
+        [CONNECTION_POSITION]: '',
     },
 };
 
@@ -55,11 +77,11 @@ const getConnectivityVoltageLevelData = (
     }
 
     return {
-        id: voltageLevelId,
-        name: voltageLevelName,
-        substationId: voltageLevelSubstationId,
-        nominalVoltage: voltageLevelNominalVoltage,
-        topologyKind: voltageLevelTopologyKind,
+        [VOLTAGE_LEVEL_ID]: voltageLevelId,
+        [VOLTAGE_LEVEL_NAME]: voltageLevelName,
+        [VOLTAGE_LEVEL_SUBSTATION_ID]: voltageLevelSubstationId,
+        [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: voltageLevelNominalVoltage,
+        [VOLTAGE_LEVEL_TOPOLOGY_KIND]: voltageLevelTopologyKind,
     };
 };
 
@@ -72,8 +94,8 @@ const getConnectivityBusBarSectionData = (
     }
 
     return {
-        id: busbarSectionId,
-        name: busbarSectionName,
+        [BUS_OR_BUSBAR_SECTION_ID]: busbarSectionId,
+        [BUS_OR_BUSBAR_SECTION_NAME]: busbarSectionName,
     };
 };
 
@@ -85,26 +107,26 @@ export const getConnectivityFormData = ({
     voltageLevelTopologyKind,
     busbarSectionId,
     busbarSectionName,
-    connectionDirection = '',
-    connectionName = '',
-    connectionPosition = '',
+    connectionDirection,
+    connectionName,
+    connectionPosition,
 }) => {
     return {
-        connectivity: {
-            voltageLevel: getConnectivityVoltageLevelData(
+        [CONNECTIVITY]: {
+            [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData(
                 voltageLevelId,
                 voltageLevelName,
                 voltageLevelSubstationId,
                 voltageLevelNominalVoltage,
                 voltageLevelTopologyKind
             ),
-            busOrBusbarSection: getConnectivityBusBarSectionData(
+            [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData(
                 busbarSectionId,
                 busbarSectionName
             ),
-            connectionDirection,
-            connectionName,
-            connectionPosition,
+            [CONNECTION_DIRECTION]: connectionDirection,
+            [CONNECTION_NAME]: connectionName,
+            [CONNECTION_POSITION]: connectionPosition,
         },
     };
 };

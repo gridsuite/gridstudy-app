@@ -36,9 +36,7 @@ const ReactHookFormIntegerNumberTextField = ({
                     fullWidth
                     value={value}
                     onChange={(e) => {
-                        if (validateValueIsANumber(e.target.value))
-                            onChange(toIntOrEmptyValue(e.target.value));
-                        else return;
+                        onChange(toIntOrEmptyValue(e.target.value));
                     }}
                     label={FieldLabel({ label: label, optional: !required })}
                     {...genHelperError(error?.message)}

@@ -22,12 +22,20 @@ import { CONNECTION_DIRECTIONS } from '../../../network/constants';
 import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
-import * as yup from 'yup';
+import yup from '../../utils/yup-config';
 import ReactHookFormAutocomplete from '../../inputs/select-field/react-hook-form-autocomplete';
 import ReactHookFormSelect from '../../inputs/select-field/react-hook-form-select';
 import ReactHookFormIntegerNumberTextField from '../../inputs/text-field/react-hook-form-integer-number-text-field';
 import ReactHookFormTextField from '../../inputs/text-field/react-hook-form-text-field';
-import { getConnectivityFormValidation } from './connectivity-form-utils';
+import {
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
+    getConnectivityFormValidation,
+    VOLTAGE_LEVEL,
+} from './connectivity-form-utils';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -61,7 +69,7 @@ export const ConnectivityForm = ({
     const {
         id: watchVoltageLevelId,
         topologyKind: watchVoltageLevelTopologyKind,
-    } = watch('connectivity.voltageLevel') || {};
+    } = watch(`${CONNECTIVITY}.${VOLTAGE_LEVEL}`) || {};
 
     const connectivityValidation = getConnectivityFormValidation();
 
@@ -108,18 +116,22 @@ export const ConnectivityForm = ({
         currentNode?.id,
     ]);
 
+    const compareObjectId = (val1, val2) => val1.id === val2.id;
+
     const newVoltageLevelField = (
         <ReactHookFormAutocomplete
             id={id ? id + '/voltage-level' : 'voltage-level'}
             options={voltageLevelOptions}
-            name="connectivity.voltageLevel"
+            name={`${CONNECTIVITY}.${VOLTAGE_LEVEL}`}
             label="VoltageLevel"
             getOptionLabel={(option) => option.id}
             isOptionEqualToValue={(value, option) => value.id === option.id}
             control={control}
             required={
-                yup.reach(connectivityValidation, 'connectivity.voltageLevel')
-                    ?.exclusiveTests?.required === true
+                yup.reach(
+                    connectivityValidation,
+                    `${CONNECTIVITY}.${VOLTAGE_LEVEL}`
+                )?.exclusiveTests?.required === true
             }
         />
     );
@@ -128,7 +140,7 @@ export const ConnectivityForm = ({
         <ReactHookFormAutocomplete
             id={id ? id + '/bus-bar-bus' : 'bus-bar-bus'}
             options={busOrBusbarSectionOptions}
-            name="connectivity.busOrBusbarSection"
+            name={`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`}
             label="BusBarBus"
             getOptionLabel={(option) => option.id}
             isOptionEqualToValue={(value, option) => value.id === option.id}
@@ -136,7 +148,7 @@ export const ConnectivityForm = ({
             required={
                 yup.reach(
                     connectivityValidation,
-                    'connectivity.busOrBusbarSection'
+                    `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`
                 )?.exclusiveTests?.required === true
             }
         />
@@ -144,19 +156,21 @@ export const ConnectivityForm = ({
 
     const newConnectionNameField = (
         <ReactHookFormTextField
-            name="connectivity.connectionName"
+            name={`${CONNECTIVITY}.${CONNECTION_NAME}`}
             label="ConnectionName"
             control={control}
             required={
-                yup.reach(connectivityValidation, 'connectivity.connectionName')
-                    ?.exclusiveTests?.required === true
+                yup.reach(
+                    connectivityValidation,
+                    `${CONNECTIVITY}.${CONNECTION_NAME}`
+                )?.exclusiveTests?.required === true
             }
         />
     );
 
     const newConnectionDirectionField = (
         <ReactHookFormSelect
-            name="connectivity.connectionDirection"
+            name={`${CONNECTIVITY}.${CONNECTION_DIRECTION}`}
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
             size="small"
@@ -165,7 +179,7 @@ export const ConnectivityForm = ({
             required={
                 yup.reach(
                     connectivityValidation,
-                    'connectivity.connectionDirection'
+                    `${CONNECTIVITY}.${CONNECTION_DIRECTION}`
                 )?.exclusiveTests?.required === true
             }
         />
@@ -173,13 +187,13 @@ export const ConnectivityForm = ({
 
     const newConnectionPositionField = (
         <ReactHookFormIntegerNumberTextField
-            name="connectivity.connectionPosition"
+            name={`${CONNECTIVITY}.${CONNECTION_POSITION}`}
             label="ConnectionPosition"
             control={control}
             required={
                 yup.reach(
                     connectivityValidation,
-                    'connectivity.connectionPosition'
+                    `${CONNECTIVITY}.${CONNECTION_POSITION}`
                 )?.exclusiveTests?.required === true
             }
         />

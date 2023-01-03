@@ -665,5 +665,9 @@
     "ErrorNoVoltageSelected": "Aucun poste sélectionné, veuillez en sélectionner un avant",
     "DisplayTakenPositions": "Afficher les positions prises",
     "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
-    "NodeNotBuildPositionMessage": "Veuillez réaliser le nœud actuel pour afficher les positions"
+    "NodeNotBuildPositionMessage": "Veuillez réaliser le nœud actuel pour afficher les positions",
+
+    "YupRequired": "Ce champ doit être renseigné",
+    "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
+    "YupNotTypeDefault": "La valeur du champ n'est pas au bon format"
 }
