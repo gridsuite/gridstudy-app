@@ -99,6 +99,8 @@ const LineCreationDialog = ({
             connectionName1: line.connectionName1,
             connectionDirection2: line.connectionDirection2,
             connectionName2: line.connectionName2,
+            connectionPosition1: line.connectionPosition1,
+            connectionPosition2: line.connectionPosition2,
         };
     };
 
@@ -199,7 +201,7 @@ const LineCreationDialog = ({
             formValues?.busOrBusbarSectionId1 || null,
         connectionDirectionValue: formValues?.connectionDirection1 ?? '',
         connectionNameValue: formValues?.connectionName1,
-        withPosition: false,
+        withPosition: true,
         connectionPositionValue: formValues?.connectionPosition1,
     });
 
@@ -216,7 +218,7 @@ const LineCreationDialog = ({
             formValues?.busOrBusbarSectionId2 || null,
         connectionDirectionValue: formValues?.connectionDirection2 ?? '',
         connectionNameValue: formValues?.connectionName2,
-        withPosition: false,
+        withPosition: true,
         connectionPositionValue: formValues?.connectionPosition2,
     });
 
@@ -277,7 +279,9 @@ const LineCreationDialog = ({
                 UNDEFINED_CONNECTION_DIRECTION,
             connectivity2?.connectionName?.id ?? null,
             connectivity2?.connectionDirection?.id ??
-                UNDEFINED_CONNECTION_DIRECTION
+                UNDEFINED_CONNECTION_DIRECTION,
+            connectivity1?.connectionPosition?.id ?? null,
+            connectivity2?.connectionPosition?.id ?? null
         ).catch((error) => {
             snackError({
                 messageTxt: error.message,
@@ -300,6 +304,7 @@ const LineCreationDialog = ({
                 disabledSave={!inputForm.hasChanged}
                 aria-labelledby="dialog-create-line"
                 fullWidth={true}
+                maxWidth={'md'}
                 titleId="CreateLine"
                 searchCopy={searchCopy}
                 {...dialogProps}

@@ -17,13 +17,12 @@ import {
     GridSection,
     compareById,
     sanitizeString,
+    getIdOrSelf,
 } from './dialogUtils';
 import { linesAttachToSplitLines } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-
-const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.
@@ -129,12 +128,12 @@ const LinesAttachToSplitLinesDialog = ({
 
     const [lineToAttachTo1, lineToAttachTo1Field] = useAutocompleteField({
         id: 'lineToAttachTo1',
-        label: 'Line1ID',
+        label: 'Line1',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue:
             lineOptions.find(
                 (value) => value.id === formValues?.lineToAttachTo1Id
@@ -144,12 +143,12 @@ const LinesAttachToSplitLinesDialog = ({
 
     const [lineToAttachTo2, lineToAttachTo2Field] = useAutocompleteField({
         id: 'lineToAttachTo2',
-        label: 'Line2ID',
+        label: 'Line2',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue:
             lineOptions.find(
                 (value) => value.id === formValues?.lineToAttachTo2Id
@@ -159,12 +158,12 @@ const LinesAttachToSplitLinesDialog = ({
 
     const [attachedLine, attachedLineField] = useAutocompleteField({
         id: 'attachedLine',
-        label: 'AttachedLineId',
+        label: 'LineAttached',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue:
             lineOptions.find(
                 (value) => value.id === formValues?.attachedLineId
@@ -179,7 +178,7 @@ const LinesAttachToSplitLinesDialog = ({
         inputForm: inputForm,
         values: allVoltageLevelOptions,
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue: defaultVoltageLevelId,
         selectedValue:
             formValues && allVoltageLevelOptions
@@ -201,7 +200,7 @@ const LinesAttachToSplitLinesDialog = ({
             inputForm: inputForm,
             values: busbarSectionOptions,
             allowNewValue: true,
-            getLabel: getId,
+            getLabel: getIdOrSelf,
             defaultValue: formValues?.bbsBusId || '',
             selectedValue: formValues
                 ? busbarSectionOptions.find(

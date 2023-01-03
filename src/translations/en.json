@@ -9,6 +9,7 @@
     "studyDeletedSuccessMsg": "Study deleted",
     "deleteStudyError": "Cannot remove the study if you are not the owner",
     "equipmentsSearchingError": "An error occurred while searching the equipments",
+    "equipmentsLoadingError": "An error occurred while loading the available equipments",
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
@@ -432,8 +433,6 @@
     "Characteristics": "Characteristics",
     "Side1": "Side 1",
     "Side2": "Side 2",
-    "OriginSide": "Origin side",
-    "ExtrimitySide": "Extremity side",
     "SeriesResistanceText": "Series resistance",
     "SeriesReactanceText": "Series reactance",
     "ShuntConductanceText": "Shunt conductance",
