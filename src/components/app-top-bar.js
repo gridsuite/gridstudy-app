@@ -172,7 +172,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [isParametersOpen, setParametersOpen] = useState(false);
-    const [openDiagramView] = useDiagram();
+    const { openDiagramView } = useDiagram();
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);

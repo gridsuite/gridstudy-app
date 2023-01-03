@@ -118,7 +118,7 @@ const Diagram = forwardRef((props, ref) => {
         totalWidth,
     } = props;
 
-    const [, , , closeDiagramView] = useDiagram(); // We only use this function (the fourth)
+    const { closeDiagramView } = useDiagram(); // We only use this function (the fourth)
 
     const diagramType = useCallback(() => {
         switch (svgType) {

@@ -265,13 +265,13 @@ export function DiagramPane({
     const viewsRef = useRef();
     viewsRef.current = views;
 
-    const [
+    const {
         openDiagramView,
         minimizeDiagramView,
         togglePinDiagramView,
         closeDiagramView,
         closeDiagramViews,
-    ] = useDiagram();
+    } = useDiagram();
 
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;

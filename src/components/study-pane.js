@@ -139,7 +139,7 @@ const StudyPane = ({
 
     const classes = useStyles();
 
-    const [openDiagramView] = useDiagram();
+    const { openDiagramView } = useDiagram();
 
     const disabled = !isNodeBuilt(currentNode);
 
@@ -311,6 +311,7 @@ const StudyPane = ({
                             {/*
                             Rendering single line diagram only in map view and if
                             displayed voltage level or substation id has been set
+                            // TODO Is this comment still valid ?
                             */}
                             <DiagramPane
                                 studyUuid={studyUuid}

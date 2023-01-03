@@ -250,13 +250,13 @@ export const useDiagram = () => {
         [dispatch]
     );
 
-    return [
+    return {
         openDiagramView,
         minimizeDiagramView,
         togglePinDiagramView,
         closeDiagramView,
         closeDiagramViews,
-    ];
+    };
 };
 
 export function getNameOrId(value) {
