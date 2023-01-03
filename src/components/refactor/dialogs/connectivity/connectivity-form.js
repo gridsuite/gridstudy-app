@@ -6,7 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
@@ -116,7 +116,8 @@ export const ConnectivityForm = ({
         currentNode?.id,
     ]);
 
-    const compareObjectId = (val1, val2) => val1.id === val2.id;
+    const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
+    const getObjectId = useCallback((object) => object.id, []);
 
     const newVoltageLevelField = (
         <ReactHookFormAutocomplete
@@ -124,8 +125,8 @@ export const ConnectivityForm = ({
             options={voltageLevelOptions}
             name={`${CONNECTIVITY}.${VOLTAGE_LEVEL}`}
             label="VoltageLevel"
-            getOptionLabel={(option) => option.id}
-            isOptionEqualToValue={(value, option) => value.id === option.id}
+            getOptionLabel={getObjectId}
+            isOptionEqualToValue={areIdsEqual}
             control={control}
             required={
                 yup.reach(
@@ -142,8 +143,8 @@ export const ConnectivityForm = ({
             options={busOrBusbarSectionOptions}
             name={`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`}
             label="BusBarBus"
-            getOptionLabel={(option) => option.id}
-            isOptionEqualToValue={(value, option) => value.id === option.id}
+            getOptionLabel={getObjectId}
+            isOptionEqualToValue={areIdsEqual}
             control={control}
             required={
                 yup.reach(
@@ -204,13 +205,13 @@ export const ConnectivityForm = ({
             ? 12
             : 6;
 
-    const handleClickOpenDiagramPane = () => {
+    const handleClickOpenDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(true);
-    };
+    }, [setIsDiagramPaneOpen]);
 
-    const handleCloseDiagramPane = () => {
+    const handleCloseDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(false);
-    };
+    }, [setIsDiagramPaneOpen]);
 
     const conditionalSize = withPosition && withDirectionsInfos ? 4 : gridSize;
     return (
