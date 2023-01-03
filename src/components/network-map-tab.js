@@ -200,15 +200,14 @@ export const NetworkMapTab = ({
 
     const getEquipmentsNotFoundIds = useCallback(
         (foundEquipmentPositions, allEquipments) => {
-            let notFoundEquipmentsIds = [];
             const foundEquipmentsIds = Array.from(
                 foundEquipmentPositions.keys()
             );
-            allEquipments.forEach((s) => {
-                if (!foundEquipmentsIds.includes(s.id)) {
-                    notFoundEquipmentsIds.push(s.id);
-                }
-            });
+
+            const notFoundEquipmentsIds = allEquipments
+                .filter((s) => !foundEquipmentsIds.includes(s.id))
+                .map((s) => s.id);
+
             return notFoundEquipmentsIds;
         },
         []
@@ -258,20 +257,15 @@ export const NetworkMapTab = ({
                     setWaitingLoadGeoData(true);
 
                     const missingSubstationPositions =
-                        notFoundSubstationIds.length > 0
-                            ? getMissingEquipmentsPositions(
-                                  notFoundSubstationIds,
-                                  fetchSubstationPositions
-                              )
-                            : Promise.resolve([]);
+                        getMissingEquipmentsPositions(
+                            notFoundSubstationIds,
+                            fetchSubstationPositions
+                        );
 
-                    const missingLinesPositions =
-                        notFoundLinesIds.length > 0
-                            ? getMissingEquipmentsPositions(
-                                  notFoundLinesIds,
-                                  fetchLinePositions
-                              )
-                            : Promise.resolve([]);
+                    const missingLinesPositions = getMissingEquipmentsPositions(
+                        notFoundLinesIds,
+                        fetchLinePositions
+                    );
 
                     Promise.all([
                         missingSubstationPositions,
