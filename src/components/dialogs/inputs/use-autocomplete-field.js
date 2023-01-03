@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { func_identity, getId } from '../dialogUtils';
+import { func_identity } from '../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
     useCallback,
@@ -45,8 +44,6 @@ function arraysMismatchIndex(a1, a2) {
     }
     return -1;
 }
-
-const filter = createFilterOptions();
 
 const isWorthLoading = (term, elements, old, minLen) => {
     const idx = elements.findIndex((e) => e.label === term || e.id === term);
@@ -188,7 +185,19 @@ export const useAutocompleteField = ({
     }, [presentedOptions, userStr, onSearchTermChange]);
 
     const handleSearchTermChange = useCallback(
-        (term) => {
+        (term, reason) => {
+            if (allowNewValue && reason !== 'reset') {
+                let matchingOption = values?.find(
+                    (val) => val.id?.toUpperCase() === term.toUpperCase()
+                );
+                if (matchingOption) {
+                    setValue(matchingOption);
+                } else {
+                    setValue({ id: term });
+                }
+                inputForm.setHasChanged(true);
+            }
+
             if (!onSearchTermChange) return;
 
             const min = minCharsBeforeSearch;
@@ -201,7 +210,13 @@ export const useAutocompleteField = ({
                 return term;
             });
         },
-        [values, minCharsBeforeSearch, onSearchTermChange]
+        [
+            values,
+            minCharsBeforeSearch,
+            onSearchTermChange,
+            allowNewValue,
+            inputForm,
+        ]
     );
 
     const field = useMemo(() => {
@@ -220,20 +235,6 @@ export const useAutocompleteField = ({
 
         const optionEqualsToValue = (option, input) =>
             option === input || option.id === input || option.id === input?.id;
-
-        const filterOptionsFunc = (options, params) => {
-            const filtered = filter(options, params);
-            if (
-                params.inputValue !== '' &&
-                !options.find((opt) => opt.id === params.inputValue)
-            ) {
-                filtered.push({
-                    inputValue: params.inputValue,
-                    id: params.inputValue,
-                });
-            }
-            return filtered;
-        };
 
         return (
             <Autocomplete
@@ -257,17 +258,13 @@ export const useAutocompleteField = ({
                 {...(allowNewValue && {
                     freeSolo: true,
                     isOptionEqualToValue: optionEqualsToValue,
-                    autoSelect: true,
                     autoComplete: true,
-                    autoHighlight: true,
                     blurOnSelect: true,
                     clearOnBlur: true,
                 })}
-                {...(allowNewValue &&
-                    getLabel === getId && {
-                        filterOptions: filterOptionsFunc,
-                    })}
-                onInputChange={(_event, value) => handleSearchTermChange(value)}
+                onInputChange={(_event, value, reason) =>
+                    handleSearchTermChange(value, reason)
+                }
                 noOptionsText={intl.formatMessage({
                     id: 'element_search/noResult',
                 })}
