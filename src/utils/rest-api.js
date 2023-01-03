@@ -2100,11 +2100,11 @@ export function deleteAttachingLine(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
     if (modificationUuid) {
-        console.info('deleting attaching line update', body);
+        console.info('Updating delete attaching line', body);
         deleteVoltageLevelOnLineUrl +=
             '/' + encodeURIComponent(modificationUuid);
     } else {
-        console.info('Delete attaching line', body);
+        console.info('Creating delete attaching line', body);
     }
 
     return backendFetchText(deleteVoltageLevelOnLineUrl, {
