@@ -75,7 +75,7 @@ export const ModificationListItem = ({
             return modif.attachedLineId;
         } else if (modif.type === 'DELETE_VOLTAGE_LEVEL_ON_LINE') {
             return modif.attachedLineId;
-        } else if (modif.type === 'DELETE_ATTACHNING_LINE') {
+        } else if (modif.type === 'DELETE_ATTACHING_LINE') {
             return modif.replacingLine1Id;
         } else if (modif.equipmentId) {
             return modif.equipmentId;
