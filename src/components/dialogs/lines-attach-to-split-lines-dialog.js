@@ -128,7 +128,7 @@ const LinesAttachToSplitLinesDialog = ({
 
     const [lineToAttachTo1, lineToAttachTo1Field] = useAutocompleteField({
         id: 'lineToAttachTo1',
-        label: 'Line1ID',
+        label: 'Line1',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
@@ -143,7 +143,7 @@ const LinesAttachToSplitLinesDialog = ({
 
     const [lineToAttachTo2, lineToAttachTo2Field] = useAutocompleteField({
         id: 'lineToAttachTo2',
-        label: 'Line2ID',
+        label: 'Line2',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
@@ -158,7 +158,7 @@ const LinesAttachToSplitLinesDialog = ({
 
     const [attachedLine, attachedLineField] = useAutocompleteField({
         id: 'attachedLine',
-        label: 'AttachedLineId',
+        label: 'LineAttached',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
