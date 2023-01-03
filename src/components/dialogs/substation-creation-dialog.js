@@ -60,9 +60,6 @@ const NonNullStringPair = ({
         return Object.keys(predefined ?? {}).sort();
     }, [predefined]);
 
-    const entryToValue = (entry) => {
-        return func_identity(entry);
-    };
     const [name, nameField] = useAutocompleteField({
         id: 'pairKey' + index,
         label: 'PropertyName',
@@ -71,7 +68,7 @@ const NonNullStringPair = ({
         values: predefinedNames,
         allowNewValue: true,
         getLabel: getIdOrSelf,
-        newEntryToValue: entryToValue,
+        newEntryToValue: func_identity,
         defaultValue: defaultValue?.name || '',
         inputForm: inputForm,
         errorMsg: errors?.name,
@@ -89,7 +86,7 @@ const NonNullStringPair = ({
         values: predefinedValues,
         allowNewValue: true,
         getLabel: getIdOrSelf,
-        newEntryToValue: entryToValue,
+        newEntryToValue: func_identity,
         defaultValue: defaultValue?.value || '',
         inputForm: inputForm,
         errorMsg: errors?.value,
