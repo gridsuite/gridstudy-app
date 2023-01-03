@@ -164,7 +164,7 @@
     "LimitType": "Type de limite",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
-    "ComputationOk": "Calcul OK",
+    "ComputationStatus": "Statut",
     "true": "oui",
     "false": "non",
     "Loading": "Charge (%)",
@@ -325,6 +325,7 @@
     "exportCaseOnNode": "Exporter la situation",
     "nodeNameAlreadyUsed": "Ce nom est déjà utilisé",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
+    "MapEquipmentsLoadError": "Une erreur est survenue lors du chargement des données de l'image réseau",
     "CaseNameLoadError": "Une erreur est survenue lors de la récupération du nom de la situation",
     "StudyUnrecoverableStateRecreate": "Votre étude a un problème. Veuillez la recréer",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
@@ -595,7 +596,6 @@
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
-    "InvalidData": "Les données ont été invalidées",
 
     "depth": "Profondeur",
 

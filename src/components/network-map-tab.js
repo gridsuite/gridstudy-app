@@ -23,12 +23,16 @@ import makeStyles from '@mui/styles/makeStyles';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
+import {
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_MAP_MANUAL_REFRESH,
+} from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import { resetMapReloaded, setForceNetworkReload } from '../redux/actions';
+import { mapEquipmentsCreated, resetMapReloaded } from '../redux/actions';
+import MapEquipments from './network/map-equipments';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -61,7 +65,6 @@ const useStyles = makeStyles((theme) => ({
 export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
-    network,
     currentNode,
     /* results*/
     securityAnalysisStatus,
@@ -77,7 +80,6 @@ export const NetworkMapTab = ({
     lineFlowMode,
     lineFlowColorMode,
     lineFlowAlertThreshold,
-    updatedLines,
     /* callbacks */
     openVoltageLevel,
     setIsComputationRunning,
@@ -88,12 +90,25 @@ export const NetworkMapTab = ({
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
+    const mapEquipments = useSelector((state) => state.mapEquipments);
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
+    const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
+    const mapManualRefresh = useSelector(
+        (state) => state[PARAM_MAP_MANUAL_REFRESH]
+    );
+    const refIsMapManualRefreshEnabled = useRef();
+    refIsMapManualRefreshEnabled.current = mapManualRefresh;
+
     const [geoData, setGeoData] = useState();
+
+    const deletedEquipment = useSelector((state) => state.deletedEquipment);
+    const updatedSubstationsIds = useSelector(
+        (state) => state.updatedSubstationsIds
+    );
 
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
@@ -110,6 +125,8 @@ export const NetworkMapTab = ({
     const [position, setPosition] = useState([-1, -1]);
 
     const classes = useStyles();
+
+    const [updatedLines, setUpdatedLines] = useState([]);
 
     function withEquipment(Menu, props) {
         return (
@@ -221,13 +238,13 @@ export const NetworkMapTab = ({
             ) {
                 const notFoundSubstationIds = getEquipmentsNotFoundIds(
                     geoData.substationPositionsById,
-                    network.getSubstations()
+                    mapEquipments.substations
                 );
 
                 const notFoundLinesIds = lineFullPath
                     ? getEquipmentsNotFoundIds(
                           geoData.linePositionsById,
-                          network.getLines()
+                          mapEquipments.lines
                       )
                     : [];
 
@@ -337,26 +354,98 @@ export const NetworkMapTab = ({
         setErrorMessage,
         studyUuid,
         getMissingEquipmentsPositions,
-        network,
+        mapEquipments,
         geoData,
         getEquipmentsNotFoundIds,
     ]);
 
+    const loadMapEquipments = useCallback(
+        (firstTime) => {
+            if (!isNodeBuilt(currentNode) || !studyUuid) {
+                return;
+            }
+            if (firstTime) {
+                const initialMapEquipments = new MapEquipments(
+                    studyUuid,
+                    currentNode?.id,
+                    setErrorMessage,
+                    dispatch,
+                    intlRef
+                );
+                dispatch(mapEquipmentsCreated(initialMapEquipments));
+            } else {
+                console.info('Reload map equipments');
+                mapEquipments.reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    refIsMapManualRefreshEnabled.current
+                        ? undefined
+                        : updatedSubstationsIds,
+                    setUpdatedLines
+                );
+            }
+        },
+        [
+            currentNode,
+            dispatch,
+            intlRef,
+            mapEquipments,
+            setErrorMessage,
+            studyUuid,
+            updatedSubstationsIds,
+        ]
+    );
+
+    const handleFullMapReload = useCallback(() => {
+        loadMapEquipments(false);
+    }, [loadMapEquipments]);
+
     const reloadMapGeoDataRef = useRef();
     reloadMapGeoDataRef.current = reloadMapGeoData;
+    const reloadMapEquipmentsRef = useRef();
+    reloadMapEquipmentsRef.current = loadMapEquipments;
 
+    // first time
+    // useEffect(() => {
+    //     reloadMapEquipmentsRef.current(true);
+    //     reloadMapGeoDataRef.current();
+    // }, []);
+
+    // when mapEquipments changes
     useEffect(() => {
-        reloadMapGeoDataRef.current();
-    }, [network]);
+        if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
+            return;
+        }
+        if (deletedEquipment) {
+            mapEquipments?.removeEquipment(
+                deletedEquipment?.type,
+                deletedEquipment?.id
+            );
+        }
+    }, [deletedEquipment, mapEquipments]);
 
-    const handleReloadMap = useCallback(() => {
-        reloadMapGeoData();
-        dispatch(setForceNetworkReload());
-    }, [dispatch, reloadMapGeoData]);
+
+    const mapEquipmentsRef = useRef();
+    mapEquipmentsRef.current = mapEquipments;
+    // when currentNode changes
+    useEffect(() => {
+        if (!mapEquipmentsRef.current) {
+            reloadMapEquipmentsRef.current(true);
+            reloadMapGeoDataRef.current();
+            return;
+        }
+        // let previousNodeStatus = isCurrentNodeBuiltRef.current;
+        isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
+
+        //when we build node we want the map to be up to date
+        if (isCurrentNodeBuiltRef.current) {
+            loadMapEquipments(); // true or false ? false isn't it ?
+        }
+    }, [currentNode, loadMapEquipments]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
-        choiceVoltageLevelsSubstation = network?.getSubstation(
+        choiceVoltageLevelsSubstation = mapEquipments?.getSubstation(
             choiceVoltageLevelsSubstationId
         );
     }
@@ -394,8 +483,8 @@ export const NetworkMapTab = ({
     }
 
     const linesNearOverload = useCallback(() => {
-        if (network) {
-            return network.lines.some((l) => {
+        if (mapEquipments) {
+            return mapEquipments.lines.some((l) => {
                 const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
                 return (
                     zone === LineLoadingZone.WARNING ||
@@ -404,7 +493,7 @@ export const NetworkMapTab = ({
             });
         }
         return false;
-    }, [network, lineFlowAlertThreshold]);
+    }, [mapEquipments, lineFlowAlertThreshold]);
 
     const isLoadFlowValid = () => {
         return loadFlowStatus === RunningStatus.SUCCEED;
@@ -412,9 +501,7 @@ export const NetworkMapTab = ({
 
     const renderMap = () => (
         <NetworkMap
-            network={network}
-            substations={network ? network.substations : []}
-            lines={network ? network.lines : []}
+            mapEquipments={mapEquipments}
             updatedLines={updatedLines}
             geoData={geoData}
             waitingLoadGeoData={waitingLoadGeoData}
@@ -443,7 +530,7 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
-            onReloadMapClick={handleReloadMap}
+            onReloadMapClick={handleFullMapReload}
         />
     );
 
@@ -460,14 +547,14 @@ export const NetworkMapTab = ({
             {renderMap()}
             {renderEquipmentMenu()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
-            {network?.substations?.length > 0 && renderNominalVoltageFilter()}
+            {mapEquipments?.substations?.length > 0 &&
+                renderNominalVoltageFilter()}
 
             {displayOverloadTable && isLoadFlowValid() && linesNearOverload() && (
                 <div className={classes.divOverloadedLineView}>
                     <OverloadedLinesView
-                        lines={network.lines}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        network={network}
+                        mapEquipments={mapEquipments}
                         disabled={disabled}
                     />
                 </div>

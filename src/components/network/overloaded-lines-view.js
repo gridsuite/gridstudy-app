@@ -72,8 +72,8 @@ const OverloadedLinesView = (props) => {
             let loads = [line.p1, line.p2];
 
             let vl =
-                props.network.getVoltageLevel(line.voltageLevelId1) ||
-                props.network.getVoltageLevel(line.voltageLevelId2);
+                props.mapEquipments.getVoltageLevel(line.voltageLevelId1) ||
+                props.mapEquipments.getVoltageLevel(line.voltageLevelId2);
             const color = getNominalVoltageColor(vl.nominalVoltage);
 
             let fields = { overload: 0 };
@@ -109,16 +109,11 @@ const OverloadedLinesView = (props) => {
             return fields;
         };
         setLines(
-            props.lines
+            props.mapEquipments?.lines
                 .map((line) => makeData(line))
                 .sort((a, b) => b.overload - a.overload)
         );
-    }, [
-        props.lines,
-        props.network,
-        props.lineFlowAlertThreshold,
-        props.disabled,
-    ]);
+    }, [props.mapEquipments, props.lineFlowAlertThreshold, props.disabled]);
 
     const filter = useCallback(
         (line) => line.overload > props.lineFlowAlertThreshold,

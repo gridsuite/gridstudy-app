@@ -267,7 +267,8 @@ export function getVoltageLevelSingleLineDiagram(
     centerLabel,
     diagonalLabel,
     componentLibrary,
-    sldDisplayMode
+    sldDisplayMode,
+    language
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -286,6 +287,7 @@ export function getVoltageLevelSingleLineDiagram(
                 componentLibrary: componentLibrary,
             }),
             sldDisplayMode: sldDisplayMode,
+            language: language,
         }).toString()
     );
 }
@@ -298,7 +300,8 @@ export function getSubstationSingleLineDiagram(
     centerLabel,
     diagonalLabel,
     substationLayout,
-    componentLibrary
+    componentLibrary,
+    language
 ) {
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -317,6 +320,7 @@ export function getSubstationSingleLineDiagram(
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
+            language: language,
         }).toString()
     );
 }
@@ -2221,6 +2225,41 @@ export function getSensiDefaultResultsThreshold() {
     return backendFetchText(getSensiDefaultResultsThresholdUrl, {
         method: 'get',
     });
+}
+
+export function fetchMapEquipments(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching map equipments data of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
+    const substationParams = getQueryParamsList(substationsIds, 'substationId');
+
+    let fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/map-equipments';
+    if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
+        fetchEquipmentsUrl += '?';
+        fetchEquipmentsUrl += urlSearchParams.toString();
+        fetchEquipmentsUrl +=
+            urlSearchParams.toString().length > 0 && substationParams.length > 0
+                ? '&' + substationParams
+                : substationParams;
+    }
+
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
 }
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
