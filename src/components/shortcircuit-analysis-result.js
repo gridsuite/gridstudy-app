@@ -37,7 +37,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     limitName: limitViolations[0].limitName,
                     current: limitViolations[0].value,
                 };
-                limitViolations.shift();
             }
             rows.push({
                 faultId: fault.id,
@@ -47,7 +46,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 current: f.current,
                 ...firstLimitViolation,
             });
-            limitViolations.forEach((lv) => {
+            limitViolations.slice(1).forEach((lv) => {
                 rows.push({
                     limitType: lv.limitType,
                     limit: lv.limit,
