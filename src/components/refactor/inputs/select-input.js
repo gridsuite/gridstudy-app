@@ -19,7 +19,7 @@ const SelectInput = ({
     onChange,
     value,
     label,
-    required = false,
+    isRequired = false,
     options,
     previousValue,
     errorMsg,
@@ -31,7 +31,7 @@ const SelectInput = ({
             value={value}
             label={FieldLabel({
                 label: label,
-                optional: !required,
+                optional: !isRequired,
             })}
             size="small"
             onChange={onChange}
@@ -53,7 +53,7 @@ SelectInput.propTypes = {
     isRequired: PropTypes.bool,
     options: PropTypes.array.isRequired,
     errorMessage: PropTypes.string,
-    value: PropTypes.object,
+    value: PropTypes.any,
     onChange: PropTypes.func,
     previousValue: PropTypes.object,
 };

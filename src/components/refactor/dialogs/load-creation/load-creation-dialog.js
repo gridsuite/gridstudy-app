@@ -59,8 +59,8 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [EQUIPMENT_TYPE]: '',
-    [ACTIVE_POWER]: 0,
-    [REACTIVE_POWER]: 0,
+    [ACTIVE_POWER]: '',
+    [REACTIVE_POWER]: '',
     ...getConnectivityEmptyFormData(),
 };
 
@@ -77,8 +77,14 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
             [EQUIPMENT_ID]: yup.string().required(),
             [EQUIPMENT_NAME]: yup.string(),
             [EQUIPMENT_TYPE]: yup.string(),
-            [ACTIVE_POWER]: yup.number().required(),
-            [REACTIVE_POWER]: yup.number().required(),
+            [ACTIVE_POWER]: yup
+                .number()
+                .transform((value) => (isNaN(value) ? undefined : value))
+                .required(),
+            [REACTIVE_POWER]: yup
+                .number()
+                .transform((value) => (isNaN(value) ? undefined : value))
+                .required(),
             ...getConnectivityFormValidationSchema(),
         })
         .required();

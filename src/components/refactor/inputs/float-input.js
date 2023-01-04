@@ -29,7 +29,7 @@ FloatInput.propTypes = {
     label: PropTypes.string.isRequired,
     isRequired: PropTypes.bool,
     errorMessage: PropTypes.string,
-    value: PropTypes.object,
+    value: PropTypes.any,
     onChange: PropTypes.func,
     adornment: PropTypes.object,
     transformValue: PropTypes.func,
