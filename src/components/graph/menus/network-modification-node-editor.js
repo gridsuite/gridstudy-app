@@ -306,7 +306,9 @@ const NetworkModificationNodeEditor = () => {
                     withEquipmentModificationOptions(
                         'Generators',
                         equipments.generators
-                    )
+                    ),
+                    withVLs,
+                    withVLsAndEquipments
                 ),
             icon: <AddIcon />,
         },
