@@ -224,10 +224,20 @@ const useDisplayView = (network, studyUuid, currentNode) => {
     );
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     minimizedDiagram: {
         bottom: '60px',
         position: 'absolute',
+    },
+    separator: {
+        flexGrow: 1,
+        display: 'flex',
+        overflow: 'hidden',
+    },
+    availableDiagramSurfaceArea: {
+        flexDirection: 'row',
+        display: 'inline-flex',
+        paddingRight: theme.spacing(6),
     },
 }));
 
@@ -491,35 +501,55 @@ export function DiagramPane({
     return (
         <AutoSizer>
             {({ width, height }) => (
-                <div style={{ flexDirection: 'row', display: 'inline-flex' }}>
+                <div
+                    className={classes.availableDiagramSurfaceArea}
+                    style={{
+                        width: width + 'px',
+                        height: height + 'px',
+                    }}
+                >
                     {displayedDiagrams.map((diagramView) => (
-                        <Diagram
-                            computedHeight={computedHeight}
-                            diagramTitle={diagramView.name}
-                            disabled={disabled}
-                            isComputationRunning={isComputationRunning}
-                            key={diagramView.svgType + diagramView.id}
-                            loadFlowStatus={loadFlowStatus}
-                            numberToDisplay={displayedDiagrams.length}
-                            onBreakerClick={handleUpdateSwitchState}
-                            onMinimize={minimizeDiagramView}
-                            onNextVoltageLevelClick={handleOpenVoltageLevelView}
-                            onTogglePin={togglePinDiagramView}
-                            pinned={diagramView.state === ViewState.PINNED}
-                            ref={diagramView.ref}
-                            setDisplayedDiagramHeights={
-                                setDisplayedDiagramHeights
+                        <>
+                            {
+                                /* This hack will add a space between all the SLD and the NAD. This space takes all the remaining space on screen. */
+                                diagramView.svgType ===
+                                    SvgType.NETWORK_AREA_DIAGRAM && (
+                                    <div
+                                        className={classes.separator}
+                                        key="separator"
+                                    ></div>
+                                )
                             }
-                            showInSpreadsheet={showInSpreadsheet}
-                            diagramId={diagramView.id}
-                            svgType={diagramView.svgType}
-                            svgUrl={diagramView.svgUrl}
-                            totalHeight={height}
-                            totalWidth={width}
-                            updateSwitchMsg={updateSwitchMsg}
-                            depth={depth}
-                            setDepth={setDepth}
-                        />
+                            <Diagram
+                                computedHeight={computedHeight}
+                                diagramTitle={diagramView.name}
+                                disabled={disabled}
+                                isComputationRunning={isComputationRunning}
+                                key={diagramView.svgType + diagramView.id}
+                                loadFlowStatus={loadFlowStatus}
+                                numberToDisplay={displayedDiagrams.length}
+                                onBreakerClick={handleUpdateSwitchState}
+                                onMinimize={minimizeDiagramView}
+                                onNextVoltageLevelClick={
+                                    handleOpenVoltageLevelView
+                                }
+                                onTogglePin={togglePinDiagramView}
+                                pinned={diagramView.state === ViewState.PINNED}
+                                ref={diagramView.ref}
+                                setDisplayedDiagramHeights={
+                                    setDisplayedDiagramHeights
+                                }
+                                showInSpreadsheet={showInSpreadsheet}
+                                diagramId={diagramView.id}
+                                svgType={diagramView.svgType}
+                                svgUrl={diagramView.svgUrl}
+                                totalHeight={height}
+                                totalWidth={width}
+                                updateSwitchMsg={updateSwitchMsg}
+                                depth={depth}
+                                setDepth={setDepth}
+                            />
+                        </>
                     ))}
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}

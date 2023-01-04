@@ -698,6 +698,7 @@ const Diagram = forwardRef((props, ref) => {
             square={true}
             className={classes.paperBorders}
             style={{
+                flewGrow: 0, // allows a separator to take all the available space
                 pointerEvents: 'auto',
                 width: sizeWidth,
                 minWidth: LOADING_WIDTH,

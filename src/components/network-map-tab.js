@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         right: 10,
         bottom: 30,
+        '&:hover': {
+            zIndex: 1,
+        },
     },
     divRunButton: {
         position: 'absolute',
