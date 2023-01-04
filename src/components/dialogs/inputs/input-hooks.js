@@ -440,7 +440,15 @@ export const useEnumValue = ({
                     ))}
                 </Select>
                 {previousValue && (
-                    <FormHelperText>{previousValue}</FormHelperText>
+                    <FormHelperText>
+                        {doTranslation ? (
+                            <FormattedMessage
+                                id={getEnumLabel(previousValue)}
+                            />
+                        ) : (
+                            getEnumLabel(previousValue)
+                        )}
+                    </FormHelperText>
                 )}
                 {error && (
                     <FormHelperText>
@@ -484,6 +492,8 @@ export const useRegulatingTerminalValue = ({
     voltageLevelIdDefaultValue,
     equipmentSectionTypeDefaultValue,
     equipmentSectionIdDefaultValue,
+    previousRegulatingTerminalValue,
+    previousEquipmentSectionTypeValue,
 }) => {
     const [regulatingTerminal, setRegulatingTerminal] = useState({
         voltageLevel: voltageLevelIdDefaultValue,
@@ -572,6 +582,12 @@ export const useRegulatingTerminalValue = ({
                 equipmentSectionTypeDefaultValue={
                     equipmentSectionTypeDefaultValue
                 }
+                previousRegulatingTerminalValue={
+                    previousRegulatingTerminalValue
+                }
+                previousEquipmentSectionTypeValue={
+                    previousEquipmentSectionTypeValue
+                }
             />
         );
     }, [
@@ -583,6 +599,8 @@ export const useRegulatingTerminalValue = ({
         voltageLevelsEquipments,
         direction,
         equipmentSectionTypeDefaultValue,
+        previousRegulatingTerminalValue,
+        previousEquipmentSectionTypeValue,
         setVoltageLevel,
         setEquipmentSection,
     ]);

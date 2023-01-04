@@ -118,6 +118,8 @@ export const NetworkMapTab = ({
     const updatedSubstationsIds = useSelector(
         (state) => state.updatedSubstationsIds
     );
+    const [isUpdatedSubstationsApplied, setIsUpdatedSubstationsApplied] =
+        useState(false);
 
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
@@ -262,25 +264,39 @@ export const NetworkMapTab = ({
             dispatch(mapEquipmentsCreated(initialMapEquipments));
         } else {
             console.info('Reload map equipments');
+            const updatedSubstationsToSend =
+                !refIsMapManualRefreshEnabled.current &&
+                !isUpdatedSubstationsApplied &&
+                updatedSubstationsIds?.length > 0
+                    ? updatedSubstationsIds
+                    : undefined;
+
             mapEquipments.reloadImpactedSubstationsEquipments(
                 studyUuid,
                 currentNode,
-                refIsMapManualRefreshEnabled.current
-                    ? undefined
-                    : updatedSubstationsIds,
+                updatedSubstationsToSend,
                 setUpdatedLines
             );
+
+            if (updatedSubstationsToSend) {
+                setIsUpdatedSubstationsApplied(true);
+            }
         }
     }, [
         currentNode,
         dispatch,
         intlRef,
         isInitialized,
+        isUpdatedSubstationsApplied,
         mapEquipments,
         setErrorMessage,
         studyUuid,
         updatedSubstationsIds,
     ]);
+
+    useEffect(() => {
+        setIsUpdatedSubstationsApplied(false);
+    }, [updatedSubstationsIds]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
