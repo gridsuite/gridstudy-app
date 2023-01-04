@@ -507,7 +507,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 const [substationsIds, deletedEquipment] =
                     parseStudyNotification(studyUpdatedForce);
 
-                // removing square brackets
+                // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
                     network.reloadImpactedSubstationsEquipments(substationsIds);
