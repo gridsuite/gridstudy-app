@@ -63,6 +63,7 @@ import {
 import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
+import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -378,6 +379,11 @@ const NetworkModificationNodeEditor = () => {
         DELETE_VOLTAGE_LEVEL_ON_LINE: {
             label: 'DeleteVoltageLevelOnLine',
             dialog: () => adapt(DeleteVoltageLevelOnLineDialog, withLines),
+            icon: <AddIcon />,
+        },
+        DELETE_ATTACHING_LINE: {
+            label: 'DeleteAttachingLine',
+            dialog: () => adapt(DeleteAttachingLineDialog, withLines),
             icon: <AddIcon />,
         },
         EQUIPMENT_DELETION: {

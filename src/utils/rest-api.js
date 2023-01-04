@@ -2108,6 +2108,46 @@ export function deleteVoltageLevelOnLine(
     });
 }
 
+export function deleteAttachingLine(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    attachedLineId,
+    replacingLine1Id,
+    replacingLine1Name
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.DELETE_ATTACHING_LINE,
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        attachedLineId,
+        replacingLine1Id,
+        replacingLine1Name,
+    });
+
+    let deleteVoltageLevelOnLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating delete attaching line', body);
+        deleteVoltageLevelOnLineUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating delete attaching line', body);
+    }
+
+    return backendFetchText(deleteVoltageLevelOnLineUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =

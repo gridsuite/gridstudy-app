@@ -498,7 +498,8 @@
     "LineDivisionError": "Error while puting a voltage level amidst a line",
     "LineAttachmentError": "Error while attaching a voltage level to a line",
     "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
-
+    "DeleteAttachingLineError" : "Error while deleting an attaching line",
+    
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
 
@@ -663,6 +664,7 @@
     "Top": "Top",
     "Bottom": "Bottom",
     "DeleteVoltageLevelOnLine": "Delete a voltage level on a line",
+    "DeleteAttachingLine": "Delete attaching line",
     "ReplacingLine": "Replacing line",
     "ConnectionPosition": "Connection position",
     "ErrorNoVoltageSelected": "No voltage level selected, please select one before",
