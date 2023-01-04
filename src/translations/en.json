@@ -381,7 +381,7 @@
     "On": "On",
     "Off": "Off",
     "NoModification": "No modification",
-    "NbModification": "{nb} modification{several} to copy",
+    "NbModification": "{nb} modification{several} to paste",
     "GeneratorCreationError": "Error while creating generator",
     "EnergySourceText": "Energy source",
     "Hydro": "Hydro",

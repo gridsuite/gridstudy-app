@@ -381,7 +381,7 @@
     "On": "Activé",
     "Off": "Désactivé",
     "NoModification": "Pas de modification",
-    "NbModification": "{nb} modification{several} à copier",
+    "NbModification": "{nb} modification{several} à coller",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
     "EnergySourceText": "Source d'énergie",
     "Hydro": "Hydraulique",
