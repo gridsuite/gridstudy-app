@@ -29,7 +29,6 @@ const AutocompleteInput = ({
     errorMsg,
     ...props
 }) => {
-    console.log('ERROR MESSAGE ', errorMsg);
     return (
         <Autocomplete
             value={value}
