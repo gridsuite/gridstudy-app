@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -23,10 +23,6 @@ import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
 import yup from '../../utils/yup-config';
-import ReactHookFormAutocomplete from '../../inputs/select-field/react-hook-form-autocomplete';
-import ReactHookFormSelect from '../../inputs/select-field/react-hook-form-select';
-import ReactHookFormIntegerNumberTextField from '../../inputs/text-field/react-hook-form-integer-number-text-field';
-import ReactHookFormTextField from '../../inputs/text-field/react-hook-form-text-field';
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTION_DIRECTION,
@@ -36,6 +32,11 @@ import {
     getConnectivityFormValidation,
     VOLTAGE_LEVEL,
 } from './connectivity-form-utils';
+import { formControlledItem } from '../../utils/form-utils';
+import TextInput from '../../inputs/text-input';
+import SelectInput from '../../inputs/select-input';
+import IntegerInput from '../../inputs/integer-input';
+import AutocompleteInput from '../../inputs/autocomplete-input';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -119,85 +120,84 @@ export const ConnectivityForm = ({
     const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
     const getObjectId = useCallback((object) => object.id, []);
 
-    const newVoltageLevelField = (
-        <ReactHookFormAutocomplete
-            id={id ? id + '/voltage-level' : 'voltage-level'}
-            options={voltageLevelOptions}
-            name={`${CONNECTIVITY}.${VOLTAGE_LEVEL}`}
+    const newVoltageLevelField = formControlledItem(
+        <AutocompleteInput
             label="VoltageLevel"
+            options={voltageLevelOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
-            control={control}
-            required={
+            size={'small'}
+            isRequired={
                 yup.reach(
                     connectivityValidation,
                     `${CONNECTIVITY}.${VOLTAGE_LEVEL}`
                 )?.exclusiveTests?.required === true
             }
-        />
+        />,
+        `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,
+        control
     );
 
-    const newBusOrBusbarSectionField = (
-        <ReactHookFormAutocomplete
-            id={id ? id + '/bus-bar-bus' : 'bus-bar-bus'}
-            options={busOrBusbarSectionOptions}
-            name={`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`}
+    const newBusOrBusbarSectionField = formControlledItem(
+        <AutocompleteInput
             label="BusBarBus"
+            options={busOrBusbarSectionOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
-            control={control}
-            required={
+            size={'small'}
+            isRequired={
                 yup.reach(
                     connectivityValidation,
                     `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`
                 )?.exclusiveTests?.required === true
             }
-        />
+        />,
+        `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`,
+        control
     );
 
-    const newConnectionNameField = (
-        <ReactHookFormTextField
-            name={`${CONNECTIVITY}.${CONNECTION_NAME}`}
+    const newConnectionNameField = formControlledItem(
+        <TextInput
             label="ConnectionName"
-            control={control}
-            required={
+            isRequired={
                 yup.reach(
                     connectivityValidation,
                     `${CONNECTIVITY}.${CONNECTION_NAME}`
                 )?.exclusiveTests?.required === true
             }
-        />
+        />,
+        `${CONNECTIVITY}.${CONNECTION_NAME}`,
+        control
     );
 
-    const newConnectionDirectionField = (
-        <ReactHookFormSelect
-            name={`${CONNECTIVITY}.${CONNECTION_DIRECTION}`}
+    const newConnectionDirectionField = formControlledItem(
+        <SelectInput
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
-            size="small"
             fullWidth
-            control={control}
-            required={
+            isRequired={
                 yup.reach(
                     connectivityValidation,
                     `${CONNECTIVITY}.${CONNECTION_DIRECTION}`
                 )?.exclusiveTests?.required === true
             }
-        />
+        />,
+        `${CONNECTIVITY}.${CONNECTION_DIRECTION}`,
+        control
     );
 
-    const newConnectionPositionField = (
-        <ReactHookFormIntegerNumberTextField
-            name={`${CONNECTIVITY}.${CONNECTION_POSITION}`}
+    const newConnectionPositionField = formControlledItem(
+        <IntegerInput
             label="ConnectionPosition"
-            control={control}
-            required={
+            isRequired={
                 yup.reach(
                     connectivityValidation,
                     `${CONNECTIVITY}.${CONNECTION_POSITION}`
                 )?.exclusiveTests?.required === true
             }
-        />
+        />,
+        `${CONNECTIVITY}.${CONNECTION_POSITION}`,
+        control
     );
 
     const gridSize =

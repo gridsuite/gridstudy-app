@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import ModificationDialog from '../modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
@@ -27,19 +28,19 @@ import {
 import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import ReactHookFormTextField from '../../inputs/text-field/react-hook-form-text-field';
 import { FormProvider, useForm } from 'react-hook-form';
 import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import ReactHookFormSelect from '../../inputs/select-field/react-hook-form-select';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import {
     getConnectivityEmptyFormData,
     getConnectivityFormData,
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
-import ReactHookFormFloatNumberTextField from '../../inputs/text-field/react-hook-form-float-number-text-field';
-import { getAdornmentInputProps } from '../../inputs/utils';
+import TextInput from '../../inputs/text-input';
+import FloatInput from '../../inputs/float-input';
+import SelectInput from '../../inputs/select-input';
+import { formControlledItem } from '../../utils/form-utils';
 
 /**
  * Dialog to create a load in the network
@@ -164,72 +165,71 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const newLoadIdField = (
-        <ReactHookFormTextField
-            name={EQUIPMENT_ID}
-            label="ID"
-            required={
+    const newLoadIdField = formControlledItem(
+        <TextInput
+            label={'ID'}
+            formProps={filledTextField}
+            isRequired={
                 yup.reach(schema, EQUIPMENT_ID)?.exclusiveTests?.required ===
                 true
             }
-            control={control}
-            {...filledTextField}
-        />
+        />,
+        EQUIPMENT_ID,
+        control
     );
 
-    const newLoadNameField = (
-        <ReactHookFormTextField
-            name={EQUIPMENT_NAME}
-            label="Name"
-            control={control}
-            required={
+    const newLoadNameField = formControlledItem(
+        <TextInput
+            label={'Name'}
+            formProps={filledTextField}
+            isRequired={
                 yup.reach(schema, EQUIPMENT_NAME)?.exclusiveTests?.required ===
                 true
             }
-            {...filledTextField}
-        />
+        />,
+        EQUIPMENT_NAME,
+        control
     );
 
-    const newLoadTypeField = (
-        <ReactHookFormSelect
-            name={EQUIPMENT_TYPE}
+    const newLoadTypeField = formControlledItem(
+        <SelectInput
             label="Type"
             options={LOAD_TYPES}
-            size="small"
             fullWidth
-            control={control}
-            required={
+            isRequired={
                 yup.reach(schema, EQUIPMENT_TYPE)?.exclusiveTests?.required ===
                 true
             }
             {...filledTextField}
-        />
+        />,
+        EQUIPMENT_TYPE,
+        control
     );
 
-    const newActivePowerField = (
-        <ReactHookFormFloatNumberTextField
-            name={ACTIVE_POWER}
-            label="ActivePowerText"
-            control={control}
-            required={
+    const newActivePowerField = formControlledItem(
+        <FloatInput
+            label={'ActivePowerText'}
+            adornment={ActivePowerAdornment}
+            isRequired={
                 yup.reach(schema, ACTIVE_POWER)?.exclusiveTests?.required ===
                 true
             }
-            adornmentCallback={getAdornmentInputProps(ActivePowerAdornment)}
-        />
+        />,
+        ACTIVE_POWER,
+        control
     );
 
-    const newReactivePowerField = (
-        <ReactHookFormFloatNumberTextField
-            name={REACTIVE_POWER}
-            label="ReactivePowerText"
-            control={control}
-            required={
+    const newReactivePowerField = formControlledItem(
+        <FloatInput
+            label={'ReactivePowerText'}
+            adornment={ReactivePowerAdornment}
+            isRequired={
                 yup.reach(schema, REACTIVE_POWER)?.exclusiveTests?.required ===
                 true
             }
-            adornmentCallback={getAdornmentInputProps(ReactivePowerAdornment)}
-        />
+        />,
+        REACTIVE_POWER,
+        control
     );
 
     const connectivityForm = (
