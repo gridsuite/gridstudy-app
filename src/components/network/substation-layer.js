@@ -13,7 +13,6 @@ import {
     SUBSTATION_RADIUS_MAX_PIXEL,
     SUBSTATION_RADIUS_MIN_PIXEL,
 } from './constants';
-import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
 
 const voltageLevelNominalVoltageIndexer = (map, voltageLevel) => {
     let list = map.get(voltageLevel.nominalVoltage);
@@ -178,10 +177,7 @@ class SubstationLayer extends CompositeLayer {
                 data: this.state.substationsLabels,
                 getPosition: (substation) =>
                     this.props.geoData.getSubstationPosition(substation.id),
-                getText: (substation) =>
-                    this.props.useName
-                        ? getNameOrId(substation)
-                        : substation.id,
+                getText: (substation) => this.props.getNameOrId(substation),
                 getColor: this.props.labelColor,
                 fontFamily: 'Roboto',
                 getSize: this.props.labelSize,

@@ -12,14 +12,19 @@ import { PARAM_USE_NAME } from '../../utils/config-params';
 export const useNameOrId = () => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const getNameOrId = useCallback(
-        (name, id) => {
-            if (useName && name && name.trim() !== '') {
-                return name;
-            } else {
-                return id;
+        (infos) => {
+            if (infos != null) {
+                const name = infos.name;
+                return useName && name != null && name.trim() !== ''
+                    ? name
+                    : infos?.id;
             }
+            return null;
         },
         [useName]
     );
-    return { getNameOrId };
+
+    const getParameter = useName ? 'name' : 'id';
+
+    return { getNameOrId, getParameter };
 };

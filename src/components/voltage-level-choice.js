@@ -112,10 +112,7 @@ const VoltageLevelChoice = ({
                                         className={classes.nominalVoltageText}
                                         primary={
                                             <Typography noWrap>
-                                                {getNameOrId(
-                                                    voltageLevel?.name,
-                                                    voltageLevel?.id
-                                                )}
+                                                {getNameOrId(voltageLevel)}
                                             </Typography>
                                         }
                                     />

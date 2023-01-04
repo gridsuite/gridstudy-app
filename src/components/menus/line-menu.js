@@ -19,7 +19,6 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
-import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import {
     energiseLineEnd,
@@ -33,8 +32,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
-import { useParameterState } from '../dialogs/parameters/parameters';
-import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
+import { useNameOrId } from '../util/equipmentInfosHandler';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -62,12 +60,10 @@ const withLineMenu =
         const classes = useStyles();
         const intl = useIntl();
         const studyUuid = decodeURIComponent(useParams().studyUuid);
-
         const { snackInfo } = useSnackMessage();
-        const [displayUseName] = useParameterState(PARAM_USE_NAME);
         const network = useSelector((state) => state.network);
-
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
+        const { getNameOrId } = useNameOrId();
 
         const line = network.getLine(id);
 
@@ -85,11 +81,12 @@ const withLineMenu =
 
         const getLineDescriptor = useCallback(
             (voltageLevelId) => {
-                return displayUseName
-                    ? getNameOrId(network.getVoltageLevel(voltageLevelId))
-                    : voltageLevelId;
+                return getNameOrId({
+                    name: network.getVoltageLevel(voltageLevelId)?.name,
+                    id: voltageLevelId,
+                });
             },
-            [displayUseName, network]
+            [network, getNameOrId]
         );
 
         function handleLineChangesResponse(response, messsageId) {
