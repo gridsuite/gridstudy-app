@@ -8,42 +8,12 @@ import { useSelector } from 'react-redux';
 import { PARAM_THEME } from '../../../utils/config-params';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import ReactJson from 'react-json-view';
-import makeStyles from '@mui/styles/makeStyles';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { TabContext, TabPanel } from '@mui/lab';
 import DynamicSimulationResultTable from './dynamic-simulation-result-table';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
-
-const useStyles = makeStyles((theme) => ({
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    tabContainer: {
-        display: 'flex',
-        position: 'relative',
-    },
-    tabHeader: {
-        position: 'relative',
-        top: 0,
-        left: 0,
-    },
-    tabContent: {
-        flexGrow: 1,
-    },
-    resultTypeSelect: {
-        position: 'absolute',
-        right: theme.spacing(2),
-        top: theme.spacing(1),
-    },
-}));
-
-const DYNAMIC_SIMULATION_RESULT_TYPES = [
-    { id: 'timeseries', label: 'DynamicSimulationTimeSeriesLabel' },
-    { id: 'timeline', label: 'DynamicSimulationTimeLineLabel' },
-];
 
 const DynamicSimulationResult = ({ result = [] }) => {
     /* fake result status */
@@ -53,35 +23,27 @@ const DynamicSimulationResult = ({ result = [] }) => {
         },
     ];
 
-    const transformToRechartSeries = useCallback(
-        (result) => {
-            console.log('transformToRechartSeries is called');
-            if (!result) return [];
-            return (
-                result
-                    // .slice(Math.max(result.length - 3, 0)) // select only first 3 elements for demo
-                    .map((series, index) => {
-                        const metadata = series.metadata;
-                        const values = series.chunks[0].values;
-                        return {
-                            index: index,
-                            name: metadata.name,
-                            data: metadata.irregularIndex.map((time, index) => {
-                                return {
-                                    category: `${time}`,
-                                    value: values[index],
-                                };
-                            }),
-                        };
-                    })
-            );
-        },
-        [result]
-    );
-
-    const series = useMemo(() => transformToRechartSeries(result), [result]);
-
-    const classes = useStyles();
+    const series = useMemo(() => {
+        console.log('transformToRechartSeries is called');
+        const pointFormat = false; // configure true for Rechart and UPlot
+        if (!result) return [];
+        return result.map((series, index) => {
+            const metadata = series.metadata;
+            const values = series.chunks[0].values;
+            return {
+                index: index,
+                name: metadata.name,
+                data: pointFormat
+                    ? metadata.irregularIndex.map((time, index) => {
+                          return {
+                              x: time,
+                              y: values[index],
+                          };
+                      })
+                    : { x: metadata.irregularIndex, y: values },
+            };
+        });
+    }, [result]);
 
     const intl = useIntl();
 
@@ -122,32 +84,6 @@ const DynamicSimulationResult = ({ result = [] }) => {
     }
 
     function renderResultChart(series) {
-        /*const series = [
-            {
-                name: 'Series 1',
-                data: [
-                    { category: 'A', value: Math.random() },
-                    { category: 'B', value: Math.random() },
-                    { category: 'C', value: Math.random() },
-                ],
-            },
-            {
-                name: 'Series 2',
-                data: [
-                    { category: 'B', value: Math.random() },
-                    { category: 'C', value: Math.random() },
-                    { category: 'D', value: Math.random() },
-                ],
-            },
-            {
-                name: 'Series 3',
-                data: [
-                    { category: 'C', value: Math.random() },
-                    { category: 'D', value: Math.random() },
-                    { category: 'E', value: Math.random() },
-                ],
-            },
-        ];*/
         return (
             result &&
             dynamicSimulationNotif && (

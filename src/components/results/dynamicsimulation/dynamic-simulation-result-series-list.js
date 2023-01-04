@@ -78,7 +78,7 @@ const DynamicSimulationResultSeriesList = ({
         <List
             sx={{
                 width: '100%',
-                maxHeight: 600,
+                maxHeight: '680px',
                 overflow: 'auto',
                 bgColor: 'background.paper',
             }}
