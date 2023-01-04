@@ -20,10 +20,10 @@ import { memo, useMemo } from 'react';
 
 const baseColors = [red, orange, blue, green, purple, pink, cyan];
 
-const PlotlySeriesChart = ({ series }) => {
-    const data = useMemo(
-        () =>
-            series.map((s) => ({
+const PlotlySeriesChart = ({ leftSeries, rightSeries }) => {
+    const data = useMemo(() => {
+        function seriesToData(opts) {
+            return (s, index) => ({
                 name: s.name,
                 type: 'scatter',
                 mode: 'lines+markers',
@@ -38,9 +38,15 @@ const PlotlySeriesChart = ({ series }) => {
                     color: baseColors[s.index % baseColors.length]['500'],
                 },
                 ...s.data,
-            })),
-        [series]
-    );
+                ...opts,
+            });
+        }
+
+        return [
+            ...leftSeries.map(seriesToData()),
+            ...rightSeries.map(seriesToData({ yaxis: 'y2' })),
+        ];
+    }, [leftSeries, rightSeries]);
     return (
         <Plot
             data={data}
@@ -69,6 +75,14 @@ const PlotlySeriesChart = ({ series }) => {
                     tick0: 0,
                     automargin: true,
                 },
+                yaxis2: {
+                    gridcolor: 'rgba(255,255,255,0.2)',
+                    griddash: 'dot',
+                    ntick: 20,
+                    tick0: 0,
+                    automargin: true,
+                    side: 'right',
+                },
                 legend: { orientation: 'h' },
                 hovermode: 'x unified',
                 hoverlabel: {
@@ -84,9 +98,11 @@ const PlotlySeriesChart = ({ series }) => {
     );
 };
 
-const DynamicSimulationResultSeriesChart = ({ series }) => {
+const DynamicSimulationResultSeriesChart = ({ leftSeries, rightSeries }) => {
     // Plotly
-    return <PlotlySeriesChart series={series} />;
+    return (
+        <PlotlySeriesChart leftSeries={leftSeries} rightSeries={rightSeries} />
+    );
 };
 
 export default memo(DynamicSimulationResultSeriesChart);

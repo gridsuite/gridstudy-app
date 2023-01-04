@@ -24,11 +24,17 @@ const DynamicSimulationResultChart = ({ series }) => {
         }));
     }, [series]);
 
-    const selectedSeries = useMemo(() => {
+    const leftSelectedSeries = useMemo(() => {
         return series.filter(
             (s, index) => leftAxisSelected.indexOf(index) !== -1
         );
     }, [series, leftAxisSelected]);
+
+    const rightSelectedSeries = useMemo(() => {
+        return series.filter(
+            (s, index) => rightAxisSelected.indexOf(index) !== -1
+        );
+    }, [series, rightAxisSelected]);
 
     return (
         <Grid
@@ -38,7 +44,10 @@ const DynamicSimulationResultChart = ({ series }) => {
             alignItems={'flex-start'}
         >
             <Grid item xs={9}>
-                <DynamicSimulationResultSeriesChart series={selectedSeries} />
+                <DynamicSimulationResultSeriesChart
+                    leftSeries={leftSelectedSeries}
+                    rightSeries={rightSelectedSeries}
+                />
             </Grid>
             <Grid item xs={3}>
                 <DynamicSimulationResultSeriesList

@@ -965,7 +965,7 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
 // --- Dynamic simulation API - BEGIN
 export function getDynamicMappings(studyUuid, currentNodeUuid) {
     console.info(
-        `Fetching dynamic mappings on \'${studyUuid}\' and node \'${currentNodeUuid}\' ...`
+        `Fetching dynamic mappings on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
