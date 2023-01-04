@@ -9,6 +9,7 @@
     "studyDeletedSuccessMsg": "Étude supprimée",
     "deleteStudyError": "Vous ne pouvez pas supprimer une étude dont vous n'êtes pas propriétaire",
     "equipmentsSearchingError": "Une erreur est survenue lors de la recherche des équipements",
+    "equipmentsLoadingError": "Une erreur est survenue lors du chargement des équipements disponibles",
 
     "renameStudyMsg": "Nouveau nom de l'étude\u00a0:",
     "renameStudy": "Renommer l'étude",
@@ -164,7 +165,7 @@
     "LimitType": "Type de limite",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
-    "ComputationOk": "Calcul OK",
+    "ComputationStatus": "Statut",
     "true": "oui",
     "false": "non",
     "Loading": "Charge (%)",
@@ -325,6 +326,7 @@
     "exportCaseOnNode": "Exporter la situation",
     "nodeNameAlreadyUsed": "Ce nom est déjà utilisé",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
+    "MapEquipmentsLoadError": "Une erreur est survenue lors du chargement des données de l'image réseau",
     "CaseNameLoadError": "Une erreur est survenue lors de la récupération du nom de la situation",
     "StudyUnrecoverableStateRecreate": "Votre étude a un problème. Veuillez la recréer",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
@@ -431,8 +433,6 @@
     "Characteristics": "Caractéristiques",
     "Side1": "Côté 1",
     "Side2": "Côté 2",
-    "OriginSide": "Côté origine",
-    "ExtrimitySide": "Côté extrémité",
     "SeriesResistanceText": "Résistance série",
     "SeriesReactanceText": "Réactance série",
     "ShuntConductanceText": "Conductance parallèle",
@@ -595,7 +595,6 @@
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
-    "InvalidData": "Les données ont été invalidées",
 
     "depth": "Profondeur",
 

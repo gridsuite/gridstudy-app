@@ -25,6 +25,7 @@ import {
     GridSection,
     removeNullDataValues,
     compareById,
+    getIdOrSelf,
 } from './dialogUtils';
 import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
@@ -40,8 +41,6 @@ import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { MODIFICATION_TYPE } from '../network/constants';
-
-const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.
@@ -147,7 +146,7 @@ const LineAttachToVoltageLevelDialog = ({
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue:
             lineOptions.find(
                 (value) => value.id === formValues?.lineToAttachToId
@@ -176,7 +175,7 @@ const LineAttachToVoltageLevelDialog = ({
             inputForm: inputForm,
             values: allVoltageLevelOptions,
             allowNewValue: true,
-            getLabel: getId,
+            getLabel: getIdOrSelf,
             defaultValue: defaultVoltageLevelId,
             selectedValue:
                 formValues && allVoltageLevelOptions
@@ -198,7 +197,7 @@ const LineAttachToVoltageLevelDialog = ({
             inputForm: inputForm,
             values: busbarSectionOptions,
             allowNewValue: true,
-            getLabel: getId,
+            getLabel: getIdOrSelf,
             defaultValue: formValues?.bbsOrBusId || '',
             selectedValue: formValues
                 ? busbarSectionOptions.find(

@@ -31,6 +31,12 @@ export function networkCreated(network) {
     return { type: NETWORK_CREATED, network: network };
 }
 
+export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
+
+export function mapEquipmentsCreated(mapEquipments) {
+    return { type: MAP_EQUIPMENTS_CREATED, mapEquipments: mapEquipments };
+}
+
 export const NETWORK_EQUIPMENT_LOADED = 'NETWORK_EQUIPMENT_LOADED';
 
 export function networkEquipmentLoaded(equipmentsName, values) {
@@ -238,30 +244,6 @@ export function selectDisplayOverloadTableState(displayOverloadTable) {
     return {
         type: DISPLAY_OVERLOAD_TABLE,
         [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
-    };
-}
-
-export const SET_FORCE_NETWORK_RELOAD = 'SET_FORCE_NETWORK_RELOAD';
-
-export function setForceNetworkReload() {
-    return {
-        type: SET_FORCE_NETWORK_RELOAD,
-    };
-}
-
-export const SET_NETWORK_RELOAD_NEEDED = 'SET_NETWORK_RELOAD_NEEDED';
-
-export function setNetworkReloadNeeded() {
-    return {
-        type: SET_NETWORK_RELOAD_NEEDED,
-    };
-}
-
-export const RESET_NETWORK_RELOAD = 'RESET_NETWORK_RELOAD';
-
-export function resetNetworkReload() {
-    return {
-        type: RESET_NETWORK_RELOAD,
     };
 }
 
@@ -576,5 +558,23 @@ export function closeDiagrams(ids) {
     return {
         type: CLOSE_DIAGRAMS,
         ids: ids,
+    };
+}
+
+export const SET_UPDATED_SUBSTATIONS_IDS = 'SET_UPDATED_SUBSTATIONS_IDS';
+
+export function setUpdatedSubstationsIds(updatedSubstationsIds) {
+    return {
+        type: SET_UPDATED_SUBSTATIONS_IDS,
+        updatedSubstationsIds: updatedSubstationsIds,
+    };
+}
+
+export const SET_DELETED_EQUIPMENT = 'SET_DELETED_EQUIPMENT';
+
+export function setDeletedEquipment(deletedEquipment) {
+    return {
+        type: SET_DELETED_EQUIPMENT,
+        deletedEquipment: deletedEquipment,
     };
 }

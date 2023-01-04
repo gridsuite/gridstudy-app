@@ -574,7 +574,7 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchEquipmentsInfos(
+export function searchEquipmentsInfos(
     studyUuid,
     nodeUuid,
     searchTerm,
@@ -1676,7 +1676,9 @@ export function createLine(
     connectionName1,
     connectionDirection1,
     connectionName2,
-    connectionDirection2
+    connectionDirection2,
+    connectionPosition1,
+    connectionPosition2
 ) {
     let createLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1719,6 +1721,8 @@ export function createLine(
             connectionDirection1: connectionDirection1,
             connectionName2: connectionName2,
             connectionDirection2: connectionDirection2,
+            connectionPosition1: connectionPosition1,
+            connectionPosition2: connectionPosition2,
         }),
     });
 }
@@ -1748,7 +1752,9 @@ export function createTwoWindingsTransformer(
     connectionName1,
     connectionDirection1,
     connectionName2,
-    connectionDirection2
+    connectionDirection2,
+    connectionPosition1,
+    connectionPosition2
 ) {
     let createTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1791,6 +1797,8 @@ export function createTwoWindingsTransformer(
             connectionDirection1: connectionDirection1,
             connectionName2: connectionName2,
             connectionDirection2: connectionDirection2,
+            connectionPosition1: connectionPosition1,
+            connectionPosition2: connectionPosition2,
         }),
     });
 }
@@ -2208,6 +2216,41 @@ export function getSensiDefaultResultsThreshold() {
     return backendFetchText(getSensiDefaultResultsThresholdUrl, {
         method: 'get',
     });
+}
+
+export function fetchMapEquipments(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching map equipments data of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
+    const substationParams = getQueryParamsList(substationsIds, 'substationId');
+
+    let fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/map-equipments';
+    if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
+        fetchEquipmentsUrl += '?';
+        fetchEquipmentsUrl += urlSearchParams.toString();
+        fetchEquipmentsUrl +=
+            urlSearchParams.toString().length > 0 && substationParams.length > 0
+                ? '&' + substationParams
+                : substationParams;
+    }
+
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
 }
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
