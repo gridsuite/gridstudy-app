@@ -24,15 +24,11 @@ export function NetworkAreaDiagramPane({
 }) {
     const { getNameOrId } = useNameOrId();
     const [depth, setDepth] = useState(0);
-
     const voltageLevelsIds = useSelector(
         (state) => state.voltageLevelsIdsForNad
     );
-
     const fullScreenNadId = useSelector((state) => state.fullScreenNadId);
-
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
-
     const displayedVoltageLevelIdRef = useRef();
     displayedVoltageLevelIdRef.current = voltageLevelsIds[0];
 
@@ -51,7 +47,7 @@ export function NetworkAreaDiagramPane({
 
         if (displayedVoltageLevels.length > 0) {
             displayedVoltageLevels.forEach((vl) => {
-                const name = getNameOrId(vl?.name, vl?.id);
+                const name = getNameOrId(vl);
                 if (name !== undefined) {
                     nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
                 }

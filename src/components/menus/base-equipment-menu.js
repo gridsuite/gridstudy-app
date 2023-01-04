@@ -104,19 +104,16 @@ const BaseEquipmentMenu = ({
                         <ItemViewInSpreadsheet
                             equipmentType={equipmentType}
                             equipmentId={equipment.id}
-                            itemText={getNameOrId(
-                                equipment?.name,
-                                equipment?.id
-                            )}
+                            itemText={getNameOrId(equipment)}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
 
-                        {equipment.voltageLevels.map((v) => (
+                        {equipment.voltageLevels.map((voltageLevel) => (
                             // menus for all voltage levels in the substation
                             <ItemViewInSpreadsheet
                                 equipmentType={equipments.voltageLevels}
-                                equipmentId={v.id}
-                                itemText={getNameOrId(v?.name, v?.id)}
+                                equipmentId={voltageLevel.id}
+                                itemText={getNameOrId(voltageLevel)}
                                 handleViewInSpreadsheet={
                                     handleViewInSpreadsheet
                                 }
@@ -137,20 +134,17 @@ const BaseEquipmentMenu = ({
                         <ItemViewInSpreadsheet
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
-                            itemText={getNameOrId(
-                                equipment?.substationName,
-                                equipment?.substationId
-                            )}
+                            itemText={getNameOrId({
+                                name: equipment?.substationName,
+                                id: equipment?.substationId,
+                            })}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {/* menus for the voltage level */}
                         <ItemViewInSpreadsheet
                             equipmentType={equipments.voltageLevels}
                             equipmentId={equipment.id}
-                            itemText={getNameOrId(
-                                equipment?.name,
-                                equipment?.id
-                            )}
+                            itemText={getNameOrId(equipment)}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                     </NestedMenuItem>

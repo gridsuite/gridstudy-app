@@ -30,9 +30,13 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { Button } from '@mui/material';
-import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
+import {
+    PARAM_MAP_MANUAL_REFRESH,
+    PARAM_USE_NAME,
+} from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
-import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
+import { useNameOrId } from '../util/equipmentInfosHandler';
+import { useParameterState } from '../dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -58,9 +62,7 @@ const LABEL_SIZE = 12;
 
 const NetworkMap = (props) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
-
     const [showLineFlow, setShowLineFlow] = useState(true);
-
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({
         lastCenteredSubstation: null,
@@ -68,29 +70,23 @@ const NetworkMap = (props) => {
         centered: false,
     });
     const lastViewStateRef = useRef(null);
-
     const [tooltip, setTooltip] = useState({});
-
     const theme = useTheme();
     const foregroundNeutralColor = useMemo(() => {
         const labelColor = decomposeColor(theme.palette.text.primary).values;
         labelColor[3] *= 255;
         return labelColor;
     }, [theme]);
-
     const [cursorType, setCursorType] = useState('grab');
-
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
-
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
-
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
-
     const currentNode = useSelector((state) => state.currentTreeNode);
-
+    const { getNameOrId } = useNameOrId();
     const classes = useStyles();
+    const [useName] = useParameterState(PARAM_USE_NAME);
 
     useEffect(() => {
         if (centerOnSubstation === null) return;
@@ -326,7 +322,7 @@ const NetworkMap = (props) => {
                 data: props.substations,
                 network: props.network,
                 geoData: props.geoData,
-                useName: props.useName,
+                useName: useName,
                 getNominalVoltageColor: getNominalVoltageColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
                 labelsVisible: labelsVisible,
@@ -336,6 +332,7 @@ const NetworkMap = (props) => {
                 onHover: ({ object, x, y }) => {
                     setCursorType(object ? 'pointer' : 'grab');
                 },
+                getNameOrId: getNameOrId,
             })
         );
 
@@ -346,7 +343,7 @@ const NetworkMap = (props) => {
                 network: props.network,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,
-                useName: props.useName,
+                useName: useName,
                 getNominalVoltageColor: getNominalVoltageColor,
                 disconnectedLineColor: foregroundNeutralColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
@@ -364,11 +361,7 @@ const NetworkMap = (props) => {
                 onHover: ({ object, x, y }) => {
                     setCursorType(object ? 'pointer' : 'grab');
                     setTooltip({
-                        message: object
-                            ? props.useName
-                                ? getNameOrId(object)
-                                : object.id
-                            : null,
+                        message: getNameOrId(object),
                         pointerX: x,
                         pointerY: y,
                     });

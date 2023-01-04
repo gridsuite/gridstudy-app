@@ -10,8 +10,7 @@ import { fetchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
-import { PARAM_USE_NAME } from '../../utils/config-params';
-import { useParameterState } from '../dialogs/parameters/parameters';
+import { useNameOrId } from './equipmentInfosHandler';
 
 export const useSearchMatchingEquipments = (
     studyUuid,
@@ -24,7 +23,7 @@ export const useSearchMatchingEquipments = (
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const timer = useRef();
     const lastSearchTermRef = useRef('');
-    const [useNameLocal] = useParameterState(PARAM_USE_NAME);
+    const { getParameter, getNameOrId } = useNameOrId();
 
     const searchMatchingEquipments = useCallback(
         (searchTerm, sooner = false) => {
@@ -37,15 +36,14 @@ export const useSearchMatchingEquipments = (
                         studyUuid,
                         nodeUuid,
                         searchTerm,
-                        useNameLocal,
+                        getParameter,
                         inUpstreamBuiltParentNode,
                         equipmentType
                     )
                         .then((infos) => {
                             if (searchTerm === lastSearchTermRef.current) {
-                                setEquipmentsFound(
-                                    makeItems(infos, useNameLocal)
-                                );
+                                const label = getNameOrId();
+                                setEquipmentsFound(makeItems(infos, label));
                             } // else ignore results of outdated fetch
                         })
                         .catch((error) => {
@@ -61,11 +59,12 @@ export const useSearchMatchingEquipments = (
         [
             studyUuid,
             nodeUuid,
-            useNameLocal,
             equipmentType,
             inUpstreamBuiltParentNode,
             makeItems,
             snackError,
+            getNameOrId,
+            getParameter,
         ]
     );
 
