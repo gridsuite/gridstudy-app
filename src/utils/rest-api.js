@@ -2091,11 +2091,11 @@ export function deleteVoltageLevelOnLine(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
     if (modificationUuid) {
-        console.info('deleting voltage level on line update', body);
+        console.info('Updating delete voltage level on line', body);
         deleteVoltageLevelOnLineUrl +=
             '/' + encodeURIComponent(modificationUuid);
     } else {
-        console.info('Delete voltage level on line', body);
+        console.info('Creating delete voltage level on line', body);
     }
 
     return backendFetchText(deleteVoltageLevelOnLineUrl, {

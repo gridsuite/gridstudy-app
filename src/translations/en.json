@@ -499,6 +499,7 @@
     "LineAttachmentError": "Error while attaching a voltage level to a line",
     "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
     "DeleteAttachingLineError" : "Error while deleting an attaching line",
+    
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
 
