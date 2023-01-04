@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    useRef,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import { useStyles } from '../dialogUtils';
@@ -13,8 +19,6 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { validateValueIsANumber } from '../../util/validation-functions';
-import { useSelector } from 'react-redux';
-import { isNodeBuilt } from '../../graph/util/model-functions';
 const minimalValue = { p: '', qminP: '', qmaxP: '' };
 
 function getId(value) {
@@ -63,36 +67,22 @@ function fixValuesFormat(valuesToFix) {
     });
 }
 
-function buildPreviousValuesToDisplay(
-    currentNode,
-    defaultValues,
-    previousValues
-) {
+function buildPreviousValuesToDisplay(defaultValues, previousValues) {
     const valuesToDisplay = [];
     // If the node is built, then we display previousValues.
     // otherwise, we display the old values stored in the modification database.
-    if (isNodeBuilt(currentNode)) {
-        defaultValues.forEach((value, index) => {
-            let valueToDisplay = minimalValue;
-            if (previousValues?.length > 0) {
-                // in case the defaultValues array is shorter than the previousValues array, we display the last value of the previousValues array.
-                if (index === defaultValues.length - 1) {
-                    valueToDisplay = previousValues[previousValues.length - 1];
-                } else if (index < previousValues.length - 1) {
-                    valueToDisplay = previousValues[index];
-                }
+    defaultValues.forEach((value, index) => {
+        let valueToDisplay = minimalValue;
+        if (previousValues?.length > 0) {
+            // in case the defaultValues array is longer than the previousValues array, we display the last value of the previousValues array.
+            if (index === defaultValues.length - 1) {
+                valueToDisplay = previousValues[previousValues.length - 1];
+            } else if (index < previousValues.length - 1) {
+                valueToDisplay = previousValues[index];
             }
-            valuesToDisplay.push(valueToDisplay);
-        });
-    } else {
-        defaultValues.forEach((value) => {
-            valuesToDisplay.push({
-                p: value.oldP,
-                qminP: value.oldQminP,
-                qmaxP: value.oldQmaxP,
-            });
-        });
-    }
+        }
+        valuesToDisplay.push(valueToDisplay);
+    });
     return valuesToDisplay;
 }
 
@@ -128,7 +118,6 @@ export const useReactiveCapabilityCurveTableValues = ({
     isModificationForm = false,
     disabled = false,
 }) => {
-    const currentNode = useSelector((state) => state.currentTreeNode);
     const classes = useStyles();
 
     // Values sent back to the parent component.
@@ -142,6 +131,12 @@ export const useReactiveCapabilityCurveTableValues = ({
     // previousValues is used to display the previous values when the user is modifying a curve.
     const [displayedPreviousValues, setDisplayedPreviousValues] =
         useState(previousValues);
+
+    const valuesRef = useRef(values);
+
+    useEffect(() => {
+        valuesRef.current = values;
+    }, [values]);
 
     useEffect(() => {
         // Updates the component when the correct default values are given by the parent component.
@@ -160,23 +155,30 @@ export const useReactiveCapabilityCurveTableValues = ({
                 setValues(fixValuesFormat(defaultValues));
                 setDisplayedValues(fixValuesFormat(defaultValues));
                 setDisplayedPreviousValues(
-                    buildPreviousValuesToDisplay(
-                        currentNode,
-                        defaultValues,
-                        previousValues
-                    )
+                    buildPreviousValuesToDisplay(defaultValues, previousValues)
                 );
             } else if (previousValues?.length > 0) {
                 // We prefill the form with empty lines and with the previous values.
-                const valuesToDisplay = Array(previousValues.length).fill(
-                    minimalValue
-                );
+                // if the user has already set some values we prefill with empty values till the previousValues array length
+                let valuesToDisplay = valuesRef.current;
+                if (previousValues?.length > valuesToDisplay.length) {
+                    valuesToDisplay = valuesToDisplay.concat(
+                        Array(
+                            previousValues.length - valuesToDisplay.length
+                        ).fill(minimalValue)
+                    );
+                }
                 setValues(valuesToDisplay);
                 setDisplayedValues(valuesToDisplay);
-                setDisplayedPreviousValues(previousValues);
+                setDisplayedPreviousValues(
+                    buildPreviousValuesToDisplay(
+                        valuesToDisplay,
+                        previousValues
+                    )
+                );
             }
         }
-    }, [currentNode, defaultValues, isModificationForm, previousValues]);
+    }, [defaultValues, isModificationForm, previousValues]);
 
     const handleDeleteItem = useCallback(
         (index) => {
@@ -218,7 +220,7 @@ export const useReactiveCapabilityCurveTableValues = ({
                 displayedPreviousValues.length <= values.length
             ) {
                 const newDisplayedPreviousValues = [...displayedPreviousValues];
-                //we find the index of the previous value that is displayed
+                //we look for the index of the previous value that is displayed
                 const indexDisplayedPreviousValue = previousValues.findIndex(
                     (v) => v?.p === displayedPreviousValues[index - 1]?.p
                 );

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
@@ -126,6 +126,16 @@ const GeneratorModificationDialog = ({
         }
         return REGULATION_TYPES.LOCAL.id;
     };
+
+    const defaultReactiveCapabilityCurveChoice = () => {
+        if (getValueOrNull(formValues?.reactiveCapabilityCurve) === true) {
+            return 'CURVE';
+        } else if (generatorInfos?.minMaxReactiveLimits !== undefined) {
+            return 'MINMAX';
+        }
+        return 'CURVE';
+    };
+
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
@@ -227,11 +237,7 @@ const GeneratorModificationDialog = ({
         reactiveCapabilityCurveChoiceRadioButton,
     ] = useRadioValue({
         inputForm: inputForm,
-        defaultValue:
-            generatorInfos?.minMaxReactiveLimits !== undefined ||
-            getValueOrNull(formValues?.reactiveCapabilityCurve) === false
-                ? 'MINMAX'
-                : 'CURVE',
+        defaultValue: defaultReactiveCapabilityCurveChoice(),
         possibleValues: REACTIVE_LIMIT_TYPES,
     });
 
@@ -272,18 +278,6 @@ const GeneratorModificationDialog = ({
         previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
     });
 
-    const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
-        label: 'MinimumReactivePower',
-        validation: {
-            isFieldNumeric: true,
-        },
-        adornment: ReactivePowerAdornment,
-        inputForm: inputForm,
-        defaultValue: getValue(formValues?.minimumReactivePower),
-        previousValue:
-            generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
-    });
-
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
         label: 'MaximumReactivePower',
         validation: {
@@ -294,6 +288,22 @@ const GeneratorModificationDialog = ({
         defaultValue: getValue(formValues?.maximumReactivePower),
         previousValue:
             generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
+    });
+
+    const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
+        label: 'MinimumReactivePower',
+        validation: {
+            isFieldNumeric: true,
+            valueLessThanOrEqualTo:
+                maximumReactivePower ||
+                generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
+            errorMsgId: 'MinReactivePowerLessThanMaxActivePower',
+        },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.minimumReactivePower),
+        previousValue:
+            generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
     });
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
@@ -440,15 +450,24 @@ const GeneratorModificationDialog = ({
         );
     }, [frequencyRegulation, generatorInfos]);
 
-    useEffect(() => {
+    const removeUnnecessaryFieldsValidation = useCallback(() => {
         if (
             !isVoltageRegulationOn ||
             !isDistantRegulation(voltageRegulationType)
         ) {
             inputForm.removeValidation(REGULATING_VOLTAGE_LEVEL);
             inputForm.removeValidation(REGULATING_EQUIPMENT);
+            inputForm.removeValidation('QPercentText');
         }
-    }, [isVoltageRegulationOn, voltageRegulationType, inputForm]);
+        if (isReactiveCapabilityCurveOn) {
+            inputForm.removeValidation('MinimumReactivePower');
+        }
+    }, [
+        inputForm,
+        isReactiveCapabilityCurveOn,
+        isVoltageRegulationOn,
+        voltageRegulationType,
+    ]);
 
     const [regulatingTerminal, regulatingTerminalField] =
         useRegulatingTerminalValue({
@@ -649,6 +668,7 @@ const GeneratorModificationDialog = ({
         } else {
             setReactiveCapabilityCurveErrors([]);
         }
+        removeUnnecessaryFieldsValidation();
         return (
             inputForm.validate() &&
             (!isReactiveCapabilityCurveOn || isReactiveCapabilityCurveValid)
