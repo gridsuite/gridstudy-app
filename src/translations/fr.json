@@ -497,7 +497,8 @@
     "ReplacingLines": "Liaisons de remplacement",
     "LineDivisionError": "Erreur lors de la création d'une coupure",
     "LineAttachmentError": "Erreur lors de la création d'un piquage",
-
+    "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
+    "DeleteAttachingLineError" : "Erreur lors de la suppression d'un piquage",
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
 
@@ -661,6 +662,9 @@
     "ConnectionDirection": "Sens départ",
     "Top": "Haut",
     "Bottom": "Bas",
+    "DeleteVoltageLevelOnLine": "Supprimer une coupure",
+    "DeleteAttachingLine": "Supprimer un piquage",
+    "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",
     "ErrorNoVoltageSelected": "Aucun poste sélectionné, veuillez en sélectionner un avant",
     "DisplayTakenPositions": "Afficher les positions prises",
