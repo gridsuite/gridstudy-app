@@ -37,7 +37,6 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { default as OldLoadCreationDialog } from '../../dialogs/load-creation-dialog';
 import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
 import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation-dialog';
@@ -277,11 +276,6 @@ const NetworkModificationNodeEditor = () => {
     }
 
     const dialogs = {
-        LOAD_CREATION_OLD: {
-            label: 'CreateLoad',
-            dialog: () => adapt(OldLoadCreationDialog, withVLs),
-            icon: <AddIcon />,
-        },
         LOAD_CREATION: {
             label: 'CreateLoad',
             dialog: () => adapt(LoadCreationDialog),
