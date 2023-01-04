@@ -511,6 +511,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
                     network.reloadImpactedSubstationsEquipments(substationsIds);
+                    dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
 
                 // removing deleted equipment from the network
@@ -526,10 +527,8 @@ export function StudyContainer({ view, onChangeTab }) {
                         deletedEquipment?.type,
                         deletedEquipment?.id
                     );
+                    dispatch(setDeletedEquipment(deletedEquipment));
                 }
-
-                dispatch(setUpdatedSubstationsIds(substationsIds));
-                dispatch(setDeletedEquipment(deletedEquipment));
             }
         }
     }, [studyUpdatedForce, network, dispatch]);

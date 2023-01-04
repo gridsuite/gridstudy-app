@@ -264,10 +264,11 @@ export const NetworkMapTab = ({
         } else {
             console.info('Reload map equipments');
             const updatedSubstationsToSend =
-                refIsMapManualRefreshEnabled.current ||
-                isUpdatedSubstationsApplied
-                    ? undefined
-                    : updatedSubstationsIds;
+                !refIsMapManualRefreshEnabled.current &&
+                !isUpdatedSubstationsApplied &&
+                updatedSubstationsIds?.length > 0
+                    ? updatedSubstationsIds
+                    : undefined;
 
             mapEquipments.reloadImpactedSubstationsEquipments(
                 studyUuid,
