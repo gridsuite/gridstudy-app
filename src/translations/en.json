@@ -420,6 +420,7 @@
     "Droop": "Droop",
     "MarginalCost": "Cost of start",
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
+    "MinReactivePowerLessThanMaxActivePower": "Minimum reactive power value must be less or equal than maximum reactive power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "NormalizedPercentage": "This percentage must be between 0 and 100",
