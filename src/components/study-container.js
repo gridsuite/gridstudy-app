@@ -164,6 +164,7 @@ const shortCircuitStatusInvalidations = [
 ];
 const UPDATE_TYPE_HEADER = 'updateType';
 const ERROR_HEADER = 'error';
+const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
 const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
@@ -183,6 +184,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyParentDirectoriesUuidsRef = useRef([]);
 
     const network = useSelector((state) => state.network);
+    const user = useSelector((state) => state.user);
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
@@ -243,10 +245,12 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const wsRef = useRef();
 
-    const checkFailNotifications = useCallback(
+    const displayErrorNotifications = useCallback(
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
+            const userId = eventData.headers[USER_HEADER];
+            if (userId !== user.profile.name) return;
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
                     headerId: 'NodeBuildingError',
@@ -285,7 +289,7 @@ export function StudyContainer({ view, onChangeTab }) {
             });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
-                checkFailNotifications(eventData);
+                displayErrorNotifications(eventData);
                 dispatch(studyUpdated(eventData));
             };
             ws.onclose = function (event) {
@@ -316,7 +320,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return ws;
         },
         // Note: dispatch doesn't change
-        [dispatch, checkFailNotifications]
+        [dispatch, displayErrorNotifications]
     );
 
     const fetchStudyPath = useCallback(() => {
