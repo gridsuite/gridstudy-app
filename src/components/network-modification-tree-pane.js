@@ -21,6 +21,7 @@ import {
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
+    setSelectedNodeForCopy,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -115,6 +116,16 @@ export const NetworkModificationTreePane = ({
         },
         [studyUuid, dispatch]
     );
+
+    useEffect(() => {
+        console.log('DBR useEffect id = ' + selectedNodeIdForCopy);
+        dispatch(
+            setSelectedNodeForCopy({
+                nodeId: selectedNodeIdForCopy,
+                copyType: CopyType.CUT,
+            })
+        );
+    }, [selectedNodeIdForCopy, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -298,7 +309,7 @@ export const NetworkModificationTreePane = ({
         setOpenExportDialog(false);
     };
 
-    const handleExportCaseOnNode = (element) => {
+    const handleExportCaseOnNode = () => {
         setOpenExportDialog(true);
     };
 

@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import { CopyType } from '../../network-modification-tree-pane';
 
 const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
@@ -23,6 +24,24 @@ const useStyles = makeStyles((theme) => ({
         background: theme.node.background,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
+        '&:hover': {
+            background: theme.node.background,
+        },
+        overflow: 'hidden',
+        boxShadow:
+            theme.node.border +
+            ' 0px 0px 3px 3px,' +
+            theme.node.border +
+            ' 0px 0px 25px,' +
+            theme.node.border +
+            ' 0px 0px 5px 1px',
+    },
+    networkModificationSelectedForCut: {
+        position: 'relative',
+        variant: 'contained',
+        background: theme.node.background,
+        textTransform: 'none',
+        color: 'red',
         '&:hover': {
             background: theme.node.background,
         },
@@ -90,10 +109,20 @@ const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const selectedNodeForCopy = useSelector(
+        (state) => state.selectedNodeForCopy
+    );
 
     const isSelectedNode = () => {
         // TODO This is a hack, when ReactFlow v10 is available, we should remove this.
         return props.id === currentNode?.id;
+    };
+
+    const isSelectedForCut = () => {
+        return (
+            props.id === selectedNodeForCopy?.nodeId &&
+            selectedNodeForCopy?.copyType === CopyType.CUT
+        );
     };
 
     return (
@@ -114,6 +143,8 @@ const NetworkModificationNode = (props) => {
                 className={
                     isSelectedNode()
                         ? classes.networkModificationSelected
+                        : isSelectedForCut()
+                        ? classes.networkModificationSelectedForCut
                         : classes.networkModification
                 }
             >
