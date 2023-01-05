@@ -28,8 +28,7 @@ export function genHelperError(...errors) {
     return {};
 }
 
-export const FieldLabel = ({ label, optional, empty = true }) => {
-    if (!empty) return;
+export const FieldLabel = ({ label, optional }) => {
     return (
         <>
             <FormattedMessage id={label} />
