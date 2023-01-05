@@ -184,7 +184,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyParentDirectoriesUuidsRef = useRef([]);
 
     const network = useSelector((state) => state.network);
-    const user = useSelector((state) => state.user);
+    const userName = useSelector((state) => state.user.profile.name);
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
@@ -250,7 +250,7 @@ export function StudyContainer({ view, onChangeTab }) {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
             const userId = eventData.headers[USER_HEADER];
-            if (userId !== user.profile.name) return;
+            if (userId !== userName) return;
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
                     headerId: 'NodeBuildingError',
@@ -276,7 +276,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 });
             }
         },
-        [snackError]
+        [snackError, userName]
     );
 
     const connectNotifications = useCallback(
