@@ -307,7 +307,7 @@ export default class Network {
     }
 
     getSubstations() {
-        return Array.from(this.substationsById.values());
+        return this.substations;
     }
 
     getSubstation(id) {
@@ -319,7 +319,7 @@ export default class Network {
     }
 
     getLines() {
-        return Array.from(this.linesById.values());
+        return this.lines;
     }
 
     getLine(id) {
