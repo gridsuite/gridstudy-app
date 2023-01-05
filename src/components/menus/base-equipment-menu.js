@@ -134,10 +134,12 @@ const BaseEquipmentMenu = ({
                         <ItemViewInSpreadsheet
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
-                            itemText={getNameOrId({
-                                name: equipment?.substationName,
-                                id: equipment?.substationId,
-                            })}
+                            itemText={() => {
+                                const substation = network.getSubstation(
+                                    equipment?.substationId
+                                );
+                                return getNameOrId(substation);
+                            }}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {/* menus for the voltage level */}

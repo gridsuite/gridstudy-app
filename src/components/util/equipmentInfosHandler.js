@@ -24,7 +24,7 @@ export const useNameOrId = () => {
         [useName]
     );
 
-    const getParameter = useName ? 'name' : 'id';
+    const getUseNameParameterKey = useName ? 'name' : 'id';
 
-    return { getNameOrId, getParameter };
+    return { getNameOrId, getUseNameParameterKey };
 };

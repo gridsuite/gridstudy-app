@@ -23,7 +23,7 @@ export const useSearchMatchingEquipments = (
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const timer = useRef();
     const lastSearchTermRef = useRef('');
-    const { getParameter, getNameOrId } = useNameOrId();
+    const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
     const searchMatchingEquipments = useCallback(
         (searchTerm, sooner = false) => {
@@ -36,7 +36,7 @@ export const useSearchMatchingEquipments = (
                         studyUuid,
                         nodeUuid,
                         searchTerm,
-                        getParameter,
+                        getUseNameParameterKey,
                         inUpstreamBuiltParentNode,
                         equipmentType
                     )
@@ -64,7 +64,7 @@ export const useSearchMatchingEquipments = (
             makeItems,
             snackError,
             getNameOrId,
-            getParameter,
+            getUseNameParameterKey,
         ]
     );
 

@@ -577,7 +577,7 @@ export function searchEquipmentsInfos(
     studyUuid,
     nodeUuid,
     searchTerm,
-    getParameter,
+    getUseNameParameterKey,
     inUpstreamBuiltParentNode,
     equipmentType
 ) {
@@ -587,7 +587,7 @@ export function searchEquipmentsInfos(
     );
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
-    urlSearchParams.append('fieldSelector', getParameter);
+    urlSearchParams.append('fieldSelector', getUseNameParameterKey);
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',

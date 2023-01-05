@@ -343,7 +343,6 @@ const NetworkMap = (props) => {
                 network: props.mapEquipments,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,
-                useName: useName,
                 getNominalVoltageColor: getNominalVoltageColor,
                 disconnectedLineColor: foregroundNeutralColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
