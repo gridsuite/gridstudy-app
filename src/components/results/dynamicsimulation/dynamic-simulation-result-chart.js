@@ -14,6 +14,7 @@ const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 
 const DynamicSimulationResultChart = ({ series }) => {
     console.log('Rerender DynamicSimulationResultChart', [series]);
+
     const [leftAxisSelected, setLeftAxisSelected] = useState([]);
     const [rightAxisSelected, setRightAxisSelected] = useState([]);
 
