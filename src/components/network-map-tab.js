@@ -458,11 +458,6 @@ export const NetworkMapTab = ({
         loadMapGeoDataRef.current();
     }, [mapEquipments, mapEquipments?.substations, mapEquipments?.lines]);
 
-    const loadMapEquipmentsAndGeoData = useCallback(() => {
-        loadMapEquipments();
-        loadMapGeoData();
-    }, [loadMapEquipments, loadMapGeoData]);
-
     useEffect(() => {
         let previousNodeStatus = isCurrentNodeBuiltRef.current;
         isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
@@ -560,7 +555,10 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
-            onReloadMapClick={loadMapEquipmentsAndGeoData}
+            onReloadMapClick={() => {
+                loadMapEquipments();
+                loadMapGeoData();
+            }}
         />
     );
 
