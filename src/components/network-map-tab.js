@@ -253,14 +253,13 @@ export const NetworkMapTab = ({
             return;
         }
         if (!isInitialized) {
-            const initialMapEquipments = new MapEquipments(
+            new MapEquipments(
                 studyUuid,
                 currentNode?.id,
                 setErrorMessage,
                 dispatch,
                 intlRef
             );
-            dispatch(mapEquipmentsCreated(initialMapEquipments));
         } else {
             console.info('Reload map equipments');
             const updatedSubstationsToSend =
