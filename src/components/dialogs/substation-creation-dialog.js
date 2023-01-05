@@ -18,6 +18,8 @@ import {
 } from './inputs/input-hooks';
 import {
     filledTextField,
+    func_identity,
+    getIdOrSelf,
     gridItem,
     GridSection,
     sanitizeString,
@@ -65,6 +67,8 @@ const NonNullStringPair = ({
         validation: { isFieldRequired: true },
         values: predefinedNames,
         allowNewValue: true,
+        getLabel: getIdOrSelf,
+        newEntryToValue: func_identity,
         defaultValue: defaultValue?.name || '',
         inputForm: inputForm,
         errorMsg: errors?.name,
@@ -81,6 +85,8 @@ const NonNullStringPair = ({
         validation: { isFieldRequired: true },
         values: predefinedValues,
         allowNewValue: true,
+        getLabel: getIdOrSelf,
+        newEntryToValue: func_identity,
         defaultValue: defaultValue?.value || '',
         inputForm: inputForm,
         errorMsg: errors?.value,
