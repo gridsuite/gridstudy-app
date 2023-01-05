@@ -77,6 +77,8 @@ export const CopyType = {
     CUT: 'CUT',
 };
 
+const noSelectionForCopy = { nodeId: null, copyType: null };
+
 export const NetworkModificationTreePane = ({
     studyUuid,
     studyMapTreeDisplay,
@@ -88,10 +90,9 @@ export const NetworkModificationTreePane = ({
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
-    const [selectedNodeIdForCopy, setSelectedNodeIdForCopy] = useState(null);
-    const [copyType, setCopyType] = useState(null);
-    const selectedNodeIdForCopyRef = useRef();
-    selectedNodeIdForCopyRef.current = selectedNodeIdForCopy;
+    const [nodeForCopy, setNodeForCopy] = useState(noSelectionForCopy);
+    const selectedNodeForCopyRef = useRef();
+    selectedNodeForCopyRef.current = nodeForCopy;
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
@@ -118,14 +119,8 @@ export const NetworkModificationTreePane = ({
     );
 
     useEffect(() => {
-        console.log('DBR useEffect id = ' + selectedNodeIdForCopy);
-        dispatch(
-            setSelectedNodeForCopy({
-                nodeId: selectedNodeIdForCopy,
-                copyType: CopyType.CUT,
-            })
-        );
-    }, [selectedNodeIdForCopy, dispatch]);
+        dispatch(setSelectedNodeForCopy(nodeForCopy));
+    }, [nodeForCopy, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -186,11 +181,11 @@ export const NetworkModificationTreePane = ({
                 }
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) => nodeId === selectedNodeIdForCopyRef.current
+                        (nodeId) =>
+                            nodeId === selectedNodeForCopyRef.current.nodeId
                     )
                 ) {
-                    setSelectedNodeIdForCopy(null);
-                    setCopyType(null);
+                    setNodeForCopy(noSelectionForCopy);
                     snackInfo({
                         messageId: 'CopiedNodeInvalidationMessage',
                     });
@@ -226,26 +221,30 @@ export const NetworkModificationTreePane = ({
 
     const handleCopyNode = useCallback(
         (referenceNodeId) => {
-            setSelectedNodeIdForCopy(referenceNodeId);
-            setCopyType(CopyType.COPY);
+            setNodeForCopy({
+                nodeId: referenceNodeId,
+                copyType: CopyType.COPY,
+            });
         },
-        [setSelectedNodeIdForCopy, setCopyType]
+        [setNodeForCopy]
     );
 
     const handleCutNode = useCallback(
         (referenceNodeId) => {
-            setSelectedNodeIdForCopy(referenceNodeId);
-            setCopyType(CopyType.CUT);
+            setNodeForCopy({
+                nodeId: referenceNodeId,
+                copyType: CopyType.CUT,
+            });
         },
-        [setSelectedNodeIdForCopy, setCopyType]
+        [setNodeForCopy]
     );
 
     const handlePasteNode = useCallback(
         (referenceNodeId, insertMode) => {
-            if (CopyType.CUT === copyType) {
+            if (CopyType.CUT === nodeForCopy.copyType) {
                 cutTreeNode(
                     studyUuid,
-                    selectedNodeIdForCopy,
+                    nodeForCopy.nodeId,
                     referenceNodeId,
                     insertMode
                 ).catch((error) => {
@@ -255,12 +254,11 @@ export const NetworkModificationTreePane = ({
                     });
                 });
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
-                setSelectedNodeIdForCopy(null);
-                setCopyType(null);
+                setNodeForCopy(noSelectionForCopy);
             } else {
                 copyTreeNode(
                     studyUuid,
-                    selectedNodeIdForCopy,
+                    nodeForCopy.nodeId,
                     referenceNodeId,
                     insertMode
                 ).catch((error) => {
@@ -269,9 +267,10 @@ export const NetworkModificationTreePane = ({
                         headerId: 'NodeCreateError',
                     });
                 });
+                //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, copyType, selectedNodeIdForCopy, snackError]
+        [studyUuid, nodeForCopy, snackError]
     );
 
     const handleRemoveNode = useCallback(
@@ -282,12 +281,11 @@ export const NetworkModificationTreePane = ({
                     headerId: 'NodeDeleteError',
                 });
             });
-            if (element.id === selectedNodeIdForCopy) {
-                setSelectedNodeIdForCopy(null);
-                setCopyType(null);
+            if (element.id === nodeForCopy.nodeId) {
+                setNodeForCopy(noSelectionForCopy);
             }
         },
-        [studyUuid, selectedNodeIdForCopy, snackError]
+        [studyUuid, nodeForCopy, snackError]
     );
 
     const handleBuildNode = useCallback(
@@ -369,8 +367,7 @@ export const NetworkModificationTreePane = ({
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
-                    selectedNodeForCopy={selectedNodeIdForCopy}
-                    copyType={copyType}
+                    selectedNodeForCopy={nodeForCopy}
                     handleCopyNode={handleCopyNode}
                     handleCutNode={handleCutNode}
                     handlePasteNode={handlePasteNode}

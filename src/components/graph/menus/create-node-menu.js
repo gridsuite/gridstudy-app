@@ -39,7 +39,6 @@ const CreateNodeMenu = ({
     handleExportCaseOnNode,
     activeNode,
     selectedNodeForCopy,
-    copyType,
     handleCopyNode,
     handleCutNode,
     handlePasteNode,
@@ -88,8 +87,10 @@ const CreateNodeMenu = ({
 
     function isPastingAllowed() {
         return (
-            selectedNodeForCopy !== null &&
-            (selectedNodeForCopy !== activeNode.id || copyType !== CopyType.CUT)
+            selectedNodeForCopy &&
+            selectedNodeForCopy.nodeId !== null &&
+            (selectedNodeForCopy.nodeId !== activeNode.id ||
+                selectedNodeForCopy.copyType !== CopyType.CUT)
         );
     }
 
