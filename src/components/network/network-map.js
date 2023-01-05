@@ -29,14 +29,10 @@ import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { Button } from '@mui/material';
-import {
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_USE_NAME,
-} from '../../utils/config-params';
+import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
 import { useNameOrId } from '../util/equipmentInfosHandler';
-import { useParameterState } from '../dialogs/parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -86,7 +82,6 @@ const NetworkMap = (props) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { getNameOrId } = useNameOrId();
     const classes = useStyles();
-    const [useName] = useParameterState(PARAM_USE_NAME);
 
     useEffect(() => {
         if (centerOnSubstation === null) return;
@@ -322,7 +317,6 @@ const NetworkMap = (props) => {
                 data: props.mapEquipments?.substations,
                 network: props.mapEquipments,
                 geoData: props.geoData,
-                useName: useName,
                 getNominalVoltageColor: getNominalVoltageColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
                 labelsVisible: labelsVisible,
@@ -358,12 +352,16 @@ const NetworkMap = (props) => {
                 labelSize: LABEL_SIZE,
                 pickable: true,
                 onHover: ({ object, x, y }) => {
-                    setCursorType(object ? 'pointer' : 'grab');
-                    setTooltip({
-                        message: getNameOrId(object),
-                        pointerX: x,
-                        pointerY: y,
-                    });
+                    if (object) {
+                        setCursorType('pointer');
+                        setTooltip({
+                            message: getNameOrId(object),
+                            pointerX: x,
+                            pointerY: y,
+                        });
+                    } else {
+                        setCursorType('grab');
+                    }
                 },
             })
         );

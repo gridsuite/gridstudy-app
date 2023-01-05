@@ -42,8 +42,9 @@ export const useSearchMatchingEquipments = (
                     )
                         .then((infos) => {
                             if (searchTerm === lastSearchTermRef.current) {
-                                const label = getNameOrId();
-                                setEquipmentsFound(makeItems(infos, label));
+                                setEquipmentsFound(
+                                    makeItems(infos, getNameOrId)
+                                );
                             } // else ignore results of outdated fetch
                         })
                         .catch((error) => {

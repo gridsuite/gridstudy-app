@@ -102,10 +102,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createSubstationSLD(substationId, state) {
                 const substation = network.getSubstation(substationId);
                 if (!substation) return;
-                let label = getNameOrId({
-                    name: substation?.name,
-                    id: substationId,
-                });
+                let label = getNameOrId(substation);
                 const countryName = substation?.countryName;
                 if (countryName) {
                     label += ' - ' + countryName;
@@ -125,7 +122,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createVoltageLevelSLD(vlId, state) {
                 const vl = network.getVoltageLevel(vlId);
                 if (!vl) return;
-                let label = getNameOrId({ name: vl?.name, id: vlId });
+                let label = getNameOrId(vl);
                 const substation = network.getSubstation(vlId);
                 const countryName = substation?.countryName;
                 if (countryName) {
