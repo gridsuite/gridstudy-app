@@ -166,6 +166,10 @@
     "IscMinKA": "Isc min (kA)",
     "IscMaxKA": "Isc max (kA)",
     "PscMVA": "Psc (MVA)",
+    "SINGLE_PHASE": "Single-phase",
+    "THREE_PHASE": "Three-phase",
+    "LOW_SHORT_CIRCUIT_CURRENT": "Isc min",
+    "HIGH_SHORT_CIRCUIT_CURRENT": "Isc max",
 
     "LimitType": "Limit type",
     "Value": "Value",

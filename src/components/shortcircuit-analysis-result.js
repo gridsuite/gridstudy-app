@@ -23,7 +23,9 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             let firstLimitViolation;
             if (limitViolations.length > 0) {
                 firstLimitViolation = {
-                    limitType: limitViolations[0].limitType,
+                    limitType: intl.formatMessage({
+                        id: limitViolations[0].limitType,
+                    }),
                     limitMin:
                         limitViolations[0].limitType ===
                         'LOW_SHORT_CIRCUIT_CURRENT'
@@ -41,7 +43,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             rows.push({
                 faultId: fault.id,
                 elementId: fault.elementId,
-                faultType: fault.faultType,
+                faultType: intl.formatMessage({ id: fault.faultType }),
                 shortCircuitPower: f.shortCircuitPower,
                 current: f.current,
                 ...firstLimitViolation,

@@ -166,6 +166,10 @@
     "IscMinKA": "Icc min (kA)",
     "IscMaxKA": "Icc max (kA)",
     "PscMVA": "Pcc (MVA)",
+    "SINGLE_PHASE": "Monophasé",
+    "THREE_PHASE": "Triphasé",
+    "LOW_SHORT_CIRCUIT_CURRENT": "Icc min",
+    "HIGH_SHORT_CIRCUIT_CURRENT": "Icc max",
 
     "LimitType": "Type de limite",
     "Value": "Valeur",
