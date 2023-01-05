@@ -25,6 +25,7 @@ import {
     GridSection,
     compareById,
     sanitizeString,
+    getIdOrSelf,
 } from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
@@ -40,8 +41,6 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { MODIFICATION_TYPE } from '../network/constants';
-
-const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
 /**
  * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.
@@ -156,12 +155,12 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const [lineToDivide, lineToDivideField] = useAutocompleteField({
         id: 'lineToDivide',
-        label: 'ID',
+        label: 'LineToSplit',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue:
             lineOptions.find(
                 (value) => value.id === formValues?.lineToSplitId
@@ -185,12 +184,12 @@ const LineSplitWithVoltageLevelDialog = ({
     const [voltageLevelOrId, voltageLevelIdField, setVoltageLevelOrId] =
         useAutocompleteField({
             id: 'VoltageLevelId',
-            label: 'ID',
+            label: 'VoltageLevelToSplitAt',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
             values: allVoltageLevelOptions,
             allowNewValue: true,
-            getLabel: getId,
+            getLabel: getIdOrSelf,
             defaultValue: defaultVoltageLevelId,
             selectedValue:
                 formValues && allVoltageLevelOptions
@@ -207,12 +206,12 @@ const LineSplitWithVoltageLevelDialog = ({
     const [bbsOrNodeId, bbsOrNodeIdField, setBbsOrNodeId] =
         useAutocompleteField({
             id: 'BusbarOrNodeID',
-            label: 'BusbarOrNodeID',
+            label: 'BusBarBus',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
             values: busbarSectionOptions,
             allowNewValue: true,
-            getLabel: getId,
+            getLabel: getIdOrSelf,
             defaultValue: formValues?.bbsOrBusId || '',
             selectedValue: formValues
                 ? busbarSectionOptions.find(
@@ -277,7 +276,7 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const [newLine1Id, newLine1IdField] = useTextValue({
         id: 'newLine1Id',
-        label: 'ID',
+        label: 'Line1ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         defaultValue: formValues?.newLine1Id,
@@ -285,7 +284,7 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const [newLine2Id, newLine2IdField] = useTextValue({
         id: 'newLine2Id',
-        label: 'ID',
+        label: 'Line2ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         defaultValue: formValues?.newLine2Id,
@@ -293,7 +292,7 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const [newLine1Name, newLine1NameField] = useTextValue({
         id: 'newLine1Name',
-        label: 'Name',
+        label: 'Line1Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.newLine1Name,
@@ -301,7 +300,7 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const [newLine2Name, newLine2NameField] = useTextValue({
         id: 'newLine2Name',
-        label: 'Name',
+        label: 'Line2Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.newLine2Name,
@@ -429,7 +428,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 {gridItem(percentageArea, 5)}
                 {gridItem(<Typography>{lineSubstation(false)}</Typography>, 1)}
             </Grid>
-            <GridSection title="VoltageLevelToSplitAt" />
+            <GridSection title="VoltageLevel" />
             <Grid container spacing={2}>
                 {gridItem(voltageLevelIdField)}
                 {gridItem(bbsOrNodeIdField)}
