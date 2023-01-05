@@ -36,24 +36,6 @@ const useStyles = makeStyles((theme) => ({
             theme.node.border +
             ' 0px 0px 5px 1px',
     },
-    networkModificationSelectedForCut: {
-        position: 'relative',
-        variant: 'contained',
-        background: theme.node.background,
-        textTransform: 'none',
-        color: 'red',
-        '&:hover': {
-            background: theme.node.background,
-        },
-        overflow: 'hidden',
-        boxShadow:
-            theme.node.border +
-            ' 0px 0px 3px 3px,' +
-            theme.node.border +
-            ' 0px 0px 25px,' +
-            theme.node.border +
-            ' 0px 0px 5px 1px',
-    },
     networkModification: {
         background: theme.palette.text.secondary,
         textTransform: 'none',
@@ -140,11 +122,12 @@ const NetworkModificationNode = (props) => {
                 isConnectable={false}
             />
             <Button
+                style={{
+                    opacity: isSelectedForCut() ? 0.3 : 'unset',
+                }}
                 className={
                     isSelectedNode()
                         ? classes.networkModificationSelected
-                        : isSelectedForCut()
-                        ? classes.networkModificationSelectedForCut
                         : classes.networkModification
                 }
             >
