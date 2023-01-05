@@ -77,10 +77,12 @@ const GeneratorScalingVariation = ({
         }
 
         if (variationMode === VENTILATION) {
-            return value?.specificMetadata?.type === IDENTIFIER_LIST &&
+            return (
+                value?.specificMetadata?.type === IDENTIFIER_LIST &&
                 value?.specificMetadata?.filterEquipmentsAttributes?.every(
                     (fil) => !!fil.distributionKey
-                );
+                )
+            );
         }
 
         return true;
@@ -206,7 +208,6 @@ const GeneratorScalingDialog = ({
     };
 
     const handleSave = () => {
-        console.log('variation : ', iterativeValue);
         generatorScaling(
             studyUuid,
             currentNodeUuid,

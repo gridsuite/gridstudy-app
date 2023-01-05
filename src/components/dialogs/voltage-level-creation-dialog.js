@@ -183,22 +183,16 @@ const BusBarConnexion = ({
 
 function validateBusBarSection(values) {
     const res = new Map();
-    console.log('gen test validation values ', values)
-
     const idMap = values.reduce(
         (m, v) => m.set(v.id, (m.get(v.id) || 0) + 1),
         new Map()
     );
-    console.log('gen test validation idMap ', idMap)
 
     const keyPosition = (val) => val.horizPos + '#' + val.vertPos;
     const posMap = values.reduce(
         (m, v) => m.set(keyPosition(v), (m.get(keyPosition(v)) || 0) + 1),
         new Map()
     );
-
-    console.log('gen test validation posMap ', posMap)
-
     values.forEach((val, idx) => {
         const errorId = idMap.get(val.id) > 1;
         const errorPosition = posMap.get(keyPosition(val)) > 1;
@@ -212,7 +206,6 @@ function validateBusBarSection(values) {
                 }),
             });
     });
-    console.log("gen test res : ", res);
     return res;
 }
 

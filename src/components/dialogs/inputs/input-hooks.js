@@ -701,7 +701,6 @@ export const useDirectoryElements = ({
     required = false,
     itemFilter = undefined,
     errorMsg = undefined,
-    onError,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(initialValues);
@@ -716,7 +715,7 @@ export const useDirectoryElements = ({
         if (refInitialValues.current !== null) {
             setValues(initialValues);
         }
-    }, []);
+    }, [initialValues]);
 
     const handleDelete = useCallback(
         (item, index) => {
@@ -751,10 +750,6 @@ export const useDirectoryElements = ({
         [values, snackError]
     );
 
-    useEffect(() => {
-        console.log('error : ', errorMsg)
-        console.log('error : ', onError)
-    }, [errorMsg, onError])
     const field = useMemo(() => {
         return (
             <>
@@ -762,7 +757,6 @@ export const useDirectoryElements = ({
                     className={classes.formDirectoryElements1}
                     error={!!errorMsg}
                     aria-errormessage={errorMsg}
-                    onError={onError}
                 >
                     {values?.length === 0 && (
                         <Grid container>
@@ -771,23 +765,27 @@ export const useDirectoryElements = ({
                                     id="elements"
                                     className={classes.labelDirectoryElements}
                                     error={!!errorMsg}
-                                    onError={onError}
                                     aria-errormessage={errorMsg}
                                 >
-                                    <FieldLabel label={label} optional={false}/>
+                                    <FieldLabel
+                                        label={label}
+                                        optional={false}
+                                    />
                                 </InputLabel>
                             </Grid>
                         </Grid>
                     )}
                     {values?.length > 0 && (
-                        <FormControl className={classes.formDirectoryElements2} >
+                        <FormControl className={classes.formDirectoryElements2}>
                             <div>
                                 {values.map((item, index) => (
                                     <Chip
                                         className={elementClassName}
                                         key={label + '_' + index}
                                         size="small"
-                                        onDelete={() => handleDelete(item, index)}
+                                        onDelete={() =>
+                                            handleDelete(item, index)
+                                        }
                                         label={
                                             <OverflowableText
                                                 text={item.name}
@@ -838,6 +836,8 @@ export const useDirectoryElements = ({
         titleId,
         label,
         elementClassName,
+        errorMsg,
+        itemFilter,
     ]);
 
     return [values, field];

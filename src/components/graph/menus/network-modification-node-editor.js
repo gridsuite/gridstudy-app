@@ -422,7 +422,6 @@ const NetworkModificationNodeEditor = () => {
         setLaunchLoader(true);
         fetchNetworkModifications(studyUuid, currentTreeNode?.id)
             .then((res) => {
-                console.log('res : ', res);
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentTreeNode.id === currentNodeIdRef.current) {
