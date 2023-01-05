@@ -47,6 +47,7 @@ export const useStyles = makeStyles((theme) => ({
 
 const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 const VENTILATION = 'VENTILATION';
+const STACKING_UP = 'STACKING_UP';
 const PROPORTIONAL_TO_PMAX = 'PROPORTIONAL_TO_PMAX';
 
 const GeneratorScalingVariation = ({
@@ -71,14 +72,18 @@ const GeneratorScalingVariation = ({
     });
 
     function itemFilter(value) {
-        const isManualFilter =
-            value?.specificMetadata?.type === IDENTIFIER_LIST;
-        return variationMode === VENTILATION
-            ? isManualFilter &&
-                  value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                      (fil) => !!fil.distributionKey
-                  )
-            : isManualFilter;
+        if (variationMode === STACKING_UP) {
+            return value?.specificMetadata?.type === IDENTIFIER_LIST;
+        }
+
+        if (variationMode === VENTILATION) {
+            return value?.specificMetadata?.type === IDENTIFIER_LIST &&
+                value?.specificMetadata?.filterEquipmentsAttributes?.every(
+                    (fil) => !!fil.distributionKey
+                );
+        }
+
+        return true;
     }
 
     const [filters, filtersField] = useDirectoryElements({
@@ -185,7 +190,7 @@ const GeneratorScalingDialog = ({
         labelAddValue: 'CreateVariation',
         validateItem: validateVariation,
         inputForm: inputForm,
-        defaultValues: formValues?.generatorScalingVariations,
+        defaultValues: formValues?.variations,
         Field: GeneratorScalingVariation,
         isRequired: true,
         fieldProps: { isDeltaP: variationType === 'DELTA_P' },
