@@ -65,6 +65,11 @@ const isWorthLoading = (term, elements, old, minLen) => {
 
     return false;
 };
+
+const defaultEntryToValue = (entry) => {
+    return { id: entry };
+};
+
 export const useAutocompleteField = ({
     id,
     label,
@@ -77,6 +82,7 @@ export const useAutocompleteField = ({
     renderElement,
     getLabel = func_identity,
     allowNewValue = false,
+    newEntryToValue = defaultEntryToValue,
     errorMsg,
     selectedValue,
     defaultValue,
@@ -103,7 +109,7 @@ export const useAutocompleteField = ({
 
     useEffect(() => {
         function validate() {
-            const res = validateField(value, validationRef.current);
+            const res = validateField(value?.id, validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }
@@ -193,7 +199,7 @@ export const useAutocompleteField = ({
                 if (matchingOption) {
                     setValue(matchingOption);
                 } else {
-                    setValue({ id: term });
+                    setValue(newEntryToValue(term));
                 }
                 inputForm.setHasChanged(true);
             }
@@ -215,6 +221,7 @@ export const useAutocompleteField = ({
             minCharsBeforeSearch,
             onSearchTermChange,
             allowNewValue,
+            newEntryToValue,
             inputForm,
         ]
     );

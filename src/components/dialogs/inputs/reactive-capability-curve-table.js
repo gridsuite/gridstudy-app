@@ -5,14 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    useRef,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import { useStyles } from '../dialogUtils';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
-
+import { validateValueIsANumber } from '../../util/validation-functions';
 const minimalValue = { p: '', qminP: '', qmaxP: '' };
 
 function getId(value) {
@@ -31,6 +37,53 @@ function hasValueCorrectFormat(valueToTest, index) {
         valueToTest[index].qminP !== undefined &&
         valueToTest[index].qmaxP !== undefined
     );
+}
+
+function getPreviousValue(displayedPreviousValues, index) {
+    if (
+        displayedPreviousValues !== undefined &&
+        index <= displayedPreviousValues.length - 1
+    ) {
+        return {
+            p: displayedPreviousValues[index].p,
+            qminP: displayedPreviousValues[index].qminP,
+            qmaxP: displayedPreviousValues[index].qmaxP,
+        };
+    } else {
+        return null;
+    }
+}
+
+function fixValuesFormat(valuesToFix) {
+    // The goal here is to verify that the provided array has the correct format.
+    // If the format is not correct, then the value is replaced by an empty string.
+    // This is done to avoid errors when the user has not modified all values on a diagram line.
+    return valuesToFix.map((v) => {
+        return {
+            p: validateValueIsANumber(v.p) ? v.p : '',
+            qminP: validateValueIsANumber(v.qminP) ? v.qminP : '',
+            qmaxP: validateValueIsANumber(v.qmaxP) ? v.qmaxP : '',
+        };
+    });
+}
+
+function buildPreviousValuesToDisplay(defaultValues, previousValues) {
+    const valuesToDisplay = [];
+    // If the node is built, then we display previousValues.
+    // otherwise, we display the old values stored in the modification database.
+    defaultValues.forEach((value, index) => {
+        let valueToDisplay = minimalValue;
+        if (previousValues?.length > 0) {
+            // in case the defaultValues array is longer than the previousValues array, we display the last value of the previousValues array.
+            if (index === defaultValues.length - 1) {
+                valueToDisplay = previousValues[previousValues.length - 1];
+            } else if (index < previousValues.length - 1) {
+                valueToDisplay = previousValues[index];
+            }
+        }
+        valuesToDisplay.push(valueToDisplay);
+    });
+    return valuesToDisplay;
 }
 
 function enforceMinimumValues(valueToTest) {
@@ -60,7 +113,9 @@ export const useReactiveCapabilityCurveTableValues = ({
     Field,
     inputForm,
     defaultValues, // format : either undefined or [{ p: '', qminP: '', qmaxP: '' }, { p: '', qminP: '', qmaxP: '' }]
+    previousValues,
     isReactiveCapabilityCurveOn,
+    isModificationForm = false,
     disabled = false,
 }) => {
     const classes = useStyles();
@@ -73,15 +128,57 @@ export const useReactiveCapabilityCurveTableValues = ({
         enforceMinimumValues(defaultValues)
     );
 
+    // previousValues is used to display the previous values when the user is modifying a curve.
+    const [displayedPreviousValues, setDisplayedPreviousValues] =
+        useState(previousValues);
+
+    const valuesRef = useRef(values);
+
+    useEffect(() => {
+        valuesRef.current = values;
+    }, [values]);
+
     useEffect(() => {
         // Updates the component when the correct default values are given by the parent component.
-        if (defaultValues !== undefined && defaultValues.length > 0) {
+        if (
+            defaultValues !== undefined &&
+            defaultValues.length > 0 &&
+            !isModificationForm
+        ) {
             const enforcedMinimumDefaultValues =
                 enforceMinimumValues(defaultValues);
             setValues(enforcedMinimumDefaultValues);
             setDisplayedValues(enforcedMinimumDefaultValues);
+        } else {
+            // In the case of a modification form
+            if (defaultValues !== undefined && defaultValues.length > 0) {
+                setValues(fixValuesFormat(defaultValues));
+                setDisplayedValues(fixValuesFormat(defaultValues));
+                setDisplayedPreviousValues(
+                    buildPreviousValuesToDisplay(defaultValues, previousValues)
+                );
+            } else if (previousValues?.length > 0) {
+                // We prefill the form with empty lines and with the previous values.
+                // if the user has already set some values we prefill with empty values till the previousValues array length
+                let valuesToDisplay = valuesRef.current;
+                if (previousValues?.length > valuesToDisplay.length) {
+                    valuesToDisplay = valuesToDisplay.concat(
+                        Array(
+                            previousValues.length - valuesToDisplay.length
+                        ).fill(minimalValue)
+                    );
+                }
+                setValues(valuesToDisplay);
+                setDisplayedValues(valuesToDisplay);
+                setDisplayedPreviousValues(
+                    buildPreviousValuesToDisplay(
+                        valuesToDisplay,
+                        previousValues
+                    )
+                );
+            }
         }
-    }, [defaultValues]);
+    }, [defaultValues, isModificationForm, previousValues]);
 
     const handleDeleteItem = useCallback(
         (index) => {
@@ -91,26 +188,59 @@ export const useReactiveCapabilityCurveTableValues = ({
             setValues(newValues);
             setDisplayedValues(newValues);
 
+            if (displayedPreviousValues !== undefined) {
+                const newDisplayedPreviousValues = [...displayedPreviousValues];
+                newDisplayedPreviousValues.splice(index, 1);
+                setDisplayedPreviousValues(newDisplayedPreviousValues);
+            }
+
             inputForm.reset();
             inputForm.setHasChanged(true);
         },
-        [values, inputForm]
+        [values, displayedPreviousValues, inputForm]
     );
 
-    const handleAddValue = useCallback(() => {
-        const newValues = [...values];
-        newValues.splice(values.length - 1, 0, minimalValue);
+    const handleAddValue = useCallback(
+        (index) => {
+            const newValues = [...values];
+            newValues.splice(values.length - 1, 0, minimalValue);
 
-        setValues(newValues);
+            setValues(newValues);
 
-        // Adds a unique ID on each displayed line, to prevent a bad rendering effect
-        const newValuesForDisplay = newValues.map((v) => {
-            v.id = getNewId();
-            return v;
-        });
-        setDisplayedValues(newValuesForDisplay);
-        inputForm.setHasChanged(true);
-    }, [values, inputForm]);
+            // Adds a unique ID on each displayed line, to prevent a bad rendering effect
+            const newValuesForDisplay = newValues.map((v) => {
+                v.id = getNewId();
+                return v;
+            });
+            setDisplayedValues(newValuesForDisplay);
+            inputForm.setHasChanged(true);
+
+            if (
+                displayedPreviousValues !== undefined &&
+                displayedPreviousValues.length <= values.length
+            ) {
+                const newDisplayedPreviousValues = [...displayedPreviousValues];
+                //we look for the index of the previous value that is displayed
+                const indexDisplayedPreviousValue = previousValues.findIndex(
+                    (v) => v?.p === displayedPreviousValues[index - 1]?.p
+                );
+                //we find the next previous value to display
+                const newValue =
+                    indexDisplayedPreviousValue !== -1 &&
+                    indexDisplayedPreviousValue + 1 < previousValues.length - 1
+                        ? previousValues[indexDisplayedPreviousValue + 1]
+                        : minimalValue;
+
+                newDisplayedPreviousValues.splice(
+                    displayedPreviousValues.length - 1,
+                    0,
+                    newValue
+                );
+                setDisplayedPreviousValues(newDisplayedPreviousValues);
+            }
+        },
+        [values, displayedPreviousValues, previousValues, inputForm]
+    );
 
     const handleSetValue = useCallback((index, newValue) => {
         setValues((oldValues) => [
@@ -120,6 +250,17 @@ export const useReactiveCapabilityCurveTableValues = ({
         ]);
     }, []);
 
+    const hasPreviousValue = useCallback(
+        (index) => {
+            return (
+                displayedPreviousValues !== undefined &&
+                index < displayedPreviousValues.length - 1 &&
+                displayedPreviousValues[index]?.p !== ''
+            );
+        },
+        [displayedPreviousValues]
+    );
+
     useEffect(() => {
         if (!isReactiveCapabilityCurveOn) {
             // When isReactiveCapabilityCurveOn is false, the reactive capability curve
@@ -127,12 +268,45 @@ export const useReactiveCapabilityCurveTableValues = ({
             // not change the validation of its values and they are still required.
             // we update the validations of reactive capability curve values so they are not required any more.
             values.forEach((value, index) => {
-                inputForm.addValidation('P' + index, () => true);
-                inputForm.addValidation('QmaxP' + index, () => true);
-                inputForm.addValidation('QminP' + index, () => true);
+                // for the modification form, we only update the validations of the values that have previous values
+                if (
+                    isReactiveCapabilityCurveOn !== undefined ||
+                    hasPreviousValue(index) ||
+                    index === values.length - 1 ||
+                    index === 0 ||
+                    !isModificationForm
+                ) {
+                    inputForm.addValidation('P' + index, () => true);
+                    inputForm.addValidation('QmaxP' + index, () => true);
+                    inputForm.addValidation('QminP' + index, () => true);
+                }
             });
         }
-    }, [inputForm, values, isReactiveCapabilityCurveOn]);
+    }, [
+        inputForm,
+        values,
+        isReactiveCapabilityCurveOn,
+        displayedPreviousValues,
+        isModificationForm,
+        hasPreviousValue,
+    ]);
+
+    const isRequired = useCallback(
+        (index) => {
+            if (isModificationForm) {
+                return isReactiveCapabilityCurveOn
+                    ? true
+                    : !(hasPreviousValue(index) || index === values.length - 1);
+            }
+            return isReactiveCapabilityCurveOn;
+        },
+        [
+            isModificationForm,
+            isReactiveCapabilityCurveOn,
+            hasPreviousValue,
+            values,
+        ]
+    );
 
     const field = useMemo(() => {
         return (
@@ -157,9 +331,13 @@ export const useReactiveCapabilityCurveTableValues = ({
                                 onChange={handleSetValue}
                                 index={index}
                                 inputForm={inputForm}
-                                isFieldRequired={isReactiveCapabilityCurveOn}
+                                isFieldRequired={isRequired(index)}
                                 disabled={disabled}
                                 labelSuffix={labelSuffix}
+                                previousValue={getPreviousValue(
+                                    displayedPreviousValues,
+                                    index
+                                )}
                             />
                             <Grid item xs={1}>
                                 <IconButton
@@ -180,7 +358,7 @@ export const useReactiveCapabilityCurveTableValues = ({
                                     <IconButton
                                         className={classes.icon}
                                         key={id + index}
-                                        onClick={handleAddValue}
+                                        onClick={() => handleAddValue(index)}
                                         disabled={disabled}
                                         style={{ top: '-1em' }}
                                     >
@@ -194,16 +372,17 @@ export const useReactiveCapabilityCurveTableValues = ({
             </Grid>
         );
     }, [
+        tableHeadersIds,
         displayedValues,
-        classes.icon,
-        handleAddValue,
-        handleDeleteItem,
         handleSetValue,
         inputForm,
-        tableHeadersIds,
-        isReactiveCapabilityCurveOn,
+        isRequired,
         disabled,
+        displayedPreviousValues,
+        classes.icon,
+        handleDeleteItem,
+        handleAddValue,
     ]);
 
-    return [values, field];
+    return [values, field, displayedPreviousValues];
 };
