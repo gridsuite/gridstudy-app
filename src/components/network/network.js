@@ -307,7 +307,7 @@ export default class Network {
     }
 
     getSubstations() {
-        return this.substations;
+        return Array.from(this.substationsById.values());
     }
 
     getSubstation(id) {
@@ -319,7 +319,7 @@ export default class Network {
     }
 
     getLines() {
-        return this.lines;
+        return Array.from(this.linesById.values());
     }
 
     getLine(id) {
@@ -682,8 +682,8 @@ export default class Network {
                 this.substationsById
                     .get(equipmentId)
                     .voltageLevels.map((vl) =>
-                        this.removeEquipment('VOLTAGE_LEVEL', vl.id)
-                    );
+                    this.removeEquipment('VOLTAGE_LEVEL', vl.id)
+                );
                 this.completeSubstationsInfos();
                 break;
             default:

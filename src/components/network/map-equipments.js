@@ -269,7 +269,7 @@ export default class MapEquipments {
     }
 
     getSubstations() {
-        return Array.from(this.substationsById.values());
+        return this.substations;
     }
 
     getSubstation(id) {
@@ -278,6 +278,10 @@ export default class MapEquipments {
 
     getNominalVoltages() {
         return this.nominalVoltages;
+    }
+
+    getLines() {
+        return this.lines;
     }
 
     getLine(id) {
