@@ -1410,8 +1410,6 @@ export function generatorScaling(
     );
 }
 
-
-
 export function createLoad(
     studyUuid,
     currentNodeUuid,

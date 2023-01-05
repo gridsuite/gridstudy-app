@@ -380,7 +380,7 @@ const NetworkModificationNodeEditor = () => {
         GENERATOR_SCALING: {
             label: 'GeneratorScaling',
             dialog: () => adapt(GeneratorScalingDialog),
-            icon: <AddIcon/>,
+            icon: <AddIcon />,
         },
         DELETE_VOLTAGE_LEVEL_ON_LINE: {
             label: 'DeleteVoltageLevelOnLine',
@@ -397,7 +397,7 @@ const NetworkModificationNodeEditor = () => {
             dialog: () => adapt(EquipmentDeletionDialog),
             icon: <DeleteIcon />,
         },
-    }
+    };
 
     const fillNotification = useCallback(
         (study, messageId) => {
