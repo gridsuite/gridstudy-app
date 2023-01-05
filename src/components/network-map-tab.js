@@ -67,30 +67,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const NetworkMapTab = ({
-                                  /* redux can be use as redux*/
-                                  studyUuid,
-                                  currentNode,
-                                  /* results*/
-                                  securityAnalysisStatus,
-                                  runnable,
-                                  loadFlowStatus,
-                                  sensiStatus,
-                                  shortCircuitStatus,
-                                  /* visual*/
-                                  visible,
-                                  useName,
-                                  lineFullPath,
-                                  lineParallelPath,
-                                  lineFlowMode,
-                                  lineFlowColorMode,
-                                  lineFlowAlertThreshold,
-                                  /* callbacks */
-                                  openVoltageLevel,
-                                  setIsComputationRunning,
-                                  filteredNominalVoltages,
-                                  showInSpreadsheet,
-                                  setErrorMessage,
-                              }) => {
+    /* redux can be use as redux*/
+    studyUuid,
+    currentNode,
+    /* results*/
+    securityAnalysisStatus,
+    runnable,
+    loadFlowStatus,
+    sensiStatus,
+    shortCircuitStatus,
+    /* visual*/
+    visible,
+    useName,
+    lineFullPath,
+    lineParallelPath,
+    lineFlowMode,
+    lineFlowColorMode,
+    lineFlowAlertThreshold,
+    /* callbacks */
+    openVoltageLevel,
+    setIsComputationRunning,
+    filteredNominalVoltages,
+    showInSpreadsheet,
+    setErrorMessage,
+}) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const dispatch = useDispatch();
 
@@ -253,9 +253,9 @@ export const NetworkMapTab = ({
 
                 const notFoundLinesIds = lineFullPath
                     ? getEquipmentsNotFoundIds(
-                        geoData.linePositionsById,
-                        mapEquipments.getLines()
-                    )
+                          geoData.linePositionsById,
+                          mapEquipments.getLines()
+                      )
                     : [];
 
                 if (
@@ -294,8 +294,8 @@ export const NetworkMapTab = ({
                                 const newGeoData = new GeoData(
                                     positions[0].length > 0
                                         ? new Map(
-                                        geoData.substationPositionsById
-                                        )
+                                              geoData.substationPositionsById
+                                          )
                                         : geoData.substationPositionsById,
                                     // If lineFullPath is off, we need to render the lines layer when there are some new subsation positions
                                     positions[1].length > 0 ||
@@ -485,13 +485,13 @@ export const NetworkMapTab = ({
         return (
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
-                withEquipment(MenuLine, {
-                    currentNode,
-                })}
+                    withEquipment(MenuLine, {
+                        currentNode,
+                    })}
                 {equipmentMenu.equipmentType === equipments.substations &&
-                withEquipment(MenuSubstation)}
+                    withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType === equipments.voltageLevels &&
-                withEquipment(MenuVoltageLevel)}
+                    withEquipment(MenuVoltageLevel)}
             </>
         );
     };
@@ -573,7 +573,7 @@ export const NetworkMapTab = ({
             {renderEquipmentMenu()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
-            renderNominalVoltageFilter()}
+                renderNominalVoltageFilter()}
 
             {displayOverloadTable && isLoadFlowValid() && linesNearOverload() && (
                 <div className={classes.divOverloadedLineView}>

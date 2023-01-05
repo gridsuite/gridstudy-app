@@ -682,8 +682,8 @@ export default class Network {
                 this.substationsById
                     .get(equipmentId)
                     .voltageLevels.map((vl) =>
-                    this.removeEquipment('VOLTAGE_LEVEL', vl.id)
-                );
+                        this.removeEquipment('VOLTAGE_LEVEL', vl.id)
+                    );
                 this.completeSubstationsInfos();
                 break;
             default:

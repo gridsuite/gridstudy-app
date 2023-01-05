@@ -54,11 +54,11 @@ function handleError(response) {
         ) {
             error = new Error(
                 errorName +
-                errorJson.status +
-                ' ' +
-                errorJson.error +
-                ', message : ' +
-                errorJson.message
+                    errorJson.status +
+                    ' ' +
+                    errorJson.error +
+                    ', message : ' +
+                    errorJson.message
             );
             error.status = errorJson.status;
         } else {
@@ -362,16 +362,16 @@ function getQueryParamsList(params, paramName) {
 export function fetchReport(studyUuid, currentNodeUuid, nodeOnlyReport) {
     console.info(
         'get report for node : ' +
-        currentNodeUuid +
-        ' with nodeOnlyReport = ' +
-        nodeOnlyReport +
-        ' in study ' +
-        studyUuid
+            currentNodeUuid +
+            ' with nodeOnlyReport = ' +
+            nodeOnlyReport +
+            ' in study ' +
+            studyUuid
     );
     return backendFetchJson(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/report?nodeOnlyReport=' +
-        (nodeOnlyReport ? 'true' : 'false')
+            '/report?nodeOnlyReport=' +
+            (nodeOnlyReport ? 'true' : 'false')
     );
 }
 
@@ -609,10 +609,10 @@ export function searchEquipmentsInfos(
     }
     return backendFetchJson(
         getStudyUrl(studyUuid) +
-        '/nodes/' +
-        encodeURIComponent(nodeUuid) +
-        '/search?' +
-        urlSearchParams.toString()
+            '/nodes/' +
+            encodeURIComponent(nodeUuid) +
+            '/search?' +
+            urlSearchParams.toString()
     );
 }
 
@@ -774,10 +774,10 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
 export function startLoadFlow(studyUuid, currentNodeUuid) {
     console.info(
         'Running loadflow on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        '...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            '...'
     );
     const startLoadFlowUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/run';
@@ -788,10 +788,10 @@ export function startLoadFlow(studyUuid, currentNodeUuid) {
 export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
     console.info(
         'Stopping security analysis on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        ' ...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
     );
     const stopSecurityAnalysisUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -818,10 +818,10 @@ export function startSecurityAnalysis(
 ) {
     console.info(
         'Running security analysis on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        ' ...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -834,10 +834,10 @@ export function startSecurityAnalysis(
 export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
     console.info(
         'Fetching security analysis on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        ' ...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -849,10 +849,10 @@ export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
         'Fetching security analysis status on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        ' ...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -868,10 +868,10 @@ export function startSensitivityAnalysis(
 ) {
     console.info(
         'Running sensi on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        ' ...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -893,10 +893,10 @@ export function startSensitivityAnalysis(
 export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
     console.info(
         'Stopping sensitivity analysis on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        ' ...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
     );
     const stopSensitivityAnalysisUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -908,10 +908,10 @@ export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
 export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
         'Fetching sensitivity analysis status on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        ' ...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -923,10 +923,10 @@ export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
 export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
     console.info(
         'Fetching sensitivity analysis on ' +
-        studyUuid +
-        ' and node ' +
-        currentNodeUuid +
-        ' ...'
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1896,17 +1896,17 @@ export function createSubstation(
 }
 
 export function createVoltageLevel({
-                                       studyUuid,
-                                       currentNodeUuid,
-                                       voltageLevelId,
-                                       voltageLevelName,
-                                       nominalVoltage,
-                                       substationId,
-                                       busbarSections,
-                                       busbarConnections,
-                                       isUpdate,
-                                       modificationUuid,
-                                   }) {
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelId,
+    voltageLevelName,
+    nominalVoltage,
+    substationId,
+    busbarSections,
+    busbarConnections,
+    isUpdate,
+    modificationUuid,
+}) {
     let createVoltageLevelUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
