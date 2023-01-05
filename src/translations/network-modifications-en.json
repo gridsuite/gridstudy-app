@@ -6,6 +6,8 @@
     "network_modifications/LINE_SPLIT_WITH_VOLTAGE_LEVEL": "Splitting a line {computedLabel}",
     "network_modifications/LINE_ATTACH_TO_VOLTAGE_LEVEL": "Attaching line {computedLabel}",
     "network_modifications/LINES_ATTACH_TO_SPLIT_LINES": "Attaching lines to splitting lines {computedLabel}",
+    "network_modifications/DELETE_VOLTAGE_LEVEL_ON_LINE": "Deleting a voltage level on a line {computedLabel}",
+    "network_modifications/DELETE_ATTACHING_LINE": "Deleting attaching line {computedLabel}",
     "network_modifications/LOAD_CREATION": "Creating load {computedLabel}",
     "network_modifications/LOAD_MODIFICATION": "Modifying load {computedLabel}",
     "network_modifications/GENERATOR_CREATION": "Creating generator {computedLabel}",

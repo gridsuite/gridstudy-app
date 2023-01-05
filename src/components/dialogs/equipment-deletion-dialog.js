@@ -4,53 +4,93 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useParams } from 'react-router-dom';
-import { deleteEquipment } from '../../utils/rest-api';
+import {
+    deleteEquipment,
+    fetchBatteries,
+    fetchDanglingLines,
+    fetchGenerators,
+    fetchHvdcLines,
+    fetchLccConverterStations,
+    fetchLines,
+    fetchLoads,
+    fetchShuntCompensators,
+    fetchStaticVarCompensators,
+    fetchSubstations,
+    fetchThreeWindingsTransformers,
+    fetchTwoWindingsTransformers,
+    fetchVoltageLevels,
+    fetchVscConverterStations,
+} from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { validateField } from '../util/validation-functions';
 import { useInputForm } from './inputs/input-hooks';
-import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
-import { filledTextField, getIdOrSelf } from './dialogUtils';
+import { compareById, filledTextField, getIdOrSelf } from './dialogUtils';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import ModificationDialog from './modificationDialog';
 
-const equipmentTypes = [
-    'LINE',
-    'TWO_WINDINGS_TRANSFORMER',
-    'THREE_WINDINGS_TRANSFORMER',
-    'GENERATOR',
-    'LOAD',
-    'BATTERY',
-    'DANGLING_LINE',
-    'HVDC_LINE',
-    'HVDC_CONVERTER_STATION',
-    'SHUNT_COMPENSATOR',
-    'STATIC_VAR_COMPENSATOR',
-    'SUBSTATION',
-    'VOLTAGE_LEVEL',
-];
-
-const makeItems = (eqpts, usesNames) => {
-    if (!eqpts) return [];
-    return eqpts
-        .map((e) => {
-            let label = usesNames ? e.name : e.id;
-            return {
-                label: label,
-                id: e.id,
-                key: e.id,
-            };
-        })
-        .sort((a, b) => a.label.localeCompare(b.label));
+const equipmentTypes = {
+    LINE: {
+        label: 'LINE',
+        fetchers: [fetchLines],
+    },
+    TWO_WINDINGS_TRANSFORMER: {
+        label: 'TWO_WINDINGS_TRANSFORMER',
+        fetchers: [fetchTwoWindingsTransformers],
+    },
+    THREE_WINDINGS_TRANSFORMER: {
+        label: 'THREE_WINDINGS_TRANSFORMER',
+        fetchers: [fetchThreeWindingsTransformers],
+    },
+    GENERATOR: {
+        label: 'GENERATOR',
+        fetchers: [fetchGenerators],
+    },
+    LOAD: {
+        label: 'LOAD',
+        fetchers: [fetchLoads],
+    },
+    BATTERY: {
+        label: 'BATTERY',
+        fetchers: [fetchBatteries],
+    },
+    DANGLING_LINE: {
+        label: 'DANGLING_LINE',
+        fetchers: [fetchDanglingLines],
+    },
+    HVDC_LINE: {
+        label: 'HVDC_LINE',
+        fetchers: [fetchHvdcLines],
+    },
+    HVDC_CONVERTER_STATION: {
+        label: 'HVDC_CONVERTER_STATION',
+        fetchers: [fetchLccConverterStations, fetchVscConverterStations],
+    },
+    SHUNT_COMPENSATOR: {
+        label: 'SHUNT_COMPENSATOR',
+        fetchers: [fetchShuntCompensators],
+    },
+    STATIC_VAR_COMPENSATOR: {
+        label: 'STATIC_VAR_COMPENSATOR',
+        fetchers: [fetchStaticVarCompensators],
+    },
+    SUBSTATION: {
+        label: 'SUBSTATION',
+        fetchers: [fetchSubstations],
+    },
+    VOLTAGE_LEVEL: {
+        label: 'VOLTAGE_LEVEL',
+        fetchers: [fetchVoltageLevels],
+    },
 };
 
-const defaultEquipmentType = 'LINE';
+const defaultEquipmentType = equipmentTypes.LINE;
 
 /**
  * Dialog to delete an equipment in the network
@@ -71,19 +111,30 @@ const EquipmentDeletionDialog = ({
     const inputForm = useInputForm();
 
     const [equipmentType, setEquipmentType] = useState(
-        editData?.equipmentType ?? defaultEquipmentType
+        equipmentTypes[editData?.equipmentType] ?? defaultEquipmentType
     );
+
+    const [equipmentsFound, setEquipmentsFound] = useState([]);
 
     const [errors, setErrors] = useState(new Map());
 
-    const [searchMatchingEquipments, equipmentsFound] =
-        useSearchMatchingEquipments(
-            studyUuid,
-            currentNodeUuid,
-            true,
-            equipmentType,
-            makeItems
-        );
+    useEffect(() => {
+        setEquipmentsFound([]);
+        Promise.all(
+            equipmentType.fetchers.map((fetchPromise) =>
+                fetchPromise(studyUuid, currentNodeUuid)
+            )
+        )
+            .then((vals) => {
+                setEquipmentsFound(vals.flat().sort(compareById));
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'equipmentsLoadingError',
+                });
+            });
+    }, [equipmentType, currentNodeUuid, studyUuid, snackError]);
 
     const [equipmentOrId, equipmentField, setEquipmentOrId] =
         useAutocompleteField({
@@ -95,7 +146,6 @@ const EquipmentDeletionDialog = ({
             validation: { isFieldRequired: true },
             formProps: filledTextField,
             inputForm: inputForm,
-            onSearchTermChange: searchMatchingEquipments,
             values: equipmentsFound,
             defaultValue: editData?.equipmentId || '',
         });
@@ -139,9 +189,9 @@ const EquipmentDeletionDialog = ({
         deleteEquipment(
             studyUuid,
             currentNodeUuid,
-            equipmentType.endsWith('CONVERTER_STATION')
+            equipmentType.label.endsWith('CONVERTER_STATION')
                 ? 'HVDC_CONVERTER_STATION'
-                : equipmentType,
+                : equipmentType.label,
             equipmentOrId?.id || equipmentOrId,
             editData?.uuid
         ).catch((error) => {
@@ -184,11 +234,11 @@ const EquipmentDeletionDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            {equipmentTypes.map((item) => {
+                            {Object.values(equipmentTypes).map((values) => {
                                 return (
-                                    <MenuItem key={item} value={item}>
+                                    <MenuItem key={values.label} value={values}>
                                         {intl.formatMessage({
-                                            id: item,
+                                            id: values.label,
                                         })}
                                     </MenuItem>
                                 );
