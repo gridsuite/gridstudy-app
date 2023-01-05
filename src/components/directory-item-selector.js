@@ -51,7 +51,6 @@ const DirectoryItemSelector = (props) => {
 
     const convertChildren = useCallback(
         (children) => {
-            console.log('children : ', children);
             return children.map((e) => {
                 return {
                     id: e.elementUuid,
@@ -153,13 +152,13 @@ const DirectoryItemSelector = (props) => {
                             props.types,
                             props.equipmentTypes
                         ).then((childrenWithMetada) => {
-                            console.log('fetch elements : ', childrenWithMetada);
-                            let finalResult = childrenWithMetada;
-                            if (props.itemFilter) {
-                                finalResult = finalResult.filter((val) => props.itemFilter(val));
-                            }
+                            const children = props.itemFilter
+                                ? childrenWithMetada.filter((val) =>
+                                      props.itemFilter(val)
+                                  )
+                                : childrenWithMetada;
                             // update directory content
-                            addToDirectory(nodeId, finalResult);
+                            addToDirectory(nodeId, children);
                         });
                     } else {
                         // update directory content
@@ -172,7 +171,7 @@ const DirectoryItemSelector = (props) => {
                     );
                 });
         },
-        [addToDirectory, contentFilter, props.types, props.equipmentTypes]
+        [addToDirectory, contentFilter, props]
     );
 
     useEffect(() => {

@@ -1375,10 +1375,9 @@ export function generatorScaling(
         type: MODIFICATION_TYPE.GENERATOR_SCALING,
         variationType,
         isIterative: iterativeValue,
-        generatorScalingVariations: variations,
+        variations,
     });
 
-    console.log('iterative : ', body);
     let generatorScalingUrl;
     if (modificationUuid) {
         console.info('generator scaling update', body);

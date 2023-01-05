@@ -34,7 +34,6 @@ export const useExpandableValues = ({
 
     useEffect(() => {
         if (defaultValues) {
-            console.log('testing default : ', defaultValues);
             setValues([...defaultValues]);
         } else {
             setValues([]);
@@ -63,7 +62,6 @@ export const useExpandableValues = ({
 
     const handleAddValue = useCallback(() => {
         setValues((oldValues) => {
-            console.log('testing add : ', [...oldValues, {}])
             return [...oldValues, {}];
         });
         setItemListError({
