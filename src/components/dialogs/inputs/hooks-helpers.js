@@ -32,7 +32,7 @@ export const FieldLabel = ({ label, optional, empty = true }) => {
     if (!empty) return;
     return (
         <>
-            <FormattedMessage  id={label} />
+            <FormattedMessage id={label} />
             {optional && <FormattedMessage id="Optional" />}
         </>
     );
