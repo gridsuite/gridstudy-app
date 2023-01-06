@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { mapEquipmentsCreated } from '../../redux/actions';
 import { fetchMapEquipments } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 
@@ -38,6 +39,7 @@ export default class MapEquipments {
 
                 this.lines = val.lines;
                 this.completeLinesInfos();
+                this.dispatch(mapEquipmentsCreated(this));
             })
             .catch((error) => {
                 console.error(error.message);

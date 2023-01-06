@@ -1481,7 +1481,21 @@ export function modifyGenerator(
     voltageSetpoint,
     voltageLevelId,
     busOrBusbarSectionId,
-    modificationId
+    modificationId,
+    qPercent,
+    marginalCost,
+    transientReactance,
+    transformerReactance,
+    voltageRegulationType,
+    regulatingTerminalId,
+    regulatingTerminalType,
+    regulatingTerminalVlId,
+    isReactiveCapabilityCurveOn,
+    frequencyRegulation,
+    droop,
+    maximumReactivePower,
+    minimumReactivePower,
+    reactiveCapabilityCurve
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1508,6 +1522,23 @@ export function modifyGenerator(
         voltageSetpoint: toModificationOperation(voltageSetpoint),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+        qPercent: toModificationOperation(qPercent),
+        marginalCost: toModificationOperation(marginalCost),
+        transientReactance: toModificationOperation(transientReactance),
+        stepUpTransformerReactance:
+            toModificationOperation(transformerReactance),
+        voltageRegulationType: toModificationOperation(voltageRegulationType),
+        regulatingTerminalId: toModificationOperation(regulatingTerminalId),
+        regulatingTerminalType: toModificationOperation(regulatingTerminalType),
+        regulatingTerminalVlId: toModificationOperation(regulatingTerminalVlId),
+        reactiveCapabilityCurve: toModificationOperation(
+            isReactiveCapabilityCurveOn
+        ),
+        participate: toModificationOperation(frequencyRegulation),
+        droop: toModificationOperation(droop),
+        maximumReactivePower: toModificationOperation(maximumReactivePower),
+        minimumReactivePower: toModificationOperation(minimumReactivePower),
+        reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -2031,6 +2062,84 @@ export function linesAttachToSplitLines(
     }
 
     return backendFetchText(lineAttachUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
+
+export function deleteVoltageLevelOnLine(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    replacingLine1Id,
+    replacingLine1Name
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.DELETE_VOLTAGE_LEVEL_ON_LINE,
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        replacingLine1Id,
+        replacingLine1Name,
+    });
+
+    let deleteVoltageLevelOnLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating delete voltage level on line', body);
+        deleteVoltageLevelOnLineUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating delete voltage level on line', body);
+    }
+
+    return backendFetchText(deleteVoltageLevelOnLineUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
+
+export function deleteAttachingLine(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    attachedLineId,
+    replacingLine1Id,
+    replacingLine1Name
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.DELETE_ATTACHING_LINE,
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        attachedLineId,
+        replacingLine1Id,
+        replacingLine1Name,
+    });
+
+    let deleteVoltageLevelOnLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating delete attaching line', body);
+        deleteVoltageLevelOnLineUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating delete attaching line', body);
+    }
+
+    return backendFetchText(deleteVoltageLevelOnLineUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',

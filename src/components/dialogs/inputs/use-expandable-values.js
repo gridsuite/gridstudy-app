@@ -120,7 +120,7 @@ export const useExpandableValues = ({
                     </Grid>
                 ))}
                 <Grid container spacing={2}>
-                    <Grid item xs={3}>
+                    <Grid item xs={12}>
                         <Button
                             fullWidth
                             className={classes.button}

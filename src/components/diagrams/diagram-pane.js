@@ -123,7 +123,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                         : id;
                 const countryName = substation?.countryName;
                 if (countryName) {
-                    name += ' \u002D ' + countryName;
+                    name += ' - ' + countryName;
                 }
                 const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(id);
 
@@ -147,7 +147,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 const substation = network.getSubstation(id);
                 const countryName = substation?.countryName;
                 if (countryName) {
-                    name += ' \u002D ' + countryName;
+                    name += ' - ' + countryName;
                 }
                 const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(id);
 

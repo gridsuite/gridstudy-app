@@ -35,7 +35,7 @@ import {
     isNodeRenamed,
 } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import { mapEquipmentsCreated, resetMapReloaded } from '../redux/actions';
+import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 
 const INITIAL_POSITION = [0, 0];
@@ -121,6 +121,8 @@ export const NetworkMapTab = ({
     const updatedSubstationsIds = useSelector(
         (state) => state.updatedSubstationsIds
     );
+    const [isUpdatedSubstationsApplied, setIsUpdatedSubstationsApplied] =
+        useState(false);
 
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
@@ -255,35 +257,50 @@ export const NetworkMapTab = ({
             return;
         }
         if (!isInitialized) {
-            const initialMapEquipments = new MapEquipments(
+            new MapEquipments(
                 studyUuid,
                 currentNode?.id,
                 setErrorMessage,
                 dispatch,
                 intlRef
             );
-            dispatch(mapEquipmentsCreated(initialMapEquipments));
         } else {
-            console.info('Reload map equipments');
-            mapEquipments.reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                refIsMapManualRefreshEnabled.current
-                    ? undefined
-                    : updatedSubstationsIds,
-                setUpdatedLines
-            );
+            if (mapEquipments) {
+                console.info('Reload map equipments');
+                const updatedSubstationsToSend =
+                    !refIsMapManualRefreshEnabled.current &&
+                    !isUpdatedSubstationsApplied &&
+                    updatedSubstationsIds?.length > 0
+                        ? updatedSubstationsIds
+                        : undefined;
+
+                mapEquipments.reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    updatedSubstationsToSend,
+                    setUpdatedLines
+                );
+
+                if (updatedSubstationsToSend) {
+                    setIsUpdatedSubstationsApplied(true);
+                }
+            }
         }
     }, [
         currentNode,
         dispatch,
         intlRef,
         isInitialized,
+        isUpdatedSubstationsApplied,
         mapEquipments,
         setErrorMessage,
         studyUuid,
         updatedSubstationsIds,
     ]);
+
+    useEffect(() => {
+        setIsUpdatedSubstationsApplied(false);
+    }, [updatedSubstationsIds]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
