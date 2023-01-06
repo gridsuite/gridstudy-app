@@ -114,15 +114,13 @@ export const useAutocompleteField = ({
             return !res.error;
         }
 
-        if (inputForm) {
-            inputForm.addValidation(id ? id : label, validate);
-        }
+        inputForm?.addValidation(id ? id : label, validate);
     }, [label, validation, inputForm, value, selectedValue, id]);
 
     const handleChangeValue = useCallback(
         (value) => {
             setValue(value);
-            inputForm.setHasChanged(true);
+            inputForm?.setHasChanged(true);
         },
         [inputForm]
     );
@@ -201,7 +199,7 @@ export const useAutocompleteField = ({
                 } else {
                     setValue(newEntryToValue(term));
                 }
-                inputForm.setHasChanged(true);
+                inputForm?.setHasChanged(true);
             }
 
             if (!onSearchTermChange) return;
@@ -241,7 +239,9 @@ export const useAutocompleteField = ({
         };
 
         const optionEqualsToValue = (option, input) =>
-            option === input || option.id === input || option.id === input?.id;
+            option === input ||
+            option.id === input ||
+            (option.id !== undefined && option.id === input?.id);
 
         return (
             <Autocomplete
