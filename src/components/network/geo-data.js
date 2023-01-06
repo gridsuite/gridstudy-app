@@ -49,7 +49,7 @@ export default class GeoData {
         const position = this.substationPositionsById.get(substationId);
         if (!position) {
             console.warn(`Position not found for ${substationId}`);
-            return [0, 0];
+            return null;
         }
         return [position.lon, position.lat];
     }
@@ -90,6 +90,11 @@ export default class GeoData {
         const substationPosition2 = this.getSubstationPosition(
             voltageLevel2.substationId
         );
+
+        if(substationPosition1 === null || substationPosition2 === null) {
+            return [[0, 0], [0, 0]];
+        }
+
         if (detailed) {
             const linePositions = this.linePositionsById.get(line.id);
             // Is there any position for this line ?
