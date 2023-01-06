@@ -32,6 +32,7 @@ import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
 import { isBlankOrEmpty } from '../util/validation-functions';
+import clsx from 'clsx';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -238,6 +239,9 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         display: 'inline-flex',
         paddingRight: theme.spacing(6),
+    },
+    fullscreen: {
+        paddingRight: 0,
     },
 }));
 
@@ -502,7 +506,12 @@ export function DiagramPane({
         <AutoSizer>
             {({ width, height }) => (
                 <div
-                    className={classes.availableDiagramSurfaceArea}
+                    className={
+                        clsx(
+                            classes.availableDiagramSurfaceArea,
+                            {[classes.fullscreen]: fullScreenDiagram?.id}
+                        )
+                    }
                     style={{
                         width: width + 'px',
                         height: height + 'px',
