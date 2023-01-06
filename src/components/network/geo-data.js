@@ -91,7 +91,10 @@ export default class GeoData {
             voltageLevel2.substationId
         );
 
-        if ((substationPosition1[0] === 0 && substationPosition1[1] === 0) || (substationPosition2[0] === 0 && substationPosition2[1] === 0)) {
+        if (
+            (substationPosition1[0] === 0 && substationPosition1[1] === 0) ||
+            (substationPosition2[0] === 0 && substationPosition2[1] === 0)
+        ) {
             return [
                 [0, 0],
                 [0, 0],
