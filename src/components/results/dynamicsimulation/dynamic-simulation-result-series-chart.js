@@ -21,19 +21,27 @@ import { memo, useMemo } from 'react';
 const baseColors = [red, orange, blue, green, purple, pink, cyan];
 
 const PlotlySeriesChart = ({ leftSeries, rightSeries }) => {
+    const makeGetMarker = useMemo(
+        () => (opts) => {
+            return (s) => ({
+                color: 'rgba(255,255,255,0.5)',
+                line: {
+                    color: baseColors[s.index % baseColors.length]['500'],
+                    width: 1,
+                },
+                ...opts,
+            });
+        },
+        []
+    );
+
     const data = useMemo(() => {
-        function seriesToData(opts) {
+        function seriesToData(getMarker, opts) {
             return (s) => ({
                 name: s.name,
                 type: 'scatter',
                 mode: 'lines+markers',
-                marker: {
-                    color: 'rgba(255,255,255,0.5)',
-                    line: {
-                        color: baseColors[s.index % baseColors.length]['500'],
-                        width: 1,
-                    },
-                },
+                marker: getMarker(s),
                 line: {
                     color: baseColors[s.index % baseColors.length]['500'],
                 },
@@ -43,10 +51,20 @@ const PlotlySeriesChart = ({ leftSeries, rightSeries }) => {
         }
 
         return [
-            ...leftSeries.map(seriesToData()),
-            ...rightSeries.map(seriesToData({ yaxis: 'y2' })),
+            ...leftSeries.map(seriesToData(makeGetMarker({}))),
+            ...rightSeries.map(
+                seriesToData(
+                    makeGetMarker({
+                        symbol: 'square',
+                    }),
+                    {
+                        yaxis: 'y2',
+                    }
+                )
+            ),
         ];
-    }, [leftSeries, rightSeries]);
+    }, [leftSeries, rightSeries, makeGetMarker]);
+
     return (
         <Plot
             data={data}
