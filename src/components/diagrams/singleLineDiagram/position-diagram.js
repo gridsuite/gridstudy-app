@@ -17,11 +17,8 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
@@ -35,6 +32,7 @@ import {
 } from './utils';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
+import DiagramHeader from '../diagram-header';
 
 const customSldStyle = (theme) => {
     return {
@@ -202,26 +200,11 @@ const PositionDiagram = forwardRef((props, ref) => {
             }}
         >
             <Box>
-                <Box className={classes.header}>
-                    <Box flexGrow={1}>
-                        <Typography>{props.diagramTitle}</Typography>
-                    </Box>
-                    <Box>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                            }}
-                        >
-                            <IconButton
-                                className={classes.close}
-                                onClick={onCloseHandler}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </Box>
-                    </Box>
-                </Box>
+                <DiagramHeader
+                    diagramTitle={props.diagramTitle}
+                    showCloseControl
+                    onClose={onCloseHandler}
+                />
             </Box>
             {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             <Box position="relative">

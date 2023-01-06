@@ -506,12 +506,9 @@ export function DiagramPane({
         <AutoSizer>
             {({ width, height }) => (
                 <div
-                    className={
-                        clsx(
-                            classes.availableDiagramSurfaceArea,
-                            {[classes.fullscreen]: fullScreenDiagram?.id}
-                        )
-                    }
+                    className={clsx(classes.availableDiagramSurfaceArea, {
+                        [classes.fullscreen]: fullScreenDiagram?.id,
+                    })}
                     style={{
                         width: width + 'px',
                         height: height + 'px',

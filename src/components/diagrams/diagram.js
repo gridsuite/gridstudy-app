@@ -18,8 +18,6 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -38,9 +36,6 @@ import { useIntl } from 'react-intl';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import AlertInvalidNode from '../util/alert-invalid-node';
-import MinimizeIcon from '@mui/icons-material/Minimize';
-import PushPinIcon from '@mui/icons-material/PushPin';
-import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import BaseEquipmentMenu from '../menus/base-equipment-menu';
 import withEquipmentMenu from '../menus/equipment-menu';
 import withLineMenu from '../menus/line-menu';
@@ -71,6 +66,7 @@ import {
     LOADING_WIDTH,
 } from './diagram-common';
 import makeStyles from '@mui/styles/makeStyles';
+import DiagramHeader from './diagram-header';
 
 const customSldStyle = (theme) => {
     return {
@@ -723,48 +719,18 @@ const Diagram = forwardRef((props, ref) => {
                     {() => /* just for measuring the header */ {}}
                 </AutoSizer>
 
-                <Box className={classes.header}>
-                    <Box flexGrow={1}>
-                        <Typography>{props.diagramTitle}</Typography>
-                    </Box>
-                    <Box>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                            }}
-                        >
-                            <IconButton
-                                className={classes.actionIcon}
-                                onClick={minimizeDiagram}
-                            >
-                                <MinimizeIcon />
-                            </IconButton>
-                            {diagramType() === 'SLD' && (
-                                <IconButton
-                                    className={
-                                        pinned
-                                            ? classes.actionIcon
-                                            : classes.pinRotate
-                                    }
-                                    onClick={pinDiagram}
-                                >
-                                    {pinned ? (
-                                        <PushPinIcon />
-                                    ) : (
-                                        <PushPinOutlinedIcon />
-                                    )}
-                                </IconButton>
-                            )}
-                            <IconButton
-                                className={classes.close}
-                                onClick={onCloseHandler}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </Box>
-                    </Box>
-                </Box>
+                <DiagramHeader
+                    diagramTitle={props.diagramTitle}
+                    showMinimizeControl
+                    onMinimize={minimizeDiagram}
+                    showTogglePinControl={
+                        svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                    }
+                    onTogglePin={pinDiagram}
+                    pinned={pinned}
+                    showCloseControl
+                    onClose={onCloseHandler}
+                />
             </Box>
             {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             {disabled ? (

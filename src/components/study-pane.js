@@ -93,7 +93,6 @@ const StudyPane = ({
     sensiStatus,
     shortCircuitStatus,
     runnable,
-    setUpdateSwitchMsg,
     setErrorMessage,
     ...props
 }) => {
