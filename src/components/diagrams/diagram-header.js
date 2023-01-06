@@ -14,7 +14,6 @@ import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
-import { commonDiagramStyle } from './diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     header: {
@@ -37,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
     },
-    ...commonDiagramStyle(theme),
 }));
 
 const DiagramHeader = (props) => {

@@ -67,6 +67,7 @@ import {
 } from './diagram-common';
 import makeStyles from '@mui/styles/makeStyles';
 import DiagramHeader from './diagram-header';
+import DiagramFooter from './diagram-footer';
 
 const customSldStyle = (theme) => {
     return {
@@ -812,42 +813,23 @@ const Diagram = forwardRef((props, ref) => {
                     )}
 
                     {!loadingState && (
-                        <div style={{ display: 'flex' }}>
-                            {diagramType() === 'NAD' && (
-                                <>
-                                    <Typography className={classes.depth}>
-                                        {intl.formatMessage({
-                                            id: 'depth',
-                                        }) +
-                                            ' : ' +
-                                            depth}
-                                    </Typography>
-                                    <AddCircleIcon
-                                        onClick={() => setDepth(depth + 1)}
-                                        className={classes.plusIcon}
-                                    />
-                                    <RemoveCircleIcon
-                                        onClick={() =>
-                                            setDepth(
-                                                depth === 0 ? 0 : depth - 1
-                                            )
-                                        }
-                                        className={classes.lessIcon}
-                                    />
-                                </>
-                            )}
-                            {fullScreenDiagram?.id ? (
-                                <FullscreenExitIcon
-                                    onClick={hideFullScreen}
-                                    className={classes.fullScreenIcon}
-                                />
-                            ) : (
-                                <FullscreenIcon
-                                    onClick={showFullScreen}
-                                    className={classes.fullScreenIcon}
-                                />
-                            )}
-                        </div>
+                        <DiagramFooter
+                            showCounterControls={
+                                svgType === SvgType.NETWORK_AREA_DIAGRAM
+                            }
+                            counterText={intl.formatMessage({
+                                id: 'depth',
+                            })}
+                            counterValue={depth}
+                            onIncrementCounter={() => setDepth(depth + 1)}
+                            onDecrementCounter={() =>
+                                setDepth(depth === 0 ? 0 : depth - 1)
+                            }
+                            showFullscreenControl
+                            fullScreenActive={fullScreenDiagram?.id}
+                            onStartFullScreen={showFullScreen}
+                            onStopFullScreen={hideFullScreen}
+                        />
                     )}
                 </Box>
             )}

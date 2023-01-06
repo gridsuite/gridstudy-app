@@ -96,34 +96,11 @@ export const commonDiagramStyle = (theme, customStyle) => {
                 opacity: NAD_INVALID_LOADFLOW_OPACITY,
             },
         },
-        fullScreenIcon: {
-            bottom: 5,
-            right: 5,
-            position: 'absolute',
-            cursor: 'pointer',
-        },
         paperBorders: {
             borderLeft: '1px solid ' + theme.palette.action.disabled,
             borderBottom:
                 '1px solid ' + theme.palette.action.disabledBackground,
             borderRight: '1px solid ' + theme.palette.action.hover,
-        },
-        plusIcon: {
-            bottom: 5,
-            left: 30,
-            position: 'absolute',
-            cursor: 'pointer',
-        },
-        lessIcon: {
-            bottom: 5,
-            left: 5,
-            position: 'absolute',
-            cursor: 'pointer',
-        },
-        depth: {
-            bottom: 25,
-            left: 5,
-            position: 'absolute',
         },
         ...customStyle,
     };
