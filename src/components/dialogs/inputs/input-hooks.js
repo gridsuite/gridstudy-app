@@ -734,9 +734,9 @@ export const useDirectoryElements = ({
 
     useEffect(() => {
         if (refInitialValues.current !== null) {
-            setValues(initialValues);
+            setValues(refInitialValues.current);
         }
-    }, [initialValues]);
+    }, []);
 
     const handleDelete = useCallback(
         (item, index) => {

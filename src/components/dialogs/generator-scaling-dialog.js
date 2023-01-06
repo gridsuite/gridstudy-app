@@ -41,7 +41,7 @@ export const useStyles = makeStyles((theme) => ({
         maxWidth: 200,
     },
     padding: {
-        padding: '5px',
+        padding: '15px',
     },
 }));
 
@@ -64,9 +64,6 @@ const GeneratorScalingVariation = ({
         label: 'VariationMode',
         defaultValue: defaultValue?.variationMode ?? PROPORTIONAL_TO_PMAX,
         inputForm: inputForm,
-        validation: {
-            isFieldRequired: true,
-        },
         enumObjects: VARIATION_MODE,
         errorMsg: errors?.variationModeError,
     });
