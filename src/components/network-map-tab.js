@@ -37,6 +37,9 @@ import {
 import { RunningStatus } from './util/running-status';
 import { mapEquipmentsCreated, resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
+import TemporaryGeoData from './network/temporary-geo-data';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -53,6 +56,11 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 8,
         marginRight: 8,
         marginTop: 8,
+    },
+    divTemporaryGeoDataLoading: {
+        position: 'absolute',
+        width: '100%',
+        zIndex: 1,
     },
     divOverloadedLineView: {
         right: 45,
@@ -97,6 +105,12 @@ export const NetworkMapTab = ({
     const intlRef = useIntlRef();
     const [isInitialized, setInitialized] = useState(false);
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
+    const [waitingTemporaryLoadGeoData, setWaitingTemporaryLoadGeoData] =
+        useState(false);
+
+    const [geoData, setGeoData] = useState();
+    const [temporaryGeoData] = useState(new TemporaryGeoData());
+
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
@@ -110,8 +124,6 @@ export const NetworkMapTab = ({
     refIsMapManualRefreshEnabled.current = mapManualRefresh;
 
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
-
-    const [geoData, setGeoData] = useState();
 
     const deletedEquipment = useSelector((state) => state.deletedEquipment);
     const updatedSubstationsIds = useSelector(
@@ -216,12 +228,16 @@ export const NetworkMapTab = ({
             );
 
             const notFoundEquipmentsIds = allEquipments
-                .filter((s) => !foundEquipmentsIds.includes(s.id))
+                .filter(
+                    (s) =>
+                        !foundEquipmentsIds.includes(s.id) ||
+                        temporaryGeoData.temporaryGeoDataIds.has(s.id)
+                )
                 .map((s) => s.id);
 
             return notFoundEquipmentsIds;
         },
-        []
+        [temporaryGeoData.temporaryGeoDataIds]
     );
 
     const getMissingEquipmentsPositions = useCallback(
@@ -250,6 +266,7 @@ export const NetworkMapTab = ({
                     geoData.substationPositionsById,
                     mapEquipments.getSubstations()
                 );
+                temporaryGeoData.addGeoDataIds(notFoundSubstationIds);
 
                 const notFoundLinesIds = lineFullPath
                     ? getEquipmentsNotFoundIds(
@@ -257,6 +274,7 @@ export const NetworkMapTab = ({
                           mapEquipments.getLines()
                       )
                     : [];
+                temporaryGeoData.addGeoDataIds(notFoundLinesIds);
 
                 if (
                     notFoundSubstationIds.length > 0 ||
@@ -265,7 +283,8 @@ export const NetworkMapTab = ({
                     console.info(
                         `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLinesIds}'...`
                     );
-                    setWaitingLoadGeoData(true);
+
+                    setWaitingTemporaryLoadGeoData(true);
 
                     const missingSubstationPositions =
                         getMissingEquipmentsPositions(
@@ -305,11 +324,11 @@ export const NetworkMapTab = ({
                                 );
                                 setGeoData(newGeoData);
                             }
-                            setWaitingLoadGeoData(false);
+                            setWaitingTemporaryLoadGeoData(false);
                         })
                         .catch(function (error) {
                             console.error(error.message);
-                            setWaitingLoadGeoData(false);
+                            setWaitingTemporaryLoadGeoData(false);
                             setErrorMessage(
                                 intlRef.current.formatMessage(
                                     { id: 'geoDataLoadingFail' },
@@ -361,6 +380,7 @@ export const NetworkMapTab = ({
         getMissingEquipmentsPositions,
         mapEquipments,
         geoData,
+        temporaryGeoData,
         getEquipmentsNotFoundIds,
     ]);
 
@@ -572,6 +592,13 @@ export const NetworkMapTab = ({
 
     return (
         <>
+            <div className={classes.divTemporaryGeoDataLoading}>
+                {
+                    <Box height={6}>
+                        {waitingTemporaryLoadGeoData && <LinearProgress />}
+                    </Box>
+                }
+            </div>
             {renderMap()}
             {renderEquipmentMenu()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
