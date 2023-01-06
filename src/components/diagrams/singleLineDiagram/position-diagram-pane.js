@@ -14,6 +14,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
+    PARAM_LANGUAGE,
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
 import PositionDiagram from './position-diagram';
@@ -34,6 +35,7 @@ const PositionDiagramPane = ({
     const componentLibrary = useSelector(
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
+    const language = useSelector((state) => state[PARAM_LANGUAGE]);
 
     const [svgUrl, setSvgUrl] = useState(null);
     const intl = useIntl();
@@ -52,7 +54,8 @@ const PositionDiagramPane = ({
                 centerName,
                 diagonalName,
                 componentLibrary,
-                SLD_DISPLAY_MODE.FEEDER_POSITION
+                SLD_DISPLAY_MODE.FEEDER_POSITION,
+                language
             ),
         [
             studyUuid,
@@ -62,6 +65,7 @@ const PositionDiagramPane = ({
             centerName,
             diagonalName,
             componentLibrary,
+            language,
         ]
     );
 

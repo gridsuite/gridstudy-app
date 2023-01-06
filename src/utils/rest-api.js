@@ -267,7 +267,8 @@ export function getVoltageLevelSingleLineDiagram(
     centerLabel,
     diagonalLabel,
     componentLibrary,
-    sldDisplayMode
+    sldDisplayMode,
+    language
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -286,6 +287,7 @@ export function getVoltageLevelSingleLineDiagram(
                 componentLibrary: componentLibrary,
             }),
             sldDisplayMode: sldDisplayMode,
+            language: language,
         }).toString()
     );
 }
@@ -298,7 +300,8 @@ export function getSubstationSingleLineDiagram(
     centerLabel,
     diagonalLabel,
     substationLayout,
-    componentLibrary
+    componentLibrary,
+    language
 ) {
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -317,6 +320,7 @@ export function getSubstationSingleLineDiagram(
             ...(componentLibrary !== null && {
                 componentLibrary: componentLibrary,
             }),
+            language: language,
         }).toString()
     );
 }
@@ -569,7 +573,7 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchEquipmentsInfos(
+export function searchEquipmentsInfos(
     studyUuid,
     nodeUuid,
     searchTerm,
@@ -1476,7 +1480,21 @@ export function modifyGenerator(
     voltageSetpoint,
     voltageLevelId,
     busOrBusbarSectionId,
-    modificationId
+    modificationId,
+    qPercent,
+    marginalCost,
+    transientReactance,
+    transformerReactance,
+    voltageRegulationType,
+    regulatingTerminalId,
+    regulatingTerminalType,
+    regulatingTerminalVlId,
+    isReactiveCapabilityCurveOn,
+    frequencyRegulation,
+    droop,
+    maximumReactivePower,
+    minimumReactivePower,
+    reactiveCapabilityCurve
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1503,6 +1521,23 @@ export function modifyGenerator(
         voltageSetpoint: toModificationOperation(voltageSetpoint),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+        qPercent: toModificationOperation(qPercent),
+        marginalCost: toModificationOperation(marginalCost),
+        transientReactance: toModificationOperation(transientReactance),
+        stepUpTransformerReactance:
+            toModificationOperation(transformerReactance),
+        voltageRegulationType: toModificationOperation(voltageRegulationType),
+        regulatingTerminalId: toModificationOperation(regulatingTerminalId),
+        regulatingTerminalType: toModificationOperation(regulatingTerminalType),
+        regulatingTerminalVlId: toModificationOperation(regulatingTerminalVlId),
+        reactiveCapabilityCurve: toModificationOperation(
+            isReactiveCapabilityCurveOn
+        ),
+        participate: toModificationOperation(frequencyRegulation),
+        droop: toModificationOperation(droop),
+        maximumReactivePower: toModificationOperation(maximumReactivePower),
+        minimumReactivePower: toModificationOperation(minimumReactivePower),
+        reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -1671,7 +1706,9 @@ export function createLine(
     connectionName1,
     connectionDirection1,
     connectionName2,
-    connectionDirection2
+    connectionDirection2,
+    connectionPosition1,
+    connectionPosition2
 ) {
     let createLineUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1714,6 +1751,8 @@ export function createLine(
             connectionDirection1: connectionDirection1,
             connectionName2: connectionName2,
             connectionDirection2: connectionDirection2,
+            connectionPosition1: connectionPosition1,
+            connectionPosition2: connectionPosition2,
         }),
     });
 }
@@ -1743,7 +1782,9 @@ export function createTwoWindingsTransformer(
     connectionName1,
     connectionDirection1,
     connectionName2,
-    connectionDirection2
+    connectionDirection2,
+    connectionPosition1,
+    connectionPosition2
 ) {
     let createTwoWindingsTransformerUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1786,6 +1827,8 @@ export function createTwoWindingsTransformer(
             connectionDirection1: connectionDirection1,
             connectionName2: connectionName2,
             connectionDirection2: connectionDirection2,
+            connectionPosition1: connectionPosition1,
+            connectionPosition2: connectionPosition2,
         }),
     });
 }
@@ -2027,6 +2070,84 @@ export function linesAttachToSplitLines(
     });
 }
 
+export function deleteVoltageLevelOnLine(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    replacingLine1Id,
+    replacingLine1Name
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.DELETE_VOLTAGE_LEVEL_ON_LINE,
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        replacingLine1Id,
+        replacingLine1Name,
+    });
+
+    let deleteVoltageLevelOnLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating delete voltage level on line', body);
+        deleteVoltageLevelOnLineUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating delete voltage level on line', body);
+    }
+
+    return backendFetchText(deleteVoltageLevelOnLineUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
+
+export function deleteAttachingLine(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    attachedLineId,
+    replacingLine1Id,
+    replacingLine1Name
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.DELETE_ATTACHING_LINE,
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        attachedLineId,
+        replacingLine1Id,
+        replacingLine1Name,
+    });
+
+    let deleteVoltageLevelOnLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating delete attaching line', body);
+        deleteVoltageLevelOnLineUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating delete attaching line', body);
+    }
+
+    return backendFetchText(deleteVoltageLevelOnLineUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =
@@ -2203,6 +2324,41 @@ export function getSensiDefaultResultsThreshold() {
     return backendFetchText(getSensiDefaultResultsThresholdUrl, {
         method: 'get',
     });
+}
+
+export function fetchMapEquipments(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching map equipments data of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
+    const substationParams = getQueryParamsList(substationsIds, 'substationId');
+
+    let fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/map-equipments';
+    if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
+        fetchEquipmentsUrl += '?';
+        fetchEquipmentsUrl += urlSearchParams.toString();
+        fetchEquipmentsUrl +=
+            urlSearchParams.toString().length > 0 && substationParams.length > 0
+                ? '&' + substationParams
+                : substationParams;
+    }
+
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
 }
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {

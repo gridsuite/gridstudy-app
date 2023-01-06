@@ -30,10 +30,11 @@ import {
     commonSldStyle,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
-    renderIntoPaperWrapper,
     NoSvg,
+    LOADING_WIDTH,
 } from './utils';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { Paper } from '@mui/material';
 
 const customSldStyle = (theme) => {
     return {
@@ -185,54 +186,54 @@ const PositionDiagram = forwardRef((props, ref) => {
         }
     };
 
-    const PositionDiagramElement = () => {
-        return (
-            <>
-                <Box>
-                    <Box className={classes.header}>
-                        <Box flexGrow={1}>
-                            <Typography>{props.diagramTitle}</Typography>
-                        </Box>
-                        <Box>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                }}
+    return !svg.error ? (
+        <Paper
+            ref={ref}
+            elevation={4}
+            square={true}
+            className={classes.paperBorders}
+            style={{
+                pointerEvents: 'auto',
+                width: serverWidth,
+                minWidth: LOADING_WIDTH,
+                height: serverHeight,
+                position: 'relative',
+                overflow: 'hidden',
+            }}
+        >
+            <Box>
+                <Box className={classes.header}>
+                    <Box flexGrow={1}>
+                        <Typography>{props.diagramTitle}</Typography>
+                    </Box>
+                    <Box>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                            }}
+                        >
+                            <IconButton
+                                className={classes.close}
+                                onClick={onCloseHandler}
                             >
-                                <IconButton
-                                    className={classes.close}
-                                    onClick={onCloseHandler}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </Box>
+                                <CloseIcon />
+                            </IconButton>
                         </Box>
                     </Box>
                 </Box>
-                {loadingState && (
-                    <Box height={2}>
-                        <LinearProgress />
-                    </Box>
-                )}
-                <Box position="relative">
-                    <div
-                        ref={svgRef}
-                        className={classes.divSld}
-                        dangerouslySetInnerHTML={{ __html: svg.svg }}
-                    />
-                </Box>
-            </>
-        );
-    };
-
-    return renderIntoPaperWrapper(
-        svg,
-        ref,
-        classes,
-        serverWidth,
-        serverHeight,
-        PositionDiagramElement()
+            </Box>
+            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
+            <Box position="relative">
+                <div
+                    ref={svgRef}
+                    className={classes.divSld}
+                    dangerouslySetInnerHTML={{ __html: svg.svg }}
+                />
+            </Box>
+        </Paper>
+    ) : (
+        <></>
     );
 });
 
