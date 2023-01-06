@@ -261,23 +261,25 @@ export const NetworkMapTab = ({
                 intlRef
             );
         } else {
-            console.info('Reload map equipments');
-            const updatedSubstationsToSend =
-                !refIsMapManualRefreshEnabled.current &&
-                !isUpdatedSubstationsApplied &&
-                updatedSubstationsIds?.length > 0
-                    ? updatedSubstationsIds
-                    : undefined;
+            if (mapEquipments) {
+                console.info('Reload map equipments');
+                const updatedSubstationsToSend =
+                    !refIsMapManualRefreshEnabled.current &&
+                    !isUpdatedSubstationsApplied &&
+                    updatedSubstationsIds?.length > 0
+                        ? updatedSubstationsIds
+                        : undefined;
 
-            mapEquipments.reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                updatedSubstationsToSend,
-                setUpdatedLines
-            );
+                mapEquipments.reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    updatedSubstationsToSend,
+                    setUpdatedLines
+                );
 
-            if (updatedSubstationsToSend) {
-                setIsUpdatedSubstationsApplied(true);
+                if (updatedSubstationsToSend) {
+                    setIsUpdatedSubstationsApplied(true);
+                }
             }
         }
     }, [
