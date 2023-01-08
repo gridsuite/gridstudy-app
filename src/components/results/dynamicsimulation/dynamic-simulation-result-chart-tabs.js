@@ -7,7 +7,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import AddIcon from '@mui/icons-material/Add';
-import { IconButton, Tab, Tabs, Tooltip } from '@mui/material';
+import { IconButton, Stack, Tab, Tabs, Tooltip } from '@mui/material';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
 import ReactJson from 'react-json-view';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
@@ -17,6 +17,8 @@ import { useSelector } from 'react-redux';
 import { PARAM_THEME } from '../../../utils/config-params';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
+import DroppableTabs from './common/draggable-tab/droppable-tabs';
+import DraggableTab from './common/draggable-tab/draggable-tab';
 
 const getVisibilityStyle = (hidden) => {
     if (hidden) {
@@ -66,6 +68,8 @@ const useStyles = makeStyles((theme) => ({
     },
     addButton: {
         borderRadius: '50%',
+        marginRight: theme.spacing(10),
+        color: theme.palette.primary.main,
     },
 }));
 
@@ -74,11 +78,12 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
 
     const selectedTheme = useSelector((state) => state[PARAM_THEME]);
 
+    // tab id is auto increase and reset to zero when there is any tab
     const [tabId, setTabId] = useState(1);
 
-    const [tabIndex, setTabIndex] = useState(tabId);
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const [tabs, setTabs] = useState([{ value: tabId }]);
+    const [tabs, setTabs] = useState([{ id: tabId }]);
 
     const series = useMemo(() => {
         console.log('transformToRechartSeries is called');
@@ -103,21 +108,27 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
         setTabs((prev) => [
             ...prev,
             {
-                value: tabId + 1,
+                id: tabId + 1,
             },
         ]);
 
-        setTabIndex(tabId + 1);
+        setSelectedIndex(tabs.length);
 
         setTabId((prev) => prev + 1);
     };
 
-    const handleClose = (value) => {
+    const handleClose = (index) => {
         return () => {
-            const newTabs = tabs.filter((tab) => tab.value !== value);
+            const newTabs = Array.from(tabs);
+            newTabs.splice(index, 1);
+            setSelectedIndex(
+                newTabs.length === 0
+                    ? -1
+                    : index === tabs.length - 1
+                    ? newTabs.length - 1
+                    : index
+            ); // get the next item in new tabs
             setTabs(newTabs);
-            setTabIndex(0); // get the first item in new tabs
-
             if (newTabs.length === 0) {
                 // reset tabId to zero
                 setTabId(0);
@@ -125,34 +136,67 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
         };
     };
 
+    const handleDragEnd = (result) => {
+        console.log('dragEnd result = ', result);
+        const newTabs = Array.from(tabs);
+        const draggedTab = newTabs.splice(result.source.index, 1)[0];
+        const destIndex = result.destination?.index;
+        newTabs.splice(destIndex, 0, draggedTab);
+        setSelectedIndex(destIndex);
+        setTabs(newTabs);
+    };
+
+    const handleTabsChange = (event, newTabIndex) => {
+        setSelectedIndex(newTabIndex);
+    };
+
     return (
         <div className={classes.root}>
-            {/* tab headers */}
-            <Tabs
-                value={tabIndex}
-                onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
-            >
-                <Tab value={0} icon={<DataObjectIcon />} />
-                {tabs.map((tab) => (
-                    <Tab
-                        value={tab.value}
-                        key={tab.value}
-                        label={
-                            <span>
-                                {`${intl.formatMessage({
-                                    id: 'DynamicSimulationResultChart',
-                                })} ${tab.value}`}
-                                <IconButton
-                                    size="small"
-                                    component="span"
-                                    onClick={handleClose(tab.value)}
+            <Stack direction="row" maxWidth={'100vw'}>
+                <Tabs value={selectedIndex} onChange={handleTabsChange}>
+                    <Tab value={-1} icon={<DataObjectIcon />} />
+                </Tabs>
+                {/* tab headers */}
+                <DroppableTabs
+                    id={'1'}
+                    value={selectedIndex}
+                    onChange={handleTabsChange}
+                    tabsRender={() =>
+                        tabs.map((tab, index) => {
+                            return (
+                                <DraggableTab
+                                    key={index}
+                                    index={index}
+                                    value={index}
                                 >
-                                    <CloseIcon />
-                                </IconButton>
-                            </span>
-                        }
-                    />
-                ))}
+                                    <Tab
+                                        key={index}
+                                        value={index}
+                                        label={
+                                            <span
+                                                style={{
+                                                    'white-space': 'nowrap',
+                                                }}
+                                            >
+                                                {`${intl.formatMessage({
+                                                    id: 'DynamicSimulationResultChart',
+                                                })} ${tab.id}`}
+                                                <IconButton
+                                                    size="small"
+                                                    component="span"
+                                                    onClick={handleClose(index)}
+                                                >
+                                                    <CloseIcon />
+                                                </IconButton>
+                                            </span>
+                                        }
+                                    />
+                                </DraggableTab>
+                            );
+                        })
+                    }
+                    onDragEnd={handleDragEnd}
+                />
                 <ButtonInTabs
                     toolTip={'Add a tab'}
                     className={classes.addButton}
@@ -160,9 +204,9 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                 >
                     <AddIcon />
                 </ButtonInTabs>
-            </Tabs>
+            </Stack>
             {/* tab contents */}
-            <TabPanel value={tabIndex} index={0}>
+            <TabPanel value={selectedIndex} index={-1}>
                 <ReactJson
                     src={result}
                     onEdit={false}
@@ -175,8 +219,8 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                     }
                 />
             </TabPanel>
-            {tabs.map((tab) => (
-                <TabPanel key={tab.value} value={tabIndex} index={tab.value}>
+            {tabs.map((tab, index) => (
+                <TabPanel key={tab.id} value={selectedIndex} index={index}>
                     <DynamicSimulationResultChart series={series} />
                 </TabPanel>
             ))}
