@@ -87,7 +87,6 @@ let initialWidth, initialHeight;
 
 const Diagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
-    const svgUrl = useRef(''); // TODO CHARLY dans Nad, utilisé comme Props
     const svgDraw = useRef();
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
@@ -98,7 +97,6 @@ const Diagram = forwardRef((props, ref) => {
     const intl = useIntl();
     const {
         computedHeight,
-        //currentNode, // on utilise plutôt celui du SLD : via le useSelector
         depth,
         disabled,
         loadFlowStatus,
@@ -109,7 +107,6 @@ const Diagram = forwardRef((props, ref) => {
         setDisplayedDiagramHeights,
         diagramId,
         svgType,
-        //onClose,
         setDepth,
         totalHeight,
         totalWidth,
@@ -140,8 +137,6 @@ const Diagram = forwardRef((props, ref) => {
     const [loadingState, updateLoadingState] = useState(false);
 
     // NAD
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
     const nadRef = useRef();
 
     // SLD
@@ -155,7 +150,6 @@ const Diagram = forwardRef((props, ref) => {
 
     const errorWidth = MAX_WIDTH_VOLTAGE_LEVEL;
 
-    // COMMUN
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
@@ -355,28 +349,6 @@ const Diagram = forwardRef((props, ref) => {
         disabled,
     ]);
 
-    // NAD
-    const updateNad = useCallback(() => {
-        if (svgRef.current) {
-            forceUpdate();
-        }
-    }, [forceUpdate]);
-
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'loadflow' ||
-                studyUpdatedForce.eventData.headers['updateType'] === 'study' ||
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'buildCompleted'
-            ) {
-                updateNad();
-            }
-        }
-        // Note: studyUuid, and loadNetwork don't change // TODO commentaire obsolete
-    }, [studyUpdatedForce, updateNad]);
-
     useLayoutEffect(() => {
         if (disabled) return;
 
@@ -519,7 +491,6 @@ const Diagram = forwardRef((props, ref) => {
                 // this is due to a svg.panzoom.js package's behaviour
                 sldViewer.refreshZoom();
 
-                svgUrl.current = svg.svgUrl;
                 svgDraw.current = sldViewer;
             } else {
                 console.error('diagramType manquant #2');
@@ -765,9 +736,6 @@ const Diagram = forwardRef((props, ref) => {
                             })}
                         />
                     )}
-                    {/*
-                    // TODO CHARLY Corriger le problème d'ID manquant quand on ferme/ouvre un interrupteur dans un SLD (et vérifier si c'est pareil sur le code de main)
-                    */}
                     {diagramType() === 'SLD' && (
                         <>
                             {displayMenuLine()}

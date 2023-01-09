@@ -290,38 +290,11 @@ export function DiagramPane({
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
 
-    const updateSld = useCallback((id) => {
-        if (id) {
-            viewsRef.current
-                .find((sld) => sld.id === id)
-                ?.ref?.current?.reloadSvg();
-        } else
-            viewsRef.current.forEach((sld) => {
-                if (
-                    sld.svgUrl &&
-                    sld.svgUrl.indexOf(currentNodeRef.current?.id) !== -1
-                ) {
-                    sld.ref?.current?.reloadSvg();
-                }
-            });
-    }, []);
-
     const classes = useStyles();
 
-    const handleUpdateSwitchState = useCallback(
-        (breakerId, open, switchElement) => {
-            updateSwitchState(
-                studyUuid,
-                currentNode?.id,
-                breakerId,
-                open
-            ).catch((error) => {
-                console.error(error.message);
-                setUpdateSwitchMsg(error.message);
-            });
-        },
-        [studyUuid, currentNode]
-    );
+    /**
+     * BUILDS THE DIAGRAMS LIST
+     */
 
     // Here, the goal is to setView with a list of view, each view corresponding to a diagram.
     // We get the diagram data from the redux store.
@@ -377,6 +350,10 @@ export function DiagramPane({
         depth,
     ]);
 
+    /**
+     * MINIMIZED DIAGRAM'S CONTROLS
+     */
+
     const handleCloseDiagramView = useCallback(
         (id, type) => {
             closeDiagramView(id, type);
@@ -394,7 +371,28 @@ export function DiagramPane({
         [network, openDiagramView]
     );
 
+    /**
+     * // TODO CHARLY a déplacer
+     * SINGLE LINE DIAGRAM CONTROLS
+     */
+
+    const handleUpdateSwitchState = useCallback(
+        (breakerId, open, switchElement) => {
+            updateSwitchState(
+                studyUuid,
+                currentNode?.id,
+                breakerId,
+                open
+            ).catch((error) => {
+                console.error(error.message);
+                setUpdateSwitchMsg(error.message);
+            });
+        },
+        [studyUuid, currentNode]
+    );
+
     const handleOpenVoltageLevelView = useCallback(
+        // TODO CHARLY put this in SLD specific
         (id) => {
             // This function is called by powsybl-diagram-viewer when clicking on a navigation arrow in a single line diagram.
             // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
@@ -406,13 +404,42 @@ export function DiagramPane({
         [network, openDiagramView]
     );
 
+    /**
+     * FORCED UPDATE MECHANISM
+     */
+
+    // Updates a particular SLD diagram or every diagram for the current node
+    const updateDiagram = useCallback((id) => {
+        if (id) {
+            viewsRef.current
+                .find(
+                    (diagramView) =>
+                        diagramView.id === id &&
+                        diagramView.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                )
+                ?.ref?.current?.reloadSvg();
+        } else {
+            viewsRef.current.forEach((diagramView) => {
+                // We search an instance of the current node's ID inside the diagram's URL to determine if the diagram should be updated
+                if (
+                    diagramView.svgUrl &&
+                    diagramView.svgUrl.indexOf(currentNodeRef.current?.id) !==
+                        -1
+                ) {
+                    diagramView.ref?.current?.reloadSvg();
+                }
+            });
+        }
+    }, []);
+
+    // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers && viewsRef.current) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
-                updateSld();
+                updateDiagram(undefined);
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'study'
             ) {
@@ -435,11 +462,11 @@ export function DiagramPane({
                     viewsRef.current.forEach((v) => {
                         const vl = network.getVoltageLevel(v.id);
                         if (vl && substationsIds.includes(vl.substationId)) {
-                            updateSld(vl.id);
+                            updateDiagram(vl.id);
                         }
                     });
                 } else {
-                    updateSld();
+                    updateDiagram(undefined);
                 }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -449,7 +476,7 @@ export function DiagramPane({
                     studyUpdatedForce.eventData.headers['node'] ===
                     currentNodeRef.current?.id
                 ) {
-                    updateSld();
+                    updateDiagram(undefined);
                 }
             }
         }
@@ -458,11 +485,17 @@ export function DiagramPane({
         studyUpdatedForce,
         dispatch,
         studyUuid,
-        updateSld,
+        updateDiagram,
         closeDiagramViews,
         network,
     ]);
 
+    /**
+     * ???
+     */
+
+    // TODO CHARLY voir si on peut pas déplacer ces effets avec ceux qui fabriquent la liste des views OU BIEN avec le calcul des tailles
+    // TODO CHARLY voir si on peut pas fusionner ces deux useEffect qui utilisent la même dependance à view
     useEffect(() => {
         setDisplayedDiagrams(
             views.filter((view) =>
@@ -501,6 +534,10 @@ export function DiagramPane({
             }
         }
     }, [displayedDiagramHeights]);
+
+    /**
+     * RENDER
+     */
 
     return (
         <AutoSizer>
