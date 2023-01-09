@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { gridItem } from '../dialogUtils';
 import { NumericalField } from '../../network/equipment-table-editors';
-import { REGULATION_MODES } from '../../network/constants';
+import { REGULATION_MODES, REGULATION_TYPES } from '../../network/constants';
 import Papa from 'papaparse';
 import makeStyles from '@mui/styles/makeStyles';
 import {
@@ -58,6 +58,9 @@ const PhaseTapChangerPane = (props) => {
         tapPositionField,
         regulatingField,
         phaseCellIndexError,
+        regulationTypeField,
+        regulationType,
+        sideField,
     } = props;
 
     const classes = useStyles();
@@ -451,7 +454,11 @@ const PhaseTapChangerPane = (props) => {
                     <Grid item xs={4}>
                         {regulatingField}
                     </Grid>
-
+                    <Grid item xs={4}>
+                        {regulationTypeField}
+                    </Grid>
+                </Grid>
+                <Grid item container spacing={2} justifyContent="flex-end">
                     {regulationMode !== REGULATION_MODES.FIXED_TAP.id && (
                         <Grid item xs={4}>
                             {regulationMode !==
@@ -469,23 +476,44 @@ const PhaseTapChangerPane = (props) => {
                     )}
                 </Grid>
 
-                {regulationMode !== REGULATION_MODES.FIXED_TAP.id && (
-                    <Grid item container spacing={2}>
-                        <Grid
-                            item
-                            xs={4}
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <FormattedMessage id="TerminalRef" />
+                {regulationMode !== REGULATION_MODES.FIXED_TAP.id &&
+                    regulationType === REGULATION_TYPES.LOCAL.id && (
+                        <Grid item container spacing={2}>
+                            <Grid
+                                item
+                                xs={4}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <FormattedMessage id="RegulatedTerminal" />
+                            </Grid>
+                            <Grid item xs={4}>
+                                {sideField}
+                            </Grid>
                         </Grid>
+                    )}
 
-                        {gridItem(regulatingTerminalField, 8)}
-                    </Grid>
-                )}
+                {regulationMode !== REGULATION_MODES.FIXED_TAP.id &&
+                    regulationType === REGULATION_TYPES.DISTANT.id && (
+                        <Grid item container spacing={2}>
+                            <Grid
+                                item
+                                xs={4}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <FormattedMessage id="DistantRegulatedTerminal" />
+                            </Grid>
+
+                            {gridItem(regulatingTerminalField, 8)}
+                        </Grid>
+                    )}
 
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>

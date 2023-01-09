@@ -13,6 +13,7 @@ import {
 import { CreateRuleDialog } from './create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import Alert from '@mui/material/Alert';
+import { REGULATION_TYPES } from '../../network/constants';
 
 const useStyles = makeStyles((theme) => ({
     center: {
@@ -56,6 +57,9 @@ const RatioTapChangerPane = (props) => {
         ratioTapLoadTapChangingCapabilities,
         regulatingField,
         ratioCellIndexError,
+        regulationTypeField,
+        regulationType,
+        sideField,
     } = props;
 
     const classes = useStyles();
@@ -439,7 +443,11 @@ const RatioTapChangerPane = (props) => {
                     <Grid item xs={4}>
                         {regulatingField}
                     </Grid>
-
+                    <Grid item xs={4}>
+                        {regulationTypeField}
+                    </Grid>
+                </Grid>
+                <Grid item container spacing={2} justifyContent="flex-end">
                     {ratioTapLoadTapChangingCapabilities && (
                         <Grid item xs={4}>
                             {targetVoltage1Field}
@@ -451,26 +459,49 @@ const RatioTapChangerPane = (props) => {
                         </Grid>
                     )}
                 </Grid>
-                {ratioTapLoadTapChangingCapabilities && (
-                    <Grid item container spacing={2}>
-                        <Grid
-                            item
-                            xs={4}
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <FormattedMessage
-                                id="TerminalRef"
-                                disabled={true}
-                            />
+                {ratioTapLoadTapChangingCapabilities &&
+                    regulationType === REGULATION_TYPES.LOCAL.id && (
+                        <Grid item container spacing={2}>
+                            <Grid
+                                item
+                                xs={4}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <FormattedMessage
+                                    id="RegulatedTerminal"
+                                    disabled={true}
+                                />
+                            </Grid>
+                            <Grid item xs={4}>
+                                {sideField}
+                            </Grid>
                         </Grid>
+                    )}
+                {ratioTapLoadTapChangingCapabilities &&
+                    regulationType === REGULATION_TYPES.DISTANT.id && (
+                        <Grid item container spacing={2}>
+                            <Grid
+                                item
+                                xs={4}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <FormattedMessage
+                                    id="DistantRegulatedTerminal"
+                                    disabled={true}
+                                />
+                            </Grid>
 
-                        {gridItem(regulatingTerminalField, 8)}
-                    </Grid>
-                )}
+                            {gridItem(regulatingTerminalField, 8)}
+                        </Grid>
+                    )}
 
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
