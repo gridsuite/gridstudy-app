@@ -55,7 +55,7 @@ const LoadCreationForm = ({ editData, currentNodeUuid, ...dialogProps }) => {
     );
 
     const activePowerField = formControlledItem(
-        <TextInput
+        <FloatInput
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
         />,
