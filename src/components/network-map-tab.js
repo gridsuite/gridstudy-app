@@ -227,14 +227,21 @@ export const NetworkMapTab = ({
                 .filter(
                     (s) =>
                         !foundEquipmentPositions.has(s.id) ||
-                        temporaryGeoData.temporaryGeoDataIds.has(s.id)
+                        temporaryGeoData.temporaryGeoDataPositions.has(s.id)
                 )
                 .map((s) => s.id);
 
             return notFoundEquipmentsIds;
         },
-        [temporaryGeoData.temporaryGeoDataIds]
+        [temporaryGeoData.temporaryGeoDataPositions]
     );
+
+    const isEqual = (coordinate1, coordinate2) => {
+        return (
+            coordinate1?.lat === coordinate2?.lat &&
+            coordinate1?.lon === coordinate2?.lon
+        );
+    };
 
     const getMissingEquipmentsPositions = useCallback(
         (notFoundEquipmentsIds, fetchEquipmentCB) => {
@@ -256,7 +263,6 @@ export const NetworkMapTab = ({
             geoData.substationPositionsById,
             mapEquipments.getSubstations()
         );
-        temporaryGeoData.addGeoDataIds(notFoundSubstationIds);
 
         const notFoundLinesIds = lineFullPath
             ? getEquipmentsNotFoundIds(
@@ -264,7 +270,6 @@ export const NetworkMapTab = ({
                   mapEquipments.getLines()
               )
             : [];
-        temporaryGeoData.addGeoDataIds(notFoundLinesIds);
 
         if (notFoundSubstationIds.length > 0 || notFoundLinesIds.length > 0) {
             console.info(
@@ -288,19 +293,60 @@ export const NetworkMapTab = ({
                     if (positions[0].length > 0 || positions[1].length > 0) {
                         geoData.addSubstationPositions(positions[0]);
                         geoData.addLinePositions(positions[1]);
-                        // If there is new substation positions, we instantiate a new Map so that the substations layer rendering is triggered.
+
+                        let someDataHasChange = false;
+                        let oldPosition;
+                        positions[0].forEach((pos) => {
+                            oldPosition =
+                                temporaryGeoData.temporaryGeoDataPositions.get(
+                                    pos.id
+                                )?.coordinate;
+                            if (!isEqual(oldPosition, pos.coordinate)) {
+                                temporaryGeoData.temporaryGeoDataPositions.set(
+                                    pos.id,
+                                    pos
+                                );
+                                someDataHasChange = true;
+                            }
+                        });
+
+                        let oldPosition2;
+                        positions[1].forEach((pos) => {
+                            oldPosition =
+                                temporaryGeoData.temporaryGeoDataPositions.get(
+                                    pos.id
+                                )?.coordinates[0];
+                            oldPosition2 =
+                                temporaryGeoData.temporaryGeoDataPositions.get(
+                                    pos.id
+                                )?.coordinates[1];
+                            if (
+                                !isEqual(oldPosition, pos.coordinates[0]) ||
+                                !isEqual(oldPosition2, pos.coordinates[1])
+                            ) {
+                                temporaryGeoData.temporaryGeoDataPositions.set(
+                                    pos.id,
+                                    pos
+                                );
+                                someDataHasChange = true;
+                            }
+                        });
+
+                        // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
                         // Same for line positions.
-                        const newGeoData = new GeoData(
-                            positions[0].length > 0
-                                ? new Map(geoData.substationPositionsById)
-                                : geoData.substationPositionsById,
-                            // If lineFullPath is off, we need to render the lines layer when there are some new subsation positions
-                            positions[1].length > 0 ||
-                            (!lineFullPath && positions[0].length > 0)
-                                ? new Map(geoData.linePositionsById)
-                                : geoData.linePositionsById
-                        );
-                        setGeoData(newGeoData);
+                        if (someDataHasChange) {
+                            const newGeoData = new GeoData(
+                                positions[0].length > 0
+                                    ? new Map(geoData.substationPositionsById)
+                                    : geoData.substationPositionsById,
+                                // If lineFullPath is off, we need to render the lines layer when there are some new subsation positions
+                                positions[1].length > 0 ||
+                                (!lineFullPath && positions[0].length > 0)
+                                    ? new Map(geoData.linePositionsById)
+                                    : geoData.linePositionsById
+                            );
+                            setGeoData(newGeoData);
+                        }
                     }
                     setWaitingTemporaryLoadGeoData(false);
                 })
