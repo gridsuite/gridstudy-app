@@ -592,6 +592,7 @@
     "insertNetworkModificationNodeBelow": "Insert a node below in the current branch",
     "copyNetworkModificationNode": "Copy node",
     "cutNetworkModificationNode": "Cut node",
+    "cancelCutNetworkModificationNode": "Cancel cut node",
     "pasteNetworkModificationNodeAbove": "Paste node above in the current branch",
     "pasteNetworkModificationNodeBelow": "Paste node below in the current branch",
     "pasteNetworkModificationNodeOnNewBranch": "Paste node in a new branch",

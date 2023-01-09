@@ -231,10 +231,12 @@ export const NetworkModificationTreePane = ({
 
     const handleCutNode = useCallback(
         (referenceNodeId) => {
-            setNodeForCopy({
-                nodeId: referenceNodeId,
-                copyType: CopyType.CUT,
-            });
+            referenceNodeId
+                ? setNodeForCopy({
+                      nodeId: referenceNodeId,
+                      copyType: CopyType.CUT,
+                  })
+                : setNodeForCopy(noSelectionForCopy);
         },
         [setNodeForCopy]
     );

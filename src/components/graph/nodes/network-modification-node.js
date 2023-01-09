@@ -13,6 +13,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { CopyType } from '../../network-modification-tree-pane';
+import { getLocalStorageTheme } from '../../../redux/local-storage';
+import { LIGHT_THEME } from '@gridsuite/commons-ui';
 
 const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
@@ -107,6 +109,14 @@ const NetworkModificationNode = (props) => {
         );
     };
 
+    const getNodeOpacity = () => {
+        return isSelectedForCut()
+            ? getLocalStorageTheme() === LIGHT_THEME
+                ? 0.3
+                : 0.6
+            : 'unset';
+    };
+
     return (
         <>
             <Handle
@@ -123,7 +133,7 @@ const NetworkModificationNode = (props) => {
             />
             <Button
                 style={{
-                    opacity: isSelectedForCut() ? 0.3 : 'unset',
+                    opacity: getNodeOpacity(),
                 }}
                 className={
                     isSelectedNode()
