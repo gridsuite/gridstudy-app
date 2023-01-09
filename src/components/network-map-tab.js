@@ -35,7 +35,7 @@ import {
     isNodeRenamed,
 } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import { mapEquipmentsCreated, resetMapReloaded } from '../redux/actions';
+import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 
 const INITIAL_POSITION = [0, 0];
@@ -254,32 +254,33 @@ export const NetworkMapTab = ({
             return;
         }
         if (!isInitialized) {
-            const initialMapEquipments = new MapEquipments(
+            new MapEquipments(
                 studyUuid,
                 currentNode?.id,
                 setErrorMessage,
                 dispatch,
                 intlRef
             );
-            dispatch(mapEquipmentsCreated(initialMapEquipments));
         } else {
-            console.info('Reload map equipments');
-            const updatedSubstationsToSend =
-                !refIsMapManualRefreshEnabled.current &&
-                !isUpdatedSubstationsApplied &&
-                updatedSubstationsIds?.length > 0
-                    ? updatedSubstationsIds
-                    : undefined;
+            if (mapEquipments) {
+                console.info('Reload map equipments');
+                const updatedSubstationsToSend =
+                    !refIsMapManualRefreshEnabled.current &&
+                    !isUpdatedSubstationsApplied &&
+                    updatedSubstationsIds?.length > 0
+                        ? updatedSubstationsIds
+                        : undefined;
 
-            mapEquipments.reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                updatedSubstationsToSend,
-                setUpdatedLines
-            );
+                mapEquipments.reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    updatedSubstationsToSend,
+                    setUpdatedLines
+                );
 
-            if (updatedSubstationsToSend) {
-                setIsUpdatedSubstationsApplied(true);
+                if (updatedSubstationsToSend) {
+                    setIsUpdatedSubstationsApplied(true);
+                }
             }
         }
     }, [
