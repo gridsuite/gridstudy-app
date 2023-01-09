@@ -64,6 +64,9 @@ const emptyFormData = {
     ...getConnectivityEmptyFormData(),
 };
 
+//ajouter provider pour yup et son schema
+//ajouter formprovider parent pour voir si controller peut être facultatif
+
 const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -202,6 +205,7 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
             label="Type"
             options={LOAD_TYPES}
             fullWidth
+            size={'small'}
             isRequired={
                 yup.reach(schema, EQUIPMENT_TYPE)?.exclusiveTests?.required ===
                 true

@@ -5,56 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MenuItem, TextField } from '@mui/material';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import {
-    FieldLabel,
-    genHelperError,
-    genHelperPreviousValue,
-} from '../../dialogs/inputs/hooks-helpers';
 import PropTypes from 'prop-types';
+import AutocompleteInput from './autocomplete-input';
 
-const SelectInput = ({
-    onChange,
-    value,
-    label,
-    isRequired = false,
-    options,
-    previousValue,
-    errorMsg,
-    ...props
-}) => {
-    return (
-        <TextField
-            select
-            value={value}
-            label={FieldLabel({
-                label: label,
-                optional: !isRequired,
-            })}
-            size="small"
-            onChange={onChange}
-            {...genHelperPreviousValue(previousValue)}
-            {...genHelperError(errorMsg)}
-            {...props}
-        >
-            {options.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                    <FormattedMessage id={option.label} />
-                </MenuItem>
-            ))}
-        </TextField>
-    );
+const SelectInput = (props) => {
+    return <AutocompleteInput readOnly={true} {...props} />;
 };
 
 SelectInput.propTypes = {
     label: PropTypes.string.isRequired,
+    onChange: PropTypes.func,
+    value: PropTypes.any,
     isRequired: PropTypes.bool,
     options: PropTypes.array.isRequired,
-    errorMessage: PropTypes.string,
-    value: PropTypes.any,
-    onChange: PropTypes.func,
+    errorMsg: PropTypes.string,
     previousValue: PropTypes.object,
 };
 

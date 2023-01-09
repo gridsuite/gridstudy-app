@@ -7,7 +7,11 @@
 
 import { Autocomplete, TextField } from '@mui/material';
 import React from 'react';
-import { FieldLabel, genHelperError } from '../../dialogs/inputs/hooks-helpers';
+import {
+    FieldLabel,
+    genHelperError,
+    genHelperPreviousValue,
+} from '../../dialogs/inputs/hooks-helpers';
 import PropTypes from 'prop-types';
 
 /**
@@ -27,6 +31,8 @@ const AutocompleteInput = ({
     isRequired = false,
     options,
     errorMsg,
+    readOnly = false,
+    previousValue,
     ...props
 }) => {
     return (
@@ -34,14 +40,17 @@ const AutocompleteInput = ({
             value={value}
             onChange={(event, data) => onChange(data)}
             options={options}
-            renderInput={(params) => (
+            renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     label={FieldLabel({
                         label: label,
                         optional: !isRequired,
                     })}
+                    inputProps={{ ...inputProps, readOnly: readOnly }}
+                    {...genHelperPreviousValue(previousValue)}
                     {...genHelperError(errorMsg)}
-                    {...params}
+                    {...props}
+                    {...rest}
                 />
             )}
             {...props}

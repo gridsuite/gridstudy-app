@@ -175,6 +175,7 @@ export const ConnectivityForm = ({
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
             fullWidth
+            size={'small'}
             isRequired={
                 yup.reach(
                     connectivityValidation,
