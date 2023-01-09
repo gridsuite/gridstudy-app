@@ -18,9 +18,6 @@ export default class TemporaryGeoData {
     temporaryGeoDataIds = new Set();
 
     addGeoDataIds(ids) {
-        this.temporaryGeoDataIds = new Set([
-            ...this.temporaryGeoDataIds,
-            ...ids,
-        ]);
+        ids.forEach(id => this.temporaryGeoDataIds.add(id))
     }
 }
