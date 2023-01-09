@@ -17,6 +17,7 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 const DynamicSimulationResultSeriesList = ({
+    index,
     items,
     headers,
     onLeftAxisSelected,
@@ -42,7 +43,7 @@ const DynamicSimulationResultSeriesList = ({
         setAxisChecked(newChecked);
 
         // propagate changes
-        onAxisSelected([...newChecked]);
+        onAxisSelected(index, [...newChecked]);
     }
 
     const handleToggleLeftAxis = (id) => () => {

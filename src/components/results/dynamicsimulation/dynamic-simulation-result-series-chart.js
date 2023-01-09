@@ -5,121 +5,69 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Plot from 'react-plotly.js';
-import {
-    blue,
-    cyan,
-    green,
-    orange,
-    pink,
-    purple,
-    red,
-} from '@mui/material/colors';
-
-import { memo, useMemo } from 'react';
-
-const baseColors = [red, orange, blue, green, purple, pink, cyan];
-
-const PlotlySeriesChart = ({ leftSeries, rightSeries }) => {
-    const makeGetMarker = useMemo(
-        () => (opts) => {
-            return (s) => ({
-                color: 'rgba(255,255,255,0.5)',
-                line: {
-                    color: baseColors[s.index % baseColors.length]['500'],
-                    width: 1,
-                },
-                ...opts,
-            });
-        },
-        []
-    );
-
-    const data = useMemo(() => {
-        function seriesToData(getMarker, opts) {
-            return (s) => ({
-                name: s.name,
-                type: 'scatter',
-                mode: 'lines+markers',
-                marker: getMarker(s),
-                line: {
-                    color: baseColors[s.index % baseColors.length]['500'],
-                },
-                ...s.data,
-                ...opts,
-            });
-        }
-
-        return [
-            ...leftSeries.map(seriesToData(makeGetMarker({}))),
-            ...rightSeries.map(
-                seriesToData(
-                    makeGetMarker({
-                        symbol: 'square',
-                    }),
-                    {
-                        yaxis: 'y2',
-                    }
-                )
-            ),
-        ];
-    }, [leftSeries, rightSeries, makeGetMarker]);
-
-    return (
-        <Plot
-            data={data}
-            layout={{
-                autosize: true,
-                plot_bgcolor: 'rgba(0,0,0,0.05)',
-                paper_bgcolor: 'rgba(0,0,0,0.02)',
-                margin: {
-                    l: 10,
-                    r: 10,
-                    b: 10,
-                    t: 10,
-                    pad: 1,
-                },
-                xaxis: {
-                    gridcolor: 'rgba(255,255,255,0.2)',
-                    griddash: 'dot',
-                    ntick: 20,
-                    tick0: 0,
-                    automargin: true,
-                },
-                yaxis: {
-                    gridcolor: 'rgba(255,255,255,0.2)',
-                    griddash: 'dot',
-                    ntick: 20,
-                    tick0: 0,
-                    automargin: true,
-                },
-                yaxis2: {
-                    gridcolor: 'rgba(255,255,255,0.2)',
-                    griddash: 'dot',
-                    ntick: 20,
-                    tick0: 0,
-                    automargin: true,
-                    side: 'right',
-                },
-                legend: { orientation: 'h' },
-                hovermode: 'x unified',
-                hoverlabel: {
-                    bgcolor: 'rgba(255,255,255,0.2)',
-                    font: {
-                        color: 'rgba(255,255,255,0.8)',
-                    },
-                },
-            }}
-            useResizeHandler={true}
-            style={{ width: '100%', height: 680 }}
-        />
-    );
-};
-
-const DynamicSimulationResultSeriesChart = ({ leftSeries, rightSeries }) => {
+import CloseIcon from '@mui/icons-material/Close';
+import PlotlySeriesChart from './plot/plotly-series-chart';
+import { Card, CardContent, CardHeader, Grid } from '@mui/material';
+import { memo } from 'react';
+import TooltipIconButton from './common/tooltip-icon-button';
+import AddIcon from '@mui/icons-material/Add';
+import makeStyles from '@mui/styles/makeStyles';
+import { lighten } from '@mui/material/styles';
+const useStyles = makeStyles((theme) => ({
+    closeButton: {
+        borderRadius: '50%',
+        marginRight: theme.spacing(10),
+        cursor: 'pointer',
+    },
+    cardActive: {
+        border: 'solid',
+        borderColor: theme.palette.primary.main,
+        marginTop: theme.spacing(2),
+    },
+    card: {
+        marginTop: theme.spacing(2),
+    },
+    cardHeader: {
+        backgroundColor: lighten(theme.palette.background.paper, 0.2),
+    },
+}));
+const DynamicSimulationResultSeriesChart = ({
+    selected,
+    leftSeries,
+    rightSeries,
+    onClose,
+    onSelect,
+}) => {
+    const classes = useStyles();
     // Plotly
     return (
-        <PlotlySeriesChart leftSeries={leftSeries} rightSeries={rightSeries} />
+        <Card
+            className={
+                selected
+                    ? `${classes.cardActive} ${classes.card}}`
+                    : classes.card
+            }
+            onClick={onSelect}
+        >
+            <CardHeader
+                className={classes.cardHeader}
+                action={
+                    <TooltipIconButton
+                        toolTip={'Close graph'}
+                        className={classes.CloseButton}
+                        onClick={onClose}
+                    >
+                        <CloseIcon />
+                    </TooltipIconButton>
+                }
+            />
+            <CardContent>
+                <PlotlySeriesChart
+                    leftSeries={leftSeries}
+                    rightSeries={rightSeries}
+                />
+            </CardContent>
+        </Card>
     );
 };
 

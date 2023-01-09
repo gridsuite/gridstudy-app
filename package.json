@@ -33,6 +33,7 @@
         "react-csv-downloader": "^2.7.1",
         "react-dom": "^18.0.0",
         "react-flow-renderer": "^10.0.0",
+        "react-grid-layout": "^1.3.4",
         "react-intl": "^6.0.0",
         "react-map-gl": "^6.0.0",
         "react-papaparse": "^4.1.0",
