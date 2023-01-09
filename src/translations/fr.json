@@ -429,6 +429,7 @@
     "RatedNominalPowerGreaterThanZero": "La valeur de la puissance nominale doit être strictement positive",
     "VoltageGreaterThanZero": "La valeur de la tension doit être strictement positive",
     "NormalizedPercentage": "Ce pourcentage doit être compris entre 0 et 100",
+    "RealPercentage": "Cette valeur doit être comprise entre 0 et 1",
     "GeneratorModificationError": "Erreur lors de la modification d'un générateur ",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "Le tableau des limites de réactifs par diagramme doit comporter au moins quatre points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Chaque valeur de puissance active doit être un nombre unique et valide.",

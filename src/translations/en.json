@@ -429,6 +429,7 @@
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "NormalizedPercentage": "This percentage must be between 0 and 100",
+    "RealPercentage": "This value must be between 0 and 1",
     "GeneratorModificationError": "Error while modifying generator",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "The table of reactive capability curve must have at least four points.",
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Each active power value must be a valid unique number.",

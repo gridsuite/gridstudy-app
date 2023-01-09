@@ -404,33 +404,28 @@ const GeneratorCreationDialog = ({
         useDoubleValue({
             label: 'PlannedActivePowerSetPoint',
             adornment: ActivePowerAdornment,
-            validation: { isFieldRequired: false },
             inputForm: inputForm,
             defaultValue: formValues?.plannedActivePowerSetPoint,
         });
 
     const [startupCost, startupCostField] = useDoubleValue({
         label: 'StartupCost',
-        validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.startupCost,
     });
 
     const [marginalCost, marginalCostField] = useDoubleValue({
         label: 'MarginalCost',
-        validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.marginalCost,
     });
 
     const [plannedOutageRate, plannedOutageRateField] = useDoubleValue({
         label: 'PlannedOutageRate',
-        adornment: percentageTextField,
         validation: {
-            isFieldRequired: false,
             valueGreaterThanOrEqualTo: '0',
-            valueLessThanOrEqualTo: '100',
-            errorMsgId: 'NormalizedPercentage',
+            valueLessThanOrEqualTo: '1',
+            errorMsgId: 'RealPercentage',
         },
         inputForm: inputForm,
         defaultValue: formValues?.plannedOutageRate,
@@ -438,12 +433,10 @@ const GeneratorCreationDialog = ({
 
     const [forcedOutageRate, forcedOutageRateField] = useDoubleValue({
         label: 'ForcedOutageRate',
-        adornment: percentageTextField,
         validation: {
-            isFieldRequired: false,
             valueGreaterThanOrEqualTo: '0',
-            valueLessThanOrEqualTo: '100',
-            errorMsgId: 'NormalizedPercentage',
+            valueLessThanOrEqualTo: '1',
+            errorMsgId: 'RealPercentage',
         },
         inputForm: inputForm,
         defaultValue: formValues?.forcedOutageRate,
