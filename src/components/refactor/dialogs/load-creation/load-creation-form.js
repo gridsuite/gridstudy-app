@@ -6,7 +6,6 @@
  */
 
 import Grid from '@mui/material/Grid';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { LOAD_TYPES } from '../../../network/constants';
 import {
@@ -22,15 +21,13 @@ import TextInput from '../../inputs/text-input';
 import FloatInput from '../../inputs/float-input';
 import SelectInput from '../../inputs/select-input';
 import { formControlledItem } from '../../utils/form-utils';
-
-const EQUIPMENT_ID = 'equipmentId';
-const EQUIPMENT_NAME = 'equipmentName';
-const EQUIPMENT_TYPE = 'loadType';
-const ACTIVE_POWER = 'activePower';
-const REACTIVE_POWER = 'reactivePower';
-
-//ajouter provider pour yup et son schema
-//ajouter formprovider parent pour voir si controller peut être facultatif
+import {
+    ACTIVE_POWER,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
+    EQUIPMENT_TYPE,
+    REACTIVE_POWER,
+} from './load-creation-dialog';
 
 const LoadCreationForm = ({ editData, currentNodeUuid, ...dialogProps }) => {
     const loadIdField = formControlledItem(
@@ -96,7 +93,5 @@ const LoadCreationForm = ({ editData, currentNodeUuid, ...dialogProps }) => {
         </>
     );
 };
-
-LoadCreationForm.propTypes = {};
 
 export default LoadCreationForm;

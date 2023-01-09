@@ -11,7 +11,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
-import { fetchEquipmentInfos } from '../../../../utils/rest-api';
+import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -24,6 +24,11 @@ import {
 } from '../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
 import { useSchemaCheck } from '../../utils/use-schema-check';
+import {
+    UNDEFINED_CONNECTION_DIRECTION,
+    UNDEFINED_LOAD_TYPE,
+} from '../../../network/constants';
+import { sanitizeString } from '../../../dialogs/dialogUtils';
 
 /**
  * Dialog to create a load in the network
@@ -32,11 +37,11 @@ import { useSchemaCheck } from '../../utils/use-schema-check';
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
-const EQUIPMENT_ID = 'equipmentId';
-const EQUIPMENT_NAME = 'equipmentName';
-const EQUIPMENT_TYPE = 'loadType';
-const ACTIVE_POWER = 'activePower';
-const REACTIVE_POWER = 'reactivePower';
+export const EQUIPMENT_ID = 'equipmentId';
+export const EQUIPMENT_NAME = 'equipmentName';
+export const EQUIPMENT_TYPE = 'loadType';
+export const ACTIVE_POWER = 'activePower';
+export const REACTIVE_POWER = 'reactivePower';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
