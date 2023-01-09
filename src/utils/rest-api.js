@@ -397,7 +397,7 @@ export function fetchSubstationPositions(
     substationsIds
 ) {
     console.info(
-        `Fetching substations positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
+        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
 
     const paramsList = substationsIds
@@ -733,7 +733,7 @@ export function fetchBusbarSectionsForVoltageLevel(
 
 export function fetchLinePositions(studyUuid, currentNodeUuid, linesIds) {
     console.info(
-        `Fetching lines positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
+        `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
     );
 
     const paramsList = linesIds
