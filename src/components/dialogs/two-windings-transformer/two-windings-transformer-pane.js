@@ -50,7 +50,7 @@ const TwoWindingsTransformerPane = (props) => {
                 </Grid>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="ExtrimitySide" />
+                        <FormattedMessage id="ExtremitySide" />
                     </h4>
                 </Grid>
             </Grid>
@@ -88,7 +88,7 @@ const TwoWindingsTransformerPane = (props) => {
                 </Grid>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="ExtrimitySide" />
+                        <FormattedMessage id="ExtremitySide" />
                     </h4>
                 </Grid>
             </Grid>
@@ -112,7 +112,7 @@ const TwoWindingsTransformerPane = (props) => {
                 </Grid>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
-                        <FormattedMessage id="ExtrimitySide" />
+                        <FormattedMessage id="ExtremitySide" />
                     </h4>
                 </Grid>
             </Grid>
