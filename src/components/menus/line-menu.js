@@ -109,7 +109,6 @@ const withLineMenu =
         }
 
         function handleLockout() {
-            if (line.branchStatus === 'PLANNED_OUTAGE') return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -127,7 +126,6 @@ const withLineMenu =
         }
 
         function handleTrip() {
-            if (line.branchStatus === 'FORCED_OUTAGE') return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -140,15 +138,6 @@ const withLineMenu =
         }
 
         function handleEnergise(side) {
-            if (
-                (side === 'ONE' &&
-                    line.terminal1Connected &&
-                    !line.terminal2Connected) ||
-                (side === 'TWO' &&
-                    line.terminal2Connected &&
-                    !line.terminal1Connected)
-            )
-                return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -166,7 +155,6 @@ const withLineMenu =
         }
 
         function handleSwitchOn() {
-            if (line.terminal1Connected && line.terminal2Connected) return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -205,7 +193,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
-                    disabled={!isNodeEditable}
+                    disabled={
+                        !isNodeEditable ||
+                        line.branchStatus === 'PLANNED_OUTAGE'
+                    }
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -224,7 +215,9 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
-                    disabled={!isNodeEditable}
+                    disabled={
+                        !isNodeEditable || line.branchStatus === 'FORCED_OUTAGE'
+                    }
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -243,7 +236,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleEnergise('ONE')}
-                    disabled={!isNodeEditable}
+                    disabled={
+                        !isNodeEditable ||
+                        (line.terminal1Connected && !line.terminal2Connected)
+                    }
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -269,7 +265,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleEnergise('TWO')}
-                    disabled={!isNodeEditable}
+                    disabled={
+                        !isNodeEditable ||
+                        (line.terminal2Connected && !line.terminal1Connected)
+                    }
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -295,7 +294,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleSwitchOn()}
-                    disabled={!isNodeEditable}
+                    disabled={
+                        !isNodeEditable ||
+                        (line.terminal1Connected && line.terminal2Connected)
+                    }
                 >
                     <ListItemIcon>
                         <PlayIcon />
