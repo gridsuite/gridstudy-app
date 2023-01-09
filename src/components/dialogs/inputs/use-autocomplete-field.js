@@ -109,13 +109,13 @@ export const useAutocompleteField = ({
 
     useEffect(() => {
         function validate() {
-            const res = validateField(value?.id, validationRef.current);
+            const res = validateField(getLabel(value), validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }
 
         inputForm?.addValidation(id ? id : label, validate);
-    }, [label, validation, inputForm, value, selectedValue, id]);
+    }, [label, validation, inputForm, value, selectedValue, id, getLabel]);
 
     const handleChangeValue = useCallback(
         (value) => {
