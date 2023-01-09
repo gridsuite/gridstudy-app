@@ -440,6 +440,8 @@
     "Characteristics": "Characteristics",
     "Side1": "Side 1",
     "Side2": "Side 2",
+    "OriginSide": "Side 1",
+    "ExtremitySide": "Side 2",
     "SeriesResistanceText": "Series resistance",
     "SeriesReactanceText": "Series reactance",
     "ShuntConductanceText": "Shunt conductance",
