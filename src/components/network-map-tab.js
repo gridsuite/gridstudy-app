@@ -293,6 +293,52 @@ export const NetworkMapTab = ({
         [studyUuid, currentNode?.id]
     );
 
+    const updateSubstationsTemporaryGeoData = useCallback(
+        (fetchedPositions) => {
+            let someDataHasChanged = false;
+            fetchedPositions.forEach((pos) => {
+                // If the geo data is the same in the geoData and in the server response, it's not updated
+                if (
+                    !substationPositionsAreEqual(
+                        geoData.substationPositionsById.get(pos.id),
+                        pos
+                    )
+                ) {
+                    temporaryGeoDataIds.add(pos.id);
+                    geoData.substationPositionsById.set(pos.id, pos);
+                    someDataHasChanged = true;
+                }
+            });
+            return someDataHasChanged;
+        },
+        [
+            geoData?.substationPositionsById,
+            substationPositionsAreEqual,
+            temporaryGeoDataIds,
+        ]
+    );
+
+    const updateLinesTemporaryGeoData = useCallback(
+        (fetchedPositions) => {
+            let someDataHasChanged = false;
+            fetchedPositions.forEach((pos) => {
+                // If the geo data is the same in the geoData and in the server response, it's not updated
+                if (
+                    !linePositionsAreEqual(
+                        geoData.linePositionsById.get(pos.id),
+                        pos
+                    )
+                ) {
+                    temporaryGeoDataIds.add(pos.id);
+                    geoData.linePositionsById.set(pos.id, pos);
+                    someDataHasChanged = true;
+                }
+            });
+            return someDataHasChanged;
+        },
+        [geoData?.linePositionsById, linePositionsAreEqual, temporaryGeoDataIds]
+    );
+
     const loadMissingGeoData = useCallback(() => {
         const notFoundSubstationIds = getEquipmentsNotFoundIds(
             geoData.substationPositionsById,
@@ -325,43 +371,17 @@ export const NetworkMapTab = ({
             Promise.all([missingSubstationPositions, missingLinesPositions])
                 .then((positions) => {
                     if (positions[0].length > 0 || positions[1].length > 0) {
-                        let someDataHasChange = false;
+                        // Update temporary geo data for subtations
+                        let someDataHasChanged =
+                            updateSubstationsTemporaryGeoData(positions[0]);
 
-                        // Update of temporary geo data for subtations
-                        positions[0].forEach((pos) => {
-                            // If the geo data is the same in the geoData and in the server response, it's not updated
-                            if (
-                                !substationPositionsAreEqual(
-                                    geoData.substationPositionsById.get(pos.id),
-                                    pos
-                                )
-                            ) {
-                                temporaryGeoDataIds.add(pos.id);
-                                geoData.substationPositionsById.set(
-                                    pos.id,
-                                    pos
-                                );
-                                someDataHasChange = true;
-                            }
-                        });
-
-                        // Update of temporary geo data for lines
-                        positions[1].forEach((pos) => {
-                            // If the geo data is the same in the geoData and in the server response, it's not updated
-                            if (
-                                !linePositionsAreEqual(
-                                    geoData.linePositionsById.get(pos.id),
-                                    pos
-                                )
-                            ) {
-                                temporaryGeoDataIds.add(pos.id);
-                                geoData.linePositionsById.set(pos.id, pos);
-                                someDataHasChange = true;
-                            }
-                        });
+                        // Update temporary geo data for lines
+                        someDataHasChanged =
+                            updateLinesTemporaryGeoData(positions[1]) ||
+                            someDataHasChanged;
 
                         // If no geo data has changed, we avoid to trigger a new render.
-                        if (someDataHasChange) {
+                        if (someDataHasChanged) {
                             geoData.addSubstationPositions(positions[0]);
                             geoData.addLinePositions(positions[1]);
                             // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
@@ -401,9 +421,8 @@ export const NetworkMapTab = ({
         getEquipmentsNotFoundIds,
         getMissingEquipmentsPositions,
         mapEquipments,
-        temporaryGeoDataIds,
-        linePositionsAreEqual,
-        substationPositionsAreEqual,
+        updateSubstationsTemporaryGeoData,
+        updateLinesTemporaryGeoData,
     ]);
 
     const loadAllGeoData = useCallback(() => {
@@ -522,6 +541,9 @@ export const NetworkMapTab = ({
         }
     }, [deletedEquipment, mapEquipments]);
 
+    const loadMapEquipmentsRef = useRef();
+    loadMapEquipmentsRef.current = loadMapEquipments;
+
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
@@ -532,11 +554,10 @@ export const NetworkMapTab = ({
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
         if (!reloadMapNeeded) return;
-        loadMapEquipments();
+        loadMapEquipmentsRef.current();
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
-        loadMapEquipments,
         disabled,
         studyUuid,
         currentNode,
