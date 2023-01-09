@@ -310,7 +310,6 @@ export const NetworkMapTab = ({
             console.info(
                 `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLinesIds}'...`
             );
-
             setWaitingTemporaryLoadGeoData(true);
 
             const missingSubstationPositions = getMissingEquipmentsPositions(
