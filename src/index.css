@@ -59,8 +59,8 @@ body {
 /* In order for oidc-client-js silent renew to work it inserts an iframe in the DOM directly under body tag, it is supposed to be invisible thus its height and width are set to 0 by default. 
    Except iframes have a border value set to 2 which can cause a slight offset to the UI. 
    This rule prevent the iframe to cause an unwanted offset.
-   It can be removed if oidc-client-js is no longer the authentification library in use in this project.
-*/
+   It can be removed if oidc-client-js is no longer the authentification library in use in this project. */
+   
 body > iframe[width='0'][height='0'] {
     border: 0;
 }
