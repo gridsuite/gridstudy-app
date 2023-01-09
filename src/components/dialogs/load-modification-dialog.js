@@ -27,7 +27,7 @@ import {
     ActivePowerAdornment,
     compareById,
     filledTextField,
-    getId,
+    getIdOrSelf,
     gridItem,
     GridSection,
     ReactivePowerAdornment,
@@ -90,7 +90,7 @@ const LoadModificationDialog = ({
         formProps: filledTextField,
         values: equipmentOptions?.sort(compareById),
         allowNewValue: true,
-        getLabel: getId,
+        getLabel: getIdOrSelf,
         defaultValue:
             equipmentOptions.find((e) => e.id === formValueEquipmentId?.id) ||
             formValueEquipmentId,
