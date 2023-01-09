@@ -15,11 +15,5 @@ export default class TemporaryGeoData {
     and this position would need to be requested again.
     It will be possible to have a better mechanism after we improved the notification system.
     */
-    temporaryGeoDataPositions = new Map();
-
-    addGeoDataPositions(positions) {
-        positions.forEach((position) =>
-            this.temporaryGeoDataPositions.set(position.id, position)
-        );
-    }
+    temporaryGeoDataIds = new Set();
 }
