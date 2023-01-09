@@ -33,6 +33,7 @@ const AutocompleteInput = ({
     errorMsg,
     readOnly = false,
     previousValue,
+    formProps,
     ...props
 }) => {
     return (
@@ -49,7 +50,7 @@ const AutocompleteInput = ({
                     inputProps={{ ...inputProps, readOnly: readOnly }}
                     {...genHelperPreviousValue(previousValue)}
                     {...genHelperError(errorMsg)}
-                    {...props}
+                    {...formProps}
                     {...rest}
                 />
             )}

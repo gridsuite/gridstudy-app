@@ -6,22 +6,10 @@
  */
 
 import React from 'react';
-import { Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 
-export const formControlledItem = (item, name, control) => {
-    return (
-        <Controller
-            name={name}
-            control={control}
-            render={({ field: { onChange, value }, fieldState: { error } }) =>
-                addPropsToReactElement(item, {
-                    onChange,
-                    value,
-                    errorMsg: error?.message,
-                })
-            }
-        />
-    );
+export const formControlledItem = (item, name) => {
+    return <CustomController name={name} item={item} />;
 };
 
 const addPropsToReactElement = (element, props) => {
@@ -29,4 +17,23 @@ const addPropsToReactElement = (element, props) => {
         return React.cloneElement(element, props);
     }
     return element;
+};
+
+const CustomController = ({ name, item }) => {
+    const methods = useFormContext();
+    const { isFieldRequired } = methods;
+
+    return (
+        <Controller
+            name={name}
+            render={({ field: { onChange, value }, fieldState: { error } }) =>
+                addPropsToReactElement(item, {
+                    onChange,
+                    value,
+                    errorMsg: error?.message,
+                    isRequired: isFieldRequired(name),
+                })
+            }
+        />
+    );
 };

@@ -60,7 +60,7 @@ const TextInput = ({
                 adornmentPosition: adornment.position,
                 adornmentText: adornment?.text,
             })}
-            value={'' + value} // handle numerical value
+            value={value} // handle numerical value
             onChange={handleChangeValue}
             FormHelperTextProps={{
                 className: classes.helperText,

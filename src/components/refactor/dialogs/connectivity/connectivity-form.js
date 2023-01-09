@@ -22,14 +22,12 @@ import { CONNECTION_DIRECTIONS } from '../../../network/constants';
 import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
 import { useFormContext } from 'react-hook-form';
-import yup from '../../utils/yup-config';
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    getConnectivityFormValidation,
     VOLTAGE_LEVEL,
 } from './connectivity-form-utils';
 import { formControlledItem } from '../../utils/form-utils';
@@ -65,14 +63,12 @@ export const ConnectivityForm = ({
     const intl = useIntl();
 
     const methods = useFormContext();
-    const { control, watch } = methods;
+    const { watch } = methods;
 
     const {
         id: watchVoltageLevelId,
         topologyKind: watchVoltageLevelTopologyKind,
     } = watch(`${CONNECTIVITY}.${VOLTAGE_LEVEL}`) || {};
-
-    const connectivityValidation = getConnectivityFormValidation();
 
     useEffect(() => {
         fetchVoltageLevels(studyUuid, currentNode?.id).then((values) => {
@@ -127,15 +123,8 @@ export const ConnectivityForm = ({
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
             size={'small'}
-            isRequired={
-                yup.reach(
-                    connectivityValidation,
-                    `${CONNECTIVITY}.${VOLTAGE_LEVEL}`
-                )?.exclusiveTests?.required === true
-            }
         />,
-        `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,
-        control
+        `${CONNECTIVITY}.${VOLTAGE_LEVEL}`
     );
 
     const newBusOrBusbarSectionField = formControlledItem(
@@ -145,29 +134,13 @@ export const ConnectivityForm = ({
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
             size={'small'}
-            isRequired={
-                yup.reach(
-                    connectivityValidation,
-                    `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`
-                )?.exclusiveTests?.required === true
-            }
         />,
-        `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`,
-        control
+        `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`
     );
 
     const newConnectionNameField = formControlledItem(
-        <TextInput
-            label="ConnectionName"
-            isRequired={
-                yup.reach(
-                    connectivityValidation,
-                    `${CONNECTIVITY}.${CONNECTION_NAME}`
-                )?.exclusiveTests?.required === true
-            }
-        />,
-        `${CONNECTIVITY}.${CONNECTION_NAME}`,
-        control
+        <TextInput label="ConnectionName" />,
+        `${CONNECTIVITY}.${CONNECTION_NAME}`
     );
 
     const newConnectionDirectionField = formControlledItem(
@@ -176,29 +149,13 @@ export const ConnectivityForm = ({
             options={CONNECTION_DIRECTIONS}
             fullWidth
             size={'small'}
-            isRequired={
-                yup.reach(
-                    connectivityValidation,
-                    `${CONNECTIVITY}.${CONNECTION_DIRECTION}`
-                )?.exclusiveTests?.required === true
-            }
         />,
-        `${CONNECTIVITY}.${CONNECTION_DIRECTION}`,
-        control
+        `${CONNECTIVITY}.${CONNECTION_DIRECTION}`
     );
 
     const newConnectionPositionField = formControlledItem(
-        <IntegerInput
-            label="ConnectionPosition"
-            isRequired={
-                yup.reach(
-                    connectivityValidation,
-                    `${CONNECTIVITY}.${CONNECTION_POSITION}`
-                )?.exclusiveTests?.required === true
-            }
-        />,
-        `${CONNECTIVITY}.${CONNECTION_POSITION}`,
-        control
+        <IntegerInput label="ConnectionPosition" />,
+        `${CONNECTIVITY}.${CONNECTION_POSITION}`
     );
 
     const gridSize =

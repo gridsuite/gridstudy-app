@@ -8,9 +8,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AutocompleteInput from './autocomplete-input';
+import { useIntl } from 'react-intl';
 
-const SelectInput = (props) => {
-    return <AutocompleteInput readOnly={true} {...props} />;
+const SelectInput = ({ onChange, options, value, ...props }) => {
+    const intl = useIntl();
+
+    return (
+        <AutocompleteInput
+            value={options.find((c) => c?.id === value) || null}
+            onChange={(data) => onChange(data?.id || null)}
+            options={options}
+            getOptionLabel={(option) => {
+                return intl.formatMessage({ id: option.label });
+            }}
+            readOnly={true}
+            {...props}
+        />
+    );
 };
 
 SelectInput.propTypes = {

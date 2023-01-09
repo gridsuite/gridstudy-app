@@ -20,4 +20,20 @@ yup.setLocale({
     },
 });
 
+// yup does not support empty number fields, it returns typeError
+// this methods returns an error if the string is not empty and is not a number
+yup.addMethod(yup.string, 'nullableNumber', function (message) {
+    return this.test('nullableNumber', message, function (value) {
+        const { path, createError } = this;
+        const error = value !== '' && isNaN(value);
+        return (
+            !error ||
+            createError({
+                path,
+                message: 'YupNotTypeNumber',
+            })
+        );
+    });
+});
+
 export default yup;

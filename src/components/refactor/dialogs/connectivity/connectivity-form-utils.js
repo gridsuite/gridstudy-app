@@ -32,7 +32,7 @@ const connectivityValidationSchema = {
                 [VOLTAGE_LEVEL_NAME]: yup.string(),
                 [VOLTAGE_LEVEL_SUBSTATION_ID]: yup.string(),
                 [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
-                [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string(),
+                [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(true),
             }),
         [BUS_OR_BUSBAR_SECTION]: yup
             .object()

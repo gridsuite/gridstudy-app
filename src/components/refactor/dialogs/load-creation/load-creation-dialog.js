@@ -6,41 +6,24 @@
  */
 
 import ModificationDialog from '../modificationDialog';
-import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    LOAD_TYPES,
-    UNDEFINED_CONNECTION_DIRECTION,
-    UNDEFINED_LOAD_TYPE,
-} from '../../../network/constants';
-import {
-    ActivePowerAdornment,
-    filledTextField,
-    gridItem,
-    GridSection,
-    ReactivePowerAdornment,
-    sanitizeString,
-} from '../../../dialogs/dialogUtils';
 
-import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
+import { fetchEquipmentInfos } from '../../../../utils/rest-api';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import { FormProvider, useForm } from 'react-hook-form';
 import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
 import {
     getConnectivityEmptyFormData,
     getConnectivityFormData,
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
-import TextInput from '../../inputs/text-input';
-import FloatInput from '../../inputs/float-input';
-import SelectInput from '../../inputs/select-input';
-import { formControlledItem } from '../../utils/form-utils';
+import LoadCreationForm from './load-creation-form';
+import { useSchemaCheck } from '../../utils/use-schema-check';
 
 /**
  * Dialog to create a load in the network
@@ -58,14 +41,23 @@ const REACTIVE_POWER = 'reactivePower';
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    [EQUIPMENT_TYPE]: '',
+    [EQUIPMENT_TYPE]: null,
     [ACTIVE_POWER]: '',
     [REACTIVE_POWER]: '',
     ...getConnectivityEmptyFormData(),
 };
 
-//ajouter provider pour yup et son schema
-//ajouter formprovider parent pour voir si controller peut être facultatif
+const schema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_NAME]: yup.string(),
+        [EQUIPMENT_TYPE]: yup.string().nullable(true),
+        [ACTIVE_POWER]: yup.string().nullableNumber().required(),
+        [REACTIVE_POWER]: yup.string().nullableNumber().required(),
+        ...getConnectivityFormValidationSchema(),
+    })
+    .required();
 
 const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -74,23 +66,7 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
 
     const equipmentPath = 'loads';
 
-    const schema = yup
-        .object()
-        .shape({
-            [EQUIPMENT_ID]: yup.string().required(),
-            [EQUIPMENT_NAME]: yup.string(),
-            [EQUIPMENT_TYPE]: yup.string(),
-            [ACTIVE_POWER]: yup
-                .number()
-                .transform((value) => (isNaN(value) ? undefined : value))
-                .required(),
-            [REACTIVE_POWER]: yup
-                .number()
-                .transform((value) => (isNaN(value) ? undefined : value))
-                .required(),
-            ...getConnectivityFormValidationSchema(),
-        })
-        .required();
+    const [isFieldRequired] = useSchemaCheck(schema);
 
     const methods = useForm({
         defaultValues: emptyFormData,
@@ -98,7 +74,6 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
     });
 
     const {
-        control,
         reset,
         formState: { isDirty },
     } = methods;
@@ -174,78 +149,6 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const newLoadIdField = formControlledItem(
-        <TextInput
-            label={'ID'}
-            formProps={filledTextField}
-            isRequired={
-                yup.reach(schema, EQUIPMENT_ID)?.exclusiveTests?.required ===
-                true
-            }
-        />,
-        EQUIPMENT_ID,
-        control
-    );
-
-    const newLoadNameField = formControlledItem(
-        <TextInput
-            label={'Name'}
-            formProps={filledTextField}
-            isRequired={
-                yup.reach(schema, EQUIPMENT_NAME)?.exclusiveTests?.required ===
-                true
-            }
-        />,
-        EQUIPMENT_NAME,
-        control
-    );
-
-    const newLoadTypeField = formControlledItem(
-        <SelectInput
-            label="Type"
-            options={LOAD_TYPES}
-            fullWidth
-            size={'small'}
-            isRequired={
-                yup.reach(schema, EQUIPMENT_TYPE)?.exclusiveTests?.required ===
-                true
-            }
-            {...filledTextField}
-        />,
-        EQUIPMENT_TYPE,
-        control
-    );
-
-    const newActivePowerField = formControlledItem(
-        <FloatInput
-            label={'ActivePowerText'}
-            adornment={ActivePowerAdornment}
-            isRequired={
-                yup.reach(schema, ACTIVE_POWER)?.exclusiveTests?.required ===
-                true
-            }
-        />,
-        ACTIVE_POWER,
-        control
-    );
-
-    const newReactivePowerField = formControlledItem(
-        <FloatInput
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-            isRequired={
-                yup.reach(schema, REACTIVE_POWER)?.exclusiveTests?.required ===
-                true
-            }
-        />,
-        REACTIVE_POWER,
-        control
-    );
-
-    const connectivityForm = (
-        <ConnectivityForm label={'Connectivity'} withPosition={true} />
-    );
-
     const onSubmit = useCallback(
         (load) => {
             createLoad(
@@ -281,7 +184,7 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
     }, [reset]);
 
     return (
-        <FormProvider {...methods}>
+        <FormProvider isFieldRequired={isFieldRequired} {...methods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -293,20 +196,7 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                 searchCopy={searchCopy}
                 {...dialogProps}
             >
-                <Grid container spacing={2}>
-                    {gridItem(newLoadIdField, 4)}
-                    {gridItem(newLoadNameField, 4)}
-                    {gridItem(newLoadTypeField, 4)}
-                </Grid>
-                <GridSection title="Connectivity" />
-                <Grid container spacing={2}>
-                    {gridItem(connectivityForm, 12)}
-                </Grid>
-                <GridSection title="Setpoints" />
-                <Grid container spacing={2}>
-                    {gridItem(newActivePowerField, 4)}
-                    {gridItem(newReactivePowerField, 4)}
-                </Grid>
+                <LoadCreationForm />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
