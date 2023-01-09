@@ -17,7 +17,7 @@ import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined';
 
 import PositionDiagramPane from '../../../diagrams/singleLineDiagram/position-diagram-pane';
-import { Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { CONNECTION_DIRECTIONS } from '../../../network/constants';
 import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
@@ -153,16 +153,6 @@ export const ConnectivityForm = ({
         `${CONNECTIVITY}.${CONNECTION_DIRECTION}`
     );
 
-    const newConnectionPositionField = formControlledItem(
-        <IntegerInput label="ConnectionPosition" />,
-        `${CONNECTIVITY}.${CONNECTION_POSITION}`
-    );
-
-    const gridSize =
-        direction && (direction === 'column' || direction === 'column-reverse')
-            ? 12
-            : 6;
-
     const handleClickOpenDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(true);
     }, [setIsDiagramPaneOpen]);
@@ -171,6 +161,45 @@ export const ConnectivityForm = ({
         setIsDiagramPaneOpen(false);
     }, [setIsDiagramPaneOpen]);
 
+    const positionIconAdorment = (isNodeBuilt, clickCallback) => {
+        return (
+            <IconButton
+                {...(isNodeBuilt && { onClick: clickCallback })}
+                disableRipple={!isNodeBuilt}
+            >
+                <Tooltip
+                    title={intl.formatMessage({
+                        id: isNodeBuilt
+                            ? 'DisplayTakenPositions'
+                            : 'NodeNotBuildPositionMessage',
+                    })}
+                >
+                    {isNodeBuilt ? (
+                        <ExploreOutlinedIcon color="action" />
+                    ) : (
+                        <ExploreOffOutlinedIcon color="action" />
+                    )}
+                </Tooltip>
+            </IconButton>
+        );
+    };
+
+    const newConnectionPositionField = formControlledItem(
+        <IntegerInput
+            label="ConnectionPosition"
+            customAdornment={positionIconAdorment(
+                isNodeBuilt(currentNode),
+                handleClickOpenDiagramPane
+            )}
+            clearable={true}
+        />,
+        `${CONNECTIVITY}.${CONNECTION_POSITION}`
+    );
+
+    const gridSize =
+        direction && (direction === 'column' || direction === 'column-reverse')
+            ? 12
+            : 6;
     const conditionalSize = withPosition && withDirectionsInfos ? 4 : gridSize;
     return (
         <>
@@ -198,39 +227,8 @@ export const ConnectivityForm = ({
                         </Grid>
                         {withPosition && (
                             <>
-                                <Grid
-                                    item
-                                    xs={(60 * gridSize) / 100}
-                                    align="start"
-                                >
+                                <Grid xs={conditionalSize} item align="start">
                                     {newConnectionPositionField}
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={(5 * gridSize) / 100}
-                                    align="start"
-                                    display="flex"
-                                    alignItems="center"
-                                >
-                                    <Tooltip
-                                        title={intl.formatMessage({
-                                            id: !isNodeBuilt(currentNode)
-                                                ? 'NodeNotBuildPositionMessage'
-                                                : 'DisplayTakenPositions',
-                                        })}
-                                    >
-                                        {!isNodeBuilt(currentNode) ? (
-                                            <ExploreOffOutlinedIcon color="action" />
-                                        ) : (
-                                            <ExploreOutlinedIcon
-                                                onClick={
-                                                    handleClickOpenDiagramPane
-                                                }
-                                                color="action"
-                                                cursor="pointer"
-                                            />
-                                        )}
-                                    </Tooltip>
                                 </Grid>
                             </>
                         )}

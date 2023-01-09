@@ -21,6 +21,7 @@ IntegerInput.propTypes = {
     value: PropTypes.any,
     onChange: PropTypes.func,
     adornment: PropTypes.object,
+    customAdornment: PropTypes.object,
     transformValue: PropTypes.func,
     acceptValue: PropTypes.func,
     formProps: PropTypes.object,

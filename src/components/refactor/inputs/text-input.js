@@ -29,6 +29,7 @@ const TextInput = ({
     errorMsg,
     previousValue,
     clearable,
+    customAdornment,
     isRequired = false,
 }) => {
     const classes = useStyles();
@@ -65,19 +66,18 @@ const TextInput = ({
             FormHelperTextProps={{
                 className: classes.helperText,
             }}
-            InputProps={
-                clearable && value
-                    ? {
-                          endAdornment: (
-                              <InputAdornment position="end">
-                                  <IconButton onClick={handleClearValue}>
-                                      <ClearIcon />
-                                  </IconButton>
-                              </InputAdornment>
-                          ),
-                      }
-                    : {}
-            }
+            InputProps={{
+                endAdornment: (
+                    <InputAdornment position="end">
+                        {clearable && value !== undefined && value !== '' && (
+                            <IconButton onClick={handleClearValue}>
+                                <ClearIcon />
+                            </IconButton>
+                        )}
+                        {customAdornment && { ...customAdornment }}
+                    </InputAdornment>
+                ),
+            }}
             {...(clearable &&
                 adornment && { handleClearValue: handleClearValue })}
             {...genHelperPreviousValue(previousValue, adornment)}
@@ -94,6 +94,7 @@ TextInput.propTypes = {
     value: PropTypes.any,
     onChange: PropTypes.func,
     adornment: PropTypes.object,
+    customAdornment: PropTypes.object,
     transformValue: PropTypes.func,
     acceptValue: PropTypes.func,
     formProps: PropTypes.object,
