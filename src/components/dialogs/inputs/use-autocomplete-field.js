@@ -114,7 +114,7 @@ export const useAutocompleteField = ({
             return !res.error;
         }
 
-        inputForm?.addValidation(id ? id : label, validate);
+        inputForm?.addValidation(id || label, validate);
     }, [label, validation, inputForm, value, selectedValue, id, getLabel]);
 
     const handleChangeValue = useCallback(
