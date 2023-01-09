@@ -293,6 +293,7 @@
     "Hades2": "Hades 2",
     "setLoadFlowProviderError": "An error occured when updating the load flow provider",
     "getLoadFlowProviderError": "An error occurred while getting the load flow provider",
+    "getLoadFlowProvidersError": "An error occurred while getting the load flow providers",
 
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",

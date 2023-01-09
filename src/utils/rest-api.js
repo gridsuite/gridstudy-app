@@ -27,6 +27,8 @@ const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/sensitivity-analysis';
 const PREFIX_EXPLORE_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/explore';
+const PREFIX_LOADFLOW_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/loadflow';
 
 function getToken() {
     const state = store.getState();
@@ -2146,6 +2148,17 @@ export function deleteAttachingLine(
         },
         body,
     });
+}
+
+function getLoadFlowUrl() {
+    return PREFIX_LOADFLOW_SERVER_QUERIES + '/v1/';
+}
+
+export function getLoadFlowProviders() {
+    console.info('get load flow providers');
+    const getLoadFlowProvidersUrl = getLoadFlowUrl() + 'providers';
+    console.debug(getLoadFlowProvidersUrl);
+    return backendFetchJson(getLoadFlowProvidersUrl);
 }
 
 export function getLoadFlowProvider(studyUuid) {

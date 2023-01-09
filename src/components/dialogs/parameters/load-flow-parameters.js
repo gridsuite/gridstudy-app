@@ -27,23 +27,43 @@ import {
     getLoadFlowProvider,
     setLoadFlowParameters,
     setLoadFlowProvider,
+    getLoadFlowProviders
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-const LF_PROVIDER_VALUES = {
-    OpenLoadFlow: 'OpenLoadFlow',
-    Hades2: 'Hades2',
-};
 
-export const useGetLfParamsAndProvider = () => {
+export const useGetLfParamsAndProvider = (user) => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
+
+    const [lfProviders, setLfProviders] = useState([]);
 
     const [lfProvider, setLfProvider] = useState(null);
 
     const [lfParams, setLfParams] = useState(null);
+
+    useEffect(() => {
+        if (user !== null) {
+            getLoadFlowProviders()
+                .then((providers) => {
+                    // we can consider the provider get from back will be also used as
+                    // a key for translation
+                    const providersObj = providers.reduce(function(obj, v, i) {
+                        obj[v] = v;
+                        return obj;
+                    }, {})
+                    setLfProviders(providersObj)
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'getLoadFlowProvidersError',
+                    });
+                });
+        }
+    }, [user, snackError]);
 
     const updateLfProvider = useCallback(
         (newProvider) => {
@@ -62,11 +82,13 @@ export const useGetLfParamsAndProvider = () => {
     const setLoadFlowProviderToDefault = useCallback(() => {
         getDefaultLoadFlowProvider()
             .then((defaultLFProvider) => {
-                updateLfProvider(
-                    defaultLFProvider in LF_PROVIDER_VALUES
-                        ? defaultLFProvider
-                        : LF_PROVIDER_VALUES.OpenLoadFlow
-                );
+                if (lfProviders.length > 0) {
+                    updateLfProvider(
+                        defaultLFProvider in lfProviders
+                            ? defaultLFProvider
+                            : Object.keys(lfProviders)[0]
+                    );
+                }
             })
             .catch((error) => {
                 snackError({
@@ -74,7 +96,7 @@ export const useGetLfParamsAndProvider = () => {
                     headerId: 'defaultLoadflowRetrievingError',
                 });
             });
-    }, [updateLfProvider, snackError]);
+    }, [lfProviders, updateLfProvider, snackError]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -89,7 +111,7 @@ export const useGetLfParamsAndProvider = () => {
             getLoadFlowProvider(studyUuid)
                 .then((provider) => {
                     // if provider is not defined or not among allowed values, it's set to default value
-                    if (!(provider in LF_PROVIDER_VALUES)) {
+                    if (!(provider in lfProviders)) {
                         setLoadFlowProviderToDefault();
                     } else {
                         setLfProvider(provider);
@@ -106,6 +128,7 @@ export const useGetLfParamsAndProvider = () => {
 
     return [
         lfParams,
+        lfProviders,
         lfProvider,
         setLfParams,
         updateLfProvider,
@@ -402,6 +425,7 @@ export const LoadFlowParameters = ({
 
     const [
         lfParams,
+        lfProviders,
         lfProvider,
         setLfParams,
         updateLfProvider,
@@ -458,7 +482,7 @@ export const LoadFlowParameters = ({
                 <DropDown
                     value={lfProvider}
                     label="Provider"
-                    values={LF_PROVIDER_VALUES}
+                    values={lfProviders}
                     callback={updateLfProviderCallback}
                 />
 

@@ -154,7 +154,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const lfParamsAndLfProvider = useGetLfParamsAndProvider();
+    const lfParamsAndLfProvider = useGetLfParamsAndProvider(user);
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
