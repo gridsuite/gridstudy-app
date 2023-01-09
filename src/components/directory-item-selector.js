@@ -152,14 +152,13 @@ const DirectoryItemSelector = (props) => {
                             props.types,
                             props.equipmentTypes
                         ).then((childrenWithMetada) => {
-                            let finalResult = childrenWithMetada;
-                            if (props.itemFilter) {
-                                finalResult = finalResult.filter((val) =>
-                                    props.itemFilter(val)
-                                );
-                            }
+                            const children = props.itemFilter
+                                ? childrenWithMetada.filter((val) =>
+                                      props.itemFilter(val)
+                                  )
+                                : childrenWithMetada;
                             // update directory content
-                            addToDirectory(nodeId, finalResult);
+                            addToDirectory(nodeId, children);
                         });
                     } else {
                         // update directory content
