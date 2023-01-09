@@ -37,7 +37,6 @@ import {
 import { RunningStatus } from './util/running-status';
 import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
-import TemporaryGeoData from './network/temporary-geo-data';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 
@@ -109,7 +108,20 @@ export const NetworkMapTab = ({
         useState(false);
 
     const [geoData, setGeoData] = useState();
-    const [temporaryGeoData] = useState(new TemporaryGeoData());
+
+    /*
+    This Set stores the geo data that are collected from the server AFTER the initialization.
+    The bunch of geo data requested at the initialization of the map are stored as permanent data. It will not be requested again.
+    The delta of geo data that is needed after the initialization is tagged as temporary. Each time some new geo data is requested, the full delta is downloaded.
+
+    This workaround is required in the case of line/substation creation. By example, the position of a substation can change after being connected to one or two lines
+    and this position would need to be requested again.
+    It will be possible to have a better mechanism after we improved the notification system.
+    */
+    const [temporaryGeoDataIds] = useState(new Set());
+
+    const temporaryGeoDataIdsRef = useRef();
+    temporaryGeoDataIdsRef.current = temporaryGeoDataIds;
 
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
@@ -227,13 +239,13 @@ export const NetworkMapTab = ({
                 .filter(
                     (s) =>
                         !foundEquipmentPositions.has(s.id) ||
-                        temporaryGeoData.temporaryGeoDataIds.has(s.id)
+                        temporaryGeoDataIdsRef.current.has(s.id)
                 )
                 .map((s) => s.id);
 
             return notFoundEquipmentsIds;
         },
-        [temporaryGeoData.temporaryGeoDataIds]
+        []
     );
 
     const areEqual = (coordinate1, coordinate2) => {
@@ -325,9 +337,7 @@ export const NetworkMapTab = ({
                                     pos
                                 )
                             ) {
-                                temporaryGeoData.temporaryGeoDataIds.add(
-                                    pos.id
-                                );
+                                temporaryGeoDataIds.add(pos.id);
                                 geoData.substationPositionsById.set(
                                     pos.id,
                                     pos
@@ -345,9 +355,7 @@ export const NetworkMapTab = ({
                                     pos
                                 )
                             ) {
-                                temporaryGeoData.temporaryGeoDataIds.add(
-                                    pos.id
-                                );
+                                temporaryGeoDataIds.add(pos.id);
                                 geoData.linePositionsById.set(pos.id, pos);
                                 someDataHasChange = true;
                             }
@@ -394,7 +402,7 @@ export const NetworkMapTab = ({
         getEquipmentsNotFoundIds,
         getMissingEquipmentsPositions,
         mapEquipments,
-        temporaryGeoData,
+        temporaryGeoDataIds,
         linePositionsAreEqual,
         substationPositionsAreEqual,
     ]);
