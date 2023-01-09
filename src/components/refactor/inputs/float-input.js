@@ -11,11 +11,7 @@ import { isFloatNumber } from '../../dialogs/inputs/input-hooks';
 import TextInput from './text-input';
 import PropTypes from 'prop-types';
 
-const FloatInput = ({
-    transformValue = toFloatValue,
-    validation,
-    ...props
-}) => {
+const FloatInput = ({ transformValue = toFloatValue, ...props }) => {
     return (
         <TextInput
             acceptValue={isFloatNumber}
