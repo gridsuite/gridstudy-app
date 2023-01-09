@@ -77,7 +77,7 @@ export const ACTIVE_VARIATION_MODE = [
 
 export const REACTIVE_VARIATION_MODE = [
     { id: 'CONSTANT_Q', label: 'ConstantQ' },
-    { id: 'TAN_FIXED', label: 'TanFixed' },
+    { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
 ];
 
 export function getLoadTypeLabel(loadTypeId) {

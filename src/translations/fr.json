@@ -497,7 +497,7 @@
     "ReplacingLines": "Liaisons de remplacement",
     "LineDivisionError": "Erreur lors de la création d'une coupure",
     "LineAttachmentError": "Erreur lors de la création d'un piquage",
-    "LoadScalingError": "Erreur lors de la création de Variation plan de consommation",
+    "LoadScalingError": "Erreur lors de la création de la variation du plan de consommation",
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError" : "Erreur lors de la suppression d'un piquage",
 
@@ -671,7 +671,7 @@
     "ActiveVariationMode": "Mode variation de l'actif",
     "ReactiveVariationMode": "Mode variation du réactif",
     "RegularDistribution": "Équipartition",
-    "TanFixed": "tan(φ) fixe",
+    "TanPhiFixed": "tan(φ) fixe",
     "ConstantQWithoutUnit": "Q constant",
     "Variations": "Variations",
     "LoadScaling": "Variation plan de consommation",
