@@ -370,13 +370,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         sldId,
     ]);
 
+    const isNodeinNotifs = isNodeInNotificationList(
+        currentNode,
+        notificationIdList
+    );
+
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (
-            props.svgUrl &&
-            !isNodeInNotificationList(currentNode, notificationIdList)
-        ) {
+        if (props.svgUrl && !isNodeinNotifs) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -416,15 +418,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(NoSvg);
         }
-    }, [
-        props.svgUrl,
-        forceState,
-        snackError,
-        intlRef,
-        sldId,
-        currentNode,
-        notificationIdList,
-    ]);
+    }, [props.svgUrl, forceState, snackError, intlRef, sldId, isNodeinNotifs]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
