@@ -223,14 +223,10 @@ export const NetworkMapTab = ({
 
     const getEquipmentsNotFoundIds = useCallback(
         (foundEquipmentPositions, allEquipments) => {
-            const foundEquipmentsIds = Array.from(
-                foundEquipmentPositions.keys()
-            );
-
             const notFoundEquipmentsIds = allEquipments
                 .filter(
                     (s) =>
-                        !foundEquipmentsIds.includes(s.id) ||
+                        !foundEquipmentPositions.has(s.id) ||
                         temporaryGeoData.temporaryGeoDataIds.has(s.id)
                 )
                 .map((s) => s.id);
