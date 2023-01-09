@@ -257,7 +257,7 @@ export function DiagramPane({
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
+    const [updateSwitchMsg, setUpdateSwitchMsg] = useState(''); // TODO CHARLY a déplacer dans le spécifique SLD ?
 
     const [views, setViews] = useState([]);
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
@@ -265,7 +265,7 @@ export function DiagramPane({
     const [displayedDiagrams, setDisplayedDiagrams] = useState([]);
     const [minimizedDiagrams, setMinimizedDiagrams] = useState([]);
     const [displayedDiagramHeights, setDisplayedDiagramHeights] = useState([]);
-    const displayedDiagramHeightsRef = useRef();
+    const displayedDiagramHeightsRef = useRef(); // TODO CHARLY sert uniquement pour éviter de trigger à chaque rendu
     displayedDiagramHeightsRef.current = displayedDiagramHeights;
 
     const createView = useDisplayView(network, studyUuid, currentNode);
@@ -274,15 +274,16 @@ export function DiagramPane({
 
     const diagramStates = useSelector((state) => state.diagramStates);
 
-    const [depth, setDepth] = useState(0);
+    //const [depth, setDepth] = useState(0);
+    const networkAreaDiagramDepth = useSelector(
+        (state) => state.networkAreaDiagramDepth
+    );
 
     const viewsRef = useRef();
     viewsRef.current = views;
 
     const {
         openDiagramView,
-        minimizeDiagramView,
-        togglePinDiagramView,
         closeDiagramView,
         closeDiagramViews,
     } = useDiagram();
@@ -327,7 +328,7 @@ export function DiagramPane({
                     ids: networkAreaIds,
                     state: networkAreaViewState,
                     svgType: SvgType.NETWORK_AREA_DIAGRAM,
-                    depth: depth,
+                    depth: networkAreaDiagramDepth,
                 });
 
                 // if current view cannot be found, it returns undefined
@@ -347,7 +348,7 @@ export function DiagramPane({
         closeDiagramView,
         createView,
         dispatch,
-        depth,
+        networkAreaDiagramDepth,
     ]);
 
     /**
@@ -572,11 +573,11 @@ export function DiagramPane({
                                 loadFlowStatus={loadFlowStatus}
                                 numberToDisplay={displayedDiagrams.length}
                                 onBreakerClick={handleUpdateSwitchState}
-                                onMinimize={minimizeDiagramView}
+                                //onMinimize={minimizeDiagramView}
                                 onNextVoltageLevelClick={
                                     handleOpenVoltageLevelView
                                 }
-                                onTogglePin={togglePinDiagramView}
+                                //onTogglePin={togglePinDiagramView}
                                 pinned={diagramView.state === ViewState.PINNED}
                                 ref={diagramView.ref}
                                 setDisplayedDiagramHeights={
@@ -589,8 +590,8 @@ export function DiagramPane({
                                 totalHeight={height}
                                 totalWidth={width}
                                 updateSwitchMsg={updateSwitchMsg}
-                                depth={depth}
-                                setDepth={setDepth}
+                                //depth={depth}
+                                //setDepth={setDepth}
                             />
                         </>
                     ))}

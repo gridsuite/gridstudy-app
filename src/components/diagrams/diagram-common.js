@@ -42,6 +42,8 @@ export const commonSldStyle = (theme, customStyle) => {
             // to our otherwise pixel accurate computations (this makes a
             // scrollbar appear in fullscreen mode)
             display: 'block',
+            width: '100%',
+            height: '100%',
         },
         '& polyline': {
             pointerEvents: 'none',
@@ -72,6 +74,7 @@ export const commonNadStyle = (theme, customStyle) => {
             // scrollbar appear in fullscreen mode)
             display: 'block',
             width: '100%',
+            height: '100%',
         },
         '& .nad-label-box': {
             color: theme.palette.text.primary,

@@ -82,6 +82,9 @@ import {
     SET_FULLSCREEN_DIAGRAM,
     SET_UPDATED_SUBSTATIONS_IDS,
     SET_DELETED_EQUIPMENT,
+    RESET_NETWORK_AREA_DIAGRAM_DEPTH,
+    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -174,6 +177,7 @@ const initialState = {
     reloadMap: true,
     updatedSubstationsIds: [],
     deletedEquipment: {},
+    networkAreaDiagramDepth: 0,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -846,6 +850,17 @@ export const reducer = createReducer(initialState, {
         state.diagramStates = state.diagramStates.filter(
             (diagram) => !idsToClose.has(diagram.id)
         );
+    },
+    [RESET_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
+        state.networkAreaDiagramDepth = 0;
+    },
+    [INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
+        state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
+    },
+    [DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
+        if (state.networkAreaDiagramDepth > 0) {
+            state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
+        }
     },
 });
 

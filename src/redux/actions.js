@@ -561,6 +561,33 @@ export function closeDiagrams(ids) {
     };
 }
 
+export const RESET_NETWORK_AREA_DIAGRAM_DEPTH =
+    'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
+
+export function resetNetworkAreaDiagramDepth() {
+    return {
+        type: RESET_NETWORK_AREA_DIAGRAM_DEPTH,
+    };
+}
+
+export const INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH =
+    'INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
+
+export function incrementNetworkAreaDiagramDepth() {
+    return {
+        type: INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    };
+}
+
+export const DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH =
+    'DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
+
+export function decrementNetworkAreaDiagramDepth() {
+    return {
+        type: DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    };
+}
+
 export const SET_UPDATED_SUBSTATIONS_IDS = 'SET_UPDATED_SUBSTATIONS_IDS';
 
 export function setUpdatedSubstationsIds(updatedSubstationsIds) {
