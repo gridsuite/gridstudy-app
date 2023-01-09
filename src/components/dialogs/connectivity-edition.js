@@ -137,7 +137,8 @@ export const useConnectivityValue = ({
         return (
             <IconButton
                 onClick={isNodeBuilt ? clickCallback : {}}
-                disableRipple={!isNodeBuilt}
+                disableRipple={!voltageLevelObjOrId?.id || !isNodeBuilt}
+                disabled={!voltageLevelObjOrId?.id || !isNodeBuilt}
             >
                 <Tooltip
                     title={intl.formatMessage({
@@ -146,7 +147,7 @@ export const useConnectivityValue = ({
                             : 'NodeNotBuildPositionMessage',
                     })}
                 >
-                    {isNodeBuilt ? (
+                    {voltageLevelObjOrId?.id && isNodeBuilt ? (
                         <ExploreOutlinedIcon color="action" />
                     ) : (
                         <ExploreOffOutlinedIcon color="action" />
