@@ -6,7 +6,6 @@
  */
 
 import Dialog from '@mui/material/Dialog';
-import { Alert } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { getVoltageLevelSingleLineDiagram } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
@@ -18,7 +17,6 @@ import {
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
 import PositionDiagram from './position-diagram';
-import { useIntl } from 'react-intl';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
 import { SvgType } from './utils';
 
@@ -38,7 +36,6 @@ const PositionDiagramPane = ({
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
 
     const [svgUrl, setSvgUrl] = useState(null);
-    const intl = useIntl();
     const handleClose = () => {
         setSvgUrl(null);
         onClose();
@@ -79,14 +76,6 @@ const PositionDiagramPane = ({
 
     return (
         <Dialog onClose={handleClose} open={open} maxWidth="md" scroll="body">
-            {!voltageLevelId?.id && (
-                <Alert severity="error">
-                    {intl.formatMessage({
-                        id: 'ErrorNoVoltageSelected',
-                    })}
-                </Alert>
-            )}
-
             {voltageLevelId?.id && open && (
                 <PositionDiagram
                     onClose={handleClose}
