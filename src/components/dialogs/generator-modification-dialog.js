@@ -18,7 +18,6 @@ import {
     useInputForm,
     useTextValue,
     useRadioValue,
-    useEnumValue,
     useRegulatingTerminalValue,
 } from './inputs/input-hooks';
 import {
@@ -111,20 +110,8 @@ const GeneratorModificationDialog = ({
     const [reactiveCapabilityCurveErrors, setReactiveCapabilityCurveErrors] =
         useState([]);
 
-    const isDistantRegulation = (regulationType) => {
+    const isActualRegulationDistant = (regulationType) => {
         return regulationType === REGULATION_TYPES.DISTANT.id;
-    };
-
-    const defaultVoltageRegulationType = () => {
-        if (formValues?.voltageRegulationType) {
-            return formValues?.voltageRegulationType.value ===
-                REGULATION_TYPES.DISTANT.id
-                ? REGULATION_TYPES.DISTANT.id
-                : REGULATION_TYPES.LOCAL.id;
-        } else if (isPreviousRegulationDistant(generatorInfos)) {
-            return REGULATION_TYPES.DISTANT.id;
-        }
-        return REGULATION_TYPES.LOCAL.id;
     };
 
     const defaultReactiveCapabilityCurveChoice = () => {
@@ -370,27 +357,26 @@ const GeneratorModificationDialog = ({
                 <Grid item xs={4} justifySelf={'end'} />
                 {gridItem(voltageSetpointField, 4)}
                 <Box sx={{ width: '100%' }} />
-                {(voltageRegulation || voltageRegulation === null) &&
-                    isDistantRegulation(voltageRegulationType) && (
-                        <>
-                            <Grid item xs={4} justifySelf={'end'}>
-                                <FormattedMessage id="RegulatingTerminalGenerator" />
-                            </Grid>
-                            {gridItem(regulatingTerminalField, 8)}
-                            <Grid item xs={4} justifySelf={'end'} />
-                            {gridItem(qPercentField, 4)}
-                        </>
-                    )}
+                {isDistantRegulation && (
+                    <>
+                        <Grid item xs={4} justifySelf={'end'}>
+                            <FormattedMessage id="RegulatingTerminalGenerator" />
+                        </Grid>
+                        {gridItem(regulatingTerminalField, 8)}
+                        <Grid item xs={4} justifySelf={'end'} />
+                        {gridItem(qPercentField, 4)}
+                    </>
+                )}
             </>
         );
     };
 
-    function isPreviousRegulationDistant(generatorInfos) {
+    const isPreviousRegulationDistant = useCallback(() => {
         return getPreviousRegulationType(generatorInfos) ===
             REGULATION_TYPES.DISTANT
             ? true
             : false;
-    }
+    }, [generatorInfos]);
 
     function getPreviousRegulationType(generatorInfos) {
         if (generatorInfos?.voltageRegulatorOn) {
@@ -403,16 +389,21 @@ const GeneratorModificationDialog = ({
         }
     }
 
-    const [voltageRegulationType, voltageRegulationTypeField] = useEnumValue({
-        label: 'RegulationTypeText',
-        inputForm: inputForm,
-        enumValues: Object.values(REGULATION_TYPES),
-        validation: {
-            isFieldRequired: voltageRegulation,
-        },
-        defaultValue: defaultVoltageRegulationType(),
-        previousValue: getPreviousRegulationType(generatorInfos),
-    });
+    const previousRegulationTypeLabel = getPreviousRegulationType(
+        generatorInfos
+    )?.label
+        ? intl.formatMessage({
+              id: getPreviousRegulationType(generatorInfos)?.label,
+          })
+        : undefined;
+    const [voltageRegulationType, voltageRegulationTypeField] =
+        useOptionalEnumValue({
+            label: 'RegulationTypeText',
+            inputForm: inputForm,
+            enumObjects: Object.values(REGULATION_TYPES),
+            defaultValue: formValues?.voltageRegulationType?.value ?? null,
+            previousValue: previousRegulationTypeLabel,
+        });
 
     let previousFrequencyRegulation = '';
     if (generatorInfos?.activePowerControlOn) {
@@ -450,24 +441,12 @@ const GeneratorModificationDialog = ({
         );
     }, [frequencyRegulation, generatorInfos]);
 
-    const removeUnnecessaryFieldsValidation = useCallback(() => {
-        if (
-            !isVoltageRegulationOn ||
-            !isDistantRegulation(voltageRegulationType)
-        ) {
-            inputForm.removeValidation(REGULATING_VOLTAGE_LEVEL);
-            inputForm.removeValidation(REGULATING_EQUIPMENT);
-            inputForm.removeValidation('QPercentText');
-        }
-        if (isReactiveCapabilityCurveOn) {
-            inputForm.removeValidation('MinimumReactivePower');
-        }
-    }, [
-        inputForm,
-        isReactiveCapabilityCurveOn,
-        isVoltageRegulationOn,
-        voltageRegulationType,
-    ]);
+    const isDistantRegulation = useMemo(() => {
+        return (
+            isActualRegulationDistant(voltageRegulationType) ||
+            (voltageRegulationType === null && isPreviousRegulationDistant())
+        );
+    }, [voltageRegulationType, isPreviousRegulationDistant]);
 
     const [regulatingTerminal, regulatingTerminalField] =
         useRegulatingTerminalValue({
@@ -475,16 +454,11 @@ const GeneratorModificationDialog = ({
             validation: {
                 isFieldRequired:
                     isVoltageRegulationOn &&
-                    isDistantRegulation(voltageRegulationType) &&
-                    !(
-                        isPreviousRegulationDistant(generatorInfos) &&
-                        isRegulatingTerminalRequired
-                    ),
+                    isDistantRegulation &&
+                    isRegulatingTerminalRequired,
             },
             inputForm: inputForm,
-            disabled:
-                (voltageRegulation !== null && !voltageRegulation) ||
-                !isDistantRegulation(voltageRegulationType),
+            disabled: !isDistantRegulation,
             voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
                 getValue(formValues?.regulatingTerminalVlId) || null,
@@ -508,10 +482,13 @@ const GeneratorModificationDialog = ({
 
     useEffect(() => {
         setIsRegulatingTerminalRequired(
-            regulatingTerminal?.equipmentSection === null &&
-                regulatingTerminal?.voltageLevel === null
+            (regulatingTerminal?.equipmentSection === null &&
+                regulatingTerminal?.voltageLevel !== null) ||
+                (regulatingTerminal?.equipmentSection === null &&
+                    regulatingTerminal?.voltageLevel === null &&
+                    !isPreviousRegulationDistant())
         );
-    }, [regulatingTerminal]);
+    }, [isPreviousRegulationDistant, regulatingTerminal]);
 
     const [droop, droopField] = useDoubleValue({
         label: 'Droop',
@@ -576,6 +553,22 @@ const GeneratorModificationDialog = ({
         previousValue: generatorInfos?.targetQ,
         clearable: true,
     });
+
+    const removeUnnecessaryFieldsValidation = useCallback(() => {
+        if (!isVoltageRegulationOn || !isDistantRegulation) {
+            inputForm.removeValidation(REGULATING_VOLTAGE_LEVEL);
+            inputForm.removeValidation(REGULATING_EQUIPMENT);
+            inputForm.removeValidation('QPercentText');
+        }
+        if (isReactiveCapabilityCurveOn) {
+            inputForm.removeValidation('MinimumReactivePower');
+        }
+    }, [
+        inputForm,
+        isDistantRegulation,
+        isReactiveCapabilityCurveOn,
+        isVoltageRegulationOn,
+    ]);
 
     const buildCurvePointsToCheck = useMemo(() => {
         const pointsToCheck = [];
@@ -692,20 +685,18 @@ const GeneratorModificationDialog = ({
             undefined,
             undefined,
             editData?.uuid,
-            isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
-                ? qPercent
-                : null,
+            isVoltageRegulationOn && isDistantRegulation ? qPercent : null,
             marginalCost ? marginalCost : null,
             transientReactance ? transientReactance : null,
             transformerReactance ? transformerReactance : null,
             voltageRegulationType,
-            isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
+            isVoltageRegulationOn && isDistantRegulation
                 ? regulatingTerminal?.equipmentSection?.id
                 : null,
-            isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
+            isVoltageRegulationOn && isDistantRegulation
                 ? regulatingTerminal?.equipmentSection?.type
                 : null,
-            isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
+            isVoltageRegulationOn && isDistantRegulation
                 ? regulatingTerminal?.voltageLevel?.id
                 : null,
             isReactiveCapabilityCurveOn,
