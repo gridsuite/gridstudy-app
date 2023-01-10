@@ -330,6 +330,9 @@ const SizedNetworkAreaDiagram = (props) => {
                 nad.setViewBox(nadRef.current.getViewBox());
             }
 
+            // This is to be able to freely zoom
+            nad.svgDraw.panZoom();
+
             nadRef.current = nad;
         }
     }, [network, svg, currentNode, theme, nadId, svgUrl]);
