@@ -136,15 +136,24 @@ export const useConnectivityValue = ({
     const positionIconAdorment = (isNodeBuilt, clickCallback) => {
         return (
             <IconButton
-                onClick={isNodeBuilt ? clickCallback : {}}
+                onClick={
+                    voltageLevelObjOrId?.id && isNodeBuilt
+                        ? clickCallback
+                        : () => {}
+                }
                 disableRipple={!voltageLevelObjOrId?.id || !isNodeBuilt}
-                disabled={!voltageLevelObjOrId?.id || !isNodeBuilt}
+                style={
+                    !voltageLevelObjOrId?.id || !isNodeBuilt
+                        ? { cursor: 'auto' }
+                        : {}
+                }
             >
                 <Tooltip
                     title={intl.formatMessage({
-                        id: isNodeBuilt
-                            ? 'DisplayTakenPositions'
-                            : 'NodeNotBuildPositionMessage',
+                        id:
+                            voltageLevelObjOrId?.id && isNodeBuilt
+                                ? 'DisplayTakenPositions'
+                                : 'NodeNotBuildPositionMessage',
                     })}
                 >
                     {voltageLevelObjOrId?.id && isNodeBuilt ? (

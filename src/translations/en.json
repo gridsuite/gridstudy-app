@@ -669,5 +669,5 @@
     "ConnectionPosition": "Connection position",
     "DisplayTakenPositions": "Display taken positions",
     "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value",
-    "NodeNotBuildPositionMessage": "Must build current node to show positions"
+    "NodeNotBuildPositionMessage": "Must choose a voltage level or wait for data to be loaded"
 }
