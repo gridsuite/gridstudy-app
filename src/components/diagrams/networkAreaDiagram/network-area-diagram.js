@@ -161,7 +161,7 @@ const computePaperAndSvgSizesIfReady = (
     }
 };
 
-const MIN_ZOOM = 0.1;
+const MIN_ZOOM_RATIO = 0.1;
 const MAX_ZOOM = 30;
 
 const SizedNetworkAreaDiagram = (props) => {
@@ -333,8 +333,8 @@ const SizedNetworkAreaDiagram = (props) => {
                 nad.setViewBox(nadRef.current.getViewBox());
             }
 
-            // // This is to be able to freely zoom, we calculate
-            const minZoom = MIN_ZOOM / (depth === 0 ? 1 : depth);
+            // we set min/max zoom for network area diagram
+            const minZoom = MIN_ZOOM_RATIO / (depth === 0 ? 1 : depth);
             nad.svgDraw.panZoom({
                 zoomMin: minZoom,
                 zoomMax: MAX_ZOOM,
