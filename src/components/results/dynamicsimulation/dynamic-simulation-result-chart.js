@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid, Paper, ToggleButton } from '@mui/material';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
@@ -14,7 +14,10 @@ import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-seri
 import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
 import AddIcon from '@mui/icons-material/Add';
+import SyncIcon from '@mui/icons-material/Sync';
+import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
 import makeStyles from '@mui/styles/makeStyles';
+import { lighten } from '@mui/material/styles';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -24,15 +27,34 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(10),
         color: theme.palette.primary.main,
     },
+    paperOptionsGroup: {
+        display: 'flex',
+        border: `1px solid ${theme.palette.divider}`,
+        flexWrap: 'wrap',
+        backgroundColor: lighten(theme.palette.background.paper, 0.2),
+        padding: '2px',
+    },
 }));
 const DynamicSimulationResultChart = ({ series, selected }) => {
     console.log('Rerender DynamicSimulationResultChart', [series]);
     const classes = useStyles();
 
+    // button options synchronization
+    const [sync, setSync] = useState(false);
+    const [plotEvent, setPlotEvent] = useState({
+        eventData: undefined,
+        eventName: undefined,
+    });
+
     // tab id is auto increase and reset to zero when there is any tab
     const [plotId, setPlotId] = useState(1);
     const [plots, setPlots] = useState([
-        { id: plotId, leftSelectedSeries: [], rightSelectedSeries: [] },
+        {
+            id: plotId,
+            revision: 1, // in order to force refresh after layout changed
+            leftSelectedSeries: [],
+            rightSelectedSeries: [],
+        },
     ]);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -73,6 +95,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
             ...prev,
             {
                 id: plotId + 1,
+                revision: 1,
                 leftSelectedSeries: [],
                 rightSelectedSeries: [],
             },
@@ -107,9 +130,28 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
         h: 2,
     }));
 
-    const handleLayoutChange = (layout) => {};
+    const handleOnPlotRelayout = (index) => (eventData, eventName) => {
+        // update event
+        console.log('eventData in handleOnPlotRelayout', eventData);
+        setPlotEvent((prev) => {
+            prev.eventData = { ...eventData };
+            prev.eventName = eventName;
+            return prev;
+        });
 
-    const handleBreakpointChange = (breakpoint, cols) => {};
+        // update revision to force refresh other plots except the sender
+        const newPlots = Array.from(plots);
+        for (let idx in newPlots) {
+            if (idx != index) {
+                newPlots[idx].revision = newPlots[idx].revision + 1;
+            }
+        }
+        setPlots(newPlots);
+    };
+
+    //const handleLayoutChange = (layout) => {};
+
+    //const handleBreakpointChange = (breakpoint, cols) => {};
 
     return (
         <Grid
@@ -126,13 +168,38 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                     justifyContent={'flex-start'}
                 >
                     <Grid item>
-                        <TooltipIconButton
-                            toolTip={'Add a graph'}
-                            className={classes.addButton}
-                            onClick={handleAddNewPlot}
-                        >
-                            <AddIcon />
-                        </TooltipIconButton>
+                        <Grid container>
+                            <Grid item>
+                                <TooltipIconButton
+                                    toolTip={'Add a graph'}
+                                    className={classes.addButton}
+                                    onClick={handleAddNewPlot}
+                                >
+                                    <AddIcon />
+                                </TooltipIconButton>
+                            </Grid>
+                            <Grid item xs={true}></Grid>
+                            <Grid item>
+                                <Paper
+                                    elevation={2}
+                                    className={classes.paperOptionsGroup}
+                                >
+                                    <ToggleButton
+                                        value="sync"
+                                        selected={sync}
+                                        onChange={() => {
+                                            setSync((prev) => !prev);
+                                        }}
+                                    >
+                                        {sync ? (
+                                            <SyncIcon />
+                                        ) : (
+                                            <SyncDisabledIcon />
+                                        )}
+                                    </ToggleButton>
+                                </Paper>
+                            </Grid>
+                        </Grid>
                     </Grid>
                     <Grid item>
                         <ResponsiveGridLayout
@@ -146,11 +213,15 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                             {plots.map((plot, index) => (
                                 <DynamicSimulationResultSeriesChart
                                     key={`${plot.id}`}
+                                    id={`plot-${plot.id}`}
                                     selected={selectedIndex === index}
                                     onSelect={handleSelectIndex(index)}
                                     leftSeries={plot.leftSelectedSeries}
                                     rightSeries={plot.rightSelectedSeries}
                                     onClose={handleClose(index)}
+                                    onRelayout={handleOnPlotRelayout(index)}
+                                    revision={plot.revision}
+                                    plotEvent={plotEvent}
                                 />
                             ))}
                         </ResponsiveGridLayout>

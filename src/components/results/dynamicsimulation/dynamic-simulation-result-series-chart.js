@@ -7,36 +7,40 @@
 
 import CloseIcon from '@mui/icons-material/Close';
 import PlotlySeriesChart from './plot/plotly-series-chart';
-import { Card, CardContent, CardHeader, Grid } from '@mui/material';
+import { Card, CardContent, CardHeader } from '@mui/material';
 import { memo } from 'react';
 import TooltipIconButton from './common/tooltip-icon-button';
-import AddIcon from '@mui/icons-material/Add';
 import makeStyles from '@mui/styles/makeStyles';
 import { lighten } from '@mui/material/styles';
 const useStyles = makeStyles((theme) => ({
     closeButton: {
-        borderRadius: '50%',
-        marginRight: theme.spacing(10),
         cursor: 'pointer',
     },
     cardActive: {
         border: 'solid',
-        borderColor: theme.palette.primary.main,
+        borderColor: lighten(theme.palette.primary.main, 0.2),
         marginTop: theme.spacing(2),
     },
     card: {
         marginTop: theme.spacing(2),
     },
-    cardHeader: {
+    cardHeaderRoot: {
         backgroundColor: lighten(theme.palette.background.paper, 0.2),
+    },
+    cardHeaderAction: {
+        margin: 'auto',
     },
 }));
 const DynamicSimulationResultSeriesChart = ({
+    id,
     selected,
     leftSeries,
     rightSeries,
     onClose,
     onSelect,
+    onRelayout,
+    revision,
+    plotEvent,
 }) => {
     const classes = useStyles();
     // Plotly
@@ -50,7 +54,10 @@ const DynamicSimulationResultSeriesChart = ({
             onClick={onSelect}
         >
             <CardHeader
-                className={classes.cardHeader}
+                classes={{
+                    root: classes.cardHeaderRoot,
+                    action: classes.cardHeaderAction,
+                }}
                 action={
                     <TooltipIconButton
                         toolTip={'Close graph'}
@@ -63,8 +70,12 @@ const DynamicSimulationResultSeriesChart = ({
             />
             <CardContent>
                 <PlotlySeriesChart
+                    id={id}
                     leftSeries={leftSeries}
                     rightSeries={rightSeries}
+                    onRelayout={onRelayout}
+                    revision={revision}
+                    plotEvent={plotEvent}
                 />
             </CardContent>
         </Card>

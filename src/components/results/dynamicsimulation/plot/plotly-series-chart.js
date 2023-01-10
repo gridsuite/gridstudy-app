@@ -1,15 +1,3 @@
-import {
-    blue,
-    cyan,
-    green,
-    orange,
-    pink,
-    purple,
-    red,
-} from '@mui/material/colors';
-import { memo, useMemo } from 'react';
-import Plot from 'react-plotly.js';
-
 /**
  * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -17,9 +5,21 @@ import Plot from 'react-plotly.js';
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const baseColors = [red, orange, blue, green, purple, pink, cyan];
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import Plot from 'react-plotly.js';
+import { baseColors, defaultLayout, PlotEvents } from './plot-config';
 
-const PlotlySeriesChart = ({ leftSeries, rightSeries }) => {
+const PlotlySeriesChart = ({
+    id,
+    leftSeries,
+    rightSeries,
+    onRelayout,
+    revision,
+    plotEvent,
+}) => {
+    console.log('id-revision : ', [id, revision]);
+    const [layout, setLayout] = useState(defaultLayout);
+
     const makeGetMarker = useMemo(
         () => (opts) => {
             return (s) => ({
@@ -64,53 +64,64 @@ const PlotlySeriesChart = ({ leftSeries, rightSeries }) => {
         ];
     }, [leftSeries, rightSeries, makeGetMarker]);
 
+    const handleOnRelayout = useCallback(
+        (eventData) => {
+            console.log('onRelayout from action', [eventData]);
+            // propagate data to parent
+            onRelayout(eventData, PlotEvents.ON_RELAYOUT);
+        },
+        [onRelayout]
+    );
+
+    useEffect(() => {
+        if (plotEvent && plotEvent.eventData) {
+            switch (plotEvent.eventName) {
+                case PlotEvents.ON_RELAYOUT:
+                    if (
+                        plotEvent.eventData['xaxis.range[0]'] ===
+                        plotEvent.eventData['xaxis.range[1]']
+                    )
+                        return;
+                    setLayout((prev) => {
+                        const newLayout = {
+                            ...prev,
+                            xaxis: {
+                                ...prev.xaxis,
+                                range: [...prev.xaxis.range],
+                            },
+                        };
+                        newLayout.xaxis.range[0] = plotEvent.eventData[
+                            'xaxis.range[0]'
+                        ]
+                            ? plotEvent.eventData['xaxis.range[0]']
+                            : newLayout.xaxis.range[0];
+                        newLayout.xaxis.range[1] = plotEvent.eventData[
+                            'xaxis.range[1]'
+                        ]
+                            ? plotEvent.eventData['xaxis.range[1]']
+                            : newLayout.xaxis.range[1];
+                        console.log('id-new layout : ', [id, newLayout]);
+                        return newLayout;
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+    }, [revision, plotEvent]);
+
+    const handleOnInitialized = (figure) => {
+        setLayout(figure.layout);
+    };
+
     return (
         <Plot
             data={data}
-            layout={{
-                autosize: true,
-                plot_bgcolor: 'rgba(0,0,0,0.05)',
-                paper_bgcolor: 'rgba(0,0,0,0.02)',
-                margin: {
-                    l: 10,
-                    r: 10,
-                    b: 10,
-                    t: 10,
-                    pad: 1,
-                },
-                xaxis: {
-                    gridcolor: 'rgba(255,255,255,0.2)',
-                    griddash: 'dot',
-                    ntick: 20,
-                    tick0: 0,
-                    automargin: true,
-                },
-                yaxis: {
-                    gridcolor: 'rgba(255,255,255,0.2)',
-                    griddash: 'dot',
-                    ntick: 20,
-                    tick0: 0,
-                    automargin: true,
-                },
-                yaxis2: {
-                    gridcolor: 'rgba(255,255,255,0.2)',
-                    griddash: 'dot',
-                    ntick: 20,
-                    tick0: 0,
-                    automargin: true,
-                    side: 'right',
-                },
-                legend: { orientation: 'h' },
-                hovermode: 'x unified',
-                hoverlabel: {
-                    bgcolor: 'rgba(255,255,255,0.2)',
-                    font: {
-                        color: 'rgba(255,255,255,0.8)',
-                    },
-                },
-            }}
+            layout={layout}
             useResizeHandler={true}
             style={{ width: '100%', height: 200 }}
+            onRelayout={handleOnRelayout}
+            onInitialized={handleOnInitialized}
         />
     );
 };
