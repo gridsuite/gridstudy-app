@@ -11,7 +11,7 @@ import { Responsive, WidthProvider } from 'react-grid-layout';
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
 import { memo, useCallback, useMemo, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
-import VisibilityPanel from './common/visibility-panel';
+import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
 import AddIcon from '@mui/icons-material/Add';
 import makeStyles from '@mui/styles/makeStyles';
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.primary.main,
     },
 }));
-const DynamicSimulationResultChart = ({ series }) => {
+const DynamicSimulationResultChart = ({ series, selected }) => {
     console.log('Rerender DynamicSimulationResultChart', [series]);
     const classes = useStyles();
 
@@ -159,10 +159,11 @@ const DynamicSimulationResultChart = ({ series }) => {
             </Grid>
             <Grid item xs={3}>
                 {plots.map((plot, index) => (
-                    <VisibilityPanel
+                    <Visibility
                         key={`plot-${plot.id}`}
                         value={selectedIndex}
                         index={index}
+                        visible={selected}
                     >
                         <DynamicSimulationResultSeriesList
                             index={index}
@@ -171,7 +172,7 @@ const DynamicSimulationResultChart = ({ series }) => {
                             onLeftAxisSelected={handleLeftAxisSelected}
                             onRightAxisSelected={handleRightAxisSelected}
                         />
-                    </VisibilityPanel>
+                    </Visibility>
                 ))}
             </Grid>
         </Grid>

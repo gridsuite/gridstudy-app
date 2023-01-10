@@ -18,7 +18,7 @@ import { PARAM_THEME } from '../../../utils/config-params';
 import makeStyles from '@mui/styles/makeStyles';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
 import DraggableTab from './common/draggable-tab/draggable-tab';
-import VisibilityPanel from './common/visibility-panel';
+import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
 
 const useStyles = makeStyles((theme) => ({
@@ -165,7 +165,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                 </TooltipIconButton>
             </Stack>
             {/* tab contents */}
-            <VisibilityPanel value={selectedIndex} index={-1}>
+            <Visibility value={selectedIndex} index={-1}>
                 <ReactJson
                     src={result}
                     onEdit={false}
@@ -177,15 +177,18 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                             : 'monokai'
                     }
                 />
-            </VisibilityPanel>
+            </Visibility>
             {tabs.map((tab, index) => (
-                <VisibilityPanel
+                <Visibility
                     key={`tab-${tab.id}`}
                     value={selectedIndex}
                     index={index}
                 >
-                    <DynamicSimulationResultChart series={series} />
-                </VisibilityPanel>
+                    <DynamicSimulationResultChart
+                        series={series}
+                        selected={selectedIndex === index}
+                    />
+                </Visibility>
             ))}
         </div>
     );

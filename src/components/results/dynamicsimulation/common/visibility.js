@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const getVisibilityStyle = (hidden) => {
+const getStyle = (hidden) => {
     if (hidden) {
         return {
             visibility: 'hidden',
@@ -20,18 +20,18 @@ const getVisibilityStyle = (hidden) => {
     };
 };
 
-const VisibilityPanel = ({ children, value, index, ...other }) => {
+const Visibility = ({ children, value, index, visible = true, ...other }) => {
     return (
-        <div style={getVisibilityStyle(value !== index)} {...other}>
+        <div style={getStyle(!visible || value !== index)} {...other}>
             {children}
         </div>
     );
 };
 
-VisibilityPanel.propTypes = {
+Visibility.propTypes = {
     children: PropTypes.node,
     index: PropTypes.any.isRequired,
     value: PropTypes.any.isRequired,
 };
 
-export default VisibilityPanel;
+export default Visibility;
