@@ -161,6 +161,8 @@ const computePaperAndSvgSizesIfReady = (
     }
 };
 
+const MIN_ZOOM = 0.1;
+
 const SizedNetworkAreaDiagram = (props) => {
     const [svg, setSvg] = useState(noSvg);
     const dispatch = useDispatch();
@@ -330,12 +332,15 @@ const SizedNetworkAreaDiagram = (props) => {
                 nad.setViewBox(nadRef.current.getViewBox());
             }
 
-            // This is to be able to freely zoom
-            nad.svgDraw.panZoom();
+            // // This is to be able to freely zoom, we calculate
+            const minZoom = MIN_ZOOM / (depth === 0 ? 1 : depth);
+            nad.svgDraw.panZoom({
+                zoomMin: minZoom,
+            });
 
             nadRef.current = nad;
         }
-    }, [network, svg, currentNode, theme, nadId, svgUrl]);
+    }, [network, svg, currentNode, theme, nadId, svgUrl, depth]);
 
     useLayoutEffect(() => {
         if (
