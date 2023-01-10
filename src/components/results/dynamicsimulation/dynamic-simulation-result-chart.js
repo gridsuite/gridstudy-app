@@ -142,7 +142,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
         // update revision to force refresh other plots except the sender
         const newPlots = Array.from(plots);
         for (let idx in newPlots) {
-            if (idx != index) {
+            if (idx !== `${index}`) {
                 newPlots[idx].revision = newPlots[idx].revision + 1;
             }
         }

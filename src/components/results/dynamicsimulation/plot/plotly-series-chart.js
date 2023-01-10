@@ -100,7 +100,7 @@ const PlotlySeriesChart = ({
                         ]
                             ? plotEvent.eventData['xaxis.range[1]']
                             : newLayout.xaxis.range[1];
-                        console.log('id-new layout : ', [id, newLayout]);
+                        console.log('new layout : ', [newLayout]);
                         return newLayout;
                     });
                     break;
