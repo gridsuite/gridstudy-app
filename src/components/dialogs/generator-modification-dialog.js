@@ -372,10 +372,10 @@ const GeneratorModificationDialog = ({
     };
 
     const isPreviousRegulationDistant = useCallback(() => {
-        return getPreviousRegulationType(generatorInfos) ===
+        return (
+            getPreviousRegulationType(generatorInfos) ===
             REGULATION_TYPES.DISTANT
-            ? true
-            : false;
+        );
     }, [generatorInfos]);
 
     function getPreviousRegulationType(generatorInfos) {
