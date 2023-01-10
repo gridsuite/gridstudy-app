@@ -162,6 +162,7 @@ const computePaperAndSvgSizesIfReady = (
 };
 
 const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 30;
 
 const SizedNetworkAreaDiagram = (props) => {
     const [svg, setSvg] = useState(noSvg);
@@ -336,6 +337,7 @@ const SizedNetworkAreaDiagram = (props) => {
             const minZoom = MIN_ZOOM / (depth === 0 ? 1 : depth);
             nad.svgDraw.panZoom({
                 zoomMin: minZoom,
+                zoomMax: MAX_ZOOM,
             });
 
             nadRef.current = nad;
