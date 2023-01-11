@@ -347,7 +347,7 @@ export function getNetworkAreaDiagramUrl(
 
 export function fetchNADSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetchText(svgUrl);
+    return backendFetchJson(svgUrl);
 }
 
 function getQueryParamsList(params, paramName) {
