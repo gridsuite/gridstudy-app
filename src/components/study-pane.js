@@ -28,7 +28,6 @@ import {
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
-    PARAM_USE_NAME,
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
@@ -100,8 +99,6 @@ const StudyPane = ({
     setErrorMessage,
     ...props
 }) => {
-    const useName = useSelector((state) => state[PARAM_USE_NAME]);
-
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector(
@@ -271,7 +268,6 @@ const StudyPane = ({
                                         studyDisplayMode !==
                                             STUDY_DISPLAY_MODE.TREE
                                     }
-                                    useName={useName}
                                     lineFullPath={lineFullPath}
                                     lineParallelPath={lineParallelPath}
                                     lineFlowMode={lineFlowMode}
