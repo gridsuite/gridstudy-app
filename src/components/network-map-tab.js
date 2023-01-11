@@ -468,7 +468,6 @@ export const NetworkMapTab = ({
             } else {
                 loadAllGeoData();
             }
-            dispatch(resetMapReloaded());
         }
     }, [
         currentNode,
@@ -513,6 +512,7 @@ export const NetworkMapTab = ({
                 }
             }
         }
+        dispatch(resetMapReloaded());
     }, [
         currentNode,
         dispatch,
@@ -555,6 +555,7 @@ export const NetworkMapTab = ({
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
+        loadMapEquipments,
         disabled,
         studyUuid,
         currentNode,
