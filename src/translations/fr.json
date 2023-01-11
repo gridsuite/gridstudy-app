@@ -203,9 +203,7 @@
     "descLfAllCountries": "Tous les pays",
     "descLfCountriesToBalance": "Pays participant à la compensation\u00a0:",
 
-    "descWithVoltageMap": "Calculer les chutes de tension",
     "descWithFeederResult": "Avec apports",
-    "descMinVoltageDropProportionalThreshold": "Seuil d'affichage des chutes de tension (%)",
     "descStudyType": "Type d'étude",
     "descTransient": "Transitoire",
     "descSubTransient": "Sub-transitoire",
