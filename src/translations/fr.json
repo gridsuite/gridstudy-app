@@ -671,5 +671,5 @@
     "ConnectionPosition": "Position départ",
     "DisplayTakenPositions": "Afficher les positions prises",
     "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
-    "NodeNotBuildPositionMessage": "Doit choisir une poste ou attendre que les données soient chargées"
+    "NodeNotBuildPositionMessage": "Veuillez choisir un poste ou attendre le chargement complet des données"
 }
