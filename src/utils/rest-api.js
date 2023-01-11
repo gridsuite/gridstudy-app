@@ -400,9 +400,10 @@ export function fetchSubstationPositions(
         `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
 
-    const paramsList = substationsIds
-        ? '?' + getQueryParamsList(substationsIds, 'substationId')
-        : '';
+    const paramsList =
+        substationsIds && substationsIds.length > 0
+            ? '?' + getQueryParamsList(substationsIds, 'substationId')
+            : '';
 
     const fetchSubstationPositionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -736,9 +737,10 @@ export function fetchLinePositions(studyUuid, currentNodeUuid, linesIds) {
         `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
     );
 
-    const paramsList = linesIds
-        ? '?' + getQueryParamsList(linesIds, 'lineId')
-        : '';
+    const paramsList =
+        linesIds && linesIds.length > 0
+            ? '?' + getQueryParamsList(linesIds, 'lineId')
+            : '';
 
     const fetchLinePositionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
