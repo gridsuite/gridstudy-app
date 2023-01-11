@@ -38,14 +38,14 @@ import AutocompleteInput from '../../inputs/autocomplete-input';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
- * @param id optional id that has to be defined if the hook is used more than once in a form
+ * @param id optional id that has to be defined if the component is used more than once in a form
  * @param direction direction of placement. Either 'row' or 'column', 'row' by default.
  * @param withPosition
  * @param withDirectionsInfos
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const ConnectivityForm = ({
-    id,
+    id = CONNECTIVITY,
     direction = 'row',
     withDirectionsInfos = true,
     withPosition = false,
@@ -68,7 +68,7 @@ export const ConnectivityForm = ({
     const {
         id: watchVoltageLevelId,
         topologyKind: watchVoltageLevelTopologyKind,
-    } = watch(`${CONNECTIVITY}.${VOLTAGE_LEVEL}`) || {};
+    } = watch(`${id}.${VOLTAGE_LEVEL}`) || {};
 
     useEffect(() => {
         fetchVoltageLevels(studyUuid, currentNode?.id).then((values) => {
@@ -124,7 +124,7 @@ export const ConnectivityForm = ({
             isOptionEqualToValue={areIdsEqual}
             size={'small'}
         />,
-        `${CONNECTIVITY}.${VOLTAGE_LEVEL}`
+        `${id}.${VOLTAGE_LEVEL}`
     );
 
     const newBusOrBusbarSectionField = formControlledItem(
@@ -135,12 +135,12 @@ export const ConnectivityForm = ({
             isOptionEqualToValue={areIdsEqual}
             size={'small'}
         />,
-        `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`
+        `${id}.${BUS_OR_BUSBAR_SECTION}`
     );
 
     const newConnectionNameField = formControlledItem(
         <TextInput label="ConnectionName" />,
-        `${CONNECTIVITY}.${CONNECTION_NAME}`
+        `${id}.${CONNECTION_NAME}`
     );
 
     const newConnectionDirectionField = formControlledItem(
@@ -150,7 +150,7 @@ export const ConnectivityForm = ({
             fullWidth
             size={'small'}
         />,
-        `${CONNECTIVITY}.${CONNECTION_DIRECTION}`
+        `${id}.${CONNECTION_DIRECTION}`
     );
 
     const handleClickOpenDiagramPane = useCallback(() => {
@@ -193,7 +193,7 @@ export const ConnectivityForm = ({
             )}
             clearable={true}
         />,
-        `${CONNECTIVITY}.${CONNECTION_POSITION}`
+        `${id}.${CONNECTION_POSITION}`
     );
 
     const gridSize =
