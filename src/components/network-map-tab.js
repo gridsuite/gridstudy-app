@@ -469,14 +469,7 @@ export const NetworkMapTab = ({
                 loadAllGeoData();
             }
         }
-    }, [
-        currentNode,
-        dispatch,
-        studyUuid,
-        geoData,
-        loadAllGeoData,
-        loadMissingGeoData,
-    ]);
+    }, [currentNode, studyUuid, geoData, loadAllGeoData, loadMissingGeoData]);
 
     const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
