@@ -64,6 +64,8 @@ import {
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     NoSvg,
     LOADING_WIDTH,
+    MAX_ZOOM,
+    MIN_ZOOM_RATIO,
 } from './diagram-common';
 import makeStyles from '@mui/styles/makeStyles';
 import DiagramHeader from './diagram-header';
@@ -108,11 +110,8 @@ const Diagram = forwardRef((props, ref) => {
         totalWidth,
     } = props;
 
-    const {
-        minimizeDiagramView,
-        togglePinDiagramView,
-        closeDiagramView,
-    } = useDiagram();
+    const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } =
+        useDiagram();
 
     const diagramType = useCallback(() => {
         switch (props.svgType) {
@@ -381,8 +380,21 @@ const Diagram = forwardRef((props, ref) => {
                         diagramViewer.getOriginalHeight()
                     )
                 ) {
-                    diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
+                    diagramViewer.setViewBox(
+                        diagramViewerRef.current.getViewBox()
+                    );
                 }
+
+                // we set min/max zoom for network area diagram
+                const minZoom =
+                    MIN_ZOOM_RATIO /
+                    (networkAreaDiagramDepth === 0
+                        ? 1
+                        : networkAreaDiagramDepth);
+                diagramViewer.svgDraw.panZoom({
+                    zoomMin: minZoom,
+                    zoomMax: MAX_ZOOM,
+                });
 
                 diagramViewerRef.current = diagramViewer;
             } else if (diagramType() === 'SLD') {
@@ -487,7 +499,9 @@ const Diagram = forwardRef((props, ref) => {
                         diagramViewer.getOriginalHeight()
                     )
                 ) {
-                    diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
+                    diagramViewer.setViewBox(
+                        diagramViewerRef.current.getViewBox()
+                    );
                 }
 
                 // on sld resizing, we need to refresh zoom to avoid exceeding max or min zoom
@@ -522,6 +536,7 @@ const Diagram = forwardRef((props, ref) => {
         loadingState,
         locallySwitchedBreaker,
         diagramType,
+        networkAreaDiagramDepth,
     ]);
 
     useLayoutEffect(() => {

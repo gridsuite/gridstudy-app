@@ -28,10 +28,11 @@ export const MAX_WIDTH_SUBSTATION = 1200;
 export const MAX_HEIGHT_SUBSTATION = 700;
 export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = 1200;
 export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
+export const MIN_ZOOM_RATIO = 0.1;
+export const MAX_ZOOM = 30;
 
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
-export const MAP_RIGHT_OFFSET = 120;
 export const MAP_BOTTOM_OFFSET = 80;
 export const BORDERS = 2; // we use content-size: border-box so this needs to be included..
 
@@ -219,14 +220,6 @@ export const useDiagram = () => {
     };
 };
 
-export function getNameOrId(value) {
-    return value?.name ?? value?.id;
-}
-
-export function getSubstationNameOrId(value) {
-    return value?.substationName ?? value?.substationId;
-}
-
 export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
@@ -263,13 +256,7 @@ export const computePaperAndSvgSizesIfReady = (
             } else {
                 console.error('type inconnu svgType');
             }
-            svgWidth = Math.min(
-                svgPreferredWidth,
-                svgType !== SvgType.NETWORK_AREA_DIAGRAM
-                    ? totalWidth //- MAP_RIGHT_OFFSET
-                    : totalWidth, // MAP_RIGHT_OFFSET = 120 pour SLD, 0 pour NAD
-                tempMaxWidth
-            );
+            svgWidth = Math.min(svgPreferredWidth, totalWidth, tempMaxWidth);
             svgHeight = Math.min(
                 svgPreferredHeight,
                 totalHeight - MAP_BOTTOM_OFFSET - headerPreferredHeight,

@@ -31,11 +31,12 @@ import { isNodeBuilt } from '../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
-import { isBlankOrEmpty } from '../util/validation-functions';
 import clsx from 'clsx';
+import { useNameOrId } from '../util/equipmentInfosHandler';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
+    const { getNameOrId } = useNameOrId();
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
     const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
     const substationLayout = useSelector(
@@ -117,13 +118,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createSubstationDiagramView(id, state) {
                 const substation = network.getSubstation(id);
                 if (!substation) return;
-                let name =
-                    paramUseName && !isBlankOrEmpty(substation.name)
-                        ? substation.name
-                        : id;
+                let label = getNameOrId(substation);
                 const countryName = substation?.countryName;
                 if (countryName) {
-                    name += ' - ' + countryName;
+                    label += ' - ' + countryName;
                 }
                 const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(id);
 
@@ -131,7 +129,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     id: id,
                     ref: React.createRef(),
                     state: state,
-                    name: name,
+                    name: label,
                     svgUrl: svgUrl,
                     svgType: SvgType.SUBSTATION,
                 };
@@ -140,14 +138,11 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createVoltageLevelDiagramView(id, state) {
                 const voltageLevel = network.getVoltageLevel(id);
                 if (!voltageLevel) return;
-                let name =
-                    paramUseName && !isBlankOrEmpty(voltageLevel.name)
-                        ? voltageLevel.name
-                        : id;
+                let label = getNameOrId(voltageLevel);
                 const substation = network.getSubstation(id);
                 const countryName = substation?.countryName;
                 if (countryName) {
-                    name += ' - ' + countryName;
+                    label += ' - ' + countryName;
                 }
                 const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(id);
 
@@ -155,7 +150,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     id: id,
                     ref: React.createRef(),
                     state: state,
-                    name: name,
+                    name: label,
                     svgUrl: svgUrl,
                     svgType: SvgType.VOLTAGE_LEVEL,
                     substationId: substation?.id,
@@ -173,10 +168,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
                 if (displayedVoltageLevels.length === 0) return;
                 displayedVoltageLevels.forEach((voltageLevel) => {
-                    const name =
-                        paramUseName && voltageLevel?.name
-                            ? voltageLevel?.name
-                            : voltageLevel?.id;
+                    const name = getNameOrId(voltageLevel);
                     if (name !== undefined) {
                         nadTitle =
                             nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
@@ -217,10 +209,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         },
         [
             network,
-            paramUseName,
             checkAndGetSubstationSingleLineDiagramUrl,
             checkAndGetVoltageLevelSingleLineDiagramUrl,
             checkAndGetNetworkAreaDiagramUrl,
+            getNameOrId,
         ]
     );
 };
@@ -282,11 +274,8 @@ export function DiagramPane({
     const viewsRef = useRef();
     viewsRef.current = views;
 
-    const {
-        openDiagramView,
-        closeDiagramView,
-        closeDiagramViews,
-    } = useDiagram();
+    const { openDiagramView, closeDiagramView, closeDiagramViews } =
+        useDiagram();
 
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;

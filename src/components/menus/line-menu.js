@@ -19,7 +19,6 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
-import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import {
     energiseLineEnd,
@@ -33,8 +32,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
-import { useParameterState } from '../dialogs/parameters/parameters';
-import { getNameOrId } from '../diagrams/diagram-common';
+import { useNameOrId } from '../util/equipmentInfosHandler';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -62,12 +60,10 @@ const withLineMenu =
         const classes = useStyles();
         const intl = useIntl();
         const studyUuid = decodeURIComponent(useParams().studyUuid);
-
         const { snackInfo } = useSnackMessage();
-        const [displayUseName] = useParameterState(PARAM_USE_NAME);
         const network = useSelector((state) => state.network);
-
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
+        const { getNameOrId } = useNameOrId();
 
         const line = network.getLine(id);
 
@@ -85,11 +81,12 @@ const withLineMenu =
 
         const getLineDescriptor = useCallback(
             (voltageLevelId) => {
-                return displayUseName
-                    ? getNameOrId(network.getVoltageLevel(voltageLevelId))
-                    : voltageLevelId;
+                return getNameOrId({
+                    name: network.getVoltageLevel(voltageLevelId)?.name,
+                    id: voltageLevelId,
+                });
             },
-            [displayUseName, network]
+            [network, getNameOrId]
         );
 
         function handleLineChangesResponse(response, messsageId) {
@@ -109,7 +106,6 @@ const withLineMenu =
         }
 
         function handleLockout() {
-            if (line.branchStatus === 'PLANNED_OUTAGE') return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -127,7 +123,6 @@ const withLineMenu =
         }
 
         function handleTrip() {
-            if (line.branchStatus === 'FORCED_OUTAGE') return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -140,15 +135,6 @@ const withLineMenu =
         }
 
         function handleEnergise(side) {
-            if (
-                (side === 'ONE' &&
-                    line.terminal1Connected &&
-                    !line.terminal2Connected) ||
-                (side === 'TWO' &&
-                    line.terminal2Connected &&
-                    !line.terminal1Connected)
-            )
-                return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -166,7 +152,6 @@ const withLineMenu =
         }
 
         function handleSwitchOn() {
-            if (line.terminal1Connected && line.terminal2Connected) return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -205,8 +190,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
-                    selected={line.branchStatus === 'PLANNED_OUTAGE'}
-                    disabled={!isNodeEditable}
+                    disabled={
+                        !isNodeEditable ||
+                        line.branchStatus === 'PLANNED_OUTAGE'
+                    }
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -225,8 +212,9 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
-                    selected={line.branchStatus === 'FORCED_OUTAGE'}
-                    disabled={!isNodeEditable}
+                    disabled={
+                        !isNodeEditable || line.branchStatus === 'FORCED_OUTAGE'
+                    }
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -245,10 +233,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleEnergise('ONE')}
-                    selected={
-                        line.terminal1Connected && !line.terminal2Connected
+                    disabled={
+                        !isNodeEditable ||
+                        (line.terminal1Connected && !line.terminal2Connected)
                     }
-                    disabled={!isNodeEditable}
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -274,10 +262,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleEnergise('TWO')}
-                    selected={
-                        line.terminal2Connected && !line.terminal1Connected
+                    disabled={
+                        !isNodeEditable ||
+                        (line.terminal2Connected && !line.terminal1Connected)
                     }
-                    disabled={!isNodeEditable}
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -303,10 +291,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleSwitchOn()}
-                    selected={
-                        line.terminal1Connected && line.terminal2Connected
+                    disabled={
+                        !isNodeEditable ||
+                        (line.terminal1Connected && line.terminal2Connected)
                     }
-                    disabled={!isNodeEditable}
                 >
                     <ListItemIcon>
                         <PlayIcon />

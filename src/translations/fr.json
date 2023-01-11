@@ -203,9 +203,7 @@
     "descLfAllCountries": "Tous les pays",
     "descLfCountriesToBalance": "Pays participant à la compensation\u00a0:",
 
-    "descWithVoltageMap": "Calculer les chutes de tension",
     "descWithFeederResult": "Avec apports",
-    "descMinVoltageDropProportionalThreshold": "Seuil d'affichage des chutes de tension (%)",
     "descStudyType": "Type d'étude",
     "descTransient": "Transitoire",
     "descSubTransient": "Sub-transitoire",
@@ -434,6 +432,8 @@
     "Characteristics": "Caractéristiques",
     "Side1": "Côté 1",
     "Side2": "Côté 2",
+    "OriginSide": "Côté origine",
+    "ExtremitySide": "Côté extrémité",
     "SeriesResistanceText": "Résistance série",
     "SeriesReactanceText": "Réactance série",
     "ShuntConductanceText": "Conductance parallèle",
@@ -667,8 +667,7 @@
     "DeleteAttachingLine": "Supprimer un piquage",
     "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",
-    "ErrorNoVoltageSelected": "Aucun poste sélectionné, veuillez en sélectionner un avant",
     "DisplayTakenPositions": "Afficher les positions prises",
     "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
-    "NodeNotBuildPositionMessage": "Veuillez réaliser le nœud actuel pour afficher les positions"
+    "NodeNotBuildPositionMessage": "Veuillez choisir un poste ou attendre le chargement complet des données"
 }
