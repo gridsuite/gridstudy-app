@@ -139,17 +139,9 @@ const BasicShortCircuitParameters = ({
     commitShortCircuitParams,
 }) => {
     const paramsDef = {
-        withVoltageMap: {
-            type: TYPES.bool,
-            description: 'descWithVoltageMap',
-        },
         withFeederResult: {
             type: TYPES.bool,
             description: 'descWithFeederResult',
-        },
-        minVoltageDropProportionalThreshold: {
-            type: TYPES.slider,
-            description: 'descMinVoltageDropProportionalThreshold',
         },
         studyType: {
             type: TYPES.enum,
