@@ -13,8 +13,9 @@ import {
     genHelperPreviousValue,
 } from '../../dialogs/inputs/hooks-helpers';
 import PropTypes from 'prop-types';
-import { Controller, useController, useFormContext } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 import { func_identity } from '../../dialogs/dialogUtils';
+import { isFieldRequired } from '../utils/utils';
 
 /**
  * Autocomplete input
@@ -38,7 +39,7 @@ const AutocompleteInput = ({
     allowNewValue,
     ...props
 }) => {
-    const { isFieldRequired } = useFormContext();
+    const { validationSchema } = useFormContext();
     const {
         field: { onChange, value },
         fieldState: { error },
@@ -63,7 +64,7 @@ const AutocompleteInput = ({
                 <TextField
                     label={FieldLabel({
                         label: label,
-                        optional: !isFieldRequired(name),
+                        optional: !isFieldRequired(name, validationSchema),
                     })}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
                     {...genHelperPreviousValue(previousValue)}

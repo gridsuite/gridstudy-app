@@ -23,7 +23,7 @@ import {
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
-import { useSchemaCheck } from '../../utils/use-schema-check';
+import { useSchemaCheck } from '../../utils/utils';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,
@@ -70,8 +70,6 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
     const { snackError } = useSnackMessage();
 
     const equipmentPath = 'loads';
-
-    const [isFieldRequired] = useSchemaCheck(schema);
 
     const methods = useForm({
         defaultValues: emptyFormData,
@@ -206,7 +204,7 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
     }, [reset]);
 
     return (
-        <FormProvider isFieldRequired={isFieldRequired} {...methods}>
+        <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

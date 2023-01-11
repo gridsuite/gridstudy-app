@@ -16,7 +16,8 @@ import {
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types';
-import { Controller, useController, useFormContext } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
+import { isFieldRequired } from '../utils/utils';
 
 const TextInput = ({
     name,
@@ -32,7 +33,7 @@ const TextInput = ({
     customAdornment,
 }) => {
     const classes = useStyles();
-    const { isFieldRequired } = useFormContext();
+    const { validationSchema } = useFormContext();
     const {
         field: { onChange, value },
         fieldState: { error },
@@ -61,7 +62,8 @@ const TextInput = ({
             label={FieldLabel({
                 label,
                 optional:
-                    isFieldRequired(name) === false && !formProps?.disabled,
+                    !isFieldRequired(name, validationSchema) &&
+                    !formProps?.disabled,
             })}
             {...(adornment && {
                 adornmentPosition: adornment.position,
