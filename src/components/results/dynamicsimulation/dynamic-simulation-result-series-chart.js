@@ -7,11 +7,12 @@
 
 import CloseIcon from '@mui/icons-material/Close';
 import PlotlySeriesChart from './plot/plotly-series-chart';
-import { Card, CardContent, CardHeader } from '@mui/material';
+import { Card, CardContent, CardHeader, Typography } from '@mui/material';
 import { memo } from 'react';
 import TooltipIconButton from './common/tooltip-icon-button';
 import makeStyles from '@mui/styles/makeStyles';
 import { lighten } from '@mui/material/styles';
+import { useIntl } from 'react-intl';
 const useStyles = makeStyles((theme) => ({
     closeButton: {
         cursor: 'pointer',
@@ -30,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
     cardHeaderAction: {
         margin: 'auto',
     },
+    cardHeaderAvatar: {
+        color: theme.palette.primary.main,
+    },
 }));
 const DynamicSimulationResultSeriesChart = ({
     id,
@@ -44,7 +48,7 @@ const DynamicSimulationResultSeriesChart = ({
     plotEvent,
 }) => {
     const classes = useStyles();
-
+    const intl = useIntl();
     // Plotly
     return (
         <Card
@@ -59,7 +63,15 @@ const DynamicSimulationResultSeriesChart = ({
                 classes={{
                     root: classes.cardHeaderRoot,
                     action: classes.cardHeaderAction,
+                    avatar: classes.cardHeaderAvatar,
                 }}
+                avatar={
+                    <Typography variant={'h6'}>
+                        {`${intl.formatMessage({
+                            id: 'DynamicSimulationResultChart',
+                        })} ${id}`}
+                    </Typography>
+                }
                 action={
                     <TooltipIconButton
                         toolTip={'Close graph'}

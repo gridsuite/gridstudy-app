@@ -5,15 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
-import { List, ListSubheader } from '@mui/material';
+import { Grid, List, ListSubheader, Typography } from '@mui/material';
 import { memo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyle = makeStyles((theme) => ({
-    header: {
-        display: 'flex',
-        justifyContent: 'space-between',
+    root: {
+        width: '100%',
+        maxHeight: 'calc(100vh - 300px)',
+        overflow: 'auto',
     },
+    headerItem: {
+        textAlign: 'center',
+        background: theme.palette.background.paper,
+    },
+    headerList: {},
 }));
 
 const DynamicSimulationResultSeriesList = ({
@@ -66,25 +72,24 @@ const DynamicSimulationResultSeriesList = ({
 
     const renderHeaders = () => {
         return (
-            <ListSubheader>
-                <li className={classes.header}>
+            <ListSubheader className={classes.headerList}>
+                <Grid container>
                     {headers.map((header, index) => (
-                        <ul key={index}>{header}</ul>
+                        <Grid item flexGrow={index === 1 ? 1 : 0} key={index}>
+                            <Typography
+                                className={classes.headerItem}
+                                variant={'subtitle1'}
+                            >
+                                {header}
+                            </Typography>
+                        </Grid>
                     ))}
-                </li>
+                </Grid>
             </ListSubheader>
         );
     };
     return (
-        <List
-            sx={{
-                width: '100%',
-                maxHeight: '680px',
-                overflow: 'auto',
-                bgColor: 'background.paper',
-            }}
-            subheader={renderHeaders()}
-        >
+        <List className={classes.root} subheader={renderHeaders()}>
             {items.map((item, index) => (
                 <DynamicSimulationResultSeriesItem
                     key={index}

@@ -139,7 +139,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                                                 }}
                                             >
                                                 {`${intl.formatMessage({
-                                                    id: 'DynamicSimulationResultChart',
+                                                    id: 'DynamicSimulationResultTab',
                                                 })} ${tab.id}`}
                                                 <IconButton
                                                     size="small"

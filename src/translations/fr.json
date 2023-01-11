@@ -151,6 +151,7 @@
     "DynamicSimulationWithVariant": "Exécuter la simulation avec une variante",
     "DynamicSimulationMappingSelection": "Sélectionnez un mappage",
     "DynamicSimulationResultReport": "Rapport",
+    "DynamicSimulationResultTab": "Page",
     "DynamicSimulationResultChart": "Graphe",
     "DynamicSimulationResultJson": "Données",
     "DynamicSimulationTimeSeriesLabel": "Time Series",

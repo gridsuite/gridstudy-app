@@ -18,6 +18,7 @@ import SyncIcon from '@mui/icons-material/Sync';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
 import makeStyles from '@mui/styles/makeStyles';
 import { lighten } from '@mui/material/styles';
+import { Box } from '@mui/system';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -33,6 +34,10 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap',
         backgroundColor: lighten(theme.palette.background.paper, 0.2),
         padding: '2px',
+    },
+    cardSticky: {
+        position: 'sticky',
+        top: theme.spacing(2),
     },
 }));
 const DynamicSimulationResultChart = ({ series, selected }) => {
@@ -179,9 +184,9 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
     return (
         <Grid
             container
-            direction={'row'}
-            justifyContent={'space-between'}
-            alignItems={'flex-start'}
+            //direction={'row'}
+            //justifyContent={'space-between'}
+            //alignItems={'flex-start'}
         >
             <Grid item xs={9}>
                 <Grid
@@ -242,7 +247,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                             {plots.map((plot, index) => (
                                 <DynamicSimulationResultSeriesChart
                                     key={`${plot.id}`}
-                                    id={`plot-${plot.id}`}
+                                    id={`${plot.id}`}
                                     index={index}
                                     selected={selectedIndex === index}
                                     onSelect={handleSelectIndex}
@@ -259,22 +264,24 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                 </Grid>
             </Grid>
             <Grid item xs={3}>
-                {plots.map((plot, index) => (
-                    <Visibility
-                        key={`plot-${plot.id}`}
-                        value={selectedIndex}
-                        index={index}
-                        visible={selected}
-                    >
-                        <DynamicSimulationResultSeriesList
+                <Box className={classes.cardSticky}>
+                    {plots.map((plot, index) => (
+                        <Visibility
+                            key={`plot-${plot.id}`}
+                            value={selectedIndex}
                             index={index}
-                            items={items}
-                            headers={headers}
-                            onLeftAxisSelected={handleLeftAxisSelected}
-                            onRightAxisSelected={handleRightAxisSelected}
-                        />
-                    </Visibility>
-                ))}
+                            visible={selected}
+                        >
+                            <DynamicSimulationResultSeriesList
+                                index={index}
+                                items={items}
+                                headers={headers}
+                                onLeftAxisSelected={handleLeftAxisSelected}
+                                onRightAxisSelected={handleRightAxisSelected}
+                            />
+                        </Visibility>
+                    ))}
+                </Box>
             </Grid>
         </Grid>
     );

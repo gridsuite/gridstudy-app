@@ -151,6 +151,7 @@
     "DynamicSimulationWithVariant": "Run simulation with a variant",
     "DynamicSimulationMappingSelection": "Select a mapping",
     "DynamicSimulationResultReport": "Report",
+    "DynamicSimulationResultTab": "Page",
     "DynamicSimulationResultChart": "Graph",
     "DynamicSimulationResultJson": "Data",
     "DynamicSimulationTimeSeriesLabel": "Time Series",
