@@ -542,12 +542,48 @@ const GeneratorModificationDialog = ({
         defaultValue: getValue(formValues?.stepUpTransformerReactance),
         previousValue: generatorInfos?.stepUpTransformerReactance,
     });
+
+    const [plannedActivePowerSetPoint, plannedActivePowerSetPointField] =
+        useDoubleValue({
+            label: 'PlannedActivePowerSetPoint',
+            adornment: ActivePowerAdornment,
+            inputForm: inputForm,
+            defaultValue: formValues?.plannedActivePowerSetPoint,
+        });
+
+    const [startupCost, startupCostField] = useDoubleValue({
+        label: 'StartupCost',
+        inputForm: inputForm,
+        defaultValue: formValues?.startupCost,
+    });
+
     const [marginalCost, marginalCostField] = useDoubleValue({
         label: 'MarginalCost',
-        validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.marginalCost),
         previousValue: generatorInfos?.marginalCost,
+    });
+
+    const [plannedOutageRate, plannedOutageRateField] = useDoubleValue({
+        label: 'PlannedOutageRate',
+        validation: {
+            valueGreaterThanOrEqualTo: '0',
+            valueLessThanOrEqualTo: '1',
+            errorMsgId: 'RealPercentage',
+        },
+        inputForm: inputForm,
+        defaultValue: formValues?.plannedOutageRate,
+    });
+
+    const [forcedOutageRate, forcedOutageRateField] = useDoubleValue({
+        label: 'ForcedOutageRate',
+        validation: {
+            valueGreaterThanOrEqualTo: '0',
+            valueLessThanOrEqualTo: '1',
+            errorMsgId: 'RealPercentage',
+        },
+        inputForm: inputForm,
+        defaultValue: formValues?.forcedOutageRate,
     });
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
         label: 'VoltageText',
@@ -695,7 +731,11 @@ const GeneratorModificationDialog = ({
             isVoltageRegulationOn && isDistantRegulation(voltageRegulationType)
                 ? qPercent
                 : null,
+            plannedActivePowerSetPoint ?? null,
+            startupCost ?? null,
             marginalCost ? marginalCost : null,
+            plannedOutageRate ?? null,
+            forcedOutageRate ?? null,
             transientReactance ? transientReactance : null,
             transformerReactance ? transformerReactance : null,
             voltageRegulationType,
@@ -837,10 +877,19 @@ const GeneratorModificationDialog = ({
                     {gridItem(transientReactanceField, 4)}
                     {gridItem(transformerReactanceField, 4)}
                 </Grid>
+
                 {/* Cost of start part */}
-                <GridSection title="MarginalCost" />
+                <GridSection title="Startup" />
                 <Grid container spacing={2}>
-                    {gridItem(marginalCostField, 4)}
+                    {gridItem(plannedActivePowerSetPointField, 4)}
+                    <Grid container item spacing={2}>
+                        {gridItem(startupCostField, 4)}
+                        {gridItem(marginalCostField, 4)}
+                    </Grid>
+                    <Grid container item spacing={2}>
+                        {gridItem(plannedOutageRateField, 4)}
+                        {gridItem(forcedOutageRateField, 4)}
+                    </Grid>
                 </Grid>
             </div>
         </ModificationDialog>
