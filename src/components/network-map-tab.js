@@ -551,7 +551,7 @@ export const NetworkMapTab = ({
         loadMapEquipments,
         disabled,
         studyUuid,
-        currentNode,
+        loadMapEquipments,
         isInitialized,
         reloadMapNeeded,
         updatedSubstationsIds,
