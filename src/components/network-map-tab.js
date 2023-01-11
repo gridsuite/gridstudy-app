@@ -466,15 +466,20 @@ export const NetworkMapTab = ({
         if (studyUuid && currentNodeRef.current) {
             if (
                 geoDataRef.current &&
-                (geoDataRef.current.substationPositionsById.size > 0 ||
-                    geoDataRef.current.linePositionsById.size > 0)
+                // To manage a lineFullPath param change, if lineFullPath=true and linePositions is void, we load all the geo data.
+                // This can be improved by loading only the lines geo data and not lines geo data + substations geo data when lineFullPath is changed to true.
+                ((lineFullPath &&
+                    geoDataRef.current.substationPositionsById.size > 0 &&
+                    geoDataRef.current.linePositionsById.size > 0) ||
+                    (!lineFullPath &&
+                        geoDataRef.current.substationPositionsById.size > 0))
             ) {
                 loadMissingGeoData();
             } else {
                 loadAllGeoData();
             }
         }
-    }, [studyUuid, loadAllGeoData, loadMissingGeoData]);
+    }, [studyUuid, loadAllGeoData, loadMissingGeoData, lineFullPath]);
 
     const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
@@ -563,6 +568,8 @@ export const NetworkMapTab = ({
         updatedSubstationsIds,
     ]);
 
+    // This useEffect ensures the geo data load is done after the map equipments load. The sequentiality could be enforced by using a chain of promises for the updates of mapEquipments and geoData
+    // At initialization, loadMapEquipments and loadGeoData can be parallelized.
     useEffect(() => {
         if (!mapEquipments) return;
         loadGeoData();
