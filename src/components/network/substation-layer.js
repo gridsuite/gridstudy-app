@@ -13,7 +13,6 @@ import {
     SUBSTATION_RADIUS_MAX_PIXEL,
     SUBSTATION_RADIUS_MIN_PIXEL,
 } from './constants';
-import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
 
 const voltageLevelNominalVoltageIndexer = (map, voltageLevel) => {
     let list = map.get(voltageLevel.nominalVoltage);
@@ -112,7 +111,7 @@ class SubstationLayer extends CompositeLayer {
 
         if (
             changeFlags.dataChanged ||
-            props.useName !== oldProps.useName ||
+            props.getNameOrId !== oldProps.getNameOrId ||
             props.filteredNominalVoltages !== oldProps.filteredNominalVoltages
         ) {
             let substationsLabels = [];
@@ -178,10 +177,7 @@ class SubstationLayer extends CompositeLayer {
                 data: this.state.substationsLabels,
                 getPosition: (substation) =>
                     this.props.geoData.getSubstationPosition(substation.id),
-                getText: (substation) =>
-                    this.props.useName
-                        ? getNameOrId(substation)
-                        : substation.id,
+                getText: (substation) => this.props.getNameOrId(substation),
                 getColor: this.props.labelColor,
                 fontFamily: 'Roboto',
                 getSize: this.props.labelSize,
@@ -191,7 +187,7 @@ class SubstationLayer extends CompositeLayer {
                 getPixelOffset: [20 / 1.5, 0],
                 visible: this.props.labelsVisible,
                 updateTriggers: {
-                    getText: [this.props.useName],
+                    getText: [this.props.getNameOrId],
                     getPosition: [
                         this.props.geoData.substationPositionsById,
                         this.props.network.substations,
@@ -212,7 +208,6 @@ SubstationLayer.defaultProps = {
     geoData: null,
     getNominalVoltageColor: { type: 'accessor', value: [255, 255, 255] },
     filteredNominalVoltages: [],
-    useName: true,
     labelsVisible: false,
     labelColor: { type: 'color', value: [255, 255, 255] },
     labelSize: 12,
