@@ -548,9 +548,9 @@ export const NetworkMapTab = ({
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
-        loadMapEquipments,
         disabled,
         studyUuid,
+        currentNode,
         loadMapEquipments,
         isInitialized,
         reloadMapNeeded,
