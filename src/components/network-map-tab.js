@@ -108,6 +108,8 @@ export const NetworkMapTab = ({
         useState(false);
 
     const [geoData, setGeoData] = useState();
+    const geoDataRef = useRef();
+    geoDataRef.current = geoData;
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -286,11 +288,11 @@ export const NetworkMapTab = ({
 
             return fetchEquipmentCB(
                 studyUuid,
-                currentNode?.id,
+                currentNodeRef.current?.id,
                 notFoundEquipmentsIds
             );
         },
-        [studyUuid, currentNode?.id]
+        [studyUuid]
     );
 
     const updateSubstationsTemporaryGeoData = useCallback(
@@ -300,22 +302,18 @@ export const NetworkMapTab = ({
                 // If the geo data is the same in the geoData and in the server response, it's not updated
                 if (
                     !substationPositionsAreEqual(
-                        geoData.substationPositionsById.get(pos.id),
+                        geoDataRef.current.substationPositionsById.get(pos.id),
                         pos
                     )
                 ) {
                     temporaryGeoDataIds.add(pos.id);
-                    geoData.substationPositionsById.set(pos.id, pos);
+                    geoDataRef.current.substationPositionsById.set(pos.id, pos);
                     someDataHasChanged = true;
                 }
             });
             return someDataHasChanged;
         },
-        [
-            geoData?.substationPositionsById,
-            substationPositionsAreEqual,
-            temporaryGeoDataIds,
-        ]
+        [substationPositionsAreEqual, temporaryGeoDataIds]
     );
 
     const updateLinesTemporaryGeoData = useCallback(
@@ -325,30 +323,30 @@ export const NetworkMapTab = ({
                 // If the geo data is the same in the geoData and in the server response, it's not updated
                 if (
                     !linePositionsAreEqual(
-                        geoData.linePositionsById.get(pos.id),
+                        geoDataRef.current.linePositionsById.get(pos.id),
                         pos
                     )
                 ) {
                     temporaryGeoDataIds.add(pos.id);
-                    geoData.linePositionsById.set(pos.id, pos);
+                    geoDataRef.current.linePositionsById.set(pos.id, pos);
                     someDataHasChanged = true;
                 }
             });
             return someDataHasChanged;
         },
-        [geoData?.linePositionsById, linePositionsAreEqual, temporaryGeoDataIds]
+        [linePositionsAreEqual, temporaryGeoDataIds]
     );
 
     const loadMissingGeoData = useCallback(() => {
         const notFoundSubstationIds = getEquipmentsNotFoundIds(
-            geoData.substationPositionsById,
-            mapEquipments.getSubstations()
+            geoDataRef.current.substationPositionsById,
+            mapEquipments.substations
         );
 
         const notFoundLinesIds = lineFullPath
             ? getEquipmentsNotFoundIds(
-                  geoData.linePositionsById,
-                  mapEquipments.getLines()
+                  geoDataRef.current.linePositionsById,
+                  mapEquipments.lines
               )
             : [];
 
@@ -382,19 +380,26 @@ export const NetworkMapTab = ({
 
                         // If no geo data has changed, we avoid to trigger a new render.
                         if (someDataHasChanged) {
-                            geoData.addSubstationPositions(positions[0]);
-                            geoData.addLinePositions(positions[1]);
+                            geoDataRef.current.addSubstationPositions(
+                                positions[0]
+                            );
+                            geoDataRef.current.addLinePositions(positions[1]);
                             // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
                             // Same for line positions.
                             const newGeoData = new GeoData(
                                 positions[0].length > 0
-                                    ? new Map(geoData.substationPositionsById)
-                                    : geoData.substationPositionsById,
+                                    ? new Map(
+                                          geoDataRef.current.substationPositionsById
+                                      )
+                                    : geoDataRef.current
+                                          .substationPositionsById,
                                 // If lineFullPath is off, we need to render the lines layer when there are some new subsation positions
                                 positions[1].length > 0 ||
                                 (!lineFullPath && positions[0].length > 0)
-                                    ? new Map(geoData.linePositionsById)
-                                    : geoData.linePositionsById
+                                    ? new Map(
+                                          geoDataRef.current.linePositionsById
+                                      )
+                                    : geoDataRef.current.linePositionsById
                             );
                             setGeoData(newGeoData);
                         }
@@ -417,10 +422,10 @@ export const NetworkMapTab = ({
         lineFullPath,
         setErrorMessage,
         studyUuid,
-        geoData,
         getEquipmentsNotFoundIds,
         getMissingEquipmentsPositions,
-        mapEquipments,
+        mapEquipments?.substations,
+        mapEquipments?.lines,
         updateSubstationsTemporaryGeoData,
         updateLinesTemporaryGeoData,
     ]);
@@ -430,11 +435,11 @@ export const NetworkMapTab = ({
         setWaitingLoadGeoData(true);
         const substationPositions = fetchSubstationPositions(
             studyUuid,
-            currentNode?.id
+            currentNodeRef.current?.id
         );
 
         const linePositions = lineFullPath
-            ? fetchLinePositions(studyUuid, currentNode?.id)
+            ? fetchLinePositions(studyUuid, currentNodeRef.current?.id)
             : Promise.resolve([]);
 
         Promise.all([substationPositions, linePositions])
@@ -455,21 +460,21 @@ export const NetworkMapTab = ({
                     )
                 );
             });
-    }, [currentNode?.id, intlRef, lineFullPath, setErrorMessage, studyUuid]);
+    }, [intlRef, lineFullPath, setErrorMessage, studyUuid]);
 
-    const loadMapGeoData = useCallback(() => {
-        if (studyUuid && currentNode) {
+    const loadGeoData = useCallback(() => {
+        if (studyUuid && currentNodeRef.current) {
             if (
-                geoData &&
-                (geoData.substationPositionsById.size > 0 ||
-                    geoData.linePositionsById.size > 0)
+                geoDataRef.current &&
+                (geoDataRef.current.substationPositionsById.size > 0 ||
+                    geoDataRef.current.linePositionsById.size > 0)
             ) {
                 loadMissingGeoData();
             } else {
                 loadAllGeoData();
             }
         }
-    }, [currentNode, studyUuid, geoData, loadAllGeoData, loadMissingGeoData]);
+    }, [studyUuid, loadAllGeoData, loadMissingGeoData]);
 
     const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
@@ -557,13 +562,10 @@ export const NetworkMapTab = ({
         updatedSubstationsIds,
     ]);
 
-    const loadMapGeoDataRef = useRef();
-    loadMapGeoDataRef.current = loadMapGeoData;
-
     useEffect(() => {
         if (!mapEquipments) return;
-        loadMapGeoDataRef.current();
-    }, [mapEquipments, mapEquipments?.substations, mapEquipments?.lines]);
+        loadGeoData();
+    }, [loadGeoData, mapEquipments]);
 
     useEffect(() => {
         let previousNodeStatus = isCurrentNodeBuiltRef.current;
@@ -664,7 +666,7 @@ export const NetworkMapTab = ({
             disabled={disabled}
             onReloadMapClick={() => {
                 loadMapEquipments();
-                loadMapGeoData();
+                loadGeoData();
             }}
         />
     );
