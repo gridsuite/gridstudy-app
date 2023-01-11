@@ -106,7 +106,6 @@ const withLineMenu =
         }
 
         function handleLockout() {
-            if (line.branchStatus === 'PLANNED_OUTAGE') return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -124,7 +123,6 @@ const withLineMenu =
         }
 
         function handleTrip() {
-            if (line.branchStatus === 'FORCED_OUTAGE') return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -137,15 +135,6 @@ const withLineMenu =
         }
 
         function handleEnergise(side) {
-            if (
-                (side === 'ONE' &&
-                    line.terminal1Connected &&
-                    !line.terminal2Connected) ||
-                (side === 'TWO' &&
-                    line.terminal2Connected &&
-                    !line.terminal1Connected)
-            )
-                return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -163,7 +152,6 @@ const withLineMenu =
         }
 
         function handleSwitchOn() {
-            if (line.terminal1Connected && line.terminal2Connected) return;
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
@@ -202,8 +190,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
-                    selected={line.branchStatus === 'PLANNED_OUTAGE'}
-                    disabled={!isNodeEditable}
+                    disabled={
+                        !isNodeEditable ||
+                        line.branchStatus === 'PLANNED_OUTAGE'
+                    }
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -222,8 +212,9 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
-                    selected={line.branchStatus === 'FORCED_OUTAGE'}
-                    disabled={!isNodeEditable}
+                    disabled={
+                        !isNodeEditable || line.branchStatus === 'FORCED_OUTAGE'
+                    }
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -242,10 +233,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleEnergise('ONE')}
-                    selected={
-                        line.terminal1Connected && !line.terminal2Connected
+                    disabled={
+                        !isNodeEditable ||
+                        (line.terminal1Connected && !line.terminal2Connected)
                     }
-                    disabled={!isNodeEditable}
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -271,10 +262,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleEnergise('TWO')}
-                    selected={
-                        line.terminal2Connected && !line.terminal1Connected
+                    disabled={
+                        !isNodeEditable ||
+                        (line.terminal2Connected && !line.terminal1Connected)
                     }
-                    disabled={!isNodeEditable}
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -300,10 +291,10 @@ const withLineMenu =
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleSwitchOn()}
-                    selected={
-                        line.terminal1Connected && line.terminal2Connected
+                    disabled={
+                        !isNodeEditable ||
+                        (line.terminal1Connected && line.terminal2Connected)
                     }
-                    disabled={!isNodeEditable}
                 >
                     <ListItemIcon>
                         <PlayIcon />
