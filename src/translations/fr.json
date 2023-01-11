@@ -203,9 +203,7 @@
     "descLfAllCountries": "Tous les pays",
     "descLfCountriesToBalance": "Pays participant à la compensation\u00a0:",
 
-    "descWithVoltageMap": "Calculer les chutes de tension",
     "descWithFeederResult": "Avec apports",
-    "descMinVoltageDropProportionalThreshold": "Seuil d'affichage des chutes de tension (%)",
     "descStudyType": "Type d'étude",
     "descTransient": "Transitoire",
     "descSubTransient": "Sub-transitoire",
@@ -683,5 +681,5 @@
     "ConnectionPosition": "Position départ",
     "DisplayTakenPositions": "Afficher les positions prises",
     "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
-    "NodeNotBuildPositionMessage": "Doit choisir une poste ou attendre que les données soient chargées"
+    "NodeNotBuildPositionMessage": "Veuillez choisir un poste ou attendre le chargement complet des données"
 }
