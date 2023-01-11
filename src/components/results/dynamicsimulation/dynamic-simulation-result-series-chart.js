@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const DynamicSimulationResultSeriesChart = ({
     id,
+    index,
     selected,
     leftSeries,
     rightSeries,
@@ -43,6 +44,7 @@ const DynamicSimulationResultSeriesChart = ({
     plotEvent,
 }) => {
     const classes = useStyles();
+
     // Plotly
     return (
         <Card
@@ -51,7 +53,7 @@ const DynamicSimulationResultSeriesChart = ({
                     ? `${classes.cardActive} ${classes.card}}`
                     : classes.card
             }
-            onClick={onSelect}
+            onClick={() => onSelect(index)}
         >
             <CardHeader
                 classes={{
@@ -62,7 +64,7 @@ const DynamicSimulationResultSeriesChart = ({
                     <TooltipIconButton
                         toolTip={'Close graph'}
                         className={classes.CloseButton}
-                        onClick={onClose}
+                        onClick={() => onClose(index)}
                     >
                         <CloseIcon />
                     </TooltipIconButton>
@@ -71,6 +73,7 @@ const DynamicSimulationResultSeriesChart = ({
             <CardContent>
                 <PlotlySeriesChart
                     id={id}
+                    index={index}
                     leftSeries={leftSeries}
                     rightSeries={rightSeries}
                     onRelayout={onRelayout}

@@ -11,6 +11,7 @@ import { baseColors, defaultLayout, PlotEvents } from './plot-config';
 
 const PlotlySeriesChart = ({
     id,
+    index,
     leftSeries,
     rightSeries,
     onRelayout,
@@ -18,7 +19,9 @@ const PlotlySeriesChart = ({
     plotEvent,
 }) => {
     console.log('id-revision : ', [id, revision]);
-    const [layout, setLayout] = useState(defaultLayout);
+    const [layout, setLayout] = useState(
+        JSON.parse(JSON.stringify(defaultLayout)) // deep clone can be done by lodash
+    );
 
     const makeGetMarker = useMemo(
         () => (opts) => {
@@ -66,22 +69,30 @@ const PlotlySeriesChart = ({
 
     const handleOnRelayout = useCallback(
         (eventData) => {
-            console.log('onRelayout from action', [eventData]);
+            console.log('onRelayout trigged', [eventData]);
             // propagate data to parent
-            onRelayout(eventData, PlotEvents.ON_RELAYOUT);
+            onRelayout(index, eventData, PlotEvents.ON_RELAYOUT);
         },
-        [onRelayout]
+        [index, onRelayout]
     );
 
     useEffect(() => {
-        if (plotEvent && plotEvent.eventData) {
+        if (
+            revision !== 0 /* first version, ignore */ &&
+            plotEvent &&
+            plotEvent.eventData
+        ) {
             switch (plotEvent.eventName) {
                 case PlotEvents.ON_RELAYOUT:
+                    // exit when no change on x
                     if (
+                        !plotEvent.eventData['xaxis.range[0]'] ||
+                        !plotEvent.eventData['xaxis.range[1]'] ||
                         plotEvent.eventData['xaxis.range[0]'] ===
-                        plotEvent.eventData['xaxis.range[1]']
+                            plotEvent.eventData['xaxis.range[1]']
                     )
                         return;
+
                     setLayout((prev) => {
                         const newLayout = {
                             ...prev,
@@ -90,17 +101,16 @@ const PlotlySeriesChart = ({
                                 range: [...prev.xaxis.range],
                             },
                         };
-                        newLayout.xaxis.range[0] = plotEvent.eventData[
-                            'xaxis.range[0]'
-                        ]
-                            ? plotEvent.eventData['xaxis.range[0]']
-                            : newLayout.xaxis.range[0];
-                        newLayout.xaxis.range[1] = plotEvent.eventData[
-                            'xaxis.range[1]'
-                        ]
-                            ? plotEvent.eventData['xaxis.range[1]']
-                            : newLayout.xaxis.range[1];
-                        console.log('new layout : ', [newLayout]);
+
+                        newLayout.xaxis.range[0] =
+                            plotEvent.eventData['xaxis.range[0]'];
+                        newLayout.xaxis.range[1] =
+                            plotEvent.eventData['xaxis.range[1]'];
+
+                        console.log('index-new layout in useEffect : ', [
+                            index,
+                            newLayout,
+                        ]);
                         return newLayout;
                     });
                     break;
@@ -108,7 +118,7 @@ const PlotlySeriesChart = ({
                     break;
             }
         }
-    }, [revision, plotEvent]);
+    }, [index, revision, plotEvent]);
 
     const handleOnInitialized = (figure) => {
         setLayout(figure.layout);

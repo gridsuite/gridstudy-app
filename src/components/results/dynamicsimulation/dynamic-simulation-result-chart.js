@@ -41,6 +41,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
 
     // button options synchronization
     const [sync, setSync] = useState(false);
+
     const [plotEvent, setPlotEvent] = useState({
         eventData: undefined,
         eventName: undefined,
@@ -51,16 +52,16 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
     const [plots, setPlots] = useState([
         {
             id: plotId,
-            revision: 1, // in order to force refresh after layout changed
+            revision: 0, // in order to force refresh after layout changed
             leftSelectedSeries: [],
             rightSelectedSeries: [],
         },
     ]);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const handleSelectIndex = (index) => () => {
+    const handleSelectIndex = useCallback((index) => {
         setSelectedIndex(index);
-    };
+    }, []);
 
     const handleLeftAxisSelected = (index, axisSelected) => {
         const newPlots = Array.from(plots);
@@ -95,7 +96,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
             ...prev,
             {
                 id: plotId + 1,
-                revision: 1,
+                revision: 0,
                 leftSelectedSeries: [],
                 rightSelectedSeries: [],
             },
@@ -106,22 +107,26 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
         setPlotId((prev) => prev + 1);
     };
 
-    const handleClose = (index) => () => {
-        const newPlots = Array.from(plots);
-        newPlots.splice(index, 1);
-        setSelectedIndex(
-            newPlots.length === 0
-                ? -1
-                : index === plots.length - 1
-                ? newPlots.length - 1
-                : index
-        ); // get the next item in new plots
-        setPlots(newPlots);
-        if (newPlots.length === 0) {
-            // reset tabId to zero
-            setPlotId(0);
-        }
-    };
+    const handleClose = useCallback(
+        (index) => {
+            const newPlots = Array.from(plots);
+            newPlots.splice(index, 1);
+            setSelectedIndex(
+                newPlots.length === 0
+                    ? -1
+                    : index === plots.length - 1
+                    ? newPlots.length - 1
+                    : index
+            ); // get the next item in new plots
+            setPlots(newPlots);
+            if (newPlots.length === 0) {
+                // reset tabId to zero
+                setPlotId(0);
+            }
+        },
+        [plots]
+    );
+
     const layout = plots.map((plot, index, list) => ({
         i: `${plot.id}`,
         x: index * 2,
@@ -130,24 +135,42 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
         h: 2,
     }));
 
-    const handleOnPlotRelayout = (index) => (eventData, eventName) => {
-        // update event
-        console.log('eventData in handleOnPlotRelayout', eventData);
-        setPlotEvent((prev) => {
-            prev.eventData = { ...eventData };
-            prev.eventName = eventName;
-            return prev;
-        });
+    const handleOnPlotRelayout = useCallback(
+        (index, eventData, eventName) => {
+            console.log(
+                'sender-eventData-sync in handleOnPlotRelayout',
+                index,
+                eventData,
+                sync
+            );
 
-        // update revision to force refresh other plots except the sender
-        const newPlots = Array.from(plots);
-        for (let idx in newPlots) {
-            if (idx !== `${index}`) {
-                newPlots[idx].revision = newPlots[idx].revision + 1;
+            console.log('current sync in handleOnPlotRelayout', sync);
+            if (!sync) {
+                return;
             }
-        }
-        setPlots(newPlots);
-    };
+
+            // update event
+            setPlotEvent((prev) => {
+                prev.eventData = { ...eventData };
+                prev.eventName = eventName;
+                return prev;
+            });
+
+            // update revision to force refresh other plots except the sender
+            const newPlots = Array.from(plots);
+            for (let idx in newPlots) {
+                if (idx !== `${index}`) {
+                    console.debug(
+                        'receiver-eventData in handleOnPlotRelayout',
+                        idx
+                    );
+                    newPlots[idx].revision = newPlots[idx].revision + 1;
+                }
+            }
+            setPlots(newPlots);
+        },
+        [sync, plots]
+    );
 
     //const handleLayoutChange = (layout) => {};
 
@@ -188,7 +211,13 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                                         value="sync"
                                         selected={sync}
                                         onChange={() => {
-                                            setSync((prev) => !prev);
+                                            setSync((prev) => {
+                                                console.log(
+                                                    'current sync = ',
+                                                    prev
+                                                );
+                                                return !prev;
+                                            });
                                         }}
                                     >
                                         {sync ? (
@@ -214,12 +243,13 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                                 <DynamicSimulationResultSeriesChart
                                     key={`${plot.id}`}
                                     id={`plot-${plot.id}`}
+                                    index={index}
                                     selected={selectedIndex === index}
-                                    onSelect={handleSelectIndex(index)}
+                                    onSelect={handleSelectIndex}
                                     leftSeries={plot.leftSelectedSeries}
                                     rightSeries={plot.rightSelectedSeries}
-                                    onClose={handleClose(index)}
-                                    onRelayout={handleOnPlotRelayout(index)}
+                                    onClose={handleClose}
+                                    onRelayout={handleOnPlotRelayout}
                                     revision={plot.revision}
                                     plotEvent={plotEvent}
                                 />
