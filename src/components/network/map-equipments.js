@@ -78,7 +78,7 @@ export default class MapEquipments {
         );
         const isFullReload = substationsIds ? false : true;
 
-        updatedEquipments
+        return updatedEquipments
             .then((values) => {
                 this.updateSubstations(
                     this.checkAndGetValues(values.substations),

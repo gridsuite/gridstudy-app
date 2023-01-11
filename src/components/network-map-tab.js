@@ -504,13 +504,14 @@ export const NetworkMapTab = ({
                         ? updatedSubstationsIds
                         : undefined;
 
-                mapEquipments.reloadImpactedSubstationsEquipments(
-                    studyUuid,
-                    currentNode,
-                    updatedSubstationsToSend,
-                    setUpdatedLines,
-                    () => setWaitingLoadEquipments(false)
-                );
+                mapEquipments
+                    .reloadImpactedSubstationsEquipments(
+                        studyUuid,
+                        currentNode,
+                        updatedSubstationsToSend,
+                        setUpdatedLines
+                    )
+                    .finally(() => setWaitingLoadEquipments(false));
                 if (updatedSubstationsToSend) {
                     setIsUpdatedSubstationsApplied(true);
                 }
