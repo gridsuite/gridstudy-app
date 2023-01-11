@@ -9,6 +9,7 @@
     "studyDeletedSuccessMsg": "Study deleted",
     "deleteStudyError": "Cannot remove the study if you are not the owner",
     "equipmentsSearchingError": "An error occurred while searching the equipments",
+    "equipmentsLoadingError": "An error occurred while loading the available equipments",
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
@@ -179,7 +180,7 @@
     "LimitType": "Limit type",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
-    "ComputationOk": "Computation OK",
+    "ComputationStatus": "Status",
     "true": "true",
     "false": "false",
     "Loading": "Loading",
@@ -340,6 +341,7 @@
     "exportCaseOnNode": "Export case",
     "nodeNameAlreadyUsed": "This name is already used",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
+    "MapEquipmentsLoadError": "An error occured while loading network map",
     "CaseNameLoadError": "An error occured while loading case name",
     "StudyUnrecoverableStateRecreate": "Your study has a problem. Please recreate it",
     "NodeCreateError": "An error occured while creating node",
@@ -433,6 +435,7 @@
     "Droop": "Droop",
     "MarginalCost": "Cost of start",
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
+    "MinReactivePowerLessThanMaxActivePower": "Minimum reactive power value must be less or equal than maximum reactive power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "NormalizedPercentage": "This percentage must be between 0 and 100",
@@ -446,8 +449,8 @@
     "Characteristics": "Characteristics",
     "Side1": "Side 1",
     "Side2": "Side 2",
-    "OriginSide": "Origin side",
-    "ExtrimitySide": "Extremity side",
+    "OriginSide": "Side 1",
+    "ExtremitySide": "Side 2",
     "SeriesResistanceText": "Series resistance",
     "SeriesReactanceText": "Series reactance",
     "ShuntConductanceText": "Shunt conductance",
@@ -511,7 +514,9 @@
     "ReplacingLines": "Replacing lines",
     "LineDivisionError": "Error while puting a voltage level amidst a line",
     "LineAttachmentError": "Error while attaching a voltage level to a line",
-
+    "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
+    "DeleteAttachingLineError" : "Error while deleting an attaching line",
+    
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
 
@@ -610,7 +615,6 @@
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
-    "InvalidData": "Data has been invalidated",
 
     "depth": "Depth",
 
@@ -676,9 +680,11 @@
     "ConnectionDirection": "Connection direction",
     "Top": "Top",
     "Bottom": "Bottom",
+    "DeleteVoltageLevelOnLine": "Delete a voltage level on a line",
+    "DeleteAttachingLine": "Delete attaching line",
+    "ReplacingLine": "Replacing line",
     "ConnectionPosition": "Connection position",
-    "ErrorNoVoltageSelected": "No voltage level selected, please select one before",
     "DisplayTakenPositions": "Display taken positions",
     "ResultsThresholdGreaterOrEqualDefaultValue": "Minimal sensitivity threshold value must be greater or equal than default value",
-    "NodeNotBuildPositionMessage": "Must build current node to show positions"
+    "NodeNotBuildPositionMessage": "Must choose a voltage level or wait for data to be loaded"
 }

@@ -64,6 +64,8 @@ const RegulatingTerminalEdition = ({
     disabled = false,
     voltageLevelEquipmentsCallback,
     equipmentSectionTypeDefaultValue,
+    previousRegulatingTerminalValue,
+    previousEquipmentSectionTypeValue,
 }) => {
     const classes = useStyles();
 
@@ -247,6 +249,7 @@ const RegulatingTerminalEdition = ({
                                     className: classes.helperText,
                                 }}
                                 {...genHelperError(errorForVL)}
+                                helperText={previousRegulatingTerminalValue}
                             />
                         )}
                         PopperComponent={FittingPopper}
@@ -322,6 +325,7 @@ const RegulatingTerminalEdition = ({
                                     className: classes.helperText,
                                 }}
                                 {...genHelperError(errorForTerminal)}
+                                helperText={previousEquipmentSectionTypeValue}
                             />
                         )}
                         PopperComponent={FittingPopper}

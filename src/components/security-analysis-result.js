@@ -130,15 +130,12 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             if (
                 postContingencyResult.limitViolationsResult.limitViolations
                     .length > 0 ||
-                !postContingencyResult.limitViolationsResult.computationOk
+                postContingencyResult.status !== 'CONVERGED'
             ) {
                 rows.push({
                     contingencyIndex: index,
                     contingencyId: postContingencyResult.contingency.id,
-                    computationOk: postContingencyResult.limitViolationsResult
-                        .computationOk
-                        ? intl.formatMessage({ id: 'true' })
-                        : intl.formatMessage({ id: 'false' }),
+                    computationStatus: postContingencyResult.status,
                     violationCount:
                         postContingencyResult.limitViolationsResult
                             .limitViolations.length,
@@ -243,7 +240,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 sort={(dataKey, reverse, isNumeric) =>
                     sortResult(
                         rows,
-                        new Set(['contingencyId', 'computationOk']),
+                        new Set(['contingencyId', 'computationStatus']),
                         dataKey,
                         reverse,
                         isNumeric
@@ -257,8 +254,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     },
                     {
                         width: 200,
-                        label: intl.formatMessage({ id: 'ComputationOk' }),
-                        dataKey: 'computationOk',
+                        label: intl.formatMessage({ id: 'ComputationStatus' }),
+                        dataKey: 'computationStatus',
                     },
                     {
                         width: 200,
@@ -302,13 +299,10 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         let mapConstraints = new Map();
 
         postContingencyResults.forEach((postContingencyResult, index) => {
-            if (!postContingencyResult.limitViolationsResult.computationOk) {
+            if (postContingencyResult.status !== 'CONVERGED') {
                 rows.push({
                     contingencyId: postContingencyResult.contingency.id,
-                    computationOk: postContingencyResult.limitViolationsResult
-                        .computationOk
-                        ? intl.formatMessage({ id: 'true' })
-                        : intl.formatMessage({ id: 'false' }),
+                    computationStatus: postContingencyResult.status,
                 });
             }
 
@@ -333,10 +327,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
 
                         contingencies.push({
                             contingencyId: postContingencyResult.contingency.id,
-                            computationOk: postContingencyResult
-                                .limitViolationsResult.computationOk
-                                ? intl.formatMessage({ id: 'true' })
-                                : intl.formatMessage({ id: 'false' }),
+                            computationStatus: postContingencyResult.status,
                             constraintId: limitViolation.subjectId,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
@@ -362,7 +353,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             contingencies.forEach((contingency) => {
                 rows.push({
                     contingencyId: contingency.contingencyId,
-                    computationOk: contingency.computationOk,
+                    computationStatus: contingency.computationStatus,
                     constraintId: contingency.constraintId,
                     limitType: contingency.limitType,
                     limit: contingency.limit,
@@ -409,8 +400,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     },
                     {
                         width: 200,
-                        label: intl.formatMessage({ id: 'ComputationOk' }),
-                        dataKey: 'computationOk',
+                        label: intl.formatMessage({ id: 'ComputationStatus' }),
+                        dataKey: 'computationStatus',
                     },
                     {
                         width: 200,
