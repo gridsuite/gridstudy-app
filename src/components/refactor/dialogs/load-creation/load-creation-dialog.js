@@ -47,8 +47,8 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [EQUIPMENT_TYPE]: null,
-    [ACTIVE_POWER]: '',
-    [REACTIVE_POWER]: '',
+    [ACTIVE_POWER]: null,
+    [REACTIVE_POWER]: null,
     ...getConnectivityEmptyFormData(),
 };
 
@@ -57,9 +57,9 @@ const schema = yup
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
-        [EQUIPMENT_TYPE]: yup.string().nullable(true),
-        [ACTIVE_POWER]: yup.string().nullableNumber().required(),
-        [REACTIVE_POWER]: yup.string().nullableNumber().required(),
+        [EQUIPMENT_TYPE]: yup.string().nullable(),
+        [ACTIVE_POWER]: yup.number().nullable().required(),
+        [REACTIVE_POWER]: yup.number().nullable().required(),
         ...getConnectivityFormValidationSchema(),
     })
     .required();
@@ -116,26 +116,43 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                 'voltage-levels',
                 load.voltageLevelId,
                 true
-            ).then((vlResult) => {
-                reset({
-                    [EQUIPMENT_ID]: load.equipmentId,
-                    [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                    [EQUIPMENT_TYPE]: load.loadType,
-                    [ACTIVE_POWER]: load.activePower,
-                    [REACTIVE_POWER]: load.reactivePower,
-                    ...getConnectivityFormData({
-                        voltageLevelId: load.voltageLevelId,
-                        voltageLevelTopologyKind: vlResult.topologyKind,
-                        voltageLevelName: vlResult.name,
-                        voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                        voltageLevelSubstationId: vlResult.substationId,
-                        busbarSectionId: load.busOrBusbarSectionId,
-                        connectionDirection: load.connectionDirection,
-                        connectionName: load.connectionName,
-                        connectionPosition: load.connectionPosition,
-                    }),
+            )
+                .then((vlResult) => {
+                    reset({
+                        [EQUIPMENT_ID]: load.equipmentId,
+                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
+                        [EQUIPMENT_TYPE]: load.loadType,
+                        [ACTIVE_POWER]: load.activePower,
+                        [REACTIVE_POWER]: load.reactivePower,
+                        ...getConnectivityFormData({
+                            voltageLevelId: load.voltageLevelId,
+                            voltageLevelTopologyKind: vlResult.topologyKind,
+                            voltageLevelName: vlResult.name,
+                            voltageLevelNominalVoltage: vlResult.nominalVoltage,
+                            voltageLevelSubstationId: vlResult.substationId,
+                            busbarSectionId: load.busOrBusbarSectionId,
+                            connectionDirection: load.connectionDirection,
+                            connectionName: load.connectionName,
+                            connectionPosition: load.connectionPosition,
+                        }),
+                    });
+                }) // if voltage level can't be found, we fill the form with minimal infos
+                .catch(() => {
+                    reset({
+                        [EQUIPMENT_ID]: load.equipmentId,
+                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
+                        [EQUIPMENT_TYPE]: load.loadType,
+                        [ACTIVE_POWER]: load.activePower,
+                        [REACTIVE_POWER]: load.reactivePower,
+                        ...getConnectivityFormData({
+                            voltageLevelId: load.voltageLevelId,
+                            busbarSectionId: load.busOrBusbarSectionId,
+                            connectionDirection: load.connectionDirection,
+                            connectionName: load.connectionName,
+                            connectionPosition: load.connectionPosition,
+                        }),
+                    });
                 });
-            });
         },
         [studyUuid, currentNodeUuid, reset]
     );

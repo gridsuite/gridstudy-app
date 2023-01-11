@@ -6,7 +6,7 @@
  */
 
 import { IconButton, InputAdornment, TextField } from '@mui/material';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { func_identity, useStyles } from '../../dialogs/dialogUtils';
 import {
     FieldLabel,
@@ -16,37 +16,42 @@ import {
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types';
+import { Controller, useController, useFormContext } from 'react-hook-form';
 
 const TextInput = ({
-    value,
-    onChange,
+    name,
     label,
     id,
     adornment,
-    transformValue = func_identity,
-    acceptValue,
+    outputTransform = func_identity, //transform materialUi input value before sending it to react hook form, mostly used to deal with number fields
+    inputTransform = func_identity, //transform react hook form value before sending it to materialUi input, mostly used to deal with number fields
+    acceptValue = () => true, //used to check user entry before committing the input change, used mostly to prevent user from typing a character in number field
     formProps,
-    errorMsg,
     previousValue,
     clearable,
     customAdornment,
-    isRequired = false,
 }) => {
     const classes = useStyles();
-
-    const handleChangeValue = useCallback(
-        (event) => {
-            if (acceptValue === undefined || acceptValue(event.target.value))
-                onChange(transformValue(event.target.value));
-        },
-        [onChange, acceptValue, transformValue]
-    );
-
-    const handleClearValue = useCallback(() => {
-        onChange('');
-    }, [onChange]);
+    const { isFieldRequired } = useFormContext();
+    const {
+        field: { onChange, value },
+        fieldState: { error },
+    } = useController({ name });
 
     const Field = adornment ? TextFieldWithAdornment : TextField;
+
+    const handleClearValue = () => {
+        onChange(outputTransform(''));
+    };
+
+    const handleValueChanged = (e) => {
+        if (acceptValue(e.target.value)) {
+            onChange(outputTransform(e.target.value));
+        }
+    };
+
+    const transformedValue = inputTransform(value);
+
     return (
         <Field
             key={id ? id : label}
@@ -55,33 +60,38 @@ const TextInput = ({
             id={id ? id : label}
             label={FieldLabel({
                 label,
-                optional: isRequired === false && !formProps?.disabled,
+                optional:
+                    isFieldRequired(name) === false && !formProps?.disabled,
             })}
             {...(adornment && {
                 adornmentPosition: adornment.position,
                 adornmentText: adornment?.text,
             })}
-            value={value} // handle numerical value
-            onChange={handleChangeValue}
+            value={transformedValue}
+            onChange={handleValueChanged}
             FormHelperTextProps={{
                 className: classes.helperText,
             }}
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">
-                        {clearable && value !== undefined && value !== '' && (
-                            <IconButton onClick={handleClearValue}>
-                                <ClearIcon />
-                            </IconButton>
-                        )}
+                        {clearable &&
+                            transformedValue !== undefined &&
+                            transformedValue !== '' && (
+                                <IconButton onClick={handleClearValue}>
+                                    <ClearIcon />
+                                </IconButton>
+                            )}
                         {customAdornment && { ...customAdornment }}
                     </InputAdornment>
                 ),
             }}
             {...(clearable &&
-                adornment && { handleClearValue: handleClearValue })}
+                adornment && {
+                    handleClearValue: handleClearValue,
+                })}
             {...genHelperPreviousValue(previousValue, adornment)}
-            {...genHelperError(errorMsg)}
+            {...genHelperError(error?.message)}
             {...formProps}
         />
     );
@@ -89,7 +99,6 @@ const TextInput = ({
 
 TextInput.propTypes = {
     label: PropTypes.string.isRequired,
-    isRequired: PropTypes.bool,
     errorMessage: PropTypes.string,
     value: PropTypes.any,
     onChange: PropTypes.func,

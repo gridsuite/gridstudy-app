@@ -6,12 +6,28 @@
  */
 
 import React from 'react';
-import { toIntValue } from '../../dialogs/dialogUtils';
 import TextInput from './text-input';
 import PropTypes from 'prop-types';
 
-const IntegerInput = ({ transformValue = toIntValue, ...props }) => {
-    return <TextInput transformValue={transformValue} {...props} />;
+const IntegerInput = (props) => {
+    const inputTransform = (value) => {
+        if ('-' === value) return value;
+        return value === null || isNaN(value) ? '' : value.toString();
+    };
+
+    const toIntOrNullValue = (value) => {
+        if (value === '-') return value;
+        if (value === '0') return 0;
+        return parseInt(value) || null;
+    };
+
+    return (
+        <TextInput
+            outputTransform={toIntOrNullValue}
+            inputTransform={inputTransform}
+            {...props}
+        />
+    );
 };
 
 IntegerInput.propTypes = {

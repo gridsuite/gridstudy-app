@@ -30,11 +30,10 @@ import {
     CONNECTIVITY,
     VOLTAGE_LEVEL,
 } from './connectivity-form-utils';
-import { formControlledItem } from '../../utils/form-utils';
-import TextInput from '../../inputs/text-input';
-import SelectInput from '../../inputs/select-input';
-import IntegerInput from '../../inputs/integer-input';
-import AutocompleteInput from '../../inputs/autocomplete-input';
+import TextInput from '../../rhf-inputs/text-input';
+import SelectInput from '../../rhf-inputs/select-input';
+import IntegerInput from '../../rhf-inputs/integer-input';
+import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -62,8 +61,7 @@ export const ConnectivityForm = ({
 
     const intl = useIntl();
 
-    const methods = useFormContext();
-    const { watch } = methods;
+    const { watch } = useFormContext();
 
     const {
         id: watchVoltageLevelId,
@@ -115,42 +113,45 @@ export const ConnectivityForm = ({
 
     const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
     const getObjectId = useCallback((object) => object.id, []);
-
-    const newVoltageLevelField = formControlledItem(
+    const newVoltageLevelField = (
         <AutocompleteInput
+            isOptionEqualToValue={areIdsEqual}
+            allowNewValue
+            name={`${CONNECTIVITY}.${VOLTAGE_LEVEL}`}
             label="VoltageLevel"
             options={voltageLevelOptions}
             getOptionLabel={getObjectId}
-            isOptionEqualToValue={areIdsEqual}
             size={'small'}
-        />,
-        `${CONNECTIVITY}.${VOLTAGE_LEVEL}`
+        />
     );
 
-    const newBusOrBusbarSectionField = formControlledItem(
+    const newBusOrBusbarSectionField = (
         <AutocompleteInput
+            allowNewValue
+            name={`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`}
             label="BusBarBus"
             options={busOrBusbarSectionOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
             size={'small'}
-        />,
-        `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}`
+        />
     );
 
-    const newConnectionNameField = formControlledItem(
-        <TextInput label="ConnectionName" />,
-        `${CONNECTIVITY}.${CONNECTION_NAME}`
+    const newConnectionNameField = (
+        <TextInput
+            name={`${CONNECTIVITY}.${CONNECTION_NAME}`}
+            label="ConnectionName"
+        />
     );
 
-    const newConnectionDirectionField = formControlledItem(
+    const newConnectionDirectionField = (
         <SelectInput
+            name={`${CONNECTIVITY}.${CONNECTION_DIRECTION}`}
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
             fullWidth
             size={'small'}
-        />,
-        `${CONNECTIVITY}.${CONNECTION_DIRECTION}`
+        />
     );
 
     const handleClickOpenDiagramPane = useCallback(() => {
@@ -184,16 +185,16 @@ export const ConnectivityForm = ({
         );
     };
 
-    const newConnectionPositionField = formControlledItem(
+    const newConnectionPositionField = (
         <IntegerInput
+            name={`${CONNECTIVITY}.${CONNECTION_POSITION}`}
             label="ConnectionPosition"
             customAdornment={positionIconAdorment(
                 isNodeBuilt(currentNode),
                 handleClickOpenDiagramPane
             )}
             clearable={true}
-        />,
-        `${CONNECTIVITY}.${CONNECTION_POSITION}`
+        />
     );
 
     const gridSize =

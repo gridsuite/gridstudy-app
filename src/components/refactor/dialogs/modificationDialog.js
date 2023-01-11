@@ -41,8 +41,7 @@ const ModificationDialog = ({
     onValidated,
     ...dialogProps
 }) => {
-    const methods = useFormContext();
-    const { handleSubmit } = methods;
+    const { handleSubmit } = useFormContext();
 
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
