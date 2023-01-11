@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DynamicSimulationResultChartTabs = ({ result }) => {
+    const { timeseries } = result;
     const classes = useStyles();
 
     const selectedTheme = useSelector((state) => state[PARAM_THEME]);
@@ -46,8 +47,8 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
 
     const series = useMemo(() => {
         console.log('transformToRechartSeries is called');
-        if (!result) return [];
-        return result.map((elem, index) => {
+        if (!timeseries) return [];
+        return timeseries.map((elem, index) => {
             const metadata = elem.metadata;
             const values = elem.chunks[0].values;
             return {
@@ -59,7 +60,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                 },
             };
         });
-    }, [result]);
+    }, [timeseries]);
 
     const intl = useIntl();
 
@@ -167,7 +168,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
             {/* tab contents */}
             <Visibility value={selectedIndex} index={-1}>
                 <ReactJson
-                    src={result}
+                    src={timeseries}
                     onEdit={false}
                     onAdd={false}
                     onDelete={false}

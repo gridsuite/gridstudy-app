@@ -9,14 +9,7 @@ import { Grid } from '@mui/material';
 import DynamicSimulationResultTable from './dynamic-simulation-result-table';
 import DynamicSimulationResultChartTabs from './dynamic-simulation-result-chart-tabs';
 
-const DynamicSimulationResult = ({ result = [] }) => {
-    /* fake result status */
-    const componentResults = [
-        {
-            status: 'CONVERGED',
-        },
-    ];
-
+const DynamicSimulationResult = ({ result }) => {
     const dynamicSimulationNotif = useSelector(
         (state) => state.dynamicSimulationNotif
     );
@@ -25,12 +18,20 @@ const DynamicSimulationResult = ({ result = [] }) => {
         <Grid container justifyContent={'column'} alignItems={'flex-end'}>
             <Grid item xs={12}>
                 {result && dynamicSimulationNotif && (
-                    <DynamicSimulationResultTable result={componentResults} />
+                    <DynamicSimulationResultTable
+                        result={[
+                            {
+                                status: result.status,
+                            },
+                        ]}
+                    />
                 )}
             </Grid>
             <Grid item xs={12}>
                 {result && dynamicSimulationNotif && (
-                    <DynamicSimulationResultChartTabs result={result} />
+                    <DynamicSimulationResultChartTabs
+                        result={{ timeseries: result.timeseries }}
+                    />
                 )}
             </Grid>
         </Grid>

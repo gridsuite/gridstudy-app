@@ -1063,12 +1063,12 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
         studyUuid,
         currentNodeUuid
     );
-    const timelinePromise = fetchDynamicSimulationResultTimeLine(
+    const statusPromise = fetchDynamicSimulationStatus(
         studyUuid,
         currentNodeUuid
     );
-    return Promise.all([timeseriesPromise, timelinePromise]).then(
-        ([timeseries, timeline]) => ({ timeseries, timeline })
+    return Promise.all([timeseriesPromise, statusPromise]).then(
+        ([timeseries, status]) => ({ timeseries, status })
     );
 }
 
