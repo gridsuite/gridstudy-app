@@ -216,7 +216,7 @@ function PagedSensitivityResult({
                     ...prev.fetched,
                     sensitivities: copy,
                 });
-            next.fetched.sensitivities = copy;
+            next.fetched = null;
             next.userRowsPerPage = userRowsPerPage;
         } else if (prev.fetcher) {
             next.fetcher = prev.fetcher;
@@ -233,14 +233,19 @@ function PagedSensitivityResult({
         console.debug('instantiating new fetcher');
         next.isFetchNeedy = true;
         next.askedFilterVersion = next.indexer?.filterVersion;
-        next.page = page;
+        if (filteredCount >= userRowsPerPage) {
+            next.page = page;
+        } else {
+            next.page = 0;
+            if (page > 0) setPage(0);
+        }
         next.userRowsPerPage = userRowsPerPage;
         next.version = next.indexer?.version;
         next.fetcher = () => {
             const selector = {
                 isJustBefore: nOrNkIndex === 0,
                 functionType: FUNCTION_TYPES[sensiKindIndex],
-                offset: page * userRowsPerPage,
+                offset: next.page * userRowsPerPage,
                 chunkSize: userRowsPerPage,
             };
             addIndexerParamsToSelector(next.indexer, selector);
@@ -309,7 +314,7 @@ function PagedSensitivityResult({
                 colSpan={3}
                 count={filteredCount ?? 0}
                 rowsPerPage={userRowsPerPage}
-                page={page ?? 0}
+                page={next?.page ?? 0}
                 showFirstButton={true}
                 showLastButton={true}
                 onPageChange={handleChangePage}
