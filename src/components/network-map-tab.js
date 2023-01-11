@@ -569,18 +569,23 @@ export const NetworkMapTab = ({
         updatedSubstationsIds,
     ]);
 
-    // This useEffect ensures the geo data load is done after the map equipments load. The sequentiality could be enforced by using a chain of promises for the updates of mapEquipments and geoData
+    // This useEffect ensures the geo data load is done after the map equipments load. Improvement: the sequentiality could be enforced by using a chain of promises for the updates of mapEquipments and geoData
     // At initialization, loadMapEquipments and loadGeoData can be parallelized.
     useEffect(() => {
         if (!mapEquipments) return;
         loadGeoData();
     }, [loadGeoData, mapEquipments]);
 
+    /* TODO : this useEffect reloads the mapEquipments when, in manual refresh mode, the current node is built.
+            But in automtic refresh mode, this useEffect triggers a second mapEquipments reload (the legitimate reload is done by the useEffect row 575).
+            2 solutions: 1) the manual mode is removed so we can remove this useEffect
+                         2) we keep the manual mode => we need to fix the "bug" and do only one reload
+     */
     useEffect(() => {
         let previousNodeStatus = isCurrentNodeBuiltRef.current;
         isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
 
-        //when we build node we want the map to be up to date
+        // when we build node we want the map to be up to date
         if (!previousNodeStatus && isCurrentNodeBuiltRef.current) {
             loadMapEquipments();
         }
