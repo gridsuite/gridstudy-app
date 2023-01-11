@@ -116,16 +116,16 @@ const DynamicSimulationParametersSelector = (props) => {
     };
 
     const handleStart = () => {
-        //if (inputForm.validate()) {
-        onStart({
-            mappingName: mappingName,
-            dynamicSimulationConfiguration: {
-                startTime: startTime,
-                stopTime: stopTime,
-                withVariant: withVariant,
-            },
-        });
-        //}
+        if (inputForm.validate()) {
+            onStart({
+                mappingName: mappingName,
+                dynamicSimulationConfiguration: {
+                    startTime: startTime,
+                    stopTime: stopTime,
+                    withVariant: withVariant,
+                },
+            });
+        }
     };
 
     function renderInputs() {
