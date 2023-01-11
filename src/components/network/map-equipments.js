@@ -68,7 +68,8 @@ export default class MapEquipments {
         studyUuid,
         currentNode,
         substationsIds,
-        handleUpdatedLines
+        handleUpdatedLines,
+        endLoaderCB
     ) {
         const updatedEquipments = fetchMapEquipments(
             studyUuid,
@@ -88,9 +89,15 @@ export default class MapEquipments {
                     isFullReload
                 );
                 handleUpdatedLines(values.lines);
+                if (endLoaderCB) {
+                    endLoaderCB();
+                }
             })
             .catch((error) => {
                 console.error(error.message);
+                if (endLoaderCB) {
+                    endLoaderCB();
+                }
                 if (this.errHandler) {
                     this.errHandler(
                         this.intlRef.current.formatMessage({

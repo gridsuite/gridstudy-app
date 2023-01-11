@@ -37,7 +37,6 @@ import {
 import { RunningStatus } from './util/running-status';
 import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
-import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 
 const INITIAL_POSITION = [0, 0];
@@ -102,8 +101,10 @@ export const NetworkMapTab = ({
 
     const intlRef = useIntlRef();
     const [isInitialized, setInitialized] = useState(false);
+    const [waitingLoadMapEquipments, setWaitingLoadEquipments] =
+        useState(false);
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
-    const [waitingTemporaryLoadGeoData, setWaitingTemporaryLoadGeoData] =
+    const [waitingLoadTemporaryGeoData, setWaitingLoadTemporaryGeoData] =
         useState(false);
 
     const [geoData, setGeoData] = useState();
@@ -353,7 +354,7 @@ export const NetworkMapTab = ({
             console.info(
                 `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLinesIds}'...`
             );
-            setWaitingTemporaryLoadGeoData(true);
+            setWaitingLoadTemporaryGeoData(true);
 
             const missingSubstationPositions = getMissingEquipmentsPositions(
                 notFoundSubstationIds,
@@ -403,11 +404,11 @@ export const NetworkMapTab = ({
                             setGeoData(newGeoData);
                         }
                     }
-                    setWaitingTemporaryLoadGeoData(false);
+                    setWaitingLoadTemporaryGeoData(false);
                 })
                 .catch(function (error) {
                     console.error(error.message);
-                    setWaitingTemporaryLoadGeoData(false);
+                    setWaitingLoadTemporaryGeoData(false);
                     setErrorMessage(
                         intlRef.current.formatMessage(
                             { id: 'geoDataLoadingFail' },
@@ -490,6 +491,7 @@ export const NetworkMapTab = ({
         } else {
             if (mapEquipments) {
                 console.info('Reload map equipments');
+                setWaitingLoadEquipments(true);
                 const updatedSubstationsToSend =
                     !refIsMapManualRefreshEnabled.current &&
                     !isUpdatedSubstationsApplied &&
@@ -501,9 +503,9 @@ export const NetworkMapTab = ({
                     studyUuid,
                     currentNode,
                     updatedSubstationsToSend,
-                    setUpdatedLines
+                    setUpdatedLines,
+                    () => setWaitingLoadEquipments(false)
                 );
-
                 if (updatedSubstationsToSend) {
                     setIsUpdatedSubstationsApplied(true);
                 }
@@ -680,11 +682,9 @@ export const NetworkMapTab = ({
     return (
         <>
             <div className={classes.divTemporaryGeoDataLoading}>
-                {
-                    <Box height={6}>
-                        {waitingTemporaryLoadGeoData && <LinearProgress />}
-                    </Box>
-                }
+                {(waitingLoadTemporaryGeoData || waitingLoadMapEquipments) && (
+                    <LinearProgress />
+                )}
             </div>
             {renderMap()}
             {renderEquipmentMenu()}
