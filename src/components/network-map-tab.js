@@ -664,10 +664,7 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
-            onReloadMapClick={() => {
-                loadMapEquipments();
-                loadGeoData();
-            }}
+            onReloadMapClick={loadMapEquipments}
         />
     );
 
