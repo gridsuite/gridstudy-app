@@ -79,7 +79,6 @@ export const NetworkMapTab = ({
     dynamicSimulationStatus,
     /* visual*/
     visible,
-    useName,
     lineFullPath,
     lineParallelPath,
     lineFlowMode,
@@ -411,7 +410,6 @@ export const NetworkMapTab = ({
             updatedLines={updatedLines}
             geoData={geoData}
             waitingLoadGeoData={waitingLoadGeoData}
-            useName={useName}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
             arrowsZoomThreshold={7}
@@ -485,7 +483,6 @@ export const NetworkMapTab = ({
 
 NetworkMapTab.propTypes = {
     updatedLines: PropTypes.arrayOf(PropTypes.any),
-    useName: PropTypes.any,
     filteredNominalVoltages: PropTypes.any,
     lineFullPath: PropTypes.any,
     lineParallelPath: PropTypes.any,
