@@ -121,7 +121,6 @@ export const NetworkMapTab = ({
     It will be possible to have a better mechanism after we improved the notification system.
     */
     const temporaryGeoDataIdsRef = useRef();
-    temporaryGeoDataIdsRef.current = new Set();
 
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
@@ -447,6 +446,7 @@ export const NetworkMapTab = ({
                 newGeoData.setLinePositions(values[1]);
                 setGeoData(newGeoData);
                 setWaitingLoadGeoData(false);
+                temporaryGeoDataIdsRef.current = new Set();
             })
             .catch(function (error) {
                 console.error(error.message);
@@ -466,11 +466,8 @@ export const NetworkMapTab = ({
                 geoDataRef.current &&
                 // To manage a lineFullPath param change, if lineFullPath=true and linePositions is void, we load all the geo data.
                 // This can be improved by loading only the lines geo data and not lines geo data + substations geo data when lineFullPath is changed to true.
-                ((lineFullPath &&
-                    geoDataRef.current.substationPositionsById.size > 0 &&
-                    geoDataRef.current.linePositionsById.size > 0) ||
-                    (!lineFullPath &&
-                        geoDataRef.current.substationPositionsById.size > 0))
+                geoDataRef.current.substationPositionsById.size > 0 &&
+                (!lineFullPath || geoDataRef.current.linePositionsById.size > 0)
             ) {
                 loadMissingGeoData();
             } else {
