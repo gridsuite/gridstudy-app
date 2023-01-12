@@ -259,7 +259,7 @@ export function fetchPath(studyUuid) {
     return backendFetchJson(fetchPathUrl);
 }
 
-export function getVoltageLevelSingleLineDiagram( // TODO rename this to getVoltageLevelSingleLineDiagramUrl
+export function getVoltageLevelSingleLineDiagram(
     studyUuid,
     currentNodeUuid,
     voltageLevelId,
@@ -292,7 +292,7 @@ export function getVoltageLevelSingleLineDiagram( // TODO rename this to getVolt
     );
 }
 
-export function getSubstationSingleLineDiagram( // TODO rename this to getSubstationSingleLineDiagramUrl
+export function getSubstationSingleLineDiagram(
     studyUuid,
     currentNodeUuid,
     substationId,
@@ -348,7 +348,7 @@ export function getNetworkAreaDiagramUrl(
 export function fetchNADSvg(svgUrl) {
     // TODO To remove after the NAD/SLD refacto
     console.debug(svgUrl);
-    return backendFetchText(svgUrl);
+    return backendFetchJson(svgUrl);
 }
 
 function getQueryParamsList(params, paramName) {
@@ -376,9 +376,11 @@ export function fetchReport(studyUuid, currentNodeUuid, nodeOnlyReport) {
     );
 }
 
-export function fetchSvg(svgUrl, acceptJson = true) {
+export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return acceptJson ? backendFetchJson(svgUrl) : backendFetchText(svgUrl);
+    return backendFetch(svgUrl).then((response) =>
+        response.status === 204 ? null : response.json()
+    );
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {

@@ -32,7 +32,10 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import makeStyles from '@mui/styles/makeStyles';
 import { useDiagram, ViewState, SvgType } from './diagram-common';
-import { isNodeBuilt } from '../graph/util/model-functions';
+import {
+    isNodeBuilt,
+    isNodeInNotificationList,
+} from '../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
@@ -51,10 +54,12 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
+    const notificationIdList = useSelector((state) => state.notificationIdList);
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode)
+            isNodeBuilt(currentNode) &&
+            !isNodeInNotificationList(currentNode, notificationIdList)
                 ? getVoltageLevelSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -75,12 +80,14 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             diagonalName,
             componentLibrary,
             language,
+            notificationIdList,
         ]
     );
 
     const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode)
+            isNodeBuilt(currentNode) &&
+            !isNodeInNotificationList(currentNode, notificationIdList)
                 ? getSubstationSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -102,12 +109,14 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             paramUseName,
             currentNode,
             language,
+            notificationIdList,
         ]
     );
 
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
         (voltageLevelsIds, depth) =>
-            isNodeBuilt(currentNode)
+            isNodeBuilt(currentNode) &&
+            !isNodeInNotificationList(currentNode, notificationIdList)
                 ? getNetworkAreaDiagramUrl(
                       studyUuid,
                       currentNode?.id,
@@ -115,7 +124,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       depth
                   )
                 : null,
-        [studyUuid, currentNode]
+        [studyUuid, currentNode, notificationIdList]
     );
 
     return useCallback(
@@ -210,7 +219,6 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     diagramState.depth
                 );
             }
-            return;
         },
         [
             network,

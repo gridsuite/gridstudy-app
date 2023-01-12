@@ -43,7 +43,11 @@ import { equipments } from '../network/network-equipments';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
+import {
+    isNodeBuilt,
+    isNodeReadOnly,
+    isNodeInNotificationList,
+} from '../graph/util/model-functions';
 import {
     NetworkAreaDiagramViewer,
     SingleLineDiagramViewer,
@@ -113,6 +117,8 @@ const Diagram = forwardRef((props, ref) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
+
+    const notificationIdList = useSelector((state) => state.notificationIdList);
 
     const [forceState, updateState] = useState(false);
 
@@ -225,9 +231,10 @@ const Diagram = forwardRef((props, ref) => {
     const [svgFinalWidth, setSvgFinalWidth] = useState();
     const [svgFinalHeight, setSvgFinalHeight] = useState();
 
+    const setDisplayedDiagramHeights = props.setDisplayedDiagramHeights;
     useEffect(() => {
         if (finalPaperHeight) {
-            props.setDisplayedDiagramHeights((displayedDiagramHeights) => {
+            setDisplayedDiagramHeights((displayedDiagramHeights) => {
                 return [
                     ...displayedDiagramHeights.filter(
                         (diagram) => diagram.id !== props.diagramId
@@ -236,7 +243,7 @@ const Diagram = forwardRef((props, ref) => {
                 ];
             });
         }
-    }, [finalPaperHeight, props.setDisplayedDiagramHeights, props.diagramId]);
+    }, [finalPaperHeight, setDisplayedDiagramHeights, props.diagramId]);
 
     // After getting the SVG, we will calculate the diagram's ideal size
     useLayoutEffect(() => {
@@ -285,22 +292,30 @@ const Diagram = forwardRef((props, ref) => {
         props.diagramId,
     ]);
 
+    const isNodeinNotifs = isNodeInNotificationList(
+        currentNode,
+        notificationIdList
+    );
+
     useEffect(() => {
-        if (props.svgUrl) {
+        if (props.svgUrl && !isNodeinNotifs) {
             const isDiagramTypeSld =
                 props.svgType === SvgType.VOLTAGE_LEVEL ||
                 props.svgType === SvgType.SUBSTATION;
-            const acceptJson = isDiagramTypeSld;
 
             updateLoadingState(true);
-            fetchSvg(props.svgUrl, acceptJson)
+            fetchSvg(props.svgUrl)
                 .then((data) => {
-                    setSvg({
-                        svg: acceptJson ? data.svg : data,
-                        metadata: isDiagramTypeSld ? data.metadata : null,
-                        error: null,
-                        svgUrl: props.svgUrl,
-                    });
+                    if (data !== null) {
+                        setSvg({
+                            svg: data.svg,
+                            metadata: isDiagramTypeSld ? data.metadata : null,
+                            error: null,
+                            svgUrl: props.svgUrl,
+                        });
+                    } else {
+                        setSvg(NoSvg);
+                    }
                 })
                 .catch((error) => {
                     console.error(error.message);
@@ -336,6 +351,7 @@ const Diagram = forwardRef((props, ref) => {
         intlRef,
         props.diagramId,
         props.svgType,
+        isNodeinNotifs,
     ]);
 
     // shouldResetPreferredSizes doesn't need to be a ref, but it makes the static checks happy
@@ -557,7 +573,6 @@ const Diagram = forwardRef((props, ref) => {
                 }
             }
             setModificationInProgress(false);
-        } else {
         }
     }, [
         svgFinalWidth,

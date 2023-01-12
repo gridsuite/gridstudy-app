@@ -87,12 +87,16 @@ const PositionDiagram = forwardRef((props, ref) => {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
-                    setSvg({
-                        svg: data.svg,
-                        metadata: data.metadata,
-                        error: null,
-                        svgUrl: props.svgUrl,
-                    });
+                    if (data !== null) {
+                        setSvg({
+                            svg: data.svg,
+                            metadata: data.metadata,
+                            error: null,
+                            svgUrl: props.svgUrl,
+                        });
+                    } else {
+                        setSvg(NoSvg);
+                    }
                     updateLoadingState(false);
                 })
                 .catch((errorMessage) => {
