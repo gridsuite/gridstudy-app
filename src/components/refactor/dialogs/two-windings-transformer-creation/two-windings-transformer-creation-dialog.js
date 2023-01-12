@@ -63,6 +63,14 @@ export const TARGET_DEADBAND = 'targetDeadband';
 export const LOW_TAP_POSITION = 'lowTapPosition';
 export const HIGH_TAP_POSITION = 'highTapPosition';
 export const TAP_POSITION = 'tapPosition';
+export const STEPS = 'steps';
+export const STEPS_TAP = 'tap';
+export const STEPS_RESISTANCE = 'resistance';
+export const STEPS_REACTANCE = 'reactance';
+export const STEPS_CONDUCTANCE = 'conductance';
+export const STEPS_SUSCEPTANCE = 'susceptance';
+export const STEPS_RATIO = 'ratio';
+export const STEPS_ALPHA = 'alpha';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const VOLTAGE_LEVEL_ID = 'id';
 export const VOLTAGE_LEVEL_NAME = 'name';
@@ -96,9 +104,19 @@ const emptyFormData = {
         [TARGET_DEADBAND]: '',
         [VOLTAGE_LEVEL]: null,
         [EQUIPMENT]: null,
-        [LOW_TAP_POSITION]: '',
-        [HIGH_TAP_POSITION]: '',
+        [LOW_TAP_POSITION]: null,
+        [HIGH_TAP_POSITION]: null,
         [TAP_POSITION]: '',
+        [STEPS]: [
+            {
+                ratio: 4,
+                resistance: 1,
+                reactance: 2,
+                conductance: 3,
+                susceptance: 4,
+                ratio: 5,
+            },
+        ],
     },
     ...getConnectivityEmptyFormData('connectivity1'),
     ...getConnectivityEmptyFormData('connectivity2'),
@@ -109,20 +127,20 @@ const schema = yup
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
-        [SERIES_RESISTANCE]: yup.string().nullableNumber().required(),
-        [SERIES_REACTANCE]: yup.string().nullableNumber().required(),
-        [MAGNETIZING_CONDUCTANCE]: yup.string().nullableNumber().required(),
-        [MAGNETIZING_SUSCEPTANCE]: yup.string().nullableNumber().required(),
+        [SERIES_RESISTANCE]: yup.number().nullable().required(),
+        [SERIES_REACTANCE]: yup.number().nullable().required(),
+        [MAGNETIZING_CONDUCTANCE]: yup.number().nullable().required(),
+        [MAGNETIZING_SUSCEPTANCE]: yup.number().nullable().required(),
         [RATED_S]: yup
-            .string()
-            .nullableNumber()
+            .number()
+            .nullable()
             .test('min', 'RatedNominalPowerGreaterThanZero', (val) => val >= 0),
-        [RATED_VOLTAGE_1]: yup.string().nullableNumber().required(),
-        [RATED_VOLTAGE_2]: yup.string().nullableNumber().required(),
+        [RATED_VOLTAGE_1]: yup.number().nullable().required(),
+        [RATED_VOLTAGE_2]: yup.number().nullable().required(),
         [CURRENT_LIMITS_1]: yup.object().shape({
             [PERMANENT_LIMIT]: yup
-                .string()
-                .nullableNumber()
+                .number()
+                .nullable()
                 .test(
                     'min',
                     'permanentCurrentLimitGreaterThanZero',
@@ -131,8 +149,8 @@ const schema = yup
         }),
         [CURRENT_LIMITS_2]: yup.object().shape({
             [PERMANENT_LIMIT]: yup
-                .string()
-                .nullableNumber()
+                .number()
+                .nullable()
                 .test(
                     'min',
                     'permanentCurrentLimitGreaterThanZero',
@@ -144,16 +162,16 @@ const schema = yup
             [RATIO_TAP_LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
             [REGULATING]: yup.bool().required(),
             [TARGET_V]: yup
-                .string()
-                .nullableNumber()
+                .number()
+                .nullable()
                 .test('min', 'TargetVoltageGreaterThanZero', (val) => val >= 0)
                 .when(`${REGULATING}`, {
                     is: true,
                     then: (schema) => schema.required(),
                 }),
             [TARGET_DEADBAND]: yup
-                .string()
-                .nullableNumber()
+                .number()
+                .nullable()
                 .test(
                     'min',
                     'TargetDeadbandGreaterThanZero',
@@ -180,13 +198,19 @@ const schema = yup
                     [EQUIPMENT_TYPE]: yup.string(),
                 }),
             [LOW_TAP_POSITION]: yup
-                .string()
-                .nullableNumber()
+                .number()
+                .nullable()
+                .min(0)
+                .max(100)
                 .when(`${RATIO_TAP_CHANGER_ENABLED}`, {
                     is: true,
                     then: (schema) => schema.required(),
                 }),
-            [HIGH_TAP_POSITION]: yup.string().nullableNumber(),
+            [HIGH_TAP_POSITION]: yup
+                .number()
+                .nullable()
+                .min(yup.ref(LOW_TAP_POSITION), 'HighTapPositionError')
+                .max(100, 'HighTapPositionError'),
             [TAP_POSITION]: yup.lazy((value) => {
                 if (value === '') {
                     return yup.string();
@@ -197,6 +221,17 @@ const schema = yup
                     then: (schema) => schema.required(),
                 });
             }),
+            [STEPS]: yup.array().of(
+                yup.object().shape({
+                    [STEPS_TAP]: yup.number().required(),
+                    [STEPS_RESISTANCE]: yup.number(),
+                    [STEPS_REACTANCE]: yup.number(),
+                    [STEPS_CONDUCTANCE]: yup.number(),
+                    [STEPS_SUSCEPTANCE]: yup.number(),
+                    [STEPS_RATIO]: yup.number(),
+                    [STEPS_ALPHA]: yup.number(),
+                })
+            ),
         }),
         ...getConnectivityFormValidationSchema('connectivity1'),
         ...getConnectivityFormValidationSchema('connectivity2'),
@@ -326,7 +361,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 onSave={onSubmit}
                 disabledSave={!isDirty}
                 aria-labelledby="dialog-create-two-windings-transformer"
-                maxWidth={'md'}
+                maxWidth={dialogWidth}
                 titleId="CreateTwoWindingsTransformer"
                 subtitle={renderSubtitle()}
                 //searchCopy={searchCopy}
