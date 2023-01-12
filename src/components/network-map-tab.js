@@ -390,9 +390,7 @@ export const NetworkMapTab = ({
                                       )
                                     : geoDataRef.current.linePositionsById
                             );
-                            newGeoData.addSubstationPositions(
-                                substations
-                            );
+                            newGeoData.addSubstationPositions(substations);
                             newGeoData.addLinePositions(lines);
                             setGeoData(newGeoData);
                         }
