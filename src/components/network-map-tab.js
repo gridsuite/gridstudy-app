@@ -120,10 +120,8 @@ export const NetworkMapTab = ({
     and this position would need to be requested again.
     It will be possible to have a better mechanism after we improved the notification system.
     */
-    const [temporaryGeoDataIds] = useState(new Set());
-
     const temporaryGeoDataIdsRef = useRef();
-    temporaryGeoDataIdsRef.current = temporaryGeoDataIds;
+    temporaryGeoDataIdsRef.current = new Set();
 
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
@@ -306,14 +304,14 @@ export const NetworkMapTab = ({
                         pos
                     )
                 ) {
-                    temporaryGeoDataIds.add(pos.id);
+                    temporaryGeoDataIdsRef.current.add(pos.id);
                     geoDataRef.current.substationPositionsById.set(pos.id, pos);
                     someDataHasChanged = true;
                 }
             });
             return someDataHasChanged;
         },
-        [substationPositionsAreEqual, temporaryGeoDataIds]
+        [substationPositionsAreEqual]
     );
 
     const updateLinesTemporaryGeoData = useCallback(
@@ -327,14 +325,14 @@ export const NetworkMapTab = ({
                         pos
                     )
                 ) {
-                    temporaryGeoDataIds.add(pos.id);
+                    temporaryGeoDataIdsRef.current.add(pos.id);
                     geoDataRef.current.linePositionsById.set(pos.id, pos);
                     someDataHasChanged = true;
                 }
             });
             return someDataHasChanged;
         },
-        [linePositionsAreEqual, temporaryGeoDataIds]
+        [linePositionsAreEqual]
     );
 
     const loadMissingGeoData = useCallback(() => {
