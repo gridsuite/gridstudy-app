@@ -162,12 +162,13 @@ export const ConnectivityForm = ({
         setIsDiagramPaneOpen(false);
     }, []);
 
-    const positionIconAdorment = useMemo(
+    const positionIconAdorment = useCallback(
         (isNodeBuilt, clickCallback) => {
             return (
                 <IconButton
-                    {...(isNodeBuilt && { onClick: clickCallback })}
-                    disableRipple={!isNodeBuilt}
+                    {...(isNodeBuilt &&
+                        watchVoltageLevelId && { onClick: clickCallback })}
+                    disableRipple={!isNodeBuilt || !watchVoltageLevelId}
                 >
                     <Tooltip
                         title={intl.formatMessage({
@@ -176,7 +177,7 @@ export const ConnectivityForm = ({
                                 : 'NodeNotBuildPositionMessage',
                         })}
                     >
-                        {isNodeBuilt ? (
+                        {isNodeBuilt && watchVoltageLevelId ? (
                             <ExploreOutlinedIcon color="action" />
                         ) : (
                             <ExploreOffOutlinedIcon color="action" />
@@ -185,7 +186,7 @@ export const ConnectivityForm = ({
                 </IconButton>
             );
         },
-        [intl]
+        [watchVoltageLevelId, intl]
     );
 
     const newConnectionPositionField = (
