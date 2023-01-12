@@ -548,13 +548,15 @@ const GeneratorModificationDialog = ({
             label: 'PlannedActivePowerSetPoint',
             adornment: ActivePowerAdornment,
             inputForm: inputForm,
-            defaultValue: formValues?.plannedActivePowerSetPoint,
+            defaultValue: getValue(formValues?.plannedActivePowerSetPoint),
+            previousValue: generatorInfos?.plannedActivePowerSetPoint,
         });
 
     const [startupCost, startupCostField] = useDoubleValue({
         label: 'StartupCost',
         inputForm: inputForm,
-        defaultValue: formValues?.startupCost,
+        defaultValue: getValue(formValues?.startupCost),
+        previousValue: generatorInfos?.startupCost,
     });
 
     const [marginalCost, marginalCostField] = useDoubleValue({
@@ -572,7 +574,8 @@ const GeneratorModificationDialog = ({
             errorMsgId: 'RealPercentage',
         },
         inputForm: inputForm,
-        defaultValue: formValues?.plannedOutageRate,
+        defaultValue: getValue(formValues?.plannedOutageRate),
+        previousValue: generatorInfos?.plannedOutageRate,
     });
 
     const [forcedOutageRate, forcedOutageRateField] = useDoubleValue({
@@ -583,7 +586,8 @@ const GeneratorModificationDialog = ({
             errorMsgId: 'RealPercentage',
         },
         inputForm: inputForm,
-        defaultValue: formValues?.forcedOutageRate,
+        defaultValue: getValue(formValues?.forcedOutageRate),
+        previousValue: generatorInfos?.forcedOutageRate,
     });
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
         label: 'VoltageText',
