@@ -174,7 +174,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 if (displayedVoltageLevels.length === 0) return;
                 displayedVoltageLevels.forEach((voltageLevel) => {
                     const name = getNameOrId(voltageLevel);
-                    if (name !== undefined) {
+                    if (name !== null) {
                         nadTitle =
                             nadTitle + (nadTitle !== '' ? ' + ' : '') + name;
                     }
@@ -330,10 +330,8 @@ export function DiagramPane({
     }, [
         diagramStates,
         visible,
-        disabled,
         closeDiagramView,
         createView,
-        dispatch,
         networkAreaDiagramDepth,
     ]);
 

@@ -232,10 +232,7 @@ export const computePaperAndSvgSizesIfReady = (
     svgPreferredHeight,
     headerPreferredHeight
 ) => {
-    if (
-        typeof svgPreferredWidth != 'undefined' &&
-        typeof headerPreferredHeight != 'undefined'
-    ) {
+    if (svgPreferredWidth != null && headerPreferredHeight != null) {
         let paperWidth, paperHeight, svgWidth, svgHeight;
         if (isFullScreenActive) {
             paperWidth = totalWidth;

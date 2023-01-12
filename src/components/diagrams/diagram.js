@@ -539,13 +539,12 @@ const Diagram = forwardRef((props, ref) => {
         loadingState,
         locallySwitchedBreaker,
         networkAreaDiagramDepth,
+        handleBreakerClick,
+        handleNextVoltageLevelClick,
     ]);
 
     useLayoutEffect(() => {
-        if (
-            typeof svgFinalWidth != 'undefined' &&
-            typeof svgFinalHeight != 'undefined'
-        ) {
+        if (svgFinalWidth != null && svgFinalHeight != null) {
             const divElt = svgRef.current;
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
@@ -553,9 +552,7 @@ const Diagram = forwardRef((props, ref) => {
                     svgEl.setAttribute('width', svgFinalWidth);
                     svgEl.setAttribute(
                         'height',
-                        props.computedHeight
-                            ? props.computedHeight
-                            : svgFinalHeight
+                        props.computedHeight ?? svgFinalHeight
                     );
                 }
             }
@@ -627,10 +624,7 @@ const Diagram = forwardRef((props, ref) => {
         sizeHeight = initialHeight;
     if (svg.error) {
         sizeWidth = errorWidth;
-    } else if (
-        typeof finalPaperWidth != 'undefined' &&
-        typeof finalPaperHeight != 'undefined'
-    ) {
+    } else if (finalPaperWidth != null && finalPaperHeight != null) {
         sizeWidth = finalPaperWidth;
         sizeHeight = finalPaperHeight;
     } else if (initialWidth !== undefined || loadingState) {
