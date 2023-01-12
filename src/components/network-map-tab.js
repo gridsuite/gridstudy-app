@@ -367,24 +367,25 @@ export const NetworkMapTab = ({
                 .then((positions) => {
                     const [substations, lines] = positions;
                     if (substations.length > 0 || lines.length > 0) {
-                        const someDataHasChanged =
-                            updateSubstationsTemporaryGeoData(substations) ||
-                            updateLinesTemporaryGeoData(lines);
+                        const substationsDataChanged =
+                            updateSubstationsTemporaryGeoData(substations);
+                        const linesDataChanged =
+                            updateLinesTemporaryGeoData(substations);
 
                         // If no geo data has changed, we avoid to trigger a new render.
-                        if (someDataHasChanged) {
+                        if (substationsDataChanged || linesDataChanged) {
                             // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
                             // Same for line positions.
                             const newGeoData = new GeoData(
-                                positions[0].length > 0
+                                substationsDataChanged
                                     ? new Map(
                                           geoDataRef.current.substationPositionsById
                                       )
                                     : geoDataRef.current
                                           .substationPositionsById,
-                                // If lineFullPath is off, we need to render the lines layer when there are some new subsation positions
-                                lines.length > 0 ||
-                                (!lineFullPath && substations.length > 0)
+                                // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
+                                linesDataChanged ||
+                                (!lineFullPath && substationsDataChanged)
                                     ? new Map(
                                           geoDataRef.current.linePositionsById
                                       )
