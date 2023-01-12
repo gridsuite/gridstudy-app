@@ -74,34 +74,27 @@ function isWorthUpdate(
     const nodes = headers?.['nodes'];
     console.log('notified somewhat', lastUpdateRef, studyUpdatedForce, headers);
     if (nodeUuidRef.current !== nodeUuid) {
-        console.debug('changed of node -> do');
         return true;
     }
     if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
-        console.debug('changed of fetcher -> do');
         return true;
     }
     if (
         studyUpdatedForce &&
         lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce
     ) {
-        console.debug('already forced last time -> do not');
         return false;
     }
     if (!updateType) {
-        console.debug('update type not defined -> do not');
         return false;
     }
     if (invalidations.indexOf(updateType) <= -1) {
-        console.debug('update type not registered -> do not');
         return false;
     }
     if (node === undefined && nodes === undefined) {
-        console.debug('undefined node and nodes -> do');
         return true;
     }
     if (node === nodeUuid || nodes?.indexOf(nodeUuid) !== -1) {
-        console.debug('watched node -> do');
         return true;
     }
 
@@ -130,7 +123,6 @@ export function useNodeData(
         fetcher(studyUuid, nodeUuid)
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid) {
-                    console.debug('got calculus result', res);
                     setResult(resultConversion ? resultConversion(res) : res);
                 }
             })

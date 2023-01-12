@@ -38,8 +38,6 @@ export const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKindIndex, setSensiKindIndex] = useState(0);
 
-    console.debug('SensitivityAnalysisResultTab', nOrNkIndex, sensiKindIndex);
-
     const pagedSensitivityResult = useMemo(
         () => (
             <>
@@ -122,14 +120,6 @@ function PagedSensitivityResult({
     studyUuid,
     nodeUuid,
 }) {
-    console.debug(
-        'PagedSensitivityResult',
-        nOrNkIndex,
-        sensiKindIndex,
-        studyUuid,
-        nodeUuid
-    );
-
     const [userRowsPerPage, setUserRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
     const [page, setPage] = useState(0);
     const [version, setVersion] = useState();
@@ -170,7 +160,6 @@ function PagedSensitivityResult({
         next.version = rowIndexer.version;
         next.page = 0;
     } else if (prev.isFetchNeedy) {
-        console.debug('still needing fetching');
         next.fetcher = prev.fetcher;
         next.isFetchNeedy = prev.isFetchNeedy;
         next.askedFilterVersion = prev.askedFilterVersion;
@@ -206,7 +195,6 @@ function PagedSensitivityResult({
     } else if (prev.page !== page) {
         tellDiff('page', prev.page, page);
     } else if (filteredCount === prev.fetched.sensitivities.length) {
-        console.debug('already all filtered');
         if (filteredCount > userRowsPerPage && userRowsPerPage >= 0) {
             // strictly less room when having all filtered -> trim
             const copy = [...prev.fetched.sensitivities];
@@ -230,7 +218,6 @@ function PagedSensitivityResult({
     }
 
     if (!next.fetcher) {
-        console.debug('instantiating new fetcher');
         next.isFetchNeedy = true;
         next.askedFilterVersion = next.indexer?.filterVersion;
         if (filteredCount >= userRowsPerPage) {
@@ -280,7 +267,6 @@ function PagedSensitivityResult({
     if (!prev?.isFetchNeedy) {
         // OK, next
     } else if (fetched && prev.fetched !== fetched) {
-        console.debug('got fetched');
         next.isFetchNeedy = false;
         setOverAllCount(fetched.totalSensitivitiesCount);
         setFilteredCount(fetched.filteredSensitivitiesCount);
