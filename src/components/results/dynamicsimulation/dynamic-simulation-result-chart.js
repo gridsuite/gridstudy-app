@@ -40,24 +40,18 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(2),
     },
 }));
-const DynamicSimulationResultChart = ({ series, selected }) => {
+const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
     console.log('Rerender DynamicSimulationResultChart', [series]);
     const classes = useStyles();
 
     // button options synchronization
     const [sync, setSync] = useState(true);
 
-    const [plotEvent, setPlotEvent] = useState({
-        eventData: undefined,
-        eventName: undefined,
-    });
-
     // tab id is auto increase and reset to zero when there is any tab
-    const [plotId, setPlotId] = useState(1);
+    const [plotIncId, setPlotIncId] = useState(1);
     const [plots, setPlots] = useState([
         {
-            id: plotId,
-            revision: 0, // in order to force refresh after layout changed
+            id: plotIncId,
             leftSelectedSeries: [],
             rightSelectedSeries: [],
         },
@@ -97,25 +91,14 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
     );
 
     const handleSync = useCallback(() => {
-        setSync((prev) => {
-            console.log('current sync = ', prev);
-            return !prev;
-        });
-
-        // update revision to force update all registered callbacks
-        const newPlots = Array.from(plots);
-        for (let idx in newPlots) {
-            newPlots[idx].revision = newPlots[idx].revision + 1;
-        }
-        setPlots(newPlots);
-    }, [plots]);
+        setSync((prev) => !prev);
+    }, []);
 
     const handleAddNewPlot = useCallback(() => {
         setPlots((prev) => [
             ...prev,
             {
-                id: plotId + 1,
-                revision: 0,
+                id: plotIncId + 1,
                 leftSelectedSeries: [],
                 rightSelectedSeries: [],
             },
@@ -123,8 +106,8 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
 
         setSelectedIndex(plots.length);
 
-        setPlotId((prev) => prev + 1);
-    }, [plotId, plots.length]);
+        setPlotIncId((prev) => prev + 1);
+    }, [plotIncId, plots.length]);
 
     const handleClose = useCallback(
         (index) => {
@@ -139,8 +122,8 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
             ); // get the next item in new plots
             setPlots(newPlots);
             if (newPlots.length === 0) {
-                // reset tabId to zero
-                setPlotId(0);
+                // reset plotIncId to zero
+                setPlotIncId(0);
             }
         },
         [plots]
@@ -153,44 +136,6 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
         w: 2,
         h: 2,
     }));
-
-    const handleOnPlotRelayout = useCallback(
-        (index, eventData, eventName) => {
-            console.log(
-                'sender-eventData-sync in handleOnPlotRelayout',
-                index,
-                eventData,
-                sync
-            );
-
-            console.log('current sync in handleOnPlotRelayout', sync);
-            if (!sync) {
-                return;
-            }
-
-            // update event
-            setPlotEvent((prev) => {
-                prev.eventData = { ...eventData };
-                prev.eventName = eventName;
-                return prev;
-            });
-
-            // update revision to force refresh other plots except the sender
-            const newPlots = Array.from(plots);
-            console.log('number of plots = ', [plots.length]);
-            for (let idx in newPlots) {
-                if (idx !== `${index}`) {
-                    console.debug(
-                        'receiver-eventData in handleOnPlotRelayout',
-                        idx
-                    );
-                    newPlots[idx].revision = newPlots[idx].revision + 1;
-                }
-            }
-            setPlots(newPlots);
-        },
-        [sync, plots]
-    );
 
     //const handleLayoutChange = (layout) => {};
 
@@ -247,7 +192,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                             className={'layout'}
                             layout={layout}
                             cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                            rowHeight={200}
+                            // rowHeight={200}
                             //onLayoutChange={handleLayoutChange}
                             //onBreakpointChange={handleBreakpointChange}
                         >
@@ -255,15 +200,14 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                                 <DynamicSimulationResultSeriesChart
                                     key={`${plot.id}`}
                                     id={`${plot.id}`}
+                                    groupId={`${groupId}`}
                                     index={index}
                                     selected={selectedIndex === index}
                                     onSelect={handleSelectIndex}
                                     leftSeries={plot.leftSelectedSeries}
                                     rightSeries={plot.rightSelectedSeries}
                                     onClose={handleClose}
-                                    onRelayout={handleOnPlotRelayout}
-                                    revision={plot.revision}
-                                    plotEvent={plotEvent}
+                                    sync={sync}
                                 />
                             ))}
                         </ResponsiveGridLayout>

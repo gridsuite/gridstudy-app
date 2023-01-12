@@ -37,15 +37,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 const DynamicSimulationResultSeriesChart = ({
     id,
+    groupId,
     index,
     selected,
     leftSeries,
     rightSeries,
     onClose,
     onSelect,
-    onRelayout,
-    revision,
-    plotEvent,
+    sync,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -85,12 +84,11 @@ const DynamicSimulationResultSeriesChart = ({
             <CardContent>
                 <PlotlySeriesChart
                     id={id}
+                    groupId={groupId}
                     index={index}
                     leftSeries={leftSeries}
                     rightSeries={rightSeries}
-                    onRelayout={onRelayout}
-                    revision={revision}
-                    plotEvent={plotEvent}
+                    sync={sync}
                 />
             </CardContent>
         </Card>

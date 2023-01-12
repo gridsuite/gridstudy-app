@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import CloseIcon from '@mui/icons-material/Close';
-import DataObjectIcon from '@mui/icons-material/DataObject';
+//import DataObjectIcon from '@mui/icons-material/DataObject';
 import AddIcon from '@mui/icons-material/Add';
-import { IconButton, Stack, Tab, Tabs } from '@mui/material';
+import { IconButton, Stack, Tab } from '@mui/material';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
-import ReactJson from 'react-json-view';
-import { LIGHT_THEME } from '@gridsuite/commons-ui';
+// import ReactJson from 'react-json-view';
+// import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
-import { PARAM_THEME } from '../../../utils/config-params';
+//import { useSelector } from 'react-redux';
+//import { PARAM_THEME } from '../../../utils/config-params';
 import makeStyles from '@mui/styles/makeStyles';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
 import DraggableTab from './common/draggable-tab/draggable-tab';
@@ -36,14 +36,14 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
     const { timeseries } = result;
     const classes = useStyles();
 
-    const selectedTheme = useSelector((state) => state[PARAM_THEME]);
+    // const selectedTheme = useSelector((state) => state[PARAM_THEME]);
 
     // tab id is auto increase and reset to zero when there is any tab
-    const [tabId, setTabId] = useState(1);
+    const [tabIncId, setTabIncId] = useState(1);
 
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const [tabs, setTabs] = useState([{ id: tabId }]);
+    const [tabs, setTabs] = useState([{ id: tabIncId }]);
 
     const series = useMemo(() => {
         console.log('transformToRechartSeries is called');
@@ -68,13 +68,13 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
         setTabs((prev) => [
             ...prev,
             {
-                id: tabId + 1,
+                id: tabIncId + 1,
             },
         ]);
 
         setSelectedIndex(tabs.length);
 
-        setTabId((prev) => prev + 1);
+        setTabIncId((prev) => prev + 1);
     };
 
     const handleClose = (index) => {
@@ -91,7 +91,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
             setTabs(newTabs);
             if (newTabs.length === 0) {
                 // reset tabId to zero
-                setTabId(0);
+                setTabIncId(0);
             }
         };
     };
@@ -113,9 +113,9 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
     return (
         <div className={classes.root}>
             <Stack direction="row" maxWidth={'100vw'}>
-                <Tabs value={selectedIndex} onChange={handleTabsChange}>
+                {/*<Tabs value={selectedIndex} onChange={handleTabsChange}>
                     <Tab value={-1} icon={<DataObjectIcon />} />
-                </Tabs>
+                </Tabs>*/}
                 {/* tab headers */}
                 <DroppableTabs
                     id={'1'}
@@ -166,7 +166,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                 </TooltipIconButton>
             </Stack>
             {/* tab contents */}
-            <Visibility value={selectedIndex} index={-1}>
+            {/*<Visibility value={selectedIndex} index={-1}>
                 <ReactJson
                     src={timeseries}
                     onEdit={false}
@@ -178,7 +178,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                             : 'monokai'
                     }
                 />
-            </Visibility>
+            </Visibility>*/}
             {tabs.map((tab, index) => (
                 <Visibility
                     key={`tab-${tab.id}`}
@@ -186,6 +186,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                     index={index}
                 >
                     <DynamicSimulationResultChart
+                        groupId={tab.id}
                         series={series}
                         selected={selectedIndex === index}
                     />

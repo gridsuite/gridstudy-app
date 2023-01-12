@@ -13,10 +13,7 @@ import {
     purple,
     red,
 } from '@mui/material/colors';
-export const PlotEvents = {
-    ON_RELAYOUT: 'onRelayout',
-    ON_TOGGLED_SYNC: 'onToggledSync',
-};
+
 export const baseColors = [red, orange, blue, green, purple, pink, cyan];
 export const defaultLayout = {
     autosize: true,
