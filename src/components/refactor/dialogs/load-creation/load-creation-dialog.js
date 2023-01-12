@@ -23,7 +23,6 @@ import {
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
-import { useSchemaCheck } from '../../utils/utils';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,

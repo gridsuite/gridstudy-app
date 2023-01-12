@@ -6,7 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
@@ -156,34 +156,37 @@ export const ConnectivityForm = ({
 
     const handleClickOpenDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(true);
-    }, [setIsDiagramPaneOpen]);
+    }, []);
 
     const handleCloseDiagramPane = useCallback(() => {
         setIsDiagramPaneOpen(false);
-    }, [setIsDiagramPaneOpen]);
+    }, []);
 
-    const positionIconAdorment = (isNodeBuilt, clickCallback) => {
-        return (
-            <IconButton
-                {...(isNodeBuilt && { onClick: clickCallback })}
-                disableRipple={!isNodeBuilt}
-            >
-                <Tooltip
-                    title={intl.formatMessage({
-                        id: isNodeBuilt
-                            ? 'DisplayTakenPositions'
-                            : 'NodeNotBuildPositionMessage',
-                    })}
+    const positionIconAdorment = useMemo(
+        (isNodeBuilt, clickCallback) => {
+            return (
+                <IconButton
+                    {...(isNodeBuilt && { onClick: clickCallback })}
+                    disableRipple={!isNodeBuilt}
                 >
-                    {isNodeBuilt ? (
-                        <ExploreOutlinedIcon color="action" />
-                    ) : (
-                        <ExploreOffOutlinedIcon color="action" />
-                    )}
-                </Tooltip>
-            </IconButton>
-        );
-    };
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: isNodeBuilt
+                                ? 'DisplayTakenPositions'
+                                : 'NodeNotBuildPositionMessage',
+                        })}
+                    >
+                        {isNodeBuilt ? (
+                            <ExploreOutlinedIcon color="action" />
+                        ) : (
+                            <ExploreOffOutlinedIcon color="action" />
+                        )}
+                    </Tooltip>
+                </IconButton>
+            );
+        },
+        [intl]
+    );
 
     const newConnectionPositionField = (
         <IntegerInput
