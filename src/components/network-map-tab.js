@@ -268,8 +268,14 @@ export const NetworkMapTab = ({
 
     const linePositionsAreEqual = useCallback((linePos1, linePos2) => {
         return (
-            latLonEqual(linePos1?.coordinates?.[0], linePos2?.coordinates?.[0]) &&
-            latLonEqual(linePos1?.coordinates?.[1], linePos2?.coordinates?.[1]) &&
+            latLonEqual(
+                linePos1?.coordinates?.[0],
+                linePos2?.coordinates?.[0]
+            ) &&
+            latLonEqual(
+                linePos1?.coordinates?.[1],
+                linePos2?.coordinates?.[1]
+            ) &&
             linePos1?.country1 === linePos2?.country1 &&
             linePos1?.country2 === linePos2?.country2 &&
             linePos1?.substationStart === linePos2?.substationStart &&
