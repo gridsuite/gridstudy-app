@@ -370,7 +370,7 @@ export const NetworkMapTab = ({
                         const substationsDataChanged =
                             updateSubstationsTemporaryGeoData(substations);
                         const linesDataChanged =
-                            updateLinesTemporaryGeoData(substations);
+                            updateLinesTemporaryGeoData(lines);
 
                         // If no geo data has changed, we avoid to trigger a new render.
                         if (substationsDataChanged || linesDataChanged) {
