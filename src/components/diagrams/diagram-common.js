@@ -244,17 +244,24 @@ export const computePaperAndSvgSizesIfReady = (
             svgHeight = totalHeight - headerPreferredHeight - BORDERS;
         } else {
             let tempMaxWidth, tempMaxHeight;
-            if (svgType === SvgType.VOLTAGE_LEVEL) {
-                tempMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
-                tempMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
-            } else if (svgType === SvgType.SUBSTATION) {
-                tempMaxWidth = MAX_WIDTH_SUBSTATION;
-                tempMaxHeight = MAX_HEIGHT_SUBSTATION;
-            } else if (svgType === SvgType.NETWORK_AREA_DIAGRAM) {
-                tempMaxWidth = MAX_WIDTH_NETWORK_AREA_DIAGRAM;
-                tempMaxHeight = MAX_HEIGHT_NETWORK_AREA_DIAGRAM;
-            } else {
-                console.error('type inconnu svgType');
+            switch (svgType) {
+                case SvgType.VOLTAGE_LEVEL:
+                    tempMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
+                    tempMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
+                    break;
+                case SvgType.SUBSTATION:
+                    tempMaxWidth = MAX_WIDTH_SUBSTATION;
+                    tempMaxHeight = MAX_HEIGHT_SUBSTATION;
+                    break;
+                case SvgType.NETWORK_AREA_DIAGRAM:
+                    tempMaxWidth = MAX_WIDTH_NETWORK_AREA_DIAGRAM;
+                    tempMaxHeight = MAX_HEIGHT_NETWORK_AREA_DIAGRAM;
+                    break;
+                default:
+                    console.warn(
+                        'Unknown type in computePaperAndSvgSizesIfReady'
+                    );
+                    tempMaxWidth = tempMaxHeight = LOADING_WIDTH;
             }
             svgWidth = Math.min(svgPreferredWidth, totalWidth, tempMaxWidth);
             svgHeight = Math.min(

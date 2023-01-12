@@ -21,7 +21,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
-import { fetchSvg } from '../../utils/rest-api';
+import { fetchSvg, updateSwitchState } from '../../utils/rest-api';
 import {
     decrementNetworkAreaDiagramDepth,
     incrementNetworkAreaDiagramDepth,
@@ -100,20 +100,16 @@ const Diagram = forwardRef((props, ref) => {
     const theme = useTheme();
     const classes = useStyles();
     const intl = useIntl();
-    const {
-        computedHeight,
-        disabled,
-        loadFlowStatus,
-        numberToDisplay,
-        setDisplayedDiagramHeights,
-        totalHeight,
-        totalWidth,
-    } = props;
 
-    const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } =
-        useDiagram();
+    const {
+        openDiagramView,
+        minimizeDiagramView,
+        togglePinDiagramView,
+        closeDiagramView,
+    } = useDiagram();
 
     const diagramType = useCallback(() => {
+        // TODO CHARLY remove this
         switch (props.svgType) {
             case SvgType.SUBSTATION:
             case SvgType.VOLTAGE_LEVEL:
@@ -149,11 +145,48 @@ const Diagram = forwardRef((props, ref) => {
 
     const errorWidth = MAX_WIDTH_VOLTAGE_LEVEL;
 
+    const [errorMessage, setErrorMessage] = useState('');
+
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
 
-    // SLD
+    useImperativeHandle(
+        ref,
+        () => ({
+            reloadSvg: forceUpdate,
+        }),
+        // Note: forceUpdate doesn't change
+        [forceUpdate]
+    );
+
+    const handleBreakerClick = useCallback(
+        (breakerId, open, switchElement) => {
+            updateSwitchState(
+                props.studyUuid,
+                currentNode?.id,
+                breakerId,
+                open
+            ).catch((error) => {
+                console.error(error.message);
+                setErrorMessage(error.message);
+            });
+        },
+        [props.studyUuid, currentNode]
+    );
+
+    const handleNextVoltageLevelClick = useCallback(
+        (id) => {
+            // This function is called by powsybl-diagram-viewer when clicking on a navigation arrow in a single line diagram.
+            // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
+            if (!network) {
+                return;
+            }
+            openDiagramView(id, SvgType.VOLTAGE_LEVEL);
+        },
+        [network, openDiagramView]
+    );
+
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
         equipmentId: null,
@@ -195,15 +228,6 @@ const Diagram = forwardRef((props, ref) => {
         closeEquipmentMenu();
     };
 
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
-
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
     const [svgPreferredWidth, setSvgPreferredWidth] = useState();
@@ -216,7 +240,7 @@ const Diagram = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (finalPaperHeight) {
-            setDisplayedDiagramHeights((displayedDiagramHeights) => {
+            props.setDisplayedDiagramHeights((displayedDiagramHeights) => {
                 return [
                     ...displayedDiagramHeights.filter(
                         (diagram) => diagram.id !== props.diagramId
@@ -225,15 +249,15 @@ const Diagram = forwardRef((props, ref) => {
                 ];
             });
         }
-    }, [finalPaperHeight, setDisplayedDiagramHeights, props.diagramId]);
+    }, [finalPaperHeight, props.setDisplayedDiagramHeights, props.diagramId]);
 
     // After getting the SVG, we will calculate the diagram's ideal size
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
             fullScreenDiagram?.id,
             props.svgType,
-            totalWidth,
-            totalHeight,
+            props.totalWidth,
+            props.totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
             headerPreferredHeight
@@ -242,14 +266,14 @@ const Diagram = forwardRef((props, ref) => {
         if (sizes) {
             if (
                 !fullScreenDiagram?.id &&
-                sizes.svgWidth * numberToDisplay > totalWidth
+                sizes.svgWidth * props.numberToDisplay > props.totalWidth
             ) {
-                setSvgFinalWidth(totalWidth / numberToDisplay);
-                setFinalPaperWidth(totalWidth / numberToDisplay);
+                setSvgFinalWidth(props.totalWidth / props.numberToDisplay);
+                setFinalPaperWidth(props.totalWidth / props.numberToDisplay);
 
                 const adjustedHeight =
                     sizes.svgHeight *
-                    (totalWidth / numberToDisplay / sizes.svgWidth);
+                    (props.totalWidth / props.numberToDisplay / sizes.svgWidth);
 
                 setSvgFinalHeight(adjustedHeight);
                 setFinalPaperHeight(
@@ -264,19 +288,21 @@ const Diagram = forwardRef((props, ref) => {
         }
     }, [
         fullScreenDiagram,
-        totalWidth,
-        totalHeight,
+        props.totalWidth,
+        props.totalHeight,
         props.svgType,
         svgPreferredWidth,
         svgPreferredHeight,
         headerPreferredHeight,
-        numberToDisplay,
+        props.numberToDisplay,
         props.diagramId,
     ]);
 
     useEffect(() => {
         if (props.svgUrl) {
-            const isDiagramTypeSld = diagramType() === 'SLD';
+            const isDiagramTypeSld =
+                props.svgType === SvgType.VOLTAGE_LEVEL ||
+                props.svgType === SvgType.SUBSTATION;
             const acceptJson = isDiagramTypeSld;
 
             updateLoadingState(true);
@@ -322,7 +348,7 @@ const Diagram = forwardRef((props, ref) => {
         snackError,
         intlRef,
         props.diagramId,
-        diagramType,
+        props.svgType,
     ]);
 
     // shouldResetPreferredSizes doesn't need to be a ref, but it makes the static checks happy
@@ -348,22 +374,19 @@ const Diagram = forwardRef((props, ref) => {
         theme,
         props.diagramId,
         ref,
-        disabled,
+        props.disabled,
     ]);
 
     useLayoutEffect(() => {
-        if (disabled) return;
+        if (props.disabled) return;
 
         if (svg.svg) {
-            if (diagramType() === 'NAD') {
-                const minWidth = svgFinalWidth;
-                const minHeight = svgFinalHeight;
-
+            if (props.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
                 const diagramViewer = new NetworkAreaDiagramViewer(
                     svgRef.current,
                     svg.svg,
-                    minWidth,
-                    minHeight,
+                    svgFinalWidth,
+                    svgFinalHeight,
                     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
                     MAX_HEIGHT_NETWORK_AREA_DIAGRAM
                 );
@@ -397,10 +420,8 @@ const Diagram = forwardRef((props, ref) => {
                 });
 
                 diagramViewerRef.current = diagramViewer;
-            } else if (diagramType() === 'SLD') {
-                const minWidth = svgFinalWidth;
-                const minHeight = svgFinalHeight;
-
+            } else {
+                // props.svgType is of Single Line Diagram type
                 let viewboxMaxWidth =
                     props.svgType === SvgType.VOLTAGE_LEVEL
                         ? MAX_WIDTH_VOLTAGE_LEVEL
@@ -414,7 +435,7 @@ const Diagram = forwardRef((props, ref) => {
                     !isAnyNodeBuilding &&
                     !modificationInProgress &&
                     !loadingState
-                        ? props.onNextVoltageLevelClick
+                        ? handleNextVoltageLevelClick
                         : null;
                 let onBreakerCallback =
                     !props.isComputationRunning &&
@@ -427,7 +448,7 @@ const Diagram = forwardRef((props, ref) => {
                                   setModificationInProgress(true);
                                   updateLoadingState(true);
                                   setLocallySwitchedBreaker(switchElement);
-                                  props.onBreakerClick(
+                                  handleBreakerClick(
                                       breakerId,
                                       newSwitchState,
                                       switchElement
@@ -450,8 +471,8 @@ const Diagram = forwardRef((props, ref) => {
                     svg.svg, //svgContent
                     svg.metadata, //svg metadata
                     props.svgType,
-                    minWidth,
-                    minHeight,
+                    svgFinalWidth,
+                    svgFinalHeight,
                     viewboxMaxWidth,
                     viewboxMaxHeight,
                     onNextVoltageCallback, //callback on the next voltage arrows
@@ -509,9 +530,6 @@ const Diagram = forwardRef((props, ref) => {
                 diagramViewer.refreshZoom();
 
                 diagramViewerRef.current = diagramViewer;
-            } else {
-                console.error('diagramType manquant #2');
-                alert('check console');
             }
         }
     }, [
@@ -520,8 +538,6 @@ const Diagram = forwardRef((props, ref) => {
         props.svgUrl,
         svg,
         currentNode,
-        props.onNextVoltageLevelClick,
-        props.onBreakerClick,
         props.isComputationRunning,
         isAnyNodeBuilding,
         equipmentMenu,
@@ -531,11 +547,10 @@ const Diagram = forwardRef((props, ref) => {
         ref,
         svgFinalHeight,
         svgFinalWidth,
-        disabled,
+        props.disabled,
         modificationInProgress,
         loadingState,
         locallySwitchedBreaker,
-        diagramType,
         networkAreaDiagramDepth,
     ]);
 
@@ -551,7 +566,9 @@ const Diagram = forwardRef((props, ref) => {
                     svgEl.setAttribute('width', svgFinalWidth);
                     svgEl.setAttribute(
                         'height',
-                        computedHeight ? computedHeight : svgFinalHeight
+                        props.computedHeight
+                            ? props.computedHeight
+                            : svgFinalHeight
                     );
                 }
             }
@@ -578,26 +595,8 @@ const Diagram = forwardRef((props, ref) => {
         network,
         ref,
         fullScreenDiagram,
-        computedHeight,
+        props.computedHeight,
     ]);
-
-    /*const onCloseHandler = () => {
-        dispatch(setFullScreenDiagram(null));
-        closeDiagramView(props.diagramId, props.svgType);
-        if (props.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
-            setDepth(0);
-        }
-    };
-
-    const showFullScreen = useCallback(
-        () => dispatch(setFullScreenDiagram(props.diagramId, props.svgType)),
-        [dispatch, props.diagramId, props.svgType]
-    );
-
-    const hideFullScreen = useCallback(
-        () => dispatch(setFullScreenDiagram(null)),
-        [dispatch]
-    );*/
 
     const displayMenuLine = () => {
         return (
@@ -650,11 +649,11 @@ const Diagram = forwardRef((props, ref) => {
     } else if (initialWidth !== undefined || loadingState) {
         sizeWidth = initialWidth;
     } else {
-        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
+        sizeWidth = props.totalWidth; // happens during initialization if initial width value is undefined
     }
 
     if (!isNodeBuilt(currentNode)) {
-        sizeWidth = totalWidth / numberToDisplay; // prevents the diagram from becoming too big if the current node is not built
+        sizeWidth = props.totalWidth / props.numberToDisplay; // prevents the diagram from becoming too big if the current node is not built
     }
 
     if (sizeWidth !== undefined) {
@@ -664,12 +663,12 @@ const Diagram = forwardRef((props, ref) => {
         initialHeight = sizeHeight; // setting initial height for the next SLD.
     }
 
-    if (!fullScreenDiagram?.id && computedHeight) {
-        sizeHeight = computedHeight;
+    if (!fullScreenDiagram?.id && props.computedHeight) {
+        sizeHeight = props.computedHeight;
     }
 
     /**
-     * CONTROL HANDLERS
+     * DIAGRAM CONTROL HANDLERS
      */
 
     const onMinimizeHandler = () => {
@@ -709,15 +708,6 @@ const Diagram = forwardRef((props, ref) => {
      * RENDER
      */
 
-    /*const pinDiagram = useCallback(() => {
-        onTogglePin(props.diagramId, props.svgType);
-    }, [props.diagramId, props.svgType, onTogglePin]);
-
-    const minimizeDiagram = useCallback(() => {
-        onMinimize(props.diagramId, props.svgType);
-        hideFullScreen();
-    }, [onMinimize, props.diagramId, props.svgType, hideFullScreen]);
-*/
     return !svg.error ? (
         <Paper
             ref={ref}
@@ -764,39 +754,29 @@ const Diagram = forwardRef((props, ref) => {
                 />
             </Box>
             {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
-            {disabled ? (
+            {props.disabled ? (
                 <Box position="relative" left={0} right={0} top={0}>
                     <AlertInvalidNode noMargin={true} />
                 </Box>
             ) : (
                 <Box>
-                    {props.updateSwitchMsg && (
-                        <Alert severity="error">{props.updateSwitchMsg}</Alert>
+                    {errorMessage && (
+                        <Alert severity="error">{errorMessage}</Alert>
                     )}
-                    {diagramType() === 'SLD' && (
-                        <div
-                            ref={svgRef}
-                            className={clsx(classes.divSld, {
-                                [classes.divInvalid]:
-                                    loadFlowStatus !== RunningStatus.SUCCEED,
-                            })}
-                            dangerouslySetInnerHTML={{
-                                __html: svg.svg,
-                            }}
-                        />
-                    )}
-                    {diagramType() === 'NAD' && (
-                        <div
-                            id="nad-svg"
-                            ref={svgRef}
-                            className={clsx(classes.divNad, {
-                                [classes.divInvalid]:
-                                    loadFlowStatus !== RunningStatus.SUCCEED,
-                            })}
-                        />
-                    )}
-                    {diagramType() === 'SLD' && (
+                    {(props.svgType === SvgType.VOLTAGE_LEVEL ||
+                        props.svgType === SvgType.SUBSTATION) && (
                         <>
+                            <div
+                                ref={svgRef}
+                                className={clsx(classes.divSld, {
+                                    [classes.divInvalid]:
+                                        props.loadFlowStatus !==
+                                        RunningStatus.SUCCEED,
+                                })}
+                                dangerouslySetInnerHTML={{
+                                    __html: svg.svg,
+                                }}
+                            />
                             {displayMenuLine()}
                             {displayMenu(equipments.loads, 'load-menus')}
                             {displayMenu(equipments.batteries, 'battery-menus')}
@@ -838,6 +818,17 @@ const Diagram = forwardRef((props, ref) => {
                             )}
                         </>
                     )}
+                    {props.svgType === SvgType.NETWORK_AREA_DIAGRAM && (
+                        <div
+                            id="nad-svg"
+                            ref={svgRef}
+                            className={clsx(classes.divNad, {
+                                [classes.divInvalid]:
+                                    props.loadFlowStatus !==
+                                    RunningStatus.SUCCEED,
+                            })}
+                        />
+                    )}
 
                     {!loadingState && (
                         <DiagramFooter
@@ -866,25 +857,29 @@ const Diagram = forwardRef((props, ref) => {
 
 Diagram.defaultProps = {
     pinned: false,
+    disabled: false,
 };
 
 Diagram.propTypes = {
-    diagramId: PropTypes.string.isRequired,
-    svgType: PropTypes.string.isRequired,
-
-    //depth: PropTypes.number,
     diagramTitle: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
-    isComputationRunning: PropTypes.bool.isRequired,
-    minimize: PropTypes.func,
-    numberToDisplay: PropTypes.number,
-    onBreakerClick: PropTypes.func,
-    loadFlowStatus: PropTypes.any,
-    onNextVoltageLevelClick: PropTypes.func,
-    pin: PropTypes.func,
     pinned: PropTypes.bool,
+    diagramId: PropTypes.string.isRequired,
+    svgType: PropTypes.string.isRequired,
     svgUrl: PropTypes.string,
-    updateSwitchMsg: PropTypes.string,
+    studyUuid: PropTypes.string.isRequired,
+
+    // Size computation
+    computedHeight: PropTypes.number,
+    totalHeight: PropTypes.number,
+    totalWidth: PropTypes.number,
+    numberToDisplay: PropTypes.number,
+    setDisplayedDiagramHeights: PropTypes.func,
+
+    // SLD specific
+    isComputationRunning: PropTypes.bool.isRequired,
+    loadFlowStatus: PropTypes.any,
+    showInSpreadsheet: PropTypes.func,
 };
 
 export default Diagram;

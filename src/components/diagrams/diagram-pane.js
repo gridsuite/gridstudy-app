@@ -14,11 +14,16 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import {
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
-    updateSwitchState,
 } from '../../utils/rest-api';
 import { getNetworkAreaDiagramUrl } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
@@ -249,15 +254,10 @@ export function DiagramPane({
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const [updateSwitchMsg, setUpdateSwitchMsg] = useState(''); // TODO CHARLY a déplacer dans le spécifique SLD ?
-
-    const [views, setViews] = useState([]);
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
 
-    const [displayedDiagrams, setDisplayedDiagrams] = useState([]);
-    const [minimizedDiagrams, setMinimizedDiagrams] = useState([]);
     const [displayedDiagramHeights, setDisplayedDiagramHeights] = useState([]);
-    const displayedDiagramHeightsRef = useRef(); // TODO CHARLY sert uniquement pour éviter de trigger à chaque rendu
+    const displayedDiagramHeightsRef = useRef();
     displayedDiagramHeightsRef.current = displayedDiagramHeights;
 
     const createView = useDisplayView(network, studyUuid, currentNode);
@@ -266,13 +266,9 @@ export function DiagramPane({
 
     const diagramStates = useSelector((state) => state.diagramStates);
 
-    //const [depth, setDepth] = useState(0);
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
-
-    const viewsRef = useRef();
-    viewsRef.current = views;
 
     const { openDiagramView, closeDiagramView, closeDiagramViews } =
         useDiagram();
@@ -286,50 +282,51 @@ export function DiagramPane({
      * BUILDS THE DIAGRAMS LIST
      */
 
-    // Here, the goal is to setView with a list of view, each view corresponding to a diagram.
+    // Here, the goal is to build a list of view, each view corresponding to a diagram.
     // We get the diagram data from the redux store.
     // In the case of SLD, each SLD corresponds to one view, but in the case of NAD, each open NAD is merged
     // into one view.
-    useEffect(() => {
-        if (visible) {
-            const views = [];
-            const networkAreaIds = [];
-            let networkAreaViewState = ViewState.OPENED;
+    const views = useMemo(() => {
+        if (!visible) {
+            return [];
+        }
+        const views = [];
+        const networkAreaIds = [];
+        let networkAreaViewState = ViewState.OPENED;
 
-            diagramStates.forEach((diagramState) => {
-                if (diagramState.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
-                    networkAreaIds.push(diagramState.id);
-                    networkAreaViewState = diagramState.state; // They should all be the same value
-                } else {
-                    let singleLineDiagramView = createView(diagramState);
-                    // if current view cannot be found, it returns undefined
-                    // in this case, we remove it from diagram states
-                    if (singleLineDiagramView) {
-                        views.push(singleLineDiagramView);
-                    } else {
-                        closeDiagramView(diagramState.id, diagramState.svgType);
-                    }
-                }
-            });
-
-            if (networkAreaIds.length > 0) {
-                let networkAreaDiagramView = createView({
-                    ids: networkAreaIds,
-                    state: networkAreaViewState,
-                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
-                    depth: networkAreaDiagramDepth,
-                });
-
+        diagramStates.forEach((diagramState) => {
+            if (diagramState.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                networkAreaIds.push(diagramState.id);
+                networkAreaViewState = diagramState.state; // They should all be the same value
+            } else {
+                let singleLineDiagramView = createView(diagramState);
                 // if current view cannot be found, it returns undefined
-                // in this case, we remove all the NAD from diagram states
-                if (networkAreaDiagramView) {
-                    views.push(networkAreaDiagramView);
+                // in this case, we remove it from diagram states
+                if (singleLineDiagramView) {
+                    views.push(singleLineDiagramView);
                 } else {
-                    closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
+                    closeDiagramView(diagramState.id, diagramState.svgType);
                 }
             }
-            setViews(views);
+        });
+
+        if (networkAreaIds.length > 0) {
+            let networkAreaDiagramView = createView({
+                ids: networkAreaIds,
+                state: networkAreaViewState,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                depth: networkAreaDiagramDepth,
+            });
+
+            // if current view cannot be found, it returns undefined
+            // in this case, we remove all the NAD from diagram states
+            if (networkAreaDiagramView) {
+                views.push(networkAreaDiagramView);
+            } else {
+                closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
+            }
         }
+        return views;
     }, [
         diagramStates,
         visible,
@@ -340,8 +337,18 @@ export function DiagramPane({
         networkAreaDiagramDepth,
     ]);
 
+    const viewsRef = useRef();
+    viewsRef.current = views;
+
+    const displayedDiagrams = views.filter((view) =>
+        [ViewState.OPENED, ViewState.PINNED].includes(view.state)
+    );
+    const minimizedDiagrams = views.filter((view) =>
+        [ViewState.MINIMIZED].includes(view.state)
+    );
+
     /**
-     * MINIMIZED DIAGRAM'S CONTROLS
+     * MINIMIZED DIAGRAMS' CONTROLS
      */
 
     const handleCloseDiagramView = useCallback(
@@ -357,39 +364,6 @@ export function DiagramPane({
                 return;
             }
             openDiagramView(id, type);
-        },
-        [network, openDiagramView]
-    );
-
-    /**
-     * // TODO CHARLY a déplacer
-     * SINGLE LINE DIAGRAM CONTROLS
-     */
-
-    const handleUpdateSwitchState = useCallback(
-        (breakerId, open, switchElement) => {
-            updateSwitchState(
-                studyUuid,
-                currentNode?.id,
-                breakerId,
-                open
-            ).catch((error) => {
-                console.error(error.message);
-                setUpdateSwitchMsg(error.message);
-            });
-        },
-        [studyUuid, currentNode]
-    );
-
-    const handleOpenVoltageLevelView = useCallback(
-        // TODO CHARLY put this in SLD specific
-        (id) => {
-            // This function is called by powsybl-diagram-viewer when clicking on a navigation arrow in a single line diagram.
-            // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
-            if (!network) {
-                return;
-            }
-            openDiagramView(id, SvgType.VOLTAGE_LEVEL);
         },
         [network, openDiagramView]
     );
@@ -481,21 +455,8 @@ export function DiagramPane({
     ]);
 
     /**
-     * ???
+     * DIAGRAM SIZE COMPUTATION
      */
-
-    // TODO CHARLY voir si on peut pas déplacer ces effets avec ceux qui fabriquent la liste des views OU BIEN avec le calcul des tailles
-    // TODO CHARLY voir si on peut pas fusionner ces deux useEffect qui utilisent la même dependance à view
-    useEffect(() => {
-        setDisplayedDiagrams(
-            views.filter((view) =>
-                [ViewState.OPENED, ViewState.PINNED].includes(view.state)
-            )
-        );
-        setMinimizedDiagrams(
-            views.filter((view) => [ViewState.MINIMIZED].includes(view.state))
-        );
-    }, [views]);
 
     const [computedHeight, setComputedHeight] = useState();
 
@@ -554,33 +515,27 @@ export function DiagramPane({
                                 )
                             }
                             <Diagram
-                                computedHeight={computedHeight}
                                 diagramTitle={diagramView.name}
-                                disabled={disabled}
-                                isComputationRunning={isComputationRunning}
-                                key={diagramView.svgType + diagramView.id}
-                                loadFlowStatus={loadFlowStatus}
-                                numberToDisplay={displayedDiagrams.length}
-                                onBreakerClick={handleUpdateSwitchState}
-                                //onMinimize={minimizeDiagramView}
-                                onNextVoltageLevelClick={
-                                    handleOpenVoltageLevelView
-                                }
-                                //onTogglePin={togglePinDiagramView}
-                                pinned={diagramView.state === ViewState.PINNED}
                                 ref={diagramView.ref}
-                                setDisplayedDiagramHeights={
-                                    setDisplayedDiagramHeights
-                                }
-                                showInSpreadsheet={showInSpreadsheet}
+                                key={diagramView.svgType + diagramView.id}
+                                disabled={disabled}
+                                pinned={diagramView.state === ViewState.PINNED}
                                 diagramId={diagramView.id}
                                 svgType={diagramView.svgType}
                                 svgUrl={diagramView.svgUrl}
+                                studyUuid={studyUuid}
+                                // Size computation
+                                computedHeight={computedHeight}
                                 totalHeight={height}
                                 totalWidth={width}
-                                updateSwitchMsg={updateSwitchMsg}
-                                //depth={depth}
-                                //setDepth={setDepth}
+                                numberToDisplay={displayedDiagrams.length}
+                                setDisplayedDiagramHeights={
+                                    setDisplayedDiagramHeights
+                                }
+                                // SLD specific
+                                isComputationRunning={isComputationRunning}
+                                loadFlowStatus={loadFlowStatus}
+                                showInSpreadsheet={showInSpreadsheet}
                             />
                         </>
                     ))}
