@@ -72,7 +72,7 @@ const VariationSection = ({
     errors,
 }) => {
     const classes = useStyles();
-
+    const id = defaultValue?.id;
     function itemFilter(value) {
         if (variationMode === VENTILATION) {
             return (
@@ -139,6 +139,7 @@ const VariationSection = ({
 
     useEffect(() => {
         onChange(index, {
+            id,
             filters,
             variationValue,
             variationMode,
@@ -151,6 +152,7 @@ const VariationSection = ({
         index,
         onChange,
         reactiveVariationMode,
+        id,
     ]);
 
     return (
