@@ -361,6 +361,7 @@ const NetworkMap = (props) => {
                         });
                     } else {
                         setCursorType('grab');
+                        setTooltip(null);
                     }
                 },
             })
