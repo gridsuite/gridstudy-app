@@ -247,7 +247,7 @@ export const NetworkMapTab = ({
         []
     );
 
-    const areEqual = (coordinate1, coordinate2) => {
+    const latLonEqual = (coordinate1, coordinate2) => {
         return (
             coordinate1?.lat === coordinate2?.lat &&
             coordinate1?.lon === coordinate2?.lon
@@ -257,7 +257,7 @@ export const NetworkMapTab = ({
     const substationPositionsAreEqual = useCallback(
         (substationPos1, substationPos2) => {
             return (
-                areEqual(
+                latLonEqual(
                     substationPos1?.coordinate,
                     substationPos2?.coordinate
                 ) && substationPos1?.country === substationPos2?.country
@@ -268,8 +268,8 @@ export const NetworkMapTab = ({
 
     const linePositionsAreEqual = useCallback((linePos1, linePos2) => {
         return (
-            areEqual(linePos1?.coordinates?.[0], linePos2?.coordinates?.[0]) &&
-            areEqual(linePos1?.coordinates?.[1], linePos2?.coordinates?.[1]) &&
+            latLonEqual(linePos1?.coordinates?.[0], linePos2?.coordinates?.[0]) &&
+            latLonEqual(linePos1?.coordinates?.[1], linePos2?.coordinates?.[1]) &&
             linePos1?.country1 === linePos2?.country1 &&
             linePos1?.country2 === linePos2?.country2 &&
             linePos1?.substationStart === linePos2?.substationStart &&
