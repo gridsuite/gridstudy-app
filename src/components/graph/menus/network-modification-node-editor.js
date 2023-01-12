@@ -404,7 +404,12 @@ const NetworkModificationNodeEditor = () => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
-            dispatch(addNotification(study.eventData.headers['parentNode']));
+            dispatch(
+                addNotification([
+                    study.eventData.headers['parentNode'],
+                    ...study.eventData.headers['nodes'],
+                ])
+            );
         },
         [dispatch]
     );
@@ -506,9 +511,10 @@ const NetworkModificationNodeEditor = () => {
                 // this allow to append new modifications to the existing list.
                 dofetchNetworkModifications();
                 dispatch(
-                    removeNotificationByNode(
-                        studyUpdatedForce.eventData.headers['parentNode']
-                    )
+                    removeNotificationByNode([
+                        studyUpdatedForce.eventData.headers['parentNode'],
+                        ...studyUpdatedForce.eventData.headers['nodes'],
+                    ])
                 );
             }
         }
