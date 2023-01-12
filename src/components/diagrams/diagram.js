@@ -108,19 +108,6 @@ const Diagram = forwardRef((props, ref) => {
         closeDiagramView,
     } = useDiagram();
 
-    const diagramType = useCallback(() => {
-        // TODO CHARLY remove this
-        switch (props.svgType) {
-            case SvgType.SUBSTATION:
-            case SvgType.VOLTAGE_LEVEL:
-                return 'SLD';
-            case SvgType.NETWORK_AREA_DIAGRAM:
-                return 'NAD';
-            default:
-                console.error('type inconnu diagramType');
-        }
-    }, [props.svgType]);
-
     const network = useSelector((state) => state.network);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
