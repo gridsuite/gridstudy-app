@@ -297,14 +297,15 @@ export const NetworkMapTab = ({
             let someDataHasChanged = false;
             fetchedPositions.forEach((pos) => {
                 // If the geo data is the same in the geoData and in the server response, it's not updated
+                const substationPosition =
+                    geoDataRef.current.substationPositionsById.get(pos.id);
                 if (
-                    !substationPositionsAreEqual(
-                        geoDataRef.current.substationPositionsById.get(pos.id),
-                        pos
+                    !(
+                        substationPosition &&
+                        substationPositionsAreEqual(substationPosition, pos)
                     )
                 ) {
                     temporaryGeoDataIdsRef.current.add(pos.id);
-                    geoDataRef.current.substationPositionsById.set(pos.id, pos);
                     someDataHasChanged = true;
                 }
             });
@@ -318,14 +319,13 @@ export const NetworkMapTab = ({
             let someDataHasChanged = false;
             fetchedPositions.forEach((pos) => {
                 // If the geo data is the same in the geoData and in the server response, it's not updated
+                const linePosition = geoDataRef.current.linePositionsById.get(
+                    pos.id
+                );
                 if (
-                    !linePositionsAreEqual(
-                        geoDataRef.current.linePositionsById.get(pos.id),
-                        pos
-                    )
+                    !(linePosition && linePositionsAreEqual(linePosition, pos))
                 ) {
                     temporaryGeoDataIdsRef.current.add(pos.id);
-                    geoDataRef.current.linePositionsById.set(pos.id, pos);
                     someDataHasChanged = true;
                 }
             });
@@ -365,22 +365,14 @@ export const NetworkMapTab = ({
 
             Promise.all([missingSubstationPositions, missingLinesPositions])
                 .then((positions) => {
-                    if (positions[0].length > 0 || positions[1].length > 0) {
-                        // Update temporary geo data for subtations
-                        let someDataHasChanged =
-                            updateSubstationsTemporaryGeoData(positions[0]);
-
-                        // Update temporary geo data for lines
-                        someDataHasChanged =
-                            updateLinesTemporaryGeoData(positions[1]) ||
-                            someDataHasChanged;
+                    const [substations, lines] = positions;
+                    if (substations.length > 0 || lines.length > 0) {
+                        const someDataHasChanged =
+                            updateSubstationsTemporaryGeoData(substations) ||
+                            updateLinesTemporaryGeoData(lines);
 
                         // If no geo data has changed, we avoid to trigger a new render.
                         if (someDataHasChanged) {
-                            geoDataRef.current.addSubstationPositions(
-                                positions[0]
-                            );
-                            geoDataRef.current.addLinePositions(positions[1]);
                             // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
                             // Same for line positions.
                             const newGeoData = new GeoData(
@@ -391,13 +383,17 @@ export const NetworkMapTab = ({
                                     : geoDataRef.current
                                           .substationPositionsById,
                                 // If lineFullPath is off, we need to render the lines layer when there are some new subsation positions
-                                positions[1].length > 0 ||
-                                (!lineFullPath && positions[0].length > 0)
+                                lines.length > 0 ||
+                                (!lineFullPath && substations.length > 0)
                                     ? new Map(
                                           geoDataRef.current.linePositionsById
                                       )
                                     : geoDataRef.current.linePositionsById
                             );
+                            newGeoData.addSubstationPositions(
+                                substations
+                            );
+                            newGeoData.addLinePositions(lines);
                             setGeoData(newGeoData);
                         }
                     }
@@ -566,6 +562,7 @@ export const NetworkMapTab = ({
 
     // This useEffect ensures the geo data load is done after the map equipments load. Improvement: the sequentiality could be enforced by using a chain of promises for the updates of mapEquipments and geoData
     // At initialization, loadMapEquipments and loadGeoData can be parallelized.
+    // Also, because of this useEffect instead of a chain of promises, we have to use a ref for currentNode in loadGeoData, loadAllGeoData and loadMissingGeoData Because currentNode would trigger loadGeoData and loadMapEquipments which retriggers loadGeoData.
     useEffect(() => {
         if (!mapEquipments) return;
         loadGeoData();
