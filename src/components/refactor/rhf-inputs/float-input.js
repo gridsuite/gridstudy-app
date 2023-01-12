@@ -6,29 +6,39 @@
  */
 
 import React from 'react';
-import { toFloatValue } from '../../dialogs/dialogUtils';
-import { isFloatNumber } from '../../dialogs/inputs/input-hooks';
 import TextInput from './text-input';
 import PropTypes from 'prop-types';
+import { isFloatNumber } from '../../dialogs/inputs/input-hooks';
 
-const FloatInput = ({ transformValue = toFloatValue, ...props }) => {
+const FloatInput = (props) => {
+    const inputTransform = (value) => {
+        if (['-', '.'].includes(value)) return value;
+        return value === null || isNaN(value) ? '' : value.toString();
+    };
+
+    const outputTransform = (value) => {
+        if (value === '-') return value;
+        if (value === '') return null;
+
+        const tmp = value?.replace(',', '.') || '';
+        if (tmp.endsWith('.') || tmp.endsWith('0')) return value;
+        return parseFloat(tmp) || null;
+    };
+
     return (
         <TextInput
             acceptValue={isFloatNumber}
-            transformValue={transformValue}
+            outputTransform={outputTransform}
+            inputTransform={inputTransform}
             {...props}
         />
     );
 };
 
 FloatInput.propTypes = {
+    name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    isRequired: PropTypes.bool,
-    errorMessage: PropTypes.string,
-    value: PropTypes.any,
-    onChange: PropTypes.func,
     adornment: PropTypes.object,
-    transformValue: PropTypes.func,
     acceptValue: PropTypes.func,
     formProps: PropTypes.object,
     previousValue: PropTypes.object,

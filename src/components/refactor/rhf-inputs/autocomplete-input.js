@@ -13,6 +13,9 @@ import {
     genHelperPreviousValue,
 } from '../../dialogs/inputs/hooks-helpers';
 import PropTypes from 'prop-types';
+import { useController, useFormContext } from 'react-hook-form';
+import { func_identity } from '../../dialogs/dialogUtils';
+import { isFieldRequired } from '../utils/utils';
 
 /**
  * Autocomplete input
@@ -25,31 +28,47 @@ import PropTypes from 'prop-types';
  * @returns autocomplete field containing the options values
  */
 const AutocompleteInput = ({
+    name,
     label,
-    onChange,
-    value,
-    isRequired = false,
+    outputTransform = func_identity, //transform materialUi input value before sending it to react hook form, mostly used to deal with select fields that need to return a string
+    inputTransform = func_identity, //transform react hook form value before sending it to materialUi input, mostly used to deal with select fields that need to return a string
     options,
-    errorMsg,
     readOnly = false,
     previousValue,
     formProps,
+    allowNewValue,
     ...props
 }) => {
+    const { validationSchema } = useFormContext();
+    const {
+        field: { onChange, value },
+        fieldState: { error },
+    } = useController({ name });
+
     return (
         <Autocomplete
-            value={value}
-            onChange={(event, data) => onChange(data)}
+            value={inputTransform(value)}
+            onChange={(_, data) => onChange(outputTransform(data))}
+            //if free input is needed. The resulting object will be : {id: <userInput>}
+            {...(allowNewValue && {
+                freeSolo: true,
+                autoComplete: true,
+                blurOnSelect: true,
+                clearOnBlur: true,
+                onInputChange: (_, data) => {
+                    onChange({ id: data });
+                },
+            })}
             options={options}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     label={FieldLabel({
                         label: label,
-                        optional: !isRequired,
+                        optional: !isFieldRequired(name, validationSchema),
                     })}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
                     {...genHelperPreviousValue(previousValue)}
-                    {...genHelperError(errorMsg)}
+                    {...genHelperError(error?.message)}
                     {...formProps}
                     {...rest}
                 />

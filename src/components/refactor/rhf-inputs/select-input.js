@@ -13,14 +13,21 @@ import { useIntl } from 'react-intl';
 const SelectInput = ({ onChange, options, value, ...props }) => {
     const intl = useIntl();
 
+    const inputTransform = (value) =>
+        options.find((option) => option?.id === value) || null;
+
+    const outputTransform = (value) => {
+        return value?.id ?? null;
+    };
+
     return (
         <AutocompleteInput
-            value={options.find((c) => c?.id === value) || null}
-            onChange={(data) => onChange(data?.id || null)}
             options={options}
             getOptionLabel={(option) => {
                 return intl.formatMessage({ id: option.label });
             }}
+            inputTransform={inputTransform}
+            outputTransform={outputTransform}
             readOnly={true}
             {...props}
         />
@@ -28,6 +35,7 @@ const SelectInput = ({ onChange, options, value, ...props }) => {
 };
 
 SelectInput.propTypes = {
+    name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     value: PropTypes.any,

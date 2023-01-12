@@ -13,8 +13,7 @@ import makeStyles from '@mui/styles/makeStyles';
 // import { CreateRuleDialog } from './create-rule-dialog';
 // import { ImportRuleDialog } from './import-rule-dialog';
 import Alert from '@mui/material/Alert';
-import { formControlledItem } from '../../../utils/form-utils';
-import BooleanInput from '../../../inputs/boolean-input';
+import BooleanInput from '../../../rhf-inputs/boolean-input';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
@@ -27,11 +26,11 @@ import {
     TARGET_V,
 } from '../two-windings-transformer-creation-dialog';
 import { useFormContext } from 'react-hook-form';
-import FloatInput from '../../../inputs/float-input';
+import FloatInput from '../../../rhf-inputs/float-input';
 import { gridItem, VoltageAdornment } from '../../../../dialogs/dialogUtils';
 import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
 import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
-import IntegerInput from '../../../inputs/integer-input';
+import IntegerInput from '../../../rhf-inputs/integer-input';
 
 const useStyles = makeStyles((theme) => ({
     center: {
@@ -451,53 +450,55 @@ const RatioTapChangerPane = (props) => {
     //     }
     // };
 
-    const ratioTapChangerEnabledField = formControlledItem(
-        <BooleanInput label="ConfigureRatioTapChanger" />,
-        `${RATIO_TAP_CHANGER}.${RATIO_TAP_CHANGER_ENABLED}`
+    const ratioTapChangerEnabledField = (
+        <BooleanInput
+            name={`${RATIO_TAP_CHANGER}.${RATIO_TAP_CHANGER_ENABLED}`}
+            label="ConfigureRatioTapChanger"
+        />
     );
 
-    const ratioTapLoadTapChangingCapabilitiesField = formControlledItem(
+    const ratioTapLoadTapChangingCapabilitiesField = (
         <BooleanInput
+            name={`${RATIO_TAP_CHANGER}.${RATIO_TAP_LOAD_TAP_CHANGING_CAPABILITIES}`}
             label="OnLoad"
             formProps={{
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
-        />,
-        `${RATIO_TAP_CHANGER}.${RATIO_TAP_LOAD_TAP_CHANGING_CAPABILITIES}`
+        />
     );
 
-    const regulatingField = formControlledItem(
+    const regulatingField = (
         <BooleanInput
+            name={`${RATIO_TAP_CHANGER}.${REGULATING}`}
             label="VoltageRegulation"
             formProps={{
                 disabled:
                     !ratioTapChangerEnabledWatcher ||
                     !ratioTapLoadTapChangingCapabilitiesWatcher,
             }}
-        />,
-        `${RATIO_TAP_CHANGER}.${REGULATING}`
+        />
     );
 
-    const targetVoltage1Field = formControlledItem(
+    const targetVoltage1Field = (
         <FloatInput
+            name={`${RATIO_TAP_CHANGER}.${TARGET_V}`}
             label="TargetVoltage"
             adornment={VoltageAdornment}
             formProps={{
                 disabled: !regulatingWatch || !ratioTapChangerEnabledWatcher,
             }}
-        />,
-        `${RATIO_TAP_CHANGER}.${TARGET_V}`
+        />
     );
 
-    const targetDeadbandField = formControlledItem(
+    const targetDeadbandField = (
         <FloatInput
+            name={`${RATIO_TAP_CHANGER}.${TARGET_DEADBAND}`}
             label="Deadband"
             adornment={VoltageAdornment}
             formProps={{
                 disabled: !regulatingWatch || !ratioTapChangerEnabledWatcher,
             }}
-        />,
-        `${RATIO_TAP_CHANGER}.${TARGET_DEADBAND}`
+        />
     );
 
     const regulatingTerminalField = (
@@ -508,34 +509,34 @@ const RatioTapChangerPane = (props) => {
         />
     );
 
-    const lowTapPositionField = formControlledItem(
+    const lowTapPositionField = (
         <IntegerInput
+            name={`${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`}
             label="LowTapPosition"
             formProps={{
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
-        />,
-        `${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`
+        />
     );
 
-    const highTapPositionField = formControlledItem(
+    const highTapPositionField = (
         <IntegerInput
+            name={`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`}
             label="HighTapPosition"
             formProps={{
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
-        />,
-        `${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`
+        />
     );
 
-    const tapPositionField = formControlledItem(
+    const tapPositionField = (
         <IntegerInput
+            name={`${RATIO_TAP_CHANGER}.${TAP_POSITION}`}
             label="TapPosition"
             formProps={{
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
-        />,
-        `${RATIO_TAP_CHANGER}.${TAP_POSITION}`
+        />
     );
 
     // const [ratioLowTapPosition, ratioLowTapPositionField] = useIntegerValue({

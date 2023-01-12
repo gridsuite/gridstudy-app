@@ -18,14 +18,13 @@ import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 import { genHelperError } from '../../../dialogs/inputs/hooks-helpers';
 import { useSelector } from 'react-redux';
-import { formControlledItem } from '../../utils/form-utils';
 import {
     EQUIPMENT,
     RATED_VOLTAGE_2,
     RATIO_TAP_CHANGER,
     VOLTAGE_LEVEL,
 } from '../two-windings-transformer-creation/two-windings-transformer-creation-dialog';
-import AutocompleteInput from '../../inputs/autocomplete-input';
+import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 import { useFormContext } from 'react-hook-form';
 
 // Factory used to create a filter method that is used to change the default
@@ -212,8 +211,9 @@ const RegulatingTerminalForm = ({
                     }
                     align="start"
                 >
-                    {formControlledItem(
+                    {
                         <AutocompleteInput
+                            name={`${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}`}
                             label="VoltageLevel"
                             size="small"
                             freeSolo
@@ -243,9 +243,8 @@ const RegulatingTerminalForm = ({
                                 return filtered;
                             }}
                             PopperComponent={FittingPopper}
-                        />,
-                        `${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}`
-                    )}
+                        />
+                    }
                 </Grid>
                 <Grid
                     item
@@ -262,8 +261,9 @@ const RegulatingTerminalForm = ({
                              it clears the field when blur event is raised, which actually forces the user to validate free input
                              with enter key for it to be validated.
                              check if autoComplete prop is fixed in v5 */}
-                    {formControlledItem(
+                    {
                         <AutocompleteInput
+                            name={`${RATIO_TAP_CHANGER}.${EQUIPMENT}`}
                             label="Equipment"
                             size="small"
                             freeSolo
@@ -303,9 +303,8 @@ const RegulatingTerminalForm = ({
                                 return filtered;
                             }}
                             PopperComponent={FittingPopper}
-                        />,
-                        `${RATIO_TAP_CHANGER}.${EQUIPMENT}`
-                    )}
+                        />
+                    }
                 </Grid>
             </Grid>
         </>

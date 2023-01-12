@@ -3,8 +3,13 @@ import { useIntl } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import PropTypes from 'prop-types';
+import { useController } from 'react-hook-form';
 
-const BooleanInput = ({ label, value, onChange, formProps }) => {
+const BooleanInput = ({ name, label, formProps }) => {
+    const {
+        field: { onChange, value },
+    } = useController({ name });
+
     const intl = useIntl();
 
     const handleChangeValue = useCallback((event) => {

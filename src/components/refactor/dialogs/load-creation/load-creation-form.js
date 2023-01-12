@@ -17,10 +17,9 @@ import {
 } from '../../../dialogs/dialogUtils';
 
 import { ConnectivityForm } from '../connectivity/connectivity-form';
-import TextInput from '../../inputs/text-input';
-import FloatInput from '../../inputs/float-input';
-import SelectInput from '../../inputs/select-input';
-import { formControlledItem } from '../../utils/form-utils';
+import TextInput from '../../rhf-inputs/text-input';
+import FloatInput from '../../rhf-inputs/float-input';
+import SelectInput from '../../rhf-inputs/select-input';
 import {
     ACTIVE_POWER,
     EQUIPMENT_ID,
@@ -30,44 +29,47 @@ import {
 } from './load-creation-dialog';
 
 const LoadCreationForm = ({ editData, currentNodeUuid, ...dialogProps }) => {
-    const loadIdField = formControlledItem(
+    const loadIdField = (
         <TextInput
+            name={EQUIPMENT_ID}
             label={'ID'}
             formProps={{ autoFocus: true, ...filledTextField }}
-        />,
-        EQUIPMENT_ID
+        />
     );
 
-    const loadNameField = formControlledItem(
-        <TextInput label={'Name'} formProps={filledTextField} />,
-        EQUIPMENT_NAME
+    const loadNameField = (
+        <TextInput
+            name={EQUIPMENT_NAME}
+            label={'Name'}
+            formProps={filledTextField}
+        />
     );
 
-    const loadTypeField = formControlledItem(
+    const loadTypeField = (
         <SelectInput
+            name={EQUIPMENT_TYPE}
             label="Type"
             options={LOAD_TYPES}
             fullWidth
             size={'small'}
             formProps={filledTextField}
-        />,
-        EQUIPMENT_TYPE
+        />
     );
 
-    const activePowerField = formControlledItem(
+    const activePowerField = (
         <FloatInput
+            name={ACTIVE_POWER}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-        />,
-        ACTIVE_POWER
+        />
     );
 
-    const reactivePowerField = formControlledItem(
+    const reactivePowerField = (
         <FloatInput
+            name={REACTIVE_POWER}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
-        />,
-        REACTIVE_POWER
+        />
     );
 
     const connectivityForm = (

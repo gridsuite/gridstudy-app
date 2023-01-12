@@ -32,7 +32,7 @@ const connectivityValidationSchema = (id) => ({
                 [VOLTAGE_LEVEL_NAME]: yup.string(),
                 [VOLTAGE_LEVEL_SUBSTATION_ID]: yup.string(),
                 [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
-                [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(true),
+                [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(),
             }),
         [BUS_OR_BUSBAR_SECTION]: yup
             .object()
@@ -42,9 +42,9 @@ const connectivityValidationSchema = (id) => ({
                 [BUS_OR_BUSBAR_SECTION_ID]: yup.string(),
                 [BUS_OR_BUSBAR_SECTION_NAME]: yup.string(),
             }),
-        [CONNECTION_DIRECTION]: yup.string(),
+        [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
-        [CONNECTION_POSITION]: yup.string(),
+        [CONNECTION_POSITION]: yup.number().nullable(),
     }),
 });
 
@@ -52,20 +52,13 @@ export const getConnectivityFormValidationSchema = (id = CONNECTIVITY) => {
     return connectivityValidationSchema(id);
 };
 
-const connectivityValidation = (id) =>
-    yup.object().shape(connectivityValidationSchema(id));
-
-export const getConnectivityFormValidation = (id = CONNECTIVITY) => {
-    return connectivityValidation(id);
-};
-
 const connectivityEmptyFormData = (id) => ({
     [id]: {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
-        [CONNECTION_DIRECTION]: '',
+        [CONNECTION_DIRECTION]: null,
         [CONNECTION_NAME]: '',
-        [CONNECTION_POSITION]: '',
+        [CONNECTION_POSITION]: null,
     },
 });
 

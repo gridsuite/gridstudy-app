@@ -22,7 +22,6 @@ import {
     getConnectivityFormData,
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
-import { useSchemaCheck } from '../../utils/use-schema-check';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,
@@ -233,8 +232,6 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const equipmentPath = '2-windings-transformers';
 
-    const [isFieldRequired] = useSchemaCheck(schema);
-
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
@@ -322,7 +319,7 @@ const TwoWindingsTransformerCreationDialog = ({
     }, [reset]);
 
     return (
-        <FormProvider isFieldRequired={isFieldRequired} {...methods}>
+        <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
