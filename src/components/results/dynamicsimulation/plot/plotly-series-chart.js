@@ -93,6 +93,8 @@ const PlotlySeriesChart = ({
                     )
                         return;
 
+                    // mutable layout => constrained from react-plotly.js
+                    // https://github.com/plotly/plotly.js/issues/2389
                     setLayout((prev) => {
                         const newLayout = {
                             ...prev,
@@ -113,6 +115,7 @@ const PlotlySeriesChart = ({
                         ]);
                         return newLayout;
                     });
+
                     break;
                 default:
                     break;

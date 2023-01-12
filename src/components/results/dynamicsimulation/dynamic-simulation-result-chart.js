@@ -18,7 +18,7 @@ import SyncIcon from '@mui/icons-material/Sync';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
 import makeStyles from '@mui/styles/makeStyles';
 import { lighten } from '@mui/material/styles';
-import { Box } from '@mui/system';
+import { Box } from '@mui/material';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const ResponsiveGridLayout = WidthProvider(Responsive);
@@ -45,7 +45,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
     const classes = useStyles();
 
     // button options synchronization
-    const [sync, setSync] = useState(false);
+    const [sync, setSync] = useState(true);
 
     const [plotEvent, setPlotEvent] = useState({
         eventData: undefined,
@@ -96,7 +96,21 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
         [series]
     );
 
-    const handleAddNewPlot = () => {
+    const handleSync = useCallback(() => {
+        setSync((prev) => {
+            console.log('current sync = ', prev);
+            return !prev;
+        });
+
+        // update revision to force update all registered callbacks
+        const newPlots = Array.from(plots);
+        for (let idx in newPlots) {
+            newPlots[idx].revision = newPlots[idx].revision + 1;
+        }
+        setPlots(newPlots);
+    }, [plots]);
+
+    const handleAddNewPlot = useCallback(() => {
         setPlots((prev) => [
             ...prev,
             {
@@ -110,7 +124,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
         setSelectedIndex(plots.length);
 
         setPlotId((prev) => prev + 1);
-    };
+    }, [plotId, plots.length]);
 
     const handleClose = useCallback(
         (index) => {
@@ -163,6 +177,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
 
             // update revision to force refresh other plots except the sender
             const newPlots = Array.from(plots);
+            console.log('number of plots = ', [plots.length]);
             for (let idx in newPlots) {
                 if (idx !== `${index}`) {
                     console.debug(
@@ -215,15 +230,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                                     <ToggleButton
                                         value="sync"
                                         selected={sync}
-                                        onChange={() => {
-                                            setSync((prev) => {
-                                                console.log(
-                                                    'current sync = ',
-                                                    prev
-                                                );
-                                                return !prev;
-                                            });
-                                        }}
+                                        onChange={handleSync}
                                     >
                                         {sync ? (
                                             <SyncIcon />
