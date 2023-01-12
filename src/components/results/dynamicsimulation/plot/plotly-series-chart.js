@@ -8,7 +8,7 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import Plot from 'react-plotly.js';
 import { baseColors, defaultLayout } from './plot-config';
-import { eventCenter, PlotEvents } from './events';
+import { eventCenter, PlotEvents } from './plot-events';
 
 const PlotlySeriesChart = ({
     id,
@@ -21,7 +21,7 @@ const PlotlySeriesChart = ({
     const [layout, setLayout] = useState(
         JSON.parse(JSON.stringify(defaultLayout)) // deep clone can be done by lodash
     );
-    const [revision, setRevision] = useState(0);
+    //const [revision, setRevision] = useState(0);
 
     const makeGetMarker = useMemo(
         () => (opts) => {
@@ -139,7 +139,7 @@ const PlotlySeriesChart = ({
             style={{ width: '100%', height: '200' }}
             onRelayout={handleOnRelayout}
             onInitialized={handleOnInitialized}
-            revision={revision}
+            //revision={revision}
         />
     );
 };
