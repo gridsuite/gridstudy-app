@@ -218,9 +218,7 @@
     "descLfAllCountries": "All countries",
     "descLfCountriesToBalance": "Countries participating in balancing: ",
 
-    "descWithVoltageMap": "Display voltage drop",
     "descWithFeederResult": "With feeder results",
-    "descMinVoltageDropProportionalThreshold": "Voltage drop display threshold (%)",
     "descStudyType": "Study type",
     "descTransient": "Transient",
     "descSubTransient": "Sub-transient",
