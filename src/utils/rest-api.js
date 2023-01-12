@@ -347,7 +347,7 @@ export function getNetworkAreaDiagramUrl(
 
 export function fetchNADSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetchText(svgUrl);
+    return backendFetchJson(svgUrl);
 }
 
 function getQueryParamsList(params, paramName) {
@@ -377,7 +377,9 @@ export function fetchReport(studyUuid, currentNodeUuid, nodeOnlyReport) {
 
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetchJson(svgUrl);
+    return backendFetch(svgUrl).then((response) =>
+        response.status === 204 ? null : response.json()
+    );
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
