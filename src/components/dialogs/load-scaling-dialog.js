@@ -157,10 +157,10 @@ const VariationSection = ({
 
     return (
         <>
-            {gridItem(filtersField, 3.5)}
-            {gridItem(variationValueField, 2)}
-            {gridItem(variationModeField, 3)}
-            {gridItem(reactiveVariationModeField, 2.5)}
+            {gridItem(filtersField, 2.5)}
+            {gridItem(variationValueField, 1.5)}
+            {gridItem(variationModeField, 3.5)}
+            {gridItem(reactiveVariationModeField, 3.5)}
         </>
     );
 };
