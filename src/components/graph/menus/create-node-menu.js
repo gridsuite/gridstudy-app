@@ -101,9 +101,8 @@ const CreateNodeMenu = ({
 
     function isAlreadySelectedForCut() {
         return (
-            selectedNodeForCopy &&
-            selectedNodeForCopy.nodeId === activeNode.id &&
-            selectedNodeForCopy.copyType === CopyType.CUT
+            selectedNodeForCopy?.nodeId === activeNode.id &&
+            selectedNodeForCopy?.copyType === CopyType.CUT
         );
     }
 
