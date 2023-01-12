@@ -656,8 +656,8 @@ export function StudyContainer({ view, onChangeTab }) {
             snackInfo({
                 headerId: 'renameStudyNotification',
                 headerValues: {
-                    oldStudyPath: prevStudyPath,
-                    studyPath: studyPath,
+                    oldStudyName: prevStudyName,
+                    studyName: studyName,
                 },
             });
         }
