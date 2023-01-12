@@ -289,11 +289,6 @@ const StudyPane = ({
                                 />
                             </div>
 
-                            {/*
-                            Rendering single line diagram only in map view and if
-                            displayed voltage level or substation id has been set
-                            // TODO Is this comment still valid ?
-                            */}
                             <DiagramPane
                                 studyUuid={studyUuid}
                                 network={network}
