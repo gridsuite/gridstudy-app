@@ -6,30 +6,135 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactJson from 'react-json-view';
+import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { PARAM_THEME } from '../utils/config-params';
-import { LIGHT_THEME } from '@gridsuite/commons-ui';
+import VirtualizedTable from './util/virtualized-table';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
-    const selectedTheme = useSelector((state) => state[PARAM_THEME]);
+    const intl = useIntl();
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
 
+    function flattenResult(shortcutAnalysisResult) {
+        const rows = [];
+        shortcutAnalysisResult?.faults?.forEach((f) => {
+            const fault = f.fault;
+            const limitViolations = f.limitViolations;
+            let firstLimitViolation;
+            if (limitViolations.length > 0) {
+                let lv = limitViolations[0];
+                firstLimitViolation = {
+                    limitType: intl.formatMessage({
+                        id: lv.limitType,
+                    }),
+                    limitMin:
+                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
+                            ? lv.limit
+                            : NaN,
+                    limitMax:
+                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
+                            ? lv.limit
+                            : NaN,
+                    limitName: lv.limitName,
+                    current: lv.value,
+                };
+            }
+            rows.push({
+                faultId: fault.id,
+                elementId: fault.elementId,
+                faultType: intl.formatMessage({ id: fault.faultType }),
+                shortCircuitPower: f.shortCircuitPower,
+                current: f.current,
+                ...firstLimitViolation,
+            });
+            limitViolations.slice(1).forEach((lv) => {
+                rows.push({
+                    limitType: intl.formatMessage({
+                        id: lv.limitType,
+                    }),
+                    limitMin:
+                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
+                            ? lv.limit
+                            : NaN,
+                    limitMax:
+                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
+                            ? lv.limit
+                            : NaN,
+                    limitName: lv.limitName,
+                    current: lv.value,
+                });
+            });
+            const feederResults = f.feederResults;
+            feederResults.forEach((fr) => {
+                rows.push({
+                    connectableId: fr.connectableId,
+                    current: fr.current,
+                });
+            });
+        });
+        return rows;
+    }
+
     function renderResult() {
+        const rows = flattenResult(result);
         return (
             result &&
             shortCircuitNotif && (
-                <ReactJson
-                    src={result}
-                    onEdit={false}
-                    onAdd={false}
-                    onDelete={false}
-                    theme={
-                        selectedTheme === LIGHT_THEME
-                            ? 'rjv-default'
-                            : 'monokai'
-                    }
+                <VirtualizedTable
+                    rows={rows}
+                    sortable={false}
+                    columns={[
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'IDNode' }),
+                            dataKey: 'elementId',
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'Type' }),
+                            dataKey: 'faultType',
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'Feeders' }),
+                            dataKey: 'connectableId',
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'IscKA' }),
+                            dataKey: 'current',
+                            numeric: true,
+                            fractionDigits: 1,
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'LimitType' }),
+                            dataKey: 'limitType',
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'IscMinKA' }),
+                            dataKey: 'limitMin',
+                            numeric: true,
+                            nullable: true,
+                            fractionDigits: 1,
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'IscMaxKA' }),
+                            dataKey: 'limitMax',
+                            numeric: true,
+                            nullable: true,
+                            fractionDigits: 1,
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'PscMVA' }),
+                            dataKey: 'shortCircuitPower',
+                            numeric: true,
+                            fractionDigits: 1,
+                        },
+                    ]}
                 />
             )
         );
