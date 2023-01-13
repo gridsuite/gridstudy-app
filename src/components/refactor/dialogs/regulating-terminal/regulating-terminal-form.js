@@ -7,23 +7,17 @@
 
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
-import { Autocomplete, Popper, TextField } from '@mui/material';
+import { Popper } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     fetchVoltageLevels,
     fetchVoltageLevelsEquipments,
 } from '../../../../utils/rest-api';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
-import { genHelperError } from '../../../dialogs/inputs/hooks-helpers';
 import { useSelector } from 'react-redux';
-import {
-    EQUIPMENT,
-    RATED_VOLTAGE_2,
-    RATIO_TAP_CHANGER,
-    VOLTAGE_LEVEL,
-} from '../two-windings-transformer-creation/two-windings-transformer-creation-dialog';
+import { EQUIPMENT, VOLTAGE_LEVEL } from './regulating-terminal-form-utils';
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 import { useFormContext } from 'react-hook-form';
 
@@ -78,6 +72,7 @@ const FittingPopper = (props) => {
 };
 
 const RegulatingTerminalForm = ({
+    id, // id that has to be defined to determine it's parent object within the form
     inputForm,
     direction,
     disabled = false,
@@ -97,8 +92,7 @@ const RegulatingTerminalForm = ({
     const methods = useFormContext();
     const { watch } = methods;
 
-    const { id: watchVoltageLevelId } =
-        watch(`${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}`) || {};
+    const { id: watchVoltageLevelId } = watch(`${id}.${VOLTAGE_LEVEL}`) || {};
 
     const [currentEquipment, setCurrentEquipment] = useState(null);
 
@@ -213,7 +207,7 @@ const RegulatingTerminalForm = ({
                 >
                     {
                         <AutocompleteInput
-                            name={`${RATIO_TAP_CHANGER}.${VOLTAGE_LEVEL}`}
+                            name={`${id}.${VOLTAGE_LEVEL}`}
                             label="VoltageLevel"
                             size="small"
                             freeSolo
@@ -263,7 +257,7 @@ const RegulatingTerminalForm = ({
                              check if autoComplete prop is fixed in v5 */}
                     {
                         <AutocompleteInput
-                            name={`${RATIO_TAP_CHANGER}.${EQUIPMENT}`}
+                            name={`${id}.${EQUIPMENT}`}
                             label="Equipment"
                             size="small"
                             freeSolo
@@ -461,6 +455,7 @@ const RegulatingTerminalForm = ({
 };
 
 RegulatingTerminalForm.propTypes = {
+    id: PropTypes.string.isRequired,
     validation: PropTypes.object,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     regulatingTerminalValue: PropTypes.object,

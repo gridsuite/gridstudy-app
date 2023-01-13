@@ -17,10 +17,10 @@ import {
 } from '../two-windings-transformer-creation-dialog-utils';
 import {
     MAX_TAP_NUMBER,
-    RATIO_TAP,
+    PHASE_TAP,
 } from '../../../../dialogs/two-windings-transformer/two-windings-transformer-creation-dialog';
-import RatioTapChangerPaneButtons from './ratio-tap-changer-pane-buttons';
-import { RATIO_TAP_CHANGER } from './ratio-tap-changer-pane-utils';
+import PhaseTapChangerPaneButtons from './phase-tap-changer-pane-buttons';
+import { PHASE_TAP_CHANGER } from './phase-tap-changer-pane-utils';
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const RatioTapChangerPaneTaps = ({ disabled }) => {
+const PhaseTapChangerPaneTaps = ({ disabled }) => {
     const intl = useIntl();
     const classes = useStyles();
     const { trigger, getValues, setValue } = useFormContext();
@@ -47,8 +47,8 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
 
-    const { fields: ratioTapFields, replace } = useFieldArray({
-        name: `${RATIO_TAP_CHANGER}.${STEPS}`,
+    const { fields: phaseTapFields, replace } = useFieldArray({
+        name: `${PHASE_TAP_CHANGER}.${STEPS}`,
     });
 
     const COLUMNS_DEFINITIONS = useMemo(() => {
@@ -57,7 +57,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 label: intl.formatMessage({ id: 'Tap' }).toUpperCase(),
                 id: 'tap',
                 dataKey: 'tap',
-                numeric: true,
+                maxWidth: 200,
             },
             {
                 label: intl
@@ -65,7 +65,6 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     .toUpperCase(),
                 id: 'resistance',
                 dataKey: 'resistance',
-                numeric: true,
                 editor: TableNumericalInput,
             },
             {
@@ -74,7 +73,6 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     .toUpperCase(),
                 id: 'reactance',
                 dataKey: 'reactance',
-                numeric: true,
                 editor: TableNumericalInput,
             },
             {
@@ -83,7 +81,6 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     .toUpperCase(),
                 id: 'conductance',
                 dataKey: 'conductance',
-                numeric: true,
                 editor: TableNumericalInput,
             },
             {
@@ -92,15 +89,18 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     .toUpperCase(),
                 id: 'susceptance',
                 dataKey: 'susceptance',
-                numeric: true,
                 editor: TableNumericalInput,
             },
             {
                 label: intl.formatMessage({ id: 'Ratio' }).toUpperCase(),
                 id: 'ratio',
                 dataKey: 'ratio',
-                numeric: true,
-                fractionDigits: 5,
+                editor: TableNumericalInput,
+            },
+            {
+                label: intl.formatMessage({ id: 'Alpha' }).toUpperCase(),
+                id: 'alpha',
+                dataKey: 'alpha',
                 editor: TableNumericalInput,
             },
         ];
@@ -134,7 +134,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     <div className={classes.tableCell}>
                         <Editor
                             key={row.dataKey + row.rowData.id}
-                            name={`${RATIO_TAP_CHANGER}.${STEPS}[${row.rowIndex}].${row.dataKey}`}
+                            name={`${PHASE_TAP_CHANGER}.${STEPS}[${row.rowIndex}].${row.dataKey}`}
                             columnDefinition={COLUMNS_DEFINITIONS[index]}
                         />
                     </div>
@@ -155,18 +155,18 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
         return tableColumns;
     };
 
-    const handleCreateRatioTapRule = (lowTapRatio, highTapRatio) => {
-        const currentTapRows = getValues(`${RATIO_TAP_CHANGER}.${STEPS}`);
+    const handleCreateAlphaTapRule = (lowTapAlpha, highTapAlpha) => {
+        const currentTapRows = getValues(`${PHASE_TAP_CHANGER}.${STEPS}`);
 
         if (currentTapRows.length > 1) {
-            let ratioInterval =
-                (highTapRatio - lowTapRatio) / (currentTapRows.length - 1);
-            let currentRatio = lowTapRatio;
+            let alphaInterval =
+                (highTapAlpha - lowTapAlpha) / (currentTapRows.length - 1);
+            let currentAlpha = lowTapAlpha;
 
             currentTapRows.forEach((row, index) => {
-                currentTapRows[index].ratio = currentRatio;
+                currentTapRows[index].alpha = currentAlpha;
 
-                currentRatio += ratioInterval;
+                currentAlpha += alphaInterval;
             });
             replace(currentTapRows);
         }
@@ -176,22 +176,22 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
         [...Array(m - n + 1).keys()].map((i) => i + n);
 
     const generateTapRows = useCallback(() => {
-        // triggerig validation on low/high tap rows before generating rows
+        // triggering validation on low/high tap rows before generating rows
         Promise.all([
-            trigger(`${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`),
-            trigger(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
+            trigger(`${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`),
+            trigger(`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
         ]).then((results) => {
             //if any of the trigger returns false, it means one of the field validation didn't pass -> we don't generate rows
             if (results.some((result) => !result)) {
                 return;
             }
             const currentLowTapPosition = getValues(
-                `${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`
+                `${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`
             );
             const currentHighTapPosition = getValues(
-                `${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`
+                `${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`
             );
-            const currentTapRows = getValues(`${RATIO_TAP_CHANGER}.${STEPS}`);
+            const currentTapRows = getValues(`${PHASE_TAP_CHANGER}.${STEPS}`);
 
             //removing all steps not within the min/max values
             const newSteps = currentTapRows.filter(
@@ -213,6 +213,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                         conductance: 0,
                         susceptance: 0,
                         ratio: 0,
+                        alpha: 0,
                     }))
                 );
                 return;
@@ -235,6 +236,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     conductance: 0,
                     susceptance: 0,
                     ratio: 0,
+                    alpha: 0,
                 });
             }
 
@@ -251,6 +253,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     conductance: 0,
                     susceptance: 0,
                     ratio: 0,
+                    alpha: 0,
                 });
             }
 
@@ -267,6 +270,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             intl.formatMessage({ id: 'ImportFileConductance' }),
             intl.formatMessage({ id: 'ImportFileSusceptance' }),
             intl.formatMessage({ id: 'Ratio' }),
+            intl.formatMessage({ id: 'ImportFileAlpha' }),
         ];
     };
 
@@ -331,6 +335,23 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                             : parseFloat(
                                   val[intl.formatMessage({ id: 'Ratio' })]
                               ),
+                        alpha: isNaN(
+                            parseFloat(
+                                val[
+                                    intl.formatMessage({
+                                        id: 'ImportFileAlpha',
+                                    })
+                                ]
+                            )
+                        )
+                            ? 1
+                            : parseFloat(
+                                  val[
+                                      intl.formatMessage({
+                                          id: 'ImportFileAlpha',
+                                      })
+                                  ]
+                              ),
                     };
                 });
                 if (rows && rows.length > 0) {
@@ -341,11 +362,11 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     let tempHighTapPosition = Math.max(...tapValues);
 
                     setValue(
-                        `${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`,
+                        `${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`,
                         tempLowTapPosition
                     );
                     setValue(
-                        `${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`,
+                        `${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`,
                         tempHighTapPosition
                     );
 
@@ -357,7 +378,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
 
     const lowTapPositionField = (
         <IntegerInput
-            name={`${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`}
+            name={`${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`}
             label="LowTapPosition"
             formProps={{
                 disabled: disabled,
@@ -367,7 +388,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
 
     const highTapPositionField = (
         <IntegerInput
-            name={`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`}
+            name={`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`}
             label="HighTapPosition"
             formProps={{
                 disabled: disabled,
@@ -377,7 +398,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
 
     const tapPositionField = (
         <IntegerInput
-            name={`${RATIO_TAP_CHANGER}.${TAP_POSITION}`}
+            name={`${PHASE_TAP_CHANGER}.${TAP_POSITION}`}
             label="TapPosition"
             formProps={{
                 disabled: disabled,
@@ -409,28 +430,28 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             >
                 <Grid item xs={10}>
                     <VirtualizedTable
-                        rows={ratioTapFields}
+                        rows={phaseTapFields}
                         columns={generateTableColumns()}
                     />
                 </Grid>
-                <RatioTapChangerPaneButtons
+                <PhaseTapChangerPaneButtons
                     disabled={disabled}
-                    isCreateRuleButtonDisabled={ratioTapFields.length === 0}
+                    isCreateRuleButtonDisabled={phaseTapFields.length === 0}
                     generateTapRows={generateTapRows}
                     setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                     setOpenImportRuleDialog={setOpenImportRuleDialog}
                 />
             </Grid>
             <CreateRuleDialog
-                ruleType={RATIO_TAP}
+                ruleType={PHASE_TAP}
                 openCreateRuleDialog={openCreateRuleDialog}
                 setOpenCreateRuleDialog={setOpenCreateRuleDialog}
-                handleCreateTapRule={handleCreateRatioTapRule}
+                handleCreateTapRule={handleCreateAlphaTapRule}
                 allowNegativeValues={false}
             />
 
             <ImportRuleDialog
-                ruleType={RATIO_TAP}
+                ruleType={PHASE_TAP}
                 openImportRuleDialog={openImportRuleDialog}
                 setOpenImportRuleDialog={setOpenImportRuleDialog}
                 csvColumns={getCSVColumns()}
@@ -440,4 +461,4 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
     );
 };
 
-export default RatioTapChangerPaneTaps;
+export default PhaseTapChangerPaneTaps;

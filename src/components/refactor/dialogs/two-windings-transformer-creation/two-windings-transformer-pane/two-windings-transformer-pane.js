@@ -26,7 +26,7 @@ import {
     RATED_VOLTAGE_2,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
-} from '../two-windings-transformer-creation-dialog';
+} from '../two-windings-transformer-creation-dialog-utils';
 
 const useStyles = makeStyles((theme) => ({
     h3: {

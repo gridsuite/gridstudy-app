@@ -7,7 +7,7 @@ import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
 } from '../two-windings-transformer-creation-dialog-utils';
-import { RATIO_TAP_CHANGER } from './ratio-tap-changer-pane-utils';
+import { PHASE_TAP_CHANGER } from './phase-tap-changer-pane-utils';
 
 const useStyles = makeStyles((theme) => ({
     center: {
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const RatioTapChangerPaneButtons = ({
+const PhaseTapChangerPaneButtons = ({
     generateTapRows,
     setOpenCreateRuleDialog,
     setOpenImportRuleDialog,
@@ -27,11 +27,11 @@ const RatioTapChangerPaneButtons = ({
     const classes = useStyles();
 
     const lowTapPositionWatcher = useWatch({
-        name: `${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`,
+        name: `${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`,
     });
 
     const highTapPositionWatcher = useWatch({
-        name: `${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`,
+        name: `${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`,
     });
     return (
         <Grid container item spacing={2} xs direction={'column'}>
@@ -59,7 +59,7 @@ const RatioTapChangerPaneButtons = ({
                         isCreateRuleButtonDisabled
                     }
                 >
-                    <FormattedMessage id="CreateRegulationRule" />
+                    <FormattedMessage id="CreateDephasingRule" />
                 </Button>
             </Grid>
             <Grid item className={classes.center}>
@@ -68,11 +68,11 @@ const RatioTapChangerPaneButtons = ({
                     onClick={() => setOpenImportRuleDialog(true)}
                     disabled={disabled /*!ratioTapChangerEnabled*/}
                 >
-                    <FormattedMessage id="ImportRegulationRule" />
+                    <FormattedMessage id="ImportDephasingRule" />
                 </Button>
             </Grid>
         </Grid>
     );
 };
 
-export default RatioTapChangerPaneButtons;
+export default PhaseTapChangerPaneButtons;
