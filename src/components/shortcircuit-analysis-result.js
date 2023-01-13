@@ -49,10 +49,19 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             });
             limitViolations.slice(1).forEach((lv) => {
                 rows.push({
-                    limitType: lv.limitType,
-                    limit: lv.limit,
+                    limitType: intl.formatMessage({
+                        id: lv.limitType,
+                    }),
+                    limitMin:
+                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
+                            ? lv.limit
+                            : NaN,
+                    limitMax:
+                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
+                            ? lv.limit
+                            : NaN,
                     limitName: lv.limitName,
-                    value: lv.value,
+                    current: lv.value,
                 });
             });
             const feederResults = f.feederResults;
