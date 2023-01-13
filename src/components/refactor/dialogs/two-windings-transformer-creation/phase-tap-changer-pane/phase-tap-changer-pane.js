@@ -25,6 +25,7 @@ import {
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
+    PHASE_TAP_CHANGER,
 } from '../two-windings-transformer-creation-dialog';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import FloatInput from '../../../rhf-inputs/float-input';
@@ -33,9 +34,8 @@ import RegulatingTerminalForm from '../../regulating-terminal/regulating-termina
 import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import IntegerInput from '../../../rhf-inputs/integer-input';
 import { TableNumericalInput } from '../../../rhf-inputs/table-inputs/table-numerical-input';
-import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
 
-const RatioTapChangerPane = (props) => {
+const PhaseTapChangerPane = (props) => {
     const {
         // formValues,
         // setFormValues,
@@ -125,10 +125,10 @@ const RatioTapChangerPane = (props) => {
     //     [handleRatioTapRows, ratioTapRows]
     // );
 
-    const ratioTapChangerEnabledField = (
+    const phaseTapChangerEnabledField = (
         <BooleanInput
-            name={`${RATIO_TAP_CHANGER}.${ENABLED}`}
-            label="ConfigureRatioTapChanger"
+            name={`${PHASE_TAP_CHANGER}.${ENABLED}`}
+            label="ConfigurePhaseTapChanger"
         />
     );
 
@@ -299,10 +299,10 @@ const RatioTapChangerPane = (props) => {
             <Grid container spacing={2}>
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
-                        {ratioTapChangerEnabledField}
+                        {phaseTapChangerEnabledField}
                     </Grid>
                 </Grid>
-                <Grid item container spacing={2}>
+                {/* <Grid item container spacing={2}>
                     <Grid item xs={4}>
                         {ratioTapLoadTapChangingCapabilitiesField}
                     </Grid>
@@ -344,7 +344,7 @@ const RatioTapChangerPane = (props) => {
                     </Grid>
                 )}
 
-                <RatioTapChangerPaneTaps />
+                <RatioTapChangerPaneTaps /> */}
                 {/* {ratioError && (
                     <Grid item xs={12}>
                         <Alert severity="error">{ratioError}</Alert>
@@ -371,4 +371,4 @@ const RatioTapChangerPane = (props) => {
     );
 };
 
-export default RatioTapChangerPane;
+export default PhaseTapChangerPane;

@@ -33,6 +33,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import TwoWindingsTransformerPane from './two-windings-transformer-pane/two-windings-transformer-pane';
 import RatioTapChangerPane from './ratio-tap-changer-pane/ratio-tap-changer-pane';
+import PhaseTapChangerPane from './phase-tap-changer-pane/phase-tap-changer-pane';
 
 /**
  * Dialog to create a load in the network
@@ -54,9 +55,9 @@ export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';
 export const PERMANENT_LIMIT = 'permanentLimit';
 export const RATIO_TAP_CHANGER = 'ratioTapChanger';
-export const RATIO_TAP_CHANGER_ENABLED = 'ratioTapChangerEnabled';
-export const RATIO_TAP_LOAD_TAP_CHANGING_CAPABILITIES =
-    'ratioTapLoadTapChangingCapabilities';
+export const PHASE_TAP_CHANGER = 'phaseTapChanger';
+export const ENABLED = 'enabled';
+export const LOAD_TAP_CHANGING_CAPABILITIES = 'loadTapChangingCapabilities';
 export const REGULATING = 'regulating';
 export const TARGET_V = 'targetV';
 export const TARGET_DEADBAND = 'targetDeadband';
@@ -80,6 +81,9 @@ export const VOLTAGE_LEVEL_TOPOLOGY_KIND = 'topologyKind';
 export const EQUIPMENT = 'equipment';
 export const EQUIPMENT_TYPE = 'type';
 
+//PHASE TAP
+export const REGULATION_MODE = "regulationMode";
+
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
@@ -97,8 +101,8 @@ const emptyFormData = {
         [PERMANENT_LIMIT]: '',
     },
     [RATIO_TAP_CHANGER]: {
-        [RATIO_TAP_CHANGER_ENABLED]: false,
-        [RATIO_TAP_LOAD_TAP_CHANGING_CAPABILITIES]: false,
+        [ENABLED]: false,
+        [LOAD_TAP_CHANGING_CAPABILITIES]: false,
         [REGULATING]: false,
         [TARGET_V]: '',
         [TARGET_DEADBAND]: '',
@@ -109,7 +113,7 @@ const emptyFormData = {
         [TAP_POSITION]: '',
         [STEPS]: [
             {
-                ratio: 4,
+                tap: 4,
                 resistance: 1,
                 reactance: 2,
                 conductance: 3,
@@ -117,6 +121,28 @@ const emptyFormData = {
                 ratio: 5,
             },
         ],
+    },
+    [PHASE_TAP_CHANGER]: {
+        [ENABLED]: false,
+        // [RATIO_TAP_LOAD_TAP_CHANGING_CAPABILITIES]: false,
+        // [REGULATING]: false,
+        // [TARGET_V]: '',
+        // [TARGET_DEADBAND]: '',
+        // [VOLTAGE_LEVEL]: null,
+        // [EQUIPMENT]: null,
+        // [LOW_TAP_POSITION]: null,
+        // [HIGH_TAP_POSITION]: null,
+        // [TAP_POSITION]: '',
+        // [STEPS]: [
+        //     {
+        //         tap: 4,
+        //         resistance: 1,
+        //         reactance: 2,
+        //         conductance: 3,
+        //         susceptance: 4,
+        //         ratio: 5,
+        //     },
+        // ],
     },
     ...getConnectivityEmptyFormData('connectivity1'),
     ...getConnectivityEmptyFormData('connectivity2'),
@@ -158,8 +184,8 @@ const schema = yup
                 ),
         }),
         [RATIO_TAP_CHANGER]: yup.object().shape({
-            [RATIO_TAP_CHANGER_ENABLED]: yup.bool().required(),
-            [RATIO_TAP_LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
+            [ENABLED]: yup.bool().required(),
+            [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
             [REGULATING]: yup.bool().required(),
             [TARGET_V]: yup
                 .number()
@@ -202,7 +228,7 @@ const schema = yup
                 .nullable()
                 .min(0)
                 .max(100)
-                .when(`${RATIO_TAP_CHANGER_ENABLED}`, {
+                .when(`${ENABLED}`, {
                     is: true,
                     then: (schema) => schema.required(),
                 }),
@@ -216,7 +242,7 @@ const schema = yup
                     return yup.string();
                 }
 
-                return yup.number().when(`${RATIO_TAP_CHANGER_ENABLED}`, {
+                return yup.number().when(`${ENABLED}`, {
                     is: true,
                     then: (schema) => schema.required(),
                 });
@@ -232,6 +258,82 @@ const schema = yup
                     [STEPS_ALPHA]: yup.number(),
                 })
             ),
+        }),
+        [PHASE_TAP_CHANGER]: yup.object().shape({
+            [ENABLED]: yup.bool().required(),
+            // [RATIO_TAP_LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
+            // [REGULATING]: yup.bool().required(),
+            // [TARGET_V]: yup
+            //     .number()
+            //     .nullable()
+            //     .test('min', 'TargetVoltageGreaterThanZero', (val) => val >= 0)
+            //     .when(`${REGULATING}`, {
+            //         is: true,
+            //         then: (schema) => schema.required(),
+            //     }),
+            // [TARGET_DEADBAND]: yup
+            //     .number()
+            //     .nullable()
+            //     .test(
+            //         'min',
+            //         'TargetDeadbandGreaterThanZero',
+            //         (val) => val >= 0
+            //     ),
+            // [VOLTAGE_LEVEL]: yup
+            //     .object()
+            //     .nullable()
+            //     .required()
+            //     .shape({
+            //         [VOLTAGE_LEVEL_ID]: yup.string(),
+            //         [VOLTAGE_LEVEL_NAME]: yup.string(),
+            //         [VOLTAGE_LEVEL_SUBSTATION_ID]: yup.string(),
+            //         [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
+            //         [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(true),
+            //     }),
+            // [EQUIPMENT]: yup
+            //     .object()
+            //     .nullable()
+            //     .required()
+            //     .shape({
+            //         [EQUIPMENT_ID]: yup.string(),
+            //         [EQUIPMENT_NAME]: yup.string(),
+            //         [EQUIPMENT_TYPE]: yup.string(),
+            //     }),
+            // [LOW_TAP_POSITION]: yup
+            //     .number()
+            //     .nullable()
+            //     .min(0)
+            //     .max(100)
+            //     .when(`${RATIO_TAP_CHANGER_ENABLED}`, {
+            //         is: true,
+            //         then: (schema) => schema.required(),
+            //     }),
+            // [HIGH_TAP_POSITION]: yup
+            //     .number()
+            //     .nullable()
+            //     .min(yup.ref(LOW_TAP_POSITION), 'HighTapPositionError')
+            //     .max(100, 'HighTapPositionError'),
+            // [TAP_POSITION]: yup.lazy((value) => {
+            //     if (value === '') {
+            //         return yup.string();
+            //     }
+
+            //     return yup.number().when(`${RATIO_TAP_CHANGER_ENABLED}`, {
+            //         is: true,
+            //         then: (schema) => schema.required(),
+            //     });
+            // }),
+            // [STEPS]: yup.array().of(
+            //     yup.object().shape({
+            //         [STEPS_TAP]: yup.number().required(),
+            //         [STEPS_RESISTANCE]: yup.number(),
+            //         [STEPS_REACTANCE]: yup.number(),
+            //         [STEPS_CONDUCTANCE]: yup.number(),
+            //         [STEPS_SUSCEPTANCE]: yup.number(),
+            //         [STEPS_RATIO]: yup.number(),
+            //         [STEPS_ALPHA]: yup.number(),
+            //     })
+            // ),
         }),
         ...getConnectivityFormValidationSchema('connectivity1'),
         ...getConnectivityFormValidationSchema('connectivity2'),
@@ -400,6 +502,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 </Box>
 
                 <Box hidden={tabIndex !== DialogTab.PHASE_TAP_TAB} p={1}>
+                    <PhaseTapChangerPane />
                     {/* <PhaseTapChangerPane
                      formValues={formValues}
                      setFormValues={setFormValues}

@@ -1,11 +1,14 @@
 import { Button, Grid, useScrollTrigger } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+import Papa from 'papaparse';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import VirtualizedTable from '../../../../util/virtualized-table';
 import IntegerInput from '../../../rhf-inputs/integer-input';
 import { TableNumericalInput } from '../../../rhf-inputs/table-inputs/table-numerical-input';
+import { CreateRuleDialog } from '../../../../dialogs/two-windings-transformer/create-rule-dialog';
+import { ImportRuleDialog } from '../../../../dialogs/two-windings-transformer/import-rule-dialog';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
@@ -13,6 +16,13 @@ import {
     STEPS,
     TAP_POSITION,
 } from '../two-windings-transformer-creation-dialog';
+import {
+    MAX_TAP_NUMBER,
+    RATIO_TAP,
+} from '../../../../dialogs/two-windings-transformer/two-windings-transformer-creation-dialog';
+import { generatePath } from 'react-router-dom';
+import GenerateTapRowsButton from './ratio-tap-changer-pane-buttons';
+import RatioTapChangerPaneButtons from './ratio-tap-changer-pane-buttons';
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -34,22 +44,13 @@ const useStyles = makeStyles((theme) => ({
 const RatioTapChangerPaneTaps = ({ disabled }) => {
     const intl = useIntl();
     const classes = useStyles();
-    const { trigger, getFieldState } = useFormContext();
-    const {
-        fields: ratioTapFields,
-        append,
-        prepend,
-        remove,
-    } = useFieldArray({
+    const { trigger, getValues, setValue } = useFormContext();
+
+    const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
+    const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
+
+    const { fields: ratioTapFields, replace } = useFieldArray({
         name: `${RATIO_TAP_CHANGER}.${STEPS}`,
-    });
-
-    const lowTapPositionWatcher = useWatch({
-        name: `${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`,
-    });
-
-    const highTapPositionWatcher = useWatch({
-        name: `${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`,
     });
 
     const COLUMNS_DEFINITIONS = useMemo(() => {
@@ -126,45 +127,24 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
     );
 
     const editableCellRender = useCallback(
-        (rowData) => {
-            const index = rowData.columnIndex;
+        (row) => {
+            const index = row.columnIndex;
             const Editor = COLUMNS_DEFINITIONS[index].editor;
+            console.log('DATA');
             if (Editor) {
-                let style;
-                // if (
-                //     ratioCellIndexError === rowData.rowIndex &&
-                //     COLUMNS_DEFINITIONS[index].id === 'ratio'
-                // ) {
-                //     style = {
-                //         color: 'red',
-                //     };
-                // }
                 return (
                     <div className={classes.tableCell}>
                         <Editor
-                            key={rowData.dataKey + index}
-                            name={`${RATIO_TAP_CHANGER}.${STEPS}[${rowData.rowIndex}].${rowData.dataKey}`}
+                            key={row.dataKey + row.rowData.id}
+                            name={`${RATIO_TAP_CHANGER}.${STEPS}[${row.rowIndex}].${row.dataKey}`}
                             columnDefinition={COLUMNS_DEFINITIONS[index]}
-                            defaultValue={rowData.cellData}
-                            // setColumnError={(k) => setColumnInError(k)}
-                            // resetColumnError={(k) => resetColumnInError(k)}
-                            // setter={(val) => handleEditCell(rowData, val)}
-                            inputProps={{ style }}
                         />
                     </div>
                 );
             }
-            return defaultCellRender(rowData);
+            return defaultCellRender(row);
         },
-        [
-            COLUMNS_DEFINITIONS,
-            classes.tableCell,
-            defaultCellRender,
-            //handleEditCell,
-            //resetColumnInError,
-            // setColumnInError,
-            // ratioCellIndexError,
-        ]
+        [COLUMNS_DEFINITIONS, classes.tableCell, defaultCellRender]
     );
 
     const generateTableColumns = () => {
@@ -177,86 +157,205 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
         return tableColumns;
     };
 
-    // const generateNewTapData = (index) => {
-    //     return {
-    //         key: index,
-    //         tap: index,
-    //         resistance: 0,
-    //         reactance: 0,
-    //         conductance: 0,
-    //         susceptance: 0,
-    //         ratio: 1,
-    //         isEdited: false,
-    //     };
-    // };
+    const handleCreateRatioTapRule = (lowTapRatio, highTapRatio) => {
+        const currentTapRows = getValues(`${RATIO_TAP_CHANGER}.${STEPS}`);
 
-    const generateTapRows = () => {
-        trigger(`${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`);
-        trigger(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`);
+        if (currentTapRows.length > 1) {
+            let ratioInterval =
+                (highTapRatio - lowTapRatio) / (currentTapRows.length - 1);
+            let currentRatio = lowTapRatio;
 
-        const { error: lowTapPositionError } = getFieldState(
-            `${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`
-        );
-        const { error: highTapPositionError } = getFieldState(
-            `${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`
-        );
+            currentTapRows.forEach((row, index) => {
+                currentTapRows[index].ratio = currentRatio;
 
-        if (!lowTapPositionError && !highTapPositionError) {
-            console.log('FIELDS', ratioTapFields);
+                currentRatio += ratioInterval;
+            });
+            replace(currentTapRows);
         }
     };
 
-    // const generateTapRows = () => {
-    //     if (highTapPosition - lowTapPosition + 1 > MAX_TAP_NUMBER) {
-    //         setRatioError(
-    //             intl.formatMessage(
-    //                 { id: 'TapPositionValueError' },
-    //                 { value: MAX_TAP_NUMBER }
-    //             )
-    //         );
-    //         return;
-    //     }
-    //     let tempRows = [];
-    //     const rowNumber =
-    //         highTapPosition - lowTapPosition > 0
-    //             ? highTapPosition - lowTapPosition + 1
-    //             : 0;
+    const arrayFromNToM = (n, m) =>
+        [...Array(m - n + 1).keys()].map((i) => i + n);
 
-    //     if (
-    //         ratioTapRows.length !== rowNumber &&
-    //         !isNaN(parseInt(lowTapPosition)) &&
-    //         !isNaN(parseInt(highTapPosition))
-    //     ) {
-    //         for (let i = lowTapPosition; i <= highTapPosition; i++) {
-    //             tempRows.push(generateNewTapData(i));
-    //         }
-    //         let editedRows = Array.from(
-    //             ratioTapRows.filter((row) => row.isEdited)
-    //         );
+    const generateTapRows = useCallback(() => {
+        // triggerig validation on low/high tap rows before generating rows
+        Promise.all([
+            trigger(`${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`),
+            trigger(`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
+        ]).then((results) => {
+            //if any of the trigger returns false, it means one of the field validation didn't pass -> we don't generate rows
+            if (results.some((result) => !result)) {
+                return;
+            }
+            const currentLowTapPosition = getValues(
+                `${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`
+            );
+            const currentHighTapPosition = getValues(
+                `${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`
+            );
+            const currentTapRows = getValues(`${RATIO_TAP_CHANGER}.${STEPS}`);
 
-    //         editedRows.forEach((row) => {
-    //             let editedRowIndex = ratioTapRows.indexOf(row);
-    //             if (
-    //                 tempRows.length > editedRowIndex &&
-    //                 parseInt(row.tap) === tempRows[editedRowIndex].tap
-    //             ) {
-    //                 tempRows[editedRowIndex] = row;
-    //             }
-    //         });
-    //         handleRatioTapRows(tempRows);
-    //         setLineEdit();
-    //     }
-    // };
+            //removing all steps not within the min/max values
+            const newSteps = currentTapRows.filter(
+                (tapRow) =>
+                    tapRow.tap >= currentLowTapPosition &&
+                    tapRow.tap <= currentHighTapPosition
+            );
 
-    // const generateTableKey = () => {
-    //     // We generate a unique key for the table because when we change alpha value by creating a new rule for example,
-    //     // the table does not update only by scrolling. With this key we make sure it is updated when creating a new rule
-    //     return (
-    //         '' +
-    //         ratioTapRows[0]?.ratio +
-    //         ratioTapRows[ratioTapRows.length - 1]?.ratio
-    //     );
-    // };
+            // if newSteps is empty, we fill it with empty rows
+            if (newSteps.length === 0) {
+                replace(
+                    arrayFromNToM(
+                        currentLowTapPosition,
+                        currentHighTapPosition
+                    ).map((i) => ({
+                        tap: i,
+                        resistance: 0,
+                        reactance: 0,
+                        conductance: 0,
+                        susceptance: 0,
+                        ratio: 0,
+                    }))
+                );
+                return;
+            }
+
+            // if newSteps is not empty, we fill the gaps
+            const lowestTapRowIndex = newSteps?.[0].tap;
+            const highestTapRowIndex = lowestTapRowIndex + newSteps.length - 1;
+
+            //adding steps from lowTap to lowest current index
+            for (
+                let i = lowestTapRowIndex - 1;
+                i >= currentLowTapPosition;
+                i--
+            ) {
+                newSteps.unshift({
+                    tap: i,
+                    resistance: 0,
+                    reactance: 0,
+                    conductance: 0,
+                    susceptance: 0,
+                    ratio: 0,
+                });
+            }
+
+            //adding steps from highest current index to highTap
+            for (
+                let i = highestTapRowIndex + 1;
+                i <= currentHighTapPosition;
+                i++
+            ) {
+                newSteps.push({
+                    tap: i,
+                    resistance: 0,
+                    reactance: 0,
+                    conductance: 0,
+                    susceptance: 0,
+                    ratio: 0,
+                });
+            }
+
+            console.log('NEWSTEPS', currentTapRows);
+            replace(newSteps);
+        });
+    }, [getValues, replace, trigger]);
+
+    const getCSVColumns = () => {
+        return [
+            intl.formatMessage({ id: 'Tap' }),
+            intl.formatMessage({ id: 'ImportFileResistance' }),
+            intl.formatMessage({ id: 'ImportFileReactance' }),
+            intl.formatMessage({ id: 'ImportFileConductance' }),
+            intl.formatMessage({ id: 'ImportFileSusceptance' }),
+            intl.formatMessage({ id: 'Ratio' }),
+        ];
+    };
+
+    const parseIntData = (data, defaultValue) => {
+        const intValue = parseInt(data);
+        return isNaN(intValue) ? defaultValue : intValue;
+    };
+
+    const handleImportTapRule = (selectedFile, setFileParseError) => {
+        Papa.parse(selectedFile, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+                if (results.data.length > MAX_TAP_NUMBER) {
+                    setFileParseError(
+                        intl.formatMessage(
+                            { id: 'TapPositionValueError' },
+                            { value: MAX_TAP_NUMBER }
+                        )
+                    );
+                    return;
+                }
+                let rows = results.data.map((val) => {
+                    return {
+                        tap: val[intl.formatMessage({ id: 'Tap' })],
+                        resistance: parseIntData(
+                            val[
+                                intl.formatMessage({
+                                    id: 'ImportFileResistance',
+                                })
+                            ],
+                            0
+                        ),
+                        reactance: parseIntData(
+                            val[
+                                intl.formatMessage({
+                                    id: 'ImportFileReactance',
+                                })
+                            ],
+                            0
+                        ),
+                        conductance: parseIntData(
+                            val[
+                                intl.formatMessage({
+                                    id: 'ImportFileConductance',
+                                })
+                            ],
+                            0
+                        ),
+                        susceptance: parseIntData(
+                            val[
+                                intl.formatMessage({
+                                    id: 'ImportFileSusceptance',
+                                })
+                            ],
+                            0
+                        ),
+                        ratio: isNaN(
+                            parseFloat(val[intl.formatMessage({ id: 'Ratio' })])
+                        )
+                            ? 1
+                            : parseFloat(
+                                  val[intl.formatMessage({ id: 'Ratio' })]
+                              ),
+                    };
+                });
+                if (rows && rows.length > 0) {
+                    let tapValues = rows.map((row) => {
+                        return parseInt(row.tap);
+                    });
+                    let tempLowTapPosition = Math.min(...tapValues);
+                    let tempHighTapPosition = Math.max(...tapValues);
+
+                    setValue(
+                        `${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`,
+                        tempLowTapPosition
+                    );
+                    setValue(
+                        `${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`,
+                        tempHighTapPosition
+                    );
+
+                    replace(rows);
+                }
+            },
+        });
+    };
 
     const lowTapPositionField = (
         <IntegerInput
@@ -314,47 +413,31 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     <VirtualizedTable
                         rows={ratioTapFields}
                         columns={generateTableColumns()}
-                        //key={generateTableKey()}
                     />
                 </Grid>
-                <Grid container item spacing={2} xs direction={'column'}>
-                    <Grid item className={classes.center}>
-                        <Button
-                            variant="contained"
-                            onClick={() => generateTapRows()}
-                            disabled={
-                                disabled ||
-                                //!ratioTapChangerEnabled ||
-                                lowTapPositionWatcher === '' ||
-                                highTapPositionWatcher === ''
-                            }
-                        >
-                            <FormattedMessage id="GenerateTapRows" />
-                        </Button>
-                    </Grid>
-                    <Grid item className={classes.center}>
-                        {/* <Button
-                                variant="contained"
-                                onClick={() => setOpenCreateRuleDialog(true)}
-                                disabled={
-                                    !ratioTapChangerEnabled ||
-                                    ratioTapRows.length === 0
-                                }
-                            >
-                                <FormattedMessage id="CreateRegulationRule" />
-                            </Button> */}
-                    </Grid>
-                    <Grid item className={classes.center}>
-                        {/* <Button
-                                variant="contained"
-                                onClick={() => setOpenImportRuleDialog(true)}
-                                disabled={!ratioTapChangerEnabled}
-                            >
-                                <FormattedMessage id="ImportRegulationRule" />
-                            </Button> */}
-                    </Grid>
-                </Grid>
+                <RatioTapChangerPaneButtons
+                    disabled={disabled}
+                    isCreateRuleButtonDisabled={ratioTapFields.length === 0}
+                    generateTapRows={generateTapRows}
+                    setOpenCreateRuleDialog={setOpenCreateRuleDialog}
+                    setOpenImportRuleDialog={setOpenImportRuleDialog}
+                />
             </Grid>
+            <CreateRuleDialog
+                ruleType={RATIO_TAP}
+                openCreateRuleDialog={openCreateRuleDialog}
+                setOpenCreateRuleDialog={setOpenCreateRuleDialog}
+                handleCreateTapRule={handleCreateRatioTapRule}
+                allowNegativeValues={false}
+            />
+
+            <ImportRuleDialog
+                ruleType={RATIO_TAP}
+                openImportRuleDialog={openImportRuleDialog}
+                setOpenImportRuleDialog={setOpenImportRuleDialog}
+                csvColumns={getCSVColumns()}
+                handleImportTapRule={handleImportTapRule}
+            />
         </>
     );
 };

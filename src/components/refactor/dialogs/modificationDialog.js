@@ -93,7 +93,9 @@ const ModificationDialog = ({
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
-                    onClick={handleSubmit(handleValidate)}
+                    onClick={handleSubmit(handleValidate, (error) =>
+                        alert(JSON.stringify(error, null, 4))
+                    )}
                     disabled={disabledSave}
                 >
                     <FormattedMessage id="validate" />
