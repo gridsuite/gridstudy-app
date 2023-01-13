@@ -509,21 +509,19 @@ export function DiagramPane({
                     }}
                 >
                     {displayedDiagrams.map((diagramView) => (
-                        <>
+                        <React.Fragment
+                            key={diagramView.svgType + diagramView.id}
+                        >
                             {
                                 /* This hack will add a space between all the SLD and the NAD. This space takes all the remaining space on screen. */
                                 diagramView.svgType ===
                                     SvgType.NETWORK_AREA_DIAGRAM && (
-                                    <div
-                                        className={classes.separator}
-                                        key="separator"
-                                    ></div>
+                                    <div className={classes.separator}></div>
                                 )
                             }
                             <Diagram
                                 diagramTitle={diagramView.name}
                                 ref={diagramView.ref}
-                                key={diagramView.svgType + diagramView.id}
                                 disabled={disabled}
                                 pinned={diagramView.state === ViewState.PINNED}
                                 diagramId={diagramView.id}
@@ -543,7 +541,7 @@ export function DiagramPane({
                                 loadFlowStatus={loadFlowStatus}
                                 showInSpreadsheet={showInSpreadsheet}
                             />
-                        </>
+                        </React.Fragment>
                     ))}
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
