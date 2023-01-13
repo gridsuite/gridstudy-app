@@ -16,7 +16,7 @@ const substationPositionByIdIndexer = (map, substation) => {
     return map;
 };
 
-const linePositionIndexer = (map, line) => {
+const linePositionByIdIndexer = (map, line) => {
     map.set(line.id, line.coordinates);
     return map;
 };
@@ -26,6 +26,11 @@ export default class GeoData {
 
     linePositionsById = new Map();
 
+    constructor(substationPositionsById, linePositionsById) {
+        this.substationPositionsById = substationPositionsById;
+        this.linePositionsById = linePositionsById;
+    }
+
     setSubstationPositions(positions) {
         // index positions by substation id
         this.substationPositionsById = positions.reduce(
@@ -34,10 +39,21 @@ export default class GeoData {
         );
     }
 
-    getSubstationPosition(substation) {
-        const position = this.substationPositionsById.get(substation);
+    updateSubstationPositions(substationIdsToUpdate, fetchedPositions) {
+        fetchedPositions.forEach((pos) =>
+            this.substationPositionsById.set(pos.id, pos.coordinate)
+        );
+        // If a substation position is requested but not present in the fetched results, we delete its position.
+        // It allows to cancel the position of a substation when the server can't situate it anymore after a network modification (for example a line deletion).
+        substationIdsToUpdate
+            .filter((id) => !fetchedPositions.map((pos) => pos.id).includes(id))
+            .forEach((id) => this.substationPositionsById.delete(id));
+    }
+
+    getSubstationPosition(substationId) {
+        const position = this.substationPositionsById.get(substationId);
         if (!position) {
-            console.warn(`Position not found for ${substation}`);
+            console.warn(`Position not found for ${substationId}`);
             return [0, 0];
         }
         return [position.lon, position.lat];
@@ -46,9 +62,21 @@ export default class GeoData {
     setLinePositions(positions) {
         // index positions by line id
         this.linePositionsById = positions.reduce(
-            linePositionIndexer,
+            linePositionByIdIndexer,
             new Map()
         );
+    }
+
+    updateLinePositions(lineIdsToUpdate, fetchedPositions) {
+        fetchedPositions.forEach((pos) => {
+            this.linePositionsById.set(pos.id, pos.coordinates);
+        });
+        // If a line position is requested but not present in the fetched results, we delete its position.
+        // For lines, this code is not really necessary as we draw lines in [(0, 0), (0, 0)] when it is connected to a (0, 0) point (see getLinePositions())
+        // But it's cleaner to avoid keeping old ignored data in geo data.
+        lineIdsToUpdate
+            .filter((id) => !fetchedPositions.map((pos) => pos.id).includes(id))
+            .forEach((id) => this.linePositionsById.delete(id));
     }
 
     /**
@@ -73,6 +101,20 @@ export default class GeoData {
         const substationPosition2 = this.getSubstationPosition(
             voltageLevel2.substationId
         );
+
+        // We never want to draw lines when its start or end is in (0, 0) (it is ugly, it would cross the whole screen all the time).
+        // For example, when a substation position is not yet fetched and it is connected to a positioned substation, it avoids the line crossing the whole screen.
+        // This would only happen for a short time because when the position is fetched, the substation and line are drawn at the correct place.
+        if (
+            (substationPosition1[0] === 0 && substationPosition1[1] === 0) ||
+            (substationPosition2[0] === 0 && substationPosition2[1] === 0)
+        ) {
+            return [
+                [0, 0],
+                [0, 0],
+            ];
+        }
+
         if (detailed) {
             const linePositions = this.linePositionsById.get(line.id);
             // Is there any position for this line ?
