@@ -99,6 +99,7 @@ const GeneratorScalingVariation = ({
         elementClassName: classes.chipElement,
         required: true,
         errorMsg: errors?.filterError,
+        inputForm: inputForm,
     });
 
     const [variationValue, variationValueField] = useDoubleValue({
