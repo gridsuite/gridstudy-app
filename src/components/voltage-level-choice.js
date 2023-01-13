@@ -10,14 +10,11 @@ import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-
 import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { useSelector } from 'react-redux';
 import { getNominalVoltageColor } from '../utils/colors';
-import { PARAM_USE_NAME } from '../utils/config-params';
-import { getNameOrId } from './diagrams/singleLineDiagram/utils';
+import { useNameOrId } from './util/equipmentInfosHandler';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -57,7 +54,7 @@ const VoltageLevelChoice = ({
     position,
 }) => {
     const classes = useStyles();
-    const useName = useSelector((state) => state[PARAM_USE_NAME]);
+    const { getNameOrId } = useNameOrId();
 
     return (
         <div className={classes.menu}>
@@ -115,9 +112,7 @@ const VoltageLevelChoice = ({
                                         className={classes.nominalVoltageText}
                                         primary={
                                             <Typography noWrap>
-                                                {useName
-                                                    ? getNameOrId(voltageLevel)
-                                                    : voltageLevel.id}
+                                                {getNameOrId(voltageLevel)}
                                             </Typography>
                                         }
                                     />

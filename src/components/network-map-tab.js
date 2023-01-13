@@ -78,7 +78,6 @@ export const NetworkMapTab = ({
     shortCircuitStatus,
     /* visual*/
     visible,
-    useName,
     lineFullPath,
     lineParallelPath,
     lineFlowMode,
@@ -261,23 +260,25 @@ export const NetworkMapTab = ({
                 intlRef
             );
         } else {
-            console.info('Reload map equipments');
-            const updatedSubstationsToSend =
-                !refIsMapManualRefreshEnabled.current &&
-                !isUpdatedSubstationsApplied &&
-                updatedSubstationsIds?.length > 0
-                    ? updatedSubstationsIds
-                    : undefined;
+            if (mapEquipments) {
+                console.info('Reload map equipments');
+                const updatedSubstationsToSend =
+                    !refIsMapManualRefreshEnabled.current &&
+                    !isUpdatedSubstationsApplied &&
+                    updatedSubstationsIds?.length > 0
+                        ? updatedSubstationsIds
+                        : undefined;
 
-            mapEquipments.reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                updatedSubstationsToSend,
-                setUpdatedLines
-            );
+                mapEquipments.reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    updatedSubstationsToSend,
+                    setUpdatedLines
+                );
 
-            if (updatedSubstationsToSend) {
-                setIsUpdatedSubstationsApplied(true);
+                if (updatedSubstationsToSend) {
+                    setIsUpdatedSubstationsApplied(true);
+                }
             }
         }
     }, [
@@ -408,7 +409,6 @@ export const NetworkMapTab = ({
             updatedLines={updatedLines}
             geoData={geoData}
             waitingLoadGeoData={waitingLoadGeoData}
-            useName={useName}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
             arrowsZoomThreshold={7}
@@ -481,7 +481,6 @@ export const NetworkMapTab = ({
 
 NetworkMapTab.propTypes = {
     updatedLines: PropTypes.arrayOf(PropTypes.any),
-    useName: PropTypes.any,
     filteredNominalVoltages: PropTypes.any,
     lineFullPath: PropTypes.any,
     lineParallelPath: PropTypes.any,

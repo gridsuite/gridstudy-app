@@ -8,8 +8,6 @@ import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
-import { useSelector } from 'react-redux';
-import { PARAM_USE_NAME } from '../../../utils/config-params';
 import Divider from '@mui/material/Divider';
 import PropTypes from 'prop-types';
 import EditIcon from '@mui/icons-material/Edit';
@@ -17,6 +15,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { useNameOrId } from '../../util/equipmentInfosHandler';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -63,9 +62,8 @@ export const ModificationListItem = ({
     ...props
 }) => {
     const intl = useIntl();
-    const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const classes = useStyles();
-
+    const { getNameOrId } = useNameOrId();
     const getComputedLabel = useCallback(() => {
         if (modif.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
             return modif.lineToSplitId;
@@ -97,7 +95,7 @@ export const ModificationListItem = ({
             function getVoltageLevelLabel(vlID) {
                 if (!vlID) return '';
                 const vl = network.getVoltageLevel(vlID);
-                if (vl) return vl[useName ? 'name' : 'id'] || vlID;
+                if (vl) return getNameOrId(vl);
                 return vlID;
             }
             let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
@@ -113,7 +111,7 @@ export const ModificationListItem = ({
                 }
             }
             return res;
-        }, [modif, network, getComputedLabel, useName]);
+        }, [modif, network, getComputedLabel, getNameOrId]);
     }
 
     const getLabel = useCallback(
