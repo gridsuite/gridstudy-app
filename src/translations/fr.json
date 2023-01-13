@@ -549,7 +549,7 @@
     "variations": "Variations",
     "CreateVariation": "Ajouter variation",
     "Variations": "Variations",
-    "GeneratorScalingError" : "Erreur lors de la création de Variation plan de consommation",
+    "GeneratorScalingError" : "Erreur lors de la création de la variation du plan de production",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",

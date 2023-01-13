@@ -1372,13 +1372,13 @@ export function generatorScaling(
     currentNodeUuid,
     modificationUuid,
     variationType,
-    iterativeValue,
+    isIterative,
     variations
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPE.GENERATOR_SCALING,
         variationType,
-        isIterative: iterativeValue,
+        isIterative,
         variations,
     });
 

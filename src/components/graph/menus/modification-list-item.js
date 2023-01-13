@@ -73,8 +73,6 @@ export const ModificationListItem = ({
             return modif.lineToAttachToId;
         } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
             return modif.attachedLineId;
-        } else if (modif.type === 'GENERATOR_SCALING') {
-            return modif.uuid;
         } else if (modif.type === 'DELETE_VOLTAGE_LEVEL_ON_LINE') {
             return modif.replacingLine1Id;
         } else if (modif.type === 'DELETE_ATTACHING_LINE') {

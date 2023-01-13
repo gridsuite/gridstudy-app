@@ -59,6 +59,7 @@ const GeneratorScalingVariation = ({
     fieldProps,
 }) => {
     const classes = useStyles();
+    const id = defaultValue?.id;
 
     const [variationMode, variationModeField] = useOptionalEnumValue({
         label: 'VariationMode',
@@ -111,8 +112,8 @@ const GeneratorScalingVariation = ({
     });
 
     useEffect(() => {
-        onChange(index, { filters, variationValue, variationMode });
-    }, [onChange, filters, variationValue, variationMode, index]);
+        onChange(index, { id, filters, variationValue, variationMode });
+    }, [onChange, filters, variationValue, variationMode, index, id]);
 
     return (
         <>
@@ -153,6 +154,7 @@ const GeneratorScalingDialog = ({
                     filterError: errorId,
                 });
             }
+
             if (!val.variationValue) {
                 res.set(idx, {
                     ...res.get(idx),
@@ -178,9 +180,12 @@ const GeneratorScalingDialog = ({
         possibleValues: VARIATION_TYPE,
     });
 
-    const [iterativeValue, iterativeField] = useBooleanValue({
+    const [isIterative, iterativeField] = useBooleanValue({
         label: 'IterativeLabel',
-        defaultValue: formValues?.isIterative ?? true,
+        defaultValue:
+            formValues?.isIterative === undefined
+                ? true
+                : formValues?.isIterative,
         inputForm: inputForm,
     });
 
@@ -210,7 +215,7 @@ const GeneratorScalingDialog = ({
             currentNodeUuid,
             editData?.uuid ?? undefined,
             variationType,
-            iterativeValue,
+            isIterative,
             variations
         ).catch((errorMessage) => {
             snackError({
