@@ -39,10 +39,17 @@ export default class GeoData {
         );
     }
 
-    addSubstationPositions(positions) {
-        positions.forEach((pos) =>
+    updateSubstationPositions(substationIdsToUpdate, fetchedPositions) {
+        fetchedPositions.forEach((pos) =>
             this.substationPositionsById.set(pos.id, pos.coordinate)
         );
+        // If a substation position is requested but is not present in the fetched results, we set its position to (0, 0).
+        // It allows to cancel the position of a substation when the server can't situate it anymore after a network modification (for example a line deletion).
+        substationIdsToUpdate
+            .filter((id) => !fetchedPositions.map((pos) => pos.id).includes(id))
+            .forEach((id) =>
+                this.substationPositionsById.set(id, { lat: 0, lon: 0 })
+            );
     }
 
     getSubstationPosition(substationId) {
@@ -62,7 +69,7 @@ export default class GeoData {
         );
     }
 
-    addLinePositions(positions) {
+    updateLinePositions(positions) {
         positions.forEach((pos) => {
             this.linePositionsById.set(pos.id, pos.coordinates);
         });

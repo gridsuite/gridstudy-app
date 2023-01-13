@@ -371,12 +371,18 @@ export const NetworkMapTab = ({
 
             Promise.all([missingSubstationPositions, missingLinesPositions])
                 .then((positions) => {
-                    const [substations, lines] = positions;
-                    if (substations.length > 0 || lines.length > 0) {
+                    const [fetchedSubstationPositions, fetchedLinePositions] =
+                        positions;
+                    if (
+                        fetchedSubstationPositions.length > 0 ||
+                        fetchedLinePositions.length > 0
+                    ) {
                         const substationsDataChanged =
-                            updateSubstationsTemporaryGeoData(substations);
+                            updateSubstationsTemporaryGeoData(
+                                fetchedSubstationPositions
+                            );
                         const linesDataChanged =
-                            updateLinesTemporaryGeoData(lines);
+                            updateLinesTemporaryGeoData(fetchedLinePositions);
 
                         // If no geo data has changed, we avoid to trigger a new render.
                         if (substationsDataChanged || linesDataChanged) {
@@ -397,8 +403,13 @@ export const NetworkMapTab = ({
                                       )
                                     : geoDataRef.current.linePositionsById
                             );
-                            newGeoData.addSubstationPositions(substations);
-                            newGeoData.addLinePositions(lines);
+                            newGeoData.updateSubstationPositions(
+                                notFoundSubstationIds,
+                                fetchedSubstationPositions
+                            );
+                            newGeoData.updateLinePositions(
+                                fetchedLinePositions
+                            );
                             setGeoData(newGeoData);
                         }
                     }
