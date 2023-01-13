@@ -904,7 +904,7 @@ export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-export function fetchSensitivityAnalysisResultTabbed(
+export function fetchSensitivityAnalysisResult(
     studyUuid,
     currentNodeUuid,
     selector
@@ -919,7 +919,7 @@ export function fetchSensitivityAnalysisResultTabbed(
 
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensitivity-analysis/result-tabbed?' +
+        '/sensitivity-analysis/result?' +
         urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);

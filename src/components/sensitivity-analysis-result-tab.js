@@ -6,7 +6,7 @@
  */
 
 import { useNodeData } from './study-container';
-import { fetchSensitivityAnalysisResultTabbed } from '../utils/rest-api';
+import { fetchSensitivityAnalysisResult } from '../utils/rest-api';
 import WaitingLoader from './util/waiting-loader';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -237,7 +237,7 @@ function PagedSensitivityResult({
             };
             addIndexerParamsToSelector(next.indexer, selector);
 
-            return fetchSensitivityAnalysisResultTabbed(
+            return fetchSensitivityAnalysisResult(
                 studyUuid,
                 nodeUuid,
                 selector
@@ -271,7 +271,7 @@ function PagedSensitivityResult({
         setOverAllCount(fetched.totalSensitivitiesCount);
         setFilteredCount(fetched.filteredSensitivitiesCount);
         next.indexer.setColFilterOuterParams('funcId', fetched.allFunctionIds);
-        next.indexer.setColFilterOuterParams('varId', fetched.allVariablesIds);
+        next.indexer.setColFilterOuterParams('varId', fetched.allVariableIds);
         const contingencyIds = fetched.allContingencyIds;
         next.indexer.setColFilterOuterParams('contingencyId', contingencyIds);
     } else if (!isLoading && prev?.isLoading && errorMessage) {
