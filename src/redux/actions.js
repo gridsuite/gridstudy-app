@@ -340,26 +340,6 @@ export function selectComponentLibrary(componentLibrary) {
     };
 }
 
-export const FULLSCREEN_SINGLE_LINE_DIAGRAM_ID =
-    'FULLSCREEN_SINGLE_LINE_DIAGRAM_ID'; // TODO to remove after the SLD/NAD refactorization
-
-export function fullScreenSingleLineDiagramId(fullScreenSldId) {
-    return {
-        type: FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
-        fullScreenSldId: fullScreenSldId,
-    };
-}
-
-export const FULLSCREEN_NETWORK_AREA_DIAGRAM_ID =
-    'FULLSCREEN_NETWORK_AREA_DIAGRAM_ID'; // TODO to remove after the SLD/NAD refactorization
-
-export function fullScreenNetworkAreaDiagramId(fullScreenNadId) {
-    return {
-        type: FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
-        fullScreenNadId: fullScreenNadId,
-    };
-}
-
 export const SET_FULLSCREEN_DIAGRAM = 'SET_FULLSCREEN_DIAGRAM';
 
 export function setFullScreenDiagram(diagramIdParam, svgTypeParam = undefined) {
@@ -472,43 +452,6 @@ export function setStudyDisplayMode(studyDisplayMode) {
     return {
         type: SET_STUDY_DISPLAY_MODE,
         studyDisplayMode: studyDisplayMode,
-    };
-}
-
-export const OPEN_SLD = 'OPEN_SLD'; // TODO to remove after the SLD/NAD refactorization
-
-export function openSld(id, svgType) {
-    return {
-        type: OPEN_SLD,
-        id: id,
-        svgType: svgType,
-    };
-}
-
-export const MINIMIZE_SLD = 'MINIMIZE_SLD'; // TODO to remove after the SLD/NAD refactorization
-
-export function minimizeSld(id) {
-    return {
-        type: MINIMIZE_SLD,
-        id: id,
-    };
-}
-
-export const TOGGLE_PIN_SLD = 'TOGGLE_PIN_SLD'; // TODO to remove after the SLD/NAD refactorization
-
-export function togglePinSld(id) {
-    return {
-        type: TOGGLE_PIN_SLD,
-        id: id,
-    };
-}
-
-export const CLOSE_SLD = 'CLOSE_SLD'; // TODO to remove after the SLD/NAD refactorization
-
-export function closeSld(idsToClose) {
-    return {
-        type: CLOSE_SLD,
-        ids: idsToClose,
     };
 }
 

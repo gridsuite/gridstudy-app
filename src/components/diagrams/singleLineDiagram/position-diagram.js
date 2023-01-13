@@ -23,13 +23,12 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
-    commonStyle,
     commonSldStyle,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
     NoSvg,
     LOADING_WIDTH,
-} from './utils';
+} from '../diagram-common';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
@@ -57,7 +56,6 @@ const customSldStyle = (theme) => {
 
 const useStyles = makeStyles((theme) => ({
     divSld: { ...commonSldStyle(theme, customSldStyle(theme)) },
-    ...commonStyle(theme, {}),
 }));
 
 const PositionDiagram = forwardRef((props, ref) => {

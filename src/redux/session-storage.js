@@ -7,40 +7,6 @@
 
 import { APP_NAME } from '../utils/config-params';
 
-export const SESSION_STORAGE_SLD_STATE_KEY_PREFIX =
-    // TODO to remove after the SLD/NAD refactorization
-    (APP_NAME + '_SLD_STATE_').toUpperCase();
-
-const getSldStateKeyPrefixFromStudyUuid = (studyUuid) => {
-    // TODO to remove after the SLD/NAD refactorization
-    return SESSION_STORAGE_SLD_STATE_KEY_PREFIX + studyUuid;
-};
-
-export const syncSldStateWithSessionStorage = (sldState, studyUuid) => {
-    // TODO to remove after the SLD/NAD refactorization
-    if (studyUuid == null) {
-        return;
-    }
-
-    sessionStorage.setItem(
-        getSldStateKeyPrefixFromStudyUuid(studyUuid),
-        JSON.stringify(sldState)
-    );
-};
-
-export const loadSldStateFromSessionStorage = (studyUuid) => {
-    // TODO to remove after the SLD/NAD refactorization
-    const sldState = JSON.parse(
-        sessionStorage.getItem(getSldStateKeyPrefixFromStudyUuid(studyUuid))
-    );
-
-    if (sldState === null) {
-        return [];
-    }
-
-    return sldState;
-};
-
 export const SESSION_STORAGE_DIAGRAM_STATE_KEY_PREFIX = (
     APP_NAME + '_DIAGRAM_STATE_'
 ).toUpperCase();

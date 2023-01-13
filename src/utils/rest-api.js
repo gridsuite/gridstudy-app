@@ -345,12 +345,6 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
-export function fetchNADSvg(svgUrl) {
-    // TODO To remove after the NAD/SLD refacto
-    console.debug(svgUrl);
-    return backendFetchJson(svgUrl);
-}
-
 function getQueryParamsList(params, paramName) {
     if (params !== undefined && params.length > 0) {
         const urlSearchParams = new URLSearchParams();
