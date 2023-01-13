@@ -79,12 +79,16 @@ const AutocompleteInput = ({
 };
 
 AutocompleteInput.propTypes = {
+    name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     isRequired: PropTypes.bool,
     options: PropTypes.array.isRequired,
-    errorMessage: PropTypes.string,
-    value: PropTypes.object,
-    onChange: PropTypes.func,
+    outputTransform: PropTypes.func,
+    inputTransform: PropTypes.func,
+    readOnly: PropTypes.bool,
+    previousValue: PropTypes.object,
+    allowNewValue: PropTypes.bool,
+    formProps: PropTypes.object,
 };
 
 export default AutocompleteInput;

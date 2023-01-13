@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import AutocompleteInput from './autocomplete-input';
 import { useIntl } from 'react-intl';
 
-const SelectInput = ({ onChange, options, value, ...props }) => {
+const SelectInput = ({ options, ...props }) => {
     const intl = useIntl();
 
     const inputTransform = (value) =>
@@ -37,11 +37,7 @@ const SelectInput = ({ onChange, options, value, ...props }) => {
 SelectInput.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    onChange: PropTypes.func,
-    value: PropTypes.any,
-    isRequired: PropTypes.bool,
     options: PropTypes.array.isRequired,
-    errorMsg: PropTypes.string,
     previousValue: PropTypes.object,
 };
 
