@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -41,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
 
 const DiagramFooter = (props) => {
     const classes = useStyles();
-    const [isCounterClicked, setIsCounterClicked] = useState(false);
 
     const handleStopFullScreen = () => {
         if (props.onStopFullScreen) {
@@ -54,21 +53,19 @@ const DiagramFooter = (props) => {
         }
     };
     const handleIncrementCounter = () => {
-        if (!isCounterClicked && props.onIncrementCounter) {
-            setIsCounterClicked(true);
+        if (props.onIncrementCounter) {
             props.onIncrementCounter();
         }
     };
     const handleDecrementCounter = () => {
-        if (!isCounterClicked && props.onDecrementCounter) {
-            setIsCounterClicked(true);
+        if (props.onDecrementCounter) {
             props.onDecrementCounter();
         }
     };
 
     return (
         <div style={{ display: 'flex' }}>
-            {props.showCounterControls && !isCounterClicked && (
+            {props.showCounterControls && (
                 <>
                     {props.showCounterValue && (
                         <Typography className={classes.counterText}>
