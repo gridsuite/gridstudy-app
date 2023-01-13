@@ -13,6 +13,11 @@ import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
     STEPS,
+    STEPS_CONDUCTANCE,
+    STEPS_RATIO,
+    STEPS_REACTANCE,
+    STEPS_RESISTANCE,
+    STEPS_TAP,
     TAP_POSITION,
 } from '../two-windings-transformer-creation-dialog-utils';
 import {
@@ -56,7 +61,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             {
                 label: intl.formatMessage({ id: 'Tap' }).toUpperCase(),
                 id: 'tap',
-                dataKey: 'tap',
+                dataKey: STEPS_TAP,
                 numeric: true,
             },
             {
@@ -64,7 +69,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     .formatMessage({ id: 'DeltaResistance' })
                     .toUpperCase(),
                 id: 'resistance',
-                dataKey: 'resistance',
+                dataKey: STEPS_RESISTANCE,
                 numeric: true,
                 editor: TableNumericalInput,
             },
@@ -73,7 +78,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     .formatMessage({ id: 'DeltaReactance' })
                     .toUpperCase(),
                 id: 'reactance',
-                dataKey: 'reactance',
+                dataKey: STEPS_REACTANCE,
                 numeric: true,
                 editor: TableNumericalInput,
             },
@@ -82,7 +87,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     .formatMessage({ id: 'DeltaConductance' })
                     .toUpperCase(),
                 id: 'conductance',
-                dataKey: 'conductance',
+                dataKey: STEPS_CONDUCTANCE,
                 numeric: true,
                 editor: TableNumericalInput,
             },
@@ -91,14 +96,14 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     .formatMessage({ id: 'DeltaSusceptance' })
                     .toUpperCase(),
                 id: 'susceptance',
-                dataKey: 'susceptance',
+                dataKey: STEPS_REACTANCE,
                 numeric: true,
                 editor: TableNumericalInput,
             },
             {
                 label: intl.formatMessage({ id: 'Ratio' }).toUpperCase(),
                 id: 'ratio',
-                dataKey: 'ratio',
+                dataKey: STEPS_RATIO,
                 numeric: true,
                 fractionDigits: 5,
                 editor: TableNumericalInput,

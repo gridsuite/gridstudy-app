@@ -17,9 +17,13 @@ import {
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
-import { EQUIPMENT, VOLTAGE_LEVEL } from './regulating-terminal-form-utils';
+import {
+    EQUIPMENT,
+    VOLTAGE_LEVEL,
+    VOLTAGE_LEVEL_ID,
+} from './regulating-terminal-form-utils';
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
-import { useFormContext } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
@@ -73,7 +77,6 @@ const FittingPopper = (props) => {
 
 const RegulatingTerminalForm = ({
     id, // id that has to be defined to determine it's parent object within the form
-    inputForm,
     direction,
     disabled = false,
     equipmentSectionTypeDefaultValue,
@@ -82,19 +85,13 @@ const RegulatingTerminalForm = ({
 }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const classes = useStyles();
-
-    const intl = useIntl();
 
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
 
-    const methods = useFormContext();
-    const { watch } = methods;
-
-    const { id: watchVoltageLevelId } = watch(`${id}.${VOLTAGE_LEVEL}`) || {};
-
-    const [currentEquipment, setCurrentEquipment] = useState(null);
+    const watchVoltageLevelId = useWatch({
+        name: `${id}.${VOLTAGE_LEVEL}.${VOLTAGE_LEVEL_ID}`,
+    });
 
     useEffect(() => {
         fetchVoltageLevels(studyUuid, currentNode?.id).then((values) => {
@@ -107,15 +104,6 @@ const RegulatingTerminalForm = ({
     useEffect(() => {
         fetchVoltageLevelsEquipments(studyUuid, currentNode?.id).then(
             (values) => {
-                console.log(
-                    'VALUES',
-                    values,
-                    values.find(
-                        (vlEquipment) =>
-                            vlEquipment?.voltageLevel?.id ===
-                            watchVoltageLevelId
-                    )
-                );
                 setEquipmentsOptions(
                     values.find(
                         (vlEquipment) =>
