@@ -16,6 +16,7 @@ import {
     STEPS_ALPHA,
     STEPS_CONDUCTANCE,
     STEPS_RATIO,
+    STEPS_REACTANCE,
     STEPS_RESISTANCE,
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
@@ -78,7 +79,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                     .formatMessage({ id: 'DeltaReactance' })
                     .toUpperCase(),
                 id: 'reactance',
-                dataKey: STEPS_RESISTANCE,
+                dataKey: STEPS_REACTANCE,
                 editor: TableNumericalInput,
             },
             {

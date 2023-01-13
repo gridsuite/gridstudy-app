@@ -17,6 +17,7 @@ import {
     STEPS_RATIO,
     STEPS_REACTANCE,
     STEPS_RESISTANCE,
+    STEPS_SUSCEPTANCE,
     STEPS_TAP,
     TAP_POSITION,
 } from '../two-windings-transformer-creation-dialog-utils';
@@ -96,7 +97,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     .formatMessage({ id: 'DeltaSusceptance' })
                     .toUpperCase(),
                 id: 'susceptance',
-                dataKey: STEPS_REACTANCE,
+                dataKey: STEPS_SUSCEPTANCE,
                 numeric: true,
                 editor: TableNumericalInput,
             },
