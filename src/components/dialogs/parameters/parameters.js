@@ -20,7 +20,7 @@ import {
     Tab,
     Tabs,
     Typography,
-    Switch,
+    Switch, Select, MenuItem
 } from '@mui/material';
 
 import { updateConfigParameter } from '../../../utils/rest-api';
@@ -43,6 +43,14 @@ import {
     useGetShortCircuitParameters,
 } from './short-circuit-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import {
+    SecurityAnalysisParameters,
+    useSecurityAnalysisParametersContext,
+} from './security-analysis-parameters';
+import {
+    SensitivityAnalysisParameters,
+    useSensitivityAnalysisParametersContext
+} from './sensitivity-analysis-parameters';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -74,6 +82,36 @@ export const SwitchWithLabel = ({ value, label, callback }) => {
         </>
     );
 };
+
+export const DropDown = ({ value, label, values, callback }) => {
+    const classes = useStyles();
+    return (
+        <>
+            <Grid item xs={8}>
+                <Typography component="span" variant="body1">
+                    <Box fontWeight="fontWeightBold" m={1}>
+                        <FormattedMessage id={label} />
+                    </Box>
+                </Typography>
+            </Grid>
+            <Grid item container xs={4} className={classes.controlItem}>
+                <Select
+                    labelId={label}
+                    value={value}
+                    onChange={callback}
+                    size="small"
+                >
+                    {Object.keys(values).map((key) => (
+                        <MenuItem key={key} value={key}>
+                            <FormattedMessage id={values[key]} />
+                        </MenuItem>
+                    ))}
+                </Select>
+            </Grid>
+        </>
+    );
+};
+
 export const useStyles = makeStyles((theme) => ({
     title: {
         padding: theme.spacing(2),
@@ -144,8 +182,10 @@ export function useParameterState(paramName) {
 const sldParamsTabIndex = 0;
 const mapParamsTabIndex = 1;
 const lfParamsTabIndex = 2;
-const shortCircuitParamsTabIndex = 3;
-const advancedParamsTabIndex = 4;
+const securityAnalysisParamsTabIndex = 3;
+const sensitivityAnalysisParamsTabIndex = 4;
+const shortCircuitParamsTabIndex = 5;
+const advancedParamsTabIndex = 6;
 
 const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const classes = useStyles();
@@ -155,6 +195,12 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const lfParamsAndLfProvider = useGetLfParamsAndProvider(user);
+
+    const securityAnalysisParametersContext =
+        useSecurityAnalysisParametersContext(user);
+
+    const sensitivityAnalysisParametersContext =
+        useSensitivityAnalysisParametersContext(user);
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
@@ -222,6 +268,14 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
+                        <Tab
+                            disabled={!studyUuid}
+                            label={<FormattedMessage id="SecurityAnalysis" />}
+                        />
+                        <Tab
+                            disabled={!studyUuid}
+                            label={<FormattedMessage id="SensitivityAnalysis" />}
+                        />
                         {enableDeveloperMode && (
                             <Tab
                                 disabled={!studyUuid}
@@ -248,6 +302,26 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 showAdvancedLfParams={showAdvancedLfParams}
                                 setShowAdvancedLfParams={
                                     setShowAdvancedLfParams
+                                }
+                            />
+                        )}
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={securityAnalysisParamsTabIndex}>
+                        {studyUuid && (
+                            <SecurityAnalysisParameters
+                                hideParameters={hideParameters}
+                                parametersContext={
+                                    securityAnalysisParametersContext
+                                }
+                            />
+                        )}
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={sensitivityAnalysisParamsTabIndex}>
+                        {studyUuid && (
+                            <SensitivityAnalysisParameters
+                                hideParameters={hideParameters}
+                                parametersContext={
+                                    sensitivityAnalysisParametersContext
                                 }
                             />
                         )}

@@ -9,9 +9,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
     Grid,
-    MenuItem,
     Box,
-    Select,
     Typography,
     Autocomplete,
     TextField,
@@ -27,11 +25,11 @@ import {
     getLoadFlowProvider,
     setLoadFlowParameters,
     setLoadFlowProvider,
-    getLoadFlowProviders
+    getLoadFlowProviders,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { SwitchWithLabel } from './parameters';
+import { DropDown, SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 
 export const useGetLfParamsAndProvider = (user) => {
@@ -50,11 +48,11 @@ export const useGetLfParamsAndProvider = (user) => {
                 .then((providers) => {
                     // we can consider the provider get from back will be also used as
                     // a key for translation
-                    const providersObj = providers.reduce(function(obj, v, i) {
+                    const providersObj = providers.reduce(function (obj, v, i) {
                         obj[v] = v;
                         return obj;
-                    }, {})
-                    setLfProviders(providersObj)
+                    }, {});
+                    setLfProviders(providersObj);
                 })
                 .catch((error) => {
                     snackError({
@@ -82,7 +80,8 @@ export const useGetLfParamsAndProvider = (user) => {
     const setLoadFlowProviderToDefault = useCallback(() => {
         getDefaultLoadFlowProvider()
             .then((defaultLFProvider) => {
-                if (lfProviders.length > 0) {
+                const providerNames = Object.keys(lfProviders);
+                if (providerNames.length > 0) {
                     updateLfProvider(
                         defaultLFProvider in lfProviders
                             ? defaultLFProvider
@@ -197,35 +196,6 @@ const CountrySelector = ({ value, label, callback }) => {
                         ))
                     }
                 />
-            </Grid>
-        </>
-    );
-};
-
-const DropDown = ({ value, label, values, callback }) => {
-    const classes = useStyles();
-    return (
-        <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
-            </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
-                <Select
-                    labelId={label}
-                    value={value}
-                    onChange={callback}
-                    size="small"
-                >
-                    {Object.keys(values).map((key) => (
-                        <MenuItem key={key} value={key}>
-                            <FormattedMessage id={values[key]} />
-                        </MenuItem>
-                    ))}
-                </Select>
             </Grid>
         </>
     );
