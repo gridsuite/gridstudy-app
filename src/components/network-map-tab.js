@@ -299,7 +299,7 @@ export const NetworkMapTab = ({
     );
 
     const updateSubstationsTemporaryGeoData = useCallback(
-        (fetchedPositions) => {
+        (requestedPositions, fetchedPositions) => {
             let someDataHasChanged = false;
             fetchedPositions.forEach((pos) => {
                 // If the geo data is the same in the geoData and in the server response, it's not updated
@@ -315,13 +315,25 @@ export const NetworkMapTab = ({
                     someDataHasChanged = true;
                 }
             });
+
+            // If a substation position is requested but not present in the fetched results, its position will be deleted in updateSubstationPositions() and we have to flag here that a position has changed
+            requestedPositions
+                .filter(
+                    (id) => !fetchedPositions.map((pos) => pos.id).includes(id)
+                )
+                .forEach((id) => {
+                    if (geoDataRef.current.substationPositionsById.get(id)) {
+                        someDataHasChanged = true;
+                    }
+                });
+
             return someDataHasChanged;
         },
         [substationPositionsAreEqual]
     );
 
     const updateLinesTemporaryGeoData = useCallback(
-        (fetchedPositions) => {
+        (requestedPositions, fetchedPositions) => {
             let someDataHasChanged = false;
             fetchedPositions.forEach((pos) => {
                 // If the geo data is the same in the geoData and in the server response, it's not updated
@@ -335,6 +347,17 @@ export const NetworkMapTab = ({
                     someDataHasChanged = true;
                 }
             });
+
+            // If a line position is requested but not present in the fetched results, its position will be deleted in updateLinePositions() and we have to flag here that a position has changed
+            requestedPositions
+                .filter(
+                    (id) => !fetchedPositions.map((pos) => pos.id).includes(id)
+                )
+                .forEach((id) => {
+                    if (geoDataRef.current.linePositionsById.get(id)) {
+                        someDataHasChanged = true;
+                    }
+                });
             return someDataHasChanged;
         },
         [linePositionsAreEqual]
@@ -346,16 +369,16 @@ export const NetworkMapTab = ({
             mapEquipments.substations
         );
 
-        const notFoundLinesIds = lineFullPath
+        const notFoundLineIds = lineFullPath
             ? getEquipmentsNotFoundIds(
                   geoDataRef.current.linePositionsById,
                   mapEquipments.lines
               )
             : [];
 
-        if (notFoundSubstationIds.length > 0 || notFoundLinesIds.length > 0) {
+        if (notFoundSubstationIds.length > 0 || notFoundLineIds.length > 0) {
             console.info(
-                `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLinesIds}'...`
+                `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLineIds}'...`
             );
             setWaitingLoadTemporaryGeoData(true);
 
@@ -365,7 +388,7 @@ export const NetworkMapTab = ({
             );
 
             const missingLinesPositions = getMissingEquipmentsPositions(
-                notFoundLinesIds,
+                notFoundLineIds,
                 fetchLinePositions
             );
 
@@ -379,10 +402,13 @@ export const NetworkMapTab = ({
                     ) {
                         const substationsDataChanged =
                             updateSubstationsTemporaryGeoData(
+                                notFoundSubstationIds,
                                 fetchedSubstationPositions
                             );
-                        const linesDataChanged =
-                            updateLinesTemporaryGeoData(fetchedLinePositions);
+                        const linesDataChanged = updateLinesTemporaryGeoData(
+                            notFoundLineIds,
+                            fetchedLinePositions
+                        );
 
                         // If no geo data has changed, we avoid to trigger a new render.
                         if (substationsDataChanged || linesDataChanged) {
@@ -408,6 +434,7 @@ export const NetworkMapTab = ({
                                 fetchedSubstationPositions
                             );
                             newGeoData.updateLinePositions(
+                                notFoundLineIds,
                                 fetchedLinePositions
                             );
                             setGeoData(newGeoData);
