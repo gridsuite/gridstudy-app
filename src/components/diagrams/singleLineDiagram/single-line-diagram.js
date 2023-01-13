@@ -415,8 +415,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
                 });
-        } else {
-            setSvg(NoSvg);
         }
     }, [props.svgUrl, forceState, snackError, intlRef, sldId, isNodeinNotifs]);
 
