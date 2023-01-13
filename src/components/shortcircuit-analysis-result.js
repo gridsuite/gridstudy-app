@@ -22,22 +22,21 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             const limitViolations = f.limitViolations;
             let firstLimitViolation;
             if (limitViolations.length > 0) {
+                let lv = limitViolations[0];
                 firstLimitViolation = {
                     limitType: intl.formatMessage({
-                        id: limitViolations[0].limitType,
+                        id: lv.limitType,
                     }),
                     limitMin:
-                        limitViolations[0].limitType ===
-                        'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? limitViolations[0].limit
+                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
+                            ? lv.limit
                             : NaN,
                     limitMax:
-                        limitViolations[0].limitType ===
-                        'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? limitViolations[0].limit
+                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
+                            ? lv.limit
                             : NaN,
-                    limitName: limitViolations[0].limitName,
-                    current: limitViolations[0].value,
+                    limitName: lv.limitName,
+                    current: lv.value,
                 };
             }
             rows.push({
