@@ -72,6 +72,8 @@ export default class GeoData {
             this.linePositionsById.set(pos.id, pos.coordinates);
         });
         // If a line position is requested but not present in the fetched results, we delete its position.
+        // For lines, this code is not really necessary as we draw lines in [(0, 0), (0, 0)] when it is connected to a (0, 0) point (see getLinePositions())
+        // But it's cleaner to avoid keeping old ignored data in geo data.
         lineIdsToUpdate
             .filter((id) => !fetchedPositions.map((pos) => pos.id).includes(id))
             .forEach((id) => this.linePositionsById.delete(id));
@@ -100,6 +102,9 @@ export default class GeoData {
             voltageLevel2.substationId
         );
 
+        // We never want to draw lines when its start or end is in (0, 0) (it is ugly, it would cross the whole screen all the time).
+        // For example, when a substation position is not yet fetched and it is connected to a positioned substation, it avoids the line crossing the whole screen.
+        // This would only happen for a short time because when the position is fetched, the substation and line are drawn at the correct place.
         if (
             (substationPosition1[0] === 0 && substationPosition1[1] === 0) ||
             (substationPosition2[0] === 0 && substationPosition2[1] === 0)
