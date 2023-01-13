@@ -400,49 +400,41 @@ export const NetworkMapTab = ({
                 .then((positions) => {
                     const [fetchedSubstationPositions, fetchedLinePositions] =
                         positions;
-                    if (
-                        fetchedSubstationPositions.length > 0 ||
-                        fetchedLinePositions.length > 0
-                    ) {
-                        const substationsDataChanged =
-                            updateSubstationsTemporaryGeoData(
-                                notFoundSubstationIds,
-                                fetchedSubstationPositions
-                            );
-                        const linesDataChanged = updateLinesTemporaryGeoData(
+                    const substationsDataChanged =
+                        updateSubstationsTemporaryGeoData(
+                            notFoundSubstationIds,
+                            fetchedSubstationPositions
+                        );
+                    const linesDataChanged = updateLinesTemporaryGeoData(
+                        notFoundLineIds,
+                        fetchedLinePositions
+                    );
+
+                    // If no geo data has changed, we avoid to trigger a new render.
+                    if (substationsDataChanged || linesDataChanged) {
+                        // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
+                        // Same for line positions.
+                        const newGeoData = new GeoData(
+                            substationsDataChanged
+                                ? new Map(
+                                      geoDataRef.current.substationPositionsById
+                                  )
+                                : geoDataRef.current.substationPositionsById,
+                            // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
+                            linesDataChanged ||
+                            (!lineFullPath && substationsDataChanged)
+                                ? new Map(geoDataRef.current.linePositionsById)
+                                : geoDataRef.current.linePositionsById
+                        );
+                        newGeoData.updateSubstationPositions(
+                            notFoundSubstationIds,
+                            fetchedSubstationPositions
+                        );
+                        newGeoData.updateLinePositions(
                             notFoundLineIds,
                             fetchedLinePositions
                         );
-
-                        // If no geo data has changed, we avoid to trigger a new render.
-                        if (substationsDataChanged || linesDataChanged) {
-                            // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
-                            // Same for line positions.
-                            const newGeoData = new GeoData(
-                                substationsDataChanged
-                                    ? new Map(
-                                          geoDataRef.current.substationPositionsById
-                                      )
-                                    : geoDataRef.current
-                                          .substationPositionsById,
-                                // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
-                                linesDataChanged ||
-                                (!lineFullPath && substationsDataChanged)
-                                    ? new Map(
-                                          geoDataRef.current.linePositionsById
-                                      )
-                                    : geoDataRef.current.linePositionsById
-                            );
-                            newGeoData.updateSubstationPositions(
-                                notFoundSubstationIds,
-                                fetchedSubstationPositions
-                            );
-                            newGeoData.updateLinePositions(
-                                notFoundLineIds,
-                                fetchedLinePositions
-                            );
-                            setGeoData(newGeoData);
-                        }
+                        setGeoData(newGeoData);
                     }
                     setWaitingLoadTemporaryGeoData(false);
                 })
