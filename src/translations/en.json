@@ -495,6 +495,8 @@
     "LineAttached": "Attached line",
     "AttachedLineId": "Attached line ID",
     "ReplacingLines": "Replacing lines",
+    "ReplacingLineId": "ID Replacing line",
+    "ReplacingLineName": "Name Replacing line",
     "LineDivisionError": "Error while puting a voltage level amidst a line",
     "LineAttachmentError": "Error while attaching a voltage level to a line",
     "LoadScalingError": "Error while creating a load scaling",
