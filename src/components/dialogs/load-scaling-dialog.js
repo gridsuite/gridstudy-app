@@ -98,6 +98,7 @@ const VariationSection = ({
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
         errorMsg: errors?.filtersError,
+        inputForm: inputForm,
     });
 
     const [variationValue, variationValueField] = useDoubleValue({

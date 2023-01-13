@@ -721,6 +721,7 @@ export const useDirectoryElements = ({
     elementClassName,
     itemFilter = undefined,
     errorMsg = undefined,
+    inputForm,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(initialValues);
@@ -741,9 +742,10 @@ export const useDirectoryElements = ({
         (item, index) => {
             let arr = [...values];
             arr.splice(index, 1);
+            if (arr.length > 0) inputForm.setHasChanged(true);
             setValues(arr);
         },
-        [values]
+        [inputForm, values]
     );
 
     const addElements = useCallback(
@@ -762,12 +764,13 @@ export const useDirectoryElements = ({
                 }
             });
             if (elementsToAdd.length > 0) {
+                inputForm.setHasChanged(true);
                 setValues(values.concat(elementsToAdd));
             }
 
             setDirectoryItemSelectorOpen(false);
         },
-        [values, snackError]
+        [values, snackError, inputForm]
     );
 
     const field = useMemo(() => {
