@@ -54,7 +54,7 @@ export const useStyles = makeStyles((theme) => ({
         maxWidth: 200,
     },
     padding: {
-        padding: '15px',
+        padding: '10px',
     },
 }));
 
@@ -73,12 +73,13 @@ const VariationSection = ({
 }) => {
     const classes = useStyles();
     const id = defaultValue?.id;
+
     function itemFilter(value) {
         if (variationMode === VENTILATION) {
             return (
                 value?.specificMetadata?.type === IDENTIFIER_LIST &&
                 value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                    (fil) => !!fil.distributionKey
+                    (filter) => !!filter.distributionKey
                 )
             );
         }
@@ -158,10 +159,10 @@ const VariationSection = ({
 
     return (
         <>
-            {gridItem(filtersField, 2.5)}
-            {gridItem(variationValueField, 1.5)}
-            {gridItem(variationModeField, 3.5)}
-            {gridItem(reactiveVariationModeField, 3.5)}
+            {gridItem(filtersField, 3.25)}
+            {gridItem(variationValueField, 1.75)}
+            {gridItem(variationModeField, 3)}
+            {gridItem(reactiveVariationModeField, 3)}
         </>
     );
 };
@@ -191,36 +192,29 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
 
     function validateVariation(values) {
         const res = new Map();
+        const errorId = 'FieldIsRequired';
+
         values.forEach((val, idx) => {
-            const errorId = 'FieldIsRequired';
+            const error = { error: true };
+
             if (!val.filters || val.filters.length < 1) {
-                res.set(idx, {
-                    error: true,
-                    filtersError: errorId,
-                });
+                error.filtersError = errorId;
             }
             if (!val.variationValue) {
-                res.set(idx, {
-                    ...res.get(idx),
-                    error: true,
-                    variationValueError: errorId,
-                });
+                error.variationValueError = errorId;
             }
             if (!val.variationMode) {
-                res.set(idx, {
-                    ...res.get(idx),
-                    error: true,
-                    variationModeError: errorId,
-                });
+                error.variationModeError = errorId;
             }
             if (!val.reactiveVariationMode) {
-                res.set(idx, {
-                    ...res.get(idx),
-                    error: true,
-                    reactiveVariationModeError: errorId,
-                });
+                error.reactiveVariationModeError = errorId;
+            }
+
+            if (Object.keys(error).length > 1) {
+                res.set(idx, error);
             }
         });
+
         return res;
     }
 
