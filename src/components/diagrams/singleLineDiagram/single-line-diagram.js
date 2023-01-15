@@ -50,7 +50,11 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeBuilt, isNodeReadOnly } from '../../graph/util/model-functions';
+import {
+    isNodeBuilt,
+    isNodeReadOnly,
+    isNodeInNotificationList,
+} from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
     BORDERS,
@@ -63,9 +67,10 @@ import {
     MAX_WIDTH_SUBSTATION,
     MAX_WIDTH_VOLTAGE_LEVEL,
     SvgType,
-    renderIntoPaperWrapper,
     NoSvg,
+    LOADING_WIDTH,
 } from './utils';
+import { Paper } from '@mui/material';
 
 const customSldStyle = (theme) => {
     return {
@@ -220,6 +225,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
+    const notificationIdList = useSelector((state) => state.notificationIdList);
+
     const [forceState, updateState] = useState(false);
 
     const [loadingState, updateLoadingState] = useState(false);
@@ -363,19 +370,28 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         sldId,
     ]);
 
+    const isNodeinNotifs = isNodeInNotificationList(
+        currentNode,
+        notificationIdList
+    );
+
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (props.svgUrl) {
+        if (props.svgUrl && !isNodeinNotifs) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
-                    setSvg({
-                        svg: data.svg,
-                        metadata: data.metadata,
-                        error: null,
-                        svgUrl: props.svgUrl,
-                    });
+                    if (data !== null) {
+                        setSvg({
+                            svg: data.svg,
+                            metadata: data.metadata,
+                            error: null,
+                            svgUrl: props.svgUrl,
+                        });
+                    } else {
+                        setSvg(NoSvg);
+                    }
                     updateLoadingState(false);
                     setLocallySwitchedBreaker();
                 })
@@ -402,7 +418,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(NoSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef, sldId]);
+    }, [props.svgUrl, forceState, snackError, intlRef, sldId, isNodeinNotifs]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -708,143 +724,146 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         hideFullScreen();
     }, [onMinimize, sldId, hideFullScreen]);
 
-    const SingleLineDiagramElement = () => {
-        return (
-            <>
-                <Box>
-                    <AutoSizer
-                        onResize={({ height }) => {
-                            setHeaderPreferredHeight(height);
-                        }}
-                    >
-                        {() => /* just for measuring the header */ {}}
-                    </AutoSizer>
+    return !svg.error ? (
+        <Paper
+            ref={ref}
+            elevation={4}
+            square={true}
+            className={classes.paperBorders}
+            style={{
+                pointerEvents: 'auto',
+                width: sizeWidth,
+                minWidth: LOADING_WIDTH,
+                height: sizeHeight,
+                position: 'relative',
+                overflow: 'hidden',
+                display:
+                    !fullScreenSldId || sldId === fullScreenSldId ? '' : 'none',
+            }}
+        >
+            <Box>
+                <AutoSizer
+                    onResize={({ height }) => {
+                        setHeaderPreferredHeight(height);
+                    }}
+                >
+                    {() => /* just for measuring the header */ {}}
+                </AutoSizer>
 
-                    <Box className={classes.header}>
-                        <Box flexGrow={1}>
-                            <Typography>{props.diagramTitle}</Typography>
-                        </Box>
-                        <Box>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                }}
+                <Box className={classes.header}>
+                    <Box flexGrow={1}>
+                        <Typography>{props.diagramTitle}</Typography>
+                    </Box>
+                    <Box>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                            }}
+                        >
+                            <IconButton
+                                className={classes.actionIcon}
+                                onClick={minimizeSld}
                             >
-                                <IconButton
-                                    className={classes.actionIcon}
-                                    onClick={minimizeSld}
-                                >
-                                    <MinimizeIcon />
-                                </IconButton>
-                                <IconButton
-                                    className={
-                                        pinned
-                                            ? classes.actionIcon
-                                            : classes.pinRotate
-                                    }
-                                    onClick={pinSld}
-                                >
-                                    {pinned ? (
-                                        <PushPinIcon />
-                                    ) : (
-                                        <PushPinOutlinedIcon />
-                                    )}
-                                </IconButton>
-                                <IconButton
-                                    className={classes.close}
-                                    onClick={onCloseHandler}
-                                >
-                                    <CloseIcon />
-                                </IconButton>
-                            </Box>
+                                <MinimizeIcon />
+                            </IconButton>
+                            <IconButton
+                                className={
+                                    pinned
+                                        ? classes.actionIcon
+                                        : classes.pinRotate
+                                }
+                                onClick={pinSld}
+                            >
+                                {pinned ? (
+                                    <PushPinIcon />
+                                ) : (
+                                    <PushPinOutlinedIcon />
+                                )}
+                            </IconButton>
+                            <IconButton
+                                className={classes.close}
+                                onClick={onCloseHandler}
+                            >
+                                <CloseIcon />
+                            </IconButton>
                         </Box>
                     </Box>
                 </Box>
-                {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
-                {disabled ? (
-                    <Box position="relative" left={0} right={0} top={0}>
-                        <AlertInvalidNode noMargin={true} />
-                    </Box>
-                ) : (
-                    <Box>
-                        {props.updateSwitchMsg && (
-                            <Alert severity="error">
-                                {props.updateSwitchMsg}
-                            </Alert>
-                        )}
-                        {
-                            <div
-                                ref={svgRef}
-                                className={clsx(classes.divSld, {
-                                    [classes.divInvalid]:
-                                        loadFlowStatus !==
-                                        RunningStatus.SUCCEED,
-                                })}
-                                dangerouslySetInnerHTML={{
-                                    __html: svg.svg,
-                                }}
+            </Box>
+            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
+            {disabled ? (
+                <Box position="relative" left={0} right={0} top={0}>
+                    <AlertInvalidNode noMargin={true} />
+                </Box>
+            ) : (
+                <Box>
+                    {props.updateSwitchMsg && (
+                        <Alert severity="error">{props.updateSwitchMsg}</Alert>
+                    )}
+                    {
+                        <div
+                            ref={svgRef}
+                            className={clsx(classes.divSld, {
+                                [classes.divInvalid]:
+                                    loadFlowStatus !== RunningStatus.SUCCEED,
+                            })}
+                            dangerouslySetInnerHTML={{
+                                __html: svg.svg,
+                            }}
+                        />
+                    }
+                    {displayMenuLine()}
+                    {displayMenu(equipments.loads, 'load-menus')}
+                    {displayMenu(equipments.batteries, 'battery-menus')}
+                    {displayMenu(
+                        equipments.danglingLines,
+                        'dangling-line-menus'
+                    )}
+                    {displayMenu(equipments.generators, 'generator-menus')}
+                    {displayMenu(
+                        equipments.staticVarCompensators,
+                        'static-var-compensator-menus'
+                    )}
+                    {displayMenu(
+                        equipments.shuntCompensators,
+                        'shunt-compensator-menus'
+                    )}
+                    {displayMenu(
+                        equipments.twoWindingsTransformers,
+                        'two-windings-transformer-menus'
+                    )}
+                    {displayMenu(
+                        equipments.threeWindingsTransformers,
+                        'three-windings-transformer-menus'
+                    )}
+                    {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
+                    {displayMenu(
+                        equipments.lccConverterStations,
+                        'lcc-converter-station-menus'
+                    )}
+                    {displayMenu(
+                        equipments.vscConverterStations,
+                        'vsc-converter-station-menus'
+                    )}
+
+                    {!loadingState &&
+                        (fullScreenSldId ? (
+                            <FullscreenExitIcon
+                                onClick={hideFullScreen}
+                                className={classes.fullScreenIcon}
                             />
-                        }
-                        {displayMenuLine()}
-                        {displayMenu(equipments.loads, 'load-menus')}
-                        {displayMenu(equipments.batteries, 'battery-menus')}
-                        {displayMenu(
-                            equipments.danglingLines,
-                            'dangling-line-menus'
-                        )}
-                        {displayMenu(equipments.generators, 'generator-menus')}
-                        {displayMenu(
-                            equipments.staticVarCompensators,
-                            'static-var-compensator-menus'
-                        )}
-                        {displayMenu(
-                            equipments.shuntCompensators,
-                            'shunt-compensator-menus'
-                        )}
-                        {displayMenu(
-                            equipments.twoWindingsTransformers,
-                            'two-windings-transformer-menus'
-                        )}
-                        {displayMenu(
-                            equipments.threeWindingsTransformers,
-                            'three-windings-transformer-menus'
-                        )}
-                        {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
-                        {displayMenu(
-                            equipments.lccConverterStations,
-                            'lcc-converter-station-menus'
-                        )}
-                        {displayMenu(
-                            equipments.vscConverterStations,
-                            'vsc-converter-station-menus'
-                        )}
-
-                        {!loadingState &&
-                            (fullScreenSldId ? (
-                                <FullscreenExitIcon
-                                    onClick={hideFullScreen}
-                                    className={classes.fullScreenIcon}
-                                />
-                            ) : (
-                                <FullscreenIcon
-                                    onClick={showFullScreen}
-                                    className={classes.fullScreenIcon}
-                                />
-                            ))}
-                    </Box>
-                )}
-            </>
-        );
-    };
-
-    return renderIntoPaperWrapper(
-        svg,
-        ref,
-        classes,
-        sizeWidth,
-        sizeHeight,
-        SingleLineDiagramElement()
+                        ) : (
+                            <FullscreenIcon
+                                onClick={showFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        ))}
+                </Box>
+            )}
+        </Paper>
+    ) : (
+        <></>
     );
 });
 

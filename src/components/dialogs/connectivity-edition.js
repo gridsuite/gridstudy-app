@@ -23,7 +23,7 @@ import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined';
 
 import PositionDiagramPane from '../diagrams/singleLineDiagram/position-diagram-pane';
-import { Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import {
     CONNECTION_DIRECTIONS,
     UNDEFINED_CONNECTION_DIRECTION,
@@ -133,6 +133,43 @@ export const useConnectivityValue = ({
         });
     }, [voltageLevelOptionsPromise]);
 
+    const positionIconAdorment = (isNodeBuilt, clickCallback) => {
+        return (
+            <IconButton
+                onClick={
+                    voltageLevelObjOrId?.id && isNodeBuilt
+                        ? clickCallback
+                        : () => {}
+                }
+                disableRipple={!voltageLevelObjOrId?.id || !isNodeBuilt}
+                style={
+                    !voltageLevelObjOrId?.id || !isNodeBuilt
+                        ? { cursor: 'auto' }
+                        : {}
+                }
+            >
+                <Tooltip
+                    title={intl.formatMessage({
+                        id:
+                            voltageLevelObjOrId?.id && isNodeBuilt
+                                ? 'DisplayTakenPositions'
+                                : 'NodeNotBuildPositionMessage',
+                    })}
+                >
+                    {voltageLevelObjOrId?.id && isNodeBuilt ? (
+                        <ExploreOutlinedIcon color="action" />
+                    ) : (
+                        <ExploreOffOutlinedIcon color="action" />
+                    )}
+                </Tooltip>
+            </IconButton>
+        );
+    };
+
+    const handleClickOpenDiagramPane = () => {
+        setIsDiagramPaneOpen(true);
+    };
+
     const [voltageLevelObjOrId, voltageLevelField] = useAutocompleteField({
         id: id ? id + '/voltage-level' : 'voltage-level',
         label: 'VoltageLevel',
@@ -183,6 +220,11 @@ export const useConnectivityValue = ({
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: connectionPositionValue,
+        customAdornment: positionIconAdorment(
+            isNodeBuilt(currentNode),
+            handleClickOpenDiagramPane
+        ),
+        clearable: true,
     });
 
     useEffect(() => {
@@ -243,10 +285,6 @@ export const useConnectivityValue = ({
         connectionPosition,
     ]);
 
-    const handleClickOpenDiagramPane = () => {
-        setIsDiagramPaneOpen(true);
-    };
-
     const handleCloseDiagramPane = () => {
         setIsDiagramPaneOpen(false);
     };
@@ -279,42 +317,9 @@ export const useConnectivityValue = ({
                                 {connectionDirectionField}
                             </Grid>
                             {withPosition && (
-                                <>
-                                    <Grid
-                                        item
-                                        xs={(60 * gridSize) / 100}
-                                        align="start"
-                                    >
-                                        {connectionPositionField}
-                                    </Grid>
-                                    <Grid
-                                        item
-                                        xs={(5 * gridSize) / 100}
-                                        align="start"
-                                        display="flex"
-                                        alignItems="center"
-                                    >
-                                        <Tooltip
-                                            title={intl.formatMessage({
-                                                id: !isNodeBuilt(currentNode)
-                                                    ? 'NodeNotBuildPositionMessage'
-                                                    : 'DisplayTakenPositions',
-                                            })}
-                                        >
-                                            {!isNodeBuilt(currentNode) ? (
-                                                <ExploreOffOutlinedIcon color="action" />
-                                            ) : (
-                                                <ExploreOutlinedIcon
-                                                    onClick={
-                                                        handleClickOpenDiagramPane
-                                                    }
-                                                    color="action"
-                                                    cursor="pointer"
-                                                />
-                                            )}
-                                        </Tooltip>
-                                    </Grid>
-                                </>
+                                <Grid item xs={conditionalSize} align="start">
+                                    {connectionPositionField}
+                                </Grid>
                             )}
                         </>
                     )}
@@ -338,8 +343,6 @@ export const useConnectivityValue = ({
         connectionNameField,
         connectionDirectionField,
         connectionPositionField,
-        intl,
-        currentNode,
         studyUuid,
         isDiagramPaneOpen,
         voltageLevelObjOrId,

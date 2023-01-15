@@ -73,10 +73,10 @@ import {
     RESET_SHORT_CIRCUIT_NOTIF,
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
-    SET_NETWORK_RELOAD_NEEDED,
-    SET_FORCE_NETWORK_RELOAD,
-    RESET_NETWORK_RELOAD,
+    MAP_EQUIPMENTS_CREATED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
+    SET_UPDATED_SUBSTATIONS_IDS,
+    SET_DELETED_EQUIPMENT,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -134,6 +134,7 @@ const initialState = {
     studyUuid: null,
     currentTreeNode: null,
     network: null,
+    mapEquipments: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
     computedLanguage: getLocalStorageComputedLanguage(),
@@ -161,8 +162,8 @@ const initialState = {
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
     sldState: [],
     reloadMap: true,
-    networkReloadNeeded: false,
-    forceReloadNetwork: true,
+    updatedSubstationsIds: [],
+    deletedEquipment: {},
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -187,6 +188,10 @@ export const reducer = createReducer(initialState, {
 
     [NETWORK_CREATED]: (state, action) => {
         state.network = action.network;
+    },
+
+    [MAP_EQUIPMENTS_CREATED]: (state, action) => {
+        state.mapEquipments = action.mapEquipments;
     },
 
     [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
@@ -402,21 +407,16 @@ export const reducer = createReducer(initialState, {
         state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
     },
 
-    [SET_FORCE_NETWORK_RELOAD]: (state) => {
-        state.forceReloadNetwork = true;
-    },
-
-    [SET_NETWORK_RELOAD_NEEDED]: (state) => {
-        state.networkReloadNeeded = true;
-    },
-
-    [RESET_NETWORK_RELOAD]: (state) => {
-        state.networkReloadNeeded = false;
-        state.forceReloadNetwork = false;
-    },
-
     [RESET_MAP_RELOADED]: (state) => {
         state.reloadMap = false;
+    },
+
+    [SET_UPDATED_SUBSTATIONS_IDS]: (state, action) => {
+        state.updatedSubstationsIds = action.updatedSubstationsIds;
+    },
+
+    [SET_DELETED_EQUIPMENT]: (state, action) => {
+        state.deletedEquipment = action.deletedEquipment;
     },
 
     [ADD_LOADFLOW_NOTIF]: (state) => {
@@ -505,6 +505,8 @@ export const reducer = createReducer(initialState, {
     [CURRENT_TREE_NODE]: (state, action) => {
         state.currentTreeNode = action.currentTreeNode;
         // current node has changed, then will need to reload Geo Data
+        state.updatedSubstationsIds = [];
+        state.deletedEquipment = {};
         state.reloadMap = true;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
@@ -516,13 +518,13 @@ export const reducer = createReducer(initialState, {
     [ADD_NOTIFICATION]: (state, action) => {
         state.notificationIdList = [
             ...state.notificationIdList,
-            action.notificationId,
+            ...action.notificationIds,
         ];
     },
     [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
         state.notificationIdList = [
             ...state.notificationIdList.filter(
-                (nodeId) => nodeId !== action.notificationId
+                (nodeId) => !action.notificationIds.includes(nodeId)
             ),
         ];
     },

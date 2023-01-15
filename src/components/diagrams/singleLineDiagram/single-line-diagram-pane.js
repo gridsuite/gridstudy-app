@@ -10,6 +10,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
+    PARAM_LANGUAGE,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../../utils/config-params';
@@ -24,10 +25,14 @@ import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
-import { getNameOrId, SvgType, useSingleLineDiagram, ViewState } from './utils';
-import { isNodeBuilt } from '../../graph/util/model-functions';
+import {
+    isNodeBuilt,
+    isNodeInNotificationList,
+} from '../../graph/util/model-functions';
+import { SvgType, useSingleLineDiagram, ViewState } from './utils';
 import { AutoSizer } from 'react-virtualized';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
+import { useNameOrId } from '../../util/equipmentInfosHandler';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -36,14 +41,17 @@ const useDisplayView = (network, studyUuid, currentNode) => {
     const substationLayout = useSelector(
         (state) => state[PARAM_SUBSTATION_LAYOUT]
     );
-
     const componentLibrary = useSelector(
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
+    const language = useSelector((state) => state[PARAM_LANGUAGE]);
+    const notificationIdList = useSelector((state) => state.notificationIdList);
+    const { getNameOrId } = useNameOrId();
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode)
+            isNodeBuilt(currentNode) &&
+            !isNodeInNotificationList(currentNode, notificationIdList)
                 ? getVoltageLevelSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -52,7 +60,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       centerName,
                       diagonalName,
                       componentLibrary,
-                      SLD_DISPLAY_MODE.STATE_VARIABLE
+                      SLD_DISPLAY_MODE.STATE_VARIABLE,
+                      language
                   )
                 : null,
         [
@@ -62,12 +71,15 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             centerName,
             diagonalName,
             componentLibrary,
+            language,
+            notificationIdList,
         ]
     );
 
     const getSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode)
+            isNodeBuilt(currentNode) &&
+            !isNodeInNotificationList(currentNode, notificationIdList)
                 ? getSubstationSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -76,7 +88,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       centerName,
                       diagonalName,
                       substationLayout,
-                      componentLibrary
+                      componentLibrary,
+                      language
                   )
                 : null,
         [
@@ -87,6 +100,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             substationLayout,
             useName,
             currentNode,
+            language,
+            notificationIdList,
         ]
     );
 
@@ -95,11 +110,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createSubstationSLD(substationId, state) {
                 const substation = network.getSubstation(substationId);
                 if (!substation) return;
-                let name =
-                    useName && substation.name ? substation.name : substationId;
+                let label = getNameOrId(substation);
                 const countryName = substation?.countryName;
                 if (countryName) {
-                    name += ' \u002D ' + countryName;
+                    label += ' - ' + countryName;
                 }
                 const svgUrl = getSubstationSingleLineDiagramUrl(substationId);
 
@@ -107,7 +121,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     id: substationId,
                     ref: React.createRef(),
                     state,
-                    name,
+                    name: label,
                     type: SvgType.SUBSTATION,
                     svgUrl,
                 };
@@ -116,12 +130,11 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             function createVoltageLevelSLD(vlId, state) {
                 const vl = network.getVoltageLevel(vlId);
                 if (!vl) return;
-                let name = useName ? vl.name : vlId;
-
+                let label = getNameOrId(vl);
                 const substation = network.getSubstation(vlId);
                 const countryName = substation?.countryName;
                 if (countryName) {
-                    name += ' \u002D ' + countryName;
+                    label += ' - ' + countryName;
                 }
                 const svgUrl = getVoltageLevelSingleLineDiagramUrl(vlId);
 
@@ -129,7 +142,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     id: vlId,
                     ref: React.createRef(),
                     state,
-                    name,
+                    name: label,
                     svgUrl,
                     type: SvgType.VOLTAGE_LEVEL,
                     substationId: substation?.id,
@@ -144,9 +157,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         },
         [
             network,
-            useName,
             getSubstationSingleLineDiagramUrl,
             getVoltageLevelSingleLineDiagramUrl,
+            getNameOrId,
         ]
     );
 };
@@ -169,24 +182,18 @@ export function SingleLineDiagramPane({
     visible,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
-
     const [views, setViews] = useState([]);
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
-
     const [displayedSLD, setDisplayedSld] = useState([]);
     const [displayedSldHeights, setDisplayedSldHeights] = useState([]);
     const displayedSldHeightsRef = useRef();
     displayedSldHeightsRef.current = displayedSldHeights;
-
     const createView = useDisplayView(network, studyUuid, currentNode);
-
     const dispatch = useDispatch();
-
     const sldState = useSelector((state) => state.sldState);
-
     const viewsRef = useRef();
+    const { getNameOrId } = useNameOrId();
     viewsRef.current = views;
 
     const [

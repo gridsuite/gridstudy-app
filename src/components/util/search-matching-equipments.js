@@ -6,12 +6,11 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchEquipmentsInfos } from '../../utils/rest-api';
+import { searchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
-import { PARAM_USE_NAME } from '../../utils/config-params';
-import { useParameterState } from '../dialogs/parameters/parameters';
+import { useNameOrId } from './equipmentInfosHandler';
 
 export const useSearchMatchingEquipments = (
     studyUuid,
@@ -24,7 +23,7 @@ export const useSearchMatchingEquipments = (
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const timer = useRef();
     const lastSearchTermRef = useRef('');
-    const [useNameLocal] = useParameterState(PARAM_USE_NAME);
+    const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
     const searchMatchingEquipments = useCallback(
         (searchTerm, sooner = false) => {
@@ -33,18 +32,18 @@ export const useSearchMatchingEquipments = (
             timer.current = setTimeout(
                 () => {
                     lastSearchTermRef.current = searchTerm;
-                    fetchEquipmentsInfos(
+                    searchEquipmentsInfos(
                         studyUuid,
                         nodeUuid,
                         searchTerm,
-                        useNameLocal,
+                        getUseNameParameterKey,
                         inUpstreamBuiltParentNode,
                         equipmentType
                     )
                         .then((infos) => {
                             if (searchTerm === lastSearchTermRef.current) {
                                 setEquipmentsFound(
-                                    makeItems(infos, useNameLocal)
+                                    makeItems(infos, getNameOrId)
                                 );
                             } // else ignore results of outdated fetch
                         })
@@ -61,11 +60,12 @@ export const useSearchMatchingEquipments = (
         [
             studyUuid,
             nodeUuid,
-            useNameLocal,
             equipmentType,
             inUpstreamBuiltParentNode,
             makeItems,
             snackError,
+            getNameOrId,
+            getUseNameParameterKey,
         ]
     );
 

@@ -170,7 +170,7 @@ export const NetworkModificationTreePane = ({
                     )
                 ) {
                     dispatch(
-                        removeNotificationByNode(currentNodeRef.current?.id)
+                        removeNotificationByNode([currentNodeRef.current?.id])
                     );
                 }
                 if (
@@ -271,8 +271,12 @@ export const NetworkModificationTreePane = ({
                     headerId: 'NodeDeleteError',
                 });
             });
+            if (element.id === selectedNodeIdForCopy) {
+                setSelectedNodeIdForCopy(null);
+                setCopyType(null);
+            }
         },
-        [studyUuid, snackError]
+        [studyUuid, selectedNodeIdForCopy, snackError]
     );
 
     const handleBuildNode = useCallback(

@@ -16,7 +16,6 @@ import {
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { syncSldStateWithSessionStorage } from '../../../redux/session-storage';
-import { Paper } from '@mui/material';
 
 export const LOADING_WIDTH = 150;
 export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
@@ -81,36 +80,6 @@ export const commonStyle = (theme, customStyle) => {
         ...customStyle,
     };
 };
-
-export function renderIntoPaperWrapper(
-    svg,
-    ref,
-    classes,
-    sizeWidth,
-    sizeHeight,
-    diagram
-) {
-    return !svg.error ? (
-        <Paper
-            ref={ref}
-            elevation={4}
-            square={true}
-            className={classes.paperBorders}
-            style={{
-                pointerEvents: 'auto',
-                width: sizeWidth,
-                minWidth: LOADING_WIDTH,
-                height: sizeHeight,
-                position: 'relative',
-                overflow: 'hidden',
-            }}
-        >
-            {diagram}
-        </Paper>
-    ) : (
-        <></>
-    );
-}
 
 export const ViewState = {
     PINNED: 'pinned',
@@ -187,10 +156,6 @@ export const useSingleLineDiagram = () => {
     ];
 };
 
-export function getNameOrId(value) {
-    return value?.name ?? value?.id;
-}
-
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
     VERTICAL: 'vertical',
@@ -205,7 +170,3 @@ export const SvgType = {
 };
 
 export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
-
-export function getSubstationNameOrId(value) {
-    return value?.substationName ?? value?.substationId;
-}
