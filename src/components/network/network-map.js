@@ -360,7 +360,8 @@ const NetworkMap = (props) => {
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
                 loadFlowStatus: props.loadFlowStatus,
-                lineFullPath: props.geoData.linePositionsById && props.lineFullPath,
+                lineFullPath:
+                    props.geoData.linePositionsById && props.lineFullPath,
                 lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,
