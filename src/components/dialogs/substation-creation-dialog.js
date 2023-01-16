@@ -142,11 +142,13 @@ const SubstationCreationDialog = ({
     const equipmentPath = 'substations';
 
     const toFormValues = (substation) => {
+        console.debug('toFormValues', substation);
         return {
             equipmentId: substation.id + '(1)',
             equipmentName: substation.name ?? '',
             substationCountryLabel: substation.countryName,
             substationCountry: null,
+            properties: substation.properties,
         };
     };
 
