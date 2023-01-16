@@ -34,7 +34,7 @@ const ratioTapChangerValidationSchema = (id) => ({
             .number()
             .nullable()
             .test('min', 'TargetVoltageGreaterThanZero', (val) => val >= 0)
-            .when(`${REGULATING}`, {
+            .when(REGULATING, {
                 is: true,
                 then: (schema) => schema.required(),
             }),
@@ -47,7 +47,7 @@ const ratioTapChangerValidationSchema = (id) => ({
             .nullable()
             .min(0)
             .max(100)
-            .when(`${ENABLED}`, {
+            .when(ENABLED, {
                 is: true,
                 then: (schema) => schema.required(),
             }),
@@ -56,16 +56,13 @@ const ratioTapChangerValidationSchema = (id) => ({
             .nullable()
             .min(yup.ref(LOW_TAP_POSITION), 'HighTapPositionError')
             .max(100, 'HighTapPositionError'),
-        [TAP_POSITION]: yup.lazy((value) => {
-            if (value === '') {
-                return yup.string();
-            }
-
-            return yup.number().when(`${ENABLED}`, {
+        [TAP_POSITION]: yup
+            .number()
+            .nullable()
+            .when(ENABLED, {
                 is: true,
                 then: (schema) => schema.required(),
-            });
-        }),
+            }),
         [STEPS]: yup.array().of(
             yup.object().shape({
                 [STEPS_TAP]: yup.number().required(),
@@ -90,21 +87,12 @@ const ratioTapChangerEmptyFormData = (id) => ({
         [ENABLED]: false,
         [LOAD_TAP_CHANGING_CAPABILITIES]: false,
         [REGULATING]: false,
-        [TARGET_V]: '',
-        [TARGET_DEADBAND]: '',
+        [TARGET_V]: null,
+        [TARGET_DEADBAND]: null,
         [LOW_TAP_POSITION]: null,
         [HIGH_TAP_POSITION]: null,
-        [TAP_POSITION]: '',
-        [STEPS]: [
-            {
-                tap: 4,
-                resistance: 1,
-                reactance: 2,
-                conductance: 3,
-                susceptance: 4,
-                ratio: 5,
-            },
-        ],
+        [TAP_POSITION]: null,
+        [STEPS]: [],
         ...getRegulatingTerminalEmptyFormData(),
     },
 });

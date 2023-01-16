@@ -63,7 +63,12 @@ const schema = yup
     })
     .required();
 
-const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
+const LoadCreationDialog = ({
+    editData,
+    currentNodeUuid,
+    voltageLevelOptionsPromise,
+    ...dialogProps
+}) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { snackError } = useSnackMessage();
@@ -215,7 +220,9 @@ const LoadCreationDialog = ({ editData, currentNodeUuid, ...dialogProps }) => {
                 searchCopy={searchCopy}
                 {...dialogProps}
             >
-                <LoadCreationForm />
+                <LoadCreationForm
+                    voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+                />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

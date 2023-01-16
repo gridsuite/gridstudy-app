@@ -2,11 +2,8 @@ import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import BooleanInput from '../../../rhf-inputs/boolean-input';
 import {
-    HIGH_TAP_POSITION,
-    LOW_TAP_POSITION,
     ENABLED,
     REGULATING,
-    TAP_POSITION,
     TARGET_DEADBAND,
 } from '../two-windings-transformer-creation-dialog-utils';
 import { useWatch } from 'react-hook-form';
@@ -18,7 +15,6 @@ import {
 } from '../../../../dialogs/dialogUtils';
 import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
 import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
-import IntegerInput from '../../../rhf-inputs/integer-input';
 import SelectInput from '../../../rhf-inputs/select-input';
 import { REGULATION_MODES } from '../../../../network/constants';
 import PhaseTapChangerPaneTaps from './phase-tap-changer-pane-taps';
@@ -29,7 +25,10 @@ import {
     REGULATION_MODE,
 } from './phase-tap-changer-pane-utils';
 
-const PhaseTapChangerPane = () => {
+const PhaseTapChangerPane = ({
+    voltageLevelOptionsPromise,
+    voltageLevelsEquipmentsOptionsPromise,
+}) => {
     const phaseTapChangerEnabledWatch = useWatch({
         name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
     });
@@ -105,39 +104,13 @@ const PhaseTapChangerPane = () => {
     const regulatingTerminalField = (
         <RegulatingTerminalForm
             id={PHASE_TAP_CHANGER}
+            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+            voltageLevelsEquipmentsOptionsPromise={
+                voltageLevelsEquipmentsOptionsPromise
+            }
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
             }
-        />
-    );
-
-    const lowTapPositionField = (
-        <IntegerInput
-            name={`${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`}
-            label="LowTapPosition"
-            formProps={{
-                disabled: !phaseTapChangerEnabledWatch,
-            }}
-        />
-    );
-
-    const highTapPositionField = (
-        <IntegerInput
-            name={`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`}
-            label="HighTapPosition"
-            formProps={{
-                disabled: !phaseTapChangerEnabledWatch,
-            }}
-        />
-    );
-
-    const tapPositionField = (
-        <IntegerInput
-            name={`${PHASE_TAP_CHANGER}.${TAP_POSITION}`}
-            label="TapPosition"
-            formProps={{
-                disabled: !phaseTapChangerEnabledWatch,
-            }}
         />
     );
 

@@ -35,6 +35,7 @@ const ModificationDialog = ({
     onClose,
     onClear,
     onSave,
+    onValidationError,
     disabledSave,
     searchCopy,
     subtitle,
@@ -72,6 +73,9 @@ const ModificationDialog = ({
         closeAndClear(data, 'validateButtonClick');
     };
 
+    const handleValidationError = (errors) =>
+        onValidationError && onValidationError(errors);
+
     return (
         <Dialog
             onClose={handleClose}
@@ -93,8 +97,9 @@ const ModificationDialog = ({
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
-                    onClick={handleSubmit(handleValidate, (error) =>
-                        alert(JSON.stringify(error, null, 4))
+                    onClick={handleSubmit(
+                        handleValidate,
+                        handleValidationError
                     )}
                     disabled={disabledSave}
                 >
@@ -110,6 +115,7 @@ ModificationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
+    onValidationError: PropTypes.func,
     onValidated: PropTypes.func.isRequired,
     disabledSave: PropTypes.bool.isRequired,
     searchCopy: PropTypes.object,

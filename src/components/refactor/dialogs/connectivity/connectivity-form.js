@@ -6,11 +6,10 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
-    fetchVoltageLevels,
 } from '../../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
@@ -46,6 +45,7 @@ import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
     direction = 'row',
+    voltageLevelOptionsPromise,
     withDirectionsInfos = true,
     withPosition = false,
 }) => {
@@ -69,12 +69,12 @@ export const ConnectivityForm = ({
     } = watch(`${id}.${VOLTAGE_LEVEL}`) || {};
 
     useEffect(() => {
-        fetchVoltageLevels(studyUuid, currentNode?.id).then((values) => {
+        voltageLevelOptionsPromise.then((values) => {
             setVoltageLevelOptions(
                 values.sort((a, b) => a.id.localeCompare(b.id))
             );
         });
-    }, [studyUuid, currentNode?.id]);
+    }, [voltageLevelOptionsPromise]);
 
     useEffect(() => {
         if (watchVoltageLevelId) {
@@ -117,6 +117,7 @@ export const ConnectivityForm = ({
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
             allowNewValue
+            forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
             label="VoltageLevel"
             options={voltageLevelOptions}
@@ -128,6 +129,7 @@ export const ConnectivityForm = ({
     const newBusOrBusbarSectionField = (
         <AutocompleteInput
             allowNewValue
+            forcePopupIcon
             name={`${id}.${BUS_OR_BUSBAR_SECTION}`}
             label="BusBarBus"
             options={busOrBusbarSectionOptions}
@@ -138,10 +140,7 @@ export const ConnectivityForm = ({
     );
 
     const newConnectionNameField = (
-        <TextInput
-            name={`${id}.${CONNECTION_NAME}`}
-            label="ConnectionName"
-        />
+        <TextInput name={`${id}.${CONNECTION_NAME}`} label="ConnectionName" />
     );
 
     const newConnectionDirectionField = (

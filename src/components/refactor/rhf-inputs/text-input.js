@@ -37,7 +37,7 @@ const TextInput = ({
     const {
         field: { onChange, value },
         fieldState: { error },
-    } = useController({ name });
+    } = useController({ name, rules: { required: true } });
 
     const Field = adornment ? TextFieldWithAdornment : TextField;
 

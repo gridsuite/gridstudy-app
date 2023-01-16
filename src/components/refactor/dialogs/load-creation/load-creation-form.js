@@ -28,7 +28,7 @@ import {
     REACTIVE_POWER,
 } from './load-creation-dialog';
 
-const LoadCreationForm = ({ editData, currentNodeUuid, ...dialogProps }) => {
+const LoadCreationForm = ({ voltageLevelOptionsPromise }) => {
     const loadIdField = (
         <TextInput
             name={EQUIPMENT_ID}
@@ -73,7 +73,11 @@ const LoadCreationForm = ({ editData, currentNodeUuid, ...dialogProps }) => {
     );
 
     const connectivityForm = (
-        <ConnectivityForm label={'Connectivity'} withPosition={true} />
+        <ConnectivityForm
+            label={'Connectivity'}
+            withPosition={true}
+            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+        />
     );
 
     return (

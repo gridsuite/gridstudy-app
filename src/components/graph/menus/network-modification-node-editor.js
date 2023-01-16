@@ -281,7 +281,7 @@ const NetworkModificationNodeEditor = () => {
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
-            dialog: () => adapt(LoadCreationDialog),
+            dialog: () => adapt(LoadCreationDialog, withVLs),
             icon: <AddIcon />,
         },
         LOAD_MODIFICATION: {

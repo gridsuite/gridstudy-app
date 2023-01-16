@@ -1,12 +1,9 @@
 import { Grid } from '@mui/material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import BooleanInput from '../../../rhf-inputs/boolean-input';
 import {
-    HIGH_TAP_POSITION,
-    LOW_TAP_POSITION,
     ENABLED,
     REGULATING,
-    TAP_POSITION,
     TARGET_DEADBAND,
 } from '../two-windings-transformer-creation-dialog-utils';
 import { useWatch } from 'react-hook-form';
@@ -14,7 +11,6 @@ import FloatInput from '../../../rhf-inputs/float-input';
 import { gridItem, VoltageAdornment } from '../../../../dialogs/dialogUtils';
 import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
 import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
-import IntegerInput from '../../../rhf-inputs/integer-input';
 import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
 import {
     LOAD_TAP_CHANGING_CAPABILITIES,
@@ -22,9 +18,10 @@ import {
     TARGET_V,
 } from './ratio-tap-changer-pane-utils';
 
-const RatioTapChangerPane = () => {
-    const intl = useIntl();
-
+const RatioTapChangerPane = ({
+    voltageLevelOptionsPromise,
+    voltageLevelsEquipmentsOptionsPromise,
+}) => {
     const ratioTapChangerEnabledWatcher = useWatch({
         name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
     });
@@ -91,39 +88,14 @@ const RatioTapChangerPane = () => {
     const regulatingTerminalField = (
         <RegulatingTerminalForm
             id={RATIO_TAP_CHANGER}
+            disabled={!ratioTapChangerEnabledWatcher}
+            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+            voltageLevelsEquipmentsOptionsPromise={
+                voltageLevelsEquipmentsOptionsPromise
+            }
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
             }
-        />
-    );
-
-    const lowTapPositionField = (
-        <IntegerInput
-            name={`${RATIO_TAP_CHANGER}.${LOW_TAP_POSITION}`}
-            label="LowTapPosition"
-            formProps={{
-                disabled: !ratioTapChangerEnabledWatcher,
-            }}
-        />
-    );
-
-    const highTapPositionField = (
-        <IntegerInput
-            name={`${RATIO_TAP_CHANGER}.${HIGH_TAP_POSITION}`}
-            label="HighTapPosition"
-            formProps={{
-                disabled: !ratioTapChangerEnabledWatcher,
-            }}
-        />
-    );
-
-    const tapPositionField = (
-        <IntegerInput
-            name={`${RATIO_TAP_CHANGER}.${TAP_POSITION}`}
-            label="TapPosition"
-            formProps={{
-                disabled: !ratioTapChangerEnabledWatcher,
-            }}
         />
     );
 
@@ -257,7 +229,9 @@ const RatioTapChangerPane = () => {
                     </Grid>
                 )}
 
-                <RatioTapChangerPaneTaps />
+                <RatioTapChangerPaneTaps
+                    disabled={!ratioTapChangerEnabledWatcher}
+                />
             </Grid>
         </>
     );

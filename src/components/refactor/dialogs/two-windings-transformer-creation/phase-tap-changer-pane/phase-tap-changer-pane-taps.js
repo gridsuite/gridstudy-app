@@ -70,8 +70,8 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                 label: intl
                     .formatMessage({ id: 'DeltaResistance' })
                     .toUpperCase(),
-                id: STEPS_RESISTANCE,
-                dataKey: 'resistance',
+                id: 'resistance',
+                dataKey: STEPS_RESISTANCE,
                 editor: TableNumericalInput,
             },
             {

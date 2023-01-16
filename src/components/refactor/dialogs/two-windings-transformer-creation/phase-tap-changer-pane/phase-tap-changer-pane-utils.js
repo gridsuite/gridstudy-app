@@ -2,6 +2,7 @@ import { REGULATION_MODES } from '../../../../network/constants';
 import yup from '../../../utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalFormData,
     getRegulatingTerminalValidationSchema,
 } from '../../regulating-terminal/regulating-terminal-form-utils';
 import {
@@ -60,7 +61,7 @@ const phaseTapChangerValidationSchema = (id) => ({
             .nullable()
             .min(0)
             .max(100)
-            .when(`${ENABLED}`, {
+            .when(ENABLED, {
                 is: true,
                 then: (schema) => schema.required(),
             }),
@@ -69,16 +70,13 @@ const phaseTapChangerValidationSchema = (id) => ({
             .nullable()
             .min(yup.ref(LOW_TAP_POSITION), 'HighTapPositionError')
             .max(100, 'HighTapPositionError'),
-        [TAP_POSITION]: yup.lazy((value) => {
-            if (value === '') {
-                return yup.string();
-            }
-
-            return yup.number().when(`${ENABLED}`, {
+        [TAP_POSITION]: yup
+            .number()
+            .nullable()
+            .when(ENABLED, {
                 is: true,
                 then: (schema) => schema.required(),
-            });
-        }),
+            }),
         [STEPS]: yup.array().of(
             yup.object().shape({
                 [STEPS_TAP]: yup.number().required(),
@@ -105,10 +103,10 @@ const phaseTapChangerEmptyFormData = (id) => ({
         [REGULATING]: false,
         [CURRENT_LIMITER_REGULATING_VALUE]: null,
         [FLOW_SET_POINT_REGULATING_VALUE]: null,
-        [TARGET_DEADBAND]: '',
+        [TARGET_DEADBAND]: null,
         [LOW_TAP_POSITION]: null,
         [HIGH_TAP_POSITION]: null,
-        [TAP_POSITION]: '',
+        [TAP_POSITION]: null,
         [STEPS]: [],
         ...getRegulatingTerminalEmptyFormData(),
     },
@@ -117,3 +115,38 @@ const phaseTapChangerEmptyFormData = (id) => ({
 export const getPhaseTapChangerEmptyFormData = (id = PHASE_TAP_CHANGER) => {
     return phaseTapChangerEmptyFormData(id);
 };
+
+export const getPhaseTapChangerFormData = (
+    {
+        enabled,
+        regulationMode,
+        regulating,
+        currentLimiterRegulatingValue,
+        flowSetpointRegulatingValue,
+        targetDeadband,
+        lowTapPosition,
+        highTapPosition,
+        tapPosition,
+        steps,
+        voltageLevelId,
+        equipmentId,
+    },
+    id = PHASE_TAP_CHANGER
+) => ({
+    [id]: {
+        [ENABLED]: enabled,
+        [REGULATION_MODE]: regulationMode,
+        [REGULATING]: regulating,
+        [CURRENT_LIMITER_REGULATING_VALUE]: currentLimiterRegulatingValue,
+        [FLOW_SET_POINT_REGULATING_VALUE]: flowSetpointRegulatingValue,
+        [TARGET_DEADBAND]: targetDeadband,
+        [LOW_TAP_POSITION]: lowTapPosition,
+        [HIGH_TAP_POSITION]: highTapPosition,
+        [TAP_POSITION]: tapPosition,
+        [STEPS]: steps,
+        ...getRegulatingTerminalFormData({
+            equipmentId: equipmentId,
+            voltageLevelId: voltageLevelId,
+        }),
+    },
+});

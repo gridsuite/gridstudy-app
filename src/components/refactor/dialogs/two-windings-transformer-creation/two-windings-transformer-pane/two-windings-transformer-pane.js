@@ -14,6 +14,8 @@ import FloatInput from '../../../rhf-inputs/float-input';
 import TextInput from '../../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import {
+    CONNECTIVITY_1,
+    CONNECTIVITY_2,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     EQUIPMENT_ID,
@@ -35,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TwoWindingsTransformerPane = () => {
+const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
     const classes = useStyles();
 
     // CHARACTERISTICS TAP PANE
@@ -125,7 +127,8 @@ const TwoWindingsTransformerPane = () => {
 
     const connectivity1Field = (
         <ConnectivityForm
-            id="connectivity1"
+            id={CONNECTIVITY_1}
+            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             withPosition={true}
             direction="column"
         />
@@ -133,7 +136,8 @@ const TwoWindingsTransformerPane = () => {
 
     const connectivity2Field = (
         <ConnectivityForm
-            id="connectivity2"
+            id={CONNECTIVITY_2}
+            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             withPosition={true}
             direction="column"
         />

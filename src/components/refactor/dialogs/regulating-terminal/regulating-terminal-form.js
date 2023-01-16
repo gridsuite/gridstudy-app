@@ -5,18 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import { Popper } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import React, { useEffect, useState } from 'react';
-import {
-    fetchVoltageLevels,
-    fetchVoltageLevelsEquipments,
-} from '../../../../utils/rest-api';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSelector } from 'react-redux';
 import {
     EQUIPMENT,
     VOLTAGE_LEVEL,
@@ -80,12 +74,11 @@ const RegulatingTerminalForm = ({
     direction,
     disabled = false,
     equipmentSectionTypeDefaultValue,
+    voltageLevelOptionsPromise,
+    voltageLevelsEquipmentsOptionsPromise,
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
 }) => {
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
 
@@ -94,16 +87,16 @@ const RegulatingTerminalForm = ({
     });
 
     useEffect(() => {
-        fetchVoltageLevels(studyUuid, currentNode?.id).then((values) => {
+        voltageLevelOptionsPromise.then((values) => {
             setVoltageLevelOptions(
                 values.sort((a, b) => a.id.localeCompare(b.id))
             );
         });
-    }, [studyUuid, currentNode?.id]);
+    }, [voltageLevelOptionsPromise]);
 
     useEffect(() => {
-        fetchVoltageLevelsEquipments(studyUuid, currentNode?.id).then(
-            (values) => {
+        if (watchVoltageLevelId) {
+            voltageLevelsEquipmentsOptionsPromise.then((values) => {
                 setEquipmentsOptions(
                     values.find(
                         (vlEquipment) =>
@@ -111,73 +104,11 @@ const RegulatingTerminalForm = ({
                             watchVoltageLevelId
                     ).equipments
                 );
-            }
-        );
-    }, [watchVoltageLevelId, studyUuid, currentNode?.id]);
-
-    // const handleChangeVoltageLevel = useCallback(
-    //     (event, value, reason) => {
-    //         if (reason === 'selectOption') {
-    //             onChangeVoltageLevel(value);
-    //             onChangeEquipmentSection(null);
-    //             inputForm.setHasChanged(true);
-    //         } else if (reason === 'clear') {
-    //             onChangeVoltageLevel(null);
-    //             onChangeEquipmentSection(null);
-    //             setEquipmentsOptions([]);
-    //             inputForm.setHasChanged(true);
-    //         }
-    //     },
-    //     [onChangeEquipmentSection, onChangeVoltageLevel, inputForm]
-    // );
-
-    // useEffect(() => {
-    //     if (voltageLevelEquipmentsCallback) {
-    //         voltageLevelEquipmentsCallback(
-    //             voltageLevelsEquipments.find(
-    //                 (vlEquipment) =>
-    //                     vlEquipment?.voltageLevel?.id ===
-    //                     regulatingTerminalValue?.voltageLevel?.id
-    //             ),
-    //             setEquipmentsOptions
-    //         );
-    //     }
-    // }, [
-    //     regulatingTerminalValue?.voltageLevel?.id,
-    //     setEquipmentsOptions,
-    //     voltageLevelEquipmentsCallback,
-    //     voltageLevelsEquipments,
-    // ]);
-
-    // useEffect(() => {
-    //     let selectedExistingEquipment;
-    //     if (regulatingTerminalValue?.equipmentSection) {
-    //         selectedExistingEquipment = equipmentsOptions.find(
-    //             (value) =>
-    //                 value.id === regulatingTerminalValue.equipmentSection.id
-    //         );
-    //     }
-    //     //To refactor in order to simplify it :
-    //     //If the user select an existing equipement from the list it is set as the current value
-    //     //Otherwise if nothing have been typed in Equipment field the value is an empty string
-    //     //If something has been typed but it does not match with an existing equipment, it is allowed in order to specify the equipment currently being created, the value will be the combination of what the user typed and default type passed as prop
-    //     setCurrentEquipment(
-    //         regulatingTerminalValue?.equipmentSection &&
-    //             selectedExistingEquipment
-    //             ? selectedExistingEquipment
-    //             : regulatingTerminalValue?.equipmentSection === null
-    //             ? ''
-    //             : {
-    //                   id: regulatingTerminalValue.equipmentSection.id,
-    //                   type: equipmentSectionTypeDefaultValue,
-    //               }
-    //     );
-    // }, [
-    //     equipmentSectionTypeDefaultValue,
-    //     equipmentsOptions,
-    //     regulatingTerminalValue,
-    //     regulatingTerminalValue.equipmentSection,
-    // ]);
+            });
+        } else {
+            setEquipmentsOptions([]);
+        }
+    }, [watchVoltageLevelId, voltageLevelsEquipmentsOptionsPromise]);
 
     return (
         <>
@@ -291,168 +222,13 @@ const RegulatingTerminalForm = ({
             </Grid>
         </>
     );
-
-    // return (
-    //     <>
-    //         <Grid container direction={direction || 'row'} spacing={2}>
-    //             <Grid
-    //                 item
-    //                 xs={
-    //                     direction &&
-    //                     (direction === 'column' ||
-    //                         direction === 'column-reverse')
-    //                         ? 12
-    //                         : 6
-    //                 }
-    //                 align="start"
-    //             >
-    //                 {/* TODO: autoComplete prop is not working properly with material-ui v4,
-    //                          it clears the field when blur event is raised, which actually forces the user to validate free input
-    //                          with enter key for it to be validated.
-    //                          check if autoComplete prop is fixed in v5 */}
-    //                 <Autocomplete
-    //                     size="small"
-    //                     freeSolo
-    //                     forcePopupIcon
-    //                     autoHighlight
-    //                     selectOnFocus
-    //                     disabled={disabled}
-    //                     id="voltage-level"
-    //                     options={voltageLevelOptions}
-    //                     getOptionLabel={(vl) => (vl?.id ? vl.id : '')}
-    //                     /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
-    //                         is created in the options list with a value equal to the input value
-    //                      */
-    //                     filterOptions={(options, params) => {
-    //                         const filtered = filter(options, params);
-    //                         if (
-    //                             params.inputValue !== '' &&
-    //                             !options.find(
-    //                                 (opt) => opt.id === params.inputValue
-    //                             )
-    //                         ) {
-    //                             filtered.push({
-    //                                 inputValue: params.inputValue,
-    //                                 id: params.inputValue,
-    //                             });
-    //                         }
-    //                         return filtered;
-    //                     }}
-    //                     value={
-    //                         regulatingTerminalValue?.voltageLevel
-    //                             ? regulatingTerminalValue.voltageLevel
-    //                             : ''
-    //                     }
-    //                     onChange={handleChangeVoltageLevel}
-    //                     renderInput={(params) => (
-    //                         <TextField
-    //                             {...params}
-    //                             fullWidth
-    //                             label={intl.formatMessage({
-    //                                 id: 'VoltageLevel',
-    //                             })}
-    //                             FormHelperTextProps={{
-    //                                 className: classes.helperText,
-    //                             }}
-    //                             {...genHelperError(errorForVL)}
-    //                             helperText={previousRegulatingTerminalValue}
-    //                         />
-    //                     )}
-    //                     PopperComponent={FittingPopper}
-    //                 />
-    //             </Grid>
-    //             <Grid
-    //                 item
-    //                 xs={
-    //                     direction &&
-    //                     (direction === 'column' ||
-    //                         direction === 'column-reverse')
-    //                         ? 12
-    //                         : 6
-    //                 }
-    //                 align="start"
-    //             >
-    //                 {/* TODO: autoComplete prop is not working properly with material-ui v4,
-    //                          it clears the field when blur event is raised, which actually forces the user to validate free input
-    //                          with enter key for it to be validated.
-    //                          check if autoComplete prop is fixed in v5 */}
-    //                 <Autocomplete
-    //                     size="small"
-    //                     freeSolo
-    //                     forcePopupIcon
-    //                     autoHighlight
-    //                     selectOnFocus
-    //                     id="equipment"
-    //                     disabled={
-    //                         !regulatingTerminalValue?.voltageLevel || disabled
-    //                     }
-    //                     options={equipmentsOptions}
-    //                     getOptionLabel={(equipment) => {
-    //                         return equipment === ''
-    //                             ? '' // to clear field
-    //                             : (equipment?.type ??
-    //                                   equipmentSectionTypeDefaultValue) +
-    //                                   ' : ' +
-    //                                   equipment?.id || '';
-    //                     }}
-    //                     /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
-    //                         is created in the options list with a value equal to the input value
-    //                      */
-    //                     filterOptions={(options, params) => {
-    //                         const filtered = filter(options, params);
-
-    //                         if (
-    //                             params.inputValue !== '' &&
-    //                             !options.find(
-    //                                 (opt) => opt.id === params.inputValue
-    //                             )
-    //                         ) {
-    //                             filtered.push({
-    //                                 inputValue: params.inputValue,
-    //                                 id: params.inputValue,
-    //                             });
-    //                         }
-    //                         return filtered;
-    //                     }}
-    //                     value={currentEquipment}
-    //                     onChange={handleChangeEquipment}
-    //                     renderInput={(params) => (
-    //                         <TextField
-    //                             {...params}
-    //                             className={
-    //                                 genHelperError(errorForTerminal)?.error &&
-    //                                 classes.fieldError
-    //                             }
-    //                             fullWidth
-    //                             label={intl.formatMessage({
-    //                                 id: 'Equipment',
-    //                             })}
-    //                             FormHelperTextProps={{
-    //                                 className: classes.helperText,
-    //                             }}
-    //                             {...genHelperError(errorForTerminal)}
-    //                             helperText={previousEquipmentSectionTypeValue}
-    //                         />
-    //                     )}
-    //                     PopperComponent={FittingPopper}
-    //                 />
-    //             </Grid>
-    //         </Grid>
-    //     </>
-    // );
 };
 
 RegulatingTerminalForm.propTypes = {
     id: PropTypes.string.isRequired,
-    validation: PropTypes.object,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    regulatingTerminalValue: PropTypes.object,
-    onChangeVoltageLevel: PropTypes.func.isRequired,
-    onChangeEquipmentSection: PropTypes.func.isRequired,
     direction: PropTypes.string,
     disabled: PropTypes.bool,
-    voltageLevelEquipmentsCallback: PropTypes.func.isRequired,
-    voltageLevelsEquipments: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default RegulatingTerminalForm;

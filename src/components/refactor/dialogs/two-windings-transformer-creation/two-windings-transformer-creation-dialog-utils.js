@@ -12,6 +12,8 @@ export const RATED_VOLTAGE_2 = 'ratedVoltage2';
 export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';
 export const PERMANENT_LIMIT = 'permanentLimit';
+export const CONNECTIVITY_1 = 'connectivity1';
+export const CONNECTIVITY_2 = 'connectivity2';
 
 //common tabs tap_changer
 export const ENABLED = 'enabled';
@@ -23,10 +25,10 @@ export const TAP_POSITION = 'tapPosition';
 
 //tap-changer-pane-taps
 export const STEPS = 'steps';
-export const STEPS_TAP = 'tap';
-export const STEPS_RESISTANCE = 'resistance';
-export const STEPS_REACTANCE = 'reactance';
-export const STEPS_CONDUCTANCE = 'conductance';
-export const STEPS_SUSCEPTANCE = 'susceptance';
-export const STEPS_RATIO = 'ratio';
+export const STEPS_TAP = 'index';
+export const STEPS_RESISTANCE = 'r';
+export const STEPS_REACTANCE = 'x';
+export const STEPS_CONDUCTANCE = 'g';
+export const STEPS_SUSCEPTANCE = 'b';
+export const STEPS_RATIO = 'rho';
 export const STEPS_ALPHA = 'alpha';

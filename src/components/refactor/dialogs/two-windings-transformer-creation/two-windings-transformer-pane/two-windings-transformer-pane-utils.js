@@ -24,28 +24,20 @@ const twoWindingsTransformerValidationSchema = (id) => ({
     [RATED_S]: yup
         .number()
         .nullable()
-        .test('min', 'RatedNominalPowerGreaterThanZero', (val) => val >= 0),
+        .min(0, 'RatedNominalPowerGreaterThanZero'),
     [RATED_VOLTAGE_1]: yup.number().nullable().required(),
     [RATED_VOLTAGE_2]: yup.number().nullable().required(),
     [CURRENT_LIMITS_1]: yup.object().shape({
         [PERMANENT_LIMIT]: yup
             .number()
             .nullable()
-            .test(
-                'min',
-                'permanentCurrentLimitGreaterThanZero',
-                (val) => val >= 0
-            ),
+            .min(0, 'permanentCurrentLimitGreaterThanZero'),
     }),
     [CURRENT_LIMITS_2]: yup.object().shape({
         [PERMANENT_LIMIT]: yup
             .number()
             .nullable()
-            .test(
-                'min',
-                'permanentCurrentLimitGreaterThanZero',
-                (val) => val >= 0
-            ),
+            .min(0, 'permanentCurrentLimitGreaterThanZero'),
     }),
 });
 
@@ -57,22 +49,54 @@ const twoWindingsTransformerEmptyFormData = (id) => ({
     // [id]: {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    [SERIES_RESISTANCE]: '',
-    [SERIES_REACTANCE]: '',
-    [MAGNETIZING_CONDUCTANCE]: '',
-    [MAGNETIZING_SUSCEPTANCE]: '',
-    [RATED_S]: '',
-    [RATED_VOLTAGE_1]: '',
-    [RATED_VOLTAGE_2]: '',
+    [SERIES_RESISTANCE]: null,
+    [SERIES_REACTANCE]: null,
+    [MAGNETIZING_CONDUCTANCE]: null,
+    [MAGNETIZING_SUSCEPTANCE]: null,
+    [RATED_S]: null,
+    [RATED_VOLTAGE_1]: null,
+    [RATED_VOLTAGE_2]: null,
     [CURRENT_LIMITS_1]: {
-        [PERMANENT_LIMIT]: '',
+        [PERMANENT_LIMIT]: null,
     },
     [CURRENT_LIMITS_2]: {
-        [PERMANENT_LIMIT]: '',
+        [PERMANENT_LIMIT]: null,
     },
     // }
 });
 
 export const getTwoWindingsTransformerEmptyFormData = () => {
     return twoWindingsTransformerEmptyFormData();
+};
+
+export const getTwoWindingsTransformerFormData = ({
+    equipmentId,
+    equipmentName,
+    seriesResistance,
+    seriesReactance,
+    magnetizingConductance,
+    magnetizingSusceptance,
+    ratedS,
+    ratedVoltageLevel1,
+    ratedVoltageLevel2,
+    permanentLimit1,
+    permanentLimit2,
+}) => {
+    return {
+        [EQUIPMENT_ID]: equipmentId,
+        [EQUIPMENT_NAME]: equipmentName,
+        [SERIES_RESISTANCE]: seriesResistance,
+        [SERIES_REACTANCE]: seriesReactance,
+        [MAGNETIZING_CONDUCTANCE]: magnetizingConductance,
+        [MAGNETIZING_SUSCEPTANCE]: magnetizingSusceptance,
+        [RATED_S]: ratedS,
+        [RATED_VOLTAGE_1]: ratedVoltageLevel1,
+        [RATED_VOLTAGE_2]: ratedVoltageLevel2,
+        [CURRENT_LIMITS_1]: {
+            [PERMANENT_LIMIT]: permanentLimit1,
+        },
+        [CURRENT_LIMITS_2]: {
+            [PERMANENT_LIMIT]: permanentLimit2,
+        },
+    };
 };

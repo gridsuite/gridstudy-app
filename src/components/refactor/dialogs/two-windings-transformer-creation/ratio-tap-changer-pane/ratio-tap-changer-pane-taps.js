@@ -139,6 +139,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 return (
                     <div className={classes.tableCell}>
                         <Editor
+                            disabled={disabled}
                             key={row.dataKey + row.rowData.id}
                             name={`${RATIO_TAP_CHANGER}.${STEPS}[${row.rowIndex}].${row.dataKey}`}
                             columnDefinition={COLUMNS_DEFINITIONS[index]}
@@ -148,7 +149,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             }
             return defaultCellRender(row);
         },
-        [COLUMNS_DEFINITIONS, classes.tableCell, defaultCellRender]
+        [COLUMNS_DEFINITIONS, classes.tableCell, disabled, defaultCellRender]
     );
 
     const generateTableColumns = () => {
@@ -170,7 +171,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             let currentRatio = lowTapRatio;
 
             currentTapRows.forEach((row, index) => {
-                currentTapRows[index].ratio = currentRatio;
+                currentTapRows[index][STEPS_RATIO] = currentRatio;
 
                 currentRatio += ratioInterval;
             });
@@ -202,8 +203,8 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             //removing all steps not within the min/max values
             const newSteps = currentTapRows.filter(
                 (tapRow) =>
-                    tapRow.tap >= currentLowTapPosition &&
-                    tapRow.tap <= currentHighTapPosition
+                    tapRow[STEPS_TAP] >= currentLowTapPosition &&
+                    tapRow[STEPS_TAP] <= currentHighTapPosition
             );
 
             // if newSteps is empty, we fill it with empty rows
@@ -213,19 +214,19 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                         currentLowTapPosition,
                         currentHighTapPosition
                     ).map((i) => ({
-                        tap: i,
-                        resistance: 0,
-                        reactance: 0,
-                        conductance: 0,
-                        susceptance: 0,
-                        ratio: 0,
+                        [STEPS_TAP]: i,
+                        [STEPS_RESISTANCE]: 0,
+                        [STEPS_REACTANCE]: 0,
+                        [STEPS_CONDUCTANCE]: 0,
+                        [STEPS_SUSCEPTANCE]: 0,
+                        [STEPS_RATIO]: 0,
                     }))
                 );
                 return;
             }
 
             // if newSteps is not empty, we fill the gaps
-            const lowestTapRowIndex = newSteps?.[0].tap;
+            const lowestTapRowIndex = newSteps?.[0][STEPS_TAP];
             const highestTapRowIndex = lowestTapRowIndex + newSteps.length - 1;
 
             //adding steps from lowTap to lowest current index
@@ -235,12 +236,12 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 i--
             ) {
                 newSteps.unshift({
-                    tap: i,
-                    resistance: 0,
-                    reactance: 0,
-                    conductance: 0,
-                    susceptance: 0,
-                    ratio: 0,
+                    [STEPS_TAP]: i,
+                    [STEPS_RESISTANCE]: 0,
+                    [STEPS_REACTANCE]: 0,
+                    [STEPS_CONDUCTANCE]: 0,
+                    [STEPS_SUSCEPTANCE]: 0,
+                    [STEPS_RATIO]: 0,
                 });
             }
 
@@ -251,12 +252,12 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 i++
             ) {
                 newSteps.push({
-                    tap: i,
-                    resistance: 0,
-                    reactance: 0,
-                    conductance: 0,
-                    susceptance: 0,
-                    ratio: 0,
+                    [STEPS_TAP]: i,
+                    [STEPS_RESISTANCE]: 0,
+                    [STEPS_REACTANCE]: 0,
+                    [STEPS_CONDUCTANCE]: 0,
+                    [STEPS_SUSCEPTANCE]: 0,
+                    [STEPS_RATIO]: 0,
                 });
             }
 
@@ -297,8 +298,8 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 }
                 let rows = results.data.map((val) => {
                     return {
-                        tap: val[intl.formatMessage({ id: 'Tap' })],
-                        resistance: parseIntData(
+                        [STEPS_TAP]: val[intl.formatMessage({ id: 'Tap' })],
+                        [STEPS_RESISTANCE]: parseIntData(
                             val[
                                 intl.formatMessage({
                                     id: 'ImportFileResistance',
@@ -306,7 +307,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                             ],
                             0
                         ),
-                        reactance: parseIntData(
+                        [STEPS_REACTANCE]: parseIntData(
                             val[
                                 intl.formatMessage({
                                     id: 'ImportFileReactance',
@@ -314,7 +315,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                             ],
                             0
                         ),
-                        conductance: parseIntData(
+                        [STEPS_CONDUCTANCE]: parseIntData(
                             val[
                                 intl.formatMessage({
                                     id: 'ImportFileConductance',
@@ -322,7 +323,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                             ],
                             0
                         ),
-                        susceptance: parseIntData(
+                        [STEPS_SUSCEPTANCE]: parseIntData(
                             val[
                                 intl.formatMessage({
                                     id: 'ImportFileSusceptance',
@@ -330,7 +331,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                             ],
                             0
                         ),
-                        ratio: isNaN(
+                        [STEPS_RATIO]: isNaN(
                             parseFloat(val[intl.formatMessage({ id: 'Ratio' })])
                         )
                             ? 1
@@ -341,7 +342,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 });
                 if (rows && rows.length > 0) {
                     let tapValues = rows.map((row) => {
-                        return parseInt(row.tap);
+                        return parseInt(row[STEPS_TAP]);
                     });
                     let tempLowTapPosition = Math.min(...tapValues);
                     let tempHighTapPosition = Math.max(...tapValues);
