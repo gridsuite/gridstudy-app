@@ -458,6 +458,20 @@ export const NetworkMapTab = ({
         updateLinesTemporaryGeoData,
     ]);
 
+    const handleFetchGeoDataError = useCallback(
+        (error) => {
+            console.error(error.message);
+            setWaitingLoadGeoData(false);
+            setErrorMessage(
+                intlRef.current.formatMessage(
+                    { id: 'geoDataLoadingFail' },
+                    { studyUuid: studyUuid }
+                )
+            );
+        },
+        [setErrorMessage, intlRef, studyUuid]
+    );
+
     const loadAllGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         setWaitingLoadGeoData(true);
@@ -507,24 +521,10 @@ export const NetworkMapTab = ({
         }
 
         Promise.all([substationPositions, linePositions]).then(() => {
-            console.info(
-                `Received both substations and lines of study '${studyUuid}'...`
-            );
             setWaitingLoadGeoData(false);
             temporaryGeoDataIdsRef.current = new Set();
         });
-    }, [intlRef, lineFullPath, setErrorMessage, studyUuid]);
-
-    function handleFetchGeoDataError(error) {
-        console.error(error.message);
-        setWaitingLoadGeoData(false);
-        setErrorMessage(
-            intlRef.current.formatMessage(
-                { id: 'geoDataLoadingFail' },
-                { studyUuid: studyUuid }
-            )
-        );
-    }
+    }, [lineFullPath, studyUuid, handleFetchGeoDataError]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
