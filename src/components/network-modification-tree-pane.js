@@ -176,7 +176,7 @@ export const NetworkModificationTreePane = ({
                     )
                 ) {
                     dispatch(
-                        removeNotificationByNode(currentNodeRef.current?.id)
+                        removeNotificationByNode([currentNodeRef.current?.id])
                     );
                 }
                 if (

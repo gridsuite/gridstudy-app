@@ -523,13 +523,13 @@ export const reducer = createReducer(initialState, {
     [ADD_NOTIFICATION]: (state, action) => {
         state.notificationIdList = [
             ...state.notificationIdList,
-            action.notificationId,
+            ...action.notificationIds,
         ];
     },
     [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
         state.notificationIdList = [
             ...state.notificationIdList.filter(
-                (nodeId) => nodeId !== action.notificationId
+                (nodeId) => !action.notificationIds.includes(nodeId)
             ),
         ];
     },

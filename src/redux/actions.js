@@ -434,19 +434,19 @@ export function centerOnSubstation(substationId) {
 
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 
-export function addNotification(notificationId) {
+export function addNotification(notificationIds) {
     return {
         type: ADD_NOTIFICATION,
-        notificationId: notificationId,
+        notificationIds: notificationIds,
     };
 }
 
 export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
 
-export function removeNotificationByNode(notificationId) {
+export function removeNotificationByNode(notificationIds) {
     return {
         type: REMOVE_NOTIFICATION_BY_NODE,
-        notificationId: notificationId,
+        notificationIds: notificationIds,
     };
 }
 
