@@ -459,66 +459,56 @@ export const NetworkMapTab = ({
         updateLinesTemporaryGeoData,
     ]);
 
-    const handleFetchGeoDataError = useCallback(
-        (error) => {
-            console.error(error.message);
-            setWaitingLoadGeoData(false);
-            setErrorMessage(
-                intlRef.current.formatMessage(
-                    { id: 'geoDataLoadingFail' },
-                    { studyUuid: studyUuid }
-                )
-            );
-        },
-        [setErrorMessage, intlRef, studyUuid]
-    );
-
     const loadAllGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         setWaitingLoadGeoData(true);
         setWaitingFullLoadGeoData(true);
-        const substationPositions = fetchSubstationPositions(
+
+        const substationPositionsDone = fetchSubstationPositions(
             studyUuid,
             currentNodeRef.current?.id
-        );
-
-        const linePositions = lineFullPath
-            ? fetchLinePositions(studyUuid, currentNodeRef.current?.id)
-            : Promise.resolve();
-
-        substationPositions
-            .then((data) => {
-                console.info(`Received substations of study '${studyUuid}'...`);
-                const newGeoData = new GeoData(
-                    null,
-                    geoDataRef.current?.linePositionsById || null
-                );
-                newGeoData.setSubstationPositions(data);
-                setGeoData(newGeoData);
-                setWaitingLoadGeoData(false);
-            })
-            .catch(handleFetchGeoDataError);
-
-        if (lineFullPath) {
-            linePositions
-                .then((data) => {
-                    console.info(`Received lines of study '${studyUuid}'...`);
-                    const newGeoData = new GeoData(
-                        geoDataRef.current?.substationPositionsById || null,
-                        null
-                    );
-                    newGeoData.setLinePositions(data);
-                    setGeoData(newGeoData);
-                    setWaitingLoadGeoData(false);
-                })
-                .catch(handleFetchGeoDataError);
-        }
-
-        Promise.all([substationPositions, linePositions]).then(() => {
-            setWaitingFullLoadGeoData(false);
-            temporaryGeoDataIdsRef.current = new Set();
+        ).then((data) => {
+            console.info(`Received substations of study '${studyUuid}'...`);
+            const newGeoData = new GeoData(
+                null,
+                geoDataRef.current?.linePositionsById || null
+            );
+            newGeoData.setSubstationPositions(data);
+            setGeoData(newGeoData);
+            setWaitingLoadGeoData(false);
         });
-    }, [lineFullPath, studyUuid, handleFetchGeoDataError]);
+
+        const linePositionsDone = !lineFullPath
+            ? Promise.resolve()
+            : fetchLinePositions(studyUuid, currentNodeRef.current?.id).then(
+                  (data) => {
+                      console.info(`Received lines of study '${studyUuid}'...`);
+                      const newGeoData = new GeoData(
+                          geoDataRef.current?.substationPositionsById || null,
+                          null
+                      );
+                      newGeoData.setLinePositions(data);
+                      setGeoData(newGeoData);
+                  }
+              );
+
+        Promise.all([substationPositionsDone, linePositionsDone])
+            .then(() => {
+                setWaitingFullLoadGeoData(false);
+                temporaryGeoDataIdsRef.current = new Set();
+            })
+            .catch(function (error) {
+                console.error(error.message);
+                setWaitingLoadGeoData(false);
+                setWaitingFullLoadGeoData(false);
+                setErrorMessage(
+                    intlRef.current.formatMessage(
+                        { id: 'geoDataLoadingFail' },
+                        { studyUuid: studyUuid }
+                    )
+                );
+            });
+    }, [intlRef, lineFullPath, setErrorMessage, studyUuid]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
