@@ -321,6 +321,68 @@ const NetworkMap = (props) => {
         return isDragging ? 'grabbing' : cursorType;
     }
 
+    const layers = [];
+
+    if (readyToDisplaySubstations) {
+        layers.push(
+            new SubstationLayer({
+                id: SUBSTATION_LAYER_PREFIX,
+                data: props.mapEquipments?.substations,
+                network: props.mapEquipments,
+                geoData: props.geoData,
+                getNominalVoltageColor: getNominalVoltageColor,
+                filteredNominalVoltages: props.filteredNominalVoltages,
+                labelsVisible: labelsVisible,
+                labelColor: foregroundNeutralColor,
+                labelSize: LABEL_SIZE,
+                pickable: true,
+                onHover: ({ object, x, y }) => {
+                    setCursorType(object ? 'pointer' : 'grab');
+                },
+                getNameOrId: getNameOrId,
+            })
+        );
+    }
+
+    if (readyToDisplayLines) {
+        layers.push(
+            new LineLayer({
+                id: LINE_LAYER_PREFIX,
+                data: props.mapEquipments?.lines,
+                network: props.mapEquipments,
+                updatedLines: props.updatedLines,
+                geoData: props.geoData,
+                getNominalVoltageColor: getNominalVoltageColor,
+                disconnectedLineColor: foregroundNeutralColor,
+                filteredNominalVoltages: props.filteredNominalVoltages,
+                lineFlowMode: props.lineFlowMode,
+                showLineFlow: props.visible && showLineFlow,
+                lineFlowColorMode: props.lineFlowColorMode,
+                lineFlowAlertThreshold: props.lineFlowAlertThreshold,
+                loadFlowStatus: props.loadFlowStatus,
+                lineFullPath: props.geoData.linePositionsById && props.lineFullPath,
+                lineParallelPath: props.lineParallelPath,
+                labelsVisible: labelsVisible,
+                labelColor: foregroundNeutralColor,
+                labelSize: LABEL_SIZE,
+                pickable: true,
+                onHover: ({ object, x, y }) => {
+                    if (object) {
+                        setCursorType('pointer');
+                        setTooltip({
+                            message: getNameOrId(object),
+                            pointerX: x,
+                            pointerY: y,
+                        });
+                    } else {
+                        setCursorType('grab');
+                        setTooltip(null);
+                    }
+                },
+            })
+        );
+    }
+
     const initialViewState = {
         longitude: props.initialPosition[0],
         latitude: props.initialPosition[1],
@@ -339,62 +401,6 @@ const NetworkMap = (props) => {
         />
     );
 
-    const renderSubstationLayer = () => (
-        <SubstationLayer
-            id={SUBSTATION_LAYER_PREFIX}
-            data={props.mapEquipments.substations}
-            network={props.mapEquipments}
-            geoData={props.geoData}
-            getNominalVoltageColor={getNominalVoltageColor}
-            filteredNominalVoltages={props.filteredNominalVoltages}
-            labelsVisible={labelsVisible}
-            labelColor={foregroundNeutralColor}
-            labelSize={LABEL_SIZE}
-            pickable={true}
-            getNameOrId={getNameOrId}
-            onHover={({ object, x, y }) => {
-                setCursorType(object ? 'pointer' : 'grab');
-            }}
-        />
-    );
-
-    const renderLineLayer = () => (
-        <LineLayer
-            id={LINE_LAYER_PREFIX}
-            data={props.mapEquipments.lines}
-            network={props.mapEquipments}
-            updatedLines={props.updatedLines}
-            geoData={props.geoData}
-            getNominalVoltageColor={getNominalVoltageColor}
-            disconnectedLineColor={foregroundNeutralColor}
-            filteredNominalVoltages={props.filteredNominalVoltages}
-            lineFlowMode={props.lineFlowMode}
-            showLineFlow={props.visible && showLineFlow}
-            lineFlowColorMode={props.lineFlowColorMode}
-            lineFlowAlertThreshold={props.lineFlowAlertThreshold}
-            loadFlowStatus={props.loadFlowStatus}
-            lineFullPath={props.geoData.linePositionsById && props.lineFullPath} // if no line positions yet, we still want to display lines without full path
-            lineParallelPath={props.lineParallelPath}
-            labelsVisible={labelsVisible}
-            labelColor={foregroundNeutralColor}
-            labelSize={LABEL_SIZE}
-            pickable={true}
-            onHover={({ object, x, y }) => {
-                if (object) {
-                    setCursorType('pointer');
-                    setTooltip({
-                        message: getNameOrId(object),
-                        pointerX: x,
-                        pointerY: y,
-                    });
-                } else {
-                    setCursorType('grab');
-                    setTooltip(null);
-                }
-            }}
-        />
-    );
-
     return (
         <>
             <DeckGL
@@ -407,6 +413,7 @@ const NetworkMap = (props) => {
                     onClickHandler(info, event, props.mapEquipments);
                 }}
                 onAfterRender={onAfterRender}
+                layers={layers}
                 initialViewState={initialViewState}
                 controller={{ doubleClickZoom: false }}
                 ContextProvider={MapContext.Provider}
@@ -429,8 +436,7 @@ const NetworkMap = (props) => {
                             </Button>
                         </div>
                     )}
-                {readyToDisplaySubstations && renderSubstationLayer()}
-                {readyToDisplayLines && renderLineLayer()}
+
                 <StaticMap
                     mapStyle={theme.mapboxStyle}
                     preventStyleDiffing={true}
@@ -445,9 +451,10 @@ const NetworkMap = (props) => {
 };
 
 NetworkMap.defaultProps = {
-    mapEquipments: null,
+    network: null,
+    substations: [],
+    lines: [],
     geoData: null,
-    waitingLoadGeoData: false,
     useName: null,
     filteredNominalVoltages: null,
     labelsZoomThreshold: 9,
@@ -466,9 +473,8 @@ NetworkMap.defaultProps = {
 };
 
 NetworkMap.propTypes = {
-    mapEquipments: PropTypes.instanceOf(MapEquipments),
+    network: PropTypes.instanceOf(MapEquipments),
     geoData: PropTypes.instanceOf(GeoData),
-    waitingLoadGeoData: PropTypes.bool,
     useName: PropTypes.bool.isRequired,
     filteredNominalVoltages: PropTypes.array,
     labelsZoomThreshold: PropTypes.number.isRequired,

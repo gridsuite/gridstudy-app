@@ -104,6 +104,7 @@ export const NetworkMapTab = ({
     const [waitingLoadMapEquipments, setWaitingLoadEquipments] =
         useState(false);
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
+    const [waitingFullLoadGeoData, setWaitingFullLoadGeoData] = useState(true);
     const [waitingLoadTemporaryGeoData, setWaitingLoadTemporaryGeoData] =
         useState(false);
 
@@ -475,6 +476,7 @@ export const NetworkMapTab = ({
     const loadAllGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         setWaitingLoadGeoData(true);
+        setWaitingFullLoadGeoData(true);
         const substationPositions = fetchSubstationPositions(
             studyUuid,
             currentNodeRef.current?.id
@@ -487,17 +489,13 @@ export const NetworkMapTab = ({
         substationPositions
             .then((data) => {
                 console.info(`Received substations of study '${studyUuid}'...`);
-                let newGeoData;
-                if (geoDataRef.current) {
-                    newGeoData = new GeoData(
-                        null,
-                        geoDataRef.current.linePositionsById
-                    );
-                } else {
-                    newGeoData = new GeoData(null, null);
-                }
+                const newGeoData = new GeoData(
+                    null,
+                    geoDataRef.current?.linePositionsById || null
+                );
                 newGeoData.setSubstationPositions(data);
                 setGeoData(newGeoData);
+                setWaitingLoadGeoData(false);
             })
             .catch(handleFetchGeoDataError);
 
@@ -505,23 +503,19 @@ export const NetworkMapTab = ({
             linePositions
                 .then((data) => {
                     console.info(`Received lines of study '${studyUuid}'...`);
-                    let newGeoData;
-                    if (geoDataRef.current) {
-                        newGeoData = new GeoData(
-                            geoDataRef.current.substationPositionsById,
-                            null
-                        );
-                    } else {
-                        newGeoData = new GeoData(null, null);
-                    }
+                    const newGeoData = new GeoData(
+                        geoDataRef.current?.substationPositionsById || null,
+                        null
+                    );
                     newGeoData.setLinePositions(data);
                     setGeoData(newGeoData);
+                    setWaitingLoadGeoData(false);
                 })
                 .catch(handleFetchGeoDataError);
         }
 
         Promise.all([substationPositions, linePositions]).then(() => {
-            setWaitingLoadGeoData(false);
+            setWaitingFullLoadGeoData(false);
             temporaryGeoDataIdsRef.current = new Set();
         });
     }, [lineFullPath, studyUuid, handleFetchGeoDataError]);
@@ -754,7 +748,9 @@ export const NetworkMapTab = ({
     return (
         <>
             <div className={classes.divTemporaryGeoDataLoading}>
-                {(waitingLoadTemporaryGeoData || waitingLoadMapEquipments) && (
+                {(waitingLoadTemporaryGeoData ||
+                    waitingLoadMapEquipments ||
+                    (!waitingLoadGeoData && waitingFullLoadGeoData)) && (
                     <LinearProgress />
                 )}
             </div>
