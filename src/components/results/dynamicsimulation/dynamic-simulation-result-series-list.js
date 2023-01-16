@@ -29,7 +29,6 @@ const DynamicSimulationResultSeriesList = ({
     onLeftAxisSelected,
     onRightAxisSelected,
 }) => {
-    console.log('Rerender DynamicSimulationResultSeriesList', [items]);
     const [leftAxisChecked, setLeftAxisChecked] = useState([]);
     const [rightAxisChecked, setRightAxisChecked] = useState([]);
 

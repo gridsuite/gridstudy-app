@@ -168,7 +168,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
     const handleChangeCols = useCallback((event) => {
         setGridLayout((prev) => ({
             ...prev,
-            cols: event.target.value,
+            cols: +event.target.value,
         }));
     }, []);
 
