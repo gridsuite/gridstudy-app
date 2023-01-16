@@ -106,6 +106,42 @@ export const commonDiagramStyle = (theme, customStyle) => {
                 '1px solid ' + theme.palette.action.disabledBackground,
             borderRight: '1px solid ' + theme.palette.action.hover,
         },
+        resizableRight: {
+            position: 'relative',
+            '& .react-resizable-handle': {
+                position: 'absolute',
+                width: theme.spacing(2),
+                height: theme.spacing(2),
+                bottom: 0,
+                right: 0,
+                cursor: 'se-resize',
+            },
+        },
+        resizableLeft: {
+            position: 'relative',
+            '& .react-resizable-handle': {
+                position: 'absolute',
+                width: theme.spacing(2),
+                height: theme.spacing(2),
+                bottom: 0,
+                left: 0,
+                cursor: 'sw-resize',
+            },
+        },
+        resizeHandleIconRight: {
+            bottom: theme.spacing(-0.5),
+            right: theme.spacing(-0.5),
+            position: 'absolute',
+            transform: 'rotate(45deg)',
+            color: theme.palette.action.disabled,
+        },
+        resizeHandleIconLeft: {
+            bottom: theme.spacing(-0.5),
+            left: theme.spacing(-0.5),
+            position: 'absolute',
+            transform: 'rotate(135deg)',
+            color: theme.palette.action.disabled,
+        },
         ...customStyle,
     };
 };

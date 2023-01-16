@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
+import { ResizableBox } from 'react-resizable';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchSvg, updateSwitchState } from '../../utils/rest-api';
@@ -74,6 +75,7 @@ import {
 import makeStyles from '@mui/styles/makeStyles';
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
+import ResizeHandleIcon from '@mui/icons-material/ChevronRight';
 
 const customSldStyle = (theme) => {
     return {
@@ -704,148 +706,181 @@ const Diagram = forwardRef((props, ref) => {
      * RENDER
      */
 
-    return !svg.error ? (
-        <Paper
-            ref={ref}
-            elevation={4}
-            square={true}
-            className={classes.paperBorders}
-            style={{
-                flewGrow: 0, // allows a separator to take all the available space
-                pointerEvents: 'auto',
-                width: sizeWidth,
-                minWidth: LOADING_WIDTH,
-                height: sizeHeight,
-                position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
-                overflow: 'hidden',
-                // We hide this diagram if another diagram is in fullscreen mode.
-                display:
-                    !fullScreenDiagram?.id ||
-                    (props.diagramId === fullScreenDiagram.id &&
-                        props.svgType === fullScreenDiagram.svgType)
-                        ? ''
-                        : 'none',
-            }}
-        >
-            <Box>
-                <AutoSizer
-                    onResize={({ height }) => {
-                        setHeaderPreferredHeight(height);
-                    }}
-                >
-                    {() => /* just for measuring the header */ {}}
-                </AutoSizer>
-
-                <DiagramHeader
-                    diagramTitle={props.diagramTitle}
-                    showMinimizeControl
-                    onMinimize={onMinimizeHandler}
-                    showTogglePinControl={
-                        props.svgType !== SvgType.NETWORK_AREA_DIAGRAM
-                    }
-                    onTogglePin={onTogglePinHandler}
-                    pinned={props.pinned}
-                    showCloseControl
-                    onClose={onCloseHandler}
-                />
-            </Box>
-            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
-            {props.disabled ? (
-                <Box position="relative" left={0} right={0} top={0}>
-                    <AlertInvalidNode noMargin={true} />
-                </Box>
-            ) : (
+    const contentRender = () => {
+        return (
+            <Paper
+                ref={ref}
+                elevation={4}
+                square={true}
+                className={classes.paperBorders}
+                style={{
+                    flewGrow: 0, // allows a separator to take all the available space
+                    pointerEvents: 'auto',
+                    width: '100%',
+                    minWidth: LOADING_WIDTH,
+                    height: '100%',
+                    position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
+                    overflow: 'hidden',
+                    // We hide this diagram if another diagram is in fullscreen mode.
+                    display:
+                        !fullScreenDiagram?.id ||
+                        (props.diagramId === fullScreenDiagram.id &&
+                            props.svgType === fullScreenDiagram.svgType)
+                            ? ''
+                            : 'none',
+                }}
+            >
                 <Box>
-                    {errorMessage && (
-                        <Alert severity="error">{errorMessage}</Alert>
-                    )}
-                    {(props.svgType === SvgType.VOLTAGE_LEVEL ||
-                        props.svgType === SvgType.SUBSTATION) && (
-                        <>
+                    <AutoSizer
+                        onResize={({ height }) => {
+                            setHeaderPreferredHeight(height);
+                        }}
+                    >
+                        {() => /* just for measuring the header */ {}}
+                    </AutoSizer>
+
+                    <DiagramHeader
+                        diagramTitle={props.diagramTitle}
+                        showMinimizeControl
+                        onMinimize={onMinimizeHandler}
+                        showTogglePinControl={
+                            props.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                        }
+                        onTogglePin={onTogglePinHandler}
+                        pinned={props.pinned}
+                        showCloseControl
+                        onClose={onCloseHandler}
+                    />
+                </Box>
+                {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
+                {props.disabled ? (
+                    <Box position="relative" left={0} right={0} top={0}>
+                        <AlertInvalidNode noMargin={true} />
+                    </Box>
+                ) : (
+                    <Box>
+                        {errorMessage && (
+                            <Alert severity="error">{errorMessage}</Alert>
+                        )}
+                        {(props.svgType === SvgType.VOLTAGE_LEVEL ||
+                            props.svgType === SvgType.SUBSTATION) && (
+                            <>
+                                <div
+                                    ref={svgRef}
+                                    className={clsx(classes.divSld, {
+                                        [classes.divInvalid]:
+                                            props.loadFlowStatus !==
+                                            RunningStatus.SUCCEED,
+                                    })}
+                                    dangerouslySetInnerHTML={{
+                                        __html: svg.svg,
+                                    }}
+                                />
+                                {displayMenuLine()}
+                                {displayMenu(equipments.loads, 'load-menus')}
+                                {displayMenu(
+                                    equipments.batteries,
+                                    'battery-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.danglingLines,
+                                    'dangling-line-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.generators,
+                                    'generator-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.staticVarCompensators,
+                                    'static-var-compensator-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.shuntCompensators,
+                                    'shunt-compensator-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.twoWindingsTransformers,
+                                    'two-windings-transformer-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.threeWindingsTransformers,
+                                    'three-windings-transformer-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.hvdcLines,
+                                    'hvdc-line-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.lccConverterStations,
+                                    'lcc-converter-station-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.vscConverterStations,
+                                    'vsc-converter-station-menus'
+                                )}
+                            </>
+                        )}
+                        {props.svgType === SvgType.NETWORK_AREA_DIAGRAM && (
                             <div
+                                id="nad-svg"
                                 ref={svgRef}
-                                className={clsx(classes.divSld, {
+                                className={clsx(classes.divNad, {
                                     [classes.divInvalid]:
                                         props.loadFlowStatus !==
                                         RunningStatus.SUCCEED,
                                 })}
-                                dangerouslySetInnerHTML={{
-                                    __html: svg.svg,
-                                }}
                             />
-                            {displayMenuLine()}
-                            {displayMenu(equipments.loads, 'load-menus')}
-                            {displayMenu(equipments.batteries, 'battery-menus')}
-                            {displayMenu(
-                                equipments.danglingLines,
-                                'dangling-line-menus'
-                            )}
-                            {displayMenu(
-                                equipments.generators,
-                                'generator-menus'
-                            )}
-                            {displayMenu(
-                                equipments.staticVarCompensators,
-                                'static-var-compensator-menus'
-                            )}
-                            {displayMenu(
-                                equipments.shuntCompensators,
-                                'shunt-compensator-menus'
-                            )}
-                            {displayMenu(
-                                equipments.twoWindingsTransformers,
-                                'two-windings-transformer-menus'
-                            )}
-                            {displayMenu(
-                                equipments.threeWindingsTransformers,
-                                'three-windings-transformer-menus'
-                            )}
-                            {displayMenu(
-                                equipments.hvdcLines,
-                                'hvdc-line-menus'
-                            )}
-                            {displayMenu(
-                                equipments.lccConverterStations,
-                                'lcc-converter-station-menus'
-                            )}
-                            {displayMenu(
-                                equipments.vscConverterStations,
-                                'vsc-converter-station-menus'
-                            )}
-                        </>
-                    )}
-                    {props.svgType === SvgType.NETWORK_AREA_DIAGRAM && (
-                        <div
-                            id="nad-svg"
-                            ref={svgRef}
-                            className={clsx(classes.divNad, {
-                                [classes.divInvalid]:
-                                    props.loadFlowStatus !==
-                                    RunningStatus.SUCCEED,
-                            })}
-                        />
-                    )}
+                        )}
 
-                    {!loadingState && (
-                        <DiagramFooter
-                            showCounterControls={
-                                props.svgType === SvgType.NETWORK_AREA_DIAGRAM
-                            }
-                            counterText={intl.formatMessage({
-                                id: 'depth',
-                            })}
-                            counterValue={networkAreaDiagramDepth}
-                            onIncrementCounter={onIncrementDepthHandler}
-                            onDecrementCounter={onDecrementDepthHandler}
-                            showFullscreenControl
-                            fullScreenActive={fullScreenDiagram?.id}
-                            onStartFullScreen={onShowFullScreenHandler}
-                            onStopFullScreen={onHideFullScreenHandler}
-                        />
-                    )}
-                </Box>
-            )}
-        </Paper>
+                        {!loadingState && (
+                            <DiagramFooter
+                                showCounterControls={
+                                    props.svgType ===
+                                    SvgType.NETWORK_AREA_DIAGRAM
+                                }
+                                counterText={intl.formatMessage({
+                                    id: 'depth',
+                                })}
+                                counterValue={networkAreaDiagramDepth}
+                                onIncrementCounter={onIncrementDepthHandler}
+                                onDecrementCounter={onDecrementDepthHandler}
+                                showFullscreenControl
+                                fullScreenActive={fullScreenDiagram?.id}
+                                onStartFullScreen={onShowFullScreenHandler}
+                                onStopFullScreen={onHideFullScreenHandler}
+                            />
+                        )}
+                    </Box>
+                )}
+            </Paper>
+        );
+    };
+
+    return !svg.error ? (
+        fullScreenDiagram?.id ? (
+            contentRender()
+        ) : (
+            <ResizableBox
+                height={sizeHeight ?? LOADING_WIDTH}
+                width={sizeWidth ?? LOADING_WIDTH}
+                className={
+                    props?.align === 'right'
+                        ? classes.resizableLeft
+                        : classes.resizableRight
+                }
+                minConstraints={[LOADING_WIDTH, LOADING_WIDTH]}
+                resizeHandles={props?.align === 'right' ? ['sw'] : undefined}
+            >
+                {contentRender()}
+                <ResizeHandleIcon
+                    className={
+                        props?.align === 'right'
+                            ? classes.resizeHandleIconLeft
+                            : classes.resizeHandleIconRight
+                    }
+                />
+            </ResizableBox>
+        )
     ) : (
         <></>
     );
@@ -854,6 +889,7 @@ const Diagram = forwardRef((props, ref) => {
 Diagram.defaultProps = {
     pinned: false,
     disabled: false,
+    align: 'left',
 };
 
 Diagram.propTypes = {
@@ -864,6 +900,7 @@ Diagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     svgUrl: PropTypes.string,
     studyUuid: PropTypes.string.isRequired,
+    align: PropTypes.string,
 
     // Size computation
     computedHeight: PropTypes.number,

@@ -21,19 +21,19 @@ const useStyles = makeStyles((theme) => ({
     },
     plusIcon: {
         bottom: theme.spacing(1),
-        left: theme.spacing(4.5),
+        left: theme.spacing(5.5),
         position: 'absolute',
         cursor: 'pointer',
     },
     lessIcon: {
         bottom: theme.spacing(1),
-        left: theme.spacing(1),
+        left: theme.spacing(2),
         position: 'absolute',
         cursor: 'pointer',
     },
     fullScreenIcon: {
         bottom: theme.spacing(1),
-        right: theme.spacing(1),
+        right: theme.spacing(2),
         position: 'absolute',
         cursor: 'pointer',
     },
