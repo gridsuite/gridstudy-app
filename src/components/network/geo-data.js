@@ -83,6 +83,20 @@ export default class GeoData {
      * Get line positions always ordered from side 1 to side 2.
      */
     getLinePositions(network, line, detailed = true) {
+        if (detailed) {
+            const linePositions = this.linePositionsById.get(line.id);
+            // Is there any position for this line ?
+            if (linePositions) {
+                const positions = new Array(linePositions.length);
+
+                for (const [index, position] of linePositions.entries()) {
+                    positions[index] = [position.lon, position.lat];
+                }
+
+                return positions;
+            }
+        }
+
         const voltageLevel1 = network.getVoltageLevel(line.voltageLevelId1);
         if (!voltageLevel1) {
             throw new Error(
@@ -113,21 +127,6 @@ export default class GeoData {
                 [0, 0],
                 [0, 0],
             ];
-        }
-
-        // why it's not at the start of the function ?
-        if (detailed) {
-            const linePositions = this.linePositionsById.get(line.id);
-            // Is there any position for this line ?
-            if (linePositions) {
-                const positions = new Array(linePositions.length);
-
-                for (const [index, position] of linePositions.entries()) {
-                    positions[index] = [position.lon, position.lat];
-                }
-
-                return positions;
-            }
         }
 
         return [substationPosition1, substationPosition2];
