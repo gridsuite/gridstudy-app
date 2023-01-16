@@ -513,10 +513,9 @@ export const NetworkMapTab = ({
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
             if (
-                geoDataRef.current &&
                 // To manage a lineFullPath param change, if lineFullPath=true and linePositions is empty, we load all the geo data.
                 // This can be improved by loading only the lines geo data and not lines geo data + substations geo data when lineFullPath is changed to true.
-                geoDataRef.current.substationPositionsById.size > 0 &&
+                geoDataRef.current?.substationPositionsById?.size > 0 &&
                 (!lineFullPath || geoDataRef.current.linePositionsById.size > 0)
             ) {
                 loadMissingGeoData();
