@@ -157,6 +157,7 @@
     "DynamicSimulationTimeSeriesLabel": "Time Series",
     "DynamicSimulationTimeLineLabel": "Time Line",
     "DynamicSimulationResultTypeLabel": "Result type",
+    "DynamicSimulationResultLayoutCols": "Max number of columns",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",

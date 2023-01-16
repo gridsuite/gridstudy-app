@@ -20,13 +20,14 @@ const useStyles = makeStyles((theme) => ({
     cardActive: {
         border: 'solid',
         borderColor: lighten(theme.palette.primary.main, 0.2),
-        marginTop: theme.spacing(2),
+        //marginTop: theme.spacing(2),
     },
     card: {
-        marginTop: theme.spacing(2),
+        //marginTop: theme.spacing(2),
     },
     cardHeaderRoot: {
         backgroundColor: lighten(theme.palette.background.paper, 0.2),
+        //height: theme.spacing(4),
     },
     cardHeaderAction: {
         margin: 'auto',
@@ -81,7 +82,12 @@ const DynamicSimulationResultSeriesChart = ({
                     </TooltipIconButton>
                 }
             />
-            <CardContent>
+            <CardContent
+                // to avoid the wrapper is dragged when zooming the plot
+                onMouseDown={(event) => {
+                    event.stopPropagation();
+                }}
+            >
                 <PlotlySeriesChart
                     id={id}
                     groupId={groupId}
