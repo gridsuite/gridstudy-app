@@ -7,7 +7,7 @@
 
 import ModificationDialog from '../modificationDialog';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
 
@@ -277,7 +277,7 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const renderSubtitle = () => {
+    const renderSubtitle = useMemo(() => {
         return (
             <TwoWindingsTransformerCreationDialogTabs
                 tabIndex={tabIndex}
@@ -286,7 +286,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 setDialogWidth={setDialogWidth}
             />
         );
-    };
+    }, [tabIndex, tabIndexesWithError]);
 
     const onSubmit = useCallback(
         (twt) => {
@@ -376,7 +376,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 aria-labelledby="dialog-create-two-windings-transformer"
                 maxWidth={dialogWidth}
                 titleId="CreateTwoWindingsTransformer"
-                subtitle={renderSubtitle()}
+                subtitle={renderSubtitle}
                 searchCopy={searchCopy}
                 {...dialogProps}
             >
