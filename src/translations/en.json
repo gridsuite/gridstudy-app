@@ -295,6 +295,16 @@
     "getLoadFlowProviderError": "An error occurred while getting the load flow provider",
     "getLoadFlowProvidersError": "An error occurred while getting the load flow providers",
 
+    "fetchSecurityAnalysisProvidersError": "An error occured when fetching security analysis provider list",
+    "fetchSecurityAnalysisProviderError": "An error occured when fetching security analysis provider",
+    "fetchDefaultSecurityAnalysisProviderError": "An error occured when fetching default security analysis provider",
+    "updateSecurityAnalysisProviderError": "An error occured when updating security analysis provider",
+
+    "fetchSensitivityAnalysisProvidersError": "An error occured when fetching sensitivity analysis provider list",
+    "fetchSensitivityAnalysisProviderError": "An error occured when fetching sensitivity analysis provider",
+    "fetchDefaultSensitivityAnalysisProviderError": "An error occured when fetching default sensitivity analysis provider",
+    "updateSensitivityAnalysisProviderError": "An error occured when updating sensitivity analysis provider",
+
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "HybridDisplay": "Hybrid display",

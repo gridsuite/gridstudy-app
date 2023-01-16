@@ -295,6 +295,16 @@
     "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
     "getLoadFlowProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs de load flow",
 
+    "fetchSecurityAnalysisProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs d'analyse de sécurité",
+    "fetchSecurityAnalysisProviderError": "Une erreur est survenue lors de la récupération du fournisseur courant d'analyse de sécurité",
+    "fetchDefaultSecurityAnalysisProviderError": "Une erreur est survenue lors de la récupération du fournisseur d'analyse de sécurité par défaut",
+    "updateSecurityAnalysisProviderError": "Une erreur est survenue lors de la mise a jour du fournisseur courant d'analyse de sécurité",
+
+    "fetchSensitivityAnalysisProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs d'analyse de sensibilité",
+    "fetchSensitivityAnalysisProviderError": "Une erreur est survenue lors de la récupération du fournisseur courant d'analyse de sensibilité",
+    "fetchDefaultSensitivityAnalysisProviderError": "Une erreur est survenue lors de la récupération du fournisseur d'analyse de sensibilité par défaut",
+    "updateSensitivityAnalysisProviderError": "Une erreur est survenue lors de la mise a jour du fournisseur courant d'analyse de sensibilité",
+
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",
     "HybridDisplay": "Affichage hybride",
