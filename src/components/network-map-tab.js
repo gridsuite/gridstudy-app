@@ -468,28 +468,63 @@ export const NetworkMapTab = ({
 
         const linePositions = lineFullPath
             ? fetchLinePositions(studyUuid, currentNodeRef.current?.id)
-            : Promise.resolve([]);
+            : Promise.resolve();
 
-        Promise.all([substationPositions, linePositions])
-            .then((values) => {
-                const newGeoData = new GeoData();
-                newGeoData.setSubstationPositions(values[0]);
-                newGeoData.setLinePositions(values[1]);
+        substationPositions
+            .then((data) => {
+                console.info(`Received substations of study '${studyUuid}'...`);
+                let newGeoData;
+                if (geoDataRef.current) {
+                    newGeoData = new GeoData(
+                        null,
+                        geoDataRef.current.linePositionsById
+                    );
+                } else {
+                    newGeoData = new GeoData(null, null);
+                }
+                newGeoData.setSubstationPositions(data);
                 setGeoData(newGeoData);
-                setWaitingLoadGeoData(false);
-                temporaryGeoDataIdsRef.current = new Set();
             })
-            .catch(function (error) {
-                console.error(error.message);
-                setWaitingLoadGeoData(false);
-                setErrorMessage(
-                    intlRef.current.formatMessage(
-                        { id: 'geoDataLoadingFail' },
-                        { studyUuid: studyUuid }
-                    )
-                );
-            });
+            .catch(handleFetchGeoDataError);
+
+        if (lineFullPath) {
+            linePositions
+                .then((data) => {
+                    console.info(`Received lines of study '${studyUuid}'...`);
+                    let newGeoData;
+                    if (geoDataRef.current) {
+                        newGeoData = new GeoData(
+                            geoDataRef.current.substationPositionsById,
+                            null
+                        );
+                    } else {
+                        newGeoData = new GeoData(null, null);
+                    }
+                    newGeoData.setLinePositions(data);
+                    setGeoData(newGeoData);
+                })
+                .catch(handleFetchGeoDataError);
+        }
+
+        Promise.all([substationPositions, linePositions]).then(() => {
+            console.info(
+                `Received both substations and lines of study '${studyUuid}'...`
+            );
+            setWaitingLoadGeoData(false);
+            temporaryGeoDataIdsRef.current = new Set();
+        });
     }, [intlRef, lineFullPath, setErrorMessage, studyUuid]);
+
+    function handleFetchGeoDataError(error) {
+        console.error(error.message);
+        setWaitingLoadGeoData(false);
+        setErrorMessage(
+            intlRef.current.formatMessage(
+                { id: 'geoDataLoadingFail' },
+                { studyUuid: studyUuid }
+            )
+        );
+    }
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {

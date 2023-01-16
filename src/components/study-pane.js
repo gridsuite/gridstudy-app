@@ -262,6 +262,7 @@ const StudyPane = ({
                                 {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
                                 <NetworkMapTab
                                     /* TODO do we move redux param to container */
+                                    /* why passing params as props if it's stored in redux and only used by this component ? */
                                     studyUuid={studyUuid}
                                     visible={
                                         props.view === StudyView.MAP &&

@@ -115,6 +115,7 @@ export default class GeoData {
             ];
         }
 
+        // why it's not at the start of the function ?
         if (detailed) {
             const linePositions = this.linePositionsById.get(line.id);
             // Is there any position for this line ?
