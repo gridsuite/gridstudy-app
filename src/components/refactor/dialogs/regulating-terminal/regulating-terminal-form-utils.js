@@ -15,18 +15,16 @@ const regulatingTerminalValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
         .object()
         .nullable()
-        .required()
         .shape({
             [VOLTAGE_LEVEL_ID]: yup.string(),
             [VOLTAGE_LEVEL_NAME]: yup.string(),
             [VOLTAGE_LEVEL_SUBSTATION_ID]: yup.string(),
             [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
-            [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(true),
+            [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(),
         }),
     [EQUIPMENT]: yup
         .object()
         .nullable()
-        .required()
         .shape({
             [EQUIPMENT_ID]: yup.string(),
             [EQUIPMENT_NAME]: yup.string(),

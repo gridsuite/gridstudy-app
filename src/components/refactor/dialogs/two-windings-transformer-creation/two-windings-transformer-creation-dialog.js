@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ModificationDialog from '../modificationDialog';
+import ModificationDialog from '../commons/modificationDialog';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -118,10 +118,7 @@ const TwoWindingsTransformerCreationDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const {
-        reset,
-        formState: { isDirty },
-    } = methods;
+    const { reset } = methods;
 
     const [tabIndex, setTabIndex] = useState(
         TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
@@ -336,10 +333,6 @@ const TwoWindingsTransformerCreationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError]
     );
 
-    // useEffect(() => {
-    //     console.log("errors", JSON.stringify(formState.errors, null, 4))
-    //   }, [formState]); //
-
     const onValidationError = (errors) => {
         let tabsInError = [];
         if (errors?.[PHASE_TAP_CHANGER] !== undefined) {
@@ -372,7 +365,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 onClear={clear}
                 onValidationError={onValidationError}
                 onSave={onSubmit}
-                disabledSave={!isDirty}
                 aria-labelledby="dialog-create-two-windings-transformer"
                 maxWidth={dialogWidth}
                 titleId="CreateTwoWindingsTransformer"

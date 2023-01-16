@@ -16,8 +16,9 @@ import {
     DialogActions,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useButtonWithTooltip } from '../../dialogs/inputs/input-hooks';
+import { useButtonWithTooltip } from '../../../dialogs/inputs/input-hooks';
 import { useFormContext } from 'react-hook-form';
+import SubmitButton from './submitButton';
 
 /**
  * Generic Modification Dialog which manage basic common behaviors
@@ -36,7 +37,7 @@ const ModificationDialog = ({
     onClear,
     onSave,
     onValidationError,
-    disabledSave,
+    disabledSave = false,
     searchCopy,
     subtitle,
     onValidated,
@@ -96,15 +97,13 @@ const ModificationDialog = ({
                 <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button
+                <SubmitButton
                     onClick={handleSubmit(
                         handleValidate,
                         handleValidationError
                     )}
                     disabled={disabledSave}
-                >
-                    <FormattedMessage id="validate" />
-                </Button>
+                />
             </DialogActions>
         </Dialog>
     );

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ModificationDialog from '../modificationDialog';
+import ModificationDialog from '../commons/modificationDialog';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
