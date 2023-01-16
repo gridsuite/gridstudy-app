@@ -1876,7 +1876,7 @@ export function createSubstation(
         console.info('Creating substation creation');
     }
 
-    const asObj = !properties
+    const asObj = !properties?.length
         ? undefined
         : Object.fromEntries(properties.map((p) => [p.name, p.value]));
 
@@ -1887,7 +1887,7 @@ export function createSubstation(
         substationCountry: substationCountry === '' ? null : substationCountry,
         properties: asObj,
     });
-    console.debug('createSubstation body', properties, body);
+    console.debug({ body });
 
     return backendFetchText(createSubstationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
