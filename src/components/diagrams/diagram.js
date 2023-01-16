@@ -845,7 +845,9 @@ const Diagram = forwardRef((props, ref) => {
                                 onIncrementCounter={onIncrementDepthHandler}
                                 onDecrementCounter={onDecrementDepthHandler}
                                 showFullscreenControl
-                                fullScreenActive={fullScreenDiagram?.id}
+                                fullScreenActive={
+                                    fullScreenDiagram?.id !== undefined
+                                }
                                 onStartFullScreen={onShowFullScreenHandler}
                                 onStopFullScreen={onHideFullScreenHandler}
                             />
@@ -871,14 +873,16 @@ const Diagram = forwardRef((props, ref) => {
                 minConstraints={[LOADING_WIDTH, LOADING_WIDTH]}
                 resizeHandles={props?.align === 'right' ? ['sw'] : undefined}
             >
-                {contentRender()}
-                <ResizeHandleIcon
-                    className={
-                        props?.align === 'right'
-                            ? classes.resizeHandleIconLeft
-                            : classes.resizeHandleIconRight
-                    }
-                />
+                <>
+                    {contentRender()}
+                    <ResizeHandleIcon
+                        className={
+                            props?.align === 'right'
+                                ? classes.resizeHandleIconLeft
+                                : classes.resizeHandleIconRight
+                        }
+                    />
+                </>
             </ResizableBox>
         )
     ) : (
