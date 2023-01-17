@@ -80,72 +80,62 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         return (
             result &&
             shortCircuitNotif && (
-                <div
-                    style={{
-                        flexGrow: 1,
-                        /* autosizer (used in virtual table) can return wrong size
-                  (off by 1) and it causes scrollbar to blink
-                  * */
-                        overflow: 'hidden',
-                    }}
-                >
-                    <VirtualizedTable
-                        rows={rows}
-                        sortable={false}
-                        columns={[
-                            {
-                                width: 200,
-                                label: intl.formatMessage({ id: 'IDNode' }),
-                                dataKey: 'elementId',
-                            },
-                            {
-                                width: 200,
-                                label: intl.formatMessage({ id: 'Type' }),
-                                dataKey: 'faultType',
-                            },
-                            {
-                                width: 200,
-                                label: intl.formatMessage({ id: 'Feeders' }),
-                                dataKey: 'connectableId',
-                            },
-                            {
-                                width: 200,
-                                label: intl.formatMessage({ id: 'IscKA' }),
-                                dataKey: 'current',
-                                numeric: true,
-                                fractionDigits: 1,
-                            },
-                            {
-                                width: 200,
-                                label: intl.formatMessage({ id: 'LimitType' }),
-                                dataKey: 'limitType',
-                            },
-                            {
-                                width: 200,
-                                label: intl.formatMessage({ id: 'IscMinKA' }),
-                                dataKey: 'limitMin',
-                                numeric: true,
-                                nullable: true,
-                                fractionDigits: 1,
-                            },
-                            {
-                                width: 200,
-                                label: intl.formatMessage({ id: 'IscMaxKA' }),
-                                dataKey: 'limitMax',
-                                numeric: true,
-                                nullable: true,
-                                fractionDigits: 1,
-                            },
-                            {
-                                width: 200,
-                                label: intl.formatMessage({ id: 'PscMVA' }),
-                                dataKey: 'shortCircuitPower',
-                                numeric: true,
-                                fractionDigits: 1,
-                            },
-                        ]}
-                    />
-                </div>
+                <VirtualizedTable
+                    rows={rows}
+                    sortable={false}
+                    columns={[
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'IDNode' }),
+                            dataKey: 'elementId',
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'Type' }),
+                            dataKey: 'faultType',
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'Feeders' }),
+                            dataKey: 'connectableId',
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'IscKA' }),
+                            dataKey: 'current',
+                            numeric: true,
+                            fractionDigits: 1,
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'LimitType' }),
+                            dataKey: 'limitType',
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'IscMinKA' }),
+                            dataKey: 'limitMin',
+                            numeric: true,
+                            nullable: true,
+                            fractionDigits: 1,
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'IscMaxKA' }),
+                            dataKey: 'limitMax',
+                            numeric: true,
+                            nullable: true,
+                            fractionDigits: 1,
+                        },
+                        {
+                            width: 200,
+                            label: intl.formatMessage({ id: 'PscMVA' }),
+                            dataKey: 'shortCircuitPower',
+                            numeric: true,
+                            fractionDigits: 1,
+                        },
+                    ]}
+                />
             )
         );
     }
