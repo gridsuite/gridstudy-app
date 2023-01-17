@@ -18,6 +18,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import Box from '@mui/material/Box';
+import { DEFAULT_COSPHI } from './constants';
 
 export const ROW_HEIGHT = 30;
 export const HEADER_ROW_HEIGHT = 48;
@@ -67,13 +68,31 @@ const OverloadedLinesView = (props) => {
     useEffect(() => {
         if (props.disabled) return;
         const makeData = (line) => {
-            let limits = [line.permanentLimit1, line.permanentLimit2];
-            let intensities = [line.i1, line.i2];
-            let loads = [line.p1, line.p2];
+            const limits = [line.permanentLimit1, line.permanentLimit2];
+            const voltageLevel1 = props.mapEquipments.getVoltageLevel(
+                line.voltageLevelId1
+            );
+            const voltageLevel2 = props.mapEquipments.getVoltageLevel(
+                line.voltageLevelId2
+            );
+            const i1 =
+                line.i1 !== undefined
+                    ? line.i1
+                    : (line.p1 * 1000) /
+                      (voltageLevel1.nominalVoltage *
+                          Math.sqrt(3) *
+                          DEFAULT_COSPHI);
+            const i2 =
+                line.i2 !== undefined
+                    ? line.i2
+                    : (line.p2 * 1000) /
+                      (voltageLevel2.nominalVoltage *
+                          Math.sqrt(3) *
+                          DEFAULT_COSPHI);
+            const intensities = [i1, i2];
+            const loads = [line.p1, line.p2];
 
-            let vl =
-                props.mapEquipments.getVoltageLevel(line.voltageLevelId1) ||
-                props.mapEquipments.getVoltageLevel(line.voltageLevelId2);
+            const vl = voltageLevel1 || voltageLevel2;
             const color = getNominalVoltageColor(vl.nominalVoltage);
 
             let fields = { overload: 0 };

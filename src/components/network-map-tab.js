@@ -660,7 +660,12 @@ export const NetworkMapTab = ({
     const linesNearOverload = useCallback(() => {
         if (mapEquipments) {
             return mapEquipments.lines.some((l) => {
-                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
+                const zone = getLineLoadingZone(
+                    l,
+                    lineFlowAlertThreshold,
+                    mapEquipments.getVoltageLevel(l.voltageLevelId1),
+                    mapEquipments.getVoltageLevel(l.voltageLevelId2)
+                );
                 return (
                     zone === LineLoadingZone.WARNING ||
                     zone === LineLoadingZone.OVERLOAD

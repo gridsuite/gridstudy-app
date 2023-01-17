@@ -9,6 +9,8 @@ export const SUBSTATION_RADIUS = 500;
 export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
 
+export const DEFAULT_COSPHI = 0.95;
+
 // Relevant LoadType Powsybl enum values
 export const LOAD_TYPES = [
     { id: 'AUXILIARY', label: 'Auxiliary' },

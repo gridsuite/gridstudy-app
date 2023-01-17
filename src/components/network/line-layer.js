@@ -20,6 +20,7 @@ import {
 } from './constants';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
+import { DEFAULT_COSPHI } from './constants';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
@@ -64,17 +65,29 @@ export const LineLoadingZone = {
 };
 
 export function getLineLoadingZoneOfSide(
+    line,
     limit,
+    activeFlow,
     intensity,
-    lineFlowAlertThreshold
+    lineFlowAlertThreshold,
+    voltagLevel
 ) {
-    if (limit === undefined || intensity === undefined || intensity === 0) {
+    if (
+        limit === undefined ||
+        (intensity === undefined && activeFlow === undefined) ||
+        (intensity === 0 && activeFlow === 0)
+    ) {
         return LineLoadingZone.UNKNOWN;
     } else {
-        let threshold = (lineFlowAlertThreshold * limit) / 100;
-        if (intensity > 0 && intensity < threshold) {
+        const vNom = voltagLevel.nominalVoltage;
+        const valIntensity =
+            intensity !== undefined
+                ? intensity
+                : (activeFlow * 1000) / (vNom * Math.sqrt(3) * DEFAULT_COSPHI);
+        const threshold = (lineFlowAlertThreshold * limit) / 100;
+        if (valIntensity > 0 && valIntensity < threshold) {
             return LineLoadingZone.SAFE;
-        } else if (intensity >= threshold && intensity < limit) {
+        } else if (valIntensity >= threshold && valIntensity < limit) {
             return LineLoadingZone.WARNING;
         } else {
             return LineLoadingZone.OVERLOAD;
@@ -82,16 +95,27 @@ export function getLineLoadingZoneOfSide(
     }
 }
 
-export function getLineLoadingZone(line, lineFlowAlertThreshold) {
+export function getLineLoadingZone(
+    line,
+    lineFlowAlertThreshold,
+    voltageLevel1,
+    voltageLevel2
+) {
     const zone1 = getLineLoadingZoneOfSide(
+        line,
         line.permanentLimit1,
+        line.p1,
         line.i1,
-        lineFlowAlertThreshold
+        lineFlowAlertThreshold,
+        voltageLevel1
     );
     const zone2 = getLineLoadingZoneOfSide(
+        line,
         line.permanentLimit2,
+        line.p2,
         line.i2,
-        lineFlowAlertThreshold
+        lineFlowAlertThreshold,
+        voltageLevel2
     );
     return Math.max(zone1, zone2);
 }
@@ -121,7 +145,12 @@ function getLineColor(line, nominalVoltageColor, props, lineConnection) {
             return nominalVoltageColor;
         }
     } else if (props.lineFlowColorMode === LineFlowColorMode.OVERLOADS) {
-        const zone = getLineLoadingZone(line, props.lineFlowAlertThreshold);
+        const zone = getLineLoadingZone(
+            line,
+            props.lineFlowAlertThreshold,
+            props.network.getVoltageLevel(line.voltageLevelId1),
+            props.network.getVoltageLevel(line.voltageLevelId2)
+        );
         return getLineLoadingZoneColor(zone);
     } else {
         return nominalVoltageColor;
