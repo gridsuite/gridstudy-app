@@ -990,7 +990,8 @@ export function updateSensitivityAnalysisProvider(studyUuid, newProvider) {
 
 export function fetchDefaultSensitivityAnalysisProvider() {
     console.info('fetch default sensitivity analysis provider');
-    const url = PREFIX_STUDY_QUERIES + '/v1/sensitivity-analysis-default-provider';
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/sensitivity-analysis-default-provider';
     console.debug(url);
     return backendFetchText(url);
 }
