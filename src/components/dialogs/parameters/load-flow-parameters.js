@@ -293,6 +293,7 @@ export const LoadFlowParameters = ({
         resetProvider,
         params,
         setParams,
+        saveParameters,
     ] = parametersBackend;
 
     const updateLfProviderCallback = useCallback(
@@ -300,21 +301,6 @@ export const LoadFlowParameters = ({
             updateProvider(evt.target.value);
         },
         [updateProvider]
-    );
-
-    const commitLFParameter = useCallback(
-        (newParams) => {
-            let oldParams = { ...params };
-            setParams(newParams);
-            setLoadFlowParameters(studyUuid, newParams).catch((error) => {
-                setParams(oldParams);
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
-            });
-        },
-        [params, snackError, studyUuid, setParams]
     );
 
     const resetLfParameters = useCallback(() => {
@@ -354,11 +340,11 @@ export const LoadFlowParameters = ({
                 </Grid>
                 <BasicLoadFlowParameters
                     lfParams={params || {}}
-                    commitLFParameter={commitLFParameter}
+                    commitLFParameter={saveParameters}
                 />
                 <AdvancedLoadFlowParameters
                     lfParams={params || {}}
-                    commitLFParameter={commitLFParameter}
+                    commitLFParameter={saveParameters}
                     showAdvancedLfParams={showAdvancedLfParams}
                     setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />

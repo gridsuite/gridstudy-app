@@ -40,6 +40,7 @@ import {
     getLoadFlowProvider,
     getDefaultLoadFlowProvider,
     setLoadFlowProvider,
+    setLoadFlowParameters,
 } from '../../../utils/rest-api';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -167,7 +168,8 @@ export const useParametersBackend = (
     backendFetchProvider,
     backendFetchDefaultProvider,
     backendUpdateProvider,
-    backendFetchParameters
+    backendFetchParameters,
+    backendSetParameters
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -240,6 +242,23 @@ export const useParametersBackend = (
         snackError,
     ]);
 
+    const saveParameter = useCallback(
+        (newParams) => {
+            if (backendSetParameters) {
+                let oldParams = { ...params };
+                setParams(newParams);
+                backendSetParameters(studyUuid, newParams).catch((error) => {
+                    setParams(oldParams);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsChangingError',
+                    });
+                });
+            }
+        },
+        [backendSetParameters, params, snackError, studyUuid, setParams]
+    );
+
     useEffect(() => {
         if (studyUuid) {
             if (backendFetchParameters) {
@@ -285,6 +304,7 @@ export const useParametersBackend = (
         resetProvider,
         params,
         setParams,
+        saveParameter,
     ];
 };
 
@@ -338,7 +358,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         getLoadFlowProvider,
         getDefaultLoadFlowProvider,
         setLoadFlowProvider,
-        getLoadFlowParameters
+        getLoadFlowParameters,
+        setLoadFlowParameters
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
