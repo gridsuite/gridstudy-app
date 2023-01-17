@@ -559,12 +559,17 @@ export const reducer = createReducer(initialState, {
         );
 
         // if sld was in state already, and was PINNED or OPENED, nothing happens
+        // except in fullscreen mode where we switch to the new sld in fullscreen.
         if (
             sldToOpenIndex >= 0 &&
             [ViewState.OPENED, ViewState.PINNED].includes(
                 sldState[sldToOpenIndex].state
             )
         ) {
+            // If an SLD was in fullscreen, the new SLD takes its place
+            if (state.fullScreenSldId) {
+                state.fullScreenSldId = action.id;
+            }
             return;
         }
 
