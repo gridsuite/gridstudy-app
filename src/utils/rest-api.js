@@ -351,7 +351,7 @@ export function getNetworkAreaDiagramUrl(
 
 export function fetchNADSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetchText(svgUrl);
+    return backendFetchJson(svgUrl);
 }
 
 function getQueryParamsList(params, paramName) {
@@ -381,7 +381,9 @@ export function fetchReport(studyUuid, currentNodeUuid, nodeOnlyReport) {
 
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetchJson(svgUrl);
+    return backendFetch(svgUrl).then((response) =>
+        response.status === 204 ? null : response.json()
+    );
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
@@ -395,13 +397,24 @@ export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
-export function fetchSubstationPositions(studyUuid, currentNodeUuid) {
+export function fetchSubstationPositions(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
     console.info(
-        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
+
+    const paramsList =
+        substationsIds && substationsIds.length > 0
+            ? '?' + getQueryParamsList(substationsIds, 'substationId')
+            : '';
+
     const fetchSubstationPositionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/geo-data/substations';
+        '/geo-data/substations' +
+        paramsList;
     console.debug(fetchSubstationPositionsUrl);
     return backendFetchJson(fetchSubstationPositionsUrl);
 }
@@ -581,7 +594,7 @@ export function searchEquipmentsInfos(
     studyUuid,
     nodeUuid,
     searchTerm,
-    usesName,
+    getUseNameParameterKey,
     inUpstreamBuiltParentNode,
     equipmentType
 ) {
@@ -591,7 +604,7 @@ export function searchEquipmentsInfos(
     );
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
-    urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
+    urlSearchParams.append('fieldSelector', getUseNameParameterKey());
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
@@ -725,12 +738,21 @@ export function fetchBusbarSectionsForVoltageLevel(
     return backendFetchJson(fetchBusbarSectionsUrl);
 }
 
-export function fetchLinePositions(studyUuid, currentNodeUuid) {
+export function fetchLinePositions(studyUuid, currentNodeUuid, linesIds) {
     console.info(
-        `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
     );
+
+    const paramsList =
+        linesIds && linesIds.length > 0
+            ? '?' + getQueryParamsList(linesIds, 'lineId')
+            : '';
+
     const fetchLinePositionsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/geo-data/lines';
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/geo-data/lines' +
+        paramsList;
+
     console.debug(fetchLinePositionsUrl);
     return backendFetchJson(fetchLinePositionsUrl);
 }
@@ -1922,18 +1944,11 @@ export function createSubstation(
     modificationUuid,
     properties
 ) {
-    let createSubstationUrl =
+    let url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
 
-    if (isUpdate) {
-        createSubstationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating substation creation');
-    } else {
-        console.info('Creating substation creation');
-    }
-
-    const asObj = !properties
+    const asObj = !properties?.length
         ? undefined
         : Object.fromEntries(properties.map((p) => [p.name, p.value]));
 
@@ -1944,9 +1959,15 @@ export function createSubstation(
         substationCountry: substationCountry === '' ? null : substationCountry,
         properties: asObj,
     });
-    console.debug('createSubstation body', properties, body);
 
-    return backendFetchText(createSubstationUrl, {
+    if (isUpdate) {
+        url += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation creation', { url, body });
+    } else {
+        console.info('Creating substation creation', { url, body });
+    }
+
+    return backendFetchText(url, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',

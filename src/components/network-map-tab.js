@@ -35,8 +35,9 @@ import {
     isNodeRenamed,
 } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
-import { mapEquipmentsCreated, resetMapReloaded } from '../redux/actions';
+import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -53,6 +54,11 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 8,
         marginRight: 8,
         marginTop: 8,
+    },
+    divTemporaryGeoDataLoading: {
+        position: 'absolute',
+        width: '100%',
+        zIndex: 1,
     },
     divOverloadedLineView: {
         right: 45,
@@ -78,7 +84,6 @@ export const NetworkMapTab = ({
     shortCircuitStatus,
     /* visual*/
     visible,
-    useName,
     lineFullPath,
     lineParallelPath,
     lineFlowMode,
@@ -96,7 +101,28 @@ export const NetworkMapTab = ({
 
     const intlRef = useIntlRef();
     const [isInitialized, setInitialized] = useState(false);
+    const [waitingLoadMapEquipments, setWaitingLoadEquipments] =
+        useState(false);
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
+    const [waitingFullLoadGeoData, setWaitingFullLoadGeoData] = useState(true);
+    const [waitingLoadTemporaryGeoData, setWaitingLoadTemporaryGeoData] =
+        useState(false);
+
+    const [geoData, setGeoData] = useState();
+    const geoDataRef = useRef();
+    geoDataRef.current = geoData;
+
+    /*
+    This Set stores the geo data that are collected from the server AFTER the initialization.
+    The bunch of geo data requested at the initialization of the map are stored as permanent data. It will not be requested again.
+    The delta of geo data that is needed after the initialization is tagged as temporary. Each time some new geo data is requested, the full delta is downloaded.
+
+    This workaround is required in the case of line/substation creation. By example, the position of a substation can change after being connected to one or two lines
+    and this position would need to be requested again.
+    It will be possible to have a better mechanism after we improved the notification system.
+    */
+    const temporaryGeoDataIdsRef = useRef();
+
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
@@ -110,8 +136,6 @@ export const NetworkMapTab = ({
     refIsMapManualRefreshEnabled.current = mapManualRefresh;
 
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
-
-    const [geoData, setGeoData] = useState();
 
     const deletedEquipment = useSelector((state) => state.deletedEquipment);
     const updatedSubstationsIds = useSelector(
@@ -209,28 +233,275 @@ export const NetworkMapTab = ({
         []
     );
 
-    const loadMapGeoData = useCallback(() => {
-        console.info(`Loading geo data of study '${studyUuid}'...`);
-        const substationPositions = fetchSubstationPositions(
-            studyUuid,
-            currentNode?.id
-        );
-        const linePositions = lineFullPath
-            ? fetchLinePositions(studyUuid, currentNode?.id)
-            : [];
-        setWaitingLoadGeoData(true);
+    const getEquipmentsNotFoundIds = useCallback(
+        (foundEquipmentPositions, allEquipments) => {
+            const notFoundEquipmentsIds = allEquipments
+                .filter(
+                    (s) =>
+                        !foundEquipmentPositions.has(s.id) ||
+                        temporaryGeoDataIdsRef.current.has(s.id)
+                )
+                .map((s) => s.id);
 
-        Promise.all([substationPositions, linePositions])
-            .then((values) => {
-                const newGeoData = new GeoData();
-                newGeoData.setSubstationPositions(values[0]);
-                newGeoData.setLinePositions(values[1]);
-                setGeoData(newGeoData);
-                setWaitingLoadGeoData(false);
+            return notFoundEquipmentsIds;
+        },
+        []
+    );
+
+    const latLonEqual = (coordinate1, coordinate2) => {
+        return (
+            coordinate1?.lat === coordinate2?.lat &&
+            coordinate1?.lon === coordinate2?.lon
+        );
+    };
+
+    const substationPositionsAreEqual = useCallback(
+        (substationPos1, substationPos2) => {
+            return (
+                latLonEqual(
+                    substationPos1?.coordinate,
+                    substationPos2?.coordinate
+                ) && substationPos1?.country === substationPos2?.country
+            );
+        },
+        []
+    );
+
+    const linePositionsAreEqual = useCallback((linePos1, linePos2) => {
+        return (
+            latLonEqual(
+                linePos1?.coordinates?.[0],
+                linePos2?.coordinates?.[0]
+            ) &&
+            latLonEqual(
+                linePos1?.coordinates?.[1],
+                linePos2?.coordinates?.[1]
+            ) &&
+            linePos1?.country1 === linePos2?.country1 &&
+            linePos1?.country2 === linePos2?.country2 &&
+            linePos1?.substationStart === linePos2?.substationStart &&
+            linePos1?.substationEnd === linePos2?.substationEnd
+        );
+    }, []);
+
+    const getMissingEquipmentsPositions = useCallback(
+        (notFoundEquipmentsIds, fetchEquipmentCB) => {
+            if (notFoundEquipmentsIds.length === 0) {
+                return Promise.resolve([]);
+            }
+
+            return fetchEquipmentCB(
+                studyUuid,
+                currentNodeRef.current?.id,
+                notFoundEquipmentsIds
+            );
+        },
+        [studyUuid]
+    );
+
+    const updateSubstationsTemporaryGeoData = useCallback(
+        (requestedPositions, fetchedPositions) => {
+            let someDataHasChanged = false;
+            fetchedPositions.forEach((pos) => {
+                // If the geo data is the same in the geoData and in the server response, it's not updated
+                const substationPosition =
+                    geoDataRef.current.substationPositionsById.get(pos.id);
+                if (
+                    !(
+                        substationPosition &&
+                        substationPositionsAreEqual(substationPosition, pos)
+                    )
+                ) {
+                    temporaryGeoDataIdsRef.current.add(pos.id);
+                    someDataHasChanged = true;
+                }
+            });
+
+            // If a substation position is requested but not present in the fetched results, its position will be deleted in updateSubstationPositions() and we have to flag here that a position has changed
+            requestedPositions
+                .filter(
+                    (id) => !fetchedPositions.map((pos) => pos.id).includes(id)
+                )
+                .forEach((id) => {
+                    if (geoDataRef.current.substationPositionsById.get(id)) {
+                        someDataHasChanged = true;
+                    }
+                });
+
+            return someDataHasChanged;
+        },
+        [substationPositionsAreEqual]
+    );
+
+    const updateLinesTemporaryGeoData = useCallback(
+        (requestedPositions, fetchedPositions) => {
+            let someDataHasChanged = false;
+            fetchedPositions.forEach((pos) => {
+                // If the geo data is the same in the geoData and in the server response, it's not updated
+                const linePosition = geoDataRef.current.linePositionsById.get(
+                    pos.id
+                );
+                if (
+                    !(linePosition && linePositionsAreEqual(linePosition, pos))
+                ) {
+                    temporaryGeoDataIdsRef.current.add(pos.id);
+                    someDataHasChanged = true;
+                }
+            });
+
+            // If a line position is requested but not present in the fetched results, its position will be deleted in updateLinePositions() and we have to flag here that a position has changed
+            requestedPositions
+                .filter(
+                    (id) => !fetchedPositions.map((pos) => pos.id).includes(id)
+                )
+                .forEach((id) => {
+                    if (geoDataRef.current.linePositionsById.get(id)) {
+                        someDataHasChanged = true;
+                    }
+                });
+            return someDataHasChanged;
+        },
+        [linePositionsAreEqual]
+    );
+
+    const loadMissingGeoData = useCallback(() => {
+        const notFoundSubstationIds = getEquipmentsNotFoundIds(
+            geoDataRef.current.substationPositionsById,
+            mapEquipments.substations
+        );
+
+        const notFoundLineIds = lineFullPath
+            ? getEquipmentsNotFoundIds(
+                  geoDataRef.current.linePositionsById,
+                  mapEquipments.lines
+              )
+            : [];
+
+        if (notFoundSubstationIds.length > 0 || notFoundLineIds.length > 0) {
+            console.info(
+                `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLineIds}'...`
+            );
+            setWaitingLoadTemporaryGeoData(true);
+
+            const missingSubstationPositions = getMissingEquipmentsPositions(
+                notFoundSubstationIds,
+                fetchSubstationPositions
+            );
+
+            const missingLinesPositions = getMissingEquipmentsPositions(
+                notFoundLineIds,
+                fetchLinePositions
+            );
+
+            Promise.all([missingSubstationPositions, missingLinesPositions])
+                .then((positions) => {
+                    const [fetchedSubstationPositions, fetchedLinePositions] =
+                        positions;
+                    const substationsDataChanged =
+                        updateSubstationsTemporaryGeoData(
+                            notFoundSubstationIds,
+                            fetchedSubstationPositions
+                        );
+                    const linesDataChanged = updateLinesTemporaryGeoData(
+                        notFoundLineIds,
+                        fetchedLinePositions
+                    );
+
+                    // If no geo data has changed, we avoid to trigger a new render.
+                    if (substationsDataChanged || linesDataChanged) {
+                        // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
+                        // Same for line positions.
+                        const newGeoData = new GeoData(
+                            substationsDataChanged
+                                ? new Map(
+                                      geoDataRef.current.substationPositionsById
+                                  )
+                                : geoDataRef.current.substationPositionsById,
+                            // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
+                            linesDataChanged ||
+                            (!lineFullPath && substationsDataChanged)
+                                ? new Map(geoDataRef.current.linePositionsById)
+                                : geoDataRef.current.linePositionsById
+                        );
+                        newGeoData.updateSubstationPositions(
+                            notFoundSubstationIds,
+                            fetchedSubstationPositions
+                        );
+                        newGeoData.updateLinePositions(
+                            notFoundLineIds,
+                            fetchedLinePositions
+                        );
+                        setGeoData(newGeoData);
+                    }
+                    setWaitingLoadTemporaryGeoData(false);
+                })
+                .catch(function (error) {
+                    console.error(error.message);
+                    setWaitingLoadTemporaryGeoData(false);
+                    setErrorMessage(
+                        intlRef.current.formatMessage(
+                            { id: 'geoDataLoadingFail' },
+                            { studyUuid: studyUuid }
+                        )
+                    );
+                });
+        }
+    }, [
+        intlRef,
+        lineFullPath,
+        setErrorMessage,
+        studyUuid,
+        getEquipmentsNotFoundIds,
+        getMissingEquipmentsPositions,
+        mapEquipments?.substations,
+        mapEquipments?.lines,
+        updateSubstationsTemporaryGeoData,
+        updateLinesTemporaryGeoData,
+    ]);
+
+    const loadAllGeoData = useCallback(() => {
+        console.info(`Loading geo data of study '${studyUuid}'...`);
+        setWaitingLoadGeoData(true);
+        setWaitingFullLoadGeoData(true);
+
+        const substationPositionsDone = fetchSubstationPositions(
+            studyUuid,
+            currentNodeRef.current?.id
+        ).then((data) => {
+            console.info(`Received substations of study '${studyUuid}'...`);
+            const newGeoData = new GeoData(
+                new Map(),
+                geoDataRef.current?.linePositionsById || new Map()
+            );
+            newGeoData.setSubstationPositions(data);
+            setGeoData(newGeoData);
+            setWaitingLoadGeoData(false);
+        });
+
+        const linePositionsDone = !lineFullPath
+            ? Promise.resolve()
+            : fetchLinePositions(studyUuid, currentNodeRef.current?.id).then(
+                  (data) => {
+                      console.info(`Received lines of study '${studyUuid}'...`);
+                      const newGeoData = new GeoData(
+                          geoDataRef.current?.substationPositionsById ||
+                              new Map(),
+                          new Map()
+                      );
+                      newGeoData.setLinePositions(data);
+                      setGeoData(newGeoData);
+                  }
+              );
+
+        Promise.all([substationPositionsDone, linePositionsDone])
+            .then(() => {
+                setWaitingFullLoadGeoData(false);
+                temporaryGeoDataIdsRef.current = new Set();
             })
             .catch(function (error) {
                 console.error(error.message);
                 setWaitingLoadGeoData(false);
+                setWaitingFullLoadGeoData(false);
                 setErrorMessage(
                     intlRef.current.formatMessage(
                         { id: 'geoDataLoadingFail' },
@@ -238,49 +509,60 @@ export const NetworkMapTab = ({
                     )
                 );
             });
-        dispatch(resetMapReloaded());
-    }, [
-        currentNode,
-        dispatch,
-        intlRef,
-        lineFullPath,
-        setErrorMessage,
-        studyUuid,
-    ]);
+    }, [intlRef, lineFullPath, setErrorMessage, studyUuid]);
+
+    const loadGeoData = useCallback(() => {
+        if (studyUuid && currentNodeRef.current) {
+            if (
+                // To manage a lineFullPath param change, if lineFullPath=true and linePositions is empty, we load all the geo data.
+                // This can be improved by loading only the lines geo data and not lines geo data + substations geo data when lineFullPath is changed to true.
+                geoDataRef.current?.substationPositionsById.size > 0 &&
+                (!lineFullPath || geoDataRef.current.linePositionsById.size > 0)
+            ) {
+                loadMissingGeoData();
+            } else {
+                loadAllGeoData();
+            }
+        }
+    }, [studyUuid, loadAllGeoData, loadMissingGeoData, lineFullPath]);
 
     const loadMapEquipments = useCallback(() => {
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
         if (!isInitialized) {
-            const initialMapEquipments = new MapEquipments(
+            new MapEquipments(
                 studyUuid,
                 currentNode?.id,
                 setErrorMessage,
                 dispatch,
                 intlRef
             );
-            dispatch(mapEquipmentsCreated(initialMapEquipments));
         } else {
-            console.info('Reload map equipments');
-            const updatedSubstationsToSend =
-                !refIsMapManualRefreshEnabled.current &&
-                !isUpdatedSubstationsApplied &&
-                updatedSubstationsIds?.length > 0
-                    ? updatedSubstationsIds
-                    : undefined;
+            if (mapEquipments) {
+                console.info('Reload map equipments');
+                setWaitingLoadEquipments(true);
+                const updatedSubstationsToSend =
+                    !refIsMapManualRefreshEnabled.current &&
+                    !isUpdatedSubstationsApplied &&
+                    updatedSubstationsIds?.length > 0
+                        ? updatedSubstationsIds
+                        : undefined;
 
-            mapEquipments.reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                updatedSubstationsToSend,
-                setUpdatedLines
-            );
-
-            if (updatedSubstationsToSend) {
-                setIsUpdatedSubstationsApplied(true);
+                mapEquipments
+                    .reloadImpactedSubstationsEquipments(
+                        studyUuid,
+                        currentNode,
+                        updatedSubstationsToSend,
+                        setUpdatedLines
+                    )
+                    .finally(() => setWaitingLoadEquipments(false));
+                if (updatedSubstationsToSend) {
+                    setIsUpdatedSubstationsApplied(true);
+                }
             }
         }
+        dispatch(resetMapReloaded());
     }, [
         currentNode,
         dispatch,
@@ -309,11 +591,6 @@ export const NetworkMapTab = ({
         }
     }, [deletedEquipment, mapEquipments]);
 
-    const handleFullMapReload = useCallback(() => {
-        loadMapEquipments();
-        loadMapGeoData();
-    }, [loadMapEquipments, loadMapGeoData]);
-
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
@@ -324,24 +601,37 @@ export const NetworkMapTab = ({
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
         if (!reloadMapNeeded) return;
-        handleFullMapReload();
+        loadMapEquipments();
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
         disabled,
         studyUuid,
         currentNode,
-        handleFullMapReload,
+        loadMapEquipments,
         isInitialized,
         reloadMapNeeded,
         updatedSubstationsIds,
     ]);
 
+    // This useEffect ensures the geo data load is done after the map equipments load. Improvement: the sequentiality could be enforced by using a chain of promises for the updates of mapEquipments and geoData
+    // At initialization, loadMapEquipments and loadGeoData can be parallelized.
+    // Also, because of this useEffect instead of a chain of promises, we have to use a ref for currentNode in loadGeoData, loadAllGeoData and loadMissingGeoData Because currentNode would trigger loadGeoData and loadMapEquipments which retriggers loadGeoData.
+    useEffect(() => {
+        if (!mapEquipments) return;
+        loadGeoData();
+    }, [loadGeoData, mapEquipments]);
+
+    /* TODO : this useEffect reloads the mapEquipments when, in manual refresh mode, the current node is built.
+            But in automtic refresh mode, this useEffect triggers a second mapEquipments reload (the legitimate reload is done by the useEffect row 575).
+            2 solutions: 1) the manual mode is removed so we can remove this useEffect
+                         2) we keep the manual mode => we need to fix the "bug" and do only one reload
+     */
     useEffect(() => {
         let previousNodeStatus = isCurrentNodeBuiltRef.current;
         isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
 
-        //when we build node we want the map to be up to date
+        // when we build node we want the map to be up to date
         if (!previousNodeStatus && isCurrentNodeBuiltRef.current) {
             loadMapEquipments();
         }
@@ -409,7 +699,6 @@ export const NetworkMapTab = ({
             updatedLines={updatedLines}
             geoData={geoData}
             waitingLoadGeoData={waitingLoadGeoData}
-            useName={useName}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
             arrowsZoomThreshold={7}
@@ -434,7 +723,7 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
-            onReloadMapClick={handleFullMapReload}
+            onReloadMapClick={loadMapEquipments}
         />
     );
 
@@ -448,6 +737,13 @@ export const NetworkMapTab = ({
 
     return (
         <>
+            <div className={classes.divTemporaryGeoDataLoading}>
+                {(waitingLoadTemporaryGeoData ||
+                    waitingLoadMapEquipments ||
+                    (!waitingLoadGeoData && waitingFullLoadGeoData)) && (
+                    <LinearProgress />
+                )}
+            </div>
             {renderMap()}
             {renderEquipmentMenu()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
@@ -482,7 +778,6 @@ export const NetworkMapTab = ({
 
 NetworkMapTab.propTypes = {
     updatedLines: PropTypes.arrayOf(PropTypes.any),
-    useName: PropTypes.any,
     filteredNominalVoltages: PropTypes.any,
     lineFullPath: PropTypes.any,
     lineParallelPath: PropTypes.any,
