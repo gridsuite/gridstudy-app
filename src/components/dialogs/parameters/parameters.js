@@ -257,7 +257,14 @@ export const useParametersBackend = (
                 });
             }
         },
-        [type, backendUpdateParameters, params, snackError, studyUuid, setParams]
+        [
+            type,
+            backendUpdateParameters,
+            params,
+            snackError,
+            studyUuid,
+            setParams,
+        ]
     );
 
     const resetParameters = useCallback(() => {
