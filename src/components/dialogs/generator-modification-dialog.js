@@ -492,7 +492,9 @@ const GeneratorModificationDialog = ({
 
     const [droop, droopField] = useDoubleValue({
         label: 'Droop',
-        validation: { isFieldRequired: frequencyRegulation },
+        validation: {
+            isFieldRequired: frequencyRegulation && !generatorInfos?.droop, // The field is required if active power regulation is ON and there is no previous value.
+        },
         adornment: percentageTextField,
         inputForm: inputForm,
         formProps: {
