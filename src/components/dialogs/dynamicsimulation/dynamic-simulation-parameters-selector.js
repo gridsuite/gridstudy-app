@@ -17,11 +17,7 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import {
-    useInputForm,
-    useIntegerValue,
-    useSwitchValue,
-} from '../inputs/input-hooks';
+import { useInputForm, useIntegerValue } from '../inputs/input-hooks';
 import { filledTextField, getIdOrSelf, gridItem } from '../dialogUtils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useAutocompleteField } from '../inputs/use-autocomplete-field';
@@ -91,12 +87,6 @@ const DynamicSimulationParametersSelector = (props) => {
         formProps: filledTextField,
     });
 
-    const [withVariant, withVariantField] = useSwitchValue({
-        label: PARAMETER_WITH_VARIANT_LABEL,
-        inputFrom: inputForm,
-        defaultValue: false,
-    });
-
     useEffect(() => {
         // get all mapping names
         getDynamicMappings(studyUuid, currentNodeUuid)
@@ -122,7 +112,6 @@ const DynamicSimulationParametersSelector = (props) => {
                 dynamicSimulationConfiguration: {
                     startTime: startTime,
                     stopTime: stopTime,
-                    withVariant: withVariant,
                 },
             });
         }
@@ -138,11 +127,10 @@ const DynamicSimulationParametersSelector = (props) => {
                 xs={12}
                 justifyContent={'center'}
             >
-                {/* TODO list mappingName names and two spinners startTime, stopTime and check box withVariant */}
+                {/* TODO list mappingName names and two spinners startTime, stopTime */}
                 <Grid item>{gridItem(mappingNameField, 6)}</Grid>
                 <Grid item>{gridItem(startTimeField, 3)}</Grid>
                 <Grid item>{gridItem(stopTimeField, 3)}</Grid>
-                <Grid item>{gridItem(withVariantField, 6)}</Grid>
             </Grid>
         );
     }
