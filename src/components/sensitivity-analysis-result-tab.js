@@ -152,6 +152,7 @@ function PagedSensitivityResult({
         const rowIndexer = new KeyedColumnsRowIndexer(...pars);
         const colKey = nOrNkIndex === 0 ? 'value' : 'valueAfter';
         const changeWay = CHANGE_WAYS.SIMPLE;
+        // fake user click twice, to set descending order
         rowIndexer.updateSortingFromUser(colKey, changeWay);
         rowIndexer.updateSortingFromUser(colKey, changeWay);
 
