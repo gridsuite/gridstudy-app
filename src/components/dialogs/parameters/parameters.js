@@ -169,7 +169,7 @@ export const useParametersBackend = (
     backendFetchDefaultProvider,
     backendUpdateProvider,
     backendFetchParameters,
-    backendSetParameters
+    backendUpdateParameters
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -242,12 +242,12 @@ export const useParametersBackend = (
         snackError,
     ]);
 
-    const saveParameter = useCallback(
+    const updateParameter = useCallback(
         (newParams) => {
-            if (backendSetParameters) {
+            if (backendUpdateParameters) {
                 let oldParams = { ...params };
                 setParams(newParams);
-                backendSetParameters(studyUuid, newParams).catch((error) => {
+                backendUpdateParameters(studyUuid, newParams).catch((error) => {
                     setParams(oldParams);
                     snackError({
                         messageTxt: error.message,
@@ -256,8 +256,34 @@ export const useParametersBackend = (
                 });
             }
         },
-        [backendSetParameters, params, snackError, studyUuid, setParams]
+        [backendUpdateParameters, params, snackError, studyUuid, setParams]
     );
+
+    const resetParameters = useCallback(() => {
+        backendUpdateParameters(studyUuid, null)
+            .then(() => {
+                return backendFetchParameters(studyUuid)
+                    .then((params) => setParams(params))
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'paramsChangingError',
+                });
+            });
+    }, [
+        studyUuid,
+        backendUpdateParameters,
+        backendFetchParameters,
+        snackError,
+        setParams,
+    ]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -303,8 +329,8 @@ export const useParametersBackend = (
         updateProvider,
         resetProvider,
         params,
-        setParams,
-        saveParameter,
+        updateParameter,
+        resetParameters,
     ];
 };
 

@@ -19,12 +19,6 @@ import {
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import { CloseButton, LabelledButton, useStyles } from './parameters';
-import {
-    getLoadFlowParameters,
-    setLoadFlowParameters,
-} from '../../../utils/rest-api';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
 import { DropDown, SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 
@@ -282,18 +276,14 @@ export const LoadFlowParameters = ({
 }) => {
     const classes = useStyles();
 
-    const { snackError } = useSnackMessage();
-
-    const studyUuid = useSelector((state) => state.studyUuid);
-
     const [
         providers,
         provider,
         updateProvider,
         resetProvider,
         params,
-        setParams,
-        saveParameters,
+        updateParameters,
+        resetParameters,
     ] = parametersBackend;
 
     const updateLfProviderCallback = useCallback(
@@ -303,27 +293,10 @@ export const LoadFlowParameters = ({
         [updateProvider]
     );
 
-    const resetLfParameters = useCallback(() => {
-        setLoadFlowParameters(studyUuid, null)
-            .then(() => {
-                return getLoadFlowParameters(studyUuid)
-                    .then((params) => setParams(params))
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        });
-                    });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
-            });
-
+    const resetLfParametersAndLfProvider = useCallback(() => {
+        resetParameters();
         resetProvider();
-    }, [studyUuid, resetProvider, snackError, setParams]);
+    }, [resetParameters, resetProvider]);
 
     return (
         <Grid container className={classes.grid}>
@@ -340,11 +313,11 @@ export const LoadFlowParameters = ({
                 </Grid>
                 <BasicLoadFlowParameters
                     lfParams={params || {}}
-                    commitLFParameter={saveParameters}
+                    commitLFParameter={updateParameters}
                 />
                 <AdvancedLoadFlowParameters
                     lfParams={params || {}}
-                    commitLFParameter={saveParameters}
+                    commitLFParameter={updateParameters}
                     showAdvancedLfParams={showAdvancedLfParams}
                     setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />
@@ -357,7 +330,7 @@ export const LoadFlowParameters = ({
                     maxWidth="md"
                 >
                     <LabelledButton
-                        callback={resetLfParameters}
+                        callback={resetLfParametersAndLfProvider}
                         label="resetToDefault"
                     />
                     <CloseButton
