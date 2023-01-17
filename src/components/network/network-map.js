@@ -361,7 +361,8 @@ const NetworkMap = (props) => {
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
                 loadFlowStatus: props.loadFlowStatus,
                 lineFullPath:
-                    props.geoData.linePositionsById.size > 0 && props.lineFullPath,
+                    props.geoData.linePositionsById.size > 0 &&
+                    props.lineFullPath,
                 lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,

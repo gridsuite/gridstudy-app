@@ -484,8 +484,9 @@ export const NetworkMapTab = ({
                   (data) => {
                       console.info(`Received lines of study '${studyUuid}'...`);
                       const newGeoData = new GeoData(
-                          geoDataRef.current?.substationPositionsById || new Map(),
-                        new Map()
+                          geoDataRef.current?.substationPositionsById ||
+                              new Map(),
+                          new Map()
                       );
                       newGeoData.setLinePositions(data);
                       setGeoData(newGeoData);
