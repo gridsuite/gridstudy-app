@@ -72,9 +72,15 @@ export const ModificationListItem = ({
         } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
             return modif.attachedLineId;
         } else if (modif.type === 'DELETE_VOLTAGE_LEVEL_ON_LINE') {
-            return modif.replacingLine1Id;
+            return modif.lineToAttachTo1Id + '/' + modif.lineToAttachTo2Id;
         } else if (modif.type === 'DELETE_ATTACHING_LINE') {
-            return modif.replacingLine1Id;
+            return (
+                modif.attachedLineId +
+                '/' +
+                modif.lineToAttachTo1Id +
+                '/' +
+                modif.lineToAttachTo2Id
+            );
         } else if (modif.equipmentId) {
             return modif.equipmentId;
         }
