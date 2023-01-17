@@ -153,6 +153,7 @@ export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',
 };
+
 export const LabelledButton = ({ callback, label, name }) => {
     return (
         <Button onClick={callback} className={name}>
@@ -251,7 +252,7 @@ export const useParametersBackend = (
                     setParams(oldParams);
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'paramsChangingError',
+                        headerId: 'update' + type + 'ParametersError',
                     });
                 });
             }
@@ -267,14 +268,14 @@ export const useParametersBackend = (
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
+                            headerId: 'fetch' + type + 'ParametersError',
                         });
                     });
             })
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'paramsChangingError',
+                    headerId: 'update' + type + 'ParametersError',
                 });
             });
     }, [
@@ -293,7 +294,7 @@ export const useParametersBackend = (
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
+                            headerId: 'fetch' + type + 'ParametersError',
                         });
                     });
             }
