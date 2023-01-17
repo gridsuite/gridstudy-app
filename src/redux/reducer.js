@@ -62,6 +62,7 @@ import {
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
+    SELECTED_TREE_NODE_FOR_COPY,
     SET_MODIFICATIONS_IN_PROGRESS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
@@ -133,6 +134,7 @@ const paramsInitialState = {
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
+    selectedNodeForCopy: { nodeId: null, copyType: null },
     network: null,
     mapEquipments: null,
     geoData: null,
@@ -508,6 +510,9 @@ export const reducer = createReducer(initialState, {
         state.updatedSubstationsIds = [];
         state.deletedEquipment = {};
         state.reloadMap = true;
+    },
+    [SELECTED_TREE_NODE_FOR_COPY]: (state, action) => {
+        state.selectedNodeForCopy = action.selectedNodeForCopy;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
