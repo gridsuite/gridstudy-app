@@ -588,7 +588,7 @@ export const reducer = createReducer(initialState, {
         }
 
         // If an SLD was in fullscreen, the new SLD takes its place
-        if(state.fullScreenSldId) {
+        if (state.fullScreenSldId) {
             state.fullScreenSldId = action.id;
         }
 
