@@ -119,7 +119,7 @@ DiagramFooter.propTypes = {
     onIncrementCounter: PropTypes.func,
     onDecrementCounter: PropTypes.func,
     showFullscreenControl: PropTypes.bool,
-    fullScreenActive: PropTypes.bool,
+    fullScreenActive: PropTypes.any,
     onStopFullScreen: PropTypes.func,
     onStartFullScreen: PropTypes.func,
 };

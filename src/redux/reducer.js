@@ -59,6 +59,7 @@ import {
     ADD_NOTIFICATION,
     REMOVE_NOTIFICATION_BY_NODE,
     CURRENT_TREE_NODE,
+    SELECTED_TREE_NODE_FOR_COPY,
     SET_MODIFICATIONS_IN_PROGRESS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
@@ -135,6 +136,7 @@ const paramsInitialState = {
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
+    selectedNodeForCopy: { nodeId: null, copyType: null },
     network: null,
     mapEquipments: null,
     geoData: null,
@@ -276,7 +278,7 @@ export const reducer = createReducer(initialState, {
                     state.currentTreeNode?.id
                 )
             ) {
-                //TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
+                // TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
                 // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
                 synchCurrentTreeNode(
                     state,
@@ -511,6 +513,9 @@ export const reducer = createReducer(initialState, {
         state.deletedEquipment = {};
         state.reloadMap = true;
     },
+    [SELECTED_TREE_NODE_FOR_COPY]: (state, action) => {
+        state.selectedNodeForCopy = action.selectedNodeForCopy;
+    },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
     },
@@ -574,6 +579,14 @@ export const reducer = createReducer(initialState, {
                     svgType: SvgType.NETWORK_AREA_DIAGRAM,
                     state: ViewState.OPENED,
                 });
+
+                // If there is already a diagram in fullscreen mode, the new opened NAD will take its place.
+                if (state.fullScreenDiagram?.id) {
+                    state.fullScreenDiagram = {
+                        id: action.id,
+                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    };
+                }
             } else {
                 // If there is already at least one NAD, and if it is minimized, then we change all of them to opened.
                 if (
@@ -592,6 +605,18 @@ export const reducer = createReducer(initialState, {
                         svgType: SvgType.NETWORK_AREA_DIAGRAM,
                         state: diagramStates[firstNadIndex].state,
                     });
+                }
+
+                // If there is a SLD in fullscreen, we have to display in fullscreen the new NAD.
+                // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
+                if (
+                    state.fullScreenDiagram?.svgType !==
+                    SvgType.NETWORK_AREA_DIAGRAM
+                ) {
+                    state.fullScreenDiagram = {
+                        id: diagramStates[firstNadIndex].id,
+                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    };
                 }
             }
         } else {
@@ -638,6 +663,14 @@ export const reducer = createReducer(initialState, {
                     svgType: action.svgType,
                     state: ViewState.OPENED,
                 });
+            }
+
+            // If there is already a diagram in fullscreen mode, the new opened SLD will take its place.
+            if (state.fullScreenDiagram?.id) {
+                state.fullScreenDiagram = {
+                    id: action.id,
+                    svgType: action.svgType,
+                };
             }
         }
         state.diagramStates = diagramStates;

@@ -395,6 +395,15 @@ export function setCurrentTreeNode(currentTreeNode) {
     };
 }
 
+export const SELECTED_TREE_NODE_FOR_COPY = 'SELECTED_NODE_FOR_COPY';
+
+export function setSelectedNodeForCopy(nodeForCopy) {
+    return {
+        type: SELECTED_TREE_NODE_FOR_COPY,
+        selectedNodeForCopy: nodeForCopy,
+    };
+}
+
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 
 export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
