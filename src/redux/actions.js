@@ -419,6 +419,15 @@ export function setCurrentTreeNode(currentTreeNode) {
     };
 }
 
+export const SELECTED_TREE_NODE_FOR_COPY = 'SELECTED_NODE_FOR_COPY';
+
+export function setSelectedNodeForCopy(nodeForCopy) {
+    return {
+        type: SELECTED_TREE_NODE_FOR_COPY,
+        selectedNodeForCopy: nodeForCopy,
+    };
+}
+
 export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
 
 export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
@@ -439,19 +448,19 @@ export function centerOnSubstation(substationId) {
 
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 
-export function addNotification(notificationId) {
+export function addNotification(notificationIds) {
     return {
         type: ADD_NOTIFICATION,
-        notificationId: notificationId,
+        notificationIds: notificationIds,
     };
 }
 
 export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
 
-export function removeNotificationByNode(notificationId) {
+export function removeNotificationByNode(notificationIds) {
     return {
         type: REMOVE_NOTIFICATION_BY_NODE,
-        notificationId: notificationId,
+        notificationIds: notificationIds,
     };
 }
 

@@ -62,6 +62,7 @@ import {
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
+    SELECTED_TREE_NODE_FOR_COPY,
     SET_MODIFICATIONS_IN_PROGRESS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
@@ -135,6 +136,7 @@ const paramsInitialState = {
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
+    selectedNodeForCopy: { nodeId: null, copyType: null },
     network: null,
     mapEquipments: null,
     geoData: null,
@@ -520,6 +522,9 @@ export const reducer = createReducer(initialState, {
         state.deletedEquipment = {};
         state.reloadMap = true;
     },
+    [SELECTED_TREE_NODE_FOR_COPY]: (state, action) => {
+        state.selectedNodeForCopy = action.selectedNodeForCopy;
+    },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
     },
@@ -529,13 +534,13 @@ export const reducer = createReducer(initialState, {
     [ADD_NOTIFICATION]: (state, action) => {
         state.notificationIdList = [
             ...state.notificationIdList,
-            action.notificationId,
+            ...action.notificationIds,
         ];
     },
     [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
         state.notificationIdList = [
             ...state.notificationIdList.filter(
-                (nodeId) => nodeId !== action.notificationId
+                (nodeId) => !action.notificationIds.includes(nodeId)
             ),
         ];
     },
