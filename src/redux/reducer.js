@@ -610,8 +610,9 @@ export const reducer = createReducer(initialState, {
                 // If there is a SLD in fullscreen, we have to display in fullscreen the new NAD.
                 // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
                 if (
+                    state.fullScreenDiagram?.svgType &&
                     state.fullScreenDiagram?.svgType !==
-                    SvgType.NETWORK_AREA_DIAGRAM
+                        SvgType.NETWORK_AREA_DIAGRAM
                 ) {
                     state.fullScreenDiagram = {
                         id: diagramStates[firstNadIndex].id,
