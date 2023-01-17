@@ -45,6 +45,7 @@ export const useExpandableValues = ({
             setValues((oldValues) => {
                 let newValues = [...oldValues];
                 newValues.splice(index, 1);
+                inputForm.setHasChanged(newValues.length > 0);
                 return newValues;
             });
             inputForm.reset();

@@ -743,7 +743,7 @@ export const useDirectoryElements = ({
         (item, index) => {
             let arr = [...values];
             arr.splice(index, 1);
-            if (arr.length > 0) inputForm.setHasChanged(true);
+            inputForm.setHasChanged(arr.length > 0);
             setValues(arr);
         },
         [values, inputForm]
