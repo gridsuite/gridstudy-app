@@ -510,7 +510,12 @@ export function StudyContainer({ view, onChangeTab }) {
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
-                    network.reloadImpactedSubstationsEquipments(substationsIds);
+                    console.info('TTT substationsIds', substationsIds);
+                    network.reloadImpactedSubstationsEquipments(
+                        studyUuid,
+                        currentNode,
+                        substationsIds
+                    );
                     dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
 
@@ -545,6 +550,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // In order to avoid glitches during sld and map rendering,
                 // lines and substations have to be prefetched and set before network creation event is dispatched
                 // Network creation event is dispatched directly in the network constructor
+                console.info('TTT NOT INIT');
                 new Network(
                     studyUuid,
                     currentNode?.id,
@@ -555,6 +561,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     }
                 );
             } else {
+                console.info('TTT ITs AN INIT');
                 const network = new Network(
                     studyUuid,
                     currentNode?.id,
@@ -578,8 +585,12 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        loadNetwork(true);
-    }, [loadNetwork, currentNode, wsConnected]);
+        console.info('TTTT previousCurrentNode', previousCurrentNode);
+        console.info('TTTT currentNodeRef.current', currentNodeRef.current);
+        if (!network || previousCurrentNode.id !== currentNodeRef.current.id) {
+            loadNetwork(false);
+        }
+    }, [loadNetwork, wsConnected]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
