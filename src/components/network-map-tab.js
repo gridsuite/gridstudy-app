@@ -470,8 +470,8 @@ export const NetworkMapTab = ({
         ).then((data) => {
             console.info(`Received substations of study '${studyUuid}'...`);
             const newGeoData = new GeoData(
-                null,
-                geoDataRef.current?.linePositionsById || null
+                new Map(),
+                geoDataRef.current?.linePositionsById || new Map()
             );
             newGeoData.setSubstationPositions(data);
             setGeoData(newGeoData);
@@ -484,8 +484,8 @@ export const NetworkMapTab = ({
                   (data) => {
                       console.info(`Received lines of study '${studyUuid}'...`);
                       const newGeoData = new GeoData(
-                          geoDataRef.current?.substationPositionsById || null,
-                          null
+                          geoDataRef.current?.substationPositionsById || new Map(),
+                        new Map()
                       );
                       newGeoData.setLinePositions(data);
                       setGeoData(newGeoData);
@@ -515,7 +515,7 @@ export const NetworkMapTab = ({
             if (
                 // To manage a lineFullPath param change, if lineFullPath=true and linePositions is empty, we load all the geo data.
                 // This can be improved by loading only the lines geo data and not lines geo data + substations geo data when lineFullPath is changed to true.
-                geoDataRef.current?.substationPositionsById?.size > 0 &&
+                geoDataRef.current?.substationPositionsById.size > 0 &&
                 (!lineFullPath || geoDataRef.current.linePositionsById.size > 0)
             ) {
                 loadMissingGeoData();

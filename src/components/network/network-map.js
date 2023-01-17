@@ -91,13 +91,13 @@ const NetworkMap = (props) => {
     const readyToDisplaySubstations =
         readyToDisplay &&
         props.mapEquipments.substations &&
-        props.geoData.substationPositionsById;
+        props.geoData.substationPositionsById.size > 0;
 
     const readyToDisplayLines =
         readyToDisplay &&
         props.mapEquipments.lines &&
         props.mapEquipments.voltageLevels &&
-        props.geoData.substationPositionsById;
+        props.geoData.substationPositionsById.size > 0;
 
     const classes = useStyles();
 
@@ -361,7 +361,7 @@ const NetworkMap = (props) => {
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
                 loadFlowStatus: props.loadFlowStatus,
                 lineFullPath:
-                    props.geoData.linePositionsById && props.lineFullPath,
+                    props.geoData.linePositionsById.size > 0 && props.lineFullPath,
                 lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,
