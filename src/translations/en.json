@@ -54,7 +54,6 @@
     "paramsChangingError": "An error occured when changing the parameters",
     "paramsChangingDenied": "The requested changes have been rejected",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
-    "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
     "defaultSensiResultsThresholdRetrievingError": "An error occurred while retrieving the sensitivity analysis results default threshold",
 
     "close": "Close",
@@ -291,9 +290,11 @@
     "Default": "Default",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
-    "setLoadFlowProviderError": "An error occured when updating the load flow provider",
-    "getLoadFlowProviderError": "An error occurred while getting the load flow provider",
-    "getLoadFlowProvidersError": "An error occurred while getting the load flow providers",
+
+    "fetchLoadFlowProvidersError": "An error occurred while getting the load flow providers",
+    "fetchLoadFlowProviderError": "An error occured when updating the load flow provider",
+    "fetchDefaultLoadFlowProviderError": "An error occured when fetching default load flow provider",
+    "updateLoadFlowProviderError": "An error occurred while getting the load flow provider",
 
     "fetchSecurityAnalysisProvidersError": "An error occured when fetching security analysis provider list",
     "fetchSecurityAnalysisProviderError": "An error occured when fetching security analysis provider",

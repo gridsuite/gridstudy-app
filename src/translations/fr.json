@@ -54,7 +54,6 @@
     "paramsChangingError": "Une erreur est survenue lors de la modification des paramètres",
     "paramsChangingDenied": "Les changements demandés ont été rejetés",
     "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
-    "defaultLoadflowRetrievingError": "Une erreur est survenue lors de la récupération du fournisseur de load flow par défaut",
     "defaultSensiResultsThresholdRetrievingError": "Une erreur est survenue lors de la récupération du seuil par défaut des résultats de l'analyse de sensibilité",
 
     "close": "Fermer",
@@ -291,9 +290,10 @@
     "Default": "Défaut",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
-    "setLoadFlowProviderError": "Une erreur est survenue lors de la mise à jour du fournisseur de load flow",
-    "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
-    "getLoadFlowProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs de load flow",
+    "fetchLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de calcul de répartition",
+    "fetchLoadFlowProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs de calcul de répartition",
+    "fetchDefaultLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de calcul de répartition par défaut",
+    "updateLoadFlowProviderError": "Une erreur est survenue lors de la mise à jour du fournisseur de calcul de répartition",
 
     "fetchSecurityAnalysisProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs d'analyse de sécurité",
     "fetchSecurityAnalysisProviderError": "Une erreur est survenue lors de la récupération du fournisseur courant d'analyse de sécurité",

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
     Grid,
@@ -20,120 +20,13 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import { CloseButton, LabelledButton, useStyles } from './parameters';
 import {
-    getDefaultLoadFlowProvider,
     getLoadFlowParameters,
-    getLoadFlowProvider,
     setLoadFlowParameters,
-    setLoadFlowProvider,
-    getLoadFlowProviders,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { DropDown, SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-
-export const useGetLfParamsAndProvider = (user) => {
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const { snackError } = useSnackMessage();
-
-    const [lfProviders, setLfProviders] = useState([]);
-
-    const [lfProvider, setLfProvider] = useState(null);
-
-    const [lfParams, setLfParams] = useState(null);
-
-    useEffect(() => {
-        if (user !== null) {
-            getLoadFlowProviders()
-                .then((providers) => {
-                    // we can consider the provider get from back will be also used as
-                    // a key for translation
-                    const providersObj = providers.reduce(function (obj, v, i) {
-                        obj[v] = v;
-                        return obj;
-                    }, {});
-                    setLfProviders(providersObj);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'getLoadFlowProvidersError',
-                    });
-                });
-        }
-    }, [user, snackError]);
-
-    const updateLfProvider = useCallback(
-        (newProvider) => {
-            setLoadFlowProvider(studyUuid, newProvider)
-                .then(() => setLfProvider(newProvider))
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'setLoadFlowProviderError',
-                    });
-                });
-        },
-        [studyUuid, snackError]
-    );
-
-    const setLoadFlowProviderToDefault = useCallback(() => {
-        getDefaultLoadFlowProvider()
-            .then((defaultLFProvider) => {
-                const providerNames = Object.keys(lfProviders);
-                if (providerNames.length > 0) {
-                    updateLfProvider(
-                        defaultLFProvider in lfProviders
-                            ? defaultLFProvider
-                            : Object.keys(lfProviders)[0]
-                    );
-                }
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'defaultLoadflowRetrievingError',
-                });
-            });
-    }, [lfProviders, updateLfProvider, snackError]);
-
-    useEffect(() => {
-        if (studyUuid) {
-            getLoadFlowParameters(studyUuid)
-                .then((params) => setLfParams(params))
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
-                });
-            getLoadFlowProvider(studyUuid)
-                .then((provider) => {
-                    // if provider is not defined or not among allowed values, it's set to default value
-                    if (!(provider in lfProviders)) {
-                        setLoadFlowProviderToDefault();
-                    } else {
-                        setLfProvider(provider);
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'getLoadFlowProviderError',
-                    });
-                });
-        }
-    }, [studyUuid, snackError, setLoadFlowProviderToDefault]);
-
-    return [
-        lfParams,
-        lfProviders,
-        lfProvider,
-        setLfParams,
-        updateLfProvider,
-        setLoadFlowProviderToDefault,
-    ];
-};
 
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
@@ -383,7 +276,7 @@ const AdvancedLoadFlowParameters = ({
 
 export const LoadFlowParameters = ({
     hideParameters,
-    lfParamsAndLfProvider,
+    parametersBackend,
     showAdvancedLfParams,
     setShowAdvancedLfParams,
 }) => {
@@ -394,41 +287,41 @@ export const LoadFlowParameters = ({
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [
-        lfParams,
-        lfProviders,
-        lfProvider,
-        setLfParams,
-        updateLfProvider,
-        setLoadFlowProviderToDefault,
-    ] = lfParamsAndLfProvider;
+        providers,
+        provider,
+        updateProvider,
+        resetProvider,
+        params,
+        setParams,
+    ] = parametersBackend;
 
     const updateLfProviderCallback = useCallback(
         (evt) => {
-            updateLfProvider(evt.target.value);
+            updateProvider(evt.target.value);
         },
-        [updateLfProvider]
+        [updateProvider]
     );
 
     const commitLFParameter = useCallback(
         (newParams) => {
-            let oldParams = { ...lfParams };
-            setLfParams(newParams);
+            let oldParams = { ...params };
+            setParams(newParams);
             setLoadFlowParameters(studyUuid, newParams).catch((error) => {
-                setLfParams(oldParams);
+                setParams(oldParams);
                 snackError({
                     messageTxt: error.message,
                     headerId: 'paramsChangingError',
                 });
             });
         },
-        [lfParams, snackError, studyUuid, setLfParams]
+        [params, snackError, studyUuid, setParams]
     );
 
     const resetLfParameters = useCallback(() => {
         setLoadFlowParameters(studyUuid, null)
             .then(() => {
                 return getLoadFlowParameters(studyUuid)
-                    .then((params) => setLfParams(params))
+                    .then((params) => setParams(params))
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
@@ -443,16 +336,16 @@ export const LoadFlowParameters = ({
                 });
             });
 
-        setLoadFlowProviderToDefault();
-    }, [studyUuid, setLoadFlowProviderToDefault, snackError, setLfParams]);
+        resetProvider();
+    }, [studyUuid, resetProvider, snackError, setParams]);
 
     return (
         <Grid container className={classes.grid}>
-            <Grid container key="lfProvider">
+            <Grid container key="provider">
                 <DropDown
-                    value={lfProvider}
+                    value={provider}
                     label="Provider"
-                    values={lfProviders}
+                    values={providers}
                     callback={updateLfProviderCallback}
                 />
 
@@ -460,11 +353,11 @@ export const LoadFlowParameters = ({
                     <LineSeparator />
                 </Grid>
                 <BasicLoadFlowParameters
-                    lfParams={lfParams || {}}
+                    lfParams={params || {}}
                     commitLFParameter={commitLFParameter}
                 />
                 <AdvancedLoadFlowParameters
-                    lfParams={lfParams || {}}
+                    lfParams={params || {}}
                     commitLFParameter={commitLFParameter}
                     showAdvancedLfParams={showAdvancedLfParams}
                     setShowAdvancedLfParams={setShowAdvancedLfParams}

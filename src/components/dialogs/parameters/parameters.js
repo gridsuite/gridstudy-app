@@ -20,10 +20,27 @@ import {
     Tab,
     Tabs,
     Typography,
-    Switch, Select, MenuItem
+    Switch,
+    Select,
+    MenuItem,
 } from '@mui/material';
 
-import { updateConfigParameter } from '../../../utils/rest-api';
+import {
+    fetchDefaultSecurityAnalysisProvider,
+    fetchDefaultSensitivityAnalysisProvider,
+    fetchSecurityAnalysisProvider,
+    fetchSensitivityAnalysisProvider,
+    fetchSecurityAnalysisProviders,
+    fetchSensitivityAnalysisProviders,
+    updateConfigParameter,
+    updateSecurityAnalysisProvider,
+    updateSensitivityAnalysisProvider,
+    getLoadFlowParameters,
+    getLoadFlowProviders,
+    getLoadFlowProvider,
+    getDefaultLoadFlowProvider,
+    setLoadFlowProvider,
+} from '../../../utils/rest-api';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
@@ -32,10 +49,7 @@ import {
     useGetAvailableComponentLibraries,
 } from './single-line-diagram-parameters';
 
-import {
-    LoadFlowParameters,
-    useGetLfParamsAndProvider,
-} from './load-flow-parameters';
+import { LoadFlowParameters } from './load-flow-parameters';
 import { MapParameters } from './map-parameters';
 import { NetworkParameters } from './network-parameters';
 import {
@@ -43,14 +57,8 @@ import {
     useGetShortCircuitParameters,
 } from './short-circuit-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
-import {
-    SecurityAnalysisParameters,
-    useSecurityAnalysisParametersContext,
-} from './security-analysis-parameters';
-import {
-    SensitivityAnalysisParameters,
-    useSensitivityAnalysisParametersContext
-} from './sensitivity-analysis-parameters';
+import { SecurityAnalysisParameters } from './security-analysis-parameters';
+import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -151,6 +159,135 @@ export const LabelledButton = ({ callback, label, name }) => {
         </Button>
     );
 };
+
+export const useParametersBackend = (
+    user,
+    type,
+    backendFetchProviders,
+    backendFetchProvider,
+    backendFetchDefaultProvider,
+    backendUpdateProvider,
+    backendFetchParameters
+) => {
+    const studyUuid = useSelector((state) => state.studyUuid);
+
+    const { snackError } = useSnackMessage();
+
+    const [providers, setProviders] = useState([]);
+
+    const [provider, setProvider] = useState(null);
+
+    const [params, setParams] = useState(null);
+
+    useEffect(() => {
+        if (user !== null) {
+            backendFetchProviders()
+                .then((providers) => {
+                    // we can consider the provider get from back will be also used as
+                    // a key for translation
+                    const providersObj = providers.reduce(function (obj, v, i) {
+                        obj[v] = v;
+                        return obj;
+                    }, {});
+                    setProviders(providersObj);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'fetch' + type + 'ProvidersError',
+                    });
+                });
+        }
+    }, [user, backendFetchProviders, type, snackError]);
+
+    const updateProvider = useCallback(
+        (newProvider) => {
+            backendUpdateProvider(studyUuid, newProvider)
+                .then(() => setProvider(newProvider))
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'update' + type + 'ProviderError',
+                    });
+                });
+        },
+        [type, backendUpdateProvider, studyUuid, snackError]
+    );
+
+    const resetProvider = useCallback(() => {
+        backendFetchDefaultProvider()
+            .then((defaultProvider) => {
+                const providerNames = Object.keys(providers);
+                if (providerNames.length > 0) {
+                    const newProvider =
+                        defaultProvider in providers
+                            ? defaultProvider
+                            : providerNames[0];
+                    updateProvider(newProvider);
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'fetchDefault' + type + 'ProviderError',
+                });
+            });
+    }, [
+        type,
+        backendFetchDefaultProvider,
+        providers,
+        updateProvider,
+        snackError,
+    ]);
+
+    useEffect(() => {
+        if (studyUuid) {
+            if (backendFetchParameters) {
+                backendFetchParameters(studyUuid)
+                    .then((params) => setParams(params))
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            }
+            backendFetchProvider(studyUuid)
+                .then((provider) => {
+                    // if provider is not defined or not among allowed values, it's set to default value
+                    if (provider in providers) {
+                        setProvider(provider);
+                    } else {
+                        resetProvider();
+                    }
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'fetch' + type + 'ProviderError',
+                    });
+                });
+        }
+    }, [
+        type,
+        backendFetchParameters,
+        backendFetchProvider,
+        studyUuid,
+        snackError,
+        resetProvider,
+        setParams,
+    ]);
+
+    return [
+        providers,
+        provider,
+        updateProvider,
+        resetProvider,
+        params,
+        setParams,
+    ];
+};
+
 export function useParameterState(paramName) {
     const { snackError } = useSnackMessage();
 
@@ -194,13 +331,33 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const lfParamsAndLfProvider = useGetLfParamsAndProvider(user);
+    const loadFlowParametersBackend = useParametersBackend(
+        user,
+        'LoadFlow',
+        getLoadFlowProviders,
+        getLoadFlowProvider,
+        getDefaultLoadFlowProvider,
+        setLoadFlowProvider,
+        getLoadFlowParameters
+    );
 
-    const securityAnalysisParametersContext =
-        useSecurityAnalysisParametersContext(user);
+    const securityAnalysisParametersBackend = useParametersBackend(
+        user,
+        'SecurityAnalysis',
+        fetchSecurityAnalysisProviders,
+        fetchSecurityAnalysisProvider,
+        fetchDefaultSecurityAnalysisProvider,
+        updateSecurityAnalysisProvider
+    );
 
-    const sensitivityAnalysisParametersContext =
-        useSensitivityAnalysisParametersContext(user);
+    const sensitivityAnalysisParametersBackend = useParametersBackend(
+        user,
+        'SensitivityAnalysis',
+        fetchSensitivityAnalysisProviders,
+        fetchSensitivityAnalysisProvider,
+        fetchDefaultSensitivityAnalysisProvider,
+        updateSensitivityAnalysisProvider
+    );
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
@@ -274,7 +431,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         />
                         <Tab
                             disabled={!studyUuid}
-                            label={<FormattedMessage id="SensitivityAnalysis" />}
+                            label={
+                                <FormattedMessage id="SensitivityAnalysis" />
+                            }
                         />
                         {enableDeveloperMode && (
                             <Tab
@@ -298,7 +457,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         {studyUuid && (
                             <LoadFlowParameters
                                 hideParameters={hideParameters}
-                                lfParamsAndLfProvider={lfParamsAndLfProvider}
+                                parametersBackend={loadFlowParametersBackend}
                                 showAdvancedLfParams={showAdvancedLfParams}
                                 setShowAdvancedLfParams={
                                     setShowAdvancedLfParams
@@ -306,22 +465,28 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={securityAnalysisParamsTabIndex}>
+                    <TabPanel
+                        value={tabIndex}
+                        index={securityAnalysisParamsTabIndex}
+                    >
                         {studyUuid && (
                             <SecurityAnalysisParameters
                                 hideParameters={hideParameters}
-                                parametersContext={
-                                    securityAnalysisParametersContext
+                                parametersBackend={
+                                    securityAnalysisParametersBackend
                                 }
                             />
                         )}
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={sensitivityAnalysisParamsTabIndex}>
+                    <TabPanel
+                        value={tabIndex}
+                        index={sensitivityAnalysisParamsTabIndex}
+                    >
                         {studyUuid && (
                             <SensitivityAnalysisParameters
                                 hideParameters={hideParameters}
-                                parametersContext={
-                                    sensitivityAnalysisParametersContext
+                                parametersBackend={
+                                    sensitivityAnalysisParametersBackend
                                 }
                             />
                         )}
