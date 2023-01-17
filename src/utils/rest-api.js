@@ -1865,16 +1865,9 @@ export function createSubstation(
     modificationUuid,
     properties
 ) {
-    let createSubstationUrl =
+    let url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
-
-    if (isUpdate) {
-        createSubstationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating substation creation');
-    } else {
-        console.info('Creating substation creation');
-    }
 
     const asObj = !properties?.length
         ? undefined
@@ -1887,9 +1880,15 @@ export function createSubstation(
         substationCountry: substationCountry === '' ? null : substationCountry,
         properties: asObj,
     });
-    console.debug({ body });
 
-    return backendFetchText(createSubstationUrl, {
+    if (isUpdate) {
+        url += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation creation', { url, body });
+    } else {
+        console.info('Creating substation creation', { url, body });
+    }
+
+    return backendFetchText(url, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
