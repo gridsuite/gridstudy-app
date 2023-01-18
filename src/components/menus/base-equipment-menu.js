@@ -68,7 +68,9 @@ const BaseEquipmentMenu = ({
     const network = useSelector((state) => state.network);
 
     function getEquipment(equipmentType, equipmentId) {
-        if (equipmentType === equipments.substations) {
+        if (!network) {
+            return null;
+        } else if (equipmentType === equipments.substations) {
             return network.getSubstation(equipmentId);
         } else if (equipmentType === equipments.voltageLevels) {
             return network.getVoltageLevel(equipmentId);
@@ -135,7 +137,7 @@ const BaseEquipmentMenu = ({
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
                             itemText={() => {
-                                const substation = network.getSubstation(
+                                const substation = network?.getSubstation(
                                     equipment?.substationId
                                 );
                                 return getNameOrId(substation);

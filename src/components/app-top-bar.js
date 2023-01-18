@@ -119,22 +119,26 @@ const CustomSuffixRenderer = ({ props, element }) => {
         element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
     )
         return (
-            <>
-                {element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name && (
+            network && (
+                <>
+                    {element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name && (
+                        <IconButton
+                            onClick={(e) =>
+                                openNetworkAreaDiagramCB(e, element)
+                            }
+                            size={'small'}
+                        >
+                            <TimelineIcon fontSize={'small'} />
+                        </IconButton>
+                    )}
                     <IconButton
-                        onClick={(e) => openNetworkAreaDiagramCB(e, element)}
+                        onClick={(e) => enterOnSubstationCB(e, element)}
                         size={'small'}
                     >
-                        <TimelineIcon fontSize={'small'} />
+                        <GpsFixedIcon fontSize={'small'} />
                     </IconButton>
-                )}
-                <IconButton
-                    onClick={(e) => enterOnSubstationCB(e, element)}
-                    size={'small'}
-                >
-                    <GpsFixedIcon fontSize={'small'} />
-                </IconButton>
-            </>
+                </>
+            )
         );
 
     return (

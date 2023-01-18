@@ -163,7 +163,7 @@ export const ResultViewTab = ({
 
 ResultViewTab.propTypes = {
     loadFlowInfos: PropTypes.object,
-    network: PropTypes.object.isRequired,
+    network: PropTypes.object,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,

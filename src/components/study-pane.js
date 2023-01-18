@@ -227,10 +227,12 @@ const StudyPane = ({
                                         : '100%',
                             }}
                         >
-                            <NetworkModificationTreePane
-                                studyUuid={studyUuid}
-                                studyMapTreeDisplay={studyDisplayMode}
-                            />
+                            {network && (
+                                <NetworkModificationTreePane
+                                    studyUuid={studyUuid}
+                                    studyMapTreeDisplay={studyDisplayMode}
+                                />
+                            )}
                         </div>
                         <div
                             className={clsx(
@@ -345,21 +347,23 @@ const StudyPane = ({
 
     function renderTableView() {
         return (
-            <Paper className={clsx('singlestretch-child', classes.table)}>
-                <NetworkTable
-                    network={network}
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    equipmentId={tableEquipment.id}
-                    equipmentType={tableEquipment.type}
-                    equipmentChanged={tableEquipment.changed}
-                    loadFlowStatus={getLoadFlowRunningStatus(
-                        loadFlowInfos?.loadFlowStatus
-                    )}
-                    disabled={disabled}
-                    visible={props.view === StudyView.SPREADSHEET}
-                />
-            </Paper>
+            network && (
+                <Paper className={clsx('singlestretch-child', classes.table)}>
+                    <NetworkTable
+                        network={network}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        equipmentId={tableEquipment.id}
+                        equipmentType={tableEquipment.type}
+                        equipmentChanged={tableEquipment.changed}
+                        loadFlowStatus={getLoadFlowRunningStatus(
+                            loadFlowInfos?.loadFlowStatus
+                        )}
+                        disabled={disabled}
+                        visible={props.view === StudyView.SPREADSHEET}
+                    />
+                </Paper>
+            )
         );
     }
 

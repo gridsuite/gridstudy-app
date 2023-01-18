@@ -115,7 +115,7 @@ const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
     [PARAM_USE_NAME]: true,
-    [PARAM_LINE_FULL_PATH]: true,
+    [PARAM_LINE_FULL_PATH]: false,
     [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_DISPLAY_OVERLOAD_TABLE]: false,

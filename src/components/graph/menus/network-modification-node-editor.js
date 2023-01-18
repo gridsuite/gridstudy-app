@@ -720,43 +720,47 @@ const NetworkModificationNodeEditor = () => {
 
     const renderNetworkModificationsList = (network) => {
         return (
-            <DragDropContext
-                onDragEnd={commit}
-                onDragStart={() => setIsDragging(true)}
-            >
-                <Droppable
-                    droppableId="network-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding}
+            network && (
+                <DragDropContext
+                    onDragEnd={commit}
+                    onDragStart={() => setIsDragging(true)}
                 >
-                    {(provided) => (
-                        <div
-                            className={classes.listContainer}
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
-                            <CheckboxList
-                                className={classes.list}
-                                onChecked={setSelectedItems}
-                                values={modifications}
-                                itemComparator={(a, b) => a.uuid === b.uuid}
-                                itemRenderer={(props) => (
-                                    <ModificationListItem
-                                        key={props.item.uuid}
-                                        onEdit={doEditModification}
-                                        isDragging={isDragging}
-                                        network={network}
-                                        isOneNodeBuilding={isAnyNodeBuilding}
-                                        {...props}
-                                        disabled={isLoading()}
-                                    />
-                                )}
-                                toggleSelectAll={toggleSelectAll}
-                            />
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
+                    <Droppable
+                        droppableId="network-modification-list"
+                        isDropDisabled={isLoading() || isAnyNodeBuilding}
+                    >
+                        {(provided) => (
+                            <div
+                                className={classes.listContainer}
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
+                                <CheckboxList
+                                    className={classes.list}
+                                    onChecked={setSelectedItems}
+                                    values={modifications}
+                                    itemComparator={(a, b) => a.uuid === b.uuid}
+                                    itemRenderer={(props) => (
+                                        <ModificationListItem
+                                            key={props.item.uuid}
+                                            onEdit={doEditModification}
+                                            isDragging={isDragging}
+                                            network={network}
+                                            isOneNodeBuilding={
+                                                isAnyNodeBuilding
+                                            }
+                                            {...props}
+                                            disabled={isLoading()}
+                                        />
+                                    )}
+                                    toggleSelectAll={toggleSelectAll}
+                                />
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
+            )
         );
     };
 
@@ -907,7 +911,6 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationDialog
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
-                network={network}
                 currentNodeUuid={currentTreeNode?.id}
                 onOpenDialog={setEditDialogOpen}
                 dialogs={dialogs}

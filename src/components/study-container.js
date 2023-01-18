@@ -684,7 +684,7 @@ export function StudyContainer({ view, onChangeTab }) {
             errMessage={
                 studyErrorMessage || networkLoadingFailMessage || errorMessage
             }
-            loading={studyPending || !network}
+            loading={studyPending}
             message={'LoadingRemoteData'}
         >
             <StudyPane

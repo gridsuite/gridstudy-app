@@ -101,8 +101,6 @@ export const NetworkMapTab = ({
 
     const intlRef = useIntlRef();
     const [isInitialized, setInitialized] = useState(false);
-    const [waitingLoadMapEquipments, setWaitingLoadEquipments] =
-        useState(false);
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
     const [waitingFullLoadGeoData, setWaitingFullLoadGeoData] = useState(true);
     const [waitingLoadTemporaryGeoData, setWaitingLoadTemporaryGeoData] =
@@ -127,7 +125,6 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
-    const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
@@ -135,6 +132,7 @@ export const NetworkMapTab = ({
     const refIsMapManualRefreshEnabled = useRef();
     refIsMapManualRefreshEnabled.current = mapManualRefresh;
 
+    //TODO remove from state ?
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
     const deletedEquipment = useSelector((state) => state.deletedEquipment);
@@ -516,6 +514,7 @@ export const NetworkMapTab = ({
             if (
                 // To manage a lineFullPath param change, if lineFullPath=true and linePositions is empty, we load all the geo data.
                 // This can be improved by loading only the lines geo data and not lines geo data + substations geo data when lineFullPath is changed to true.
+                // isInitialized &&
                 geoDataRef.current?.substationPositionsById.size > 0 &&
                 (!lineFullPath || geoDataRef.current.linePositionsById.size > 0)
             ) {
@@ -530,36 +529,42 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
-        if (!isInitialized) {
-            new MapEquipments(
-                studyUuid,
-                currentNode?.id,
-                setErrorMessage,
-                dispatch,
-                intlRef
-            );
-        } else {
-            if (mapEquipments) {
-                console.info('Reload map equipments');
-                setWaitingLoadEquipments(true);
-                const updatedSubstationsToSend =
-                    !refIsMapManualRefreshEnabled.current &&
-                    !isUpdatedSubstationsApplied &&
-                    updatedSubstationsIds?.length > 0
-                        ? updatedSubstationsIds
-                        : undefined;
+        new MapEquipments(
+            studyUuid,
+            currentNode?.id,
+            setErrorMessage,
+            dispatch,
+            intlRef
+        );
+        dispatch(resetMapReloaded());
+    }, [currentNode, dispatch, intlRef, setErrorMessage, studyUuid]);
 
-                mapEquipments
-                    .reloadImpactedSubstationsEquipments(
-                        studyUuid,
-                        currentNode,
-                        updatedSubstationsToSend,
-                        setUpdatedLines
-                    )
-                    .finally(() => setWaitingLoadEquipments(false));
-                if (updatedSubstationsToSend) {
-                    setIsUpdatedSubstationsApplied(true);
-                }
+    const updateMapEquipmentsAndGeoData = useCallback(() => {
+        if (!isNodeBuilt(currentNode) || !studyUuid || !isInitialized) {
+            return;
+        }
+        //TODO not reload map equip when switching on true lineFullPath
+        if (mapEquipments) {
+            console.info('Reload map equipments');
+            setWaitingFullLoadGeoData(true);
+            const updatedSubstationsToSend =
+                !refIsMapManualRefreshEnabled.current &&
+                !isUpdatedSubstationsApplied &&
+                updatedSubstationsIds?.length > 0
+                    ? updatedSubstationsIds
+                    : undefined;
+
+            mapEquipments
+                .reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    updatedSubstationsToSend,
+                    setUpdatedLines
+                )
+                .then(() => loadGeoData())
+                .finally(() => setWaitingFullLoadGeoData(false));
+            if (updatedSubstationsToSend) {
+                setIsUpdatedSubstationsApplied(true);
             }
         }
         dispatch(resetMapReloaded());
@@ -570,7 +575,6 @@ export const NetworkMapTab = ({
         isInitialized,
         isUpdatedSubstationsApplied,
         mapEquipments,
-        setErrorMessage,
         studyUuid,
         updatedSubstationsIds,
     ]);
@@ -599,9 +603,12 @@ export const NetworkMapTab = ({
         if (disabled) return;
         if (refIsMapManualRefreshEnabled.current && isInitialized) return;
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
-        // TODO REMOVE LATER
-        if (!reloadMapNeeded) return;
-        loadMapEquipments();
+        if (!isInitialized) {
+            loadMapEquipments();
+            loadAllGeoData();
+        } else {
+            updateMapEquipmentsAndGeoData();
+        }
         setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
@@ -609,33 +616,20 @@ export const NetworkMapTab = ({
         studyUuid,
         currentNode,
         loadMapEquipments,
-        isInitialized,
+        updateMapEquipmentsAndGeoData,
+        loadAllGeoData, isInitialized,
         reloadMapNeeded,
         updatedSubstationsIds,
     ]);
 
-    // This useEffect ensures the geo data load is done after the map equipments load. Improvement: the sequentiality could be enforced by using a chain of promises for the updates of mapEquipments and geoData
-    // At initialization, loadMapEquipments and loadGeoData can be parallelized.
-    // Also, because of this useEffect instead of a chain of promises, we have to use a ref for currentNode in loadGeoData, loadAllGeoData and loadMissingGeoData Because currentNode would trigger loadGeoData and loadMapEquipments which retriggers loadGeoData.
-    useEffect(() => {
-        if (!mapEquipments) return;
-        loadGeoData();
-    }, [loadGeoData, mapEquipments]);
-
     /* TODO : this useEffect reloads the mapEquipments when, in manual refresh mode, the current node is built.
-            But in automtic refresh mode, this useEffect triggers a second mapEquipments reload (the legitimate reload is done by the useEffect row 575).
-            2 solutions: 1) the manual mode is removed so we can remove this useEffect
-                         2) we keep the manual mode => we need to fix the "bug" and do only one reload
      */
     useEffect(() => {
-        let previousNodeStatus = isCurrentNodeBuiltRef.current;
-        isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
-
         // when we build node we want the map to be up to date
-        if (!previousNodeStatus && isCurrentNodeBuiltRef.current) {
-            loadMapEquipments();
+        if (refIsMapManualRefreshEnabled.current && isInitialized && isNodeBuilt(currentNode)) {
+            updateMapEquipmentsAndGeoData();
         }
-    }, [currentNode, loadMapEquipments]);
+    }, [currentNode, isInitialized, updateMapEquipmentsAndGeoData]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
@@ -739,7 +733,6 @@ export const NetworkMapTab = ({
         <>
             <div className={classes.divTemporaryGeoDataLoading}>
                 {(waitingLoadTemporaryGeoData ||
-                    waitingLoadMapEquipments ||
                     (!waitingLoadGeoData && waitingFullLoadGeoData)) && (
                     <LinearProgress />
                 )}

@@ -108,7 +108,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
     return useCallback(
         (view) => {
             function createSubstationSLD(substationId, state) {
-                const substation = network.getSubstation(substationId);
+                const substation = network?.getSubstation(substationId);
                 if (!substation) return;
                 let label = getNameOrId(substation);
                 const countryName = substation?.countryName;
@@ -128,10 +128,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             }
 
             function createVoltageLevelSLD(vlId, state) {
-                const vl = network.getVoltageLevel(vlId);
+                const vl = network?.getVoltageLevel(vlId);
                 if (!vl) return;
                 let label = getNameOrId(vl);
-                const substation = network.getSubstation(vlId);
+                const substation = network?.getSubstation(vlId);
                 const countryName = substation?.countryName;
                 if (countryName) {
                     label += ' - ' + countryName;
@@ -297,7 +297,7 @@ export function SingleLineDiagramPane({
                     const substationsIds =
                         studyUpdatedForce.eventData.headers['substationsIds'];
                     viewsRef.current.forEach((v) => {
-                        const vl = network.getVoltageLevel(v.id);
+                        const vl = network?.getVoltageLevel(v.id);
                         if (vl && substationsIds.includes(vl.substationId)) {
                             updateSld(vl.id);
                         }

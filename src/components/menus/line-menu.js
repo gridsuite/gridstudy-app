@@ -65,7 +65,7 @@ const withLineMenu =
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const { getNameOrId } = useNameOrId();
 
-        const line = network.getLine(id);
+        const line = network?.getLine(id);
 
         const isNodeEditable = useMemo(
             function () {
@@ -169,147 +169,153 @@ const withLineMenu =
         }
 
         return (
-            <Menu
-                className={classes.menu}
-                anchorReference="anchorPosition"
-                anchorPosition={{
-                    position: 'absolute',
-                    top: position[1],
-                    left: position[0],
-                }}
-                id="line-menu"
-                open={true}
-                onClose={handleClose}
-            >
-                <BaseMenu
-                    equipmentId={id}
-                    equipmentType={equipments.lines}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleLockout()}
-                    disabled={
-                        !isNodeEditable ||
-                        line.branchStatus === 'PLANNED_OUTAGE'
-                    }
+            network &&
+            line && (
+                <Menu
+                    className={classes.menu}
+                    anchorReference="anchorPosition"
+                    anchorPosition={{
+                        position: 'absolute',
+                        top: position[1],
+                        left: position[0],
+                    }}
+                    id="line-menu"
+                    open={true}
+                    onClose={handleClose}
                 >
-                    <ListItemIcon>
-                        <LockOutlinedIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({ id: 'LockoutLine' })}
-                            </Typography>
-                        }
+                    <BaseMenu
+                        equipmentId={id}
+                        equipmentType={equipments.lines}
+                        handleViewInSpreadsheet={handleViewInSpreadsheet}
                     />
-                </MenuItem>
 
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleTrip()}
-                    disabled={
-                        !isNodeEditable || line.branchStatus === 'FORCED_OUTAGE'
-                    }
-                >
-                    <ListItemIcon>
-                        <OfflineBoltOutlinedIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({ id: 'TripLine' })}
-                            </Typography>
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleLockout()}
+                        disabled={
+                            !isNodeEditable ||
+                            line.branchStatus === 'PLANNED_OUTAGE'
                         }
-                    />
-                </MenuItem>
+                    >
+                        <ListItemIcon>
+                            <LockOutlinedIcon />
+                        </ListItemIcon>
 
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleEnergise('ONE')}
-                    disabled={
-                        !isNodeEditable ||
-                        (line.terminal1Connected && !line.terminal2Connected)
-                    }
-                >
-                    <ListItemIcon>
-                        <EnergiseOneSideIcon />
-                    </ListItemIcon>
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({ id: 'LockoutLine' })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
 
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage(
-                                    { id: 'EnergiseOnOneEnd' },
-                                    {
-                                        substation: getLineDescriptor(
-                                            line.voltageLevelId1
-                                        ),
-                                    }
-                                )}
-                            </Typography>
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleTrip()}
+                        disabled={
+                            !isNodeEditable ||
+                            line.branchStatus === 'FORCED_OUTAGE'
                         }
-                    />
-                </MenuItem>
+                    >
+                        <ListItemIcon>
+                            <OfflineBoltOutlinedIcon />
+                        </ListItemIcon>
 
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleEnergise('TWO')}
-                    disabled={
-                        !isNodeEditable ||
-                        (line.terminal2Connected && !line.terminal1Connected)
-                    }
-                >
-                    <ListItemIcon>
-                        <EnergiseOtherSideIcon />
-                    </ListItemIcon>
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({ id: 'TripLine' })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
 
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage(
-                                    { id: 'EnergiseOnOneEnd' },
-                                    {
-                                        substation: getLineDescriptor(
-                                            line.voltageLevelId2
-                                        ),
-                                    }
-                                )}
-                            </Typography>
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleEnergise('ONE')}
+                        disabled={
+                            !isNodeEditable ||
+                            (line.terminal1Connected &&
+                                !line.terminal2Connected)
                         }
-                    />
-                </MenuItem>
+                    >
+                        <ListItemIcon>
+                            <EnergiseOneSideIcon />
+                        </ListItemIcon>
 
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleSwitchOn()}
-                    disabled={
-                        !isNodeEditable ||
-                        (line.terminal1Connected && line.terminal2Connected)
-                    }
-                >
-                    <ListItemIcon>
-                        <PlayIcon />
-                    </ListItemIcon>
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage(
+                                        { id: 'EnergiseOnOneEnd' },
+                                        {
+                                            substation: getLineDescriptor(
+                                                line.voltageLevelId1
+                                            ),
+                                        }
+                                    )}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
 
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({ id: 'SwitchOnLine' })}
-                            </Typography>
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleEnergise('TWO')}
+                        disabled={
+                            !isNodeEditable ||
+                            (line.terminal2Connected &&
+                                !line.terminal1Connected)
                         }
-                    />
-                </MenuItem>
-            </Menu>
+                    >
+                        <ListItemIcon>
+                            <EnergiseOtherSideIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage(
+                                        { id: 'EnergiseOnOneEnd' },
+                                        {
+                                            substation: getLineDescriptor(
+                                                line.voltageLevelId2
+                                            ),
+                                        }
+                                    )}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleSwitchOn()}
+                        disabled={
+                            !isNodeEditable ||
+                            (line.terminal1Connected && line.terminal2Connected)
+                        }
+                    >
+                        <ListItemIcon>
+                            <PlayIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({ id: 'SwitchOnLine' })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                </Menu>
+            )
         );
     };
 
