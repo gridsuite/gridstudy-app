@@ -6,6 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { MODIFICATION_TYPE } from '../components/network/constants';
 import {
     fetchNetworkModifications,
     deleteModifications,
@@ -278,12 +279,12 @@ const NetworkModificationNodeEditor = () => {
     }
 
     const dialogs = {
-        LOAD_CREATION: {
+        [MODIFICATION_TYPE.LOAD_CREATION]: {
             label: 'CreateLoad',
             dialog: () => adapt(LoadCreationDialog, withVLs),
             icon: <AddIcon />,
         },
-        LOAD_MODIFICATION: {
+        [MODIFICATION_TYPE.LOAD_MODIFICATION]: {
             label: 'ModifyLoad',
             dialog: () =>
                 adapt(
@@ -292,13 +293,13 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
-        GENERATOR_CREATION: {
+        [MODIFICATION_TYPE.GENERATOR_CREATION]: {
             label: 'CreateGenerator',
             dialog: () =>
                 adapt(GeneratorCreationDialog, withVLs, withVLsAndEquipments),
             icon: <AddIcon />,
         },
-        GENERATOR_MODIFICATION: {
+        [MODIFICATION_TYPE.GENERATOR_MODIFICATION]: {
             label: 'ModifyGenerator',
             dialog: () =>
                 adapt(
@@ -312,17 +313,17 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
-        SHUNT_COMPENSATOR_CREATION: {
+        [MODIFICATION_TYPE.SHUNT_COMPENSATOR_CREATION]: {
             label: 'CreateShuntCompensator',
             dialog: () => adapt(ShuntCompensatorCreationDialog, withVLs),
             icon: <AddIcon />,
         },
-        LINE_CREATION: {
+        [MODIFICATION_TYPE.LINE_CREATION]: {
             label: 'CreateLine',
             dialog: () => adapt(LineCreationDialog, withVLs),
             icon: <AddIcon />,
         },
-        TWO_WINDINGS_TRANSFORMER_CREATION: {
+        [MODIFICATION_TYPE.TWO_WINDINGS_TRANSFORMER_CREATION]: {
             onlyDeveloperMode: true,
             label: 'CreateTwoWindingsTransformer',
             dialog: () =>
@@ -333,17 +334,17 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
-        SUBSTATION_CREATION: {
+        [MODIFICATION_TYPE.SUBSTATION_CREATION]: {
             label: 'CreateSubstation',
             dialog: () => adapt(SubstationCreationDialog),
             icon: <AddIcon />,
         },
-        VOLTAGE_LEVEL_CREATION: {
+        [MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION]: {
             label: 'CreateVoltageLevel',
             dialog: () => adapt(VoltageLevelCreationDialog, withSubstations),
             icon: <AddIcon />,
         },
-        LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
+        [MODIFICATION_TYPE.LINE_SPLIT_WITH_VOLTAGE_LEVEL]: {
             label: 'LineSplitWithVoltageLevel',
             dialog: () =>
                 adapt(
@@ -354,7 +355,7 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
-        LINE_ATTACH_TO_VOLTAGE_LEVEL: {
+        [MODIFICATION_TYPE.LINE_ATTACH_TO_VOLTAGE_LEVEL]: {
             label: 'LineAttachToVoltageLevel',
             dialog: () =>
                 adapt(
@@ -365,7 +366,7 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
-        LINES_ATTACH_TO_SPLIT_LINES: {
+        [MODIFICATION_TYPE.LINES_ATTACH_TO_SPLIT_LINES]: {
             label: 'LinesAttachToSplitLines',
             dialog: () =>
                 adapt(
@@ -376,17 +377,17 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
-        DELETE_VOLTAGE_LEVEL_ON_LINE: {
+        [MODIFICATION_TYPE.DELETE_VOLTAGE_LEVEL_ON_LINE]: {
             label: 'DeleteVoltageLevelOnLine',
             dialog: () => adapt(DeleteVoltageLevelOnLineDialog, withLines),
             icon: <AddIcon />,
         },
-        DELETE_ATTACHING_LINE: {
+        [MODIFICATION_TYPE.DELETE_ATTACHING_LINE]: {
             label: 'DeleteAttachingLine',
             dialog: () => adapt(DeleteAttachingLineDialog, withLines),
             icon: <AddIcon />,
         },
-        EQUIPMENT_DELETION: {
+        [MODIFICATION_TYPE.EQUIPMENT_DELETION]: {
             label: 'DeleteEquipment',
             dialog: () => adapt(EquipmentDeletionDialog),
             icon: <DeleteIcon />,

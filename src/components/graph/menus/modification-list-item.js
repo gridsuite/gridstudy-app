@@ -65,15 +65,15 @@ export const ModificationListItem = ({
     const classes = useStyles();
     const { getNameOrId } = useNameOrId();
     const getComputedLabel = useCallback(() => {
-        if (modif.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
+        if (modif.type === MODIFICATION_TYPE.LINE_SPLIT_WITH_VOLTAGE_LEVE) {
             return modif.lineToSplitId;
-        } else if (modif.type === 'LINE_ATTACH_TO_VOLTAGE_LEVEL') {
+        } else if (modif.type === MODIFICATION_TYPE.LINE_ATTACH_TO_VOLTAGE_LEVEL) {
             return modif.lineToAttachToId;
-        } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
+        } else if (modif.type === MODIFICATION_TYPE.LINES_ATTACH_TO_SPLIT_LINES) {
             return modif.attachedLineId;
-        } else if (modif.type === 'DELETE_VOLTAGE_LEVEL_ON_LINE') {
+        } else if (modif.type === MODIFICATION_TYPE.DELETE_VOLTAGE_LEVEL_ON_LINE) {
             return modif.lineToAttachTo1Id + '/' + modif.lineToAttachTo2Id;
-        } else if (modif.type === 'DELETE_ATTACHING_LINE') {
+        } else if (modif.type === MODIFICATION_TYPE.DELETE_ATTACHING_LINE) {
             return (
                 modif.attachedLineId +
                 '/' +
@@ -105,7 +105,7 @@ export const ModificationListItem = ({
                 return vlID;
             }
             let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
-            if (modif.type === 'BRANCH_STATUS_MODIFICATION') {
+            if (modif.type === MODIFICATION_TYPE.BRANCH_STATUS_MODIFICATION) {
                 if (modif.action === 'ENERGISE_END_ONE') {
                     res.energizedEnd = getVoltageLevelLabel(
                         network.getLine(modif.equipmentId)?.voltageLevelId1
