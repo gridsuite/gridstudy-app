@@ -132,7 +132,12 @@ const OverloadedLinesView = (props) => {
                 .map((line) => makeData(line))
                 .sort((a, b) => b.overload - a.overload)
         );
-    }, [props.mapEquipments, props.lineFlowAlertThreshold, props.disabled]);
+    }, [
+        props.mapEquipments,
+        props.mapEquipments?.lines,
+        props.lineFlowAlertThreshold,
+        props.disabled,
+    ]);
 
     const filter = useCallback(
         (line) => line.overload > props.lineFlowAlertThreshold,
