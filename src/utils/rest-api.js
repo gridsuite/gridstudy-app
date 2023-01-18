@@ -7,7 +7,7 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
-import {MODIFICATION_TYPE} from '../../util/enums'
+import {MODIFICATION_TYPE} from '../components/enums';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';

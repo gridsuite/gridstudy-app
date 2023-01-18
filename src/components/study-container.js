@@ -41,7 +41,7 @@ import {
     setUpdatedSubstationsIds,
 } from '../redux/actions';
 import Network from './network/network';
-import { equipments } from '../../util/enums';
+import { equipments } from './enums';
 import WaitingLoader from './util/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';

@@ -23,7 +23,7 @@ import {
     fetchTwoWindingsTransformers,
     fetchVscConverterStations,
 } from '../../utils/rest-api';
-import { equipments } from '../../util/enums';
+import { equipments } from '../enums';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);

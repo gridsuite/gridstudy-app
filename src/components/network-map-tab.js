@@ -13,7 +13,7 @@ import {
     fetchSubstationPositions,
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
-import { equipments } from '../../util/enums';
+import { equipments } from './enums';
 import withLineMenu from './menus/line-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';

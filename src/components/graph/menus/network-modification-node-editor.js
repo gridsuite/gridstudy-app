@@ -25,7 +25,7 @@ import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
-import { equipments } from '../../util/enums';
+import { equipments } from '../../enums';
 import { ModificationListItem } from './modification-list-item';
 import {
     Checkbox,
@@ -64,7 +64,7 @@ import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
-import {MODIFICATION_TYPE} from '../../util/enums'
+import {MODIFICATION_TYPE} from './enums';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {

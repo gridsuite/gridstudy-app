@@ -18,7 +18,7 @@ import {
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import Paper from '@mui/material/Paper';
-import { equipments } from '../../util/enums';
+import { equipments } from './enums';
 import PropTypes from 'prop-types';
 import NetworkTable from './network/network-table';
 import clsx from 'clsx';

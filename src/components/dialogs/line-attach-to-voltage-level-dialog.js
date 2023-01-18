@@ -40,7 +40,7 @@ import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import {MODIFICATION_TYPE} from '../../util/enums'
+import {MODIFICATION_TYPE} from '../enums';
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.

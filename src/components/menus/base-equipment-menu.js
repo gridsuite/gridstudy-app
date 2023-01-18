@@ -16,7 +16,7 @@ import TableChartIcon from '@mui/icons-material/TableChart';
 import { NestedMenuItem } from 'mui-nested-menu';
 
 import { useIntl } from 'react-intl';
-import { equipments } from '../../util/enums';
+import { equipments } from '../enums';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../util/equipmentInfosHandler';
 

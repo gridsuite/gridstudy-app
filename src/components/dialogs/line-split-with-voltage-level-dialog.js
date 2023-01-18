@@ -40,7 +40,7 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import {MODIFICATION_TYPE} from '../../util/enums'
+import {MODIFICATION_TYPE} from './enums';
 
 /**
  * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.

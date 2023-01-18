@@ -7,7 +7,7 @@
 
 import Network from './network';
 import 'core-js/es/array/flat-map';
-import { equipments } from '../../util/enums';
+import { equipments } from '../enums';
 
 const substations = [
     {
