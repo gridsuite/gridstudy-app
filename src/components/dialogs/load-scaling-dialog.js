@@ -59,7 +59,8 @@ export const useStyles = makeStyles((theme) => ({
 }));
 
 const ACTIVE_VAR_MODE_DEFAULT_VALUE = 'PROPORTIONAL';
-const REACTIVE_VAR_MODE_DEFAULT_VALUE = 'TAN_PHI_FIXED';
+// to update later after correcting implementation in the backend (Powsybl)
+const REACTIVE_VAR_MODE_DEFAULT_VALUE = 'CONSTANT_Q';
 const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 const VENTILATION = 'VENTILATION';
 

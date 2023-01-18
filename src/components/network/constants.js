@@ -77,7 +77,8 @@ export const ACTIVE_VARIATION_MODE = [
 
 export const REACTIVE_VARIATION_MODE = [
     { id: 'CONSTANT_Q', label: 'ConstantQ' },
-    { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
+    // to add later after correcting implementation in the backend (Powsybl)
+    // { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
 ];
 
 export function getLoadTypeLabel(loadTypeId) {
