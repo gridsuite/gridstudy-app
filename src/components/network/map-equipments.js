@@ -7,7 +7,7 @@
 
 import { mapEquipmentsCreated } from '../../redux/actions';
 import { fetchMapEquipments } from '../../utils/rest-api';
-import { equipments } from './network-equipments';
+import { equipments } from '../../util/enums';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);

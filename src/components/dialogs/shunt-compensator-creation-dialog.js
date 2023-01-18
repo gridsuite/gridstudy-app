@@ -31,6 +31,7 @@ import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../network/constants';
 import { Box } from '@mui/material';
+import EquipmentType from '../dialogs/sensi/sensi-parameters-selector'
 
 const disabledChecked = { disabled: true };
 

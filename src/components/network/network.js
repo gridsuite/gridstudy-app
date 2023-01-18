@@ -23,7 +23,7 @@ import {
     fetchTwoWindingsTransformers,
     fetchVscConverterStations,
 } from '../../utils/rest-api';
-import { equipments } from './network-equipments';
+import { equipments } from '../../util/enums';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
@@ -180,7 +180,7 @@ export default class Network {
     }
 
     updateLines(lines) {
-        this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
+        this.lines = this.updateEquipments(this.lines, lines, [equipments.lines]);
 
         // add more infos
         this.completeLinesInfos();
@@ -197,7 +197,7 @@ export default class Network {
         this.twoWindingsTransformers = this.updateEquipments(
             this.twoWindingsTransformers,
             twoWindingsTransformers,
-            equipments.twoWindingsTransformers
+            [equipments.twoWindingsTransformers]
         );
 
         // add more infos
@@ -213,7 +213,7 @@ export default class Network {
         this.threeWindingsTransformers = this.updateEquipments(
             this.threeWindingsTransformers,
             threeWindingsTransformers,
-            equipments.threeWindingsTransformers
+            [equipments.threeWindingsTransformers]
         );
 
         // add more infos
@@ -231,7 +231,7 @@ export default class Network {
         this.generators = this.updateEquipments(
             this.generators,
             generators,
-            equipments.generators
+            [equipments.generators]
         );
 
         // add more infos
@@ -242,7 +242,7 @@ export default class Network {
         this.batteries = this.updateEquipments(
             this.batteries,
             batteries,
-            equipments.batteries
+            [equipments.batteries]
         );
     }
 
@@ -254,7 +254,7 @@ export default class Network {
         this.danglingLines = this.updateEquipments(
             this.danglingLines,
             danglingLines,
-            equipments.danglingLines
+            [equipments.danglingLines]
         );
     }
 
@@ -262,7 +262,7 @@ export default class Network {
         this.shuntCompensators = this.updateEquipments(
             this.shuntCompensators,
             shuntCompensators,
-            equipments.shuntCompensators
+            [equipments.shuntCompensators]
         );
     }
 
@@ -270,7 +270,7 @@ export default class Network {
         this.staticVarCompensators = this.updateEquipments(
             this.staticVarCompensators,
             staticVarCompensators,
-            equipments.staticVarCompensators
+            [equipments.staticVarCompensators]
         );
     }
 
@@ -278,7 +278,7 @@ export default class Network {
         this.hvdcLines = this.updateEquipments(
             this.hvdcLines,
             hvdcLines,
-            equipments.hvdcLines
+            [equipments.hvdcLines]
         );
     }
 
@@ -286,7 +286,7 @@ export default class Network {
         this.lccConverterStations = this.updateEquipments(
             this.lccConverterStations,
             lccConverterStations,
-            equipments.lccConverterStations
+            [equipments.lccConverterStations]
         );
     }
 
@@ -294,7 +294,7 @@ export default class Network {
         this.vscConverterStations = this.updateEquipments(
             this.vscConverterStations,
             vscConverterStations,
-            equipments.vscConverterStations
+            [equipments.vscConverterStations]
         );
     }
 

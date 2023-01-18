@@ -37,7 +37,7 @@ import BaseEquipmentMenu from '../../menus/base-equipment-menu';
 import withEquipmentMenu from '../../menus/equipment-menu';
 import withLineMenu from '../../menus/line-menu';
 
-import { equipments } from '../../network/network-equipments';
+import { equipments } from '../../util/enums';
 import { RunningStatus } from '../../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 

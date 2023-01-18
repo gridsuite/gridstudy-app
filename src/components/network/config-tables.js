@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { equipments } from './network-equipments';
+import { equipments } from '../../util/enums';
 import {
     NumericalField,
     NameField,
@@ -37,7 +37,7 @@ export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
         name: 'Substations',
-        resource: equipments.substations,
+        resource: [equipments.substations],
         columns: [
             {
                 id: 'ID',
@@ -57,7 +57,7 @@ export const TABLES_DEFINITIONS = {
     VOLTAGE_LEVELS: {
         index: 1,
         name: 'VoltageLevels',
-        resource: equipments.voltageLevels,
+        resource: [equipments.voltageLevels],
         getter: (network) => network.getVoltageLevels(),
         columns: [
             {
@@ -84,7 +84,7 @@ export const TABLES_DEFINITIONS = {
     LINES: {
         index: 2,
         name: 'Lines',
-        resource: equipments.lines,
+        resource: [equipments.lines],
         columns: [
             {
                 id: 'ID',
@@ -156,7 +156,7 @@ export const TABLES_DEFINITIONS = {
     TWO_WINDINGS_TRANSFORMERS: {
         index: 3,
         name: 'TwoWindingsTransformers',
-        resource: equipments.twoWindingsTransformers,
+        resource: [equipments.twoWindingsTransformers],
         modifiableEquipmentType: 'twoWindingsTransformer',
         columns: [
             {
@@ -309,7 +309,7 @@ export const TABLES_DEFINITIONS = {
     THREE_WINDINGS_TRANSFORMERS: {
         index: 4,
         name: 'ThreeWindingsTransformers',
-        resource: equipments.threeWindingsTransformers,
+        resource: [equipments.threeWindingsTransformers],
         modifiableEquipmentType: 'threeWindingsTransformer',
         columns: [
             {
@@ -596,7 +596,7 @@ export const TABLES_DEFINITIONS = {
     GENERATORS: {
         index: 5,
         name: 'Generators',
-        resource: equipments.generators,
+        resource: [equipments.generators],
         modifiableEquipmentType: 'generator',
         columns: [
             {
@@ -750,7 +750,7 @@ export const TABLES_DEFINITIONS = {
     LOADS: {
         index: 6,
         name: 'Loads',
-        resource: equipments.loads,
+        resource: [equipments.loads],
         modifiableEquipmentType: 'load',
         columns: [
             {
@@ -827,7 +827,7 @@ export const TABLES_DEFINITIONS = {
     SHUNT_COMPENSATORS: {
         index: 7,
         name: 'ShuntCompensators',
-        resource: equipments.shuntCompensators,
+        resource: [equipments.shuntCompensators],
         columns: [
             {
                 id: 'ID',
@@ -878,7 +878,7 @@ export const TABLES_DEFINITIONS = {
     STATIC_VAR_COMPENSATORS: {
         index: 8,
         name: 'StaticVarCompensators',
-        resource: equipments.staticVarCompensators,
+        resource: [equipments.staticVarCompensators],
         columns: [
             {
                 id: 'ID',
@@ -934,7 +934,7 @@ export const TABLES_DEFINITIONS = {
     BATTERIES: {
         index: 9,
         name: 'Batteries',
-        resource: equipments.batteries,
+        resource: [equipments.batteries],
         columns: [
             {
                 id: 'ID',
@@ -991,7 +991,7 @@ export const TABLES_DEFINITIONS = {
     HVDC_LINES: {
         index: 10,
         name: 'HvdcLines',
-        resource: equipments.hvdcLines,
+        resource: [equipments.hvdcLines],
         columns: [
             {
                 id: 'ID',
@@ -1073,7 +1073,7 @@ export const TABLES_DEFINITIONS = {
     LCC_CONVERTER_STATIONS: {
         index: 11,
         name: 'LccConverterStations',
-        resource: equipments.lccConverterStations,
+        resource: [equipments.lccConverterStations],
         columns: [
             {
                 id: 'ID',
@@ -1132,7 +1132,7 @@ export const TABLES_DEFINITIONS = {
     VSC_CONVERTER_STATIONS: {
         index: 12,
         name: 'VscConverterStations',
-        resource: equipments.vscConverterStations,
+        resource: [equipments.vscConverterStations],
         columns: [
             {
                 id: 'ID',
@@ -1203,7 +1203,7 @@ export const TABLES_DEFINITIONS = {
     DANGLING_LINES: {
         index: 13,
         name: 'DanglingLines',
-        resource: equipments.danglingLines,
+        resource: [equipments.danglingLines],
         columns: [
             {
                 id: 'ID',
