@@ -378,43 +378,45 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
-        if (props.svgUrl && !isNodeinNotifs) {
-            updateLoadingState(true);
-            fetchSvg(props.svgUrl)
-                .then((data) => {
-                    if (data !== null) {
+        if (props.svgUrl) {
+            if (!isNodeinNotifs) {
+                updateLoadingState(true);
+                fetchSvg(props.svgUrl)
+                    .then((data) => {
+                        if (data !== null) {
+                            setSvg({
+                                svg: data.svg,
+                                metadata: data.metadata,
+                                error: null,
+                                svgUrl: props.svgUrl,
+                            });
+                        } else {
+                            setSvg(NoSvg);
+                        }
+                        updateLoadingState(false);
+                        setLocallySwitchedBreaker();
+                    })
+                    .catch((error) => {
+                        console.error(error.message);
                         setSvg({
-                            svg: data.svg,
-                            metadata: data.metadata,
-                            error: null,
+                            svg: null,
+                            metadata: null,
+                            error: error.message,
                             svgUrl: props.svgUrl,
                         });
-                    } else {
-                        setSvg(NoSvg);
-                    }
-                    updateLoadingState(false);
-                    setLocallySwitchedBreaker();
-                })
-                .catch((error) => {
-                    console.error(error.message);
-                    setSvg({
-                        svg: null,
-                        metadata: null,
-                        error: error.message,
-                        svgUrl: props.svgUrl,
+                        let msg;
+                        if (error.status === 404) {
+                            msg = `Voltage level ${sldId} not found`;
+                        } else {
+                            msg = error.message;
+                        }
+                        snackError({
+                            messageTxt: msg,
+                        });
+                        updateLoadingState(false);
+                        setLocallySwitchedBreaker();
                     });
-                    let msg;
-                    if (error.status === 404) {
-                        msg = `Voltage level ${sldId} not found`;
-                    } else {
-                        msg = error.message;
-                    }
-                    snackError({
-                        messageTxt: msg,
-                    });
-                    updateLoadingState(false);
-                    setLocallySwitchedBreaker();
-                });
+            }
         } else {
             setSvg(NoSvg);
         }
