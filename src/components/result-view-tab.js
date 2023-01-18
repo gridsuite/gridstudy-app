@@ -34,8 +34,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-        overflowY: 'auto',
-        margin: 10,
     },
 }));
 
