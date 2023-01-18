@@ -298,49 +298,53 @@ const Diagram = forwardRef((props, ref) => {
     );
 
     useEffect(() => {
-        if (props.svgUrl && !isNodeinNotifs) {
-            const isDiagramTypeSld =
-                props.svgType === SvgType.VOLTAGE_LEVEL ||
-                props.svgType === SvgType.SUBSTATION;
+        if (props.svgUrl) {
+            if (!isNodeinNotifs) {
+                const isDiagramTypeSld =
+                    props.svgType === SvgType.VOLTAGE_LEVEL ||
+                    props.svgType === SvgType.SUBSTATION;
 
-            updateLoadingState(true);
-            fetchSvg(props.svgUrl)
-                .then((data) => {
-                    if (data !== null) {
+                updateLoadingState(true);
+                fetchSvg(props.svgUrl)
+                    .then((data) => {
+                        if (data !== null) {
+                            setSvg({
+                                svg: data.svg,
+                                metadata: isDiagramTypeSld
+                                    ? data.metadata
+                                    : null,
+                                error: null,
+                                svgUrl: props.svgUrl,
+                            });
+                        } else {
+                            setSvg(NoSvg);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error.message);
                         setSvg({
-                            svg: data.svg,
-                            metadata: isDiagramTypeSld ? data.metadata : null,
-                            error: null,
+                            svg: null,
+                            metadata: null,
+                            error: error.message,
                             svgUrl: props.svgUrl,
                         });
-                    } else {
-                        setSvg(NoSvg);
-                    }
-                })
-                .catch((error) => {
-                    console.error(error.message);
-                    setSvg({
-                        svg: null,
-                        metadata: null,
-                        error: error.message,
-                        svgUrl: props.svgUrl,
+                        let msg;
+                        if (error.status === 404) {
+                            msg = `Voltage level ${props.diagramId} not found`; // TODO change this error message
+                        } else {
+                            msg = error.message;
+                        }
+                        snackError({
+                            messageTxt: msg,
+                        });
+                    })
+                    .finally(() => {
+                        updateLoadingState(false);
+                        if (isDiagramTypeSld) {
+                            setLocallySwitchedBreaker();
+                        }
                     });
-                    let msg;
-                    if (error.status === 404) {
-                        msg = `Voltage level ${props.diagramId} not found`; // TODO change this error message
-                    } else {
-                        msg = error.message;
-                    }
-                    snackError({
-                        messageTxt: msg,
-                    });
-                })
-                .finally(() => {
-                    updateLoadingState(false);
-                    if (isDiagramTypeSld) {
-                        setLocallySwitchedBreaker();
-                    }
-                });
+            }
         } else {
             setSvg(NoSvg);
         }

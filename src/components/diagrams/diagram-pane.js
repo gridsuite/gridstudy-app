@@ -54,12 +54,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
-    const notificationIdList = useSelector((state) => state.notificationIdList);
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode) &&
-            !isNodeInNotificationList(currentNode, notificationIdList)
+            isNodeBuilt(currentNode)
                 ? getVoltageLevelSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -80,14 +78,12 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             diagonalName,
             componentLibrary,
             language,
-            notificationIdList,
         ]
     );
 
     const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode) &&
-            !isNodeInNotificationList(currentNode, notificationIdList)
+            isNodeBuilt(currentNode)
                 ? getSubstationSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -109,14 +105,12 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             paramUseName,
             currentNode,
             language,
-            notificationIdList,
         ]
     );
 
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
         (voltageLevelsIds, depth) =>
-            isNodeBuilt(currentNode) &&
-            !isNodeInNotificationList(currentNode, notificationIdList)
+            isNodeBuilt(currentNode)
                 ? getNetworkAreaDiagramUrl(
                       studyUuid,
                       currentNode?.id,
@@ -124,7 +118,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       depth
                   )
                 : null,
-        [studyUuid, currentNode, notificationIdList]
+        [studyUuid, currentNode]
     );
 
     return useCallback(
@@ -278,6 +272,8 @@ export function DiagramPane({
         (state) => state.networkAreaDiagramDepth
     );
 
+    const notificationIdList = useSelector((state) => state.notificationIdList);
+
     const { openDiagramView, closeDiagramView, closeDiagramViews } =
         useDiagram();
 
@@ -295,7 +291,10 @@ export function DiagramPane({
     // In the case of SLD, each SLD corresponds to one view, but in the case of NAD, each open NAD is merged
     // into one view.
     const views = useMemo(() => {
-        if (!visible) {
+        if (
+            !visible ||
+            isNodeInNotificationList(currentNode, notificationIdList)
+        ) {
             return [];
         }
         const views = [];
@@ -341,6 +340,8 @@ export function DiagramPane({
         closeDiagramView,
         createView,
         networkAreaDiagramDepth,
+        currentNode,
+        notificationIdList,
     ]);
 
     const viewsRef = useRef();
