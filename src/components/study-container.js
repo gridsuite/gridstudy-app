@@ -584,7 +584,7 @@ export function StudyContainer({ view, onChangeTab }) {
         if (!isNodeBuilt(currentNode)) return;
         if (
             !network ||
-            previousCurrentNode.id !== currentNode.id ||
+            previousCurrentNode?.id !== currentNode?.id ||
             (!isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode))
         ) {
             loadNetwork(false);
@@ -654,7 +654,7 @@ export function StudyContainer({ view, onChangeTab }) {
             const ws = connectNotifications(studyUuid);
             const wsDirectory = connectDeletedStudyNotifications(studyUuid);
 
-            loadNetworkRef.current();
+            loadNetworkRef.current(false);
 
             // study cleanup at unmount event
             return function () {
