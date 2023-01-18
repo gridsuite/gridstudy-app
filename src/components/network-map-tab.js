@@ -561,7 +561,7 @@ export const NetworkMapTab = ({
                     updatedSubstationsToSend,
                     setUpdatedLines
                 )
-                .then(() => loadGeoData())
+                .then(loadGeoData)
                 .finally(() => setWaitingFullLoadGeoData(false));
             if (updatedSubstationsToSend) {
                 setIsUpdatedSubstationsApplied(true);
