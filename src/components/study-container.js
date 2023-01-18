@@ -497,7 +497,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
+        if (network && studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'

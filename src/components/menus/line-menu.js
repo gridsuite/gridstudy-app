@@ -169,8 +169,7 @@ const withLineMenu =
         }
 
         return (
-            network &&
-            line && (
+            network && (
                 <Menu
                     className={classes.menu}
                     anchorReference="anchorPosition"
