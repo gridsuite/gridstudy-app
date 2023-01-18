@@ -20,7 +20,7 @@ import { useNameOrId } from '../../util/equipmentInfosHandler';
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
     'GROOVY_SCRIPT',
-    'BRANCH_STATUS',
+    'BRANCH_STATUS_MODIFICATION',
 ]);
 
 const isEditableModification = (modif) => {
@@ -105,7 +105,7 @@ export const ModificationListItem = ({
                 return vlID;
             }
             let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
-            if (modif.type === 'BRANCH_STATUS') {
+            if (modif.type === 'BRANCH_STATUS_MODIFICATION') {
                 if (modif.action === 'ENERGISE_END_ONE') {
                     res.energizedEnd = getVoltageLevelLabel(
                         network.getLine(modif.equipmentId)?.voltageLevelId1
