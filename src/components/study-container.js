@@ -162,7 +162,7 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
 ];
-const UPDATE_TYPE_HEADER = 'updateType';
+export const UPDATE_TYPE_HEADER = 'updateType';
 // the delay before we consider the WS truly connected
 const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
