@@ -252,11 +252,6 @@ const PhaseTapChangerPane = ({
                 <PhaseTapChangerPaneTaps
                     disabled={!phaseTapChangerEnabledWatch}
                 />
-                {/* {ratioError && (
-                    <Grid item xs={12}>
-                        <Alert severity="error">{ratioError}</Alert>
-                    </Grid>
-                )} */}
             </Grid>
         </>
     );

@@ -28,6 +28,7 @@ import {
 } from '../../../../dialogs/two-windings-transformer/two-windings-transformer-creation-dialog';
 import PhaseTapChangerPaneButtons from './phase-tap-changer-pane-buttons';
 import { PHASE_TAP_CHANGER } from './phase-tap-changer-pane-utils';
+import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -218,7 +219,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                         [STEPS_REACTANCE]: 0,
                         [STEPS_CONDUCTANCE]: 0,
                         [STEPS_SUSCEPTANCE]: 0,
-                        [STEPS_RATIO]: 0,
+                        [STEPS_RATIO]: 1,
                         [STEPS_ALPHA]: 0,
                     }))
                 );
@@ -241,7 +242,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                     [STEPS_REACTANCE]: 0,
                     [STEPS_CONDUCTANCE]: 0,
                     [STEPS_SUSCEPTANCE]: 0,
-                    [STEPS_RATIO]: 0,
+                    [STEPS_RATIO]: 1,
                     [STEPS_ALPHA]: 0,
                 });
             }
@@ -258,7 +259,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                     [STEPS_REACTANCE]: 0,
                     [STEPS_CONDUCTANCE]: 0,
                     [STEPS_SUSCEPTANCE]: 0,
-                    [STEPS_RATIO]: 0,
+                    [STEPS_RATIO]: 1,
                     [STEPS_ALPHA]: 0,
                 });
             }
@@ -446,6 +447,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                     setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                     setOpenImportRuleDialog={setOpenImportRuleDialog}
                 />
+                <FieldErrorAlert name={`${PHASE_TAP_CHANGER}.${STEPS}`} />
             </Grid>
             <CreateRuleDialog
                 ruleType={PHASE_TAP}

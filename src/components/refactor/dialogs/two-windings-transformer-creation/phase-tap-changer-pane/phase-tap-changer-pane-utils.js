@@ -1,4 +1,8 @@
 import { REGULATION_MODES } from '../../../../network/constants';
+import {
+    areArrayElementsOrdered,
+    areArrayElementsUnique,
+} from '../../../utils/utils';
 import yup from '../../../utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
@@ -87,17 +91,30 @@ const phaseTapChangerValidationSchema = (id) => ({
                 is: true,
                 then: (schema) => schema.required(),
             }),
-        [STEPS]: yup.array().of(
-            yup.object().shape({
-                [STEPS_TAP]: yup.number().required(),
-                [STEPS_RESISTANCE]: yup.number(),
-                [STEPS_REACTANCE]: yup.number(),
-                [STEPS_CONDUCTANCE]: yup.number(),
-                [STEPS_SUSCEPTANCE]: yup.number(),
-                [STEPS_RATIO]: yup.number(),
-                [STEPS_ALPHA]: yup.number(),
+        [STEPS]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [STEPS_TAP]: yup.number().required(),
+                    [STEPS_RESISTANCE]: yup.number(),
+                    [STEPS_REACTANCE]: yup.number(),
+                    [STEPS_CONDUCTANCE]: yup.number(),
+                    [STEPS_SUSCEPTANCE]: yup.number(),
+                    [STEPS_RATIO]: yup.number(),
+                    [STEPS_ALPHA]: yup.number(),
+                })
+            )
+            .when(ENABLED, {
+                is: true,
+                then: (schema) => schema.min(1),
             })
-        ),
+            .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
+                const alphaArray = array.map((step) => step[STEPS_ALPHA]);
+                return (
+                    areArrayElementsOrdered(alphaArray) &&
+                    areArrayElementsUnique(alphaArray)
+                );
+            }),
         ...getRegulatingTerminalValidationSchema(),
     }),
 });

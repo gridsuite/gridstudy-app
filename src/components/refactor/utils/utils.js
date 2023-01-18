@@ -12,3 +12,29 @@ export const isFieldRequired = (fieldName, schema, values) => {
     //static way, not working when using when in schema
     //return yup.reach(schema, fieldName)?.exclusiveTests?.required === true;
 };
+
+export const areArrayElementsUnique = (array) => {
+    let uniqueAlphaValues = [...new Set(array)];
+    return uniqueAlphaValues.length === array.length;
+};
+
+export const areArrayElementsOrdered = (array) => {
+    if (array.length <= 1) return true;
+    if (array[0] === array[1]) {
+        return false;
+    } else if (array[0] < array[1]) {
+        for (let index = 0; index < array.length - 1; index++) {
+            if (array[index] >= array[index + 1]) {
+                return false;
+            }
+        }
+    } else if (array[0] > array[1]) {
+        for (let index = 0; index < array.length - 1; index++) {
+            if (array[index] <= array[index + 1]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+};

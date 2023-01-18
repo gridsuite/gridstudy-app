@@ -218,7 +218,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                         [STEPS_REACTANCE]: 0,
                         [STEPS_CONDUCTANCE]: 0,
                         [STEPS_SUSCEPTANCE]: 0,
-                        [STEPS_RATIO]: 0,
+                        [STEPS_RATIO]: 1,
                     }))
                 );
                 return;
@@ -240,7 +240,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     [STEPS_REACTANCE]: 0,
                     [STEPS_CONDUCTANCE]: 0,
                     [STEPS_SUSCEPTANCE]: 0,
-                    [STEPS_RATIO]: 0,
+                    [STEPS_RATIO]: 1,
                 });
             }
 
@@ -256,7 +256,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     [STEPS_REACTANCE]: 0,
                     [STEPS_CONDUCTANCE]: 0,
                     [STEPS_SUSCEPTANCE]: 0,
-                    [STEPS_RATIO]: 0,
+                    [STEPS_RATIO]: 1,
                 });
             }
 
