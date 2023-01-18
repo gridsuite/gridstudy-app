@@ -21,6 +21,7 @@ import {
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
+    setSelectedNodeForCopy,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -76,6 +77,8 @@ export const CopyType = {
     CUT: 'CUT',
 };
 
+const noSelectionForCopy = { nodeId: null, copyType: null };
+
 export const NetworkModificationTreePane = ({
     studyUuid,
     studyMapTreeDisplay,
@@ -87,14 +90,17 @@ export const NetworkModificationTreePane = ({
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
-    const [selectedNodeIdForCopy, setSelectedNodeIdForCopy] = useState(null);
-    const [copyType, setCopyType] = useState(null);
-    const selectedNodeIdForCopyRef = useRef();
-    selectedNodeIdForCopyRef.current = selectedNodeIdForCopy;
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
+
+    const selectedNodeForCopy = useSelector(
+        (state) => state.selectedNodeForCopy
+    );
+    const selectedNodeForCopyRef = useRef();
+    selectedNodeForCopyRef.current = selectedNodeForCopy;
+
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
@@ -170,16 +176,16 @@ export const NetworkModificationTreePane = ({
                     )
                 ) {
                     dispatch(
-                        removeNotificationByNode(currentNodeRef.current?.id)
+                        removeNotificationByNode([currentNodeRef.current?.id])
                     );
                 }
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) => nodeId === selectedNodeIdForCopyRef.current
+                        (nodeId) =>
+                            nodeId === selectedNodeForCopyRef.current.nodeId
                     )
                 ) {
-                    setSelectedNodeIdForCopy(null);
-                    setCopyType(null);
+                    dispatch(setSelectedNodeForCopy(noSelectionForCopy));
                     snackInfo({
                         messageId: 'CopiedNodeInvalidationMessage',
                     });
@@ -213,28 +219,31 @@ export const NetworkModificationTreePane = ({
         [studyUuid, snackError]
     );
 
-    const handleCopyNode = useCallback(
-        (referenceNodeId) => {
-            setSelectedNodeIdForCopy(referenceNodeId);
-            setCopyType(CopyType.COPY);
-        },
-        [setSelectedNodeIdForCopy, setCopyType]
-    );
+    const dispatchSelectedNodeForCopy = (nodeId, copyType) => {
+        dispatch(
+            setSelectedNodeForCopy({
+                nodeId: nodeId,
+                copyType: copyType,
+            })
+        );
+    };
 
-    const handleCutNode = useCallback(
-        (referenceNodeId) => {
-            setSelectedNodeIdForCopy(referenceNodeId);
-            setCopyType(CopyType.CUT);
-        },
-        [setSelectedNodeIdForCopy, setCopyType]
-    );
+    const handleCopyNode = (nodeId) => {
+        dispatchSelectedNodeForCopy(nodeId, CopyType.COPY);
+    };
+
+    const handleCutNode = (nodeId) => {
+        nodeId
+            ? dispatchSelectedNodeForCopy(nodeId, CopyType.CUT)
+            : dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+    };
 
     const handlePasteNode = useCallback(
         (referenceNodeId, insertMode) => {
-            if (CopyType.CUT === copyType) {
+            if (CopyType.CUT === selectedNodeForCopyRef.current.copyType) {
                 cutTreeNode(
                     studyUuid,
-                    selectedNodeIdForCopy,
+                    selectedNodeForCopyRef.current.nodeId,
                     referenceNodeId,
                     insertMode
                 ).catch((error) => {
@@ -244,12 +253,11 @@ export const NetworkModificationTreePane = ({
                     });
                 });
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
-                setSelectedNodeIdForCopy(null);
-                setCopyType(null);
+                dispatch(setSelectedNodeForCopy(noSelectionForCopy));
             } else {
                 copyTreeNode(
                     studyUuid,
-                    selectedNodeIdForCopy,
+                    selectedNodeForCopyRef.current.nodeId,
                     referenceNodeId,
                     insertMode
                 ).catch((error) => {
@@ -258,9 +266,10 @@ export const NetworkModificationTreePane = ({
                         headerId: 'NodeCreateError',
                     });
                 });
+                //In copy/paste, we can still paste the same node later
             }
         },
-        [studyUuid, copyType, selectedNodeIdForCopy, snackError]
+        [studyUuid, snackError, dispatch]
     );
 
     const handleRemoveNode = useCallback(
@@ -271,8 +280,11 @@ export const NetworkModificationTreePane = ({
                     headerId: 'NodeDeleteError',
                 });
             });
+            if (element.id === selectedNodeForCopyRef.current.nodeId) {
+                dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+            }
         },
-        [studyUuid, snackError]
+        [studyUuid, snackError, dispatch]
     );
 
     const handleBuildNode = useCallback(
@@ -294,7 +306,7 @@ export const NetworkModificationTreePane = ({
         setOpenExportDialog(false);
     };
 
-    const handleExportCaseOnNode = (element) => {
+    const handleExportCaseOnNode = () => {
         setOpenExportDialog(true);
     };
 
@@ -354,8 +366,7 @@ export const NetworkModificationTreePane = ({
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
-                    selectedNodeForCopy={selectedNodeIdForCopy}
-                    copyType={copyType}
+                    selectedNodeForCopy={selectedNodeForCopyRef.current}
                     handleCopyNode={handleCopyNode}
                     handleCutNode={handleCutNode}
                     handlePasteNode={handlePasteNode}

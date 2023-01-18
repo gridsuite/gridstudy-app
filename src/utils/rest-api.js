@@ -352,7 +352,7 @@ export function getNetworkAreaDiagramUrl(
 
 export function fetchNADSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetchText(svgUrl);
+    return backendFetchJson(svgUrl);
 }
 
 function getQueryParamsList(params, paramName) {
@@ -382,7 +382,9 @@ export function fetchReport(studyUuid, currentNodeUuid, nodeOnlyReport) {
 
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetchJson(svgUrl);
+    return backendFetch(svgUrl).then((response) =>
+        response.status === 204 ? null : response.json()
+    );
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
@@ -396,13 +398,24 @@ export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
-export function fetchSubstationPositions(studyUuid, currentNodeUuid) {
+export function fetchSubstationPositions(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
     console.info(
-        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
+
+    const paramsList =
+        substationsIds && substationsIds.length > 0
+            ? '?' + getQueryParamsList(substationsIds, 'substationId')
+            : '';
+
     const fetchSubstationPositionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/geo-data/substations';
+        '/geo-data/substations' +
+        paramsList;
     console.debug(fetchSubstationPositionsUrl);
     return backendFetchJson(fetchSubstationPositionsUrl);
 }
@@ -582,7 +595,7 @@ export function searchEquipmentsInfos(
     studyUuid,
     nodeUuid,
     searchTerm,
-    usesName,
+    getUseNameParameterKey,
     inUpstreamBuiltParentNode,
     equipmentType
 ) {
@@ -592,7 +605,7 @@ export function searchEquipmentsInfos(
     );
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
-    urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
+    urlSearchParams.append('fieldSelector', getUseNameParameterKey());
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
@@ -726,12 +739,21 @@ export function fetchBusbarSectionsForVoltageLevel(
     return backendFetchJson(fetchBusbarSectionsUrl);
 }
 
-export function fetchLinePositions(studyUuid, currentNodeUuid) {
+export function fetchLinePositions(studyUuid, currentNodeUuid, linesIds) {
     console.info(
-        `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
     );
+
+    const paramsList =
+        linesIds && linesIds.length > 0
+            ? '?' + getQueryParamsList(linesIds, 'lineId')
+            : '';
+
     const fetchLinePositionsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/geo-data/lines';
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/geo-data/lines' +
+        paramsList;
+
     console.debug(fetchLinePositionsUrl);
     return backendFetchJson(fetchLinePositionsUrl);
 }
@@ -1336,7 +1358,7 @@ function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.BRANCH_STATUS,
+            type: MODIFICATION_TYPE.BRANCH_STATUS_MODIFICATION,
             equipmentId: lineId,
             action: status.toUpperCase(),
         }),
@@ -1485,7 +1507,21 @@ export function modifyGenerator(
     voltageSetpoint,
     voltageLevelId,
     busOrBusbarSectionId,
-    modificationId
+    modificationId,
+    qPercent,
+    marginalCost,
+    transientReactance,
+    transformerReactance,
+    voltageRegulationType,
+    regulatingTerminalId,
+    regulatingTerminalType,
+    regulatingTerminalVlId,
+    isReactiveCapabilityCurveOn,
+    frequencyRegulation,
+    droop,
+    maximumReactivePower,
+    minimumReactivePower,
+    reactiveCapabilityCurve
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1512,6 +1548,23 @@ export function modifyGenerator(
         voltageSetpoint: toModificationOperation(voltageSetpoint),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+        qPercent: toModificationOperation(qPercent),
+        marginalCost: toModificationOperation(marginalCost),
+        transientReactance: toModificationOperation(transientReactance),
+        stepUpTransformerReactance:
+            toModificationOperation(transformerReactance),
+        voltageRegulationType: toModificationOperation(voltageRegulationType),
+        regulatingTerminalId: toModificationOperation(regulatingTerminalId),
+        regulatingTerminalType: toModificationOperation(regulatingTerminalType),
+        regulatingTerminalVlId: toModificationOperation(regulatingTerminalVlId),
+        reactiveCapabilityCurve: toModificationOperation(
+            isReactiveCapabilityCurveOn
+        ),
+        participate: toModificationOperation(frequencyRegulation),
+        droop: toModificationOperation(droop),
+        maximumReactivePower: toModificationOperation(maximumReactivePower),
+        minimumReactivePower: toModificationOperation(minimumReactivePower),
+        reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
     };
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
@@ -1817,18 +1870,11 @@ export function createSubstation(
     modificationUuid,
     properties
 ) {
-    let createSubstationUrl =
+    let url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
 
-    if (isUpdate) {
-        createSubstationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating substation creation');
-    } else {
-        console.info('Creating substation creation');
-    }
-
-    const asObj = !properties
+    const asObj = !properties?.length
         ? undefined
         : Object.fromEntries(properties.map((p) => [p.name, p.value]));
 
@@ -1839,9 +1885,15 @@ export function createSubstation(
         substationCountry: substationCountry === '' ? null : substationCountry,
         properties: asObj,
     });
-    console.debug('createSubstation body', properties, body);
 
-    return backendFetchText(createSubstationUrl, {
+    if (isUpdate) {
+        url += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation creation', { url, body });
+    } else {
+        console.info('Creating substation creation', { url, body });
+    }
+
+    return backendFetchText(url, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -2035,6 +2087,84 @@ export function linesAttachToSplitLines(
     }
 
     return backendFetchText(lineAttachUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
+
+export function deleteVoltageLevelOnLine(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    replacingLine1Id,
+    replacingLine1Name
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.DELETE_VOLTAGE_LEVEL_ON_LINE,
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        replacingLine1Id,
+        replacingLine1Name,
+    });
+
+    let deleteVoltageLevelOnLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating delete voltage level on line', body);
+        deleteVoltageLevelOnLineUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating delete voltage level on line', body);
+    }
+
+    return backendFetchText(deleteVoltageLevelOnLineUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
+
+export function deleteAttachingLine(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    attachedLineId,
+    replacingLine1Id,
+    replacingLine1Name
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.DELETE_ATTACHING_LINE,
+        lineToAttachTo1Id,
+        lineToAttachTo2Id,
+        attachedLineId,
+        replacingLine1Id,
+        replacingLine1Name,
+    });
+
+    let deleteVoltageLevelOnLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating delete attaching line', body);
+        deleteVoltageLevelOnLineUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating delete attaching line', body);
+    }
+
+    return backendFetchText(deleteVoltageLevelOnLineUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',

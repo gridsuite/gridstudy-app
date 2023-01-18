@@ -18,6 +18,8 @@ import {
 } from './inputs/input-hooks';
 import {
     filledTextField,
+    func_identity,
+    getIdOrSelf,
     gridItem,
     GridSection,
     sanitizeString,
@@ -61,10 +63,11 @@ const NonNullStringPair = ({
     const [name, nameField] = useAutocompleteField({
         id: 'pairKey' + index,
         label: 'PropertyName',
-        formProps: filledTextField,
         validation: { isFieldRequired: true },
         values: predefinedNames,
         allowNewValue: true,
+        getLabel: getIdOrSelf,
+        newEntryToValue: func_identity,
         defaultValue: defaultValue?.name || '',
         inputForm: inputForm,
         errorMsg: errors?.name,
@@ -77,10 +80,11 @@ const NonNullStringPair = ({
     const [value, valueField] = useAutocompleteField({
         id: 'pairValue' + index,
         label: 'PropertyValue',
-        formProps: filledTextField,
         validation: { isFieldRequired: true },
         values: predefinedValues,
         allowNewValue: true,
+        getLabel: getIdOrSelf,
+        newEntryToValue: func_identity,
         defaultValue: defaultValue?.value || '',
         inputForm: inputForm,
         errorMsg: errors?.value,
@@ -143,6 +147,7 @@ const SubstationCreationDialog = ({
             equipmentName: substation.name ?? '',
             substationCountryLabel: substation.countryName,
             substationCountry: null,
+            properties: substation.properties,
         };
     };
 

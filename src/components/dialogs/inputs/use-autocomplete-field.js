@@ -65,6 +65,11 @@ const isWorthLoading = (term, elements, old, minLen) => {
 
     return false;
 };
+
+const defaultEntryToValue = (entry) => {
+    return { id: entry };
+};
+
 export const useAutocompleteField = ({
     id,
     label,
@@ -77,6 +82,7 @@ export const useAutocompleteField = ({
     renderElement,
     getLabel = func_identity,
     allowNewValue = false,
+    newEntryToValue = defaultEntryToValue,
     errorMsg,
     selectedValue,
     defaultValue,
@@ -103,20 +109,18 @@ export const useAutocompleteField = ({
 
     useEffect(() => {
         function validate() {
-            const res = validateField(value, validationRef.current);
+            const res = validateField(getLabel(value), validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }
 
-        if (inputForm) {
-            inputForm.addValidation(id ? id : label, validate);
-        }
-    }, [label, validation, inputForm, value, selectedValue, id]);
+        inputForm?.addValidation(id || label, validate);
+    }, [label, validation, inputForm, value, selectedValue, id, getLabel]);
 
     const handleChangeValue = useCallback(
         (value) => {
             setValue(value);
-            inputForm.setHasChanged(true);
+            inputForm?.setHasChanged(true);
         },
         [inputForm]
     );
@@ -193,9 +197,9 @@ export const useAutocompleteField = ({
                 if (matchingOption) {
                     setValue(matchingOption);
                 } else {
-                    setValue({ id: term });
+                    setValue(newEntryToValue(term));
                 }
-                inputForm.setHasChanged(true);
+                inputForm?.setHasChanged(true);
             }
 
             if (!onSearchTermChange) return;
@@ -215,6 +219,7 @@ export const useAutocompleteField = ({
             minCharsBeforeSearch,
             onSearchTermChange,
             allowNewValue,
+            newEntryToValue,
             inputForm,
         ]
     );
@@ -234,7 +239,9 @@ export const useAutocompleteField = ({
         };
 
         const optionEqualsToValue = (option, input) =>
-            option === input || option.id === input || option.id === input?.id;
+            option === input ||
+            option.id === input ||
+            (option.id !== undefined && option.id === input?.id);
 
         return (
             <Autocomplete
