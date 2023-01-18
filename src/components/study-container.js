@@ -510,7 +510,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
-                    console.info('TTT substationsIds', substationsIds);
                     network.reloadImpactedSubstationsEquipments(
                         studyUuid,
                         currentNode,
@@ -536,7 +535,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         }
-    }, [studyUpdatedForce, network, dispatch]);
+    }, [studyUpdatedForce, network, currentNode, studyUuid, dispatch]);
 
     const loadNetwork = useCallback(
         (isUpdate) => {
@@ -583,10 +582,14 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        if (!network || previousCurrentNode.id !== currentNode.id || (!isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode))) {
+        if (
+            !network ||
+            previousCurrentNode.id !== currentNode.id ||
+            (!isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode))
+        ) {
             loadNetwork(false);
         }
-    }, [loadNetwork, wsConnected]);
+    }, [loadNetwork, currentNode, network, wsConnected]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {

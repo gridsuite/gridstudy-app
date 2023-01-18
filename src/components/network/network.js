@@ -490,8 +490,6 @@ export default class Network {
         currentNode,
         substationsIds
     ) {
-        console.info('TTT reloadImpactedSubstationsEquipments')
-        console.info('TTT substationsIds', substationsIds)
         if (substationsIds) {
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
