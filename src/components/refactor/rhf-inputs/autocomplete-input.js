@@ -39,16 +39,18 @@ const AutocompleteInput = ({
     allowNewValue,
     ...props
 }) => {
-    const { validationSchema } = useFormContext();
+    const { validationSchema, getValues } = useFormContext();
     const {
-        field: { onChange, value },
+        field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
 
     return (
         <Autocomplete
             value={inputTransform(value)}
-            onChange={(_, data) => onChange(outputTransform(data))}
+            onChange={(_, data) => {
+                onChange(outputTransform(data));
+            }}
             //if free input is needed. The resulting object will be : {id: <userInput>}
             {...(allowNewValue && {
                 freeSolo: true,
@@ -64,8 +66,13 @@ const AutocompleteInput = ({
                 <TextField
                     label={FieldLabel({
                         label: label,
-                        optional: !isFieldRequired(name, validationSchema),
+                        optional: !isFieldRequired(
+                            name,
+                            validationSchema,
+                            getValues()
+                        ),
                     })}
+                    inputRef={ref}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
                     {...genHelperPreviousValue(previousValue)}
                     {...genHelperError(error?.message)}

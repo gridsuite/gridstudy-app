@@ -135,7 +135,6 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
         (row) => {
             const index = row.columnIndex;
             const Editor = COLUMNS_DEFINITIONS[index].editor;
-            console.log('DATA');
             if (Editor) {
                 return (
                     <div className={classes.tableCell}>
@@ -171,7 +170,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
             let currentAlpha = lowTapAlpha;
 
             currentTapRows.forEach((row, index) => {
-                currentTapRows[index].alpha = currentAlpha;
+                currentTapRows[index][STEPS_ALPHA] = currentAlpha;
 
                 currentAlpha += alphaInterval;
             });
@@ -203,8 +202,8 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
             //removing all steps not within the min/max values
             const newSteps = currentTapRows.filter(
                 (tapRow) =>
-                    tapRow.tap >= currentLowTapPosition &&
-                    tapRow.tap <= currentHighTapPosition
+                    tapRow[STEPS_TAP] >= currentLowTapPosition &&
+                    tapRow[STEPS_TAP] <= currentHighTapPosition
             );
 
             // if newSteps is empty, we fill it with empty rows
@@ -214,20 +213,20 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                         currentLowTapPosition,
                         currentHighTapPosition
                     ).map((i) => ({
-                        tap: i,
-                        resistance: 0,
-                        reactance: 0,
-                        conductance: 0,
-                        susceptance: 0,
-                        ratio: 0,
-                        alpha: 0,
+                        [STEPS_TAP]: i,
+                        [STEPS_RESISTANCE]: 0,
+                        [STEPS_REACTANCE]: 0,
+                        [STEPS_CONDUCTANCE]: 0,
+                        [STEPS_SUSCEPTANCE]: 0,
+                        [STEPS_RATIO]: 0,
+                        [STEPS_ALPHA]: 0,
                     }))
                 );
                 return;
             }
 
             // if newSteps is not empty, we fill the gaps
-            const lowestTapRowIndex = newSteps?.[0].tap;
+            const lowestTapRowIndex = newSteps?.[0][STEPS_TAP];
             const highestTapRowIndex = lowestTapRowIndex + newSteps.length - 1;
 
             //adding steps from lowTap to lowest current index
@@ -237,13 +236,13 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                 i--
             ) {
                 newSteps.unshift({
-                    tap: i,
-                    resistance: 0,
-                    reactance: 0,
-                    conductance: 0,
-                    susceptance: 0,
-                    ratio: 0,
-                    alpha: 0,
+                    [STEPS_TAP]: i,
+                    [STEPS_RESISTANCE]: 0,
+                    [STEPS_REACTANCE]: 0,
+                    [STEPS_CONDUCTANCE]: 0,
+                    [STEPS_SUSCEPTANCE]: 0,
+                    [STEPS_RATIO]: 0,
+                    [STEPS_ALPHA]: 0,
                 });
             }
 
@@ -254,17 +253,16 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                 i++
             ) {
                 newSteps.push({
-                    tap: i,
-                    resistance: 0,
-                    reactance: 0,
-                    conductance: 0,
-                    susceptance: 0,
-                    ratio: 0,
-                    alpha: 0,
+                    [STEPS_TAP]: i,
+                    [STEPS_RESISTANCE]: 0,
+                    [STEPS_REACTANCE]: 0,
+                    [STEPS_CONDUCTANCE]: 0,
+                    [STEPS_SUSCEPTANCE]: 0,
+                    [STEPS_RATIO]: 0,
+                    [STEPS_ALPHA]: 0,
                 });
             }
 
-            console.log('NEWSTEPS', currentTapRows);
             replace(newSteps);
         });
     }, [getValues, replace, trigger]);
@@ -302,8 +300,8 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                 }
                 let rows = results.data.map((val) => {
                     return {
-                        tap: val[intl.formatMessage({ id: 'Tap' })],
-                        resistance: parseIntData(
+                        [STEPS_TAP]: val[intl.formatMessage({ id: 'Tap' })],
+                        [STEPS_RESISTANCE]: parseIntData(
                             val[
                                 intl.formatMessage({
                                     id: 'ImportFileResistance',
@@ -311,7 +309,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                             ],
                             0
                         ),
-                        reactance: parseIntData(
+                        [STEPS_REACTANCE]: parseIntData(
                             val[
                                 intl.formatMessage({
                                     id: 'ImportFileReactance',
@@ -319,7 +317,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                             ],
                             0
                         ),
-                        conductance: parseIntData(
+                        [STEPS_CONDUCTANCE]: parseIntData(
                             val[
                                 intl.formatMessage({
                                     id: 'ImportFileConductance',
@@ -327,7 +325,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                             ],
                             0
                         ),
-                        susceptance: parseIntData(
+                        [STEPS_SUSCEPTANCE]: parseIntData(
                             val[
                                 intl.formatMessage({
                                     id: 'ImportFileSusceptance',
@@ -335,14 +333,14 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                             ],
                             0
                         ),
-                        ratio: isNaN(
+                        [STEPS_RATIO]: isNaN(
                             parseFloat(val[intl.formatMessage({ id: 'Ratio' })])
                         )
                             ? 1
                             : parseFloat(
                                   val[intl.formatMessage({ id: 'Ratio' })]
                               ),
-                        alpha: isNaN(
+                        [STEPS_ALPHA]: isNaN(
                             parseFloat(
                                 val[
                                     intl.formatMessage({
@@ -363,7 +361,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                 });
                 if (rows && rows.length > 0) {
                     let tapValues = rows.map((row) => {
-                        return parseInt(row.tap);
+                        return parseInt(row[STEPS_TAP]);
                     });
                     let tempLowTapPosition = Math.min(...tapValues);
                     let tempHighTapPosition = Math.max(...tapValues);

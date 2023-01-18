@@ -17,7 +17,7 @@ import {
     VOLTAGE_LEVEL_ID,
 } from './regulating-terminal-form-utils';
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
@@ -81,6 +81,7 @@ const RegulatingTerminalForm = ({
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
+    const { setValue } = useFormContext();
 
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${VOLTAGE_LEVEL_ID}`,
@@ -106,9 +107,15 @@ const RegulatingTerminalForm = ({
                 );
             });
         } else {
+            setValue(`${id}.${EQUIPMENT}`, null);
             setEquipmentsOptions([]);
         }
-    }, [watchVoltageLevelId, voltageLevelsEquipmentsOptionsPromise]);
+    }, [
+        watchVoltageLevelId,
+        id,
+        setValue,
+        voltageLevelsEquipmentsOptionsPromise,
+    ]);
 
     return (
         <>
@@ -184,9 +191,7 @@ const RegulatingTerminalForm = ({
                             autoHighlight
                             selectOnFocus
                             id="equipment"
-                            // disabled={
-                            //     !regulatingTerminalValue?.voltageLevel || disabled
-                            // }
+                            disabled={!watchVoltageLevelId || disabled}
                             options={equipmentsOptions}
                             getOptionLabel={(equipment) => {
                                 return equipment === ''

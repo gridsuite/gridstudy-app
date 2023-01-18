@@ -20,7 +20,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import { CONNECTION_DIRECTIONS } from '../../../network/constants';
 import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { useFormContext } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTION_DIRECTION,
@@ -28,6 +28,8 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY,
     VOLTAGE_LEVEL,
+    VOLTAGE_LEVEL_ID,
+    VOLTAGE_LEVEL_TOPOLOGY_KIND,
 } from './connectivity-form-utils';
 import TextInput from '../../rhf-inputs/text-input';
 import SelectInput from '../../rhf-inputs/select-input';
@@ -61,12 +63,12 @@ export const ConnectivityForm = ({
 
     const intl = useIntl();
 
-    const { watch } = useFormContext();
-
-    const {
-        id: watchVoltageLevelId,
-        topologyKind: watchVoltageLevelTopologyKind,
-    } = watch(`${id}.${VOLTAGE_LEVEL}`) || {};
+    const watchVoltageLevelId = useWatch({
+        name: `${id}.${VOLTAGE_LEVEL}.${VOLTAGE_LEVEL_ID}`,
+    });
+    const watchVoltageLevelTopologyKind = useWatch({
+        name: `${id}.${VOLTAGE_LEVEL}.${VOLTAGE_LEVEL_TOPOLOGY_KIND}`,
+    });
 
     useEffect(() => {
         voltageLevelOptionsPromise.then((values) => {

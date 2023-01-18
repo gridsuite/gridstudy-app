@@ -49,6 +49,7 @@ import {
     CONNECTIVITY_2,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
+    ENABLED,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAGNETIZING_CONDUCTANCE,
@@ -125,6 +126,27 @@ const TwoWindingsTransformerCreationDialog = ({
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dialogWidth, setDialogWidth] = useState('sm');
+
+    // console.log(
+    //     yup
+    //         .reach(schema, `${PHASE_TAP_CHANGER}.${REGULATION_MODE}`)
+    //         .resolve({ parent: getValues(`${PHASE_TAP_CHANGER}`) })
+    // );
+
+    // const {
+    //     schema: parentSchema,
+    //     parent: testParent,
+    //     parentPath,
+    // } = getIn(
+    //     schema,
+    //     `${PHASE_TAP_CHANGER}.${STEPS}[0].${STEPS_ALPHA}`,
+    //     getValues()
+    // );
+
+    // console.log(
+    //     'SHOULD WORK',
+    //     parentSchema.resolve({ parent: testParent })
+    // );
 
     const fromEditDataToFormValues = useCallback(
         (twt) => {
@@ -287,8 +309,8 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const onSubmit = useCallback(
         (twt) => {
-            alert(JSON.stringify(twt, null, 4));
-
+            const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
+            const enableRatioTapChanger = twt[RATIO_TAP_CHANGER]?.[ENABLED];
             createTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,
@@ -311,8 +333,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 twt[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.[
                     BUS_OR_BUSBAR_SECTION_ID
                 ],
-                twt[RATIO_TAP_CHANGER],
-                twt[PHASE_TAP_CHANGER],
+                enableRatioTapChanger ? twt[RATIO_TAP_CHANGER] : undefined,
+                enablePhaseTapChanger ? twt[PHASE_TAP_CHANGER] : undefined,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
                 twt[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? null,
@@ -334,6 +356,7 @@ const TwoWindingsTransformerCreationDialog = ({
     );
 
     const onValidationError = (errors) => {
+        // alert(JSON.stringify(errors, null, 4));
         let tabsInError = [];
         if (errors?.[PHASE_TAP_CHANGER] !== undefined) {
             tabsInError.push(

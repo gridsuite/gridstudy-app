@@ -33,7 +33,7 @@ const ratioTapChangerValidationSchema = (id) => ({
         [TARGET_V]: yup
             .number()
             .nullable()
-            .test('min', 'TargetVoltageGreaterThanZero', (val) => val >= 0)
+            .min(0, 'TargetVoltageGreaterThanZero')
             .when(REGULATING, {
                 is: true,
                 then: (schema) => schema.required(),
@@ -55,7 +55,11 @@ const ratioTapChangerValidationSchema = (id) => ({
             .number()
             .nullable()
             .min(yup.ref(LOW_TAP_POSITION), 'HighTapPositionError')
-            .max(100, 'HighTapPositionError'),
+            .max(100, 'HighTapPositionError')
+            .when(ENABLED, {
+                is: true,
+                then: (schema) => schema.required(),
+            }),
         [TAP_POSITION]: yup
             .number()
             .nullable()

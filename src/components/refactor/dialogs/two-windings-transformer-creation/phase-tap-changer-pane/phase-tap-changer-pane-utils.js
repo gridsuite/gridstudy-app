@@ -31,7 +31,13 @@ export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
 const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
-        [REGULATION_MODE]: yup.string().nullable().required(),
+        [REGULATION_MODE]: yup
+            .string()
+            .nullable()
+            .when([ENABLED], {
+                is: true,
+                then: (schema) => schema.required(),
+            }),
         [REGULATING]: yup.bool().required(),
         [CURRENT_LIMITER_REGULATING_VALUE]: yup
             .number()
@@ -69,7 +75,11 @@ const phaseTapChangerValidationSchema = (id) => ({
             .number()
             .nullable()
             .min(yup.ref(LOW_TAP_POSITION), 'HighTapPositionError')
-            .max(100, 'HighTapPositionError'),
+            .max(100, 'HighTapPositionError')
+            .when([ENABLED], {
+                is: true,
+                then: (schema) => schema.required(),
+            }),
         [TAP_POSITION]: yup
             .number()
             .nullable()

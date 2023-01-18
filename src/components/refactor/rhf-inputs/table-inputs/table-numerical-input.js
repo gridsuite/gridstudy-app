@@ -12,21 +12,36 @@ export const TableNumericalInput = ({
 }) => {
     const { trigger } = useFormContext();
     const {
-        field: { onChange, value },
+        field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
 
     const intl = useIntl();
 
+    const inputTransform = (value) => {
+        if (['-', '.'].includes(value)) return value;
+        return value === null || isNaN(value) ? '' : value.toString();
+    };
+
+    const outputTransform = (value) => {
+        if (value === '-') return value;
+        if (value === '') return null;
+
+        const tmp = value?.replace(',', '.') || '';
+        if (tmp.endsWith('.') || tmp.endsWith('0')) return value;
+        return parseFloat(tmp) || null;
+    };
+
     const handleInputChange = (e) => {
-        console.log('CHANGING', name);
-        onChange(e.target.value);
+        onChange(outputTransform(e.target.value));
         trigger(name);
     };
 
+    const transformedValue = inputTransform(value);
+
     const renderNumericText = (
         <TextField
-            value={value}
+            value={transformedValue}
             onChange={handleInputChange}
             {...props}
             error={error?.message}
@@ -34,6 +49,7 @@ export const TableNumericalInput = ({
             size={'small'}
             margin={'none'}
             style={{ ...style, padding: 0 }}
+            inputRef={ref}
             inputProps={{
                 style: {
                     textAlign: 'center',

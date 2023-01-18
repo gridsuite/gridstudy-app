@@ -134,7 +134,6 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
         (row) => {
             const index = row.columnIndex;
             const Editor = COLUMNS_DEFINITIONS[index].editor;
-            console.log('DATA');
             if (Editor) {
                 return (
                     <div className={classes.tableCell}>
@@ -261,7 +260,6 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 });
             }
 
-            console.log('NEWSTEPS', currentTapRows);
             replace(newSteps);
         });
     }, [getValues, replace, trigger]);

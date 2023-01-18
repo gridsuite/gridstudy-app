@@ -77,7 +77,9 @@ const PhaseTapChangerPane = ({
         <FloatInput
             name={`${PHASE_TAP_CHANGER}.${CURRENT_LIMITER_REGULATING_VALUE}`}
             label="RegulatingValueCurrentLimiter"
-            disabled={!regulatingWatch && !phaseTapChangerEnabledWatch}
+            formProps={{
+                disabled: !regulatingWatch || !phaseTapChangerEnabledWatch,
+            }}
             adornment={AmpereAdornment}
         />
     );
@@ -87,6 +89,9 @@ const PhaseTapChangerPane = ({
             name={`${PHASE_TAP_CHANGER}.${FLOW_SET_POINT_REGULATING_VALUE}`}
             label="RegulatingValueActivePowerControl"
             adornment={ActivePowerAdornment}
+            formProps={{
+                disabled: !regulatingWatch || !phaseTapChangerEnabledWatch,
+            }}
         />
     );
 
@@ -104,6 +109,7 @@ const PhaseTapChangerPane = ({
     const regulatingTerminalField = (
         <RegulatingTerminalForm
             id={PHASE_TAP_CHANGER}
+            disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             voltageLevelsEquipmentsOptionsPromise={
                 voltageLevelsEquipmentsOptionsPromise
@@ -243,7 +249,9 @@ const PhaseTapChangerPane = ({
                         {gridItem(regulatingTerminalField, 8)}
                     </Grid>
                 )}
-                <PhaseTapChangerPaneTaps />
+                <PhaseTapChangerPaneTaps
+                    disabled={!phaseTapChangerEnabledWatch}
+                />
                 {/* {ratioError && (
                     <Grid item xs={12}>
                         <Alert severity="error">{ratioError}</Alert>

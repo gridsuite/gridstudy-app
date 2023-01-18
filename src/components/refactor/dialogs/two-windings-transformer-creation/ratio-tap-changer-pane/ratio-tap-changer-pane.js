@@ -88,7 +88,7 @@ const RatioTapChangerPane = ({
     const regulatingTerminalField = (
         <RegulatingTerminalForm
             id={RATIO_TAP_CHANGER}
-            disabled={!ratioTapChangerEnabledWatcher}
+            disabled={!ratioTapChangerEnabledWatcher || !regulatingWatch}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             voltageLevelsEquipmentsOptionsPromise={
                 voltageLevelsEquipmentsOptionsPromise
