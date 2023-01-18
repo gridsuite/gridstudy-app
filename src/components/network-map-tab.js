@@ -587,7 +587,6 @@ export const NetworkMapTab = ({
                 loadMapEquipments();
             }
         }
-        // Note: studyUuid, and loadNetwork don't change
     }, [studyUpdatedForce, loadMapEquipments]);
 
     useEffect(() => {
