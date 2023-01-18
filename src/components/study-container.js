@@ -550,7 +550,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 // In order to avoid glitches during sld and map rendering,
                 // lines and substations have to be prefetched and set before network creation event is dispatched
                 // Network creation event is dispatched directly in the network constructor
-                console.info('TTT NOT INIT');
                 new Network(
                     studyUuid,
                     currentNode?.id,
@@ -561,7 +560,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     }
                 );
             } else {
-                console.info('TTT ITs AN INIT');
                 const network = new Network(
                     studyUuid,
                     currentNode?.id,
@@ -585,9 +583,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        console.info('TTTT previousCurrentNode', previousCurrentNode);
-        console.info('TTTT currentNodeRef.current', currentNodeRef.current);
-        if (!network || previousCurrentNode.id !== currentNodeRef.current.id) {
+        if (!network || previousCurrentNode.id !== currentNode.id || (!isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode))) {
             loadNetwork(false);
         }
     }, [loadNetwork, wsConnected]);
