@@ -312,8 +312,7 @@ const SizedNetworkAreaDiagram = (props) => {
                 minWidth,
                 minHeight,
                 maxWidth,
-                maxHeight,
-                depth
+                maxHeight
             );
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
@@ -330,6 +329,7 @@ const SizedNetworkAreaDiagram = (props) => {
             ) {
                 nad.setViewBox(nadRef.current.getViewBox());
             }
+            nad.refreshZoom();
 
             nadRef.current = nad;
         }
