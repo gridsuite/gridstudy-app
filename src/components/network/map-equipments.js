@@ -6,7 +6,7 @@
  */
 
 import { mapEquipmentsCreated } from '../../redux/actions';
-import { fetchMapEquipments } from '../../utils/rest-api';
+import { fetchMapLines, fetchMapSubstations } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 
 const elementIdIndexer = (map, element) => {
@@ -32,17 +32,13 @@ export default class MapEquipments {
     intlRef = undefined;
 
     initEquipments(studyUuid, currentNodeUuid) {
-        fetchMapEquipments(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            false,
-            'substations'
-        )
+        fetchMapSubstations(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.substations = val;
                 this.completeSubstationsInfos();
-                this.dispatch(mapEquipmentsCreated(this));
+                this.dispatch(
+                    mapEquipmentsCreated(this.newMapEquipmentForUpdate())
+                );
             })
             .catch((error) => {
                 console.error(error.message);
@@ -54,17 +50,13 @@ export default class MapEquipments {
                     );
                 }
             });
-        fetchMapEquipments(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            false,
-            'lines'
-        )
+        fetchMapLines(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.lines = val;
                 this.completeLinesInfos();
-                this.dispatch(mapEquipmentsCreated(this));
+                this.dispatch(
+                    mapEquipmentsCreated(this.newMapEquipmentForUpdate())
+                );
             })
             .catch((error) => {
                 console.error(error.message);
@@ -76,6 +68,11 @@ export default class MapEquipments {
                     );
                 }
             });
+    }
+
+    newMapEquipmentForUpdate() {
+        /* shallow clone of the map-equipment https://stackoverflow.com/a/44782052 */
+        return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
     }
 
     checkAndGetValues(equipments) {
@@ -95,24 +92,24 @@ export default class MapEquipments {
         substationsIds,
         handleUpdatedLines
     ) {
-        const updatedEquipments = fetchMapEquipments(
+        const updatedSubstations = fetchMapSubstations(
+            studyUuid,
+            currentNode?.id,
+            substationsIds
+        );
+        const updatedLines = fetchMapLines(
             studyUuid,
             currentNode?.id,
             substationsIds
         );
         const isFullReload = substationsIds ? false : true;
 
-        return updatedEquipments
+        updatedSubstations
             .then((values) => {
                 this.updateSubstations(
-                    this.checkAndGetValues(values.substations),
+                    this.checkAndGetValues(values),
                     isFullReload
                 );
-                this.updateLines(
-                    this.checkAndGetValues(values.lines),
-                    isFullReload
-                );
-                handleUpdatedLines(values.lines);
             })
             .catch((error) => {
                 console.error(error.message);
@@ -124,6 +121,22 @@ export default class MapEquipments {
                     );
                 }
             });
+        updatedLines
+            .then((values) => {
+                this.updateLines(this.checkAndGetValues(values), isFullReload);
+                handleUpdatedLines(values);
+            })
+            .catch((error) => {
+                console.error(error.message);
+                if (this.errHandler) {
+                    this.errHandler(
+                        this.intlRef.current.formatMessage({
+                            id: 'MapEquipmentsLoadError',
+                        })
+                    );
+                }
+            });
+        return Promise.all([updatedLines, updatedSubstations]);
     }
 
     completeSubstationsInfos(equipementsToIndex) {
