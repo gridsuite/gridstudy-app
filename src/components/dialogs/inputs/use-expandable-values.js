@@ -45,6 +45,7 @@ export const useExpandableValues = ({
             setValues((oldValues) => {
                 let newValues = [...oldValues];
                 newValues.splice(index, 1);
+                inputForm.setHasChanged(newValues.length > 0);
                 return newValues;
             });
             inputForm.reset();
@@ -119,23 +120,21 @@ export const useExpandableValues = ({
                         </Grid>
                     </Grid>
                 ))}
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Button
-                            fullWidth
-                            className={classes.button}
-                            startIcon={<AddIcon />}
-                            onClick={handleAddValue}
-                        >
-                            <FormattedMessage id={labelAddValue} />
-                        </Button>
-                        {isEmptyListError && (
-                            <div className={classes.emptyListError}>
-                                <FormattedMessage id={'EmptyList/' + id} />
-                            </div>
-                        )}
-                    </Grid>
-                </Grid>
+                <span>
+                    <Button
+                        fullWidth
+                        className={classes.button}
+                        startIcon={<AddIcon />}
+                        onClick={handleAddValue}
+                    >
+                        <FormattedMessage id={labelAddValue} />
+                    </Button>
+                    {isEmptyListError && (
+                        <div className={classes.emptyListError}>
+                            <FormattedMessage id={'EmptyList/' + id} />
+                        </div>
+                    )}
+                </span>
             </Grid>
         );
     }, [

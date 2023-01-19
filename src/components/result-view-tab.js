@@ -34,8 +34,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-        overflowY: 'auto',
-        margin: 10,
     },
 }));
 
@@ -142,14 +140,12 @@ export const ResultViewTab = ({
                             disabled={disabled}
                         />
                     )}
-                    {enableDeveloperMode && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'ShortCircuitAnalysisResults',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'ShortCircuitAnalysisResults',
+                        })}
+                        disabled={disabled}
+                    />
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>

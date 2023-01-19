@@ -31,8 +31,8 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import { Button } from '@mui/material';
 import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
-import { getNameOrId } from '../diagrams/singleLineDiagram/utils';
 import MapEquipments from './map-equipments';
+import { useNameOrId } from '../util/equipmentInfosHandler';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -58,9 +58,7 @@ const LABEL_SIZE = 12;
 
 const NetworkMap = (props) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
-
     const [showLineFlow, setShowLineFlow] = useState(true);
-
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({
         lastCenteredSubstation: null,
@@ -68,27 +66,38 @@ const NetworkMap = (props) => {
         centered: false,
     });
     const lastViewStateRef = useRef(null);
-
     const [tooltip, setTooltip] = useState({});
-
     const theme = useTheme();
     const foregroundNeutralColor = useMemo(() => {
         const labelColor = decomposeColor(theme.palette.text.primary).values;
         labelColor[3] *= 255;
         return labelColor;
     }, [theme]);
-
     const [cursorType, setCursorType] = useState('grab');
-
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
-
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
-
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
-
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const { getNameOrId } = useNameOrId();
+
+    const readyToDisplay =
+        props.mapEquipments !== null &&
+        props.geoData !== null &&
+        props.filteredNominalVoltages !== null &&
+        !props.disabled;
+
+    const readyToDisplaySubstations =
+        readyToDisplay &&
+        props.mapEquipments.substations &&
+        props.geoData.substationPositionsById.size > 0;
+
+    const readyToDisplayLines =
+        readyToDisplay &&
+        props.mapEquipments.lines &&
+        props.mapEquipments.voltageLevels &&
+        props.geoData.substationPositionsById.size > 0;
 
     const classes = useStyles();
 
@@ -314,19 +323,13 @@ const NetworkMap = (props) => {
 
     const layers = [];
 
-    if (
-        props.mapEquipments !== null &&
-        props.geoData !== null &&
-        props.filteredNominalVoltages !== null &&
-        !props.disabled
-    ) {
+    if (readyToDisplaySubstations) {
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
                 data: props.mapEquipments?.substations,
                 network: props.mapEquipments,
                 geoData: props.geoData,
-                useName: props.useName,
                 getNominalVoltageColor: getNominalVoltageColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
                 labelsVisible: labelsVisible,
@@ -336,9 +339,12 @@ const NetworkMap = (props) => {
                 onHover: ({ object, x, y }) => {
                     setCursorType(object ? 'pointer' : 'grab');
                 },
+                getNameOrId: getNameOrId,
             })
         );
+    }
 
+    if (readyToDisplayLines) {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
@@ -346,7 +352,6 @@ const NetworkMap = (props) => {
                 network: props.mapEquipments,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,
-                useName: props.useName,
                 getNominalVoltageColor: getNominalVoltageColor,
                 disconnectedLineColor: foregroundNeutralColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
@@ -355,23 +360,26 @@ const NetworkMap = (props) => {
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
                 loadFlowStatus: props.loadFlowStatus,
-                lineFullPath: props.lineFullPath,
+                lineFullPath:
+                    props.geoData.linePositionsById.size > 0 &&
+                    props.lineFullPath,
                 lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,
                 labelSize: LABEL_SIZE,
                 pickable: true,
                 onHover: ({ object, x, y }) => {
-                    setCursorType(object ? 'pointer' : 'grab');
-                    setTooltip({
-                        message: object
-                            ? props.useName
-                                ? getNameOrId(object)
-                                : object.id
-                            : null,
-                        pointerX: x,
-                        pointerY: y,
-                    });
+                    if (object) {
+                        setCursorType('pointer');
+                        setTooltip({
+                            message: getNameOrId(object),
+                            pointerX: x,
+                            pointerY: y,
+                        });
+                    } else {
+                        setCursorType('grab');
+                        setTooltip(null);
+                    }
                 },
             })
         );
