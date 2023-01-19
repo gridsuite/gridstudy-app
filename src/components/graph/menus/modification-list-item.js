@@ -64,27 +64,34 @@ export const ModificationListItem = ({
     const intl = useIntl();
     const classes = useStyles();
     const { getNameOrId } = useNameOrId();
+
+    /*
+        this version is more optimized because it uses a switch statement instead of a series of if-else statements.
+        this makes the code more readable and easier to maintain.
+        it also eliminate the need for the final if statement by using the default case of the switch statement instead.
+        finally, we uses the default value of equipmentId or empty string
+    */
     const getComputedLabel = useCallback(() => {
-        if (modif.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
-            return modif.lineToSplitId;
-        } else if (modif.type === 'LINE_ATTACH_TO_VOLTAGE_LEVEL') {
-            return modif.lineToAttachToId;
-        } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
-            return modif.attachedLineId;
-        } else if (modif.type === 'DELETE_VOLTAGE_LEVEL_ON_LINE') {
-            return modif.lineToAttachTo1Id + '/' + modif.lineToAttachTo2Id;
-        } else if (modif.type === 'DELETE_ATTACHING_LINE') {
-            return (
-                modif.attachedLineId +
-                '/' +
-                modif.lineToAttachTo1Id +
-                '/' +
-                modif.lineToAttachTo2Id
-            );
-        } else if (modif.equipmentId) {
-            return modif.equipmentId;
+        switch (modif.type) {
+            case 'LINE_SPLIT_WITH_VOLTAGE_LEVEL':
+                return modif.lineToSplitId;
+            case 'LINE_ATTACH_TO_VOLTAGE_LEVEL':
+                return modif.lineToAttachToId;
+            case 'LINES_ATTACH_TO_SPLIT_LINES':
+                return modif.attachedLineId;
+            case 'DELETE_VOLTAGE_LEVEL_ON_LINE':
+                return modif.lineToAttachTo1Id + '/' + modif.lineToAttachTo2Id;
+            case 'DELETE_ATTACHING_LINE':
+                return (
+                    modif.attachedLineId +
+                    '/' +
+                    modif.lineToAttachTo1Id +
+                    '/' +
+                    modif.lineToAttachTo2Id
+                );
+            default:
+                return modif.equipmentId || '';
         }
-        return '';
     }, [modif]);
 
     const toggle = useCallback(
