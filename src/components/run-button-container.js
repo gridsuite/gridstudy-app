@@ -94,19 +94,19 @@ export function RunButtonContainer({
         } else if (
             ranSA &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
-                'securityAnalysisResult'
+            'securityAnalysisResult'
         ) {
             dispatch(addSANotif());
         } else if (
             ranSensi &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
-                'sensitivityAnalysisResult'
+            'sensitivityAnalysisResult'
         ) {
             dispatch(addSensiNotif());
         } else if (
             ranShortCircuit &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
-                'shortCircuitAnalysisResult'
+            'shortCircuitAnalysisResult'
         ) {
             dispatch(addShortCircuitNotif());
         }
@@ -181,7 +181,7 @@ export function RunButtonContainer({
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'ShortCircuitError',
+                        headerId: 'startShortCircuitError',
                     });
                 });
         }
