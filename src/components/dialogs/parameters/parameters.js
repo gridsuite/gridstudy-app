@@ -42,7 +42,6 @@ import {
     ShortCircuitParameters,
     useGetShortCircuitParameters,
 } from './short-circuit-parameters';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -162,8 +161,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
         return (
@@ -179,15 +176,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             </Typography>
         );
     }
-
-    //To be removed when ShortCircuit is not in developer mode only.
-    useEffect(() => {
-        setTabIndex(
-            enableDeveloperMode
-                ? advancedParamsTabIndex
-                : advancedParamsTabIndex - 1
-        );
-    }, [enableDeveloperMode]);
 
     return (
         <Dialog
@@ -222,12 +210,11 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
-                        {enableDeveloperMode && (
-                            <Tab
-                                disabled={!studyUuid}
-                                label={<FormattedMessage id="ShortCircuit" />}
-                            />
-                        )}
+                        <Tab
+                            disabled={!studyUuid}
+                            label={<FormattedMessage id="ShortCircuit" />}
+                        />
+
                         <Tab label={<FormattedMessage id="Advanced" />} />
                     </Tabs>
 
@@ -252,33 +239,20 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                     </TabPanel>
-                    {
-                        //To be removed when ShortCircuit is not in developer mode only.
-                        enableDeveloperMode && (
-                            <TabPanel
-                                value={tabIndex}
-                                index={shortCircuitParamsTabIndex}
-                            >
-                                {studyUuid && (
-                                    <ShortCircuitParameters
-                                        hideParameters={hideParameters}
-                                        useShortCircuitParameters={
-                                            useShortCircuitParameters
-                                        }
-                                    />
-                                )}
-                            </TabPanel>
-                        )
-                    }
                     <TabPanel
                         value={tabIndex}
-                        //Ternary to be removed when ShortCircuit is not in developer mode only.
-                        index={
-                            enableDeveloperMode
-                                ? advancedParamsTabIndex
-                                : advancedParamsTabIndex - 1
-                        }
+                        index={shortCircuitParamsTabIndex}
                     >
+                        {studyUuid && (
+                            <ShortCircuitParameters
+                                hideParameters={hideParameters}
+                                useShortCircuitParameters={
+                                    useShortCircuitParameters
+                                }
+                            />
+                        )}
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={advancedParamsTabIndex}>
                         <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
                 </Container>

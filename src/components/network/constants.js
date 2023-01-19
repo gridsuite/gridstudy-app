@@ -64,6 +64,23 @@ export const REACTIVE_LIMIT_TYPES = [
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
 ];
 
+export const LOAD_SCALABLE_TYPES = [
+    { id: 'DELTA_P', label: 'DeltaP' },
+    { id: 'TARGET_P', label: 'TargetPText' },
+];
+
+export const ACTIVE_VARIATION_MODE = [
+    { id: 'PROPORTIONAL', label: 'Proportional' },
+    { id: 'REGULAR_DISTRIBUTION', label: 'RegularDistribution' },
+    { id: 'VENTILATION', label: 'Ventilation' },
+];
+
+export const REACTIVE_VARIATION_MODE = [
+    { id: 'CONSTANT_Q', label: 'ConstantQ' },
+    // to add later after correcting implementation in the backend (Powsybl)
+    // { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
+];
+
 export function getLoadTypeLabel(loadTypeId) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
 }
@@ -88,8 +105,9 @@ export const MODIFICATION_TYPE = {
     LINE_SPLIT_WITH_VOLTAGE_LEVEL: 'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
     LINE_ATTACH_TO_VOLTAGE_LEVEL: 'LINE_ATTACH_TO_VOLTAGE_LEVEL',
     LINES_ATTACH_TO_SPLIT_LINES: 'LINES_ATTACH_TO_SPLIT_LINES',
-    BRANCH_STATUS: 'BRANCH_STATUS',
+    BRANCH_STATUS_MODIFICATION: 'BRANCH_STATUS_MODIFICATION',
     EQUIPMENT_ATTRIBUTE_MODIFICATION: 'EQUIPMENT_ATTRIBUTE_MODIFICATION',
+    LOAD_SCALING: 'LOAD_SCALING',
     DELETE_VOLTAGE_LEVEL_ON_LINE: 'DELETE_VOLTAGE_LEVEL_ON_LINE',
     DELETE_ATTACHING_LINE: 'DELETE_ATTACHING_LINE',
 };
