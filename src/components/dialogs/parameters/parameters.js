@@ -180,13 +180,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         );
     }
 
-    //To be removed when ShortCircuit is not in developer mode only.
     useEffect(() => {
-        setTabIndex(
-            enableDeveloperMode
-                ? advancedParamsTabIndex
-                : advancedParamsTabIndex - 1
-        );
+        setTabIndex(advancedParamsTabIndex - 1);
     }, [enableDeveloperMode]);
 
     return (
@@ -253,31 +248,23 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         )}
                     </TabPanel>
                     {
-                        //To be removed when ShortCircuit is not in developer mode only.
-                        enableDeveloperMode && (
-                            <TabPanel
-                                value={tabIndex}
-                                index={shortCircuitParamsTabIndex}
-                            >
-                                {studyUuid && (
-                                    <ShortCircuitParameters
-                                        hideParameters={hideParameters}
-                                        useShortCircuitParameters={
-                                            useShortCircuitParameters
-                                        }
-                                    />
-                                )}
-                            </TabPanel>
-                        )
+                        <TabPanel
+                            value={tabIndex}
+                            index={shortCircuitParamsTabIndex}
+                        >
+                            {studyUuid && (
+                                <ShortCircuitParameters
+                                    hideParameters={hideParameters}
+                                    useShortCircuitParameters={
+                                        useShortCircuitParameters
+                                    }
+                                />
+                            )}
+                        </TabPanel>
                     }
                     <TabPanel
                         value={tabIndex}
-                        //Ternary to be removed when ShortCircuit is not in developer mode only.
-                        index={
-                            enableDeveloperMode
-                                ? advancedParamsTabIndex
-                                : advancedParamsTabIndex - 1
-                        }
+                        index={advancedParamsTabIndex - 1}
                     >
                         <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
