@@ -19,12 +19,11 @@ export const SensitivityAnalysisParameters = ({
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
 
-    const updateProviderCallback = useCallback(
-        (evt) => {
-            updateProvider(evt.target.value);
-        },
-        [updateProvider]
-    );
+    const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
+
+    const updateProviderCallback = useCallback(handleUpdateProvider, [
+        updateProvider,
+    ]);
 
     return (
         <Grid container className={classes.grid}>

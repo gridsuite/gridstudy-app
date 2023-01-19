@@ -110,9 +110,9 @@ export const DropDown = ({ value, label, values, callback }) => {
                     onChange={callback}
                     size="small"
                 >
-                    {Object.keys(values).map((key) => (
+                    {Object.entries(values).map(([key, value]) => (
                         <MenuItem key={key} value={key}>
-                            <FormattedMessage id={values[key]} />
+                            <FormattedMessage id={value} />
                         </MenuItem>
                     ))}
                 </Select>
@@ -162,6 +162,8 @@ export const LabelledButton = ({ callback, label, name }) => {
     );
 };
 
+const INITIAL_PROVIDERS = {};
+
 export const useParametersBackend = (
     user,
     type,
@@ -176,7 +178,7 @@ export const useParametersBackend = (
 
     const { snackError } = useSnackMessage();
 
-    const [providers, setProviders] = useState([]);
+    const [providers, setProviders] = useState(INITIAL_PROVIDERS);
 
     const [provider, setProvider] = useState(null);
 
