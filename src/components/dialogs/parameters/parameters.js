@@ -162,8 +162,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
         return (
