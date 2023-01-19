@@ -213,12 +213,11 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
-                        {enableDeveloperMode && (
-                            <Tab
-                                disabled={!studyUuid}
-                                label={<FormattedMessage id="ShortCircuit" />}
-                            />
-                        )}
+                        <Tab
+                            disabled={!studyUuid}
+                            label={<FormattedMessage id="ShortCircuit" />}
+                        />
+
                         <Tab label={<FormattedMessage id="Advanced" />} />
                     </Tabs>
 
