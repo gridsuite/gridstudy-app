@@ -372,7 +372,6 @@ const Diagram = forwardRef((props, ref) => {
         svg,
         currentNode,
         props.onNextVoltageLevelClick,
-        props.onBreakerClick,
         props.isComputationRunning,
         isAnyNodeBuilding,
         equipmentMenu,
@@ -585,7 +584,6 @@ const Diagram = forwardRef((props, ref) => {
         //how to refactor to avoid repeating them here ?
         svg,
         props.onNextVoltageLevelClick,
-        props.onBreakerClick,
         props.isComputationRunning,
         props.svgType,
         theme,
