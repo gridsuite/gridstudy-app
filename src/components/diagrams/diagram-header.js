@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -41,21 +41,16 @@ const useStyles = makeStyles((theme) => ({
 const DiagramHeader = (props) => {
     const classes = useStyles();
 
-    const handleMinimize = () => {
-        if (props.onMinimize) {
-            props.onMinimize();
-        }
-    };
-    const handleTogglePin = () => {
-        if (props.onTogglePin) {
-            props.onTogglePin();
-        }
-    };
-    const handleClose = () => {
-        if (props.onClose) {
-            props.onClose();
-        }
-    };
+    const { onMinimize, onTogglePin, onClose } = props;
+    const handleMinimize = useCallback(
+        () => onMinimize && onMinimize(),
+        [onMinimize]
+    );
+    const handleTogglePin = useCallback(
+        () => onTogglePin && onTogglePin(),
+        [onTogglePin]
+    );
+    const handleClose = useCallback(() => onClose && onClose(), [onClose]);
 
     return (
         <Box className={classes.header}>
