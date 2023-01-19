@@ -571,12 +571,12 @@ export const NetworkMapTab = ({
     }, [
         currentNode,
         dispatch,
-        intlRef,
         isInitialized,
         isUpdatedSubstationsApplied,
         mapEquipments,
         studyUuid,
         updatedSubstationsIds,
+        loadGeoData,
     ]);
 
     useEffect(() => {
@@ -617,7 +617,8 @@ export const NetworkMapTab = ({
         currentNode,
         loadMapEquipments,
         updateMapEquipmentsAndGeoData,
-        loadAllGeoData, isInitialized,
+        loadAllGeoData,
+        isInitialized,
         reloadMapNeeded,
         updatedSubstationsIds,
     ]);
@@ -626,7 +627,12 @@ export const NetworkMapTab = ({
      */
     useEffect(() => {
         // when we build node we want the map to be up to date
-        if (refIsMapManualRefreshEnabled.current && isInitialized && isNodeBuilt(currentNode)) {
+        //TODO enlever isInitialized ?
+        if (
+            refIsMapManualRefreshEnabled.current &&
+            isInitialized &&
+            isNodeBuilt(currentNode)
+        ) {
             updateMapEquipmentsAndGeoData();
         }
     }, [currentNode, isInitialized, updateMapEquipmentsAndGeoData]);
@@ -692,7 +698,7 @@ export const NetworkMapTab = ({
             mapEquipments={mapEquipments}
             updatedLines={updatedLines}
             geoData={geoData}
-            waitingLoadGeoData={waitingLoadGeoData}
+            waitingLoadGeoData={!mapEquipments || !geoData} // TODO rename
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
             arrowsZoomThreshold={7}
