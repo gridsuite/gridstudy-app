@@ -607,15 +607,18 @@ export default class Network {
                 break;
             case 'VOLTAGE_LEVEL':
                 const substationId =
-                    this.voltageLevelsById.get(equipmentId).substationId;
-                let voltageLevelsOfSubstation =
-                    this.substationsById.get(substationId).voltageLevels;
-                voltageLevelsOfSubstation = voltageLevelsOfSubstation.filter(
-                    (l) => l.id !== equipmentId
-                );
+                    this.voltageLevelsById.get(equipmentId)?.substationId;
+                if (this.substationsById.get(equipmentId)) {
+                    let voltageLevelsOfSubstation =
+                        this.substationsById.get(substationId).voltageLevels;
+                    voltageLevelsOfSubstation =
+                        voltageLevelsOfSubstation.filter(
+                            (l) => l.id !== equipmentId
+                        );
 
-                this.substationsById.get(substationId).voltageLevels =
-                    voltageLevelsOfSubstation;
+                    this.substationsById.get(substationId).voltageLevels =
+                        voltageLevelsOfSubstation;
+                }
 
                 this.generators = this.removeInjectionOfVoltageLevel(
                     this.generators,
@@ -681,7 +684,7 @@ export default class Network {
 
                 this.substationsById
                     .get(equipmentId)
-                    .voltageLevels.map((vl) =>
+                    ?.voltageLevels.map((vl) =>
                         this.removeEquipment('VOLTAGE_LEVEL', vl.id)
                     );
                 this.completeSubstationsInfos();

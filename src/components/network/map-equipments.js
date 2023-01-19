@@ -256,7 +256,7 @@ export default class MapEquipments {
                 substation.voltageLevels.map((vl) =>
                     this.removeEquipment('VOLTAGE_LEVEL', vl.id)
                 );
-                this.completeSubstationsInfos([...substation]);
+                this.completeSubstationsInfos([substation]);
                 break;
             default:
         }
