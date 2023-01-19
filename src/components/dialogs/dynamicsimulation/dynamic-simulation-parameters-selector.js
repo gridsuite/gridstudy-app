@@ -40,7 +40,6 @@ const PARAMETER_START_TIME_ERROR_MSG =
 const PARAMETER_STOP_TIME_LABEL = 'DynamicSimulationStopTime';
 const PARAMETER_STOP_TIME_ERROR_MSG =
     'DynamicSimulationStopTimeLessThanOrEqualDefaultValue';
-const PARAMETER_WITH_VARIANT_LABEL = 'DynamicSimulationWithVariant';
 
 const DynamicSimulationParametersSelector = (props) => {
     const { open, onClose, onStart, studyUuid, currentNodeUuid } = props;
