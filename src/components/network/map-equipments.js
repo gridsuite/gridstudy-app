@@ -32,7 +32,13 @@ export default class MapEquipments {
     intlRef = undefined;
 
     initEquipments(studyUuid, currentNodeUuid) {
-        fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false, "substations")
+        fetchMapEquipments(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            false,
+            'substations'
+        )
             .then((val) => {
                 this.substations = val;
                 this.completeSubstationsInfos();
@@ -48,7 +54,13 @@ export default class MapEquipments {
                     );
                 }
             });
-        fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false, "lines")
+        fetchMapEquipments(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            false,
+            'lines'
+        )
             .then((val) => {
                 this.lines = val;
                 this.completeLinesInfos();

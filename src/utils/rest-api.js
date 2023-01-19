@@ -2409,12 +2409,13 @@ export function fetchMapEquipments(
     const substationParams = getQueryParamsList(substationsIds, 'substationId');
 
     let fetchEquipmentsUrl;
-    if (equipmentType === "substations") {
-        fetchEquipmentsUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/map-substations';
-    }
-    else {
-        fetchEquipmentsUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+    if (equipmentType === 'substations') {
+        fetchEquipmentsUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-map/map-substations';
+    } else {
+        fetchEquipmentsUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
             '/network-map/map-lines';
     }
 
