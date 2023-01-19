@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -19,13 +19,13 @@ const useStyles = makeStyles((theme) => ({
         left: theme.spacing(1),
         position: 'absolute',
     },
-    plusIcon: {
+    incrementCounterIcon: {
         bottom: theme.spacing(1),
         left: theme.spacing(5.5),
         position: 'absolute',
         cursor: 'pointer',
     },
-    lessIcon: {
+    decrementCounterIcon: {
         bottom: theme.spacing(1),
         left: theme.spacing(2),
         position: 'absolute',
@@ -42,26 +42,28 @@ const useStyles = makeStyles((theme) => ({
 const DiagramFooter = (props) => {
     const classes = useStyles();
 
-    const handleStopFullScreen = () => {
-        if (props.onStopFullScreen) {
-            props.onStopFullScreen();
-        }
-    };
-    const handleStartFullScreen = () => {
-        if (props.onStartFullScreen) {
-            props.onStartFullScreen();
-        }
-    };
-    const handleIncrementCounter = () => {
-        if (props.onIncrementCounter) {
-            props.onIncrementCounter();
-        }
-    };
-    const handleDecrementCounter = () => {
-        if (props.onDecrementCounter) {
-            props.onDecrementCounter();
-        }
-    };
+    const {
+        onStopFullScreen,
+        onStartFullScreen,
+        onIncrementCounter,
+        onDecrementCounter,
+    } = props;
+    const handleStopFullScreen = useCallback(
+        () => onStopFullScreen && onStopFullScreen(),
+        [onStopFullScreen]
+    );
+    const handleStartFullScreen = useCallback(
+        () => onStartFullScreen && onStartFullScreen(),
+        [onStartFullScreen]
+    );
+    const handleIncrementCounter = useCallback(
+        () => onIncrementCounter && onIncrementCounter(),
+        [onIncrementCounter]
+    );
+    const handleDecrementCounter = useCallback(
+        () => onDecrementCounter && onDecrementCounter(),
+        [onDecrementCounter]
+    );
 
     return (
         <div style={{ display: 'flex' }}>
@@ -74,11 +76,11 @@ const DiagramFooter = (props) => {
                     )}
                     <AddCircleIcon
                         onClick={handleIncrementCounter}
-                        className={classes.plusIcon}
+                        className={classes.incrementCounterIcon}
                     />
                     <RemoveCircleIcon
                         onClick={handleDecrementCounter}
-                        className={classes.lessIcon}
+                        className={classes.decrementCounterIcon}
                     />
                 </>
             )}
