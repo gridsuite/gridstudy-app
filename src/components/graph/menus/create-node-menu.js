@@ -39,7 +39,6 @@ const CreateNodeMenu = ({
     handleExportCaseOnNode,
     activeNode,
     selectedNodeForCopy,
-    copyType,
     handleCopyNode,
     handleCutNode,
     handlePasteNode,
@@ -76,6 +75,11 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
+    function cancelCutNetworkModificationNode() {
+        handleCutNode(null);
+        handleClose();
+    }
+
     function removeNode() {
         handleNodeRemoval(activeNode);
         handleClose();
@@ -88,8 +92,17 @@ const CreateNodeMenu = ({
 
     function isPastingAllowed() {
         return (
-            selectedNodeForCopy !== null &&
-            (selectedNodeForCopy !== activeNode.id || copyType !== CopyType.CUT)
+            selectedNodeForCopy &&
+            selectedNodeForCopy.nodeId !== null &&
+            (selectedNodeForCopy.nodeId !== activeNode.id ||
+                selectedNodeForCopy.copyType !== CopyType.CUT)
+        );
+    }
+
+    function isAlreadySelectedForCut() {
+        return (
+            selectedNodeForCopy?.nodeId === activeNode.id &&
+            selectedNodeForCopy?.copyType === CopyType.CUT
         );
     }
 
@@ -125,8 +138,13 @@ const CreateNodeMenu = ({
         },
         CUT_MODIFICATION_NODE: {
             onRoot: false,
-            action: () => cutNetworkModificationNode(),
-            id: 'cutNetworkModificationNode',
+            action: () =>
+                isAlreadySelectedForCut()
+                    ? cancelCutNetworkModificationNode()
+                    : cutNetworkModificationNode(),
+            id: isAlreadySelectedForCut()
+                ? 'cancelCutNetworkModificationNode'
+                : 'cutNetworkModificationNode',
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
