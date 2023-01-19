@@ -352,6 +352,7 @@ export const reducer = createReducer(initialState, {
 
     [LINE_FULL_PATH]: (state, action) => {
         state[PARAM_LINE_FULL_PATH] = action[PARAM_LINE_FULL_PATH];
+        state.reloadMap = true;
     },
 
     [LINE_PARALLEL_PATH]: (state, action) => {

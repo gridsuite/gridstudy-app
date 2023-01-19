@@ -603,6 +603,8 @@ export const NetworkMapTab = ({
         if (disabled) return;
         if (refIsMapManualRefreshEnabled.current && isInitialized) return;
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
+        // TODO REMOVE LATER
+        if (!reloadMapNeeded) return;
         if (!isInitialized) {
             loadMapEquipments();
             loadAllGeoData();
