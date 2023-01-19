@@ -38,6 +38,7 @@ import { RunningStatus } from './util/running-status';
 import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
+import { UPDATE_TYPE_HEADER } from './study-container';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -101,6 +102,7 @@ export const NetworkMapTab = ({
     setErrorMessage,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
@@ -578,6 +580,18 @@ export const NetworkMapTab = ({
         studyUuid,
         updatedSubstationsIds,
     ]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
+                'loadflow'
+            ) {
+                //TODO reload data more intelligently
+                loadMapEquipments();
+            }
+        }
+    }, [studyUpdatedForce, loadMapEquipments]);
 
     useEffect(() => {
         setIsUpdatedSubstationsApplied(false);

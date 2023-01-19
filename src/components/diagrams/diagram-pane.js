@@ -54,12 +54,10 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
-    const notificationIdList = useSelector((state) => state.notificationIdList);
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode) &&
-            !isNodeInNotificationList(currentNode, notificationIdList)
+            isNodeBuilt(currentNode)
                 ? getVoltageLevelSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -80,14 +78,12 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             diagonalName,
             componentLibrary,
             language,
-            notificationIdList,
         ]
     );
 
     const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode) &&
-            !isNodeInNotificationList(currentNode, notificationIdList)
+            isNodeBuilt(currentNode)
                 ? getSubstationSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -109,14 +105,12 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             paramUseName,
             currentNode,
             language,
-            notificationIdList,
         ]
     );
 
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
         (voltageLevelsIds, depth) =>
-            isNodeBuilt(currentNode) &&
-            !isNodeInNotificationList(currentNode, notificationIdList)
+            isNodeBuilt(currentNode)
                 ? getNetworkAreaDiagramUrl(
                       studyUuid,
                       currentNode?.id,
@@ -124,7 +118,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                       depth
                   )
                 : null,
-        [studyUuid, currentNode, notificationIdList]
+        [studyUuid, currentNode]
     );
 
     return useCallback(
@@ -261,7 +255,7 @@ export function DiagramPane({
     visible,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
+    const [views, setViews] = useState([]);
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
 
     const [displayedDiagramHeights, setDisplayedDiagramHeights] = useState([]);
@@ -277,6 +271,8 @@ export function DiagramPane({
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
+
+    const notificationIdList = useSelector((state) => state.notificationIdList);
 
     const { openDiagramView, closeDiagramView, closeDiagramViews } =
         useDiagram();
@@ -294,11 +290,14 @@ export function DiagramPane({
     // We get the diagram data from the redux store.
     // In the case of SLD, each SLD corresponds to one view, but in the case of NAD, each open NAD is merged
     // into one view.
-    const views = useMemo(() => {
-        if (!visible) {
-            return [];
+    useEffect(() => {
+        if (
+            !visible ||
+            isNodeInNotificationList(currentNode, notificationIdList)
+        ) {
+            return;
         }
-        const views = [];
+        const diagramViews = [];
         const networkAreaIds = [];
         let networkAreaViewState = ViewState.OPENED;
 
@@ -311,7 +310,7 @@ export function DiagramPane({
                 // if current view cannot be found, it returns undefined
                 // in this case, we remove it from diagram states
                 if (singleLineDiagramView) {
-                    views.push({ ...singleLineDiagramView, align: 'left' });
+                    diagramViews.push({ ...singleLineDiagramView, align: 'left' });
                 } else {
                     closeDiagramView(diagramState.id, diagramState.svgType);
                 }
@@ -329,18 +328,20 @@ export function DiagramPane({
             // if current view cannot be found, it returns undefined
             // in this case, we remove all the NAD from diagram states
             if (networkAreaDiagramView) {
-                views.push({ ...networkAreaDiagramView, align: 'right' });
+                diagramViews.push({ ...networkAreaDiagramView, align: 'right' });
             } else {
                 closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
             }
         }
-        return views;
+        setViews(diagramViews);
     }, [
         diagramStates,
         visible,
         closeDiagramView,
         createView,
         networkAreaDiagramDepth,
+        currentNode,
+        notificationIdList,
     ]);
 
     const viewsRef = useRef();
