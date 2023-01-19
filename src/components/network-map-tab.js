@@ -540,7 +540,7 @@ export const NetworkMapTab = ({
     }, [currentNode, dispatch, intlRef, setErrorMessage, studyUuid]);
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
-        if (!isNodeBuilt(currentNode) || !studyUuid || !isInitialized) {
+        if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
         //TODO not reload map equip when switching on true lineFullPath
@@ -571,7 +571,6 @@ export const NetworkMapTab = ({
     }, [
         currentNode,
         dispatch,
-        isInitialized,
         isUpdatedSubstationsApplied,
         mapEquipments,
         studyUuid,
