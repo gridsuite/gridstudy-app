@@ -51,7 +51,10 @@ import { modifyGenerator } from '../../utils/rest-api';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { useReactiveCapabilityCurveTableValues } from './inputs/reactive-capability-curve-table';
 import { ReactiveCapabilityCurveReactiveRange } from './reactive-capability-curve-reactive-range';
-import { checkReactiveCapabilityCurve } from '../util/validation-functions';
+import {
+    checkReactiveCapabilityCurve,
+    validateValueIsGreaterThan,
+} from '../util/validation-functions';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -492,7 +495,13 @@ const GeneratorModificationDialog = ({
 
     const [droop, droopField] = useDoubleValue({
         label: 'Droop',
-        validation: { isFieldRequired: frequencyRegulation },
+        validation: {
+            isFieldRequired:
+                frequencyRegulation &&
+                !validateValueIsGreaterThan(generatorInfos?.droop, 0), // The field is required if active power regulation is ON and there is no previous valid value.
+            valueGreaterThan: 0,
+            errorMsgId: 'DroopGreaterThanZero',
+        },
         adornment: percentageTextField,
         inputForm: inputForm,
         formProps: {

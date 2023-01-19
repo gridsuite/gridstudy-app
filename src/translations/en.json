@@ -431,6 +431,7 @@
     "MinReactivePowerLessThanMaxActivePower": "Minimum reactive power value must be less or equal than maximum reactive power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
+    "DroopGreaterThanZero": "The droop value must be strictly positive",
     "NormalizedPercentage": "This percentage must be between 0 and 100",
     "GeneratorModificationError": "Error while modifying generator",
     "ReactiveCapabilityCurveCreationErrorMissingPoints": "The table of reactive capability curve must have at least four points.",
