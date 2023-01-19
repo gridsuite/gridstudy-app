@@ -45,13 +45,11 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
-    const notificationIdList = useSelector((state) => state.notificationIdList);
     const { getNameOrId } = useNameOrId();
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode) &&
-            !isNodeInNotificationList(currentNode, notificationIdList)
+            isNodeBuilt(currentNode)
                 ? getVoltageLevelSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -72,14 +70,12 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             diagonalName,
             componentLibrary,
             language,
-            notificationIdList,
         ]
     );
 
     const getSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId) =>
-            isNodeBuilt(currentNode) &&
-            !isNodeInNotificationList(currentNode, notificationIdList)
+            isNodeBuilt(currentNode)
                 ? getSubstationSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
@@ -101,7 +97,6 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             useName,
             currentNode,
             language,
-            notificationIdList,
         ]
     );
 
@@ -195,6 +190,7 @@ export function SingleLineDiagramPane({
     const viewsRef = useRef();
     const { getNameOrId } = useNameOrId();
     viewsRef.current = views;
+    const notificationIdList = useSelector((state) => state.notificationIdList);
 
     const [
         closeView,
@@ -241,20 +237,33 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        if (visible) {
+        if (
+            visible &&
+            !isNodeInNotificationList(currentNode, notificationIdList)
+        ) {
             const viewsFromSldState = [];
             sldState.forEach((currentState) => {
                 let currentView = createView(currentState);
                 // if current view cannot be found, it return undefined
                 // in this case, we remove it from SLD state
-                if (currentView) viewsFromSldState.push(currentView);
-                else {
+                if (currentView) {
+                    viewsFromSldState.push(currentView);
+                } else {
                     closeView(currentState.id);
                 }
             });
             setViews(viewsFromSldState);
         }
-    }, [sldState, visible, disabled, closeView, createView, dispatch]);
+    }, [
+        sldState,
+        visible,
+        disabled,
+        closeView,
+        createView,
+        dispatch,
+        currentNode,
+        notificationIdList,
+    ]);
 
     const handleCloseSLD = useCallback(
         (id) => {
