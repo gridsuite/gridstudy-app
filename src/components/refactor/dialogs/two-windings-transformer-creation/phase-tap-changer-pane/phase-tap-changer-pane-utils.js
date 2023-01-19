@@ -56,8 +56,9 @@ const phaseTapChangerValidationSchema = (id) => ({
             .number()
             .nullable()
             .min(0, 'CurrentLimiterGreaterThanZero')
-            .when([REGULATING, REGULATION_MODE], {
-                is: (regulating, regulationMode) =>
+            .when([ENABLED, REGULATING, REGULATION_MODE], {
+                is: (enabled, regulating, regulationMode) =>
+                    enabled &&
                     regulating &&
                     regulationMode === REGULATION_MODES.CURRENT_LIMITER.id,
                 then: (schema) => schema.required(),
@@ -65,8 +66,9 @@ const phaseTapChangerValidationSchema = (id) => ({
         [FLOW_SET_POINT_REGULATING_VALUE]: yup
             .number()
             .nullable()
-            .when([REGULATING, REGULATION_MODE], {
-                is: (regulating, regulationMode) =>
+            .when([ENABLED, REGULATING, REGULATION_MODE], {
+                is: (enabled, regulating, regulationMode) =>
+                    enabled &&
                     regulating &&
                     regulationMode === REGULATION_MODES.ACTIVE_POWER_CONTROL.id,
                 then: (schema) => schema.required(),
@@ -136,8 +138,8 @@ const phaseTapChangerValidationSchema = (id) => ({
                 [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
                 [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(),
             })
-            .when(REGULATING, {
-                is: true,
+            .when([ENABLED, REGULATING], {
+                is: (enabled, regulating) => enabled && regulating,
                 then: (schema) => schema.required(),
             }),
         [EQUIPMENT]: yup
@@ -148,8 +150,8 @@ const phaseTapChangerValidationSchema = (id) => ({
                 [EQUIPMENT_NAME]: yup.string(),
                 [EQUIPMENT_TYPE]: yup.string(),
             })
-            .when(REGULATING, {
-                is: true,
+            .when([ENABLED, REGULATING], {
+                is: (enabled, regulating) => enabled && regulating,
                 then: (schema) => schema.required(),
             }),
     }),

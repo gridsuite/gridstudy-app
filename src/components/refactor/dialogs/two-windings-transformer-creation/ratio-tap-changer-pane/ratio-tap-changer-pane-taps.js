@@ -27,6 +27,7 @@ import {
 } from '../../../../dialogs/two-windings-transformer/two-windings-transformer-creation-dialog';
 import RatioTapChangerPaneButtons from './ratio-tap-changer-pane-buttons';
 import { RATIO_TAP_CHANGER } from './ratio-tap-changer-pane-utils';
+import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -425,6 +426,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                     setOpenImportRuleDialog={setOpenImportRuleDialog}
                 />
+                <FieldErrorAlert name={`${RATIO_TAP_CHANGER}.${STEPS}`} />
             </Grid>
             <CreateRuleDialog
                 ruleType={RATIO_TAP}

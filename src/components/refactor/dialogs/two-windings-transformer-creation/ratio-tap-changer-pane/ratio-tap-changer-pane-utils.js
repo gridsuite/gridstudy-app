@@ -96,7 +96,7 @@ const ratioTapChangerValidationSchema = (id) => ({
                 is: true,
                 then: (schema) => schema.min(1),
             })
-            .test('distinctOrderedRatio', 'TapPositionValueError', (array) => {
+            .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
                 const ratioArray = array.map((step) => step[STEPS_RATIO]);
                 return (
                     areArrayElementsOrdered(ratioArray) &&
