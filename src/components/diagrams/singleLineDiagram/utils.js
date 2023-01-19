@@ -156,10 +156,6 @@ export const useSingleLineDiagram = () => {
     ];
 };
 
-export function getNameOrId(value) {
-    return value?.name ?? value?.id;
-}
-
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
     VERTICAL: 'vertical',
@@ -174,7 +170,3 @@ export const SvgType = {
 };
 
 export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
-
-export function getSubstationNameOrId(value) {
-    return value?.substationName ?? value?.substationId;
-}

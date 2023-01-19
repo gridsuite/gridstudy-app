@@ -62,6 +62,7 @@ import {
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
+import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
 
@@ -376,6 +377,11 @@ const NetworkModificationNodeEditor = () => {
                 ),
             icon: <AddIcon />,
         },
+        LOAD_SCALING: {
+            label: 'LoadScaling',
+            dialog: () => adapt(LoadScalingDialog),
+            icon: <AddIcon />,
+        },
         DELETE_VOLTAGE_LEVEL_ON_LINE: {
             label: 'DeleteVoltageLevelOnLine',
             dialog: () => adapt(DeleteVoltageLevelOnLineDialog, withLines),
@@ -398,7 +404,12 @@ const NetworkModificationNodeEditor = () => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
-            dispatch(addNotification(study.eventData.headers['parentNode']));
+            dispatch(
+                addNotification([
+                    study.eventData.headers['parentNode'],
+                    ...study.eventData.headers['nodes'],
+                ])
+            );
         },
         [dispatch]
     );
@@ -500,9 +511,10 @@ const NetworkModificationNodeEditor = () => {
                 // this allow to append new modifications to the existing list.
                 dofetchNetworkModifications();
                 dispatch(
-                    removeNotificationByNode(
-                        studyUpdatedForce.eventData.headers['parentNode']
-                    )
+                    removeNotificationByNode([
+                        studyUpdatedForce.eventData.headers['parentNode'],
+                        ...studyUpdatedForce.eventData.headers['nodes'],
+                    ])
                 );
             }
         }
