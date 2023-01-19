@@ -104,7 +104,6 @@ export const NetworkMapTab = ({
     const intlRef = useIntlRef();
     const [isInitialized, setInitialized] = useState(false);
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
-    const [waitingFullLoadGeoData, setWaitingFullLoadGeoData] = useState(true);
     const [waitingLoadTemporaryGeoData, setWaitingLoadTemporaryGeoData] =
         useState(false);
 
@@ -461,7 +460,6 @@ export const NetworkMapTab = ({
     const loadAllGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         setWaitingLoadGeoData(true);
-        setWaitingFullLoadGeoData(true);
 
         const substationPositionsDone = fetchSubstationPositions(
             studyUuid,
@@ -474,7 +472,6 @@ export const NetworkMapTab = ({
             );
             newGeoData.setSubstationPositions(data);
             setGeoData(newGeoData);
-            setWaitingLoadGeoData(false);
         });
 
         const linePositionsDone = !lineFullPath
@@ -494,13 +491,12 @@ export const NetworkMapTab = ({
 
         Promise.all([substationPositionsDone, linePositionsDone])
             .then(() => {
-                setWaitingFullLoadGeoData(false);
+                setWaitingLoadGeoData(false);
                 temporaryGeoDataIdsRef.current = new Set();
             })
             .catch(function (error) {
                 console.error(error.message);
                 setWaitingLoadGeoData(false);
-                setWaitingFullLoadGeoData(false);
                 setErrorMessage(
                     intlRef.current.formatMessage(
                         { id: 'geoDataLoadingFail' },
@@ -546,7 +542,7 @@ export const NetworkMapTab = ({
         //TODO not reload map equip when switching on true lineFullPath
         if (mapEquipments) {
             console.info('Reload map equipments');
-            setWaitingFullLoadGeoData(true);
+            setWaitingLoadGeoData(true);
             const updatedSubstationsToSend =
                 !refIsMapManualRefreshEnabled.current &&
                 !isUpdatedSubstationsApplied &&
@@ -562,7 +558,7 @@ export const NetworkMapTab = ({
                     setUpdatedLines
                 )
                 .then(loadGeoData)
-                .finally(() => setWaitingFullLoadGeoData(false));
+                .finally(() => setWaitingLoadGeoData(false));
             if (updatedSubstationsToSend) {
                 setIsUpdatedSubstationsApplied(true);
             }
@@ -710,7 +706,7 @@ export const NetworkMapTab = ({
             mapEquipments={mapEquipments}
             updatedLines={updatedLines}
             geoData={geoData}
-            waitingLoadGeoData={!mapEquipments || !geoData} // TODO rename
+            displayOverlayLoader={!mapEquipments || !geoData}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
             arrowsZoomThreshold={7}
@@ -751,7 +747,7 @@ export const NetworkMapTab = ({
         <>
             <div className={classes.divTemporaryGeoDataLoading}>
                 {(waitingLoadTemporaryGeoData ||
-                    (!waitingLoadGeoData && waitingFullLoadGeoData)) && (
+                    ((mapEquipments || geoData) && waitingLoadGeoData)) && (
                     <LinearProgress />
                 )}
             </div>
