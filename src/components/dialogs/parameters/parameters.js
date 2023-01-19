@@ -243,25 +243,20 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                     </TabPanel>
-                    {
-                        <TabPanel
-                            value={tabIndex}
-                            index={shortCircuitParamsTabIndex}
-                        >
-                            {studyUuid && (
-                                <ShortCircuitParameters
-                                    hideParameters={hideParameters}
-                                    useShortCircuitParameters={
-                                        useShortCircuitParameters
-                                    }
-                                />
-                            )}
-                        </TabPanel>
-                    }
                     <TabPanel
                         value={tabIndex}
-                        index={advancedParamsTabIndex - 1}
+                        index={shortCircuitParamsTabIndex}
                     >
+                        {studyUuid && (
+                            <ShortCircuitParameters
+                                hideParameters={hideParameters}
+                                useShortCircuitParameters={
+                                    useShortCircuitParameters
+                                }
+                            />
+                        )}
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={advancedParamsTabIndex}>
                         <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
                 </Container>
