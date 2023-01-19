@@ -180,10 +180,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         );
     }
 
-    useEffect(() => {
-        setTabIndex(advancedParamsTabIndex - 1);
-    }, [enableDeveloperMode]);
-
     return (
         <Dialog
             open={isParametersOpen}
