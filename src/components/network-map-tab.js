@@ -134,7 +134,6 @@ export const NetworkMapTab = ({
     const refIsMapManualRefreshEnabled = useRef();
     refIsMapManualRefreshEnabled.current = mapManualRefresh;
 
-    //TODO remove from state ?
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
     const deletedEquipment = useSelector((state) => state.deletedEquipment);
@@ -516,7 +515,6 @@ export const NetworkMapTab = ({
             if (
                 // To manage a lineFullPath param change, if lineFullPath=true and linePositions is empty, we load all the geo data.
                 // This can be improved by loading only the lines geo data and not lines geo data + substations geo data when lineFullPath is changed to true.
-                // isInitialized &&
                 geoDataRef.current?.substationPositionsById.size > 0 &&
                 (!lineFullPath || geoDataRef.current.linePositionsById.size > 0)
             ) {
@@ -582,16 +580,16 @@ export const NetworkMapTab = ({
     ]);
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
+        if (isInitialized && studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'loadflow'
             ) {
                 //TODO reload data more intelligently
-                loadMapEquipments();
+                updateMapEquipmentsAndGeoData();
             }
         }
-    }, [studyUpdatedForce, loadMapEquipments]);
+    }, [isInitialized, studyUpdatedForce, updateMapEquipmentsAndGeoData]);
 
     useEffect(() => {
         setIsUpdatedSubstationsApplied(false);
@@ -643,15 +641,14 @@ export const NetworkMapTab = ({
      */
     useEffect(() => {
         // when we build node we want the map to be up to date
-        //TODO enlever isInitialized ?
         if (
-            refIsMapManualRefreshEnabled.current &&
             isInitialized &&
+            refIsMapManualRefreshEnabled.current &&
             isNodeBuilt(currentNode)
         ) {
             updateMapEquipmentsAndGeoData();
         }
-    }, [currentNode, isInitialized, updateMapEquipmentsAndGeoData]);
+    }, [isInitialized, currentNode, updateMapEquipmentsAndGeoData]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
