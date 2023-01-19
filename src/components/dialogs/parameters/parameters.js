@@ -42,7 +42,6 @@ import {
     ShortCircuitParameters,
     useGetShortCircuitParameters,
 } from './short-circuit-parameters';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
