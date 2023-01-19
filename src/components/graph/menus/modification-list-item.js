@@ -20,7 +20,7 @@ import { useNameOrId } from '../../util/equipmentInfosHandler';
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
     'GROOVY_SCRIPT',
-    'BRANCH_STATUS',
+    'BRANCH_STATUS_MODIFICATION',
 ]);
 
 const isEditableModification = (modif) => {
@@ -72,9 +72,15 @@ export const ModificationListItem = ({
         } else if (modif.type === 'LINES_ATTACH_TO_SPLIT_LINES') {
             return modif.attachedLineId;
         } else if (modif.type === 'DELETE_VOLTAGE_LEVEL_ON_LINE') {
-            return modif.replacingLine1Id;
+            return modif.lineToAttachTo1Id + '/' + modif.lineToAttachTo2Id;
         } else if (modif.type === 'DELETE_ATTACHING_LINE') {
-            return modif.replacingLine1Id;
+            return (
+                modif.attachedLineId +
+                '/' +
+                modif.lineToAttachTo1Id +
+                '/' +
+                modif.lineToAttachTo2Id
+            );
         } else if (modif.equipmentId) {
             return modif.equipmentId;
         }
@@ -99,7 +105,7 @@ export const ModificationListItem = ({
                 return vlID;
             }
             let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
-            if (modif.type === 'BRANCH_STATUS') {
+            if (modif.type === 'BRANCH_STATUS_MODIFICATION') {
                 if (modif.action === 'ENERGISE_END_ONE') {
                     res.energizedEnd = getVoltageLevelLabel(
                         network.getLine(modif.equipmentId)?.voltageLevelId1
