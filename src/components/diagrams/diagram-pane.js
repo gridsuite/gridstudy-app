@@ -255,7 +255,7 @@ export function DiagramPane({
     visible,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
+    const [views, setViews] = useState([]);
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
 
     const [displayedDiagramHeights, setDisplayedDiagramHeights] = useState([]);
@@ -290,14 +290,14 @@ export function DiagramPane({
     // We get the diagram data from the redux store.
     // In the case of SLD, each SLD corresponds to one view, but in the case of NAD, each open NAD is merged
     // into one view.
-    const views = useMemo(() => {
+    useEffect(() => {
         if (
             !visible ||
             isNodeInNotificationList(currentNode, notificationIdList)
         ) {
-            return [];
+            return;
         }
-        const views = [];
+        const diagramViews = [];
         const networkAreaIds = [];
         let networkAreaViewState = ViewState.OPENED;
 
@@ -310,7 +310,7 @@ export function DiagramPane({
                 // if current view cannot be found, it returns undefined
                 // in this case, we remove it from diagram states
                 if (singleLineDiagramView) {
-                    views.push(singleLineDiagramView);
+                    diagramViews.push(singleLineDiagramView);
                 } else {
                     closeDiagramView(diagramState.id, diagramState.svgType);
                 }
@@ -328,12 +328,12 @@ export function DiagramPane({
             // if current view cannot be found, it returns undefined
             // in this case, we remove all the NAD from diagram states
             if (networkAreaDiagramView) {
-                views.push(networkAreaDiagramView);
+                diagramViews.push(networkAreaDiagramView);
             } else {
                 closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
             }
         }
-        return views;
+        setViews(diagramViews);
     }, [
         diagramStates,
         visible,
