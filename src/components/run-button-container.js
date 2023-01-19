@@ -19,6 +19,7 @@ import {
     stopSensitivityAnalysis,
     stopShortCircuitAnalysis,
     stopDynamicSimulation,
+    getCanExecuteActionOnNode,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
 import LoopIcon from '@mui/icons-material/Loop';
@@ -40,6 +41,14 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+
+// name of actions must be to follow the naming convention in the backend
+const actions = {
+    NodeEntityAction: {
+        RUN_DYNAMIC_SIMULATION_ACTION: 'RUN_DYNAMIC_SIMULATION_ACTION',
+        STOP_DYNAMIC_SIMULATION_ACTION: 'STOP_DYNAMIC_SIMULATION_ACTION',
+    },
+};
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -86,7 +95,7 @@ export function RunButtonContainer({
 
     const intl = useIntl();
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
 
     const classes = useStyles();
 
@@ -138,6 +147,37 @@ export function RunButtonContainer({
         ranDynamicSimulation,
     ]);
 
+    const executeActionOnNode = useCallback(
+        (
+            studyUuid,
+            nodeUuid,
+            nodeAction,
+            warningHeaderId,
+            errorHeaderId,
+            action
+        ) => {
+            // workflow checking
+            getCanExecuteActionOnNode(studyUuid, nodeUuid, nodeAction)
+                .then((message) => {
+                    if (message) {
+                        snackWarning({
+                            messageTxt: message,
+                            headerId: warningHeaderId,
+                        });
+                    } else {
+                        action();
+                    }
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: errorHeaderId,
+                    });
+                });
+        },
+        [snackError, snackWarning]
+    );
+
     const ACTION_ON_RUNNABLES = {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
@@ -151,8 +191,17 @@ export function RunButtonContainer({
                 stopShortCircuitAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             } else if (action === runnable.DYNAMIC_SIMULATION) {
-                stopDynamicSimulation(studyUuid, currentNode?.id);
-                setComputationStopped(!computationStopped);
+                executeActionOnNode(
+                    studyUuid,
+                    currentNode?.id,
+                    actions.NodeEntityAction.STOP_DYNAMIC_SIMULATION_ACTION,
+                    'DynamicSimulationStopWarning',
+                    'DynamicSimulationStopError',
+                    () => {
+                        stopDynamicSimulation(studyUuid, currentNode?.id);
+                        setComputationStopped(!computationStopped);
+                    }
+                );
             }
         },
     };
@@ -225,8 +274,17 @@ export function RunButtonContainer({
                     });
                 });
         } else if (action === runnable.DYNAMIC_SIMULATION) {
-            setShowDynamicSimulationParametersSelector(true);
-            setRanDynamicSimulation(true);
+            executeActionOnNode(
+                studyUuid,
+                currentNode?.id,
+                actions.NodeEntityAction.RUN_DYNAMIC_SIMULATION_ACTION,
+                'DynamicSimulationRunWarning',
+                'DynamicSimulationRunError',
+                () => {
+                    setShowDynamicSimulationParametersSelector(true);
+                    setRanDynamicSimulation(true);
+                }
+            );
         }
     };
 
