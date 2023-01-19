@@ -329,7 +329,6 @@ const SizedNetworkAreaDiagram = (props) => {
             ) {
                 nad.setViewBox(nadRef.current.getViewBox());
             }
-            nad.refreshZoom();
 
             nadRef.current = nad;
         }
