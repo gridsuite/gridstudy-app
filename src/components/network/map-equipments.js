@@ -32,12 +32,25 @@ export default class MapEquipments {
     intlRef = undefined;
 
     initEquipments(studyUuid, currentNodeUuid) {
-        fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false)
+        fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false, "substations")
             .then((val) => {
-                this.substations = val.substations;
+                this.substations = val;
                 this.completeSubstationsInfos();
-
-                this.lines = val.lines;
+                this.dispatch(mapEquipmentsCreated(this));
+            })
+            .catch((error) => {
+                console.error(error.message);
+                if (this.errHandler) {
+                    this.errHandler(
+                        this.intlRef.current.formatMessage({
+                            id: 'MapEquipmentsLoadError',
+                        })
+                    );
+                }
+            });
+        fetchMapEquipments(studyUuid, currentNodeUuid, undefined, false, "lines")
+            .then((val) => {
+                this.lines = val;
                 this.completeLinesInfos();
                 this.dispatch(mapEquipmentsCreated(this));
             })

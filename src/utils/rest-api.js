@@ -2351,7 +2351,8 @@ export function fetchMapEquipments(
     studyUuid,
     currentNodeUuid,
     substationsIds,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    equipmentType
 ) {
     console.info(
         `Fetching map equipments data of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -2366,9 +2367,16 @@ export function fetchMapEquipments(
 
     const substationParams = getQueryParamsList(substationsIds, 'substationId');
 
-    let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/map-equipments';
+    let fetchEquipmentsUrl;
+    if (equipmentType === "substations") {
+        fetchEquipmentsUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/map-substations';
+    }
+    else {
+        fetchEquipmentsUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-map/map-lines';
+    }
+
     if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
         fetchEquipmentsUrl += '?';
         fetchEquipmentsUrl += urlSearchParams.toString();
