@@ -140,14 +140,12 @@ export const ResultViewTab = ({
                             disabled={disabled}
                         />
                     )}
-                    {enableDeveloperMode && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'ShortCircuitAnalysisResults',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'ShortCircuitAnalysisResults',
+                        })}
+                        disabled={disabled}
+                    />
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
