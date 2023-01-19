@@ -62,6 +62,7 @@ import {
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
+import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
 
@@ -374,6 +375,11 @@ const NetworkModificationNodeEditor = () => {
                     withLines,
                     withSubstations
                 ),
+            icon: <AddIcon />,
+        },
+        LOAD_SCALING: {
+            label: 'LoadScaling',
+            dialog: () => adapt(LoadScalingDialog),
             icon: <AddIcon />,
         },
         DELETE_VOLTAGE_LEVEL_ON_LINE: {
