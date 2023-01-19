@@ -404,7 +404,7 @@ const NetworkTable = (props) => {
 
     const getRows = useCallback(
         (index) => {
-            if (props.disabled) {
+            if (props.disabled || !props.network) {
                 return [];
             }
             const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
