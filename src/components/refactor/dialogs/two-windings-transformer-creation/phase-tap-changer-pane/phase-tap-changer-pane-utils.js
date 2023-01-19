@@ -5,9 +5,18 @@ import {
 } from '../../../utils/utils';
 import yup from '../../../utils/yup-config';
 import {
+    EQUIPMENT,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
+    EQUIPMENT_TYPE,
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
-    getRegulatingTerminalValidationSchema,
+    VOLTAGE_LEVEL,
+    VOLTAGE_LEVEL_ID,
+    VOLTAGE_LEVEL_NAME,
+    VOLTAGE_LEVEL_NOMINAL_VOLTAGE,
+    VOLTAGE_LEVEL_SUBSTATION_ID,
+    VOLTAGE_LEVEL_TOPOLOGY_KIND,
 } from '../../regulating-terminal/regulating-terminal-form-utils';
 import {
     ENABLED,
@@ -115,7 +124,34 @@ const phaseTapChangerValidationSchema = (id) => ({
                     areArrayElementsUnique(alphaArray)
                 );
             }),
-        ...getRegulatingTerminalValidationSchema(),
+        //regulating terminal fields
+        //TODO: is it possible to move it to regulating-terminal-utils.js properly since it depends on "ENABLED" ?
+        [VOLTAGE_LEVEL]: yup
+            .object()
+            .nullable()
+            .shape({
+                [VOLTAGE_LEVEL_ID]: yup.string(),
+                [VOLTAGE_LEVEL_NAME]: yup.string(),
+                [VOLTAGE_LEVEL_SUBSTATION_ID]: yup.string(),
+                [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
+                [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(),
+            })
+            .when(REGULATING, {
+                is: true,
+                then: (schema) => schema.required(),
+            }),
+        [EQUIPMENT]: yup
+            .object()
+            .nullable()
+            .shape({
+                [EQUIPMENT_ID]: yup.string(),
+                [EQUIPMENT_NAME]: yup.string(),
+                [EQUIPMENT_TYPE]: yup.string(),
+            })
+            .when(REGULATING, {
+                is: true,
+                then: (schema) => schema.required(),
+            }),
     }),
 });
 

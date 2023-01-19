@@ -66,11 +66,12 @@ const AutocompleteInput = ({
                 <TextField
                     label={FieldLabel({
                         label: label,
-                        optional: !isFieldRequired(
-                            name,
-                            validationSchema,
-                            getValues()
-                        ),
+                        optional:
+                            !isFieldRequired(
+                                name,
+                                validationSchema,
+                                getValues()
+                            ) && !props?.disabled,
                     })}
                     inputRef={ref}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
