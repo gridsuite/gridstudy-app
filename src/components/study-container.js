@@ -654,8 +654,6 @@ export function StudyContainer({ view, onChangeTab }) {
             const ws = connectNotifications(studyUuid);
             const wsDirectory = connectDeletedStudyNotifications(studyUuid);
 
-            loadNetworkRef.current(false);
-
             // study cleanup at unmount event
             return function () {
                 websocketExpectedCloseRef.current = true;
