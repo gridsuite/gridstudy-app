@@ -111,6 +111,8 @@ export const NetworkMapTab = ({
 
     const basicDataReady = mapEquipments && geoData;
 
+    const lineFullPathRef = useRef();
+
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
     The bunch of geo data requested at the initialization of the map are stored as permanent data. It will not be requested again.
@@ -633,7 +635,11 @@ export const NetworkMapTab = ({
 
     // Reload geo data (if necessary) when we switch on full path
     useEffect(() => {
-        if (isInitialized && lineFullPath) loadGeoData();
+        const prevLineFullPath = lineFullPathRef.current;
+        lineFullPathRef.current = lineFullPath;
+        if (isInitialized && lineFullPath && !prevLineFullPath) {
+            loadGeoData();
+        }
     }, [isInitialized, lineFullPath, loadGeoData]);
 
     /* TODO : this useEffect reloads the mapEquipments when, in manual refresh mode, the current node is built.
