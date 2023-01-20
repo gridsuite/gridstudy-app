@@ -584,7 +584,7 @@ export function StudyContainer({ view, onChangeTab }) {
             previousCurrentNode?.id !== currentNode?.id ||
             (!isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode))
         ) {
-            loadNetwork(false);
+            loadNetwork(true);
         }
     }, [loadNetwork, currentNode, network, wsConnected]);
 
