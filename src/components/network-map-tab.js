@@ -649,12 +649,18 @@ export const NetworkMapTab = ({
         // when we build node we want the map to be up to date
         if (
             isInitialized &&
+            reloadMapNeeded &&
             refIsMapManualRefreshEnabled.current &&
             isNodeBuilt(currentNode)
         ) {
             updateMapEquipmentsAndGeoData();
         }
-    }, [isInitialized, currentNode, updateMapEquipmentsAndGeoData]);
+    }, [
+        isInitialized,
+        reloadMapNeeded,
+        currentNode,
+        updateMapEquipmentsAndGeoData,
+    ]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
