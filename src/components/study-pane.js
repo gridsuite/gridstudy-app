@@ -37,8 +37,6 @@ import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { SvgType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
-import { ResizableBox } from 'react-resizable';
-import ResizePanelHandleIcon from '@mui/icons-material/MoreVert';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -75,30 +73,6 @@ const useStyles = makeStyles((theme) => ({
     table: {
         display: 'flex',
         flexDirection: 'column',
-    },
-    resizablePanel: {
-        position: 'relative',
-        '& .react-resizable-handle': {
-            position: 'absolute',
-            width: theme.spacing(0.5),
-            height: '100%',
-            top: 0,
-            right: 0,
-            cursor: 'col-resize',
-            backgroundColor: theme.palette.action.disabled,
-        },
-    },
-    innerResizablePanel: {
-        flex: 'auto',
-        height: '100%',
-        paddingRight: theme.spacing(0.5),
-    },
-    resizePanelHandleIcon: {
-        bottom: '50%',
-        right: theme.spacing(-1.25),
-        position: 'absolute',
-        color: theme.palette.text.disabled,
-        transform: 'scale(0.5, 1.5)',
     },
 }));
 
@@ -230,55 +204,39 @@ const StudyPane = ({
                             overflow: 'hidden',
                         }}
                     >
-                        {studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID ? (
-                            <ResizableBox
-                                height={'100%'}
-                                width={window.innerWidth / 2}
-                                className={classes.resizablePanel}
-                                minConstraints={[window.innerWidth * 0.2]}
-                                maxConstraints={[window.innerWidth * 0.8]}
-                                resizeHandles={['e']}
-                            >
-                                <div className={classes.innerResizablePanel}>
-                                    <NetworkModificationTreePane
-                                        studyUuid={studyUuid}
-                                        studyMapTreeDisplay={studyDisplayMode}
-                                    />
-                                    <ResizePanelHandleIcon
-                                        className={
-                                            classes.resizePanelHandleIcon
-                                        }
-                                    />
-                                </div>
-                            </ResizableBox>
-                        ) : (
-                            <div
-                                style={{
-                                    display:
-                                        studyDisplayMode ===
-                                        STUDY_DISPLAY_MODE.MAP
-                                            ? 'none'
-                                            : null,
-                                    width: '100%',
-                                }}
-                            >
-                                <NetworkModificationTreePane
-                                    studyUuid={studyUuid}
-                                    studyMapTreeDisplay={studyDisplayMode}
-                                />
-                            </div>
-                        )}
+                        <div
+                            style={{
+                                display:
+                                    studyDisplayMode === STUDY_DISPLAY_MODE.MAP
+                                        ? 'none'
+                                        : null,
+                                width:
+                                    studyDisplayMode ===
+                                    STUDY_DISPLAY_MODE.HYBRID
+                                        ? '50%'
+                                        : '100%',
+                            }}
+                        >
+                            <NetworkModificationTreePane
+                                studyUuid={studyUuid}
+                                studyMapTreeDisplay={studyDisplayMode}
+                            />
+                        </div>
                         <div
                             className={clsx(
                                 'relative singlestretch-child',
                                 classes.map
                             )}
                             style={{
-                                flex: 'auto',
                                 display:
                                     studyDisplayMode === STUDY_DISPLAY_MODE.TREE
                                         ? 'none'
                                         : null,
+                                width:
+                                    studyDisplayMode ===
+                                    STUDY_DISPLAY_MODE.HYBRID
+                                        ? '50%'
+                                        : '100%',
                             }}
                         >
                             <div
