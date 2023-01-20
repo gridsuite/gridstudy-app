@@ -232,8 +232,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const loadNetworkRef = useRef();
-
     const [wsConnected, setWsConnected] = useState(false);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
@@ -572,7 +570,6 @@ export function StudyContainer({ view, onChangeTab }) {
         },
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
-    loadNetworkRef.current = loadNetwork;
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -663,7 +660,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(filteredNominalVoltagesUpdated(null));
             };
         }
-        // Note: dispach, loadNetworkRef, loadGeoData
+        // Note: dispach, loadGeoData
         // connectNotifications don't change
     }, [
         dispatch,
