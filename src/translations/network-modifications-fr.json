@@ -6,6 +6,7 @@
     "network_modifications/LINE_SPLIT_WITH_VOLTAGE_LEVEL": "Création d'une coupure {computedLabel}",
     "network_modifications/LINE_ATTACH_TO_VOLTAGE_LEVEL": "Création d'un piquage {computedLabel}",
     "network_modifications/LINES_ATTACH_TO_SPLIT_LINES": "Passage de piquage en coupure {computedLabel}",
+    "network_modifications/LOAD_SCALING": "Variation plan de consommation {computedLabel}",
     "network_modifications/DELETE_VOLTAGE_LEVEL_ON_LINE": "Suppression d'une coupure {computedLabel}",
     "network_modifications/DELETE_ATTACHING_LINE": "Suppression d'un piquage {computedLabel}",
     "network_modifications/LOAD_CREATION": "Création de la charge {computedLabel}",
