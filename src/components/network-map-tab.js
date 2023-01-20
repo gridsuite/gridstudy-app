@@ -631,9 +631,14 @@ export const NetworkMapTab = ({
         updatedSubstationsIds,
     ]);
 
+    const lineFullPathRef = useRef();
     // Reload geo data (if necessary) when we switch on full path
     useEffect(() => {
-        if (isInitialized && lineFullPath) loadGeoData();
+        const prevLineFullPath = lineFullPathRef.current;
+        lineFullPathRef.current = lineFullPath;
+        if (isInitialized && lineFullPath && !prevLineFullPath) {
+            loadGeoData();
+        }
     }, [isInitialized, lineFullPath, loadGeoData]);
 
     /* TODO : this useEffect reloads the mapEquipments when, in manual refresh mode, the current node is built.
