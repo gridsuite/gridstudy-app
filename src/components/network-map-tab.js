@@ -42,61 +42,8 @@ import { UPDATE_TYPE_HEADER } from './study-container';
 
 const INITIAL_POSITION = [0, 0];
 
-const useStyles = makeStyles((theme) => ({
-    divNominalVoltageFilter: {
-        position: 'absolute',
-        right: 10,
-        bottom: 30,
-    },
-    divRunButton: {
-        position: 'absolute',
-        right: 100,
-        bottom: 30,
-        marginLeft: 8,
-        marginRight: 8,
-        marginTop: 8,
-    },
-    divTemporaryGeoDataLoading: {
-        position: 'absolute',
-        width: '100%',
-        zIndex: 1,
-    },
-    divOverloadedLineView: {
-        right: 45,
-        top: 10,
-        minWidth: '500px',
-        position: 'absolute',
-        height: '70%',
-        opacity: '1',
-        flex: 1,
-        pointerEvents: 'none',
-    },
-}));
+export const useMapData = (disabled, studyUuid, lineFullPath, currentNode, setErrorMessage) => {
 
-export const NetworkMapTab = ({
-    /* redux can be use as redux*/
-    studyUuid,
-    currentNode,
-    /* results*/
-    securityAnalysisStatus,
-    runnable,
-    loadFlowStatus,
-    sensiStatus,
-    shortCircuitStatus,
-    /* visual*/
-    visible,
-    lineFullPath,
-    lineParallelPath,
-    lineFlowMode,
-    lineFlowColorMode,
-    lineFlowAlertThreshold,
-    /* callbacks */
-    openVoltageLevel,
-    setIsComputationRunning,
-    filteredNominalVoltages,
-    showInSpreadsheet,
-    setErrorMessage,
-}) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const dispatch = useDispatch();
@@ -122,10 +69,6 @@ export const NetworkMapTab = ({
     */
     const temporaryGeoDataIdsRef = useRef();
 
-    const displayOverloadTable = useSelector(
-        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
-    );
-    const disabled = !visible || !isNodeBuilt(currentNode);
 
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
@@ -142,94 +85,9 @@ export const NetworkMapTab = ({
     const [isUpdatedSubstationsApplied, setIsUpdatedSubstationsApplied] =
         useState(false);
 
-    const [equipmentMenu, setEquipmentMenu] = useState({
-        position: [-1, -1],
-        equipment: null,
-        equipmentType: null,
-        display: null,
-    });
-
-    const [
-        choiceVoltageLevelsSubstationId,
-        setChoiceVoltageLevelsSubstationId,
-    ] = useState(null);
-
-    const [position, setPosition] = useState([-1, -1]);
-
-    const classes = useStyles();
     const currentNodeRef = useRef(null);
 
     const [updatedLines, setUpdatedLines] = useState([]);
-
-    function withEquipment(Menu, props) {
-        return (
-            <Menu
-                id={equipmentMenu.equipment.id}
-                position={equipmentMenu.position}
-                handleClose={closeEquipmentMenu}
-                handleViewInSpreadsheet={handleViewInSpreadsheet}
-                {...props}
-            />
-        );
-    }
-
-    const MenuLine = withLineMenu(BaseEquipmentMenu);
-
-    const MenuSubstation = withEquipmentMenu(
-        BaseEquipmentMenu,
-        'substation-menus',
-        equipments.substations
-    );
-
-    const MenuVoltageLevel = withEquipmentMenu(
-        BaseEquipmentMenu,
-        'voltage-level-menus',
-        equipments.voltageLevels
-    );
-
-    function showEquipmentMenu(equipment, x, y, type) {
-        setEquipmentMenu({
-            position: [x, y],
-            equipment: equipment,
-            equipmentType: type,
-            display: true,
-        });
-    }
-
-    function closeEquipmentMenu() {
-        setEquipmentMenu({
-            display: false,
-        });
-    }
-
-    function handleViewInSpreadsheet(equipmentType, equipmentId) {
-        showInSpreadsheet({
-            equipmentType: equipmentType,
-            equipmentId: equipmentId,
-        });
-        closeEquipmentMenu();
-    }
-
-    function closeChoiceVoltageLevelMenu() {
-        setChoiceVoltageLevelsSubstationId(null);
-    }
-
-    function choiceVoltageLevel(voltageLevelId) {
-        openVoltageLevel(voltageLevelId);
-        closeChoiceVoltageLevelMenu();
-    }
-
-    const voltageLevelMenuClick = (equipment, x, y) => {
-        showEquipmentMenu(equipment, x, y, equipments.voltageLevels);
-    };
-
-    const chooseVoltageLevelForSubstation = useCallback(
-        (idSubstation, x, y) => {
-            setChoiceVoltageLevelsSubstationId(idSubstation);
-            setPosition([x, y]);
-        },
-        []
-    );
 
     const getEquipmentsNotFoundIds = useCallback(
         (foundEquipmentPositions, allEquipments) => {
@@ -654,6 +512,168 @@ export const NetworkMapTab = ({
         }
     }, [isInitialized, currentNode, updateMapEquipmentsAndGeoData]);
 
+    return {
+        mapEquipments,
+        geoData,
+        updatedLines,
+        displayOverlayLoader: waitingLoadData && !basicDataReady,
+        displayMapProgress: waitingLoadData && basicDataReady,
+    }
+}
+
+const useStyles = makeStyles((theme) => ({
+    divNominalVoltageFilter: {
+        position: 'absolute',
+        right: 10,
+        bottom: 30,
+    },
+    divRunButton: {
+        position: 'absolute',
+        right: 100,
+        bottom: 30,
+        marginLeft: 8,
+        marginRight: 8,
+        marginTop: 8,
+    },
+    divTemporaryGeoDataLoading: {
+        position: 'absolute',
+        width: '100%',
+        zIndex: 1,
+    },
+    divOverloadedLineView: {
+        right: 45,
+        top: 10,
+        minWidth: '500px',
+        position: 'absolute',
+        height: '70%',
+        opacity: '1',
+        flex: 1,
+        pointerEvents: 'none',
+    },
+}));
+
+export const NetworkMapTab = ({
+    /* redux can be use as redux*/
+    studyUuid,
+    currentNode,
+    /* data */
+    mapEquipments,
+    geoData,
+    updatedLines,
+    /* results*/
+    securityAnalysisStatus,
+    runnable,
+    loadFlowStatus,
+    sensiStatus,
+    shortCircuitStatus,
+    /* visual*/
+    displayOverlayLoader,
+    displayMapProgress,
+    visible,
+    lineFullPath,
+    lineParallelPath,
+    lineFlowMode,
+    lineFlowColorMode,
+    lineFlowAlertThreshold,
+    /* callbacks */
+    openVoltageLevel,
+    setIsComputationRunning,
+    filteredNominalVoltages,
+    showInSpreadsheet,
+    setErrorMessage,
+    updateMapEquipmentsAndGeoData,
+}) => {
+    const displayOverloadTable = useSelector(
+        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
+    );
+    const disabled = !visible || !isNodeBuilt(currentNode);
+
+    const [equipmentMenu, setEquipmentMenu] = useState({
+        position: [-1, -1],
+        equipment: null,
+        equipmentType: null,
+        display: null,
+    });
+
+    const [
+        choiceVoltageLevelsSubstationId,
+        setChoiceVoltageLevelsSubstationId,
+    ] = useState(null);
+
+    const [position, setPosition] = useState([-1, -1]);
+
+    const classes = useStyles();
+
+    function withEquipment(Menu, props) {
+        return (
+            <Menu
+                id={equipmentMenu.equipment.id}
+                position={equipmentMenu.position}
+                handleClose={closeEquipmentMenu}
+                handleViewInSpreadsheet={handleViewInSpreadsheet}
+                {...props}
+            />
+        );
+    }
+
+    const MenuLine = withLineMenu(BaseEquipmentMenu);
+
+    const MenuSubstation = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'substation-menus',
+        equipments.substations
+    );
+
+    const MenuVoltageLevel = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'voltage-level-menus',
+        equipments.voltageLevels
+    );
+
+    function showEquipmentMenu(equipment, x, y, type) {
+        setEquipmentMenu({
+            position: [x, y],
+            equipment: equipment,
+            equipmentType: type,
+            display: true,
+        });
+    }
+
+    function closeEquipmentMenu() {
+        setEquipmentMenu({
+            display: false,
+        });
+    }
+
+    function handleViewInSpreadsheet(equipmentType, equipmentId) {
+        showInSpreadsheet({
+            equipmentType: equipmentType,
+            equipmentId: equipmentId,
+        });
+        closeEquipmentMenu();
+    }
+
+    function closeChoiceVoltageLevelMenu() {
+        setChoiceVoltageLevelsSubstationId(null);
+    }
+
+    function choiceVoltageLevel(voltageLevelId) {
+        openVoltageLevel(voltageLevelId);
+        closeChoiceVoltageLevelMenu();
+    }
+
+    const voltageLevelMenuClick = (equipment, x, y) => {
+        showEquipmentMenu(equipment, x, y, equipments.voltageLevels);
+    };
+
+    const chooseVoltageLevelForSubstation = useCallback(
+        (idSubstation, x, y) => {
+            setChoiceVoltageLevelsSubstationId(idSubstation);
+            setPosition([x, y]);
+        },
+        []
+    );
+
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
         choiceVoltageLevelsSubstation = mapEquipments?.getSubstation(
@@ -715,7 +735,7 @@ export const NetworkMapTab = ({
             mapEquipments={mapEquipments}
             updatedLines={updatedLines}
             geoData={geoData}
-            displayOverlayLoader={!basicDataReady}
+            displayOverlayLoader={displayOverlayLoader}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
             arrowsZoomThreshold={7}
@@ -755,7 +775,7 @@ export const NetworkMapTab = ({
     return (
         <>
             <div className={classes.divTemporaryGeoDataLoading}>
-                {basicDataReady && waitingLoadData && <LinearProgress />}
+                {displayMapProgress && <LinearProgress />}
             </div>
             {renderMap()}
             {renderEquipmentMenu()}

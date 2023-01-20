@@ -59,6 +59,10 @@ import {
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
+import {
+    PARAM_LINE_FULL_PATH,
+} from '../utils/config-params';
+import { useMapData } from './network-map-tab';
 
 export function useNodeData(
     studyUuid,
@@ -73,6 +77,8 @@ export function useNodeData(
     const [errorMessage, setErrorMessage] = useState(undefined);
     const nodeUuidRef = useRef();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
+
     const lastUpdateRef = useRef();
 
     const update = useCallback(() => {
@@ -193,6 +199,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const dispatch = useDispatch();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+
+    const disabled = !isNodeBuilt(currentNode);
 
     const currentNodeRef = useRef();
 
@@ -679,6 +687,16 @@ export function StudyContainer({ view, onChangeTab }) {
         };
     }, [intl]);
 
+    const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
+
+    const {
+        geoData,
+        mapEquipments,
+        updatedLines,
+        displayOverlayLoader,
+        displayMapProgress,
+    } = useMapData(disabled, studyUuid, lineFullPath, currentNode, setErrorMessage);
+
     return (
         <WaitingLoader
             errMessage={
@@ -691,6 +709,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUuid={studyUuid}
                 network={network}
                 currentNode={currentNode}
+                disabled={disabled}
                 view={view}
                 onChangeTab={onChangeTab}
                 loadFlowInfos={loadFlowInfos}
@@ -699,6 +718,12 @@ export function StudyContainer({ view, onChangeTab }) {
                 shortCircuitStatus={shortCircuitStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
+                geoData={geoData}
+                mapEquipments={mapEquipments}
+                updatedLines={updatedLines}
+                lineFullPath={lineFullPath}
+                displayOverlayLoader={displayOverlayLoader}
+                displayMapProgress={displayMapProgress}
             />
         </WaitingLoader>
     );

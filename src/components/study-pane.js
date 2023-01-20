@@ -26,7 +26,6 @@ import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
@@ -90,6 +89,7 @@ const StudyPane = ({
     studyUuid,
     network,
     currentNode,
+    disabled,
     loadFlowInfos,
     securityAnalysisStatus,
     sensiStatus,
@@ -97,10 +97,14 @@ const StudyPane = ({
     runnable,
     setUpdateSwitchMsg,
     setErrorMessage,
+    geoData,
+    mapEquipments,
+    updatedLines,
+    lineFullPath,
+    displayOverlayLoader,
+    displayMapProgress,
     ...props
 }) => {
-    const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
-
     const lineParallelPath = useSelector(
         (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
@@ -140,8 +144,6 @@ const StudyPane = ({
         dispatch(fullScreenNetworkAreaDiagramId(null));
         dispatch(openNetworkAreaDiagram([]));
     }
-
-    const disabled = !isNodeBuilt(currentNode);
 
     useEffect(() => {
         if (
@@ -296,6 +298,11 @@ const StudyPane = ({
                                     }
                                     runnable={runnable}
                                     setErrorMessage={setErrorMessage}
+                                    geoData={geoData}
+                                    mapEquipments={mapEquipments}
+                                    updatedLines={updatedLines}
+                                    displayOverlayLoader={displayOverlayLoader}
+                                    displayMapProgress={displayMapProgress}
                                 />
                             </div>
 
