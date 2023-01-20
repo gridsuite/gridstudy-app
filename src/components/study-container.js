@@ -510,7 +510,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     console.info('Reload network equipments');
                     network.reloadImpactedSubstationsEquipments(
                         studyUuid,
-                        currentNode,
+                        currentNodeRef.current,
                         substationsIds
                     );
                     dispatch(setUpdatedSubstationsIds(substationsIds));
@@ -533,7 +533,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         }
-    }, [studyUpdatedForce, network, currentNode, studyUuid, dispatch]);
+    }, [studyUpdatedForce, network, studyUuid, dispatch]);
 
     const loadNetwork = useCallback(
         (isUpdate) => {
