@@ -746,7 +746,7 @@ export const useDirectoryElements = ({
             inputForm.setHasChanged(arr.length > 0);
             setValues(arr);
         },
-        [values, inputForm]
+        [inputForm, values]
     );
 
     const addElements = useCallback(
@@ -847,23 +847,24 @@ export const useDirectoryElements = ({
         );
     }, [
         classes.formDirectoryElements1,
-        classes.formDirectoryElements2,
         classes.labelDirectoryElements,
+        classes.formDirectoryElements2,
         classes.addDirectoryElements,
+        errorMsg,
         values,
-        addElements,
-        handleDelete,
+        label,
         directoryItemSelectorOpen,
+        addElements,
         elementType,
         equipmentTypes,
         intl,
         titleId,
-        label,
+        itemFilter,
         elementClassName,
         errorMsg,
         itemFilter,
+        handleDelete,
     ]);
-
     return [values, field];
 };
 

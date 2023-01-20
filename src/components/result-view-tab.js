@@ -34,8 +34,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-        overflowY: 'auto',
-        margin: 10,
     },
 }));
 
@@ -134,18 +132,16 @@ export const ResultViewTab = ({
                         })}
                         disabled={disabled}
                     />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'ShortCircuitAnalysisResults',
+                        })}
+                        disabled={disabled}
+                    />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
                                 id: 'sensitivityAnalysisResults',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
-                    {enableDeveloperMode && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'ShortCircuitAnalysisResults',
                             })}
                             disabled={disabled}
                         />
@@ -155,8 +151,8 @@ export const ResultViewTab = ({
             </div>
             {tabIndex === 0 && !disabled && renderLoadFlowResult()}
             {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
-            {tabIndex === 2 && !disabled && renderSensitivityAnalysisResult()}
-            {tabIndex === 3 && !disabled && renderShortCircuitAnalysisResult()}
+            {tabIndex === 2 && !disabled && renderShortCircuitAnalysisResult()}
+            {tabIndex === 3 && !disabled && renderSensitivityAnalysisResult()}
         </Paper>
     );
 };
