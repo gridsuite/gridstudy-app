@@ -12,8 +12,8 @@ import {
     SensiChecked,
     SENSITIVITY_TYPES,
     useStyles,
-    EquipmentType,
 } from './sensi-parameters-selector';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types'
 
 export const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
     const classes = useStyles();
@@ -30,8 +30,8 @@ export const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
             : [],
         elementType: elementType.FILTER,
         equipmentTypes: [
-            EquipmentType.LINE,
-            EquipmentType.TWO_WINDINGS_TRANSFORMER,
+            EQUIPMENT_TYPES.LINE.type,
+            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
         ],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
@@ -41,7 +41,7 @@ export const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
         label: 'PSTS',
         initialValues: defaultValue.psts ? defaultValue.psts : [],
         elementType: elementType.FILTER,
-        equipmentTypes: [EquipmentType.TWO_WINDINGS_TRANSFORMER],
+        equipmentTypes: [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });

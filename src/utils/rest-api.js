@@ -7,7 +7,7 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
-import { MODIFICATION_TYPE } from '../components/network/constants';
+import { MODIFICATION_TYPES } from '../components/util/modifications-type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -771,7 +771,7 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.EQUIPMENT_ATTRIBUTE_MODIFICATION,
+            type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
             equipmentType: 'SWITCH',
             equipmentId: switchId,
             equipmentAttributeName: 'open',
@@ -1295,7 +1295,7 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.GROOVY_SCRIPT,
+            type: MODIFICATION_TYPES.GROOVY_SCRIPT.type,
             script: groovyScript,
         }),
     });
@@ -1358,7 +1358,7 @@ function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.BRANCH_STATUS_MODIFICATION,
+            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
             equipmentId: lineId,
             action: status.toUpperCase(),
         }),
@@ -1428,7 +1428,7 @@ export function createLoad(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.LOAD_CREATION,
+            type: MODIFICATION_TYPES.LOAD_CREATION.type,
             equipmentId: id,
             equipmentName: name,
             loadType: loadType,
@@ -1474,7 +1474,7 @@ export function modifyLoad(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.LOAD_MODIFICATION,
+            type: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
             equipmentId: id,
             equipmentName: toModificationOperation(name),
             loadType: toModificationOperation(loadType),
@@ -1535,7 +1535,7 @@ export function modifyGenerator(
     }
 
     const generatorModification = {
-        type: MODIFICATION_TYPE.GENERATOR_MODIFICATION,
+        type: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
         equipmentId: generatorId,
         equipmentName: toModificationOperation(name),
         energySource: toModificationOperation(energySource),
@@ -1628,7 +1628,7 @@ export function createGenerator(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.GENERATOR_CREATION,
+            type: MODIFICATION_TYPES.GENERATOR_CREATION.type,
             equipmentId: id,
             equipmentName: name,
             energySource: energySource,
@@ -1695,7 +1695,7 @@ export function createShuntCompensator(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.SHUNT_COMPENSATOR_CREATION,
+            type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
             equipmentId: shuntCompensatorId,
             equipmentName: shuntCompensatorName,
             maximumNumberOfSections: maximumNumberOfSections,
@@ -1755,7 +1755,7 @@ export function createLine(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.LINE_CREATION,
+            type: MODIFICATION_TYPES.LINE_CREATION.type,
             equipmentId: lineId,
             equipmentName: lineName,
             seriesResistance: seriesResistance,
@@ -1832,7 +1832,7 @@ export function createTwoWindingsTransformer(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.TWO_WINDINGS_TRANSFORMER_CREATION,
+            type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION.type,
             equipmentId: twoWindingsTransformerId,
             equipmentName: twoWindingsTransformerName,
             seriesResistance: seriesResistance,
@@ -1879,7 +1879,7 @@ export function createSubstation(
         : Object.fromEntries(properties.map((p) => [p.name, p.value]));
 
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.SUBSTATION_CREATION,
+        type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
         equipmentId: substationId,
         equipmentName: substationName,
         substationCountry: substationCountry === '' ? null : substationCountry,
@@ -1927,7 +1927,7 @@ export function createVoltageLevel({
     }
 
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
+        type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
         equipmentId: voltageLevelId,
         equipmentName: voltageLevelName,
         nominalVoltage: nominalVoltage,
@@ -1961,7 +1961,7 @@ export function divideLine(
     newLine2Name
 ) {
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.LINE_SPLIT_WITH_VOLTAGE_LEVEL,
+        type: MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type,
         lineToSplitId,
         percent,
         mayNewVoltageLevelInfos,
@@ -2012,7 +2012,7 @@ export function attachLine(
     newLine2Name
 ) {
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.LINE_ATTACH_TO_VOLTAGE_LEVEL,
+        type: MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type,
         lineToAttachToId,
         percent,
         attachmentPointId,
@@ -2056,7 +2056,7 @@ export function loadScaling(
     variations
 ) {
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.LOAD_SCALING,
+        type: MODIFICATION_TYPES.LOAD_SCALING.type,
         variationType,
         variations,
     });
@@ -2104,7 +2104,7 @@ export function linesAttachToSplitLines(
     replacingLine2Name
 ) {
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.LINES_ATTACH_TO_SPLIT_LINES,
+        type: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
         lineToAttachTo1Id,
         lineToAttachTo2Id,
         attachedLineId,
@@ -2147,7 +2147,7 @@ export function deleteVoltageLevelOnLine(
     replacingLine1Name
 ) {
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.DELETE_VOLTAGE_LEVEL_ON_LINE,
+        type: MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type,
         lineToAttachTo1Id,
         lineToAttachTo2Id,
         replacingLine1Id,
@@ -2186,7 +2186,7 @@ export function deleteAttachingLine(
     replacingLine1Name
 ) {
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.DELETE_ATTACHING_LINE,
+        type: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
         lineToAttachTo1Id,
         lineToAttachTo2Id,
         attachedLineId,
@@ -2279,7 +2279,7 @@ export function deleteEquipment(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.EQUIPMENT_DELETION,
+            type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
             equipmentId: equipmentId,
             equipmentType: equipmentType,
         }),

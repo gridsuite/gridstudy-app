@@ -11,8 +11,8 @@ import { gridItem } from '../dialogUtils';
 import {
     SensiChecked,
     useStyles,
-    EquipmentType,
 } from './sensi-parameters-selector';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types'
 
 export const SensiNodes = ({ index, onChange, defaultValue }) => {
     const classes = useStyles();
@@ -29,7 +29,7 @@ export const SensiNodes = ({ index, onChange, defaultValue }) => {
                 ? defaultValue.monitoredVoltageLevels
                 : [],
             elementType: elementType.FILTER,
-            equipmentTypes: [EquipmentType.VOLTAGE_LEVEL],
+            equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL.type],
             titleId: 'FiltersListsSelection',
             elementClassName: classes.chipElement,
         });
@@ -42,11 +42,11 @@ export const SensiNodes = ({ index, onChange, defaultValue }) => {
                 : [],
             elementType: elementType.FILTER,
             equipmentTypes: [
-                EquipmentType.GENERATOR,
-                EquipmentType.TWO_WINDINGS_TRANSFORMER,
-                EquipmentType.VSC_CONVERTER_STATION,
-                EquipmentType.STATIC_VAR_COMPENSATOR,
-                EquipmentType.SHUNT_COMPENSATOR,
+                EQUIPMENT_TYPES.GENERATOR.type,
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+                EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
+                EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
             ],
             titleId: 'FiltersListsSelection',
             elementClassName: classes.chipElement,

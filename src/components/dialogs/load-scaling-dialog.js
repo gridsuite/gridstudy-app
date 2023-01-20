@@ -29,7 +29,7 @@ import {
     useRadioValue,
 } from './inputs/input-hooks';
 import { makeStyles } from '@mui/styles';
-import { EquipmentType } from './sensi/sensi-parameters-selector';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
@@ -95,7 +95,7 @@ const VariationSection = ({
             isFieldRequired: true,
         },
         elementType: elementType.FILTER,
-        equipmentTypes: [EquipmentType.LOAD],
+        equipmentTypes: [EQUIPMENT_TYPES.LOAD.type],
         itemFilter: itemFilter,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
