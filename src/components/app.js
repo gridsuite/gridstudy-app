@@ -48,7 +48,6 @@ import {
     CardErrorBoundary,
     getPreLoginPath,
     initializeAuthenticationProd,
-    setShowAuthenticationRouterLogin,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 
@@ -328,37 +327,9 @@ const App = () => {
         )
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
-                return userManager.getUser().then((user) => {
-                    if (
-                        user == null &&
-                        initialMatchSilentRenewCallbackUrl == null
-                    ) {
-                        return userManager.signinSilent().catch((error) => {
-                            dispatch(setShowAuthenticationRouterLogin(true));
-                            const oidcHackReloaded =
-                                'gridsuite-oidc-hack-reloaded';
-                            if (
-                                !sessionStorage.getItem(oidcHackReloaded) &&
-                                error.message ===
-                                    'authority mismatch on settings vs. signin state'
-                            ) {
-                                sessionStorage.setItem(
-                                    oidcHackReloaded,
-                                    'true'
-                                );
-                                console.log(
-                                    'Hack oidc, reload page to make login work'
-                                );
-                                window.location.reload();
-                            }
-                        });
-                    }
-                });
             })
             .catch(function (error) {
                 setUserManager({ instance: null, error: error.message });
-                console.debug('error when importing the idp settings');
-                dispatch(setShowAuthenticationRouterLogin(true));
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
     }, [initialMatchSilentRenewCallbackUrl, dispatch]);

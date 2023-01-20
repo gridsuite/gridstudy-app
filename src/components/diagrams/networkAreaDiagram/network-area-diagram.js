@@ -240,7 +240,7 @@ const SizedNetworkAreaDiagram = (props) => {
             setSvg(noSvg);
             svgRef.current.innerHTML = ''; // clear the previous svg before replacing
             fetchNADSvg(svgUrl)
-                .then((svg) => {
+                .then(({ svg }) => {
                     setSvg({
                         svg: svg,
                         metadata: null,
@@ -332,7 +332,7 @@ const SizedNetworkAreaDiagram = (props) => {
 
             nadRef.current = nad;
         }
-    }, [network, svg, currentNode, theme, nadId, svgUrl]);
+    }, [network, svg, currentNode, theme, nadId, svgUrl, depth]);
 
     useLayoutEffect(() => {
         if (

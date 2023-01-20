@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { mapEquipmentsCreated } from '../../redux/actions';
 import { fetchMapEquipments } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 
@@ -38,6 +39,7 @@ export default class MapEquipments {
 
                 this.lines = val.lines;
                 this.completeLinesInfos();
+                this.dispatch(mapEquipmentsCreated(this));
             })
             .catch((error) => {
                 console.error(error.message);
@@ -75,7 +77,7 @@ export default class MapEquipments {
         );
         const isFullReload = substationsIds ? false : true;
 
-        updatedEquipments
+        return updatedEquipments
             .then((values) => {
                 this.updateSubstations(
                     this.checkAndGetValues(values.substations),
@@ -269,7 +271,7 @@ export default class MapEquipments {
     }
 
     getSubstations() {
-        return Array.from(this.substationsById.values());
+        return this.substations;
     }
 
     getSubstation(id) {
@@ -278,6 +280,10 @@ export default class MapEquipments {
 
     getNominalVoltages() {
         return this.nominalVoltages;
+    }
+
+    getLines() {
+        return this.lines;
     }
 
     getLine(id) {

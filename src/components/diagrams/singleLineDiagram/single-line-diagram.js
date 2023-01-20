@@ -50,7 +50,11 @@ import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { isNodeBuilt, isNodeReadOnly } from '../../graph/util/model-functions';
+import {
+    isNodeBuilt,
+    isNodeReadOnly,
+    isNodeInNotificationList,
+} from '../../graph/util/model-functions';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
     BORDERS,
@@ -221,6 +225,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const fullScreenSldId = useSelector((state) => state.fullScreenSldId);
 
+    const notificationIdList = useSelector((state) => state.notificationIdList);
+
     const [forceState, updateState] = useState(false);
 
     const [loadingState, updateLoadingState] = useState(false);
@@ -364,46 +370,57 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         sldId,
     ]);
 
+    const isNodeinNotifs = isNodeInNotificationList(
+        currentNode,
+        notificationIdList
+    );
+
     useEffect(() => {
         // We use isNodeBuilt here instead of the "disabled" props to avoid
         // triggering this effect when changing current node
         if (props.svgUrl) {
-            updateLoadingState(true);
-            fetchSvg(props.svgUrl)
-                .then((data) => {
-                    setSvg({
-                        svg: data.svg,
-                        metadata: data.metadata,
-                        error: null,
-                        svgUrl: props.svgUrl,
+            if (!isNodeinNotifs) {
+                updateLoadingState(true);
+                fetchSvg(props.svgUrl)
+                    .then((data) => {
+                        if (data !== null) {
+                            setSvg({
+                                svg: data.svg,
+                                metadata: data.metadata,
+                                error: null,
+                                svgUrl: props.svgUrl,
+                            });
+                        } else {
+                            setSvg(NoSvg);
+                        }
+                        updateLoadingState(false);
+                        setLocallySwitchedBreaker();
+                    })
+                    .catch((error) => {
+                        console.error(error.message);
+                        setSvg({
+                            svg: null,
+                            metadata: null,
+                            error: error.message,
+                            svgUrl: props.svgUrl,
+                        });
+                        let msg;
+                        if (error.status === 404) {
+                            msg = `Voltage level ${sldId} not found`;
+                        } else {
+                            msg = error.message;
+                        }
+                        snackError({
+                            messageTxt: msg,
+                        });
+                        updateLoadingState(false);
+                        setLocallySwitchedBreaker();
                     });
-                    updateLoadingState(false);
-                    setLocallySwitchedBreaker();
-                })
-                .catch((error) => {
-                    console.error(error.message);
-                    setSvg({
-                        svg: null,
-                        metadata: null,
-                        error: error.message,
-                        svgUrl: props.svgUrl,
-                    });
-                    let msg;
-                    if (error.status === 404) {
-                        msg = `Voltage level ${sldId} not found`;
-                    } else {
-                        msg = error.message;
-                    }
-                    snackError({
-                        messageTxt: msg,
-                    });
-                    updateLoadingState(false);
-                    setLocallySwitchedBreaker();
-                });
+            }
         } else {
             setSvg(NoSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef, sldId]);
+    }, [props.svgUrl, forceState, snackError, intlRef, sldId, isNodeinNotifs]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;

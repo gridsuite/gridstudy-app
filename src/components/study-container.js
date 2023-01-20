@@ -162,7 +162,7 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
 ];
-const UPDATE_TYPE_HEADER = 'updateType';
+export const UPDATE_TYPE_HEADER = 'updateType';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
@@ -619,8 +619,8 @@ export function StudyContainer({ view, onChangeTab }) {
             snackInfo({
                 headerId: 'renameStudyNotification',
                 headerValues: {
-                    oldStudyPath: prevStudyPath,
-                    studyPath: studyPath,
+                    oldStudyName: prevStudyName,
+                    studyName: studyName,
                 },
             });
         }

@@ -63,7 +63,6 @@ const NonNullStringPair = ({
     const [name, nameField] = useAutocompleteField({
         id: 'pairKey' + index,
         label: 'PropertyName',
-        formProps: filledTextField,
         validation: { isFieldRequired: true },
         values: predefinedNames,
         allowNewValue: true,
@@ -81,7 +80,6 @@ const NonNullStringPair = ({
     const [value, valueField] = useAutocompleteField({
         id: 'pairValue' + index,
         label: 'PropertyValue',
-        formProps: filledTextField,
         validation: { isFieldRequired: true },
         values: predefinedValues,
         allowNewValue: true,
@@ -149,6 +147,7 @@ const SubstationCreationDialog = ({
             equipmentName: substation.name ?? '',
             substationCountryLabel: substation.countryName,
             substationCountry: null,
+            properties: substation.properties,
         };
     };
 
