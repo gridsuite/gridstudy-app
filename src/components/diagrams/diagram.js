@@ -847,9 +847,7 @@ const Diagram = forwardRef((props, ref) => {
                                 onIncrementCounter={onIncrementDepthHandler}
                                 onDecrementCounter={onDecrementDepthHandler}
                                 showFullscreenControl
-                                fullScreenActive={
-                                    fullScreenDiagram?.id !== undefined
-                                }
+                                fullScreenActive={fullScreenDiagram?.id}
                                 onStartFullScreen={onShowFullScreenHandler}
                                 onStopFullScreen={onHideFullScreenHandler}
                             />

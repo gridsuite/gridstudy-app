@@ -304,7 +304,10 @@ export function DiagramPane({
                 // if current view cannot be found, it returns undefined
                 // in this case, we remove it from diagram states
                 if (singleLineDiagramView) {
-                    diagramViews.push({ ...singleLineDiagramView, align: 'left' });
+                    diagramViews.push({
+                        ...singleLineDiagramView,
+                        align: 'left',
+                    });
                 } else {
                     closeDiagramView(diagramState.id, diagramState.svgType);
                 }
@@ -322,7 +325,10 @@ export function DiagramPane({
             // if current view cannot be found, it returns undefined
             // in this case, we remove all the NAD from diagram states
             if (networkAreaDiagramView) {
-                diagramViews.push({ ...networkAreaDiagramView, align: 'right' });
+                diagramViews.push({
+                    ...networkAreaDiagramView,
+                    align: 'right',
+                });
             } else {
                 closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
             }
