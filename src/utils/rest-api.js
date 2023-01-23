@@ -929,17 +929,23 @@ export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
+export function fetchSensitivityAnalysisResult(
+    studyUuid,
+    currentNodeUuid,
+    selector
+) {
     console.info(
-        'Fetching sensitivity analysis on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            ' ...'
+        `Fetching sensitivity analysis on ${studyUuid} and node ${currentNodeUuid}  ...`
     );
+
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(selector);
+    urlSearchParams.append('selector', jsoned);
+
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensitivity-analysis/result';
+        '/sensitivity-analysis/result?' +
+        urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
 }
