@@ -27,6 +27,10 @@ const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/sensitivity-analysis';
 const PREFIX_EXPLORE_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/explore';
+const PREFIX_LOADFLOW_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/loadflow';
+const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/security-analysis';
 
 function getToken() {
     const state = store.getState();
@@ -870,6 +874,45 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
+function getSecurityAnalysisUrl() {
+    return PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES + '/v1/';
+}
+
+export function fetchSecurityAnalysisProviders() {
+    console.info('fetch security analysis providers');
+    const url = getSecurityAnalysisUrl() + 'providers';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchSecurityAnalysisProvider(studyUuid) {
+    console.info('fetch security analysis provider');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function updateSecurityAnalysisProvider(studyUuid, newProvider) {
+    console.info('update security analysis provider');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newProvider,
+    });
+}
+
+export function fetchDefaultSecurityAnalysisProvider() {
+    console.info('fetch default security analysis provider');
+    const url = PREFIX_STUDY_QUERIES + '/v1/security-analysis-default-provider';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
 export function startSensitivityAnalysis(
     studyUuid,
     currentNodeUuid,
@@ -929,19 +972,61 @@ export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid) {
+export function fetchSensitivityAnalysisResult(
+    studyUuid,
+    currentNodeUuid,
+    selector
+) {
     console.info(
-        'Fetching sensitivity analysis on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            ' ...'
+        `Fetching sensitivity analysis on ${studyUuid} and node ${currentNodeUuid}  ...`
     );
+
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(selector);
+    urlSearchParams.append('selector', jsoned);
+
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensitivity-analysis/result';
+        '/sensitivity-analysis/result?' +
+        urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function fetchSensitivityAnalysisProviders() {
+    console.info('fetch sensitivity analysis providers');
+    const url = getSensiUrl() + 'providers';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchSensitivityAnalysisProvider(studyUuid) {
+    console.info('fetch sensitivity analysis provider');
+    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/provider';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function updateSensitivityAnalysisProvider(studyUuid, newProvider) {
+    console.info('update sensitivity analysis provider');
+    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/provider';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newProvider,
+    });
+}
+
+export function fetchDefaultSensitivityAnalysisProvider() {
+    console.info('fetch default sensitivity analysis provider');
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/sensitivity-analysis-default-provider';
+    console.debug(url);
+    return backendFetchText(url);
 }
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
@@ -2213,6 +2298,17 @@ export function deleteAttachingLine(
         },
         body,
     });
+}
+
+function getLoadFlowUrl() {
+    return PREFIX_LOADFLOW_SERVER_QUERIES + '/v1/';
+}
+
+export function getLoadFlowProviders() {
+    console.info('get load flow providers');
+    const getLoadFlowProvidersUrl = getLoadFlowUrl() + 'providers';
+    console.debug(getLoadFlowProvidersUrl);
+    return backendFetchJson(getLoadFlowProvidersUrl);
 }
 
 export function getLoadFlowProvider(studyUuid) {
