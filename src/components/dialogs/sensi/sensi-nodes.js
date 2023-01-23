@@ -8,11 +8,8 @@ import React, { useEffect, useState } from 'react';
 import { useDirectoryElements } from '../inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { gridItem } from '../dialogUtils';
-import {
-    SensiChecked,
-    useStyles,
-} from './sensi-parameters-selector';
-import { EQUIPMENT_TYPES } from '../../util/equipment-types'
+import { SensiChecked, useStyles } from './sensi-parameters-selector';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 export const SensiNodes = ({ index, onChange, defaultValue }) => {
     const classes = useStyles();
