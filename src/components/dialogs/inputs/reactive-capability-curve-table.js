@@ -19,6 +19,7 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { validateValueIsANumber } from '../../util/validation-functions';
+import ReactiveCapabilityCurveReactiveRange from '../reactive-capability-curve-reactive-range';
 const minimalValue = { p: '', qminP: '', qmaxP: '' };
 
 function getId(value) {
@@ -110,7 +111,6 @@ function enforceMinimumValues(valueToTest) {
 
 export const useReactiveCapabilityCurveTableValues = ({
     tableHeadersIds,
-    Field,
     inputForm,
     defaultValues, // format : either undefined or [{ p: '', qminP: '', qmaxP: '' }, { p: '', qminP: '', qmaxP: '' }]
     previousValues,
@@ -291,20 +291,29 @@ export const useReactiveCapabilityCurveTableValues = ({
         hasPreviousValue,
     ]);
 
-    const isRequired = useCallback(
+    const isFieldRequired = useCallback(
         (index) => {
             if (isModificationForm) {
-                return isReactiveCapabilityCurveOn
-                    ? true
-                    : !(hasPreviousValue(index) || index === values.length - 1);
+                if (isReactiveCapabilityCurveOn) return true;
+                // The first and last element have the previous value, so they are not required.
+                else if (index === values.length - 1 || index === 0) {
+                    return undefined;
+                } else {
+                    // the fields are required if new intermediate lines are added
+                    if (
+                        displayedPreviousValues === undefined ||
+                        displayedPreviousValues[index]?.p === ''
+                    )
+                        return true;
+                }
             }
             return isReactiveCapabilityCurveOn;
         },
         [
             isModificationForm,
             isReactiveCapabilityCurveOn,
-            hasPreviousValue,
             values,
+            displayedPreviousValues,
         ]
     );
 
@@ -326,18 +335,19 @@ export const useReactiveCapabilityCurveTableValues = ({
                     else labelSuffix = index.toString();
                     return (
                         <Grid key={id + index} container spacing={3} item>
-                            <Field
+                            <ReactiveCapabilityCurveReactiveRange
                                 defaultValue={value}
                                 onChange={handleSetValue}
                                 index={index}
                                 inputForm={inputForm}
-                                isFieldRequired={isRequired(index)}
+                                isFieldRequired={isFieldRequired(index)}
                                 disabled={disabled}
                                 labelSuffix={labelSuffix}
                                 previousValue={getPreviousValue(
                                     displayedPreviousValues,
                                     index
                                 )}
+                                isModificationForm={isModificationForm}
                             />
                             <Grid item xs={1}>
                                 <IconButton
@@ -376,12 +386,13 @@ export const useReactiveCapabilityCurveTableValues = ({
         displayedValues,
         handleSetValue,
         inputForm,
-        isRequired,
+        isFieldRequired,
         disabled,
         displayedPreviousValues,
         classes.icon,
         handleDeleteItem,
         handleAddValue,
+        isModificationForm,
     ]);
 
     return [values, field, displayedPreviousValues];

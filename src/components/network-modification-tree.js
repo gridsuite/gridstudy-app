@@ -109,12 +109,7 @@ const NetworkModificationTree = ({
     }, []);
 
     const [x, y, zoom] = useStore((state) => state.transform);
-
     const { setViewport, fitView } = useReactFlow();
-
-    const onInit = useCallback((reactFlowInstance) => {
-        reactFlowInstance.fitView();
-    }, []);
 
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.
@@ -126,7 +121,6 @@ const NetworkModificationTree = ({
         setViewport,
         prevTreeDisplay,
     };
-
     const intl = useIntl();
 
     useEffect(() => {
@@ -187,7 +181,7 @@ const NetworkModificationTree = ({
                 onNodeClick={onNodeClick}
                 //TODO why onMove instead of onMoveStart
                 onMove={onMove}
-                onInit={onInit}
+                fitView={true}
                 onMoveEnd={onMoveEnd}
                 elementsSelectable
                 selectNodesOnDrag={false}
