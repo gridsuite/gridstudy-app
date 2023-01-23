@@ -10,13 +10,13 @@ import PageNotFound from '../page-not-found';
 import PropTypes from 'prop-types';
 import Paper from '@mui/material/Paper';
 
-const WaitingLoader = ({ loading, message, errMessage, children }) => {
+const WaitingLoader = ({ loading, message, errMessage, children, style }) => {
     if (errMessage !== undefined) {
         /* TODO errMessage -> error {status, message} to get 404, 403 and adapt Page*/
         return <PageNotFound message={errMessage} />;
     } else if (loading === true)
         return (
-            <Paper className={'singlestretch-child'}>
+            <Paper className={'singlestretch-child'} style={style}>
                 <LoaderWithOverlay
                     color="inherit"
                     loaderSize={70}

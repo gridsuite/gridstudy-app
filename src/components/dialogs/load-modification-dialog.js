@@ -34,6 +34,7 @@ import {
     sanitizeString,
 } from './dialogUtils';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import WaitingLoader from '../util/waiting-loader';
 
 /**
  * Dialog to modify a load in the network
@@ -198,16 +199,22 @@ const LoadModificationDialog = ({
             titleId="ModifyLoad"
             {...dialogProps}
         >
-            <Grid container spacing={2}>
-                {gridItem(loadIdField, 4)}
-                {gridItem(loadNameField, 4)}
-                {gridItem(loadTypeField, 4)}
-            </Grid>
-            <GridSection title="Setpoints" />
-            <Grid container spacing={2}>
-                {gridItem(activePowerField, 4)}
-                {gridItem(reactivePowerField, 4)}
-            </Grid>
+            <WaitingLoader
+                loading={equipmentOptions?.length === 0}
+                message={'LoadingRemoteData'}
+                style={{ height: '200px', backgroundColor: 'inherit' }}
+            >
+                <Grid container spacing={2}>
+                    {gridItem(loadIdField, 4)}
+                    {gridItem(loadNameField, 4)}
+                    {gridItem(loadTypeField, 4)}
+                </Grid>
+                <GridSection title="Setpoints" />
+                <Grid container spacing={2}>
+                    {gridItem(activePowerField, 4)}
+                    {gridItem(reactivePowerField, 4)}
+                </Grid>
+            </WaitingLoader>
         </ModificationDialog>
     );
 };

@@ -54,6 +54,7 @@ import {
     checkReactiveCapabilityCurve,
     validateValueIsGreaterThan,
 } from '../util/validation-functions';
+import WaitingLoader from '../util/waiting-loader';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -734,7 +735,11 @@ const GeneratorModificationDialog = ({
             titleId="ModifyGenerator"
             {...dialogProps}
         >
-            <div>
+            <WaitingLoader
+                loading={equipmentOptions?.length === 0}
+                message={'LoadingRemoteData'}
+                style={{ height: '916px', backgroundColor: 'inherit' }}
+            >
                 <Grid container spacing={2}>
                     {gridItem(generatorIdField, 4)}
                     {gridItem(generatorNameField, 4)}
@@ -837,7 +842,7 @@ const GeneratorModificationDialog = ({
                 <Grid container spacing={2}>
                     {gridItem(marginalCostField, 4)}
                 </Grid>
-            </div>
+            </WaitingLoader>
         </ModificationDialog>
     );
 };
