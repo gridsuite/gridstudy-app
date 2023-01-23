@@ -479,21 +479,11 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     function parseStudyNotification(studyUpdatedForce) {
-        const substationsIds =
-            studyUpdatedForce.eventData.headers['substationsIds'];
-        const substationsIdsArray = substationsIds
-            .substring(1, substationsIds.length - 1)
-            .split(', ');
-        const deletedEquipments =
-            studyUpdatedForce.eventData.headers['deletedEquipments'];
-        const deletedEquipmentsArray = [];
-        if (deletedEquipments) {
-            deletedEquipments.forEach((equipment) => {
-                deletedEquipmentsArray.push(JSON.parse(equipment));
-            });
-        }
+        const payload = studyUpdatedForce.eventData.payload;
+        const substationsIds = payload?.impactedSubstationsIds;
+        const deletedEquipments = payload?.deletedEquipments;
 
-        return [substationsIdsArray, deletedEquipmentsArray];
+        return [substationsIds, deletedEquipments];
     }
 
     useEffect(() => {

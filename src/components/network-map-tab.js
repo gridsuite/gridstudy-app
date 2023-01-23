@@ -598,9 +598,9 @@ export const NetworkMapTab = ({
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
             return;
         }
-        if (deletedEquipments?.length > 0) {
+        if (deletedEquipments?.length > 0 && mapEquipments) {
             deletedEquipments.forEach((deletedEquipment) => {
-                mapEquipments?.removeEquipment(
+                mapEquipments.removeEquipment(
                     deletedEquipment?.type,
                     deletedEquipment?.id
                 );
