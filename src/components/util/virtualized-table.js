@@ -47,7 +47,6 @@ const styles = (theme) => ({
         color: theme.link.color,
     },
     header: {
-        paddingLeft: 16 + cellPadding,
         height: '100%',
     },
 });
