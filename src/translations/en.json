@@ -284,16 +284,19 @@
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
 
+    "ViewOnSpreadsheet": "View in spreadsheet",
+
     "LockoutLine": "Lock out the line",
     "TripLine": "Trip the line",
-    "EnergiseOnOneEnd": "Energise on one end ({substation})",
+    "EnergiseOnOneEndLine": "Energise on one end ({substation})",
     "SwitchOnLine": "Switch on the line",
-    "ViewOnSpreadsheet": "View in spreadsheet",
+    "Trip2WTransformer": "Trip the transformer",
 
     "UnableToLockoutLine": "Unable to lockout the line",
     "UnableToTripLine": "Unable to trip the line",
-    "UnableToEnergiseLineEnd": "Unable to energise the line end",
+    "UnableToEnergiseOnOneEndLine": "Unable to energise the line end",
     "UnableToSwitchOnLine": "Unable to switch on the line",
+    "UnableToTrip2WTransformer": "Unable to trip the transformer",
 
     "Provider": "Provider: ",
     "Default": "Default",

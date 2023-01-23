@@ -175,6 +175,7 @@ const StudyPane = ({
         if (!network) return;
         network.useEquipment(equipments.substations);
         network.useEquipment(equipments.lines);
+        network.useEquipment(equipments.twoWindingsTransformers);
     }, [network]);
 
     function showInSpreadsheet(equipment) {

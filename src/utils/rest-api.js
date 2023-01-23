@@ -1346,12 +1346,12 @@ export function getShortCircuitParameters(studyUuid) {
     return backendFetchJson(getShortCircuitParams);
 }
 
-function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
-    const changeLineStatusUrl =
+function changeBranchStatus(studyUuid, currentNodeUuid, branchId, action) {
+    const changeBranchStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
-    console.debug('%s with body: %s', changeLineStatusUrl, status);
-    return backendFetch(changeLineStatusUrl, {
+    console.debug('%s with action: %s', changeBranchStatusUrl, action);
+    return backendFetch(changeBranchStatusUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -1359,39 +1359,35 @@ function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.BRANCH_STATUS_MODIFICATION,
-            equipmentId: lineId,
-            action: status.toUpperCase(),
+            equipmentId: branchId,
+            action: action,
         }),
     });
 }
 
-export function lockoutLine(studyUuid, currentNodeUuid, lineId) {
+export function lockoutBranch(studyUuid, currentNodeUuid, lineId) {
     console.info('locking out line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, currentNodeUuid, lineId, 'lockout');
+    return changeBranchStatus(studyUuid, currentNodeUuid, lineId, 'LOCKOUT');
 }
 
-export function tripLine(studyUuid, currentNodeUuid, lineId) {
+export function tripBranch(studyUuid, currentNodeUuid, lineId) {
     console.info('tripping line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, currentNodeUuid, lineId, 'trip');
+    return changeBranchStatus(studyUuid, currentNodeUuid, lineId, 'TRIP');
 }
 
-export function energiseLineEnd(studyUuid, currentNodeUuid, lineId, lineEnd) {
+export function energiseBranchEnd(studyUuid, currentNodeUuid, lineId, lineEnd) {
     console.info('energise line ' + lineId + ' end ' + lineEnd + ' ...');
-    return changeLineStatus(
+    return changeBranchStatus(
         studyUuid,
         currentNodeUuid,
         lineId,
-        lineEnd === 'ONE'
-            ? 'energise_end_one'
-            : lineEnd === 'TWO'
-            ? 'energise_end_two'
-            : null
+        'ENERGISE_END_' + lineEnd
     );
 }
 
-export function switchOnLine(studyUuid, currentNodeUuid, lineId) {
+export function switchOnBranch(studyUuid, currentNodeUuid, lineId) {
     console.info('switching on line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, currentNodeUuid, lineId, 'switch_on');
+    return changeBranchStatus(studyUuid, currentNodeUuid, lineId, 'SWITCH_ON');
 }
 
 export function createLoad(

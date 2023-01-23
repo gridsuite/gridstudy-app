@@ -21,10 +21,10 @@ import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
-    energiseLineEnd,
-    lockoutLine,
-    switchOnLine,
-    tripLine,
+    energiseBranchEnd,
+    lockoutBranch,
+    switchOnBranch,
+    tripBranch,
 } from '../../utils/rest-api';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -46,10 +46,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const withLineMenu =
+const withBranchMenu =
     (BaseMenu) =>
     ({
         id,
+        equipmentType,
         position,
         handleClose,
         handleViewInSpreadsheet,
@@ -60,26 +61,36 @@ const withLineMenu =
         const classes = useStyles();
         const intl = useIntl();
         const studyUuid = decodeURIComponent(useParams().studyUuid);
-        const { snackInfo } = useSnackMessage();
+        const { snackError } = useSnackMessage();
         const network = useSelector((state) => state.network);
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const { getNameOrId } = useNameOrId();
 
-        const line = network.getLine(id);
+        const branch =
+            equipmentType === equipments.twoWindingsTransformers
+                ? network.getTwoWindingsTransformer(id)
+                : network.getLine(id);
+
+        const getTranslationKey = (key) => {
+            return key.concat(
+                equipmentType === equipments.lines ? 'Line' : '2WTransformer'
+            );
+        };
 
         const isNodeEditable = useMemo(
             function () {
                 return (
+                    branch &&
                     isNodeBuilt(currentNode) &&
                     !isNodeReadOnly(currentNode) &&
                     !isAnyNodeBuilding &&
                     !modificationInProgress
                 );
             },
-            [currentNode, isAnyNodeBuilding, modificationInProgress]
+            [branch, currentNode, isAnyNodeBuilding, modificationInProgress]
         );
 
-        const getLineDescriptor = useCallback(
+        const getVoltageLevelLabel = useCallback(
             (voltageLevelId) => {
                 return getNameOrId({
                     name: network.getVoltageLevel(voltageLevelId)?.name,
@@ -89,81 +100,56 @@ const withLineMenu =
             [network, getNameOrId]
         );
 
-        function handleLineChangesResponse(response, messsageId) {
-            const utf8Decoder = new TextDecoder('utf-8');
-            response.body
-                .getReader()
-                .read()
-                .then((value) => {
-                    snackInfo({
-                        messageTxt: utf8Decoder.decode(value.value),
-                        headerId: messsageId,
-                    });
-                });
+        function handleError(error, translationKey) {
+            snackError({
+                messageTxt: error.message,
+                headerId: getTranslationKey(translationKey),
+            });
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(false);
             }
         }
 
-        function handleLockout() {
+        function startModification() {
             handleClose();
             if (setModificationInProgress !== undefined) {
                 setModificationInProgress(true);
             }
-            lockoutLine(studyUuid, currentNode?.id, line.id).then(
-                (response) => {
-                    if (response.status !== 200) {
-                        handleLineChangesResponse(
-                            response,
-                            'UnableToLockoutLine'
-                        );
-                    }
+        }
+
+        function handleLockout() {
+            startModification();
+            lockoutBranch(studyUuid, currentNode?.id, branch.id).catch(
+                (error) => {
+                    handleError(error, 'UnableToLockout');
                 }
             );
         }
 
         function handleTrip() {
-            handleClose();
-            if (setModificationInProgress !== undefined) {
-                setModificationInProgress(true);
-            }
-            tripLine(studyUuid, currentNode?.id, line.id).then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToTripLine');
-                }
+            startModification();
+            tripBranch(studyUuid, currentNode?.id, branch.id).catch((error) => {
+                handleError(error, 'UnableToTrip');
             });
         }
 
         function handleEnergise(side) {
-            handleClose();
-            if (setModificationInProgress !== undefined) {
-                setModificationInProgress(true);
-            }
-            energiseLineEnd(studyUuid, currentNode?.id, line.id, side).then(
-                (response) => {
-                    if (response.status !== 200) {
-                        handleLineChangesResponse(
-                            response,
-                            'UnableToEnergiseLineEnd'
-                        );
-                    }
-                }
-            );
+            startModification();
+            energiseBranchEnd(
+                studyUuid,
+                currentNode?.id,
+                branch.id,
+                side
+            ).catch((error) => {
+                handleError(error, 'UnableToEnergiseOnOneEnd');
+            });
         }
 
         function handleSwitchOn() {
-            handleClose();
-            if (setModificationInProgress !== undefined) {
-                setModificationInProgress(true);
-            }
-            switchOnLine(studyUuid, currentNode?.id, line.id).then(
-                (response) => {
-                    if (response.status !== 200) {
-                        handleLineChangesResponse(
-                            response,
-                            'UnableToSwitchOnLine'
-                        );
-                    }
+            startModification();
+            switchOnBranch(studyUuid, currentNode?.id, branch.id).catch(
+                (error) => {
+                    handleError(error, 'UnableToSwitchOn');
                 }
             );
         }
@@ -177,43 +163,46 @@ const withLineMenu =
                     top: position[1],
                     left: position[0],
                 }}
-                id="line-menu"
+                id="branch-menu"
                 open={true}
                 onClose={handleClose}
             >
                 <BaseMenu
                     equipmentId={id}
-                    equipmentType={equipments.lines}
+                    equipmentType={equipmentType}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                 />
-
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleLockout()}
-                    disabled={
-                        !isNodeEditable ||
-                        line.branchStatus === 'PLANNED_OUTAGE'
-                    }
-                >
-                    <ListItemIcon>
-                        <LockOutlinedIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({ id: 'LockoutLine' })}
-                            </Typography>
+                {equipmentType === equipments.lines && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleLockout()}
+                        disabled={
+                            !isNodeEditable ||
+                            branch.branchStatus === 'PLANNED_OUTAGE'
                         }
-                    />
-                </MenuItem>
+                    >
+                        <ListItemIcon>
+                            <LockOutlinedIcon />
+                        </ListItemIcon>
 
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({
+                                        id: getTranslationKey('Lockout'),
+                                    })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
                     disabled={
-                        !isNodeEditable || line.branchStatus === 'FORCED_OUTAGE'
+                        !isNodeEditable ||
+                        branch.branchStatus === 'FORCED_OUTAGE'
                     }
                 >
                     <ListItemIcon>
@@ -224,101 +213,122 @@ const withLineMenu =
                         className={classes.listItemText}
                         primary={
                             <Typography noWrap>
-                                {intl.formatMessage({ id: 'TripLine' })}
+                                {intl.formatMessage({
+                                    id: getTranslationKey('Trip'),
+                                })}
                             </Typography>
                         }
                     />
                 </MenuItem>
-
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleEnergise('ONE')}
-                    disabled={
-                        !isNodeEditable ||
-                        (line.terminal1Connected && !line.terminal2Connected)
-                    }
-                >
-                    <ListItemIcon>
-                        <EnergiseOneSideIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage(
-                                    { id: 'EnergiseOnOneEnd' },
-                                    {
-                                        substation: getLineDescriptor(
-                                            line.voltageLevelId1
-                                        ),
-                                    }
-                                )}
-                            </Typography>
+                {equipmentType === equipments.lines && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleEnergise('ONE')}
+                        disabled={
+                            !isNodeEditable ||
+                            (branch.terminal1Connected &&
+                                !branch.terminal2Connected)
                         }
-                    />
-                </MenuItem>
+                    >
+                        <ListItemIcon>
+                            <EnergiseOneSideIcon />
+                        </ListItemIcon>
 
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleEnergise('TWO')}
-                    disabled={
-                        !isNodeEditable ||
-                        (line.terminal2Connected && !line.terminal1Connected)
-                    }
-                >
-                    <ListItemIcon>
-                        <EnergiseOtherSideIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage(
-                                    { id: 'EnergiseOnOneEnd' },
-                                    {
-                                        substation: getLineDescriptor(
-                                            line.voltageLevelId2
-                                        ),
-                                    }
-                                )}
-                            </Typography>
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage(
+                                        {
+                                            id: getTranslationKey(
+                                                'EnergiseOnOneEnd'
+                                            ),
+                                        },
+                                        {
+                                            substation: getVoltageLevelLabel(
+                                                branch.voltageLevelId1
+                                            ),
+                                        }
+                                    )}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
+                {equipmentType === equipments.lines && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleEnergise('TWO')}
+                        disabled={
+                            !isNodeEditable ||
+                            (branch.terminal2Connected &&
+                                !branch.terminal1Connected)
                         }
-                    />
-                </MenuItem>
+                    >
+                        <ListItemIcon>
+                            <EnergiseOtherSideIcon />
+                        </ListItemIcon>
 
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleSwitchOn()}
-                    disabled={
-                        !isNodeEditable ||
-                        (line.terminal1Connected && line.terminal2Connected)
-                    }
-                >
-                    <ListItemIcon>
-                        <PlayIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({ id: 'SwitchOnLine' })}
-                            </Typography>
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage(
+                                        {
+                                            id: getTranslationKey(
+                                                'EnergiseOnOneEnd'
+                                            ),
+                                        },
+                                        {
+                                            substation: getVoltageLevelLabel(
+                                                branch.voltageLevelId2
+                                            ),
+                                        }
+                                    )}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
+                {equipmentType === equipments.lines && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleSwitchOn()}
+                        disabled={
+                            !isNodeEditable ||
+                            (branch.terminal1Connected &&
+                                branch.terminal2Connected)
                         }
-                    />
-                </MenuItem>
+                    >
+                        <ListItemIcon>
+                            <PlayIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({
+                                        id: getTranslationKey('SwitchOn'),
+                                    })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
             </Menu>
         );
     };
 
-withLineMenu.propTypes = {
-    line: PropTypes.object.isRequired,
+withBranchMenu.propTypes = {
+    id: PropTypes.string.isRequired,
+    equipmentType: PropTypes.string.isRequired,
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
+    modificationInProgress: PropTypes.func,
+    setModificationInProgress: PropTypes.func,
 };
 
-export default withLineMenu;
+export default withBranchMenu;

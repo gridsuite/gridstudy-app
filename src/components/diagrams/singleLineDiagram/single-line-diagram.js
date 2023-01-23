@@ -35,7 +35,7 @@ import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import { AutoSizer } from 'react-virtualized';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
 import withEquipmentMenu from '../../menus/equipment-menu';
-import withLineMenu from '../../menus/line-menu';
+import withBranchMenu from '../../menus/line-menu';
 
 import { equipments } from '../../network/network-equipments';
 import { RunningStatus } from '../../util/running-status';
@@ -235,7 +235,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
-    const MenuLine = withLineMenu(BaseEquipmentMenu);
+    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
 
     const theme = useTheme();
 
@@ -650,12 +650,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         [dispatch]
     );
 
-    const displayMenuLine = () => {
+    const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.lines && (
-                <MenuLine
+            (equipmentMenu.equipmentType === equipments.lines ||
+                equipmentMenu.equipmentType ===
+                    equipments.twoWindingsTransformers) && (
+                <MenuBranch
                     id={equipmentMenu.equipmentId}
+                    equipmentType={equipmentMenu.equipmentType}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -815,7 +818,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                             }}
                         />
                     }
-                    {displayMenuLine()}
+                    {displayBranchMenu()}
                     {displayMenu(equipments.loads, 'load-menus')}
                     {displayMenu(equipments.batteries, 'battery-menus')}
                     {displayMenu(
@@ -830,10 +833,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     {displayMenu(
                         equipments.shuntCompensators,
                         'shunt-compensator-menus'
-                    )}
-                    {displayMenu(
-                        equipments.twoWindingsTransformers,
-                        'two-windings-transformer-menus'
                     )}
                     {displayMenu(
                         equipments.threeWindingsTransformers,
