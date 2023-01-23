@@ -128,6 +128,7 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
+    const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
@@ -646,21 +647,18 @@ export const NetworkMapTab = ({
     /* TODO : this useEffect reloads the mapEquipments when, in manual refresh mode, the current node is built.
      */
     useEffect(() => {
+        let previousNodeStatus = isCurrentNodeBuiltRef.current;
+        isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
+
         // when we build node we want the map to be up to date
         if (
-            isInitialized &&
-            reloadMapNeeded &&
             refIsMapManualRefreshEnabled.current &&
-            isNodeBuilt(currentNode)
+            !previousNodeStatus &&
+            isCurrentNodeBuiltRef.current
         ) {
             updateMapEquipmentsAndGeoData();
         }
-    }, [
-        isInitialized,
-        reloadMapNeeded,
-        currentNode,
-        updateMapEquipmentsAndGeoData,
-    ]);
+    }, [currentNode, updateMapEquipmentsAndGeoData]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
