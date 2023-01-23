@@ -81,6 +81,24 @@ const NetworkMap = (props) => {
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { getNameOrId } = useNameOrId();
+
+    const readyToDisplay =
+        props.mapEquipments !== null &&
+        props.geoData !== null &&
+        props.filteredNominalVoltages !== null &&
+        !props.disabled;
+
+    const readyToDisplaySubstations =
+        readyToDisplay &&
+        props.mapEquipments.substations &&
+        props.geoData.substationPositionsById.size > 0;
+
+    const readyToDisplayLines =
+        readyToDisplay &&
+        props.mapEquipments.lines &&
+        props.mapEquipments.voltageLevels &&
+        props.geoData.substationPositionsById.size > 0;
+
     const classes = useStyles();
 
     useEffect(() => {
@@ -305,12 +323,7 @@ const NetworkMap = (props) => {
 
     const layers = [];
 
-    if (
-        props.mapEquipments !== null &&
-        props.geoData !== null &&
-        props.filteredNominalVoltages !== null &&
-        !props.disabled
-    ) {
+    if (readyToDisplaySubstations) {
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
@@ -329,7 +342,9 @@ const NetworkMap = (props) => {
                 getNameOrId: getNameOrId,
             })
         );
+    }
 
+    if (readyToDisplayLines) {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
@@ -345,7 +360,9 @@ const NetworkMap = (props) => {
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
                 loadFlowStatus: props.loadFlowStatus,
-                lineFullPath: props.lineFullPath,
+                lineFullPath:
+                    props.geoData.linePositionsById.size > 0 &&
+                    props.lineFullPath,
                 lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,

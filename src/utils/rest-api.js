@@ -63,7 +63,12 @@ function handleError(response) {
             error.status = errorJson.status;
         } else {
             error = new Error(
-                errorName + response.status + ' ' + response.statusText
+                errorName +
+                    response.status +
+                    ' ' +
+                    response.statusText +
+                    ', message : ' +
+                    text
             );
             error.status = response.status;
         }
@@ -1353,7 +1358,7 @@ function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.BRANCH_STATUS,
+            type: MODIFICATION_TYPE.BRANCH_STATUS_MODIFICATION,
             equipmentId: lineId,
             action: status.toUpperCase(),
         }),
@@ -1865,18 +1870,11 @@ export function createSubstation(
     modificationUuid,
     properties
 ) {
-    let createSubstationUrl =
+    let url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
 
-    if (isUpdate) {
-        createSubstationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating substation creation');
-    } else {
-        console.info('Creating substation creation');
-    }
-
-    const asObj = !properties
+    const asObj = !properties?.length
         ? undefined
         : Object.fromEntries(properties.map((p) => [p.name, p.value]));
 
@@ -1887,9 +1885,15 @@ export function createSubstation(
         substationCountry: substationCountry === '' ? null : substationCountry,
         properties: asObj,
     });
-    console.debug('createSubstation body', properties, body);
 
-    return backendFetchText(createSubstationUrl, {
+    if (isUpdate) {
+        url += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation creation', { url, body });
+    } else {
+        console.info('Creating substation creation', { url, body });
+    }
+
+    return backendFetchText(url, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -2042,6 +2046,47 @@ export function attachLine(
         },
         body,
     });
+}
+
+export function loadScaling(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    variationType,
+    variations
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.LOAD_SCALING,
+        variationType,
+        variations,
+    });
+
+    let loadScalingUrl;
+    if (modificationUuid) {
+        console.info('load scaling update', body);
+        loadScalingUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modifications/' +
+            encodeURIComponent(modificationUuid);
+    } else {
+        console.info('create load scaling', body);
+        loadScalingUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-modifications';
+    }
+
+    return backendFetch(loadScalingUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
 
 export function linesAttachToSplitLines(
