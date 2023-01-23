@@ -50,7 +50,6 @@ import { useNullableBooleanValue } from './inputs/boolean';
 import { modifyGenerator } from '../../utils/rest-api';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { useReactiveCapabilityCurveTableValues } from './inputs/reactive-capability-curve-table';
-import { ReactiveCapabilityCurveReactiveRange } from './reactive-capability-curve-reactive-range';
 import {
     checkReactiveCapabilityCurve,
     validateValueIsGreaterThan,
@@ -261,7 +260,6 @@ const GeneratorModificationDialog = ({
     ] = useReactiveCapabilityCurveTableValues({
         tableHeadersIds: headerIds,
         inputForm: inputForm,
-        Field: ReactiveCapabilityCurveReactiveRange,
         defaultValues: formValues?.reactiveCapabilityCurvePoints,
         isReactiveCapabilityCurveOn: reactiveCapabilityCurveOn,
         isModificationForm: true,
@@ -513,7 +511,6 @@ const GeneratorModificationDialog = ({
 
     const [transientReactance, transientReactanceField] = useDoubleValue({
         label: 'TransientReactance',
-        validation: { isFieldRequired: false },
         adornment: OhmAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.transientReactance),
@@ -522,7 +519,6 @@ const GeneratorModificationDialog = ({
 
     const [transformerReactance, transformerReactanceField] = useDoubleValue({
         label: 'TransformerReactance',
-        validation: { isFieldRequired: false },
         adornment: OhmAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.stepUpTransformerReactance),
@@ -530,7 +526,6 @@ const GeneratorModificationDialog = ({
     });
     const [marginalCost, marginalCostField] = useDoubleValue({
         label: 'MarginalCost',
-        validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.marginalCost),
         previousValue: generatorInfos?.marginalCost,
