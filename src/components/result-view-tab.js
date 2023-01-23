@@ -132,6 +132,12 @@ export const ResultViewTab = ({
                         })}
                         disabled={disabled}
                     />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'ShortCircuitAnalysisResults',
+                        })}
+                        disabled={disabled}
+                    />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
@@ -140,19 +146,13 @@ export const ResultViewTab = ({
                             disabled={disabled}
                         />
                     )}
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'ShortCircuitAnalysisResults',
-                        })}
-                        disabled={disabled}
-                    />
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
             {tabIndex === 0 && !disabled && renderLoadFlowResult()}
             {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
-            {tabIndex === 2 && !disabled && renderSensitivityAnalysisResult()}
-            {tabIndex === 3 && !disabled && renderShortCircuitAnalysisResult()}
+            {tabIndex === 2 && !disabled && renderShortCircuitAnalysisResult()}
+            {tabIndex === 3 && !disabled && renderSensitivityAnalysisResult()}
         </Paper>
     );
 };
