@@ -13,7 +13,7 @@ import {
     SENSITIVITY_TYPES,
     useStyles,
 } from './sensi-parameters-selector';
-import { EQUIPMENT_TYPES } from '../../util/equipment-types'
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
     const classes = useStyles();
