@@ -231,7 +231,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyParentDirectoriesUuidsRef = useRef([]);
 
     const network = useSelector((state) => state.network);
-    const userName = useSelector((state) => state.user.profile.name);
+    const userName = useSelector((state) => state.user.profile.sub);
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
