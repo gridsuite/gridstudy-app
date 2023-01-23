@@ -361,12 +361,22 @@ const GeneratorCreationDialog = ({
                 null,
         });
 
-    useEffect(() => {
+    const removeUnnecessaryFieldsValidation = useCallback(() => {
         if (!voltageRegulation || !isDistantRegulation(voltageRegulationType)) {
             inputForm.removeValidation(REGULATING_VOLTAGE_LEVEL);
             inputForm.removeValidation(REGULATING_EQUIPMENT);
+            inputForm.removeValidation('QPercentText');
         }
-    }, [voltageRegulation, voltageRegulationType, inputForm]);
+        if (isReactiveCapabilityCurveOn()) {
+            inputForm.removeValidation('MinimumReactivePower');
+            inputForm.removeValidation('MaximumReactivePower');
+        }
+    }, [
+        voltageRegulation,
+        voltageRegulationType,
+        inputForm,
+        isReactiveCapabilityCurveOn,
+    ]);
 
     const [frequencyRegulation, frequencyRegulationField] = useBooleanValue({
         label: 'FrequencyRegulation',
@@ -441,7 +451,7 @@ const GeneratorCreationDialog = ({
         } else {
             setReactiveCapabilityCurveErrors([]);
         }
-
+        removeUnnecessaryFieldsValidation();
         return (
             inputForm.validate() &&
             (!isReactiveCapabilityCurveOn() || isReactiveCapabilityCurveValid)
