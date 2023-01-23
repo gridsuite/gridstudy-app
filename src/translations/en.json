@@ -54,7 +54,6 @@
     "paramsChangingError": "An error occured when changing the parameters",
     "paramsChangingDenied": "The requested changes have been rejected",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
-    "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
     "defaultSensiResultsThresholdRetrievingError": "An error occurred while retrieving the sensitivity analysis results default threshold",
 
     "close": "Close",
@@ -314,8 +313,27 @@
     "Default": "Default",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
-    "setLoadFlowProviderError": "An error occured when updating the load flow provider",
-    "getLoadFlowProviderError": "An error occurred while getting the load flow provider",
+
+    "fetchLoadFlowProvidersError": "An error occurred while fetching the load flow providers",
+    "fetchLoadFlowProviderError": "An error occured when fetching the load flow provider",
+    "fetchDefaultLoadFlowProviderError": "An error occured when fetching default load flow provider",
+    "updateLoadFlowProviderError": "An error occurred while updating the load flow provider",
+    "updateLoadFlowParametersError": "An error occurred while updating the load flow parameters",
+    "fetchLoadFlowParametersError": "An error occured when fetching the load flow parameters",
+
+    "fetchSecurityAnalysisProvidersError": "An error occured when fetching security analysis provider list",
+    "fetchSecurityAnalysisProviderError": "An error occured when fetching security analysis provider",
+    "fetchDefaultSecurityAnalysisProviderError": "An error occured when fetching default security analysis provider",
+    "updateSecurityAnalysisProviderError": "An error occured when updating security analysis provider",
+    "updateSecurityAnalysisParametersError": "An error occurred while updating the security analysis parameters",
+    "fetchSecurityAnalysisParametersError": "An error occured when fetching the security analysis parameters",
+
+    "fetchSensitivityAnalysisProvidersError": "An error occured when fetching sensitivity analysis provider list",
+    "fetchSensitivityAnalysisProviderError": "An error occured when fetching sensitivity analysis provider",
+    "fetchDefaultSensitivityAnalysisProviderError": "An error occured when fetching default sensitivity analysis provider",
+    "updateSensitivityAnalysisProviderError": "An error occured when updating sensitivity analysis provider",
+    "updateSensitivityAnalysisParametersError": "An error occurred while updating the sensitivity analysis parameters",
+    "fetchSensitivityAnalysisParametersError": "An error occured when fetching the sensitivity analysis parameters",
 
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
