@@ -119,7 +119,6 @@ const LoadCreationDialog = ({
         label: 'ActivePowerText',
         validation: {
             isFieldRequired: true,
-            isFieldNumeric: true,
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
@@ -130,7 +129,6 @@ const LoadCreationDialog = ({
         label: 'ReactivePowerText',
         validation: {
             isFieldRequired: true,
-            isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
