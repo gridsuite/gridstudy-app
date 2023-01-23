@@ -710,13 +710,6 @@ const Diagram = forwardRef((props, ref) => {
                     height: '100%',
                     position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
                     overflow: 'hidden',
-                    // We hide this diagram if another diagram is in fullscreen mode.
-                    display:
-                        !fullScreenDiagram?.id ||
-                        (props.diagramId === fullScreenDiagram.id &&
-                            props.svgType === fullScreenDiagram.svgType)
-                            ? ''
-                            : 'none',
                 }}
             >
                 <Box>
@@ -846,22 +839,31 @@ const Diagram = forwardRef((props, ref) => {
     };
 
     return !svg.error ? (
-        fullScreenDiagram?.id ? (
-            contentRender()
-        ) : (
-            <ResizableBox
-                height={sizeHeight ?? LOADING_WIDTH}
-                width={sizeWidth ?? LOADING_WIDTH}
-                className={
-                    props?.align === 'right'
-                        ? classes.resizableLeft
-                        : classes.resizableRight
-                }
-                minConstraints={[LOADING_WIDTH, LOADING_WIDTH]}
-                resizeHandles={props?.align === 'right' ? ['sw'] : undefined}
-            >
-                <>
-                    {contentRender()}
+        <ResizableBox
+            height={sizeHeight ?? LOADING_WIDTH}
+            width={sizeWidth ?? LOADING_WIDTH}
+            className={clsx({
+                [classes.resizableLeft]:
+                    !fullScreenDiagram?.id && props?.align === 'right',
+                [classes.resizableRight]:
+                    !fullScreenDiagram?.id && props?.align === 'left',
+            })}
+            minConstraints={[LOADING_WIDTH, LOADING_WIDTH]}
+            resizeHandles={props?.align === 'right' ? ['sw'] : undefined}
+            axis={fullScreenDiagram?.id ? 'none' : undefined} // disables the resizeBox if in fullscreen
+            style={{
+                // We hide this diagram if another diagram is in fullscreen mode.
+                display:
+                    !fullScreenDiagram?.id ||
+                    (props.diagramId === fullScreenDiagram.id &&
+                        props.svgType === fullScreenDiagram.svgType)
+                        ? ''
+                        : 'none',
+            }}
+        >
+            <>
+                {contentRender()}
+                {!fullScreenDiagram?.id && (
                     <ResizeHandleIcon
                         className={
                             props?.align === 'right'
@@ -869,9 +871,9 @@ const Diagram = forwardRef((props, ref) => {
                                 : classes.resizeHandleIconRight
                         }
                     />
-                </>
-            </ResizableBox>
-        )
+                )}
+            </>
+        </ResizableBox>
     ) : (
         <></>
     );
