@@ -539,7 +539,7 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
             return Promise.reject();
         }
-        console.info('Reload map equipments');
+        console.info('Update map equipments');
         setWaitingLoadData(true);
         const updatedSubstationsToSend =
             !refIsMapManualRefreshEnabled.current &&
