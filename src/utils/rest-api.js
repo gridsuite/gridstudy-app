@@ -2388,10 +2388,11 @@ export function getSensiDefaultResultsThreshold() {
     });
 }
 
-export function fetchMapSubstations(
+export function fetchMapEquipment(
     studyUuid,
     currentNodeUuid,
     substationsIds,
+    equipmentType,
     inUpstreamBuiltParentNode
 ) {
     console.info(
@@ -2407,46 +2408,19 @@ export function fetchMapSubstations(
 
     const substationParams = getQueryParamsList(substationsIds, 'substationId');
 
-    let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/map-substations';
-
-    if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
-        fetchEquipmentsUrl += '?';
-        fetchEquipmentsUrl += urlSearchParams.toString();
-        fetchEquipmentsUrl +=
-            urlSearchParams.toString().length > 0 && substationParams.length > 0
-                ? '&' + substationParams
-                : substationParams;
+    let fetchEquipmentsUrl;
+    if (equipmentType === 'substations') {
+        fetchEquipmentsUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-map/map-substations';
+    } else if (equipmentType === 'lines') {
+        fetchEquipmentsUrl =
+            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+            '/network-map/map-lines';
+    } else {
+        console.error('unexpected equipmentType request');
+        return;
     }
-
-    console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
-}
-
-export function fetchMapLines(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds,
-    inUpstreamBuiltParentNode
-) {
-    console.info(
-        `Fetching map lines data of study '${studyUuid}' and node '${currentNodeUuid}'...`
-    );
-    let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
-
-    const substationParams = getQueryParamsList(substationsIds, 'substationId');
-
-    let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/map-lines';
-
     if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
         fetchEquipmentsUrl += '?';
         fetchEquipmentsUrl += urlSearchParams.toString();
