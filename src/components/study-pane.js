@@ -39,30 +39,7 @@ import { SvgType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { ResizableBox } from 'react-resizable';
 import ResizePanelHandleIcon from '@mui/icons-material/MoreVert';
-
-function getWindowDimensions() {
-    const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
-    return {
-        windowWidth,
-        windowHeight
-    };
-}
-
-function useWindowDimensions() {
-    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
-
-    useEffect(() => {
-        function handleResize() {
-            setWindowDimensions(getWindowDimensions());
-        }
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    return windowDimensions;
-}
-
+import { useWindowDimensions } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -145,7 +122,6 @@ const StudyPane = ({
     setErrorMessage,
     ...props
 }) => {
-    const { windowWidth } = useWindowDimensions(); // TODO CHARLY mettre ce nouveau code au bon endroit, dans les bons fichiers.
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector(
@@ -183,6 +159,8 @@ const StudyPane = ({
     const { openDiagramView } = useDiagram();
 
     const disabled = !isNodeBuilt(currentNode);
+
+    const { windowWidth } = useWindowDimensions();
 
     useEffect(() => {
         if (
@@ -258,11 +236,12 @@ const StudyPane = ({
                         {studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID ? (
                             <ResizableBox
                                 height={'100%'}
-                                width={windowWidth / 2}
+                                width={windowWidth / 2} // By default, the tree panel takes half of the screen
                                 className={classes.resizablePanel}
                                 minConstraints={[windowWidth * 0.2]}
                                 maxConstraints={[windowWidth * 0.8]}
                                 resizeHandles={['e']}
+                                axis={'x'}
                             >
                                 <div className={classes.innerResizablePanel}>
                                     <NetworkModificationTreePane
@@ -270,7 +249,8 @@ const StudyPane = ({
                                         studyMapTreeDisplay={studyDisplayMode}
                                     />
                                     <ResizePanelHandleIcon
-                                        className={ // TODO CHARLY rendre la handle un peu plus large, mais pas forcément visiblement plus large.
+                                        className={
+                                            // TODO CHARLY rendre la handle un peu plus large, mais pas forcément visiblement plus large.
                                             classes.resizePanelHandleIcon
                                         }
                                     />
