@@ -27,6 +27,8 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
+    getConnectivityBusBarSectionData,
+    getConnectivityVoltageLevelData,
     VOLTAGE_LEVEL,
     VOLTAGE_LEVEL_ID,
     VOLTAGE_LEVEL_TOPOLOGY_KIND,
@@ -114,10 +116,21 @@ export const ConnectivityForm = ({
     ]);
 
     const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
-    const getObjectId = useCallback((object) => object.id, []);
+    const getObjectId = useCallback((object) => {
+        if (typeof object === 'string') {
+            return object;
+        }
+
+        return object.id;
+    }, []);
     const newVoltageLevelField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
+            outputTransform={(value) =>
+                typeof value === 'string'
+                    ? getConnectivityVoltageLevelData({ voltageLevelId: value })
+                    : value
+            }
             allowNewValue
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
@@ -137,6 +150,13 @@ export const ConnectivityForm = ({
             options={busOrBusbarSectionOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
+            outputTransform={(value) =>
+                typeof value === 'string'
+                    ? getConnectivityBusBarSectionData({
+                          busbarSectionId: value,
+                      })
+                    : value
+            }
             size={'small'}
         />
     );

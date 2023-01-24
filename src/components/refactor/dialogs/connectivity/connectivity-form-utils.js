@@ -66,13 +66,13 @@ export const getConnectivityEmptyFormData = (id = CONNECTIVITY) => {
     return connectivityEmptyFormData(id);
 };
 
-const getConnectivityVoltageLevelData = (
+export const getConnectivityVoltageLevelData = ({
     voltageLevelId,
-    voltageLevelName,
-    voltageLevelSubstationId,
-    voltageLevelNominalVoltage,
-    voltageLevelTopologyKind
-) => {
+    voltageLevelName = '',
+    voltageLevelSubstationId = '',
+    voltageLevelNominalVoltage = '',
+    voltageLevelTopologyKind = '',
+}) => {
     if (!voltageLevelId) {
         return null;
     }
@@ -86,10 +86,10 @@ const getConnectivityVoltageLevelData = (
     };
 };
 
-const getConnectivityBusBarSectionData = (
+export const getConnectivityBusBarSectionData = ({
     busbarSectionId,
-    busbarSectionName
-) => {
+    busbarSectionName = '',
+}) => {
     if (!busbarSectionId) {
         return null;
     }
@@ -100,34 +100,32 @@ const getConnectivityBusBarSectionData = (
     };
 };
 
-export const getConnectivityFormData = (
-    {
-        voltageLevelId,
-        voltageLevelName,
-        voltageLevelSubstationId,
-        voltageLevelNominalVoltage,
-        voltageLevelTopologyKind,
-        busbarSectionId,
-        busbarSectionName,
-        connectionDirection,
-        connectionName,
-        connectionPosition,
-    },
-    id = CONNECTIVITY
-) => {
+export const getConnectivityFormData = ({
+    voltageLevelId,
+    voltageLevelName,
+    voltageLevelSubstationId,
+    voltageLevelNominalVoltage,
+    voltageLevelTopologyKind,
+    busbarSectionId,
+    busbarSectionName,
+    connectionDirection = null,
+    connectionName = '',
+    connectionPosition = null,
+},
+id = CONNECTIVITY) => {
     return {
         [id]: {
-            [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData(
+            [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
                 voltageLevelId,
                 voltageLevelName,
                 voltageLevelSubstationId,
                 voltageLevelNominalVoltage,
-                voltageLevelTopologyKind
-            ),
-            [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData(
+                voltageLevelTopologyKind,
+            }),
+            [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData({
                 busbarSectionId,
-                busbarSectionName
-            ),
+                busbarSectionName,
+            }),
             [CONNECTION_DIRECTION]: connectionDirection,
             [CONNECTION_NAME]: connectionName,
             [CONNECTION_POSITION]: connectionPosition,
