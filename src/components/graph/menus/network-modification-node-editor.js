@@ -381,26 +381,27 @@ const NetworkModificationNodeEditor = () => {
         GENERATOR_SCALING: {
             label: 'GeneratorScaling',
             dialog: () => adapt(GeneratorScalingDialog),
-            LOAD_SCALING: {
-                label: 'LoadScaling',
-                dialog: () => adapt(LoadScalingDialog),
-                icon: <AddIcon />,
-            },
-            DELETE_VOLTAGE_LEVEL_ON_LINE: {
-                label: 'DeleteVoltageLevelOnLine',
-                dialog: () => adapt(DeleteVoltageLevelOnLineDialog, withLines),
-                icon: <AddIcon />,
-            },
-            DELETE_ATTACHING_LINE: {
-                label: 'DeleteAttachingLine',
-                dialog: () => adapt(DeleteAttachingLineDialog, withLines),
-                icon: <AddIcon />,
-            },
-            EQUIPMENT_DELETION: {
-                label: 'DeleteEquipment',
-                dialog: () => adapt(EquipmentDeletionDialog),
-                icon: <DeleteIcon />,
-            },
+            icon: <AddIcon />,
+        },
+        LOAD_SCALING: {
+            label: 'LoadScaling',
+            dialog: () => adapt(LoadScalingDialog),
+            icon: <AddIcon />,
+        },
+        DELETE_VOLTAGE_LEVEL_ON_LINE: {
+            label: 'DeleteVoltageLevelOnLine',
+            dialog: () => adapt(DeleteVoltageLevelOnLineDialog, withLines),
+            icon: <AddIcon />,
+        },
+        DELETE_ATTACHING_LINE: {
+            label: 'DeleteAttachingLine',
+            dialog: () => adapt(DeleteAttachingLineDialog, withLines),
+            icon: <AddIcon />,
+        },
+        EQUIPMENT_DELETION: {
+            label: 'DeleteEquipment',
+            dialog: () => adapt(EquipmentDeletionDialog),
+            icon: <DeleteIcon />,
         },
     };
 
