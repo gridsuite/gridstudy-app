@@ -35,7 +35,7 @@ import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
 import clsx from 'clsx';
 import { useNameOrId } from '../util/equipmentInfosHandler';
-import { syncDiagramStateWithSessionStorage } from "../../redux/session-storage";
+import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
