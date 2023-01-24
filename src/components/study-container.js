@@ -72,7 +72,6 @@ function isWorthUpdate(
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const node = headers?.['node'];
     const nodes = headers?.['nodes'];
-    console.log('notified somewhat', lastUpdateRef, studyUpdatedForce, headers);
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
     }
