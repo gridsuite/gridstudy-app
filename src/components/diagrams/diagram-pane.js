@@ -35,6 +35,7 @@ import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
 import clsx from 'clsx';
 import { useNameOrId } from '../util/equipmentInfosHandler';
+import { syncDiagramStateWithSessionStorage } from "../../redux/session-storage";
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -141,7 +142,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 const voltageLevel = network.getVoltageLevel(id);
                 if (!voltageLevel) return;
                 let label = getNameOrId(voltageLevel);
-                const substation = network.getSubstation(id);
+                const substation = network.getSubstation(
+                    voltageLevel.substationId
+                );
                 const countryName = substation?.countryName;
                 if (countryName) {
                     label += ' - ' + countryName;
@@ -267,6 +270,10 @@ export function DiagramPane({
     );
 
     const notificationIdList = useSelector((state) => state.notificationIdList);
+
+    useEffect(() => {
+        syncDiagramStateWithSessionStorage(diagramStates, studyUuid);
+    }, [diagramStates, studyUuid]);
 
     const { openDiagramView, closeDiagramView, closeDiagramViews } =
         useDiagram();
