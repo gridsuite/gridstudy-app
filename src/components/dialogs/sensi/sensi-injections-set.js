@@ -13,6 +13,7 @@ import {
     useStyles,
     SensiChecked,
 } from './sensi-parameters-selector';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 export const SensiInjectionsSet = ({
     index,
@@ -33,7 +34,10 @@ export const SensiInjectionsSet = ({
             ? defaultValue.monitoredBranches
             : [],
         elementType: elementType.FILTER,
-        equipmentTypes: ['LINE', 'TWO_WINDINGS_TRANSFORMER'],
+        equipmentTypes: [
+            EQUIPMENT_TYPES.LINE.type,
+            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        ],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -42,7 +46,10 @@ export const SensiInjectionsSet = ({
         label: 'Injections',
         initialValues: defaultValue.injections ? defaultValue.injections : [],
         elementType: elementType.FILTER,
-        equipmentTypes: ['GENERATOR', 'LOAD'],
+        equipmentTypes: [
+            EQUIPMENT_TYPES.GENERATOR.type,
+            EQUIPMENT_TYPES.LOAD.type,
+        ],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });

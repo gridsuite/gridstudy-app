@@ -9,6 +9,7 @@ import { useDirectoryElements } from '../inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { gridItem } from '../dialogUtils';
 import { SensiChecked, useStyles } from './sensi-parameters-selector';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 export const SensiInjections = ({ index, onChange, defaultValue }) => {
     const classes = useStyles();
@@ -24,7 +25,10 @@ export const SensiInjections = ({ index, onChange, defaultValue }) => {
             ? defaultValue.monitoredBranches
             : [],
         elementType: elementType.FILTER,
-        equipmentTypes: ['LINE', 'TWO_WINDINGS_TRANSFORMER'],
+        equipmentTypes: [
+            EQUIPMENT_TYPES.LINE.type,
+            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        ],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -33,7 +37,10 @@ export const SensiInjections = ({ index, onChange, defaultValue }) => {
         label: 'Injections',
         initialValues: defaultValue.injections ? defaultValue.injections : [],
         elementType: elementType.FILTER,
-        equipmentTypes: ['GENERATOR', 'LOAD'],
+        equipmentTypes: [
+            EQUIPMENT_TYPES.GENERATOR.type,
+            EQUIPMENT_TYPES.LOAD.type,
+        ],
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });

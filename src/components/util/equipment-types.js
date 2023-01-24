@@ -47,4 +47,7 @@ export const EQUIPMENT_TYPES = {
     SWITCH: {
         type: 'SWITCH',
     },
+    VSC_CONVERTER_STATION: {
+        type: 'VSC_CONVERTER_STATION',
+    },
 };
