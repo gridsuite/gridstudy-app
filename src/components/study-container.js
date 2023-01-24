@@ -210,6 +210,8 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_failed',
 ];
 export const UPDATE_TYPE_HEADER = 'updateType';
+const ERROR_HEADER = 'error';
+const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
 const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
@@ -229,6 +231,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyParentDirectoriesUuidsRef = useRef([]);
 
     const network = useSelector((state) => state.network);
+    const userName = useSelector((state) => state.user.profile.sub);
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
@@ -289,31 +292,38 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const wsRef = useRef();
 
-    const checkFailNotifications = useCallback(
+    const displayErrorNotifications = useCallback(
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const errorMessage = eventData.headers[ERROR_HEADER];
+            const userId = eventData.headers[USER_HEADER];
+            if (userId !== userName) return;
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
                     headerId: 'NodeBuildingError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'securityAnalysis_failed') {
                 snackError({
                     headerId: 'securityAnalysisError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'sensitivityAnalysis_failed') {
                 snackError({
                     headerId: 'sensitivityAnalysisError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
                 snackError({
-                    headerId: 'shortCircuitAnalysisError',
+                    headerId: 'ShortCircuitAnalysisError',
+                    messageTxt: errorMessage,
                 });
             }
         },
-        [snackError]
+        [snackError, userName]
     );
 
     const connectNotifications = useCallback(
@@ -326,7 +336,7 @@ export function StudyContainer({ view, onChangeTab }) {
             });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
-                checkFailNotifications(eventData);
+                displayErrorNotifications(eventData);
                 dispatch(studyUpdated(eventData));
             };
             ws.onclose = function (event) {
@@ -357,7 +367,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return ws;
         },
         // Note: dispatch doesn't change
-        [dispatch, checkFailNotifications]
+        [dispatch, displayErrorNotifications]
     );
 
     const fetchStudyPath = useCallback(() => {
