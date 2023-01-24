@@ -202,7 +202,6 @@ const RegulatingTerminalForm = ({
                             disabled={!watchVoltageLevelId || disabled}
                             options={equipmentsOptions}
                             getOptionLabel={(equipment) => {
-                                console.log('option', equipment);
                                 return equipment === ''
                                     ? '' // to clear field
                                     : (equipment?.[EQUIPMENT_TYPE] ??

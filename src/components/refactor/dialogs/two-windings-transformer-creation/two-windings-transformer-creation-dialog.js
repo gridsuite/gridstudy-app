@@ -236,7 +236,7 @@ const TwoWindingsTransformerCreationDialog = ({
         (twt) => {
             reset({
                 ...getTwoWindingsTransformerFormData({
-                    equipmentId: twt.id,
+                    equipmentId: twt.id + '(1)',
                     equipmentName: twt.name,
                     seriesResistance: twt.r,
                     seriesReactance: twt.x,
@@ -266,7 +266,66 @@ const TwoWindingsTransformerCreationDialog = ({
                     },
                     CONNECTIVITY_2
                 ),
-                ...twt,
+                ...getRatioTapChangerFormData({
+                    enabled:
+                        twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
+                    loadTapChangingCapabilities:
+                        twt?.[RATIO_TAP_CHANGER]?.[
+                            LOAD_TAP_CHANGING_CAPABILITIES
+                        ],
+                    regulating: twt?.[RATIO_TAP_CHANGER]?.[REGULATING],
+                    targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
+                    targetDeadband: isNaN(
+                        twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND]
+                    )
+                        ? null
+                        : twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
+                    lowTapPosition:
+                        twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION],
+                    highTapPosition: computeHighTapPosition(
+                        twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ),
+                    tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
+                    steps: twt?.[RATIO_TAP_CHANGER]?.[STEPS],
+                    equipmentId:
+                        twt?.[RATIO_TAP_CHANGER]
+                            ?.regulatingTerminalConnectableId,
+                    equipmentType:
+                        twt?.[RATIO_TAP_CHANGER]
+                            ?.regulatingTerminalConnectableType,
+                    voltageLevelId:
+                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
+                }),
+                ...getPhaseTapChangerFormData({
+                    enabled:
+                        twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
+                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE],
+                    regulating: twt?.[PHASE_TAP_CHANGER]?.[REGULATING],
+                    currentLimiterRegulatingValue:
+                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                    flowSetpointRegulatingValue:
+                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                    targetDeadband: isNaN(
+                        twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND]
+                    )
+                        ? null
+                        : twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
+                    lowTapPosition:
+                        twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
+                    highTapPosition: computeHighTapPosition(
+                        twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                    ),
+                    tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
+                    steps: twt?.[PHASE_TAP_CHANGER]?.[STEPS],
+                    equipmentId:
+                        twt?.[PHASE_TAP_CHANGER]
+                            ?.regulatingTerminalConnectableId,
+                    equipmentType:
+                        twt?.[PHASE_TAP_CHANGER]
+                            ?.regulatingTerminalConnectableType,
+                    voltageLevelId:
+                        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
+                }),
             });
         },
         [reset]
