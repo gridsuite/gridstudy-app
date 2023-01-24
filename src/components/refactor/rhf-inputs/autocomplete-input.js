@@ -45,18 +45,36 @@ const AutocompleteInput = ({
         fieldState: { error },
     } = useController({ name });
 
+    const handleChange = (value) => {
+        //if free solo not enabled or if value is not of string type, we call onChange right away
+        if (!allowNewValue || typeof value !== 'string') {
+            onChange(outputTransform(value));
+            return;
+        }
+
+        //otherwise, we check if user input matches with one of the options
+        const matchingOption = options.find((option) => option.id === value);
+        //if it does, we send the matching option to react hook form
+        if (matchingOption) {
+            onChange(outputTransform(matchingOption));
+            return;
+        }
+
+        //otherwise, we send the user input
+        onChange(outputTransform(value));
+    };
+
     return (
         <Autocomplete
             value={inputTransform(value)}
-            onChange={(_, data) => onChange(outputTransform(data))}
-            //if free input is needed. The resulting object will be : {id: <userInput>}
+            onChange={(_, data) => handleChange(data)}
             {...(allowNewValue && {
                 freeSolo: true,
                 autoComplete: true,
                 blurOnSelect: true,
-                clearOnBlur: true,
+                autoSelect: true,
                 onInputChange: (_, data) => {
-                    onChange({ id: data });
+                    handleChange(data);
                 },
             })}
             options={options}

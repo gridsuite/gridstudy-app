@@ -6,7 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
@@ -28,6 +28,8 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
+    getConnectivityBusBarSectionData,
+    getConnectivityVoltageLevelData,
     VOLTAGE_LEVEL,
 } from './connectivity-form-utils';
 import TextInput from '../../rhf-inputs/text-input';
@@ -112,10 +114,21 @@ export const ConnectivityForm = ({
     ]);
 
     const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
-    const getObjectId = useCallback((object) => object.id, []);
+    const getObjectId = useCallback((object) => {
+        if (typeof object === 'string') {
+            return object;
+        }
+
+        return object.id;
+    }, []);
     const newVoltageLevelField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
+            outputTransform={(value) =>
+                typeof value === 'string'
+                    ? getConnectivityVoltageLevelData({ voltageLevelId: value })
+                    : value
+            }
             allowNewValue
             name={`${CONNECTIVITY}.${VOLTAGE_LEVEL}`}
             label="VoltageLevel"
@@ -133,6 +146,13 @@ export const ConnectivityForm = ({
             options={busOrBusbarSectionOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
+            outputTransform={(value) =>
+                typeof value === 'string'
+                    ? getConnectivityBusBarSectionData({
+                          busbarSectionId: value,
+                      })
+                    : value
+            }
             size={'small'}
         />
     );

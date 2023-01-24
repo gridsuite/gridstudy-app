@@ -66,13 +66,13 @@ export const getConnectivityEmptyFormData = () => {
     return connectivityEmptyFormData;
 };
 
-const getConnectivityVoltageLevelData = (
+export const getConnectivityVoltageLevelData = ({
     voltageLevelId,
-    voltageLevelName,
-    voltageLevelSubstationId,
-    voltageLevelNominalVoltage,
-    voltageLevelTopologyKind
-) => {
+    voltageLevelName = '',
+    voltageLevelSubstationId = '',
+    voltageLevelNominalVoltage = '',
+    voltageLevelTopologyKind = '',
+}) => {
     if (!voltageLevelId) {
         return null;
     }
@@ -86,10 +86,10 @@ const getConnectivityVoltageLevelData = (
     };
 };
 
-const getConnectivityBusBarSectionData = (
+export const getConnectivityBusBarSectionData = ({
     busbarSectionId,
-    busbarSectionName
-) => {
+    busbarSectionName = '',
+}) => {
     if (!busbarSectionId) {
         return null;
     }
@@ -108,23 +108,23 @@ export const getConnectivityFormData = ({
     voltageLevelTopologyKind,
     busbarSectionId,
     busbarSectionName,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
+    connectionDirection = null,
+    connectionName = '',
+    connectionPosition = null,
 }) => {
     return {
         [CONNECTIVITY]: {
-            [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData(
+            [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
                 voltageLevelId,
                 voltageLevelName,
                 voltageLevelSubstationId,
                 voltageLevelNominalVoltage,
-                voltageLevelTopologyKind
-            ),
-            [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData(
+                voltageLevelTopologyKind,
+            }),
+            [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData({
                 busbarSectionId,
-                busbarSectionName
-            ),
+                busbarSectionName,
+            }),
             [CONNECTION_DIRECTION]: connectionDirection,
             [CONNECTION_NAME]: connectionName,
             [CONNECTION_POSITION]: connectionPosition,
