@@ -610,13 +610,9 @@ export default class Network {
                     this.voltageLevelsById.get(equipmentId)?.substationId;
                 const substation = this.substationsById.get(substationId);
                 if (substation) {
-                    let voltageLevelsOfSubstation = substation.voltageLevels;
-                    voltageLevelsOfSubstation =
-                        voltageLevelsOfSubstation.filter(
-                            (vl) => vl.id !== equipmentId
-                        );
-
-                    substation.voltageLevels = voltageLevelsOfSubstation;
+                    substation.voltageLevels = substation.voltageLevels.filter(
+                        (vl) => vl.id !== equipmentId
+                    );
                 }
 
                 this.generators = this.removeInjectionOfVoltageLevel(
