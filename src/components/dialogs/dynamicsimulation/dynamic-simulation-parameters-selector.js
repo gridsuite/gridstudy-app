@@ -54,6 +54,7 @@ const DynamicSimulationParametersSelector = (props) => {
         label: MAPPING_SELECTION_LABEL,
         inputForm: inputForm,
         values: mappingNames,
+        defaultValue: '',
         validation: {
             isFieldRequired: true,
         },
