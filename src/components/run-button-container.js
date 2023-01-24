@@ -270,7 +270,7 @@ export function RunButtonContainer({
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'ShortCircuitError',
+                        headerId: 'startShortCircuitError',
                     });
                 });
         } else if (action === runnable.DYNAMIC_SIMULATION) {
@@ -331,12 +331,14 @@ export function RunButtonContainer({
     };
 
     const RUNNABLES = useMemo(() => {
-        let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
+        let runnables = [
+            runnable.LOADFLOW,
+            runnable.SECURITY_ANALYSIS,
+            runnable.SHORT_CIRCUIT_ANALYSIS,
+        ];
         if (enableDeveloperMode) {
             // SENSI is currently a dev feature
             runnables.push(runnable.SENSITIVITY_ANALYSIS);
-            // SHORTCIRCUIT is currently a dev feature
-            runnables.push(runnable.SHORT_CIRCUIT_ANALYSIS);
             // DYNAMICSIMULATION is currently a dev feature
             runnables.push(runnable.DYNAMIC_SIMULATION);
         }

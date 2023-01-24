@@ -220,7 +220,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 }
                 group = row._group;
             } else if (rootSorting) {
-                currentSorting[currentSorting.length - 1].indexes.push(index); // we don't want to loose children
+                currentSorting[currentSorting.length - 1].indexes.push(index); // we don't want to lose children
             } else {
                 addRowToSort(row[key], index); // children need sorting
             }
