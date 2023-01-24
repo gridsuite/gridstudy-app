@@ -1096,6 +1096,24 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
 
 // --- Dynamic simulation API - END
 
+// --- Workflow API - BEGIN
+export function getCanExecuteActionOnNode(studyUuid, currentNodeUuid, action) {
+    console.info(
+        `Check whether action '${action}' can execute on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    let url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/can-execute?';
+
+    // add request params
+    if (action) {
+        url += `action=${action}`;
+    }
+
+    console.debug(url);
+    return backendFetchText(url);
+}
+// --- Workflow API - END
+
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');
     const url =
