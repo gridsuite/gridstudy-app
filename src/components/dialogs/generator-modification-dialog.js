@@ -112,6 +112,8 @@ const GeneratorModificationDialog = ({
     const [reactiveCapabilityCurveErrors, setReactiveCapabilityCurveErrors] =
         useState([]);
 
+    const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
+
     const isActualRegulationDistant = (regulationType) => {
         return regulationType === REGULATION_TYPES.DISTANT.id;
     };
@@ -270,6 +272,7 @@ const GeneratorModificationDialog = ({
         label: 'MaximumReactivePower',
         validation: {
             isFieldNumeric: true,
+            isFieldRequired: reactivePowerRequired,
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
@@ -282,6 +285,7 @@ const GeneratorModificationDialog = ({
         label: 'MinimumReactivePower',
         validation: {
             isFieldNumeric: true,
+            isFieldRequired: reactivePowerRequired,
             valueLessThanOrEqualTo:
                 maximumReactivePower ||
                 generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
@@ -293,6 +297,17 @@ const GeneratorModificationDialog = ({
         previousValue:
             generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
     });
+
+    useEffect(() => {
+        setReactivePowerRequired(
+            (minimumReactivePower !== '' &&
+                !generatorInfos?.minMaxReactiveLimits?.minimumReactivePower) ||
+                (maximumReactivePower !== '' &&
+                    !generatorInfos?.minMaxReactiveLimits?.maximumReactivePower)
+                ? true
+                : undefined // if the field is not required then we set "reactivePowerRequired" to undefined so that the optional label is not displayed
+        );
+    }, [minimumReactivePower, maximumReactivePower, generatorInfos]);
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
