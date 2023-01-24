@@ -11,10 +11,10 @@ const FieldErrorAlert = ({ name }) => {
         name,
     });
     return (
-        error && (
+        error?.message && (
             <Grid item xs={12}>
                 <Alert severity="error">
-                    <FormattedMessage id={error.message} />
+                    <FormattedMessage id={error?.message} />
                 </Alert>
             </Grid>
         )

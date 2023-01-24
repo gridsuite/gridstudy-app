@@ -13,6 +13,8 @@ import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     EQUIPMENT,
+    EQUIPMENT_ID,
+    EQUIPMENT_TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_LEVEL_ID,
 } from './regulating-terminal-form-utils';
@@ -143,7 +145,11 @@ const RegulatingTerminalForm = ({
                             disabled={disabled}
                             id="voltage-level"
                             options={voltageLevelOptions}
-                            getOptionLabel={(vl) => (vl?.id ? vl.id : '')}
+                            getOptionLabel={(vl) =>
+                                vl?.[VOLTAGE_LEVEL_ID]
+                                    ? vl?.[VOLTAGE_LEVEL_ID]
+                                    : ''
+                            }
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
@@ -152,12 +158,14 @@ const RegulatingTerminalForm = ({
                                 if (
                                     params.inputValue !== '' &&
                                     !options.find(
-                                        (opt) => opt.id === params.inputValue
+                                        (opt) =>
+                                            opt?.[VOLTAGE_LEVEL_ID] ===
+                                            params.inputValue
                                     )
                                 ) {
                                     filtered.push({
                                         inputValue: params.inputValue,
-                                        id: params.inputValue,
+                                        [VOLTAGE_LEVEL_ID]: params.inputValue,
                                     });
                                 }
                                 return filtered;
@@ -194,12 +202,13 @@ const RegulatingTerminalForm = ({
                             disabled={!watchVoltageLevelId || disabled}
                             options={equipmentsOptions}
                             getOptionLabel={(equipment) => {
+                                console.log('option', equipment);
                                 return equipment === ''
                                     ? '' // to clear field
-                                    : (equipment?.type ??
+                                    : (equipment?.[EQUIPMENT_TYPE] ??
                                           equipmentSectionTypeDefaultValue) +
                                           ' : ' +
-                                          equipment?.id || '';
+                                          equipment?.[EQUIPMENT_ID] || '';
                             }}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
@@ -210,7 +219,7 @@ const RegulatingTerminalForm = ({
                                 if (
                                     params.inputValue !== '' &&
                                     !options.find(
-                                        (opt) => opt.id === params.inputValue
+                                        (opt) => opt?.id === params.inputValue
                                     )
                                 ) {
                                     filtered.push({

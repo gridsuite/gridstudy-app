@@ -44,7 +44,7 @@ export const TableNumericalInput = ({
             value={transformedValue}
             onChange={handleInputChange}
             {...props}
-            error={error?.message}
+            error={!!error?.message}
             type="Number"
             size={'small'}
             margin={'none'}

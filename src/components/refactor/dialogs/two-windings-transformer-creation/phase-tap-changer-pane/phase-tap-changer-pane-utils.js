@@ -183,18 +183,19 @@ export const getPhaseTapChangerEmptyFormData = (id = PHASE_TAP_CHANGER) => {
 
 export const getPhaseTapChangerFormData = (
     {
-        enabled,
-        regulationMode,
-        regulating,
-        currentLimiterRegulatingValue,
-        flowSetpointRegulatingValue,
-        targetDeadband,
-        lowTapPosition,
-        highTapPosition,
-        tapPosition,
-        steps,
+        enabled = false,
+        regulationMode = null,
+        regulating = false,
+        currentLimiterRegulatingValue = null,
+        flowSetpointRegulatingValue = null,
+        targetDeadband = null,
+        lowTapPosition = null,
+        highTapPosition = null,
+        tapPosition = null,
+        steps = [],
         voltageLevelId,
         equipmentId,
+        equipmentType,
     },
     id = PHASE_TAP_CHANGER
 ) => ({
@@ -210,8 +211,9 @@ export const getPhaseTapChangerFormData = (
         [TAP_POSITION]: tapPosition,
         [STEPS]: steps,
         ...getRegulatingTerminalFormData({
-            equipmentId: equipmentId,
-            voltageLevelId: voltageLevelId,
+            equipmentId,
+            equipmentType,
+            voltageLevelId,
         }),
     },
 });

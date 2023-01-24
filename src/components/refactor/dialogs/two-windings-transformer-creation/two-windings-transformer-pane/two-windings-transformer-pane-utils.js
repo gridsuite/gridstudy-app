@@ -71,16 +71,16 @@ export const getTwoWindingsTransformerEmptyFormData = () => {
 
 export const getTwoWindingsTransformerFormData = ({
     equipmentId,
-    equipmentName,
-    seriesResistance,
-    seriesReactance,
-    magnetizingConductance,
-    magnetizingSusceptance,
-    ratedS,
-    ratedVoltageLevel1,
-    ratedVoltageLevel2,
-    permanentLimit1,
-    permanentLimit2,
+    equipmentName = '',
+    seriesResistance = null,
+    seriesReactance = null,
+    magnetizingConductance = null,
+    magnetizingSusceptance = null,
+    ratedS = null,
+    ratedVoltageLevel1 = null,
+    ratedVoltageLevel2 = null,
+    permanentLimit1 = null,
+    permanentLimit2 = null,
 }) => {
     return {
         [EQUIPMENT_ID]: equipmentId,

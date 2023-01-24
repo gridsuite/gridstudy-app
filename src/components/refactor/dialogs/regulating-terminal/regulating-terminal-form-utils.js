@@ -8,8 +8,8 @@ export const VOLTAGE_LEVEL_NOMINAL_VOLTAGE = 'nominalVoltage';
 export const VOLTAGE_LEVEL_TOPOLOGY_KIND = 'topologyKind';
 export const EQUIPMENT = 'equipment';
 export const EQUIPMENT_TYPE = 'type';
-export const EQUIPMENT_ID = 'equipmentId';
-export const EQUIPMENT_NAME = 'equipmentName';
+export const EQUIPMENT_ID = 'id';
+export const EQUIPMENT_NAME = 'name';
 
 const regulatingTerminalValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
@@ -45,10 +45,65 @@ export const getRegulatingTerminalEmptyFormData = () => {
     return regulatingTerminalEmptyFormData();
 };
 
-export const getRegulatingTerminalFormData = ({
+export const getRegulatingTerminalVoltageLevelData = ({
     voltageLevelId,
+    voltageLevelName = '',
+    voltageLevelSubstationId = '',
+    voltageLevelNominalVoltage = '',
+    voltageLevelTopologyKind = '',
+}) => {
+    if (!voltageLevelId) {
+        return null;
+    }
+
+    return {
+        [VOLTAGE_LEVEL_ID]: voltageLevelId,
+        [VOLTAGE_LEVEL_NAME]: voltageLevelName,
+        [VOLTAGE_LEVEL_SUBSTATION_ID]: voltageLevelSubstationId,
+        [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: voltageLevelNominalVoltage,
+        [VOLTAGE_LEVEL_TOPOLOGY_KIND]: voltageLevelTopologyKind,
+    };
+};
+
+export const getRegulatingTerminalEquipmentData = ({
     equipmentId,
-}) => ({
-    [VOLTAGE_LEVEL]: voltageLevelId,
-    [EQUIPMENT]: equipmentId,
-});
+    equipmentName = '',
+    equipmentType = '',
+}) => {
+    if (!equipmentId) {
+        return null;
+    }
+
+    return {
+        [EQUIPMENT_ID]: equipmentId,
+        [EQUIPMENT_NAME]: equipmentName,
+        [EQUIPMENT_TYPE]: equipmentType,
+    };
+};
+
+export const getRegulatingTerminalFormData = ({
+    voltageLevelId = null,
+    voltageLevelName,
+    voltageLevelNominalVoltage,
+    voltageLevelSubstationId,
+    voltageLevelTopologyKind,
+    equipmentId = null,
+    equipmentName,
+    equipmentType,
+}) => {
+    console.log('TEST', equipmentId, voltageLevelId, equipmentType);
+    return {
+        [VOLTAGE_LEVEL]: getRegulatingTerminalVoltageLevelData({
+            voltageLevelId,
+            voltageLevelName,
+            voltageLevelNominalVoltage,
+            voltageLevelSubstationId,
+            voltageLevelTopologyKind,
+        }),
+        [EQUIPMENT]: getRegulatingTerminalEquipmentData({
+            equipmentId,
+            equipmentName,
+            equipmentType,
+        }),
+    };
+};

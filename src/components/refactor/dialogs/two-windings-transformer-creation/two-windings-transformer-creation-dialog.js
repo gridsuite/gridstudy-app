@@ -31,13 +31,18 @@ import RatioTapChangerPane from './ratio-tap-changer-pane/ratio-tap-changer-pane
 import PhaseTapChangerPane from './phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
+    getPhaseTapChangerFormData,
     getPhaseTapChangerValidationSchema,
     PHASE_TAP_CHANGER,
+    REGULATION_MODE,
 } from './phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import {
     getRatioTapChangerEmptyFormData,
+    getRatioTapChangerFormData,
     getRatioTapChangerValidationSchema,
+    LOAD_TAP_CHANGING_CAPABILITIES,
     RATIO_TAP_CHANGER,
+    TARGET_V,
 } from './ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import {
     getTwoWindingsTransformerEmptyFormData,
@@ -52,14 +57,20 @@ import {
     ENABLED,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    LOW_TAP_POSITION,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
     PERMANENT_LIMIT,
     RATED_S,
     RATED_VOLTAGE_1,
     RATED_VOLTAGE_2,
+    REGULATING,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
+    STEPS,
+    STEPS_TAP,
+    TAP_POSITION,
+    TARGET_DEADBAND,
 } from './two-windings-transformer-creation-dialog-utils';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
@@ -127,30 +138,29 @@ const TwoWindingsTransformerCreationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dialogWidth, setDialogWidth] = useState('sm');
 
-    // console.log(
-    //     yup
-    //         .reach(schema, `${PHASE_TAP_CHANGER}.${REGULATION_MODE}`)
-    //         .resolve({ parent: getValues(`${PHASE_TAP_CHANGER}`) })
-    // );
-
-    // const {
-    //     schema: parentSchema,
-    //     parent: testParent,
-    //     parentPath,
-    // } = getIn(
-    //     schema,
-    //     `${PHASE_TAP_CHANGER}.${STEPS}[0].${STEPS_ALPHA}`,
-    //     getValues()
-    // );
-
-    // console.log(
-    //     'SHOULD WORK',
-    //     parentSchema.resolve({ parent: testParent })
-    // );
+    const computeHighTapPosition = (steps) => {
+        const values = steps?.map((step) => step[STEPS_TAP]);
+        return Array.isArray(values) && values.length > 0
+            ? Math.max(...values)
+            : null;
+    };
 
     const fromEditDataToFormValues = useCallback(
         (twt) => {
             reset({
+                ...getTwoWindingsTransformerFormData({
+                    equipmentId: twt.equipmentId,
+                    equipmentName: twt.equipmentName,
+                    seriesResistance: twt.seriesResistance,
+                    seriesReactance: twt.seriesReactance,
+                    magnetizingConductance: twt.magnetizingConductance,
+                    magnetizingSusceptance: twt.magnetizingSusceptance,
+                    ratedVoltageLevel1: twt.ratedVoltageLevel1,
+                    ratedVoltageLevel2: twt.ratedVoltageLevel2,
+                    ratedS: twt.ratedS,
+                    permanentLimit1: twt.currentLimits1?.permanentLimit,
+                    permanentLimit2: twt.currentLimits2?.permanentLimit,
+                }),
                 ...getConnectivityFormData(
                     {
                         busbarSectionId: twt.busOrBusbarSectionId1,
@@ -171,7 +181,52 @@ const TwoWindingsTransformerCreationDialog = ({
                     },
                     CONNECTIVITY_2
                 ),
-                ...twt,
+                ...getPhaseTapChangerFormData({
+                    enabled:
+                        twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
+                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE],
+                    regulating: twt?.[PHASE_TAP_CHANGER]?.[REGULATING],
+                    currentLimiterRegulatingValue:
+                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                    flowSetpointRegulatingValue:
+                        twt?.[PHASE_TAP_CHANGER]?.regulationValue,
+                    targetDeadband: twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
+                    lowTapPosition:
+                        twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
+                    highTapPosition: computeHighTapPosition(
+                        twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                    ),
+                    tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
+                    steps: twt?.[PHASE_TAP_CHANGER]?.[STEPS],
+                    equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId,
+                    equipmentType:
+                        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalType,
+                    voltageLevelId:
+                        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
+                }),
+                ...getRatioTapChangerFormData({
+                    enabled:
+                        twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
+                    loadTapChangingCapabilities:
+                        twt?.[RATIO_TAP_CHANGER]?.[
+                            LOAD_TAP_CHANGING_CAPABILITIES
+                        ],
+                    regulating: twt?.[RATIO_TAP_CHANGER]?.[REGULATING],
+                    targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
+                    targetDeadband: twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
+                    lowTapPosition:
+                        twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION],
+                    highTapPosition: computeHighTapPosition(
+                        twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ),
+                    tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
+                    steps: twt?.[RATIO_TAP_CHANGER]?.[STEPS],
+                    equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId,
+                    equipmentType:
+                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalType,
+                    voltageLevelId:
+                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
+                }),
             });
         },
         [reset]

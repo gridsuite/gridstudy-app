@@ -9,6 +9,7 @@ import {
     EQUIPMENT_NAME,
     EQUIPMENT_TYPE,
     getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalFormData,
     getRegulatingTerminalValidationSchema,
     VOLTAGE_LEVEL,
     VOLTAGE_LEVEL_ID,
@@ -156,3 +157,38 @@ const ratioTapChangerEmptyFormData = (id) => ({
 export const getRatioTapChangerEmptyFormData = (id = RATIO_TAP_CHANGER) => {
     return ratioTapChangerEmptyFormData(id);
 };
+
+export const getRatioTapChangerFormData = (
+    {
+        enabled = false,
+        regulating = false,
+        loadTapChangingCapabilities = false,
+        targetV = null,
+        targetDeadband = null,
+        lowTapPosition = null,
+        highTapPosition = null,
+        tapPosition = null,
+        steps = [],
+        voltageLevelId,
+        equipmentId,
+        equipmentType,
+    },
+    id = RATIO_TAP_CHANGER
+) => ({
+    [id]: {
+        [ENABLED]: enabled,
+        [REGULATING]: regulating,
+        [LOAD_TAP_CHANGING_CAPABILITIES]: loadTapChangingCapabilities,
+        [TARGET_V]: targetV,
+        [TARGET_DEADBAND]: targetDeadband,
+        [LOW_TAP_POSITION]: lowTapPosition,
+        [HIGH_TAP_POSITION]: highTapPosition,
+        [TAP_POSITION]: tapPosition,
+        [STEPS]: steps,
+        ...getRegulatingTerminalFormData({
+            equipmentId,
+            voltageLevelId,
+            equipmentType,
+        }),
+    },
+});
