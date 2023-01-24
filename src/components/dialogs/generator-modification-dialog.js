@@ -119,8 +119,11 @@ const GeneratorModificationDialog = ({
     };
 
     const defaultReactiveCapabilityCurveChoice = () => {
-        if (getValueOrNull(formValues?.reactiveCapabilityCurve) === true) {
-            return 'CURVE';
+        const reactiveCapabilityChoice = getValueOrNull(
+            formValues?.reactiveCapabilityCurve
+        );
+        if (reactiveCapabilityChoice !== null) {
+            return reactiveCapabilityChoice ? 'CURVE' : 'MINMAX';
         } else if (generatorInfos?.minMaxReactiveLimits !== undefined) {
             return 'MINMAX';
         }
@@ -581,6 +584,7 @@ const GeneratorModificationDialog = ({
         }
         if (isReactiveCapabilityCurveOn) {
             inputForm.removeValidation('MinimumReactivePower');
+            inputForm.removeValidation('MaximumReactivePower');
         }
     }, [
         inputForm,
