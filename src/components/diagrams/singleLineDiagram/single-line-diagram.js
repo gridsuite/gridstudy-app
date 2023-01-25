@@ -35,7 +35,7 @@ import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import { AutoSizer } from 'react-virtualized';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
 import withEquipmentMenu from '../../menus/equipment-menu';
-import { withBranchMenu, getBranchPromise } from '../../menus/branch-menu';
+import { withBranchMenu } from '../../menus/branch-menu';
 
 import { equipments } from '../../network/network-equipments';
 import { RunningStatus } from '../../util/running-status';
@@ -666,16 +666,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     currentNode={currentNode}
+                    studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={(value) =>
                         setModificationInProgress(value)
                     }
-                    branchPromise={getBranchPromise(
-                        equipmentMenu.equipmentId,
-                        equipmentMenu.equipmentType,
-                        studyUuid,
-                        currentNode?.id
-                    )}
                 />
             )
         );

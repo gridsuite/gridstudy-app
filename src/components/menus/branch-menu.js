@@ -26,7 +26,6 @@ import {
     switchOnBranch,
     tripBranch,
 } from '../../utils/rest-api';
-import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
@@ -45,21 +44,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function getBranchPromise(branchId, branchType, studyUuid, nodeUuuid) {
-    if (
-        branchType !== equipments.twoWindingsTransformers &&
-        branchType !== equipments.lines
-    ) {
-        console.warn(
-            'getBranchPromise: ' + branchType + ' is not a branch type'
-        );
-        return null;
-    }
-    return Promise.resolve(
-        fetchBranchStatus(studyUuid, nodeUuuid, branchId, false)
-    );
-}
-
 const withBranchMenu =
     (BaseMenu) =>
     ({
@@ -69,13 +53,12 @@ const withBranchMenu =
         handleClose,
         handleViewInSpreadsheet,
         currentNode,
+        studyUuid,
         modificationInProgress,
         setModificationInProgress,
-        branchPromise,
     }) => {
         const classes = useStyles();
         const intl = useIntl();
-        const studyUuid = decodeURIComponent(useParams().studyUuid);
         const { snackError } = useSnackMessage();
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const [branch, setBranch] = useState(null);
@@ -87,13 +70,14 @@ const withBranchMenu =
         };
 
         useEffect(() => {
-            if (!branchPromise) return;
-            branchPromise.then((value) => {
-                if (value) {
-                    setBranch(value);
+            fetchBranchStatus(studyUuid, currentNode?.id, id, false).then(
+                (value) => {
+                    if (value) {
+                        setBranch(value);
+                    }
                 }
-            });
-        }, [branchPromise]);
+            );
+        }, [studyUuid, currentNode?.id, id]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -333,12 +317,9 @@ withBranchMenu.propTypes = {
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
+    studyUuid: PropTypes.string.isRequired,
     modificationInProgress: PropTypes.func,
     setModificationInProgress: PropTypes.func,
-    branchPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
 };
 
-export { getBranchPromise, withBranchMenu };
+export { withBranchMenu };
