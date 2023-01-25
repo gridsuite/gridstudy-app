@@ -64,11 +64,6 @@ export const REACTIVE_LIMIT_TYPES = [
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
 ];
 
-export const LOAD_SCALABLE_TYPES = [
-    { id: 'DELTA_P', label: 'DeltaP' },
-    { id: 'TARGET_P', label: 'TargetPText' },
-];
-
 export const ACTIVE_VARIATION_MODE = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
     { id: 'REGULAR_DISTRIBUTION', label: 'RegularDistribution' },

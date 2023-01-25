@@ -1494,18 +1494,13 @@ export function generatorScaling(
         variations,
     });
 
-    let generatorScalingUrl;
+    let generatorScalingUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
     if (modificationUuid) {
         console.info('generator scaling update', body);
         generatorScalingUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modifications/' +
-            encodeURIComponent(modificationUuid);
-    } else {
-        console.info('create generator scaling', body);
-        generatorScalingUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modifications';
+            generatorScalingUrl + '/' + encodeURIComponent(modificationUuid);
     }
 
     return backendFetch(generatorScalingUrl, {
@@ -2197,18 +2192,13 @@ export function loadScaling(
         variations,
     });
 
-    let loadScalingUrl;
+    let loadScalingUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
     if (modificationUuid) {
         console.info('load scaling update', body);
         loadScalingUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modifications/' +
-            encodeURIComponent(modificationUuid);
-    } else {
-        console.info('create load scaling', body);
-        loadScalingUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modifications';
+            loadScalingUrl + '/' + encodeURIComponent(modificationUuid);
     }
 
     return backendFetch(loadScalingUrl, {

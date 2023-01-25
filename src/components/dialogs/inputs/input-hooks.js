@@ -734,7 +734,7 @@ export const useDirectoryElements = ({
     refInitialValues.current = initialValues;
 
     useEffect(() => {
-        if (refInitialValues.current !== null) {
+        if (refInitialValues.current) {
             setValues(refInitialValues.current);
         }
     }, []);
