@@ -10,7 +10,7 @@ import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {ActivePowerAdornment, gridItem, GridSection} from './dialogUtils';
+import { ActivePowerAdornment, gridItem, GridSection } from './dialogUtils';
 import { loadScaling } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { elementType } from '@gridsuite/commons-ui';
