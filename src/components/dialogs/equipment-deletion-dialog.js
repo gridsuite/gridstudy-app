@@ -38,55 +38,42 @@ import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const equipmentTypes = {
     LINE: {
-        label: 'LINE',
         fetchers: [fetchLines],
     },
     TWO_WINDINGS_TRANSFORMER: {
-        label: 'TWO_WINDINGS_TRANSFORMER',
         fetchers: [fetchTwoWindingsTransformers],
     },
     THREE_WINDINGS_TRANSFORMER: {
-        label: 'THREE_WINDINGS_TRANSFORMER',
         fetchers: [fetchThreeWindingsTransformers],
     },
     GENERATOR: {
-        label: 'GENERATOR',
         fetchers: [fetchGenerators],
     },
     LOAD: {
-        label: 'LOAD',
         fetchers: [fetchLoads],
     },
     BATTERY: {
-        label: 'BATTERY',
         fetchers: [fetchBatteries],
     },
     DANGLING_LINE: {
-        label: 'DANGLING_LINE',
         fetchers: [fetchDanglingLines],
     },
     HVDC_LINE: {
-        label: 'HVDC_LINE',
         fetchers: [fetchHvdcLines],
     },
     HVDC_CONVERTER_STATION: {
-        label: 'HVDC_CONVERTER_STATION',
         fetchers: [fetchLccConverterStations, fetchVscConverterStations],
     },
     SHUNT_COMPENSATOR: {
-        label: 'SHUNT_COMPENSATOR',
         fetchers: [fetchShuntCompensators],
     },
     STATIC_VAR_COMPENSATOR: {
-        label: 'STATIC_VAR_COMPENSATOR',
         fetchers: [fetchStaticVarCompensators],
     },
     SUBSTATION: {
-        label: 'SUBSTATION',
         fetchers: [fetchSubstations],
     },
     VOLTAGE_LEVEL: {
-        label: 'VOLTAGE_LEVEL',
         fetchers: [fetchVoltageLevels],
     },
 };

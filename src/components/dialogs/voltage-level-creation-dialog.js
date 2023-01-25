@@ -330,7 +330,7 @@ const VoltageLevelCreationDialog = ({
 
     const [substation, substationField] = useAutocompleteField({
         id: 'optSubstation',
-        label: 'Substation',
+        label: EQUIPMENT_TYPES.SUBSTATION.type,
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,

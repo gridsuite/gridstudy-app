@@ -60,6 +60,7 @@ import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { isNodeReadOnly } from '../graph/util/model-functions';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -702,7 +703,7 @@ const NetworkTable = (props) => {
             });
 
             Promise.resolve(
-                lineEdit.equipmentType === 'load'
+                lineEdit.equipmentType === EQUIPMENT_TYPES.LOAD.type
                     ? modifyLoad(
                           props.studyUuid,
                           props.currentNode?.id,
@@ -716,7 +717,7 @@ const NetworkTable = (props) => {
                           false,
                           undefined
                       )
-                    : lineEdit.equipmentType === 'generator'
+                    : lineEdit.equipmentType === EQUIPMENT_TYPES.GENERATOR.type
                     ? modifyGenerator(
                           props.studyUuid,
                           props.currentNode?.id,

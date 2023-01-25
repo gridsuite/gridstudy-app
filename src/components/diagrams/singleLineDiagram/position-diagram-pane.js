@@ -18,7 +18,7 @@ import {
 } from '../../../utils/config-params';
 import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
-import { SvgType } from './utils';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 const PositionDiagramPane = ({
     open,
@@ -81,7 +81,7 @@ const PositionDiagramPane = ({
                     onClose={handleClose}
                     diagramTitle={voltageLevelId?.id ?? ''}
                     svgUrl={svgUrl}
-                    svgType={SvgType.VOLTAGE_LEVEL}
+                    svgType={EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
                     isComputationRunning={false}
                 />
             )}

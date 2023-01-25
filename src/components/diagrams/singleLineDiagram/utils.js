@@ -125,7 +125,7 @@ export const useSingleLineDiagram = () => {
 
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
-            openSldView(SvgType.VOLTAGE_LEVEL, voltageLevelId);
+            openSldView(EQUIPMENT_TYPES.VOLTAGE_LEVEL.type, voltageLevelId);
         },
         [openSldView]
     );
@@ -163,11 +163,6 @@ export const SubstationLayout = {
     SMART: 'smart',
     SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
     SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
-};
-
-export const SvgType = {
-    VOLTAGE_LEVEL: 'voltage-level',
-    SUBSTATION: 'substation',
 };
 
 export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };

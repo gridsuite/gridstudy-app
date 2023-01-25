@@ -15,6 +15,7 @@ import {
 } from './equipment-table-editors';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { ENERGY_SOURCES, LOAD_TYPES } from './constants';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const nominalVoltage = (network, voltageLevelId) => {
     return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
@@ -157,7 +158,7 @@ export const TABLES_DEFINITIONS = {
         index: 3,
         name: 'TwoWindingsTransformers',
         resource: equipments.twoWindingsTransformers,
-        modifiableEquipmentType: 'twoWindingsTransformer',
+        modifiableEquipmentType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
         columns: [
             {
                 id: 'ID',
@@ -310,7 +311,8 @@ export const TABLES_DEFINITIONS = {
         index: 4,
         name: 'ThreeWindingsTransformers',
         resource: equipments.threeWindingsTransformers,
-        modifiableEquipmentType: 'threeWindingsTransformer',
+        modifiableEquipmentType:
+            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
         columns: [
             {
                 id: 'ID',
@@ -597,7 +599,7 @@ export const TABLES_DEFINITIONS = {
         index: 5,
         name: 'Generators',
         resource: equipments.generators,
-        modifiableEquipmentType: 'generator',
+        modifiableEquipmentType: EQUIPMENT_TYPES.GENERATOR.type,
         columns: [
             {
                 id: 'ID',
@@ -751,7 +753,7 @@ export const TABLES_DEFINITIONS = {
         index: 6,
         name: 'Loads',
         resource: equipments.loads,
-        modifiableEquipmentType: 'load',
+        modifiableEquipmentType: EQUIPMENT_TYPES.LOAD.type,
         columns: [
             {
                 id: 'ID',

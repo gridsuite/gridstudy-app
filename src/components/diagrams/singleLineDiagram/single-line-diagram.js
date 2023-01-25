@@ -66,7 +66,6 @@ import {
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_SUBSTATION,
     MAX_WIDTH_VOLTAGE_LEVEL,
-    SvgType,
     NoSvg,
     LOADING_WIDTH,
 } from './utils';
@@ -173,7 +172,7 @@ const computePaperAndSvgSizesIfReady = (
             svgHeight = totalHeight - headerPreferredHeight - BORDERS;
         } else {
             let maxWidth, maxHeight;
-            if (svgType === SvgType.VOLTAGE_LEVEL) {
+            if (svgType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type) {
                 maxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
                 maxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
             } else {
@@ -460,11 +459,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             const minHeight = svgFinalHeight;
 
             let viewboxMaxWidth =
-                svgType === SvgType.VOLTAGE_LEVEL
+                svgType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
                     ? MAX_WIDTH_VOLTAGE_LEVEL
                     : MAX_WIDTH_SUBSTATION;
             let viewboxMaxHeight =
-                svgType === SvgType.VOLTAGE_LEVEL
+                svgType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
                     ? MAX_HEIGHT_VOLTAGE_LEVEL
                     : MAX_HEIGHT_SUBSTATION;
             let onNextVoltageCallback =
