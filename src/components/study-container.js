@@ -501,7 +501,6 @@ export function StudyContainer({ view, onChangeTab }) {
                         (node) => node.id === firstSelectedNode.id
                     ),
                 };
-                // currentNodeRef.current = ModelFirstSelectedNode;
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
                 dispatch(
                     loadNetworkModificationTreeSuccess(
