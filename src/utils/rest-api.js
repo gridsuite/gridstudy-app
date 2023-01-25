@@ -8,6 +8,7 @@ import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
 import { MODIFICATION_TYPES } from '../components/util/modifications-type';
+import { EQUIPMENT_TYPES } from '../components/util/equipment-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -776,7 +777,7 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-            equipmentType: 'SWITCH',
+            equipmentType: EQUIPMENT_TYPES.SWITCH.type,
             equipmentId: switchId,
             equipmentAttributeName: 'open',
             equipmentAttributeValue: open,

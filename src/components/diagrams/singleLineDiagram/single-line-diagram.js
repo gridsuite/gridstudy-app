@@ -71,6 +71,7 @@ import {
     LOADING_WIDTH,
 } from './utils';
 import { Paper } from '@mui/material';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 const customSldStyle = (theme) => {
     return {
@@ -113,33 +114,33 @@ const useStyles = makeStyles((theme) => ({
 
 function getEquipmentTypeFromFeederType(feederType) {
     switch (feederType) {
-        case 'LINE':
+        case EQUIPMENT_TYPES.LINE.type:
             return equipments.lines;
-        case 'LOAD':
+        case EQUIPMENT_TYPES.LOAD.type:
             return equipments.loads;
-        case 'BATTERY':
+        case EQUIPMENT_TYPES.BATTERY.type:
             return equipments.batteries;
-        case 'DANGLING_LINE':
+        case EQUIPMENT_TYPES.DANGLING_LINE.type:
             return equipments.danglingLines;
-        case 'GENERATOR':
+        case EQUIPMENT_TYPES.GENERATOR.type:
             return equipments.generators;
-        case 'VSC_CONVERTER_STATION':
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type:
             return equipments.vscConverterStations;
-        case 'LCC_CONVERTER_STATION':
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type:
             return equipments.lccConverterStations;
-        case 'HVDC_LINE':
+        case EQUIPMENT_TYPES.HVDC_LINE.type:
             return equipments.hvdcLines;
-        case 'CAPACITOR':
-        case 'INDUCTOR':
+        case EQUIPMENT_TYPES.CAPACITOR.type:
+        case EQUIPMENT_TYPES.INDUCTOR.tpe:
             return equipments.shuntCompensators;
-        case 'STATIC_VAR_COMPENSATOR':
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type:
             return equipments.staticVarCompensators;
-        case 'TWO_WINDINGS_TRANSFORMER':
-        case 'TWO_WINDINGS_TRANSFORMER_LEG':
-        case 'PHASE_SHIFT_TRANSFORMER':
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER_LEG.type:
+        case EQUIPMENT_TYPES.PHASE_SHIFT_TRANSFORMER.type:
             return equipments.twoWindingsTransformers;
-        case 'THREE_WINDINGS_TRANSFORMER':
-        case 'THREE_WINDINGS_TRANSFORMER_LEG':
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type:
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER_LEG.type:
             return equipments.threeWindingsTransformers;
         default: {
             console.log('bad feeder type ', feederType);

@@ -50,4 +50,22 @@ export const EQUIPMENT_TYPES = {
     VSC_CONVERTER_STATION: {
         type: 'VSC_CONVERTER_STATION',
     },
+    LCC_CONVERTER_STATION: {
+        type: 'LCC_CONVERTER_STATION',
+    },
+    CAPACITOR: {
+        type: 'CAPACITOR',
+    },
+    INDUCTOR: {
+        type: 'INDUCTOR',
+    },
+    TWO_WINDINGS_TRANSFORMER_LEG: {
+        type: 'TWO_WINDINGS_TRANSFORMER_LEG',
+    },
+    PHASE_SHIFT_TRANSFORMER: {
+        type: 'PHASE_SHIFT_TRANSFORMER',
+    },
+    THREE_WINDINGS_TRANSFORMER_LEG: {
+        type: 'THREE_WINDINGS_TRANSFORMER_LEG',
+    },
 };

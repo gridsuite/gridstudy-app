@@ -598,7 +598,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     displayNetworkLoadingFailMessage,
                     dispatch,
                     {
-                        equipments: [EQUIPMENT_TYPES.LINE.type, EQUIPMENT_TYPES.SUBSTATION.type],
+                        equipments: [
+                            EQUIPMENT_TYPES.LINE.type,
+                            EQUIPMENT_TYPES.SUBSTATION.type,
+                        ],
                     }
                 );
             } else {

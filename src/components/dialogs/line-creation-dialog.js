@@ -31,6 +31,7 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useConnectivityValue } from './connectivity-edition';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../network/constants';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -413,7 +414,7 @@ const LineCreationDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'LINE'}
+                equipmentType={EQUIPMENT_TYPES.LINE.type}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />

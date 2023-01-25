@@ -34,6 +34,7 @@ import { createLoad } from '../../utils/rest-api';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useConnectivityValue } from './connectivity-edition';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 /**
  * Dialog to create a load in the network
@@ -215,7 +216,7 @@ const LoadCreationDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'LOAD'}
+                equipmentType={EQUIPMENT_TYPES.LOAD.type}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />

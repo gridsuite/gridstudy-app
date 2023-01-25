@@ -8,6 +8,7 @@
 import { mapEquipmentsCreated } from '../../redux/actions';
 import { fetchMapEquipments } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
@@ -228,11 +229,11 @@ export default class MapEquipments {
 
     removeEquipment(equipmentType, equipmentId) {
         switch (equipmentType) {
-            case 'LINE':
+            case EQUIPMENT_TYPES.LINE.type:
                 this.lines = this.lines.filter((l) => l.id !== equipmentId);
                 this.linesById.delete(equipmentId);
                 break;
-            case 'VOLTAGE_LEVEL':
+            case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
                 const substationId =
                     this.voltageLevelsById.get(equipmentId).substationId;
                 let voltageLevelsOfSubstation =
@@ -247,14 +248,17 @@ export default class MapEquipments {
                 //New reference on substations to trigger reload of NetworkExplorer and NetworkMap
                 this.substations = [...this.substations];
                 break;
-            case 'SUBSTATION':
+            case EQUIPMENT_TYPES.SUBSTATION.type:
                 this.substations = this.substations.filter(
                     (l) => l.id !== equipmentId
                 );
 
                 const substation = this.substationsById.get(equipmentId);
                 substation.voltageLevels.map((vl) =>
-                    this.removeEquipment('VOLTAGE_LEVEL', vl.id)
+                    this.removeEquipment(
+                        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                        vl.id
+                    )
                 );
                 this.completeSubstationsInfos([...substation]);
                 break;

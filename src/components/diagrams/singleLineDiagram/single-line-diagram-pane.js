@@ -276,7 +276,8 @@ export function SingleLineDiagramPane({
     const handleOpenView = useCallback(
         (id, type = SvgType.VOLTAGE_LEVEL) => {
             if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
-            else if (type === EQUIPMENT_TYPES.SUBSTATION.type) openSubstation(id);
+            else if (type === EQUIPMENT_TYPES.SUBSTATION.type)
+                openSubstation(id);
         },
         [openSubstation, openVoltageLevel]
     );

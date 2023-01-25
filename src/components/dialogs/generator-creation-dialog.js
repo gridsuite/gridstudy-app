@@ -51,6 +51,7 @@ import {
     REGULATING_EQUIPMENT,
     REGULATING_VOLTAGE_LEVEL,
 } from './regulating-terminal-edition';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -682,7 +683,7 @@ const GeneratorCreationDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'GENERATOR'}
+                equipmentType={EQUIPMENT_TYPES.GENERATOR.type}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />
