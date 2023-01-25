@@ -636,7 +636,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        if (isIncrementalBuild()) {
+        if (isIncrementalBuild(network, previousCurrentNode, currentNode)) {
             return;
         }
         loadNetwork(true);
