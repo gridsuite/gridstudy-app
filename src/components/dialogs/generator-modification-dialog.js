@@ -734,11 +734,11 @@ const GeneratorModificationDialog = ({
             isVoltageRegulationOn && isDistantRegulation ? qPercent : null,
             plannedActivePowerSetPoint ?? null,
             startupCost ?? null,
-            marginalCost ? marginalCost : null,
+            marginalCost ?? null,
             plannedOutageRate ?? null,
             forcedOutageRate ?? null,
-            transientReactance ? transientReactance : null,
-            transformerReactance ? transformerReactance : null,
+            transientReactance ?? null,
+            transformerReactance ?? null,
             voltageRegulationType,
             isVoltageRegulationOn && isDistantRegulation
                 ? regulatingTerminal?.equipmentSection?.id
