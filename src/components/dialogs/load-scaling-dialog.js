@@ -10,7 +10,7 @@ import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { gridItem, GridSection } from './dialogUtils';
+import {ActivePowerAdornment, gridItem, GridSection} from './dialogUtils';
 import { loadScaling } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { elementType } from '@gridsuite/commons-ui';
@@ -52,6 +52,7 @@ export const useStyles = makeStyles((theme) => ({
     chipElement: {
         margin: 3,
         maxWidth: 200,
+        textOverflow: 'ellipsis',
     },
     padding: {
         padding: '10px',
@@ -110,6 +111,7 @@ const VariationSection = ({
         },
         defaultValue: defaultValue?.variationValue,
         inputForm: inputForm,
+        adornment: ActivePowerAdornment,
         errorMsg: errors?.variationValueError,
     });
 
