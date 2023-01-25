@@ -35,7 +35,7 @@ import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import { AutoSizer } from 'react-virtualized';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
 import withEquipmentMenu from '../../menus/equipment-menu';
-import withBranchMenu from '../../menus/branch-menu';
+import { withBranchMenu, getBranchPromise } from '../../menus/branch-menu';
 
 import { equipments } from '../../network/network-equipments';
 import { RunningStatus } from '../../util/running-status';
@@ -71,6 +71,7 @@ import {
     LOADING_WIDTH,
 } from './utils';
 import { Paper } from '@mui/material';
+import { useParams } from 'react-router-dom';
 
 const customSldStyle = (theme) => {
     return {
@@ -234,6 +235,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState();
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
+
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
 
@@ -667,6 +670,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     setModificationInProgress={(value) =>
                         setModificationInProgress(value)
                     }
+                    branchPromise={getBranchPromise(
+                        equipmentMenu.equipmentId,
+                        equipmentMenu.equipmentType,
+                        studyUuid,
+                        currentNode?.id
+                    )}
                 />
             )
         );

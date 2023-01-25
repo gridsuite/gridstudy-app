@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -19,9 +19,9 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
 import {
     energiseBranchEnd,
+    fetchBranchStatus,
     lockoutBranch,
     switchOnBranch,
     tripBranch,
@@ -32,7 +32,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
-import { useNameOrId } from '../util/equipmentInfosHandler';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -46,6 +45,21 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function getBranchPromise(branchId, branchType, studyUuid, nodeUuuid) {
+    if (
+        branchType !== equipments.twoWindingsTransformers &&
+        branchType !== equipments.lines
+    ) {
+        console.warn(
+            'getBranchPromise: ' + branchType + ' is not a branch type'
+        );
+        return null;
+    }
+    return Promise.resolve(
+        fetchBranchStatus(studyUuid, nodeUuuid, branchId, false)
+    );
+}
+
 const withBranchMenu =
     (BaseMenu) =>
     ({
@@ -57,25 +71,29 @@ const withBranchMenu =
         currentNode,
         modificationInProgress,
         setModificationInProgress,
+        branchPromise,
     }) => {
         const classes = useStyles();
         const intl = useIntl();
         const studyUuid = decodeURIComponent(useParams().studyUuid);
         const { snackError } = useSnackMessage();
-        const network = useSelector((state) => state.network);
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
-        const { getNameOrId } = useNameOrId();
-
-        const branch =
-            equipmentType === equipments.twoWindingsTransformers
-                ? network.getTwoWindingsTransformer(id)
-                : network.getLine(id);
+        const [branch, setBranch] = useState(null);
 
         const getTranslationKey = (key) => {
             return key.concat(
                 equipmentType === equipments.lines ? 'Line' : '2WTransformer'
             );
         };
+
+        useEffect(() => {
+            if (!branchPromise) return;
+            branchPromise.then((value) => {
+                if (value) {
+                    setBranch(value);
+                }
+            });
+        }, [branchPromise]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -88,16 +106,6 @@ const withBranchMenu =
                 );
             },
             [branch, currentNode, isAnyNodeBuilding, modificationInProgress]
-        );
-
-        const getVoltageLevelLabel = useCallback(
-            (voltageLevelId) => {
-                return getNameOrId({
-                    name: network.getVoltageLevel(voltageLevelId)?.name,
-                    id: voltageLevelId,
-                });
-            },
-            [network, getNameOrId]
         );
 
         function handleError(error, translationKey) {
@@ -245,9 +253,8 @@ const withBranchMenu =
                                             ),
                                         },
                                         {
-                                            substation: getVoltageLevelLabel(
-                                                branch.voltageLevelId1
-                                            ),
+                                            substation:
+                                                branch?.voltageLevel1Name,
                                         }
                                     )}
                                 </Typography>
@@ -280,9 +287,8 @@ const withBranchMenu =
                                             ),
                                         },
                                         {
-                                            substation: getVoltageLevelLabel(
-                                                branch.voltageLevelId2
-                                            ),
+                                            substation:
+                                                branch?.voltageLevel2Name,
                                         }
                                     )}
                                 </Typography>
@@ -329,6 +335,10 @@ withBranchMenu.propTypes = {
     currentNode: PropTypes.object,
     modificationInProgress: PropTypes.func,
     setModificationInProgress: PropTypes.func,
+    branchPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
 };
 
-export default withBranchMenu;
+export { getBranchPromise, withBranchMenu };
