@@ -635,11 +635,10 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        // A modification has been done to the currentNode and this one has been built incrementally. No need to load the network.
+        // A modification has been added to the currentNode and this one has been built incrementally. No need to load the network.
         if (
             isSameNode(previousCurrentNode, currentNode) &&
-            isNodeBuilt(previousCurrentNode) &&
-            isNodeBuilt(currentNode)
+            isNodeBuilt(previousCurrentNode)
         ) {
             return;
         }
