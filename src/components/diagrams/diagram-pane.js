@@ -468,13 +468,14 @@ export function DiagramPane({
 
     const [computedHeight, setComputedHeight] = useState();
 
+    // Here the goal is to remove from this list of heights every diagram height that correspond to a minimized diagram
     useEffect(() => {
         let displayedDiagramHeights_ =
             displayedDiagramHeightsRef.current?.filter((displayedHeight) =>
                 views
                     .filter((sld) => sld.state !== ViewState.MINIMIZED)
-                    .map((sld) => sld.id)
-                    .includes(displayedHeight.id)
+                    .map((sld) => sld.svgType + sld.id)
+                    .includes(displayedHeight.svgType + displayedHeight.id)
             );
 
         setDisplayedDiagramHeights(displayedDiagramHeights_);
