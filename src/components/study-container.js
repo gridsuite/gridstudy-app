@@ -47,9 +47,9 @@ import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
     getFirstNodeOfType,
-    isIncrementalBuild,
     isNodeBuilt,
     isNodeRenamed,
+    isSameNode,
 } from './graph/util/model-functions';
 import {
     getSecurityAnalysisRunningStatus,
@@ -635,7 +635,12 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        if (isIncrementalBuild(previousCurrentNode, currentNode)) {
+        // A modification has been done to the currentNode and this one has been built incrementally. No need to load the network.
+        if (
+            isSameNode(previousCurrentNode, currentNode) &&
+            isNodeBuilt(previousCurrentNode) &&
+            isNodeBuilt(currentNode)
+        ) {
             return;
         }
         loadNetwork(true);
