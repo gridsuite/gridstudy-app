@@ -16,6 +16,7 @@ import {
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { syncSldStateWithSessionStorage } from '../../../redux/session-storage';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 export const LOADING_WIDTH = 150;
 export const MAX_WIDTH_VOLTAGE_LEVEL = 800;

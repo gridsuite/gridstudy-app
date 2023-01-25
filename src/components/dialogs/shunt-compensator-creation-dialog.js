@@ -31,6 +31,7 @@ import { useBooleanValue } from './inputs/boolean';
 import { useConnectivityValue } from './connectivity-edition';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../network/constants';
 import { Box } from '@mui/material';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const disabledChecked = { disabled: true };
 
@@ -229,7 +230,7 @@ const ShuntCompensatorCreationDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'SHUNT_COMPENSATOR'}
+                equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />
