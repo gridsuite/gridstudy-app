@@ -861,8 +861,6 @@ export const useDirectoryElements = ({
         titleId,
         itemFilter,
         elementClassName,
-        errorMsg,
-        itemFilter,
         handleDelete,
     ]);
     return [values, field];

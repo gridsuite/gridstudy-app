@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom';
 import ModificationDialog from './modificationDialog';
 import { useBooleanValue } from './inputs/boolean';
 import Grid from '@mui/material/Grid';
-import { gridItem, GridSection } from './dialogUtils';
+import { ActivePowerAdornment, gridItem, GridSection } from './dialogUtils';
 import { EquipmentType } from './sensi/sensi-parameters-selector';
 import { VARIATION_MODE, VARIATION_TYPE } from '../network/constants';
 import { useExpandableValues } from './inputs/use-expandable-values';
@@ -39,6 +39,7 @@ export const useStyles = makeStyles((theme) => ({
     chipElement: {
         margin: 3,
         maxWidth: 200,
+        textOverflow: "ellipsis"
     },
     padding: {
         padding: '15px',
@@ -108,6 +109,7 @@ const GeneratorScalingVariation = ({
             isFieldRequired: true,
         },
         inputForm: inputForm,
+        adornment: ActivePowerAdornment,
         defaultValue: defaultValue.variationValue ?? '',
         errorMsg: errors?.variationValueError,
     });
