@@ -46,9 +46,11 @@ import WaitingLoader from './util/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
+    becameBuilt,
     getFirstNodeOfType,
     isNodeBuilt,
     isNodeRenamed,
+    isSameNode,
 } from './graph/util/model-functions';
 import {
     getSecurityAnalysisRunningStatus,
@@ -627,13 +629,6 @@ export function StudyContainer({ view, onChangeTab }) {
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
 
-    function currentNodeChandedOrBecameBuilt(previousCurrentNode, currentNode) {
-        return (
-            previousCurrentNode?.id !== currentNode?.id ||
-            (!isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode))
-        );
-    }
-
     //handles map automatic mode network reload
     useEffect(() => {
         if (!wsConnected) return;
@@ -642,10 +637,10 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-
         if (
             network &&
-            !currentNodeChandedOrBecameBuilt(previousCurrentNode, currentNode)
+            isSameNode(previousCurrentNode, currentNode) &&
+            !becameBuilt(previousCurrentNode, currentNode)
         ) {
             return;
         }

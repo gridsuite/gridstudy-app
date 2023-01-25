@@ -87,6 +87,10 @@ export function isNodeRenamed(node1, node2) {
     );
 }
 
+export function becameBuilt(previousCurrentNode, currentNode) {
+    return !isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode);
+}
+
 export function isNodeInNotificationList(node, notificationIdList) {
     if (!node || !notificationIdList) return false;
     return notificationIdList.includes(node.id);
