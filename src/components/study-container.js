@@ -46,11 +46,10 @@ import WaitingLoader from './util/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
-    becameBuilt,
     getFirstNodeOfType,
+    isIncrementalBuild,
     isNodeBuilt,
     isNodeRenamed,
-    isSameNode,
 } from './graph/util/model-functions';
 import {
     getSecurityAnalysisRunningStatus,
@@ -637,11 +636,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        if (
-            network &&
-            isSameNode(previousCurrentNode, currentNode) &&
-            !becameBuilt(previousCurrentNode, currentNode)
-        ) {
+        if (isIncrementalBuild()) {
             return;
         }
         loadNetwork(true);
