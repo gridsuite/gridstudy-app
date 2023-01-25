@@ -713,7 +713,6 @@ const Diagram = forwardRef((props, ref) => {
             square={true}
             className={classes.paperBorders}
             style={{
-                flewGrow: 0, // needed to allows a separator in the parent pane to take all the available pane space
                 pointerEvents: 'auto',
                 width: sizeWidth,
                 minWidth: LOADING_WIDTH,
