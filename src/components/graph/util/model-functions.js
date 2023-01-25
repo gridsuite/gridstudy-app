@@ -92,9 +92,11 @@ export function becameBuilt(previousCurrentNode, currentNode) {
 }
 
 export function isIncrementalBuild(network, previousCurrentNode, currentNode) {
-    return network &&
+    return (
+        network &&
         isSameNode(previousCurrentNode, currentNode) &&
-        !becameBuilt(previousCurrentNode, currentNode);
+        !becameBuilt(previousCurrentNode, currentNode)
+    );
 }
 
 export function isNodeInNotificationList(node, notificationIdList) {
