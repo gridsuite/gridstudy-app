@@ -501,7 +501,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         (node) => node.id === firstSelectedNode.id
                     ),
                 };
-                currentNodeRef.current = ModelFirstSelectedNode;
+                // currentNodeRef.current = ModelFirstSelectedNode;
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
                 dispatch(
                     loadNetworkModificationTreeSuccess(
@@ -636,11 +636,11 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
-        if (isIncrementalBuild(network, previousCurrentNode, currentNode)) {
+        if (isIncrementalBuild(previousCurrentNode, currentNode)) {
             return;
         }
         loadNetwork(true);
-    }, [loadNetwork, currentNode, network, wsConnected]);
+    }, [loadNetwork, currentNode, wsConnected]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {

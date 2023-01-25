@@ -91,9 +91,8 @@ export function becameBuilt(previousCurrentNode, currentNode) {
     return !isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode);
 }
 
-export function isIncrementalBuild(network, previousCurrentNode, currentNode) {
+export function isIncrementalBuild(previousCurrentNode, currentNode) {
     return (
-        network &&
         isSameNode(previousCurrentNode, currentNode) &&
         !becameBuilt(previousCurrentNode, currentNode)
     );
