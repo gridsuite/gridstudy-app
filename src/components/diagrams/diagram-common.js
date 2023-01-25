@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import {
     closeDiagram,
     closeDiagrams,
@@ -14,7 +14,6 @@ import {
     openDiagram,
     togglePinDiagram,
 } from '../../redux/actions';
-import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
 import {
     INVALID_LOADFLOW_OPACITY,
     NAD_INVALID_LOADFLOW_OPACITY,
@@ -203,12 +202,6 @@ export function getEquipmentTypeFromFeederType(feederType) {
 
 export const useDiagram = () => {
     const dispatch = useDispatch();
-    const diagramStates = useSelector((state) => state.diagramStates);
-    const studyUuid = useSelector((state) => state.studyUuid);
-
-    useEffect(() => {
-        syncDiagramStateWithSessionStorage(diagramStates, studyUuid);
-    }, [diagramStates, studyUuid]);
 
     const openDiagramView = useCallback(
         (id, type) => {

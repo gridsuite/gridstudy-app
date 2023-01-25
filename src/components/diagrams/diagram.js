@@ -231,19 +231,33 @@ const Diagram = forwardRef((props, ref) => {
     const [svgFinalWidth, setSvgFinalWidth] = useState();
     const [svgFinalHeight, setSvgFinalHeight] = useState();
 
+    // Here, the goal is to update the parent's list of heights with the newly computed height of this diagram.
     const setDisplayedDiagramHeights = props.setDisplayedDiagramHeights;
     useEffect(() => {
         if (finalPaperHeight) {
             setDisplayedDiagramHeights((displayedDiagramHeights) => {
                 return [
                     ...displayedDiagramHeights.filter(
-                        (diagram) => diagram.id !== props.diagramId
+                        // We remove any old diagram that matches the current diagram...
+                        (diagram) =>
+                            diagram.id !== props.diagramId ||
+                            diagram.svgType !== props.svgType
                     ),
-                    { id: props.diagramId, initialHeight: finalPaperHeight },
+                    {
+                        // ...and then insert the current diagram's height
+                        id: props.diagramId,
+                        svgType: props.svgType,
+                        initialHeight: finalPaperHeight,
+                    },
                 ];
             });
         }
-    }, [finalPaperHeight, setDisplayedDiagramHeights, props.diagramId]);
+    }, [
+        finalPaperHeight,
+        setDisplayedDiagramHeights,
+        props.diagramId,
+        props.svgType,
+    ]);
 
     // After getting the SVG, we will calculate the diagram's ideal size
     useLayoutEffect(() => {
@@ -698,18 +712,24 @@ const Diagram = forwardRef((props, ref) => {
     const contentRender = () => {
         return (
             <Paper
-                ref={ref}
                 elevation={4}
                 square={true}
                 className={classes.paperBorders}
                 style={{
-                    flewGrow: 0, // allows a separator to take all the available space
+                    flewGrow: 0, // needed to allows a separator in the parent pane to take all the available pane space
                     pointerEvents: 'auto',
                     width: '100%',
                     minWidth: LOADING_WIDTH,
                     height: '100%',
                     position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
                     overflow: 'hidden',
+                    // We hide this diagram if another diagram is in fullscreen mode.
+                    display:
+                        !fullScreenDiagram?.id ||
+                        (props.diagramId === fullScreenDiagram.id &&
+                            props.svgType === fullScreenDiagram.svgType)
+                            ? ''
+                            : 'none',
                 }}
             >
                 <Box>
