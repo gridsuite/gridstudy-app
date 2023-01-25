@@ -8,15 +8,15 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import Plot from 'react-plotly.js';
 import { baseColors, defaultLayout } from './plot-config';
-import { eventCenter, PlotEvents } from './plot-events';
+import { PlotEvents } from './plot-events';
 
 const PlotlySeriesChart = ({
     id,
-    groupId,
-    index,
     leftSeries,
     rightSeries,
     sync,
+    onSyncEvent,
+    syncEvent,
 }) => {
     const [layout, setLayout] = useState(
         JSON.parse(JSON.stringify(defaultLayout)) // deep clone can be done by lodash
@@ -69,22 +69,19 @@ const PlotlySeriesChart = ({
 
     const handleOnRelayout = useCallback(
         (eventData) => {
-            // propagate data to parent
-            if (sync) {
-                eventCenter.emit(
-                    PlotEvents.ON_RELAYOUT,
-                    groupId,
-                    id,
-                    eventData
-                );
-            }
+            // propagate sync data to parent
+            onSyncEvent({
+                senderId: id,
+                eventType: PlotEvents.ON_RELAYOUT,
+                eventData: eventData,
+            });
         },
-        [sync, groupId, id]
+        [id, onSyncEvent]
     );
 
     useEffect(() => {
-        const syncOnRelayout = (channelId, senderId, eventData) => {
-            if (channelId === groupId && senderId !== id && eventData) {
+        const syncOnRelayout = (senderId, eventData) => {
+            if (senderId !== id && eventData) {
                 // exit when no change on x
                 if (
                     !eventData['xaxis.range[0]'] ||
@@ -116,16 +113,10 @@ const PlotlySeriesChart = ({
             }
         };
 
-        if (sync) {
-            eventCenter.addListener(PlotEvents.ON_RELAYOUT, syncOnRelayout);
-        } else {
-            eventCenter.removeListener(PlotEvents.ON_RELAYOUT, syncOnRelayout);
+        if (sync && syncEvent.eventType === PlotEvents.ON_RELAYOUT) {
+            syncOnRelayout(syncEvent.senderId, syncEvent.eventData);
         }
-
-        return () => {
-            eventCenter.removeListener(PlotEvents.ON_RELAYOUT, syncOnRelayout);
-        };
-    }, [sync, groupId, id]);
+    }, [sync, id, syncEvent]);
 
     const handleOnInitialized = (figure) => {
         setLayout(figure.layout);
