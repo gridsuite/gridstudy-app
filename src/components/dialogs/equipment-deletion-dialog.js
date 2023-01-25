@@ -34,6 +34,7 @@ import { useInputForm } from './inputs/input-hooks';
 import { compareById, filledTextField, getIdOrSelf } from './dialogUtils';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import ModificationDialog from './modificationDialog';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const equipmentTypes = {
     LINE: {
@@ -90,7 +91,7 @@ const equipmentTypes = {
     },
 };
 
-const defaultEquipmentType = equipmentTypes.LINE;
+const defaultEquipmentType = EQUIPMENT_TYPES.LINE.type;
 
 /**
  * Dialog to delete an equipment in the network

@@ -6,7 +6,6 @@
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    EQUIPMENT_TYPE,
     equipmentStyles,
     LIGHT_THEME,
     logout,
@@ -58,6 +57,7 @@ import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './util/search-matching-equipments';
+import { EQUIPMENT_TYPES } from './util/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -91,7 +91,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
     const enterOnSubstationCB = useCallback(
         (e, element) => {
             const substationId =
-                element.type === EQUIPMENT_TYPE.SUBSTATION.name
+                element.type === EQUIPMENT_TYPES.SUBSTATION.type
                     ? element.id
                     : network.getVoltageLevel(element.id).substationId;
             dispatch(centerOnSubstation(substationId));
@@ -115,12 +115,12 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 
     if (
-        element.type === EQUIPMENT_TYPE.SUBSTATION.name ||
-        element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
+        element.type === EQUIPMENT_TYPES.SUBSTATION.type ||
+        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
     )
         return (
             <>
-                {element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name && (
+                {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type && (
                     <IconButton
                         onClick={(e) => openNetworkAreaDiagramCB(e, element)}
                         size={'small'}
@@ -231,7 +231,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
-            if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
+            if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION.type) {
                 showSubstation(optionInfos.id);
             } else {
                 showVoltageLevel(optionInfos.voltageLevelId);

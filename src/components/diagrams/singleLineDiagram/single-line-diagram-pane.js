@@ -33,6 +33,7 @@ import { SvgType, useSingleLineDiagram, ViewState } from './utils';
 import { AutoSizer } from 'react-virtualized';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
 import { useNameOrId } from '../../util/equipmentInfosHandler';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -117,7 +118,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     ref: React.createRef(),
                     state,
                     name: label,
-                    type: SvgType.SUBSTATION,
+                    type: EQUIPMENT_TYPES.SUBSTATION.type,
                     svgUrl,
                 };
             }
@@ -147,7 +148,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
             if (!network) return;
             if (view.type === SvgType.VOLTAGE_LEVEL)
                 return createVoltageLevelSLD(view.id, view.state);
-            else if (view.type === SvgType.SUBSTATION)
+            else if (view.type === EQUIPMENT_TYPES.SUBSTATION.type)
                 return createSubstationSLD(view.id, view.state);
         },
         [
@@ -275,7 +276,7 @@ export function SingleLineDiagramPane({
     const handleOpenView = useCallback(
         (id, type = SvgType.VOLTAGE_LEVEL) => {
             if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
-            else if (type === SvgType.SUBSTATION) openSubstation(id);
+            else if (type === EQUIPMENT_TYPES.SUBSTATION.type) openSubstation(id);
         },
         [openSubstation, openVoltageLevel]
     );

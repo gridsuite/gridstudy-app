@@ -31,6 +31,7 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { useExpandableValues } from './inputs/use-expandable-values';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const numericalWithButton = {
     type: 'number',
@@ -433,7 +434,7 @@ const VoltageLevelCreationDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'VOLTAGE_LEVEL'}
+                equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />

@@ -41,6 +41,7 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { MODIFICATION_TYPES } from '../util/modifications-type';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 /**
  * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.
@@ -466,7 +467,7 @@ const LineSplitWithVoltageLevelDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'VOLTAGE_LEVEL'}
+                equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />

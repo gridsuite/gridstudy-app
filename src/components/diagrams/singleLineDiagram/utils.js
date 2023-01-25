@@ -131,7 +131,7 @@ export const useSingleLineDiagram = () => {
 
     const showSubstationDiagram = useCallback(
         (substationId) => {
-            openSldView(SvgType.SUBSTATION, substationId);
+            openSldView(EQUIPMENT_TYPES.SUBSTATION.type, substationId);
         },
         [openSldView]
     );

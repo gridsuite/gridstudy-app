@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { createTwoWindingsTransformer } from '../../../utils/rest-api';
 import {
     useDoubleValue,
@@ -44,6 +44,7 @@ import {
 import { useBooleanValue } from '../inputs/boolean';
 import clsx from 'clsx';
 import makeStyles from '@mui/styles/makeStyles';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
@@ -348,7 +349,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 formValues?.ratioTapChanger?.regulatingTerminalVlId ?? '',
             equipmentSectionTypeDefaultValue:
                 formValues?.ratioTapChanger?.regulatingTerminalType ??
-                EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name,
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
             equipmentSectionIdDefaultValue:
                 formValues?.ratioTapChanger?.regulatingTerminalId ?? '',
         });
@@ -504,7 +505,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 formValues?.phaseTapChanger?.regulatingTerminalVlId ?? '',
             equipmentSectionTypeDefaultValue:
                 formValues?.phaseTapChanger?.regulatingTerminalType ??
-                EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name,
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
             equipmentSectionIdDefaultValue:
                 formValues?.phaseTapChanger?.regulatingTerminalId ?? '',
         });
@@ -908,7 +909,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ratioTapRegulatingTerminal?.equipmentSection?.type ??
                     (twoWindingsTransformerId ===
                     ratioTapRegulatingTerminal?.equipmentSection?.id
-                        ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
+                        ? EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
                         : undefined),
                 regulatingTerminalVlId:
                     ratioTapRegulatingTerminal?.voltageLevel?.id,
@@ -948,7 +949,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     phaseTapRegulatingTerminal?.equipmentSection?.type ??
                     (twoWindingsTransformerId ===
                     phaseTapRegulatingTerminal?.equipmentSection?.id
-                        ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
+                        ? EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
                         : undefined),
                 regulatingTerminalVlId:
                     phaseTapRegulatingTerminal?.voltageLevel?.id,
@@ -1172,7 +1173,7 @@ const TwoWindingsTransformerCreationDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name}
+                equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />
