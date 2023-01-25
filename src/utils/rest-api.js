@@ -2497,15 +2497,16 @@ export function getSensiDefaultResultsThreshold() {
     });
 }
 
-export function fetchMapEquipment(
+function fetchMapEquipment(
     studyUuid,
     currentNodeUuid,
     substationsIds,
     equipmentType,
+    equipmentPath,
     inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching map substations data of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching map ' + ${equipmentType} + ' data of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
     let urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
@@ -2517,19 +2518,11 @@ export function fetchMapEquipment(
 
     const substationParams = getQueryParamsList(substationsIds, 'substationId');
 
-    let fetchEquipmentsUrl;
-    if (equipmentType === 'substations') {
-        fetchEquipmentsUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-map/map-substations';
-    } else if (equipmentType === 'lines') {
-        fetchEquipmentsUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-map/map-lines';
-    } else {
-        console.error('unexpected equipmentType request');
-        return;
-    }
+    let fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/' +
+        equipmentPath;
+
     if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
         fetchEquipmentsUrl += '?';
         fetchEquipmentsUrl += urlSearchParams.toString();
@@ -2557,4 +2550,36 @@ export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
         elementTypes.join('&elementTypes=');
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function fetchMapSubstations(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchMapEquipment(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'substations',
+        'map-substations',
+        inUpstreamBuiltParentNode
+    );
+}
+
+export function fetchMapLines(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchMapEquipment(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'lines',
+        'map-lines',
+        inUpstreamBuiltParentNode
+    );
 }

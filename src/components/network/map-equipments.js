@@ -6,7 +6,7 @@
  */
 
 import { mapEquipmentsCreated } from '../../redux/actions';
-import { fetchMapEquipment } from '../../utils/rest-api';
+import { fetchMapLines, fetchMapSubstations } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 
 const elementIdIndexer = (map, element) => {
@@ -32,13 +32,7 @@ export default class MapEquipments {
     intlRef = undefined;
 
     initEquipments(studyUuid, currentNodeUuid) {
-        fetchMapEquipment(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            'substations',
-            false
-        )
+        fetchMapSubstations(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.substations = val;
                 this.completeSubstationsInfos();
@@ -56,7 +50,7 @@ export default class MapEquipments {
                     );
                 }
             });
-        fetchMapEquipment(studyUuid, currentNodeUuid, undefined, 'lines', false)
+        fetchMapLines(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.lines = val;
                 this.completeLinesInfos();
@@ -98,17 +92,15 @@ export default class MapEquipments {
         substationsIds,
         handleUpdatedLines
     ) {
-        const updatedSubstations = fetchMapEquipment(
+        const updatedSubstations = fetchMapSubstations(
             studyUuid,
             currentNode?.id,
-            substationsIds,
-            'substations'
+            substationsIds
         );
-        const updatedLines = fetchMapEquipment(
+        const updatedLines = fetchMapLines(
             studyUuid,
             currentNode?.id,
-            substationsIds,
-            'lines'
+            substationsIds
         );
         const isFullReload = substationsIds ? false : true;
 
