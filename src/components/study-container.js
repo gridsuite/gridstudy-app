@@ -627,6 +627,13 @@ export function StudyContainer({ view, onChangeTab }) {
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
 
+    function currentNodeChandedOrBecameBuilt(previousCurrentNode, currentNode) {
+        return (
+            previousCurrentNode?.id !== currentNode?.id ||
+            (!isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode))
+        );
+    }
+
     //handles map automatic mode network reload
     useEffect(() => {
         if (!wsConnected) return;
@@ -635,13 +642,14 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
+
         if (
-            !network ||
-            previousCurrentNode?.id !== currentNode?.id ||
-            (!isNodeBuilt(previousCurrentNode) && isNodeBuilt(currentNode))
+            network &&
+            !currentNodeChandedOrBecameBuilt(previousCurrentNode, currentNode)
         ) {
-            loadNetwork(true);
+            return;
         }
+        loadNetwork(true);
     }, [loadNetwork, currentNode, network, wsConnected]);
 
     useEffect(() => {
