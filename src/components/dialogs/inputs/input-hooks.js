@@ -721,7 +721,7 @@ export const useDirectoryElements = ({
     elementClassName,
     itemFilter = undefined,
     errorMsg = undefined,
-    inputForm,
+    inputForm = undefined,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(initialValues);
@@ -742,7 +742,7 @@ export const useDirectoryElements = ({
         (item, index) => {
             let arr = [...values];
             arr.splice(index, 1);
-            inputForm.setHasChanged(arr.length > 0);
+            inputForm?.setHasChanged(arr.length > 0);
             setValues(arr);
         },
         [inputForm, values]
@@ -764,7 +764,7 @@ export const useDirectoryElements = ({
                 }
             });
             if (elementsToAdd.length > 0) {
-                inputForm.setHasChanged(true);
+                inputForm?.setHasChanged(true);
                 setValues(values.concat(elementsToAdd));
             }
 

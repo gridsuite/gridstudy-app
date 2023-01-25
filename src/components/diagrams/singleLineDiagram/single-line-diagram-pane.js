@@ -127,7 +127,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 const vl = network.getVoltageLevel(vlId);
                 if (!vl) return;
                 let label = getNameOrId(vl);
-                const substation = network.getSubstation(vlId);
+                const substation = network.getSubstation(vl.substationId);
                 const countryName = substation?.countryName;
                 if (countryName) {
                     label += ' - ' + countryName;

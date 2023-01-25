@@ -414,6 +414,7 @@ const GeneratorCreationDialog = ({
     const [plannedActivePowerSetPoint, plannedActivePowerSetPointField] =
         useDoubleValue({
             label: 'PlannedActivePowerSetPoint',
+            validation: { isFieldRequired: false },
             adornment: ActivePowerAdornment,
             inputForm: inputForm,
             defaultValue: formValues?.plannedActivePowerSetPoint,
@@ -421,12 +422,14 @@ const GeneratorCreationDialog = ({
 
     const [startupCost, startupCostField] = useDoubleValue({
         label: 'StartupCost',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.startupCost,
     });
 
     const [marginalCost, marginalCostField] = useDoubleValue({
         label: 'MarginalCost',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.marginalCost,
     });
@@ -434,6 +437,7 @@ const GeneratorCreationDialog = ({
     const [plannedOutageRate, plannedOutageRateField] = useDoubleValue({
         label: 'PlannedOutageRate',
         validation: {
+            isFieldRequired: false,
             valueGreaterThanOrEqualTo: '0',
             valueLessThanOrEqualTo: '1',
             errorMsgId: 'RealPercentage',
@@ -445,6 +449,7 @@ const GeneratorCreationDialog = ({
     const [forcedOutageRate, forcedOutageRateField] = useDoubleValue({
         label: 'ForcedOutageRate',
         validation: {
+            isFieldRequired: false,
             valueGreaterThanOrEqualTo: '0',
             valueLessThanOrEqualTo: '1',
             errorMsgId: 'RealPercentage',
