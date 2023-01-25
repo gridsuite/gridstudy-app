@@ -2497,14 +2497,16 @@ export function getSensiDefaultResultsThreshold() {
     });
 }
 
-export function fetchMapEquipments(
+function fetchMapEquipment(
     studyUuid,
     currentNodeUuid,
     substationsIds,
+    equipmentType,
+    equipmentPath,
     inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching map equipments data of study '${studyUuid}' and node '${currentNodeUuid}'...`
+        `Fetching map ' + ${equipmentType} + ' data of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
     let urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
@@ -2518,7 +2520,9 @@ export function fetchMapEquipments(
 
     let fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/map-equipments';
+        '/network-map/' +
+        equipmentPath;
+
     if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
         fetchEquipmentsUrl += '?';
         fetchEquipmentsUrl += urlSearchParams.toString();
@@ -2546,4 +2550,36 @@ export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
         elementTypes.join('&elementTypes=');
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function fetchMapSubstations(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchMapEquipment(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'substations',
+        'map-substations',
+        inUpstreamBuiltParentNode
+    );
+}
+
+export function fetchMapLines(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchMapEquipment(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'lines',
+        'map-lines',
+        inUpstreamBuiltParentNode
+    );
 }
