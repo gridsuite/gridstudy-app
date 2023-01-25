@@ -49,6 +49,7 @@ import {
     getFirstNodeOfType,
     isNodeBuilt,
     isNodeRenamed,
+    isSameNode,
 } from './graph/util/model-functions';
 import {
     getSecurityAnalysisRunningStatus,
@@ -281,8 +282,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const loadNetworkRef = useRef();
-
     const [wsConnected, setWsConnected] = useState(false);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
@@ -502,7 +501,6 @@ export function StudyContainer({ view, onChangeTab }) {
                         (node) => node.id === firstSelectedNode.id
                     ),
                 };
-                currentNodeRef.current = ModelFirstSelectedNode;
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
                 dispatch(
                     loadNetworkModificationTreeSuccess(
@@ -566,7 +564,11 @@ export function StudyContainer({ view, onChangeTab }) {
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
-                    network.reloadImpactedSubstationsEquipments(substationsIds);
+                    network.reloadImpactedSubstationsEquipments(
+                        studyUuid,
+                        currentNodeRef.current,
+                        substationsIds
+                    );
                     dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
 
@@ -587,7 +589,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         }
-    }, [studyUpdatedForce, network, dispatch]);
+    }, [studyUpdatedForce, network, studyUuid, dispatch]);
 
     const loadNetwork = useCallback(
         (isUpdate) => {
@@ -624,7 +626,6 @@ export function StudyContainer({ view, onChangeTab }) {
         },
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
-    loadNetworkRef.current = loadNetwork;
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -634,6 +635,14 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
+        // A modification has been added to the currentNode and this one has been built incrementally.
+        // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
+        if (
+            isSameNode(previousCurrentNode, currentNode) &&
+            isNodeBuilt(previousCurrentNode)
+        ) {
+            return;
+        }
         loadNetwork(true);
     }, [loadNetwork, currentNode, wsConnected]);
 
@@ -700,8 +709,6 @@ export function StudyContainer({ view, onChangeTab }) {
             const ws = connectNotifications(studyUuid);
             const wsDirectory = connectDeletedStudyNotifications(studyUuid);
 
-            loadNetworkRef.current();
-
             // study cleanup at unmount event
             return function () {
                 websocketExpectedCloseRef.current = true;
@@ -711,7 +718,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(filteredNominalVoltagesUpdated(null));
             };
         }
-        // Note: dispach, loadNetworkRef, loadGeoData
+        // Note: dispach, loadGeoData
         // connectNotifications don't change
     }, [
         dispatch,
