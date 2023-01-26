@@ -36,6 +36,7 @@ import { SLD_DISPLAY_MODE } from '../network/constants';
 import clsx from 'clsx';
 import { useNameOrId } from '../util/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
+import { sortByAlign } from '../util/sort-functions';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -353,19 +354,6 @@ export function DiagramPane({
 
     const viewsRef = useRef();
     viewsRef.current = views;
-
-    const sortByAlign = (a, b) => {
-        if (!a || !b) {
-            return 0;
-        }
-        if (a.align === 'left' && b.align === 'right') {
-            return -1;
-        }
-        if (a.align === 'right' && b.align === 'left') {
-            return 1;
-        }
-        return 0;
-    };
 
     const displayedDiagrams = views
         .filter((view) =>
