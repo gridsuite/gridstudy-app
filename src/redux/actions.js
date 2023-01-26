@@ -549,11 +549,11 @@ export function setUpdatedSubstationsIds(updatedSubstationsIds) {
     };
 }
 
-export const SET_DELETED_EQUIPMENT = 'SET_DELETED_EQUIPMENT';
+export const SET_DELETED_EQUIPMENTS = 'SET_DELETED_EQUIPMENTS';
 
-export function setDeletedEquipment(deletedEquipment) {
+export function setDeletedEquipments(deletedEquipments) {
     return {
-        type: SET_DELETED_EQUIPMENT,
-        deletedEquipment: deletedEquipment,
+        type: SET_DELETED_EQUIPMENTS,
+        deletedEquipments: deletedEquipments,
     };
 }
