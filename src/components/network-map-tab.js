@@ -47,6 +47,10 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         right: 10,
         bottom: 30,
+        zIndex: 0,
+        '&:hover': {
+            zIndex: 1,
+        },
     },
     divRunButton: {
         position: 'absolute',
@@ -138,7 +142,8 @@ export const NetworkMapTab = ({
 
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
-    const deletedEquipment = useSelector((state) => state.deletedEquipment);
+    const deletedEquipments = useSelector((state) => state.deletedEquipments);
+
     const updatedSubstationsIds = useSelector(
         (state) => state.updatedSubstationsIds
     );
@@ -597,13 +602,15 @@ export const NetworkMapTab = ({
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
             return;
         }
-        if (deletedEquipment) {
-            mapEquipments?.removeEquipment(
-                deletedEquipment?.type,
-                deletedEquipment?.id
-            );
+        if (deletedEquipments?.length > 0 && mapEquipments) {
+            deletedEquipments.forEach((deletedEquipment) => {
+                mapEquipments.removeEquipment(
+                    deletedEquipment?.equipmentType,
+                    deletedEquipment?.equipmentId
+                );
+            });
         }
-    }, [deletedEquipment, mapEquipments]);
+    }, [deletedEquipments, mapEquipments]);
 
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;

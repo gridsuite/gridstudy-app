@@ -340,23 +340,13 @@ export function selectComponentLibrary(componentLibrary) {
     };
 }
 
-export const FULLSCREEN_SINGLE_LINE_DIAGRAM_ID =
-    'FULLSCREEN_SINGLE_LINE_DIAGRAM_ID';
+export const SET_FULLSCREEN_DIAGRAM = 'SET_FULLSCREEN_DIAGRAM';
 
-export function fullScreenSingleLineDiagramId(fullScreenSldId) {
+export function setFullScreenDiagram(diagramIdParam, svgTypeParam = undefined) {
     return {
-        type: FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
-        fullScreenSldId: fullScreenSldId,
-    };
-}
-
-export const FULLSCREEN_NETWORK_AREA_DIAGRAM_ID =
-    'FULLSCREEN_NETWORK_AREA_DIAGRAM_ID';
-
-export function fullScreenNetworkAreaDiagramId(fullScreenNadId) {
-    return {
-        type: FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
-        fullScreenNadId: fullScreenNadId,
+        type: SET_FULLSCREEN_DIAGRAM,
+        diagramId: diagramIdParam,
+        svgType: svgTypeParam,
     };
 }
 
@@ -450,15 +440,6 @@ export function removeNotificationByNode(notificationIds) {
     };
 }
 
-export const OPEN_NETWORK_AREA_DIAGRAM = 'OPEN_NETWORK_AREA_DIAGRAM';
-
-export function openNetworkAreaDiagram(voltageLevelsIds) {
-    return {
-        type: OPEN_NETWORK_AREA_DIAGRAM,
-        voltageLevelsIdsForNad: voltageLevelsIds,
-    };
-}
-
 export const SET_MODIFICATIONS_IN_PROGRESS = 'SET_MODIFICATIONS_IN_PROGRESS';
 
 export function setModificationsInProgress(isModificationsInProgress) {
@@ -483,40 +464,79 @@ export function setStudyDisplayMode(studyDisplayMode) {
     };
 }
 
-export const OPEN_SLD = 'OPEN_SLD';
+export const OPEN_DIAGRAM = 'OPEN_DIAGRAM';
 
-export function openSld(id, svgType) {
+export function openDiagram(id, svgType) {
     return {
-        type: OPEN_SLD,
+        type: OPEN_DIAGRAM,
         id: id,
         svgType: svgType,
     };
 }
 
-export const MINIMIZE_SLD = 'MINIMIZE_SLD';
+export const MINIMIZE_DIAGRAM = 'MINIMIZE_DIAGRAM';
 
-export function minimizeSld(id) {
+export function minimizeDiagram(id, svgType) {
     return {
-        type: MINIMIZE_SLD,
+        type: MINIMIZE_DIAGRAM,
         id: id,
+        svgType: svgType,
     };
 }
 
-export const TOGGLE_PIN_SLD = 'TOGGLE_PIN_SLD';
+export const TOGGLE_PIN_DIAGRAM = 'TOGGLE_PIN_DIAGRAM';
 
-export function togglePinSld(id) {
+export function togglePinDiagram(id, svgType) {
     return {
-        type: TOGGLE_PIN_SLD,
+        type: TOGGLE_PIN_DIAGRAM,
         id: id,
+        svgType: svgType,
     };
 }
 
-export const CLOSE_SLD = 'CLOSE_SLD';
+export const CLOSE_DIAGRAM = 'CLOSE_DIAGRAM';
 
-export function closeSld(idsToClose) {
+export function closeDiagram(id, svgType) {
     return {
-        type: CLOSE_SLD,
-        ids: idsToClose,
+        type: CLOSE_DIAGRAM,
+        id: id,
+        svgType: svgType,
+    };
+}
+
+export const CLOSE_DIAGRAMS = 'CLOSE_DIAGRAMS';
+
+export function closeDiagrams(ids) {
+    return {
+        type: CLOSE_DIAGRAMS,
+        ids: ids,
+    };
+}
+
+export const RESET_NETWORK_AREA_DIAGRAM_DEPTH =
+    'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
+
+export function resetNetworkAreaDiagramDepth() {
+    return {
+        type: RESET_NETWORK_AREA_DIAGRAM_DEPTH,
+    };
+}
+
+export const INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH =
+    'INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
+
+export function incrementNetworkAreaDiagramDepth() {
+    return {
+        type: INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    };
+}
+
+export const DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH =
+    'DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
+
+export function decrementNetworkAreaDiagramDepth() {
+    return {
+        type: DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     };
 }
 
@@ -529,11 +549,11 @@ export function setUpdatedSubstationsIds(updatedSubstationsIds) {
     };
 }
 
-export const SET_DELETED_EQUIPMENT = 'SET_DELETED_EQUIPMENT';
+export const SET_DELETED_EQUIPMENTS = 'SET_DELETED_EQUIPMENTS';
 
-export function setDeletedEquipment(deletedEquipment) {
+export function setDeletedEquipments(deletedEquipments) {
     return {
-        type: SET_DELETED_EQUIPMENT,
-        deletedEquipment: deletedEquipment,
+        type: SET_DELETED_EQUIPMENTS,
+        deletedEquipments: deletedEquipments,
     };
 }
