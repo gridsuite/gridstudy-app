@@ -322,4 +322,4 @@ withBranchMenu.propTypes = {
     setModificationInProgress: PropTypes.func,
 };
 
-export { withBranchMenu };
+export default withBranchMenu;
