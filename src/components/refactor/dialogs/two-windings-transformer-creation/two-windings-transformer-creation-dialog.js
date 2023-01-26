@@ -352,6 +352,23 @@ const TwoWindingsTransformerCreationDialog = ({
         );
     }, [tabIndex, tabIndexesWithError]);
 
+    const computePhaseTapChangerRegulationValue = (
+        phaseTapChangerFormValues
+    ) => {
+        switch (phaseTapChangerFormValues?.[REGULATION_MODE]) {
+            case REGULATION_MODES.ACTIVE_POWER_CONTROL.id:
+                return phaseTapChangerFormValues?.[
+                    FLOW_SET_POINT_REGULATING_VALUE
+                ];
+            case REGULATION_MODES.CURRENT_LIMITER.id:
+                return phaseTapChangerFormValues?.[
+                    CURRENT_LIMITER_REGULATING_VALUE
+                ];
+            default:
+                return undefined;
+        }
+    };
+
     const onSubmit = useCallback(
         (twt) => {
             const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
@@ -390,18 +407,9 @@ const TwoWindingsTransformerCreationDialog = ({
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
-                    regulationValue:
-                        phaseTapChangerFormValues?.[REGULATION_MODE] ===
-                        REGULATION_MODES.ACTIVE_POWER_CONTROL.id
-                            ? phaseTapChangerFormValues?.[
-                                  FLOW_SET_POINT_REGULATING_VALUE
-                              ]
-                            : phaseTapChangerFormValues?.[REGULATION_MODE] ===
-                              REGULATION_MODES.CURRENT_LIMITER.id
-                            ? phaseTapChangerFormValues?.[
-                                  CURRENT_LIMITER_REGULATING_VALUE
-                              ]
-                            : undefined,
+                    regulationValue: computePhaseTapChangerRegulationValue(
+                        phaseTapChangerFormValues
+                    ),
                     regulatingTerminalId:
                         phaseTapChangerFormValues?.[EQUIPMENT]?.id,
                     regulatingTerminalType:
