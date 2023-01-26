@@ -311,7 +311,10 @@ export function DiagramPane({
                 // if current view cannot be found, it returns undefined
                 // in this case, we remove it from diagram states
                 if (singleLineDiagramView) {
-                    diagramViews.push(singleLineDiagramView);
+                    diagramViews.push({
+                        ...singleLineDiagramView,
+                        align: 'left',
+                    });
                 } else {
                     closeDiagramView(diagramState.id, diagramState.svgType);
                 }
@@ -329,7 +332,10 @@ export function DiagramPane({
             // if current view cannot be found, it returns undefined
             // in this case, we remove all the NAD from diagram states
             if (networkAreaDiagramView) {
-                diagramViews.push(networkAreaDiagramView);
+                diagramViews.push({
+                    ...networkAreaDiagramView,
+                    align: 'right',
+                });
             } else {
                 closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
             }
@@ -348,9 +354,24 @@ export function DiagramPane({
     const viewsRef = useRef();
     viewsRef.current = views;
 
-    const displayedDiagrams = views.filter((view) =>
-        [ViewState.OPENED, ViewState.PINNED].includes(view.state)
-    );
+    const sortByAlign = (a, b) => {
+        if (!a || !b) {
+            return 0;
+        }
+        if (a.align === 'left' && b.align === 'right') {
+            return -1;
+        }
+        if (a.align === 'right' && b.align === 'left') {
+            return 1;
+        }
+        return 0;
+    };
+
+    const displayedDiagrams = views
+        .filter((view) =>
+            [ViewState.OPENED, ViewState.PINNED].includes(view.state)
+        )
+        .sort(sortByAlign);
     const minimizedDiagrams = views.filter((view) =>
         [ViewState.MINIMIZED].includes(view.state)
     );
@@ -499,6 +520,7 @@ export function DiagramPane({
      * RENDER
      */
 
+    let currentAlign = 'left';
     return (
         <AutoSizer>
             {({ width, height }) => (
@@ -511,47 +533,59 @@ export function DiagramPane({
                         height: height + 'px',
                     }}
                 >
-                    {displayedDiagrams.map((diagramView) => (
-                        <React.Fragment
-                            key={diagramView.svgType + diagramView.id}
-                        >
-                            {
-                                /* This hack will add a space between all the SLD and the NAD. This space takes all the remaining space on screen. */
-                                diagramView.svgType ===
-                                    SvgType.NETWORK_AREA_DIAGRAM && (
-                                    <div className={classes.separator}></div>
-                                )
-                            }
-                            <Diagram
-                                diagramTitle={diagramView.name}
-                                ref={diagramView.ref}
-                                disabled={disabled}
-                                pinned={diagramView.state === ViewState.PINNED}
-                                diagramId={diagramView.id}
-                                svgType={diagramView.svgType}
-                                svgUrl={diagramView.svgUrl}
-                                studyUuid={studyUuid}
-                                // Size computation
-                                computedHeight={
-                                    // We are not harmonizing the NAD's height with the SLD's
-                                    diagramView.svgType !==
-                                    SvgType.NETWORK_AREA_DIAGRAM
-                                        ? computedHeight
-                                        : undefined
+                    {displayedDiagrams.map((diagramView) => {
+                        const alignChanged = currentAlign !== diagramView.align;
+                        if (alignChanged) {
+                            currentAlign = diagramView.align;
+                        }
+                        return (
+                            <React.Fragment
+                                key={diagramView.svgType + diagramView.id}
+                            >
+                                {
+                                    /*
+                                    When switching from displaying the left aligned diagrams to the right aligned ones, we put a space between them.
+                                    This space takes all the remaining space on screen and "pushes" the right aligned diagrams to the right of the screen.
+                                    */
+                                    alignChanged && (
+                                        <div
+                                            className={classes.separator}
+                                        ></div>
+                                    )
                                 }
-                                totalHeight={height}
-                                totalWidth={width}
-                                numberToDisplay={displayedDiagrams.length}
-                                setDisplayedDiagramHeights={
-                                    setDisplayedDiagramHeights
-                                }
-                                // SLD specific
-                                isComputationRunning={isComputationRunning}
-                                loadFlowStatus={loadFlowStatus}
-                                showInSpreadsheet={showInSpreadsheet}
-                            />
-                        </React.Fragment>
-                    ))}
+                                <Diagram
+                                    diagramTitle={diagramView.name}
+                                    ref={diagramView.ref}
+                                    disabled={disabled}
+                                    pinned={
+                                        diagramView.state === ViewState.PINNED
+                                    }
+                                    diagramId={diagramView.id}
+                                    svgType={diagramView.svgType}
+                                    svgUrl={diagramView.svgUrl}
+                                    studyUuid={studyUuid}
+                                    // Size computation
+                                    computedHeight={
+                                        // We are not harmonizing the NAD's height with the SLD's
+                                        diagramView.svgType !==
+                                        SvgType.NETWORK_AREA_DIAGRAM
+                                            ? computedHeight
+                                            : undefined
+                                    }
+                                    totalHeight={height}
+                                    totalWidth={width}
+                                    numberToDisplay={displayedDiagrams.length}
+                                    setDisplayedDiagramHeights={
+                                        setDisplayedDiagramHeights
+                                    }
+                                    // SLD specific
+                                    isComputationRunning={isComputationRunning}
+                                    loadFlowStatus={loadFlowStatus}
+                                    showInSpreadsheet={showInSpreadsheet}
+                                />
+                            </React.Fragment>
+                        );
+                    })}
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                         spacing={1}
