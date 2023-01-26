@@ -196,7 +196,22 @@ export const reducer = createReducer(initialState, {
     },
 
     [MAP_EQUIPMENTS_CREATED]: (state, action) => {
-        state.mapEquipments = action.mapEquipments;
+        let newMapEquipments;
+        //if it's not initialised yet we take the empty one given in action
+        if (!state.mapEquipments) {
+            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate();
+        } else {
+            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate();
+        }
+        if (action.newLines) {
+            newMapEquipments.lines = action.newLines;
+            newMapEquipments.completeLinesInfos();
+        }
+        if (action.newSubstations) {
+            newMapEquipments.substations = action.newSubstations;
+            newMapEquipments.completeSubstationsInfos();
+        }
+        state.mapEquipments = newMapEquipments;
     },
 
     [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
