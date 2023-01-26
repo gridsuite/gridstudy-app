@@ -6,8 +6,14 @@
  */
 
 import Grid from '@mui/material/Grid';
+import {
+    ACTIVE_POWER,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
+    LOAD_TYPE,
+    REACTIVE_POWER,
+} from 'components/refactor/utils/field-constants';
 import React from 'react';
-import { LOAD_TYPES } from '../../../network/constants';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -15,18 +21,11 @@ import {
     GridSection,
     ReactivePowerAdornment,
 } from '../../../dialogs/dialogUtils';
-
-import { ConnectivityForm } from '../connectivity/connectivity-form';
-import TextInput from '../../rhf-inputs/text-input';
+import { LOAD_TYPES } from '../../../network/constants';
 import FloatInput from '../../rhf-inputs/float-input';
 import SelectInput from '../../rhf-inputs/select-input';
-import {
-    ACTIVE_POWER,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    EQUIPMENT_TYPE,
-    REACTIVE_POWER,
-} from './load-creation-dialog';
+import TextInput from '../../rhf-inputs/text-input';
+import { ConnectivityForm } from '../connectivity/connectivity-form';
 
 const LoadCreationForm = ({ voltageLevelOptionsPromise }) => {
     const loadIdField = (
@@ -47,7 +46,7 @@ const LoadCreationForm = ({ voltageLevelOptionsPromise }) => {
 
     const loadTypeField = (
         <SelectInput
-            name={EQUIPMENT_TYPE}
+            name={LOAD_TYPE}
             label="Type"
             options={LOAD_TYPES}
             fullWidth

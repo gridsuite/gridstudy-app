@@ -5,37 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import {
+    EQUIPMENT,
+    ID,
+    NAME,
+    NOMINAL_VOLTAGE,
+    SUBSTATION_ID,
+    TOPOLOGY_KIND,
+    TYPE,
+    VOLTAGE_LEVEL,
+} from 'components/refactor/utils/field-constants';
 import yup from '../../utils/yup-config';
-
-export const VOLTAGE_LEVEL = 'voltageLevel';
-export const VOLTAGE_LEVEL_ID = 'id';
-export const VOLTAGE_LEVEL_NAME = 'name';
-export const VOLTAGE_LEVEL_SUBSTATION_ID = 'substationId';
-export const VOLTAGE_LEVEL_NOMINAL_VOLTAGE = 'nominalVoltage';
-export const VOLTAGE_LEVEL_TOPOLOGY_KIND = 'topologyKind';
-export const EQUIPMENT = 'equipment';
-export const EQUIPMENT_TYPE = 'type';
-export const EQUIPMENT_ID = 'id';
-export const EQUIPMENT_NAME = 'name';
 
 const regulatingTerminalValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup
         .object()
         .nullable()
         .shape({
-            [VOLTAGE_LEVEL_ID]: yup.string(),
-            [VOLTAGE_LEVEL_NAME]: yup.string(),
-            [VOLTAGE_LEVEL_SUBSTATION_ID]: yup.string(),
-            [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
-            [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(),
+            [ID]: yup.string(),
+            [NAME]: yup.string(),
+            [SUBSTATION_ID]: yup.string(),
+            [NOMINAL_VOLTAGE]: yup.string(),
+            [TOPOLOGY_KIND]: yup.string().nullable(),
         }),
     [EQUIPMENT]: yup
         .object()
         .nullable()
         .shape({
-            [EQUIPMENT_ID]: yup.string(),
-            [EQUIPMENT_NAME]: yup.string(),
-            [EQUIPMENT_TYPE]: yup.string(),
+            [ID]: yup.string(),
+            [NAME]: yup.string(),
+            [TYPE]: yup.string(),
         }),
 });
 
@@ -64,11 +63,11 @@ export const getRegulatingTerminalVoltageLevelData = ({
     }
 
     return {
-        [VOLTAGE_LEVEL_ID]: voltageLevelId,
-        [VOLTAGE_LEVEL_NAME]: voltageLevelName,
-        [VOLTAGE_LEVEL_SUBSTATION_ID]: voltageLevelSubstationId,
-        [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: voltageLevelNominalVoltage,
-        [VOLTAGE_LEVEL_TOPOLOGY_KIND]: voltageLevelTopologyKind,
+        [ID]: voltageLevelId,
+        [NAME]: voltageLevelName,
+        [SUBSTATION_ID]: voltageLevelSubstationId,
+        [NOMINAL_VOLTAGE]: voltageLevelNominalVoltage,
+        [TOPOLOGY_KIND]: voltageLevelTopologyKind,
     };
 };
 
@@ -82,9 +81,9 @@ export const getRegulatingTerminalEquipmentData = ({
     }
 
     return {
-        [EQUIPMENT_ID]: equipmentId,
-        [EQUIPMENT_NAME]: equipmentName,
-        [EQUIPMENT_TYPE]: equipmentType,
+        [ID]: equipmentId,
+        [NAME]: equipmentName,
+        [TYPE]: equipmentType,
     };
 };
 

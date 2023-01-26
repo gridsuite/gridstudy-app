@@ -5,31 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { REGULATION_MODES } from '../../../../network/constants';
 import {
-    areArrayElementsOrdered,
-    areArrayElementsUnique,
-} from '../../../utils/utils';
-import yup from '../../../utils/yup-config';
-import {
-    EQUIPMENT,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    EQUIPMENT_TYPE,
-    getRegulatingTerminalEmptyFormData,
-    getRegulatingTerminalFormData,
-    VOLTAGE_LEVEL,
-    VOLTAGE_LEVEL_ID,
-    VOLTAGE_LEVEL_NAME,
-    VOLTAGE_LEVEL_NOMINAL_VOLTAGE,
-    VOLTAGE_LEVEL_SUBSTATION_ID,
-    VOLTAGE_LEVEL_TOPOLOGY_KIND,
-} from '../../regulating-terminal/regulating-terminal-form-utils';
-import {
+    CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
+    EQUIPMENT,
+    FLOW_SET_POINT_REGULATING_VALUE,
     HIGH_TAP_POSITION,
+    ID,
     LOW_TAP_POSITION,
+    NAME,
+    NOMINAL_VOLTAGE,
+    PHASE_TAP_CHANGER,
     REGULATING,
+    REGULATION_MODE,
     STEPS,
     STEPS_ALPHA,
     STEPS_CONDUCTANCE,
@@ -38,15 +26,23 @@ import {
     STEPS_RESISTANCE,
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
+    SUBSTATION_ID,
     TAP_POSITION,
     TARGET_DEADBAND,
-} from '../two-windings-transformer-creation-dialog-utils';
-
-//tab phase_tap_changer
-export const PHASE_TAP_CHANGER = 'phaseTapChanger';
-export const REGULATION_MODE = 'regulationMode';
-export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
-export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
+    TOPOLOGY_KIND,
+    TYPE,
+    VOLTAGE_LEVEL,
+} from 'components/refactor/utils/field-constants';
+import { REGULATION_MODES } from '../../../../network/constants';
+import {
+    areArrayElementsOrdered,
+    areArrayElementsUnique,
+} from '../../../utils/utils';
+import yup from '../../../utils/yup-config';
+import {
+    getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalFormData,
+} from '../../regulating-terminal/regulating-terminal-form-utils';
 
 const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
@@ -139,11 +135,11 @@ const phaseTapChangerValidationSchema = (id) => ({
             .object()
             .nullable()
             .shape({
-                [VOLTAGE_LEVEL_ID]: yup.string(),
-                [VOLTAGE_LEVEL_NAME]: yup.string(),
-                [VOLTAGE_LEVEL_SUBSTATION_ID]: yup.string(),
-                [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
-                [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(),
+                [ID]: yup.string(),
+                [NAME]: yup.string(),
+                [SUBSTATION_ID]: yup.string(),
+                [NOMINAL_VOLTAGE]: yup.string(),
+                [TOPOLOGY_KIND]: yup.string().nullable(),
             })
             .when([ENABLED, REGULATING], {
                 is: (enabled, regulating) => enabled && regulating,
@@ -153,9 +149,9 @@ const phaseTapChangerValidationSchema = (id) => ({
             .object()
             .nullable()
             .shape({
-                [EQUIPMENT_ID]: yup.string(),
-                [EQUIPMENT_NAME]: yup.string(),
-                [EQUIPMENT_TYPE]: yup.string(),
+                [ID]: yup.string(),
+                [NAME]: yup.string(),
+                [TYPE]: yup.string(),
             })
             .when([ENABLED, REGULATING], {
                 is: (enabled, regulating) => enabled && regulating,

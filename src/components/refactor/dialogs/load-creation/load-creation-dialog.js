@@ -5,29 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ModificationDialog from '../commons/modificationDialog';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { yupResolver } from '@hookform/resolvers/yup';
+import {
+    ACTIVE_POWER,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
+    LOAD_TYPE,
+    REACTIVE_POWER,
+} from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-
 import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
+import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import { FormProvider, useForm } from 'react-hook-form';
+import {
+    UNDEFINED_CONNECTION_DIRECTION,
+    UNDEFINED_LOAD_TYPE,
+} from '../../../network/constants';
 import yup from '../../utils/yup-config';
-import { yupResolver } from '@hookform/resolvers/yup';
+import ModificationDialog from '../commons/modificationDialog';
 import {
     getConnectivityEmptyFormData,
     getConnectivityFormData,
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
-import {
-    UNDEFINED_CONNECTION_DIRECTION,
-    UNDEFINED_LOAD_TYPE,
-} from '../../../network/constants';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
 
 /**
  * Dialog to create a load in the network
@@ -36,16 +42,10 @@ import { sanitizeString } from '../../../dialogs/dialogUtils';
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
-export const EQUIPMENT_ID = 'equipmentId';
-export const EQUIPMENT_NAME = 'equipmentName';
-export const EQUIPMENT_TYPE = 'loadType';
-export const ACTIVE_POWER = 'activePower';
-export const REACTIVE_POWER = 'reactivePower';
-
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    [EQUIPMENT_TYPE]: null,
+    [LOAD_TYPE]: null,
     [ACTIVE_POWER]: null,
     [REACTIVE_POWER]: null,
     ...getConnectivityEmptyFormData(),
@@ -56,7 +56,7 @@ const schema = yup
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
-        [EQUIPMENT_TYPE]: yup.string().nullable(),
+        [LOAD_TYPE]: yup.string().nullable(),
         [ACTIVE_POWER]: yup.number().nullable().required(),
         [REACTIVE_POWER]: yup.number().nullable().required(),
         ...getConnectivityFormValidationSchema(),
@@ -96,7 +96,7 @@ const LoadCreationDialog = ({
             reset({
                 [EQUIPMENT_ID]: load.id + '(1)',
                 [EQUIPMENT_NAME]: load.name ?? '',
-                [EQUIPMENT_TYPE]: load.type,
+                [LOAD_TYPE]: load.type,
                 [ACTIVE_POWER]: load.p0,
                 [REACTIVE_POWER]: load.q0,
                 ...getConnectivityFormData({
@@ -123,7 +123,7 @@ const LoadCreationDialog = ({
                     reset({
                         [EQUIPMENT_ID]: load.equipmentId,
                         [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [EQUIPMENT_TYPE]: load.loadType,
+                        [LOAD_TYPE]: load.loadType,
                         [ACTIVE_POWER]: load.activePower,
                         [REACTIVE_POWER]: load.reactivePower,
                         ...getConnectivityFormData({
@@ -143,7 +143,7 @@ const LoadCreationDialog = ({
                     reset({
                         [EQUIPMENT_ID]: load.equipmentId,
                         [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [EQUIPMENT_TYPE]: load.loadType,
+                        [LOAD_TYPE]: load.loadType,
                         [ACTIVE_POWER]: load.activePower,
                         [REACTIVE_POWER]: load.reactivePower,
                         ...getConnectivityFormData({
@@ -180,9 +180,7 @@ const LoadCreationDialog = ({
                 currentNodeUuid,
                 load[EQUIPMENT_ID],
                 sanitizeString(load[EQUIPMENT_NAME]),
-                !load[EQUIPMENT_TYPE]
-                    ? UNDEFINED_LOAD_TYPE
-                    : load[EQUIPMENT_TYPE],
+                !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
                 load[ACTIVE_POWER],
                 load[REACTIVE_POWER],
                 load.connectivity.voltageLevel.id,

@@ -7,18 +7,10 @@
 
 import { Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import React, { useCallback, useMemo, useState } from 'react';
-import Papa from 'papaparse';
-import { useFieldArray, useFormContext } from 'react-hook-form';
-import { useIntl } from 'react-intl';
-import VirtualizedTable from '../../../../util/virtualized-table';
-import IntegerInput from '../../../rhf-inputs/integer-input';
-import { TableNumericalInput } from '../../../rhf-inputs/table-inputs/table-numerical-input';
-import { CreateRuleDialog } from '../../../../dialogs/two-windings-transformer/create-rule-dialog';
-import { ImportRuleDialog } from '../../../../dialogs/two-windings-transformer/import-rule-dialog';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
+    RATIO_TAP_CHANGER,
     STEPS,
     STEPS_CONDUCTANCE,
     STEPS_RATIO,
@@ -27,14 +19,22 @@ import {
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
     TAP_POSITION,
-} from '../two-windings-transformer-creation-dialog-utils';
+} from 'components/refactor/utils/field-constants';
+import Papa from 'papaparse';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useIntl } from 'react-intl';
+import { CreateRuleDialog } from '../../../../dialogs/two-windings-transformer/create-rule-dialog';
+import { ImportRuleDialog } from '../../../../dialogs/two-windings-transformer/import-rule-dialog';
 import {
     MAX_TAP_NUMBER,
     RATIO_TAP,
 } from '../../../../dialogs/two-windings-transformer/two-windings-transformer-creation-dialog';
-import RatioTapChangerPaneButtons from './ratio-tap-changer-pane-buttons';
-import { RATIO_TAP_CHANGER } from './ratio-tap-changer-pane-utils';
+import VirtualizedTable from '../../../../util/virtualized-table';
 import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
+import IntegerInput from '../../../rhf-inputs/integer-input';
+import { TableNumericalInput } from '../../../rhf-inputs/table-inputs/table-numerical-input';
+import RatioTapChangerPaneButtons from './ratio-tap-changer-pane-buttons';
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {

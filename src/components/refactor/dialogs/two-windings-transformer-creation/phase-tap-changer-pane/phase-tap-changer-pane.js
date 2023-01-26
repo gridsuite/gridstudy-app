@@ -5,32 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
-import BooleanInput from '../../../rhf-inputs/boolean-input';
 import {
+    CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
+    FLOW_SET_POINT_REGULATING_VALUE,
+    PHASE_TAP_CHANGER,
     REGULATING,
+    REGULATION_MODE,
     TARGET_DEADBAND,
-} from '../two-windings-transformer-creation-dialog-utils';
+} from 'components/refactor/utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import FloatInput from '../../../rhf-inputs/float-input';
+import { FormattedMessage } from 'react-intl';
 import {
     ActivePowerAdornment,
     AmpereAdornment,
     gridItem,
 } from '../../../../dialogs/dialogUtils';
-import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
-import SelectInput from '../../../rhf-inputs/select-input';
 import { REGULATION_MODES } from '../../../../network/constants';
+import BooleanInput from '../../../rhf-inputs/boolean-input';
+import FloatInput from '../../../rhf-inputs/float-input';
+import SelectInput from '../../../rhf-inputs/select-input';
+import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneTaps from './phase-tap-changer-pane-taps';
-import {
-    CURRENT_LIMITER_REGULATING_VALUE,
-    FLOW_SET_POINT_REGULATING_VALUE,
-    PHASE_TAP_CHANGER,
-    REGULATION_MODE,
-} from './phase-tap-changer-pane-utils';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,

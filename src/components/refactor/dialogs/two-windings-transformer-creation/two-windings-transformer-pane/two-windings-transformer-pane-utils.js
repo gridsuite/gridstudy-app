@@ -5,11 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../utils/yup-config';
-import {
-    getConnectivityEmptyFormData,
-    getConnectivityFormValidationSchema,
-} from '../../connectivity/connectivity-form-utils';
 import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
@@ -26,7 +21,12 @@ import {
     RATED_VOLTAGE_2,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
-} from '../two-windings-transformer-creation-dialog-utils';
+} from 'components/refactor/utils/field-constants';
+import yup from '../../../utils/yup-config';
+import {
+    getConnectivityEmptyFormData,
+    getConnectivityFormValidationSchema,
+} from '../../connectivity/connectivity-form-utils';
 
 const twoWindingsTransformerValidationSchema = (id) => ({
     [id]: yup.object().shape({

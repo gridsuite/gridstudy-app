@@ -5,38 +5,39 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-    fetchBusbarSectionsForVoltageLevel,
-    fetchBusesForVoltageLevel,
-} from '../../../../utils/rest-api';
-import { useSelector } from 'react-redux';
-import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined';
-
-import PositionDiagramPane from '../../../diagrams/singleLineDiagram/position-diagram-pane';
+import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import { IconButton, Tooltip } from '@mui/material';
-import { CONNECTION_DIRECTIONS } from '../../../network/constants';
-import { useIntl } from 'react-intl';
-import { isNodeBuilt } from '../../../graph/util/model-functions';
-import { useWatch } from 'react-hook-form';
+import Grid from '@mui/material/Grid';
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
+    ID,
+    TOPOLOGY_KIND,
+    VOLTAGE_LEVEL,
+} from 'components/refactor/utils/field-constants';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useWatch } from 'react-hook-form';
+import { useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
+import {
+    fetchBusbarSectionsForVoltageLevel,
+    fetchBusesForVoltageLevel,
+} from '../../../../utils/rest-api';
+import PositionDiagramPane from '../../../diagrams/singleLineDiagram/position-diagram-pane';
+import { isNodeBuilt } from '../../../graph/util/model-functions';
+import { CONNECTION_DIRECTIONS } from '../../../network/constants';
+import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
+import IntegerInput from '../../rhf-inputs/integer-input';
+import SelectInput from '../../rhf-inputs/select-input';
+import TextInput from '../../rhf-inputs/text-input';
+import {
     getConnectivityBusBarSectionData,
     getConnectivityVoltageLevelData,
-    VOLTAGE_LEVEL,
-    VOLTAGE_LEVEL_ID,
-    VOLTAGE_LEVEL_TOPOLOGY_KIND,
 } from './connectivity-form-utils';
-import TextInput from '../../rhf-inputs/text-input';
-import SelectInput from '../../rhf-inputs/select-input';
-import IntegerInput from '../../rhf-inputs/integer-input';
-import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -66,10 +67,10 @@ export const ConnectivityForm = ({
     const intl = useIntl();
 
     const watchVoltageLevelId = useWatch({
-        name: `${id}.${VOLTAGE_LEVEL}.${VOLTAGE_LEVEL_ID}`,
+        name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
     const watchVoltageLevelTopologyKind = useWatch({
-        name: `${id}.${VOLTAGE_LEVEL}.${VOLTAGE_LEVEL_TOPOLOGY_KIND}`,
+        name: `${id}.${VOLTAGE_LEVEL}.${TOPOLOGY_KIND}`,
     });
 
     useEffect(() => {

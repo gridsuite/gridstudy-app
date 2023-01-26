@@ -5,21 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
 import { Popper } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     EQUIPMENT,
-    EQUIPMENT_ID,
-    EQUIPMENT_TYPE,
+    ID,
+    TYPE,
     VOLTAGE_LEVEL,
-    VOLTAGE_LEVEL_ID,
-} from './regulating-terminal-form-utils';
-import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
+} from 'components/refactor/utils/field-constants';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
@@ -86,7 +85,7 @@ const RegulatingTerminalForm = ({
     const { setValue } = useFormContext();
 
     const watchVoltageLevelId = useWatch({
-        name: `${id}.${VOLTAGE_LEVEL}.${VOLTAGE_LEVEL_ID}`,
+        name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
 
     useEffect(() => {
@@ -145,11 +144,7 @@ const RegulatingTerminalForm = ({
                             disabled={disabled}
                             id="voltage-level"
                             options={voltageLevelOptions}
-                            getOptionLabel={(vl) =>
-                                vl?.[VOLTAGE_LEVEL_ID]
-                                    ? vl?.[VOLTAGE_LEVEL_ID]
-                                    : ''
-                            }
+                            getOptionLabel={(vl) => (vl?.[ID] ? vl?.[ID] : '')}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
@@ -158,14 +153,12 @@ const RegulatingTerminalForm = ({
                                 if (
                                     params.inputValue !== '' &&
                                     !options.find(
-                                        (opt) =>
-                                            opt?.[VOLTAGE_LEVEL_ID] ===
-                                            params.inputValue
+                                        (opt) => opt?.[ID] === params.inputValue
                                     )
                                 ) {
                                     filtered.push({
                                         inputValue: params.inputValue,
-                                        [VOLTAGE_LEVEL_ID]: params.inputValue,
+                                        [ID]: params.inputValue,
                                     });
                                 }
                                 return filtered;
@@ -204,10 +197,10 @@ const RegulatingTerminalForm = ({
                             getOptionLabel={(equipment) => {
                                 return equipment === ''
                                     ? '' // to clear field
-                                    : (equipment?.[EQUIPMENT_TYPE] ??
+                                    : (equipment?.[TYPE] ??
                                           equipmentSectionTypeDefaultValue) +
                                           ' : ' +
-                                          equipment?.[EQUIPMENT_ID] || '';
+                                          equipment?.[ID] || '';
                             }}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value

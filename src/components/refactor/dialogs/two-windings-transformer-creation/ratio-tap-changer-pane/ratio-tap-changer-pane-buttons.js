@@ -7,14 +7,14 @@
 
 import { Button, Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
-import React from 'react';
-import { useWatch } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
-} from '../two-windings-transformer-creation-dialog-utils';
-import { RATIO_TAP_CHANGER } from './ratio-tap-changer-pane-utils';
+    RATIO_TAP_CHANGER,
+} from 'components/refactor/utils/field-constants';
+import React from 'react';
+import { useWatch } from 'react-hook-form';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
     center: {

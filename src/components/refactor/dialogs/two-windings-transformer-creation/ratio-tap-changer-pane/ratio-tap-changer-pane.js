@@ -5,25 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
-import BooleanInput from '../../../rhf-inputs/boolean-input';
 import {
     ENABLED,
-    REGULATING,
-    TARGET_DEADBAND,
-} from '../two-windings-transformer-creation-dialog-utils';
-import { useWatch } from 'react-hook-form';
-import FloatInput from '../../../rhf-inputs/float-input';
-import { gridItem, VoltageAdornment } from '../../../../dialogs/dialogUtils';
-import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
-import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
-import {
     LOAD_TAP_CHANGING_CAPABILITIES,
     RATIO_TAP_CHANGER,
+    REGULATING,
+    TARGET_DEADBAND,
     TARGET_V,
-} from './ratio-tap-changer-pane-utils';
+} from 'components/refactor/utils/field-constants';
+import { useWatch } from 'react-hook-form';
+import { FormattedMessage } from 'react-intl';
+import { gridItem, VoltageAdornment } from '../../../../dialogs/dialogUtils';
+import BooleanInput from '../../../rhf-inputs/boolean-input';
+import FloatInput from '../../../rhf-inputs/float-input';
+import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
+import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,

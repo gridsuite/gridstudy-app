@@ -36,7 +36,7 @@ import {
     RATED_VOLTAGE_2,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
-} from '../two-windings-transformer-creation-dialog-utils';
+} from 'components/refactor/utils/field-constants';
 
 const useStyles = makeStyles((theme) => ({
     h3: {

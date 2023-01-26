@@ -5,87 +5,81 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ModificationDialog from '../commons/modificationDialog';
-import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
-
-import { FormProvider, useForm } from 'react-hook-form';
-import yup from '../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Box } from '@mui/material';
 import {
     BUS_OR_BUSBAR_SECTION,
-    BUS_OR_BUSBAR_SECTION_ID,
+    CHARACTERISTICS,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
-    getConnectivityFormData,
-    VOLTAGE_LEVEL_ID,
-} from '../connectivity/connectivity-form-utils';
-import { Box } from '@mui/material';
-import TwoWindingsTransformerPane from './two-windings-transformer-pane/two-windings-transformer-pane';
-import RatioTapChangerPane from './ratio-tap-changer-pane/ratio-tap-changer-pane';
-import PhaseTapChangerPane from './phase-tap-changer-pane/phase-tap-changer-pane';
-import {
-    CURRENT_LIMITER_REGULATING_VALUE,
-    FLOW_SET_POINT_REGULATING_VALUE,
-    getPhaseTapChangerEmptyFormData,
-    getPhaseTapChangerFormData,
-    getPhaseTapChangerValidationSchema,
-    PHASE_TAP_CHANGER,
-    REGULATION_MODE,
-} from './phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import {
-    getRatioTapChangerEmptyFormData,
-    getRatioTapChangerFormData,
-    getRatioTapChangerValidationSchema,
-    LOAD_TAP_CHANGING_CAPABILITIES,
-    RATIO_TAP_CHANGER,
-    TARGET_V,
-} from './ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
-import {
-    getTwoWindingsTransformerEmptyFormData,
-    getTwoWindingsTransformerFormData,
-    getTwoWindingsTransformerValidationSchema,
-} from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
-import {
-    CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
+    CURRENT_LIMITER_REGULATING_VALUE,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     ENABLED,
+    EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    FLOW_SET_POINT_REGULATING_VALUE,
+    ID,
+    LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
     PERMANENT_LIMIT,
+    PHASE_TAP_CHANGER,
     RATED_S,
     RATED_VOLTAGE_1,
     RATED_VOLTAGE_2,
+    RATIO_TAP_CHANGER,
     REGULATING,
+    REGULATION_MODE,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
     STEPS,
     STEPS_TAP,
     TAP_POSITION,
     TARGET_DEADBAND,
-} from './two-windings-transformer-creation-dialog-utils';
-import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
-import { createTwoWindingsTransformer } from '../../../../utils/rest-api';
-import {
-    EQUIPMENT,
+    TARGET_V,
     VOLTAGE_LEVEL,
-} from '../regulating-terminal/regulating-terminal-form-utils';
+} from 'components/refactor/utils/field-constants';
+import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import { createTwoWindingsTransformer } from '../../../../utils/rest-api';
+import { sanitizeString } from '../../../dialogs/dialogUtils';
+import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
+import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import {
     REGULATION_MODES,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../../../network/constants';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
+import yup from '../../utils/yup-config';
+import ModificationDialog from '../commons/modificationDialog';
+import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
+import PhaseTapChangerPane from './phase-tap-changer-pane/phase-tap-changer-pane';
+import {
+    getPhaseTapChangerEmptyFormData,
+    getPhaseTapChangerFormData,
+    getPhaseTapChangerValidationSchema,
+} from './phase-tap-changer-pane/phase-tap-changer-pane-utils';
+import RatioTapChangerPane from './ratio-tap-changer-pane/ratio-tap-changer-pane';
+import {
+    getRatioTapChangerEmptyFormData,
+    getRatioTapChangerFormData,
+    getRatioTapChangerValidationSchema,
+} from './ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import TwoWindingsTransformerCreationDialogTabs from './two-windings-transformer-creation-dialog-tabs';
+import TwoWindingsTransformerPane from './two-windings-transformer-pane/two-windings-transformer-pane';
+import {
+    getTwoWindingsTransformerEmptyFormData,
+    getTwoWindingsTransformerFormData,
+    getTwoWindingsTransformerValidationSchema,
+} from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -387,9 +381,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
                             : undefined,
                     regulatingTerminalVlId:
-                        ratioTapChangerFormValues?.[VOLTAGE_LEVEL]?.[
-                            VOLTAGE_LEVEL_ID
-                        ],
+                        ratioTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID],
                     ...ratioTapChangerFormValues,
                 };
             }
@@ -419,9 +411,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
                             : undefined),
                     regulatingTerminalVlId:
-                        phaseTapChangerFormValues?.[VOLTAGE_LEVEL]?.[
-                            VOLTAGE_LEVEL_ID
-                        ],
+                        phaseTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID],
                     ...twt[PHASE_TAP_CHANGER],
                 };
             }
@@ -440,18 +430,10 @@ const TwoWindingsTransformerCreationDialog = ({
                 characteristics[RATED_VOLTAGE_2],
                 currentLimits1,
                 currentLimits2,
-                characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[
-                    VOLTAGE_LEVEL_ID
-                ],
-                characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[
-                    BUS_OR_BUSBAR_SECTION_ID
-                ],
-                characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[
-                    VOLTAGE_LEVEL_ID
-                ],
-                characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.[
-                    BUS_OR_BUSBAR_SECTION_ID
-                ],
+                characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
+                characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID],
+                characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 ratioTap,
                 phaseTap,
                 editData ? true : false,

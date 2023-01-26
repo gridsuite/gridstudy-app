@@ -6,28 +6,15 @@
  */
 
 import {
-    areArrayElementsOrdered,
-    areArrayElementsUnique,
-} from '../../../utils/utils';
-import yup from '../../../utils/yup-config';
-import {
-    EQUIPMENT,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    EQUIPMENT_TYPE,
-    getRegulatingTerminalEmptyFormData,
-    getRegulatingTerminalFormData,
-    VOLTAGE_LEVEL,
-    VOLTAGE_LEVEL_ID,
-    VOLTAGE_LEVEL_NAME,
-    VOLTAGE_LEVEL_NOMINAL_VOLTAGE,
-    VOLTAGE_LEVEL_SUBSTATION_ID,
-    VOLTAGE_LEVEL_TOPOLOGY_KIND,
-} from '../../regulating-terminal/regulating-terminal-form-utils';
-import {
     ENABLED,
+    EQUIPMENT,
     HIGH_TAP_POSITION,
+    ID,
+    LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
+    NAME,
+    NOMINAL_VOLTAGE,
+    RATIO_TAP_CHANGER,
     REGULATING,
     STEPS,
     STEPS_CONDUCTANCE,
@@ -36,14 +23,23 @@ import {
     STEPS_RESISTANCE,
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
+    SUBSTATION_ID,
     TAP_POSITION,
     TARGET_DEADBAND,
-} from '../two-windings-transformer-creation-dialog-utils';
-
-//tab ratio_tap_changer
-export const RATIO_TAP_CHANGER = 'ratioTapChanger';
-export const LOAD_TAP_CHANGING_CAPABILITIES = 'loadTapChangingCapabilities';
-export const TARGET_V = 'targetV';
+    TARGET_V,
+    TOPOLOGY_KIND,
+    TYPE,
+    VOLTAGE_LEVEL,
+} from 'components/refactor/utils/field-constants';
+import {
+    areArrayElementsOrdered,
+    areArrayElementsUnique,
+} from '../../../utils/utils';
+import yup from '../../../utils/yup-config';
+import {
+    getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalFormData,
+} from '../../regulating-terminal/regulating-terminal-form-utils';
 
 const ratioTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
@@ -116,11 +112,11 @@ const ratioTapChangerValidationSchema = (id) => ({
             .object()
             .nullable()
             .shape({
-                [VOLTAGE_LEVEL_ID]: yup.string(),
-                [VOLTAGE_LEVEL_NAME]: yup.string(),
-                [VOLTAGE_LEVEL_SUBSTATION_ID]: yup.string(),
-                [VOLTAGE_LEVEL_NOMINAL_VOLTAGE]: yup.string(),
-                [VOLTAGE_LEVEL_TOPOLOGY_KIND]: yup.string().nullable(),
+                [ID]: yup.string(),
+                [NAME]: yup.string(),
+                [SUBSTATION_ID]: yup.string(),
+                [NOMINAL_VOLTAGE]: yup.string(),
+                [TOPOLOGY_KIND]: yup.string().nullable(),
             })
             .when(REGULATING, {
                 is: true,
@@ -130,9 +126,9 @@ const ratioTapChangerValidationSchema = (id) => ({
             .object()
             .nullable()
             .shape({
-                [EQUIPMENT_ID]: yup.string(),
-                [EQUIPMENT_NAME]: yup.string(),
-                [EQUIPMENT_TYPE]: yup.string(),
+                [ID]: yup.string(),
+                [NAME]: yup.string(),
+                [TYPE]: yup.string(),
             })
             .when(REGULATING, {
                 is: true,
