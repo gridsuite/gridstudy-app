@@ -43,7 +43,6 @@ import { equipments } from '../network/network-equipments';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
-import { useParams } from 'react-router-dom';
 import {
     isNodeBuilt,
     isNodeReadOnly,
@@ -130,8 +129,6 @@ const Diagram = forwardRef((props, ref) => {
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState();
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
-
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
 
@@ -616,7 +613,7 @@ const Diagram = forwardRef((props, ref) => {
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     currentNode={currentNode}
-                    studyUuid={studyUuid}
+                    studyUuid={props.studyUuid}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={(value) =>
                         setModificationInProgress(value)

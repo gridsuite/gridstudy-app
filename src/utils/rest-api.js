@@ -2527,59 +2527,6 @@ function fetchMapEquipment(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
-export function fetchSingleEquipment(
-    studyUuid,
-    currentNodeUuid,
-    equipmentId,
-    equipmentResource,
-    inUpstreamBuiltParentNode
-) {
-    console.info(
-        `Fetching '${equipmentResource}' '${equipmentId}' from '${studyUuid}' and node '${currentNodeUuid}'...`
-    );
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append(
-        'inUpstreamBuiltParentNode',
-        inUpstreamBuiltParentNode
-    );
-    let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/' +
-        equipmentResource +
-        '/' +
-        equipmentId +
-        '?' +
-        urlSearchParams.toString();
-
-    console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
-}
-
-export function fetchBranchStatus(
-    studyUuid,
-    currentNodeUuid,
-    branchId,
-    inUpstreamBuiltParentNode
-) {
-    console.info(
-        `Fetching branch status '${branchId}' from '${studyUuid}' and node '${currentNodeUuid}'...`
-    );
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append(
-        'inUpstreamBuiltParentNode',
-        inUpstreamBuiltParentNode
-    );
-    let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/branches/' +
-        branchId +
-        '?' +
-        urlSearchParams.toString();
-
-    console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
-}
-
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     console.info('Fetching elements metadata');
     const url =

@@ -19,9 +19,10 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
+import { useNameOrId } from '../util/equipmentInfosHandler';
 import {
     energiseBranchEnd,
-    fetchBranchStatus,
+    fetchEquipmentInfos,
     lockoutBranch,
     switchOnBranch,
     tripBranch,
@@ -61,6 +62,7 @@ const withBranchMenu =
         const intl = useIntl();
         const { snackError } = useSnackMessage();
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
+        const { getNameOrId } = useNameOrId();
         const [branch, setBranch] = useState(null);
 
         const getTranslationKey = (key) => {
@@ -70,14 +72,20 @@ const withBranchMenu =
         };
 
         useEffect(() => {
-            fetchBranchStatus(studyUuid, currentNode?.id, id, false).then(
-                (value) => {
-                    if (value) {
-                        setBranch(value);
-                    }
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNode?.id,
+                equipmentType === equipments.lines
+                    ? 'lines'
+                    : '2-windings-transformers',
+                id,
+                false
+            ).then((value) => {
+                if (value) {
+                    setBranch(value);
                 }
-            );
-        }, [studyUuid, currentNode?.id, id]);
+            });
+        }, [studyUuid, currentNode?.id, equipmentType, id]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -237,8 +245,10 @@ const withBranchMenu =
                                             ),
                                         },
                                         {
-                                            substation:
-                                                branch?.voltageLevel1Name,
+                                            substation: getNameOrId({
+                                                name: branch?.voltageLevelName1,
+                                                id: branch?.voltageLevelId1,
+                                            }),
                                         }
                                     )}
                                 </Typography>
@@ -271,8 +281,10 @@ const withBranchMenu =
                                             ),
                                         },
                                         {
-                                            substation:
-                                                branch?.voltageLevel2Name,
+                                            substation: getNameOrId({
+                                                name: branch?.voltageLevelName2,
+                                                id: branch?.voltageLevelId2,
+                                            }),
                                         }
                                     )}
                                 </Typography>
