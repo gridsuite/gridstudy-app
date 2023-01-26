@@ -565,7 +565,13 @@ export function DiagramPane({
                                     svgUrl={diagramView.svgUrl}
                                     studyUuid={studyUuid}
                                     // Size computation
-                                    computedHeight={computedHeight}
+                                    computedHeight={
+                                        // We are not harmonizing the NAD's height with the SLD's
+                                        diagramView.svgType !==
+                                        SvgType.NETWORK_AREA_DIAGRAM
+                                            ? computedHeight
+                                            : undefined
+                                    }
                                     totalHeight={height}
                                     totalWidth={width}
                                     numberToDisplay={displayedDiagrams.length}
