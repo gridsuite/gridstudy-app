@@ -35,10 +35,10 @@ export default class MapEquipments {
         fetchMapSubstations(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.substations = val;
-                this.completeSubstationsInfos();
-                this.dispatch(
-                    mapEquipmentsCreated(this.newMapEquipmentForUpdate())
-                );
+                const newMapEquipments = this.newMapEquipmentForUpdate();
+                newMapEquipments.substations = val;
+                newMapEquipments.completeSubstationsInfos();
+                this.dispatch(mapEquipmentsCreated(newMapEquipments));
             })
             .catch((error) => {
                 console.error(error.message);
@@ -53,10 +53,10 @@ export default class MapEquipments {
         fetchMapLines(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.lines = val;
-                this.completeLinesInfos();
-                this.dispatch(
-                    mapEquipmentsCreated(this.newMapEquipmentForUpdate())
-                );
+                const newMapEquipments = this.newMapEquipmentForUpdate();
+                newMapEquipments.lines = val;
+                newMapEquipments.completeLinesInfos();
+                this.dispatch(mapEquipmentsCreated(newMapEquipments));
             })
             .catch((error) => {
                 console.error(error.message);
