@@ -52,7 +52,6 @@ export const useStyles = makeStyles((theme) => ({
     chipElement: {
         margin: 3,
         maxWidth: 200,
-        textOverflow: 'ellipsis',
     },
     padding: {
         padding: '10px',
