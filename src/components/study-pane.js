@@ -13,8 +13,6 @@ import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     filteredNominalVoltagesUpdated,
-    fullScreenNetworkAreaDiagramId,
-    openNetworkAreaDiagram,
     STUDY_DISPLAY_MODE,
 } from '../redux/actions';
 import Paper from '@mui/material/Paper';
@@ -33,12 +31,11 @@ import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
-import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
+import { DiagramPane } from './diagrams/diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
-import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
+import { SvgType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
@@ -95,7 +92,6 @@ const StudyPane = ({
     sensiStatus,
     shortCircuitStatus,
     runnable,
-    setUpdateSwitchMsg,
     setErrorMessage,
     ...props
 }) => {
@@ -133,13 +129,7 @@ const StudyPane = ({
 
     const classes = useStyles();
 
-    const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
-        useSingleLineDiagram();
-
-    function closeNetworkAreaDiagram() {
-        dispatch(fullScreenNetworkAreaDiagramId(null));
-        dispatch(openNetworkAreaDiagram([]));
-    }
+    const { openDiagramView } = useDiagram();
 
     const disabled = !isNodeBuilt(currentNode);
 
@@ -155,20 +145,20 @@ const StudyPane = ({
         }
     }, [network, filteredNominalVoltages, dispatch]);
 
-    function openVoltageLevelDiagram(vlId, substationId) {
+    function openVoltageLevelDiagram(vlId) {
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
             props.onChangeTab(0); // switch to map view
-            showVoltageLevelDiagram(vlId); // show voltage level
+            openDiagramView(vlId, SvgType.VOLTAGE_LEVEL);
         }
     }
 
     const openVoltageLevel = useCallback(
         (vlId) => {
             if (!network) return;
-            showVoltageLevelDiagram(vlId);
+            openDiagramView(vlId, SvgType.VOLTAGE_LEVEL);
         },
-        [network, showVoltageLevelDiagram]
+        [network, openDiagramView]
     );
 
     useEffect(() => {
@@ -299,15 +289,9 @@ const StudyPane = ({
                                 />
                             </div>
 
-                            {/*
-                Rendering single line diagram only in map view and if
-                displayed voltage level or substation id has been set
-                */}
-                            <SingleLineDiagramPane
+                            <DiagramPane
                                 studyUuid={studyUuid}
                                 network={network}
-                                onClose={closeVoltageLevelDiagram}
-                                openVoltageLevel={openVoltageLevel}
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
                                 loadFlowStatus={getLoadFlowRunningStatus(
@@ -315,22 +299,6 @@ const StudyPane = ({
                                 )}
                                 currentNode={currentNode}
                                 disabled={disabled}
-                                visible={
-                                    props.view === StudyView.MAP &&
-                                    studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
-                                }
-                            />
-
-                            <NetworkAreaDiagramPane
-                                studyUuid={studyUuid}
-                                network={network}
-                                currentNode={currentNode}
-                                loadFlowStatus={getLoadFlowRunningStatus(
-                                    loadFlowInfos?.loadFlowStatus
-                                )}
-                                onClose={closeNetworkAreaDiagram}
-                                disabled={disabled}
-                                align="right"
                                 visible={
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE

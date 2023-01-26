@@ -662,7 +662,7 @@
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
 
-    "depth": "Profondeur",
+    "depth": "Profondeur : ",
 
     "root": "Racine",
     "LogOnlySingleNode": "Log nœud seul",
