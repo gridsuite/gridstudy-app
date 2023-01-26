@@ -37,7 +37,7 @@ import {
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
-    setDeletedEquipment,
+    setDeletedEquipments,
     setUpdatedSubstationsIds,
 } from '../redux/actions';
 import Network from './network/network';
@@ -49,6 +49,7 @@ import {
     getFirstNodeOfType,
     isNodeBuilt,
     isNodeRenamed,
+    isSameNode,
 } from './graph/util/model-functions';
 import {
     getSecurityAnalysisRunningStatus,
@@ -281,8 +282,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const loadNetworkRef = useRef();
-
     const [wsConnected, setWsConnected] = useState(false);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
@@ -502,7 +501,6 @@ export function StudyContainer({ view, onChangeTab }) {
                         (node) => node.id === firstSelectedNode.id
                     ),
                 };
-                currentNodeRef.current = ModelFirstSelectedNode;
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
                 dispatch(
                     loadNetworkModificationTreeSuccess(
@@ -535,21 +533,11 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     function parseStudyNotification(studyUpdatedForce) {
-        const substationsIds =
-            studyUpdatedForce.eventData.headers['substationsIds'];
-        const substationsIdsArray = substationsIds
-            .substring(1, substationsIds.length - 1)
-            .split(', ');
+        const payload = studyUpdatedForce.eventData.payload;
+        const substationsIds = payload?.impactedSubstationsIds;
+        const deletedEquipments = payload?.deletedEquipments;
 
-        const deletedEquipmentId =
-            studyUpdatedForce.eventData.headers['deletedEquipmentId'];
-        const deletedEquipmentType =
-            studyUpdatedForce.eventData.headers['deletedEquipmentType'];
-
-        return [
-            substationsIdsArray,
-            { id: deletedEquipmentId, type: deletedEquipmentType },
-        ];
+        return [substationsIds, deletedEquipments];
     }
 
     useEffect(() => {
@@ -560,34 +548,40 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
-                const [substationsIds, deletedEquipment] =
+                const [substationsIds, deletedEquipments] =
                     parseStudyNotification(studyUpdatedForce);
-
+                if (deletedEquipments?.length > 0) {
+                    // removing deleted equipment from the network
+                    deletedEquipments.forEach((deletedEquipment) => {
+                        if (deletedEquipment?.id && deletedEquipment?.type) {
+                            console.info(
+                                'removing equipment with id=',
+                                deletedEquipment?.id,
+                                ' and type=',
+                                deletedEquipment?.type,
+                                ' from the network'
+                            );
+                            network.removeEquipment(
+                                deletedEquipment?.type,
+                                deletedEquipment?.id
+                            );
+                        }
+                    });
+                    dispatch(setDeletedEquipments(deletedEquipments));
+                }
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
-                    network.reloadImpactedSubstationsEquipments(substationsIds);
+                    network.reloadImpactedSubstationsEquipments(
+                        studyUuid,
+                        currentNodeRef.current,
+                        substationsIds
+                    );
                     dispatch(setUpdatedSubstationsIds(substationsIds));
-                }
-
-                // removing deleted equipment from the network
-                if (deletedEquipment?.id && deletedEquipment?.type) {
-                    console.info(
-                        'removing equipment with id=',
-                        deletedEquipment?.id,
-                        ' and type=',
-                        deletedEquipment?.type,
-                        ' from the network'
-                    );
-                    network.removeEquipment(
-                        deletedEquipment?.type,
-                        deletedEquipment?.id
-                    );
-                    dispatch(setDeletedEquipment(deletedEquipment));
                 }
             }
         }
-    }, [studyUpdatedForce, network, dispatch]);
+    }, [studyUpdatedForce, network, studyUuid, dispatch]);
 
     const loadNetwork = useCallback(
         (isUpdate) => {
@@ -624,7 +618,6 @@ export function StudyContainer({ view, onChangeTab }) {
         },
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
-    loadNetworkRef.current = loadNetwork;
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -634,6 +627,14 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
+        // A modification has been added to the currentNode and this one has been built incrementally.
+        // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
+        if (
+            isSameNode(previousCurrentNode, currentNode) &&
+            isNodeBuilt(previousCurrentNode)
+        ) {
+            return;
+        }
         loadNetwork(true);
     }, [loadNetwork, currentNode, wsConnected]);
 
@@ -700,8 +701,6 @@ export function StudyContainer({ view, onChangeTab }) {
             const ws = connectNotifications(studyUuid);
             const wsDirectory = connectDeletedStudyNotifications(studyUuid);
 
-            loadNetworkRef.current();
-
             // study cleanup at unmount event
             return function () {
                 websocketExpectedCloseRef.current = true;
@@ -711,7 +710,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(filteredNominalVoltagesUpdated(null));
             };
         }
-        // Note: dispach, loadNetworkRef, loadGeoData
+        // Note: dispach, loadGeoData
         // connectNotifications don't change
     }, [
         dispatch,
