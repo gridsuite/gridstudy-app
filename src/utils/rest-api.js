@@ -355,11 +355,6 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
-export function fetchNADSvg(svgUrl) {
-    console.debug(svgUrl);
-    return backendFetchJson(svgUrl);
-}
-
 function getQueryParamsList(params, paramName) {
     if (params !== undefined && params.length > 0) {
         const urlSearchParams = new URLSearchParams();

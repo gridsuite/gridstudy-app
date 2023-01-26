@@ -298,7 +298,7 @@ export default class MapEquipments {
                         vl.id
                     )
                 );
-                this.completeSubstationsInfos([...substation]);
+                this.completeSubstationsInfos([substation]);
                 break;
             default:
         }
