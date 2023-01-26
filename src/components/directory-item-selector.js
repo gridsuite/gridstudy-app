@@ -52,9 +52,11 @@ const DirectoryItemSelector = (props) => {
     const convertChildren = useCallback(
         (children) => {
             return children.map((e) => {
+                console.log('children', children);
                 return {
                     id: e.elementUuid,
                     name: e.elementName,
+                    specificMetadata: e.specificMetadata,
                     icon: getFileIcon(e.type, classes.icon),
                     children:
                         e.type === elementType.DIRECTORY

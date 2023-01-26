@@ -592,17 +592,13 @@
     "TapPositionValueError": "Le nombre de prises ne doit pas dépasser la valeur {value}",
 
     "GeneratorScaling": "Variation plan de production",
-    "DeltaP": "Δ P",
-    "TargetPText": "P cible",
     "IterativeLabel": "Itérative",
     "VariationMode": "Mode de variation",
     "ProportionalToPMax": "Proportionnel à Pmax",
-    "RegularDistribution": "Équipartition",
     "StackingUp": "Empilement",
     "variations": "Variations",
-    "CreateVariation": "Ajouter variation",
-    "Variations": "Variations",
     "GeneratorScalingError" : "Erreur lors de la création de la variation du plan de production",
+    "AllExplicitNamingFiltersError": "Tous les types de filtres doivent être par nommage lorsque le mode variation est empilement ou ventilation",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",

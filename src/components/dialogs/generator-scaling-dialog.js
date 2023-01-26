@@ -17,6 +17,8 @@ import { VARIATION_MODE, VARIATION_TYPE } from '../network/constants';
 import { useExpandableValues } from './inputs/use-expandable-values';
 import makeStyles from '@mui/styles/makeStyles';
 import { generatorScaling } from '../../utils/rest-api';
+import Alert from '@mui/material/Alert';
+import { FormattedMessage } from 'react-intl';
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
@@ -115,6 +117,7 @@ const GeneratorScalingVariation = ({
     });
 
     useEffect(() => {
+        console.log('filters : ', filters);
         onChange(index, { id, filters, variationValue, variationMode });
     }, [onChange, filters, variationValue, variationMode, index, id]);
 
@@ -140,6 +143,8 @@ const GeneratorScalingDialog = ({
     const inputForm = useInputForm();
 
     const [formValues, setFormValues] = useState(undefined);
+
+    const [error, setError] = useState(undefined);
 
     useEffect(() => {
         if (editData) {
@@ -172,6 +177,20 @@ const GeneratorScalingDialog = ({
                     error: true,
                     variationModeError: errorId,
                 });
+            }
+
+            console.log('variations: ', val.variationMode, val.filters);
+            if (
+                (val.variationMode === 'STACKING_UP' ||
+                    val.variationMode === 'VENTILATION') &&
+                !val.filters.every((f) => f.specificMetadata.type === 'IDENTIFIER_LIST')
+            ) {
+                res.set(idx, {
+                    ...res.get(idx),
+                    error: true,
+                    filterError: 'AllExplicitNamingFiltersError',
+                });
+                setError('AllExplicitNamingFiltersError');
             }
         });
         return res;
@@ -249,6 +268,11 @@ const GeneratorScalingDialog = ({
             <Grid container className={classes.padding}>
                 {gridItem(variationsField, 12)}
             </Grid>
+            {error && (
+                <Alert severity={'error'}>
+                    <FormattedMessage id={error} />
+                </Alert>
+            )}
         </ModificationDialog>
     );
 };

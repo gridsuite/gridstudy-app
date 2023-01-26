@@ -778,7 +778,11 @@ export const useDirectoryElements = ({
         return (
             <>
                 <FormControl
-                    className={classes.formDirectoryElements1}
+                    className={
+                        errorMsg
+                            ? classes.formDirectoryElementsError
+                            : classes.formDirectoryElements1
+                    }
                     error={!!errorMsg}
                     aria-errormessage={errorMsg}
                 >
@@ -789,7 +793,6 @@ export const useDirectoryElements = ({
                                     id="elements"
                                     className={classes.labelDirectoryElements}
                                     error={!!errorMsg}
-                                    aria-errormessage={errorMsg}
                                 >
                                     <FieldLabel
                                         label={label}
@@ -846,6 +849,7 @@ export const useDirectoryElements = ({
             </>
         );
     }, [
+        classes.formDirectoryElementsError,
         classes.formDirectoryElements1,
         classes.labelDirectoryElements,
         classes.formDirectoryElements2,

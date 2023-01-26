@@ -592,16 +592,12 @@
     "TapPositionValueError": "The number of taps must not exceed the value {value}",
 
     "GeneratorScaling": "Generator scaling",
-    "DeltaP": "Δ P",
-    "TargetPText": "Target P",
     "IterativeLabel": "Iterative",
     "VariationMode": "Variation mode",
     "ProportionalToPMax": "Proportional to max P",
-    "RegularDistribution": "Regular distribution",
     "StackingUp": "Stacking up",
-    "CreateVariation": "Add variation",
-    "Variations": "Variations",
     "GeneratorScalingError" : "Error while creating a generator scaling",
+    "AllExplicitNamingFiltersError": "All filters types have to be Explicit Naming when variation mode is stacking up or ventilation",
 
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",
