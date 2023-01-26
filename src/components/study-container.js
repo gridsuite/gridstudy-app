@@ -553,17 +553,20 @@ export function StudyContainer({ view, onChangeTab }) {
                 if (deletedEquipments?.length > 0) {
                     // removing deleted equipment from the network
                     deletedEquipments.forEach((deletedEquipment) => {
-                        if (deletedEquipment?.id && deletedEquipment?.type) {
+                        if (
+                            deletedEquipment?.equipmentId &&
+                            deletedEquipment?.equipmentType
+                        ) {
                             console.info(
                                 'removing equipment with id=',
-                                deletedEquipment?.id,
+                                deletedEquipment?.equipmentId,
                                 ' and type=',
-                                deletedEquipment?.type,
+                                deletedEquipment?.equipmentType,
                                 ' from the network'
                             );
                             network.removeEquipment(
-                                deletedEquipment?.type,
-                                deletedEquipment?.id
+                                deletedEquipment?.equipmentType,
+                                deletedEquipment?.equipmentId
                             );
                         }
                     });
