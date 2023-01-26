@@ -605,8 +605,8 @@ export const NetworkMapTab = ({
         if (deletedEquipments?.length > 0 && mapEquipments) {
             deletedEquipments.forEach((deletedEquipment) => {
                 mapEquipments.removeEquipment(
-                    deletedEquipment?.type,
-                    deletedEquipment?.id
+                    deletedEquipment?.equipmentType,
+                    deletedEquipment?.equipmentId
                 );
             });
         }
