@@ -41,7 +41,6 @@ const PhaseTapChangerPaneButtons = ({
                     onClick={() => generateTapRows()}
                     disabled={
                         disabled ||
-                        //!ratioTapChangerEnabled ||
                         lowTapPositionWatcher === null ||
                         highTapPositionWatcher === null
                     }
@@ -53,11 +52,7 @@ const PhaseTapChangerPaneButtons = ({
                 <Button
                     variant="contained"
                     onClick={() => setOpenCreateRuleDialog(true)}
-                    disabled={
-                        disabled ||
-                        //!ratioTapChangerEnabled ||
-                        isCreateRuleButtonDisabled
-                    }
+                    disabled={disabled || isCreateRuleButtonDisabled}
                 >
                     <FormattedMessage id="CreateDephasingRule" />
                 </Button>
@@ -66,7 +61,7 @@ const PhaseTapChangerPaneButtons = ({
                 <Button
                     variant="contained"
                     onClick={() => setOpenImportRuleDialog(true)}
-                    disabled={disabled /*!ratioTapChangerEnabled*/}
+                    disabled={disabled}
                 >
                     <FormattedMessage id="ImportDephasingRule" />
                 </Button>

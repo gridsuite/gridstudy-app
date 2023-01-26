@@ -1,5 +1,6 @@
 // constants
 // tab characteristics
+export const CHARACTERISTICS = 'characteristics';
 export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
 export const SERIES_RESISTANCE = 'seriesResistance';

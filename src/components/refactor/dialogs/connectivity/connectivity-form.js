@@ -123,6 +123,7 @@ export const ConnectivityForm = ({
 
         return object.id;
     }, []);
+
     const newVoltageLevelField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}

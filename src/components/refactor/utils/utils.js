@@ -9,7 +9,7 @@ export const isFieldRequired = (fieldName, schema, values) => {
             ?.required === true
     );
 
-    //static way, not working when using when in schema
+    //static way, not working when using "when" in schema, but does not need form values
     //return yup.reach(schema, fieldName)?.exclusiveTests?.required === true;
 };
 

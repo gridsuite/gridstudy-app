@@ -41,7 +41,6 @@ const RatioTapChangerPaneButtons = ({
                     onClick={() => generateTapRows()}
                     disabled={
                         disabled ||
-                        //!ratioTapChangerEnabled ||
                         lowTapPositionWatcher === null ||
                         highTapPositionWatcher === null
                     }
@@ -53,11 +52,7 @@ const RatioTapChangerPaneButtons = ({
                 <Button
                     variant="contained"
                     onClick={() => setOpenCreateRuleDialog(true)}
-                    disabled={
-                        disabled ||
-                        //!ratioTapChangerEnabled ||
-                        isCreateRuleButtonDisabled
-                    }
+                    disabled={disabled || isCreateRuleButtonDisabled}
                 >
                     <FormattedMessage id="CreateRegulationRule" />
                 </Button>

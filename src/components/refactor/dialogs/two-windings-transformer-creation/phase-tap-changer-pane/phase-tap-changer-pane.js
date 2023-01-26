@@ -26,31 +26,32 @@ import {
 } from './phase-tap-changer-pane-utils';
 
 const PhaseTapChangerPane = ({
+    id = PHASE_TAP_CHANGER,
     voltageLevelOptionsPromise,
     voltageLevelsEquipmentsOptionsPromise,
 }) => {
     const phaseTapChangerEnabledWatch = useWatch({
-        name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
+        name: `${id}.${ENABLED}`,
     });
 
     const regulationModeWatch = useWatch({
-        name: `${PHASE_TAP_CHANGER}.${REGULATION_MODE}`,
+        name: `${id}.${REGULATION_MODE}`,
     });
 
     const regulatingWatch = useWatch({
-        name: `${PHASE_TAP_CHANGER}.${REGULATING}`,
+        name: `${id}.${REGULATING}`,
     });
 
     const phaseTapChangerEnabledField = (
         <BooleanInput
-            name={`${PHASE_TAP_CHANGER}.${ENABLED}`}
+            name={`${id}.${ENABLED}`}
             label="ConfigurePhaseTapChanger"
         />
     );
 
     const regulationModeField = (
         <SelectInput
-            name={`${PHASE_TAP_CHANGER}.${REGULATION_MODE}`}
+            name={`${id}.${REGULATION_MODE}`}
             label={'RegulationMode'}
             options={Object.values(REGULATION_MODES)}
             disabled={!phaseTapChangerEnabledWatch}
@@ -59,7 +60,7 @@ const PhaseTapChangerPane = ({
 
     const regulatingField = (
         <BooleanInput
-            name={`${PHASE_TAP_CHANGER}.${REGULATING}`}
+            name={`${id}.${REGULATING}`}
             label="Regulating"
             formProps={{
                 disabled:
@@ -75,7 +76,7 @@ const PhaseTapChangerPane = ({
 
     const currentLimiterRegulatingValueField = (
         <FloatInput
-            name={`${PHASE_TAP_CHANGER}.${CURRENT_LIMITER_REGULATING_VALUE}`}
+            name={`${id}.${CURRENT_LIMITER_REGULATING_VALUE}`}
             label="RegulatingValueCurrentLimiter"
             formProps={{
                 disabled: !regulatingWatch || !phaseTapChangerEnabledWatch,
@@ -86,7 +87,7 @@ const PhaseTapChangerPane = ({
 
     const flowSetPointRegulatingValueField = (
         <FloatInput
-            name={`${PHASE_TAP_CHANGER}.${FLOW_SET_POINT_REGULATING_VALUE}`}
+            name={`${id}.${FLOW_SET_POINT_REGULATING_VALUE}`}
             label="RegulatingValueActivePowerControl"
             adornment={ActivePowerAdornment}
             formProps={{
@@ -97,7 +98,7 @@ const PhaseTapChangerPane = ({
 
     const targetDeadbandField = (
         <FloatInput
-            name={`${PHASE_TAP_CHANGER}.${TARGET_DEADBAND}`}
+            name={`${id}.${TARGET_DEADBAND}`}
             label="Deadband"
             adornment={ActivePowerAdornment}
             formProps={{
@@ -108,7 +109,7 @@ const PhaseTapChangerPane = ({
 
     const regulatingTerminalField = (
         <RegulatingTerminalForm
-            id={PHASE_TAP_CHANGER}
+            id={id}
             disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             voltageLevelsEquipmentsOptionsPromise={
@@ -119,86 +120,6 @@ const PhaseTapChangerPane = ({
             }
         />
     );
-
-    // const [ratioLowTapPosition, ratioLowTapPositionField] = useIntegerValue({
-    //     validation: {
-    //         isFieldRequired: ratioTapChangerEnabled,
-    //     },
-    // });
-
-    // const [ratioHighTapPosition, ratioHighTapPositionField] = useIntegerValue({
-    //     validation: {
-    //         isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
-    //         valueLessThanOrEqualTo: MAX_TAP_NUMBER,
-    //         valueGreaterThanOrEqualTo: ratioLowTapPosition,
-    //         errorMsgId: 'HighTapPositionError',
-    //     },
-    //     defaultValue:
-    //         (isCopy || editData) && computeHighTapPosition(ratioTapRows),
-    // });
-
-    // const [ratioTapPosition, ratioTapPositionField] = useIntegerValue({
-    //     validation: {
-    //         isFieldRequired: ratioTapChangerEnabled,
-    //         valueGreaterThanOrEqualTo: ratioLowTapPosition,
-    //         valueLessThanOrEqualTo: ratioHighTapPosition
-    //             ? ratioHighTapPosition
-    //             : computeHighTapPosition(ratioTapRows),
-    //         errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
-    //     },
-    // });
-
-    // const [targetVoltage, targetVoltage1Field] = useDoubleValue({
-    //     label: 'TargetVoltage',
-    //     id: 'TargetVoltage',
-    //     formProps: {
-    //         disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
-    //     },
-    //     validation: {
-    //         isFieldRequired: ratioTapRegulating && ratioTapChangerEnabled,
-    //         valueGreaterThan: '0',
-    //         errorMsgId: 'TargetVoltageGreaterThanZero',
-    //     },
-    //     adornment: VoltageAdornment,
-    //     inputForm: ratioTapInputForm,
-    //     defaultValue: formValues?.ratioTapChanger?.targetV,
-    // });
-
-    // const [ratioTapTargetDeadband, ratioTapTargetDeadbandField] =
-    //     useDoubleValue({
-    //         label: 'Deadband',
-    //         id: 'TargetDeadband',
-    //         formProps: {
-    //             disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
-    //         },
-    //         validation: {
-    //             isFieldRequired: false,
-    //             valueGreaterThan: '0',
-    //             errorMsgId: 'TargetDeadbandGreaterThanZero',
-    //         },
-    //         adornment: VoltageAdornment,
-    //         inputForm: ratioTapInputForm,
-    //         defaultValue:
-    //             formValues?.ratioTapChanger?.targetDeadband &&
-    //             formValues.ratioTapChanger.targetDeadband !== '0'
-    //                 ? formValues.ratioTapChanger.targetDeadband
-    //                 : '',
-    //     });
-
-    // const [ratioTapRegulatingTerminal, ratioTapRegulatingTerminalField] =
-    //     useRegulatingTerminalValue({
-    //         label: 'RegulatingTerminalGenerator',
-    //         inputForm: ratioTapInputForm,
-    //         disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
-    //         voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
-    //         voltageLevelIdDefaultValue:
-    //             formValues?.ratioTapChanger?.regulatingTerminalVlId ?? '',
-    //         equipmentSectionTypeDefaultValue:
-    //             formValues?.ratioTapChanger?.regulatingTerminalType ??
-    //             EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name,
-    //         equipmentSectionIdDefaultValue:
-    //             formValues?.ratioTapChanger?.regulatingTerminalId ?? '',
-    //     });
 
     return (
         <>

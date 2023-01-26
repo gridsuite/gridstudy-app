@@ -91,7 +91,6 @@ export const getRegulatingTerminalFormData = ({
     equipmentName,
     equipmentType,
 }) => {
-    console.log('TEST', equipmentId, voltageLevelId, equipmentType);
     return {
         [VOLTAGE_LEVEL]: getRegulatingTerminalVoltageLevelData({
             voltageLevelId,

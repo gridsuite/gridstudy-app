@@ -19,31 +19,32 @@ import {
 } from './ratio-tap-changer-pane-utils';
 
 const RatioTapChangerPane = ({
+    id = RATIO_TAP_CHANGER,
     voltageLevelOptionsPromise,
     voltageLevelsEquipmentsOptionsPromise,
 }) => {
     const ratioTapChangerEnabledWatcher = useWatch({
-        name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
+        name: `${id}.${ENABLED}`,
     });
 
     const ratioTapLoadTapChangingCapabilitiesWatcher = useWatch({
-        name: `${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`,
+        name: `${id}.${LOAD_TAP_CHANGING_CAPABILITIES}`,
     });
 
     const regulatingWatch = useWatch({
-        name: `${RATIO_TAP_CHANGER}.${REGULATING}`,
+        name: `${id}.${REGULATING}`,
     });
 
     const ratioTapChangerEnabledField = (
         <BooleanInput
-            name={`${RATIO_TAP_CHANGER}.${ENABLED}`}
+            name={`${id}.${ENABLED}`}
             label="ConfigureRatioTapChanger"
         />
     );
 
     const ratioTapLoadTapChangingCapabilitiesField = (
         <BooleanInput
-            name={`${RATIO_TAP_CHANGER}.${LOAD_TAP_CHANGING_CAPABILITIES}`}
+            name={`${id}.${LOAD_TAP_CHANGING_CAPABILITIES}`}
             label="OnLoad"
             formProps={{
                 disabled: !ratioTapChangerEnabledWatcher,
@@ -53,7 +54,7 @@ const RatioTapChangerPane = ({
 
     const regulatingField = (
         <BooleanInput
-            name={`${RATIO_TAP_CHANGER}.${REGULATING}`}
+            name={`${id}.${REGULATING}`}
             label="VoltageRegulation"
             formProps={{
                 disabled:
@@ -65,7 +66,7 @@ const RatioTapChangerPane = ({
 
     const targetVoltage1Field = (
         <FloatInput
-            name={`${RATIO_TAP_CHANGER}.${TARGET_V}`}
+            name={`${id}.${TARGET_V}`}
             label="TargetVoltage"
             adornment={VoltageAdornment}
             formProps={{
@@ -76,7 +77,7 @@ const RatioTapChangerPane = ({
 
     const targetDeadbandField = (
         <FloatInput
-            name={`${RATIO_TAP_CHANGER}.${TARGET_DEADBAND}`}
+            name={`${id}.${TARGET_DEADBAND}`}
             label="Deadband"
             adornment={VoltageAdornment}
             formProps={{
@@ -87,7 +88,7 @@ const RatioTapChangerPane = ({
 
     const regulatingTerminalField = (
         <RegulatingTerminalForm
-            id={RATIO_TAP_CHANGER}
+            id={id}
             disabled={!ratioTapChangerEnabledWatcher || !regulatingWatch}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             voltageLevelsEquipmentsOptionsPromise={
@@ -98,86 +99,6 @@ const RatioTapChangerPane = ({
             }
         />
     );
-
-    // const [ratioLowTapPosition, ratioLowTapPositionField] = useIntegerValue({
-    //     validation: {
-    //         isFieldRequired: ratioTapChangerEnabled,
-    //     },
-    // });
-
-    // const [ratioHighTapPosition, ratioHighTapPositionField] = useIntegerValue({
-    //     validation: {
-    //         isFieldRequired: ratioTapChangerEnabled && !editData && !isCopy,
-    //         valueLessThanOrEqualTo: MAX_TAP_NUMBER,
-    //         valueGreaterThanOrEqualTo: ratioLowTapPosition,
-    //         errorMsgId: 'HighTapPositionError',
-    //     },
-    //     defaultValue:
-    //         (isCopy || editData) && computeHighTapPosition(ratioTapRows),
-    // });
-
-    // const [ratioTapPosition, ratioTapPositionField] = useIntegerValue({
-    //     validation: {
-    //         isFieldRequired: ratioTapChangerEnabled,
-    //         valueGreaterThanOrEqualTo: ratioLowTapPosition,
-    //         valueLessThanOrEqualTo: ratioHighTapPosition
-    //             ? ratioHighTapPosition
-    //             : computeHighTapPosition(ratioTapRows),
-    //         errorMsgId: 'TapPositionBetweenLowAndHighTapPositionValue',
-    //     },
-    // });
-
-    // const [targetVoltage, targetVoltage1Field] = useDoubleValue({
-    //     label: 'TargetVoltage',
-    //     id: 'TargetVoltage',
-    //     formProps: {
-    //         disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
-    //     },
-    //     validation: {
-    //         isFieldRequired: ratioTapRegulating && ratioTapChangerEnabled,
-    //         valueGreaterThan: '0',
-    //         errorMsgId: 'TargetVoltageGreaterThanZero',
-    //     },
-    //     adornment: VoltageAdornment,
-    //     inputForm: ratioTapInputForm,
-    //     defaultValue: formValues?.ratioTapChanger?.targetV,
-    // });
-
-    // const [ratioTapTargetDeadband, ratioTapTargetDeadbandField] =
-    //     useDoubleValue({
-    //         label: 'Deadband',
-    //         id: 'TargetDeadband',
-    //         formProps: {
-    //             disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
-    //         },
-    //         validation: {
-    //             isFieldRequired: false,
-    //             valueGreaterThan: '0',
-    //             errorMsgId: 'TargetDeadbandGreaterThanZero',
-    //         },
-    //         adornment: VoltageAdornment,
-    //         inputForm: ratioTapInputForm,
-    //         defaultValue:
-    //             formValues?.ratioTapChanger?.targetDeadband &&
-    //             formValues.ratioTapChanger.targetDeadband !== '0'
-    //                 ? formValues.ratioTapChanger.targetDeadband
-    //                 : '',
-    //     });
-
-    // const [ratioTapRegulatingTerminal, ratioTapRegulatingTerminalField] =
-    //     useRegulatingTerminalValue({
-    //         label: 'RegulatingTerminalGenerator',
-    //         inputForm: ratioTapInputForm,
-    //         disabled: !ratioTapRegulating || !ratioTapChangerEnabled,
-    //         voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
-    //         voltageLevelIdDefaultValue:
-    //             formValues?.ratioTapChanger?.regulatingTerminalVlId ?? '',
-    //         equipmentSectionTypeDefaultValue:
-    //             formValues?.ratioTapChanger?.regulatingTerminalType ??
-    //             EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name,
-    //         equipmentSectionIdDefaultValue:
-    //             formValues?.ratioTapChanger?.regulatingTerminalId ?? '',
-    //     });
 
     return (
         <>

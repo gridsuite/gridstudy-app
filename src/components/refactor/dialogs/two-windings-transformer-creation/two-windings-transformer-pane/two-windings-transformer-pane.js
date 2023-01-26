@@ -14,6 +14,7 @@ import FloatInput from '../../../rhf-inputs/float-input';
 import TextInput from '../../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import {
+    CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITS_1,
@@ -37,17 +38,24 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
+const TwoWindingsTransformerPane = ({
+    id = CHARACTERISTICS,
+    voltageLevelOptionsPromise,
+}) => {
     const classes = useStyles();
 
     // CHARACTERISTICS TAP PANE
     const twoWindingsTransformerIdField = (
-        <TextInput name={EQUIPMENT_ID} label="ID" formProps={filledTextField} />
+        <TextInput
+            name={`${id}.${EQUIPMENT_ID}`}
+            label="ID"
+            formProps={filledTextField}
+        />
     );
 
     const twoWindingsTransformerNameField = (
         <TextInput
-            name={EQUIPMENT_NAME}
+            name={`${id}.${EQUIPMENT_NAME}`}
             label="Name"
             formProps={filledTextField}
         />
@@ -55,7 +63,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const seriesResistanceField = (
         <FloatInput
-            name={SERIES_RESISTANCE}
+            name={`${id}.${SERIES_RESISTANCE}`}
             label="SeriesResistanceText"
             adornment={OhmAdornment}
         />
@@ -63,7 +71,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const seriesReactanceField = (
         <FloatInput
-            name={SERIES_REACTANCE}
+            name={`${id}.${SERIES_REACTANCE}`}
             label="SeriesReactanceText"
             adornment={OhmAdornment}
         />
@@ -71,7 +79,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const magnetizingConductanceField = (
         <FloatInput
-            name={MAGNETIZING_CONDUCTANCE}
+            name={`${id}.${MAGNETIZING_CONDUCTANCE}`}
             label="MagnetizingConductance"
             adornment={MicroSusceptanceAdornment}
         />
@@ -79,7 +87,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const magnetizingSusceptanceField = (
         <FloatInput
-            name={MAGNETIZING_SUSCEPTANCE}
+            name={`${id}.${MAGNETIZING_SUSCEPTANCE}`}
             label="MagnetizingSusceptance"
             adornment={MicroSusceptanceAdornment}
         />
@@ -87,7 +95,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const ratedSField = (
         <FloatInput
-            name={RATED_S}
+            name={`${id}.${RATED_S}`}
             label="RatedNominalPowerText"
             adornment={MVAPowerAdornment}
         />
@@ -95,7 +103,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const ratedVoltage1Field = (
         <FloatInput
-            name={RATED_VOLTAGE_1}
+            name={`${id}.${RATED_VOLTAGE_1}`}
             label="RatedVoltage"
             adornment={VoltageAdornment}
         />
@@ -103,7 +111,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const ratedVoltage2Field = (
         <FloatInput
-            name={RATED_VOLTAGE_2}
+            name={`${id}.${RATED_VOLTAGE_2}`}
             label="RatedVoltage"
             adornment={VoltageAdornment}
         />
@@ -111,7 +119,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const permanentCurrentLimit1Field = (
         <FloatInput
-            name={`${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`}
+            name={`${id}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`}
             label="PermanentCurrentLimitText1"
             adornment={AmpereAdornment}
         />
@@ -119,7 +127,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const permanentCurrentLimit2Field = (
         <FloatInput
-            name={`${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`}
+            name={`${id}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`}
             label="PermanentCurrentLimitText2"
             adornment={AmpereAdornment}
         />
@@ -127,7 +135,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const connectivity1Field = (
         <ConnectivityForm
-            id={CONNECTIVITY_1}
+            id={`${id}.${CONNECTIVITY_1}`}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             withPosition={true}
             direction="column"
@@ -136,7 +144,7 @@ const TwoWindingsTransformerPane = ({ voltageLevelOptionsPromise }) => {
 
     const connectivity2Field = (
         <ConnectivityForm
-            id={CONNECTIVITY_2}
+            id={`${id}.${CONNECTIVITY_2}`}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             withPosition={true}
             direction="column"
