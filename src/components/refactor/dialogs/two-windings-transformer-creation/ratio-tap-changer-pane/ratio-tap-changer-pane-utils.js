@@ -10,7 +10,6 @@ import {
     EQUIPMENT_TYPE,
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
-    getRegulatingTerminalValidationSchema,
     VOLTAGE_LEVEL,
     VOLTAGE_LEVEL_ID,
     VOLTAGE_LEVEL_NAME,

@@ -100,19 +100,21 @@ export const getConnectivityBusBarSectionData = ({
     };
 };
 
-export const getConnectivityFormData = ({
-    voltageLevelId,
-    voltageLevelName,
-    voltageLevelSubstationId,
-    voltageLevelNominalVoltage,
-    voltageLevelTopologyKind,
-    busbarSectionId,
-    busbarSectionName,
-    connectionDirection = null,
-    connectionName = '',
-    connectionPosition = null,
-},
-id = CONNECTIVITY) => {
+export const getConnectivityFormData = (
+    {
+        voltageLevelId,
+        voltageLevelName,
+        voltageLevelSubstationId,
+        voltageLevelNominalVoltage,
+        voltageLevelTopologyKind,
+        busbarSectionId,
+        busbarSectionName,
+        connectionDirection = null,
+        connectionName = '',
+        connectionPosition = null,
+    },
+    id = CONNECTIVITY
+) => {
     return {
         [id]: {
             [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({

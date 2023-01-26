@@ -12,9 +12,12 @@ const BooleanInput = ({ name, label, formProps }) => {
 
     const intl = useIntl();
 
-    const handleChangeValue = useCallback((event) => {
-        onChange(event.target.checked);
-    }, []);
+    const handleChangeValue = useCallback(
+        (event) => {
+            onChange(event.target.checked);
+        },
+        [onChange]
+    );
 
     return (
         <FormControlLabel
