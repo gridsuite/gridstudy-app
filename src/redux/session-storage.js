@@ -7,33 +7,30 @@
 
 import { APP_NAME } from '../utils/config-params';
 
-export const SESSION_STORAGE_SLD_STATE_KEY_PREFIX = (
-    APP_NAME + '_SLD_STATE_'
+export const SESSION_STORAGE_DIAGRAM_STATE_KEY_PREFIX = (
+    APP_NAME + '_DIAGRAM_STATE_'
 ).toUpperCase();
 
-const getSldStateKeyPrefixFromStudyUuid = (studyUuid) => {
-    return SESSION_STORAGE_SLD_STATE_KEY_PREFIX + studyUuid;
+const getDiagramStateKeyPrefixFromStudyUuid = (studyUuid) => {
+    return SESSION_STORAGE_DIAGRAM_STATE_KEY_PREFIX + studyUuid;
 };
 
-export const syncSldStateWithSessionStorage = (sldState, studyUuid) => {
+export const syncDiagramStateWithSessionStorage = (diagramState, studyUuid) => {
     if (studyUuid == null) {
         return;
     }
-
     sessionStorage.setItem(
-        getSldStateKeyPrefixFromStudyUuid(studyUuid),
-        JSON.stringify(sldState)
+        getDiagramStateKeyPrefixFromStudyUuid(studyUuid),
+        JSON.stringify(diagramState)
     );
 };
 
-export const loadSldStateFromSessionStorage = (studyUuid) => {
-    const sldState = JSON.parse(
-        sessionStorage.getItem(getSldStateKeyPrefixFromStudyUuid(studyUuid))
+export const loadDiagramStateFromSessionStorage = (studyUuid) => {
+    const diagramState = JSON.parse(
+        sessionStorage.getItem(getDiagramStateKeyPrefixFromStudyUuid(studyUuid))
     );
-
-    if (sldState === null) {
+    if (diagramState === null) {
         return [];
     }
-
-    return sldState;
+    return diagramState;
 };

@@ -18,7 +18,7 @@ import {
 } from '../../../utils/config-params';
 import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
-import { SvgType } from './utils';
+import { SvgType } from '../diagram-common';
 
 const PositionDiagramPane = ({
     open,

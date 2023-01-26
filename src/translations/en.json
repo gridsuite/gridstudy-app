@@ -653,7 +653,7 @@
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
 
-    "depth": "Depth",
+    "depth": "Depth: ",
 
     "root": "Root",
     "LogOnlySingleNode": "Log single node",
