@@ -37,7 +37,7 @@ import {
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
-    setDeletedEquipment,
+    setDeletedEquipments,
     setUpdatedSubstationsIds,
 } from '../redux/actions';
 import Network from './network/network';
@@ -479,21 +479,11 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     function parseStudyNotification(studyUpdatedForce) {
-        const substationsIds =
-            studyUpdatedForce.eventData.headers['substationsIds'];
-        const substationsIdsArray = substationsIds
-            .substring(1, substationsIds.length - 1)
-            .split(', ');
+        const payload = studyUpdatedForce.eventData.payload;
+        const substationsIds = payload?.impactedSubstationsIds;
+        const deletedEquipments = payload?.deletedEquipments;
 
-        const deletedEquipmentId =
-            studyUpdatedForce.eventData.headers['deletedEquipmentId'];
-        const deletedEquipmentType =
-            studyUpdatedForce.eventData.headers['deletedEquipmentType'];
-
-        return [
-            substationsIdsArray,
-            { id: deletedEquipmentId, type: deletedEquipmentType },
-        ];
+        return [substationsIds, deletedEquipments];
     }
 
     useEffect(() => {
@@ -504,30 +494,32 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
-                const [substationsIds, deletedEquipment] =
+                const [substationsIds, deletedEquipments] =
                     parseStudyNotification(studyUpdatedForce);
-
+                if (deletedEquipments?.length > 0) {
+                    // removing deleted equipment from the network
+                    deletedEquipments.forEach((deletedEquipment) => {
+                        if (deletedEquipment?.id && deletedEquipment?.type) {
+                            console.info(
+                                'removing equipment with id=',
+                                deletedEquipment?.id,
+                                ' and type=',
+                                deletedEquipment?.type,
+                                ' from the network'
+                            );
+                            network.removeEquipment(
+                                deletedEquipment?.type,
+                                deletedEquipment?.id
+                            );
+                        }
+                    });
+                    dispatch(setDeletedEquipments(deletedEquipments));
+                }
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
                     network.reloadImpactedSubstationsEquipments(substationsIds);
                     dispatch(setUpdatedSubstationsIds(substationsIds));
-                }
-
-                // removing deleted equipment from the network
-                if (deletedEquipment?.id && deletedEquipment?.type) {
-                    console.info(
-                        'removing equipment with id=',
-                        deletedEquipment?.id,
-                        ' and type=',
-                        deletedEquipment?.type,
-                        ' from the network'
-                    );
-                    network.removeEquipment(
-                        deletedEquipment?.type,
-                        deletedEquipment?.id
-                    );
-                    dispatch(setDeletedEquipment(deletedEquipment));
                 }
             }
         }

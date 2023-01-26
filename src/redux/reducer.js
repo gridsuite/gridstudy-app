@@ -77,7 +77,7 @@ import {
     MAP_EQUIPMENTS_CREATED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     SET_UPDATED_SUBSTATIONS_IDS,
-    SET_DELETED_EQUIPMENT,
+    SET_DELETED_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -165,7 +165,7 @@ const initialState = {
     sldState: [],
     reloadMap: true,
     updatedSubstationsIds: [],
-    deletedEquipment: {},
+    deletedEquipments: [],
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -417,8 +417,8 @@ export const reducer = createReducer(initialState, {
         state.updatedSubstationsIds = action.updatedSubstationsIds;
     },
 
-    [SET_DELETED_EQUIPMENT]: (state, action) => {
-        state.deletedEquipment = action.deletedEquipment;
+    [SET_DELETED_EQUIPMENTS]: (state, action) => {
+        state.deletedEquipments = action.deletedEquipments;
     },
 
     [ADD_LOADFLOW_NOTIF]: (state) => {
@@ -508,7 +508,7 @@ export const reducer = createReducer(initialState, {
         state.currentTreeNode = action.currentTreeNode;
         // current node has changed, then will need to reload Geo Data
         state.updatedSubstationsIds = [];
-        state.deletedEquipment = {};
+        state.deletedEquipments = [];
         state.reloadMap = true;
     },
     [SELECTED_TREE_NODE_FOR_COPY]: (state, action) => {
