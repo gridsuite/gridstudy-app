@@ -111,7 +111,8 @@ import {
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadDiagramStateFromSessionStorage } from './session-storage';
-import { SvgType, ViewState } from '../components/diagrams/diagram-common';
+import { ViewState } from '../components/diagrams/diagram-common';
+import { EQUIPMENT_TYPES } from '../components/util/equipment-types';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -567,16 +568,18 @@ export const reducer = createReducer(initialState, {
                 diagram.id === action.id && diagram.svgType === action.svgType
         );
 
-        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+        if (action.svgType === EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type) {
             // First, we check if there is already a Network Area Diagram in the diagramStates.
             const firstNadIndex = diagramStates.findIndex(
-                (diagram) => diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM
+                (diagram) =>
+                    diagram.svgType ===
+                    EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
             );
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
                 diagramStates.push({
                     id: action.id,
-                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    svgType: EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type,
                     state: ViewState.OPENED,
                 });
 
@@ -584,7 +587,7 @@ export const reducer = createReducer(initialState, {
                 if (state.fullScreenDiagram?.id) {
                     state.fullScreenDiagram = {
                         id: action.id,
-                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                        svgType: EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type,
                     };
                 }
             } else {
@@ -593,7 +596,10 @@ export const reducer = createReducer(initialState, {
                     diagramStates[firstNadIndex].state === ViewState.MINIMIZED
                 ) {
                     diagramStates.forEach((diagram) => {
-                        if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                        if (
+                            diagram.svgType ===
+                            EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
+                        ) {
                             diagram.state = ViewState.OPENED;
                         }
                     });
@@ -602,7 +608,7 @@ export const reducer = createReducer(initialState, {
                 if (diagramToOpenIndex < 0) {
                     diagramStates.push({
                         id: action.id,
-                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                        svgType: EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type,
                         state: diagramStates[firstNadIndex].state,
                     });
                 }
@@ -612,11 +618,11 @@ export const reducer = createReducer(initialState, {
                 if (
                     state.fullScreenDiagram?.svgType &&
                     state.fullScreenDiagram?.svgType !==
-                        SvgType.NETWORK_AREA_DIAGRAM
+                        EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
                 ) {
                     state.fullScreenDiagram = {
                         id: diagramStates[firstNadIndex].id,
-                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                        svgType: EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type,
                     };
                 }
             }
@@ -631,7 +637,8 @@ export const reducer = createReducer(initialState, {
                     // We minimize all the other OPENED SLD.
                     diagramStates.forEach((diagram) => {
                         if (
-                            diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
+                            diagram.svgType !==
+                                EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type &&
                             diagram.state === ViewState.OPENED
                         ) {
                             diagram.state = ViewState.MINIMIZED;
@@ -652,7 +659,8 @@ export const reducer = createReducer(initialState, {
                 // We minimize all the other OPENED SLD.
                 diagramStates.forEach((diagram) => {
                     if (
-                        diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
+                        diagram.svgType !==
+                            EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type &&
                         diagram.state === ViewState.OPENED
                     ) {
                         diagram.state = ViewState.MINIMIZED;
@@ -679,10 +687,13 @@ export const reducer = createReducer(initialState, {
     [MINIMIZE_DIAGRAM]: (state, action) => {
         const diagramStates = state.diagramStates;
 
-        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+        if (action.svgType === EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type) {
             // For network area diagrams, the ID is irrelevant, we will minimize all the NAD in the state.diagramStates.
             diagramStates.forEach((diagram) => {
-                if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                if (
+                    diagram.svgType ===
+                    EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
+                ) {
                     diagram.state = ViewState.MINIMIZED;
                 }
             });
@@ -709,7 +720,7 @@ export const reducer = createReducer(initialState, {
                 diagram.id === action.id && diagram.svgType === action.svgType
         );
         if (diagramToPinToggleIndex >= 0) {
-            if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            if (action.svgType === EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type) {
                 // If the current NAD is PINNED, we put all NAD to OPENED. Otherwise, we pul them to PINNED.
                 const newStateForNads =
                     diagramStates[diagramToPinToggleIndex].state ===
@@ -717,7 +728,10 @@ export const reducer = createReducer(initialState, {
                         ? ViewState.OPENED
                         : ViewState.PINNED;
                 diagramStates.forEach((diagram) => {
-                    if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                    if (
+                        diagram.svgType ===
+                        EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
+                    ) {
                         diagram.state = newStateForNads;
                     }
                 });
@@ -753,10 +767,12 @@ export const reducer = createReducer(initialState, {
     [CLOSE_DIAGRAM]: (state, action) => {
         let diagramStates = state.diagramStates;
 
-        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+        if (action.svgType === EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type) {
             // If we close a NAD, we close all of them.
             diagramStates = diagramStates.filter(
-                (diagram) => diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                (diagram) =>
+                    diagram.svgType !==
+                    EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
             );
         } else {
             // If we close a SLD, we only remove one.

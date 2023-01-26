@@ -35,8 +35,9 @@ import { DiagramPane } from './diagrams/diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { SvgType, useDiagram } from './diagrams/diagram-common';
+import { useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
+import { EQUIPMENT_TYPES } from './util/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -149,14 +150,14 @@ const StudyPane = ({
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
             props.onChangeTab(0); // switch to map view
-            openDiagramView(vlId, SvgType.VOLTAGE_LEVEL);
+            openDiagramView(vlId, EQUIPMENT_TYPES.VOLTAGE_LEVEL.type);
         }
     }
 
     const openVoltageLevel = useCallback(
         (vlId) => {
             if (!network) return;
-            openDiagramView(vlId, SvgType.VOLTAGE_LEVEL);
+            openDiagramView(vlId, EQUIPMENT_TYPES.VOLTAGE_LEVEL.type);
         },
         [network, openDiagramView]
     );

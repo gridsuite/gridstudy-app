@@ -68,4 +68,7 @@ export const EQUIPMENT_TYPES = {
     THREE_WINDINGS_TRANSFORMER_LEG: {
         type: 'THREE_WINDINGS_TRANSFORMER_LEG',
     },
+    NETWORK_AREA_DIAGRAM: {
+        type: 'NETWORK_AREA_DIAGRAM',
+    },
 };

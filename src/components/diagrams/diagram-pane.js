@@ -25,7 +25,7 @@ import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import makeStyles from '@mui/styles/makeStyles';
-import { useDiagram, ViewState, SvgType } from './diagram-common';
+import { useDiagram, ViewState } from './diagram-common';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
@@ -36,6 +36,7 @@ import { SLD_DISPLAY_MODE } from '../network/constants';
 import clsx from 'clsx';
 import { useNameOrId } from '../util/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -134,7 +135,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state: state,
                     name: label,
                     svgUrl: svgUrl,
-                    svgType: SvgType.SUBSTATION,
+                    svgType: EQUIPMENT_TYPES.SUBSTATION.type,
                 };
             }
 
@@ -157,7 +158,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state: state,
                     name: label,
                     svgUrl: svgUrl,
-                    svgType: SvgType.VOLTAGE_LEVEL,
+                    svgType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
                     substationId: substation?.id,
                 };
             }
@@ -188,22 +189,27 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state: state,
                     name: nadTitle,
                     svgUrl: svgUrl,
-                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    svgType: EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type,
                 };
             }
 
             if (!network) return;
-            if (diagramState.svgType === SvgType.VOLTAGE_LEVEL) {
+            if (diagramState.svgType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type) {
                 return createVoltageLevelDiagramView(
                     diagramState.id,
                     diagramState.state
                 );
-            } else if (diagramState.svgType === SvgType.SUBSTATION) {
+            } else if (
+                diagramState.svgType === EQUIPMENT_TYPES.SUBSTATION.type
+            ) {
                 return createSubstationDiagramView(
                     diagramState.id,
                     diagramState.state
                 );
-            } else if (diagramState.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            } else if (
+                diagramState.svgType ===
+                EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
+            ) {
                 return createNetworkAreaDiagramView(
                     diagramState.ids,
                     diagramState.state,
@@ -303,7 +309,10 @@ export function DiagramPane({
         let networkAreaViewState = ViewState.OPENED;
 
         diagramStates.forEach((diagramState) => {
-            if (diagramState.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            if (
+                diagramState.svgType ===
+                EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
+            ) {
                 networkAreaIds.push(diagramState.id);
                 networkAreaViewState = diagramState.state; // They should all be the same value
             } else {
@@ -322,7 +331,7 @@ export function DiagramPane({
             let networkAreaDiagramView = createView({
                 ids: networkAreaIds,
                 state: networkAreaViewState,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type,
                 depth: networkAreaDiagramDepth,
             });
 
@@ -331,7 +340,10 @@ export function DiagramPane({
             if (networkAreaDiagramView) {
                 diagramViews.push(networkAreaDiagramView);
             } else {
-                closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
+                closeDiagramView(
+                    null,
+                    EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
+                ); // In this case, the ID is irrelevant
             }
         }
         setViews(diagramViews);
@@ -387,7 +399,8 @@ export function DiagramPane({
                 .find(
                     (diagramView) =>
                         diagramView.id === id &&
-                        diagramView.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                        diagramView.svgType !==
+                            EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
                 )
                 ?.ref?.current?.reloadSvg();
         } else {
@@ -518,7 +531,8 @@ export function DiagramPane({
                             {
                                 /* This hack will add a space between all the SLD and the NAD. This space takes all the remaining space on screen. */
                                 diagramView.svgType ===
-                                    SvgType.NETWORK_AREA_DIAGRAM && (
+                                    EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM
+                                        .type && (
                                     <div className={classes.separator}></div>
                                 )
                             }
@@ -535,7 +549,7 @@ export function DiagramPane({
                                 computedHeight={
                                     // We are not harmonizing the NAD's height with the SLD's
                                     diagramView.svgType !==
-                                    SvgType.NETWORK_AREA_DIAGRAM
+                                    EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
                                         ? computedHeight
                                         : undefined
                                 }
@@ -565,7 +579,8 @@ export function DiagramPane({
                                 key={diagramView.svgType + diagramView.id}
                                 icon={
                                     diagramView.svgType ===
-                                    SvgType.NETWORK_AREA_DIAGRAM ? (
+                                    EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM
+                                        .type ? (
                                         <>
                                             <ArrowUpwardIcon />
                                             <TimelineIcon />
