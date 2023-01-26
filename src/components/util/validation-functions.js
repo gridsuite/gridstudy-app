@@ -34,7 +34,7 @@ function toNumber(value) {
  * Returns true if value is either undefined, null, empty or only contains whitespaces.
  * Otherwise, if value is a boolean or a number, returns false.
  */
-function isBlankOrEmpty(value) {
+export function isBlankOrEmpty(value) {
     if (value === undefined || value === null) {
         return true;
     }

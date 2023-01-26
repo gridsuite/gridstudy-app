@@ -38,7 +38,6 @@ import {
     MAP_MANUAL_REFRESH,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
-    FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
     CHANGE_REORDERED_COLUMNS,
@@ -59,25 +58,28 @@ import {
     CENTER_ON_SUBSTATION,
     ADD_NOTIFICATION,
     REMOVE_NOTIFICATION_BY_NODE,
-    OPEN_NETWORK_AREA_DIAGRAM,
-    FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
     CURRENT_TREE_NODE,
     SELECTED_TREE_NODE_FOR_COPY,
     SET_MODIFICATIONS_IN_PROGRESS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
-    OPEN_SLD,
-    MINIMIZE_SLD,
-    TOGGLE_PIN_SLD,
-    CLOSE_SLD,
+    OPEN_DIAGRAM,
+    MINIMIZE_DIAGRAM,
+    TOGGLE_PIN_DIAGRAM,
+    CLOSE_DIAGRAM,
+    CLOSE_DIAGRAMS,
     ADD_SHORT_CIRCUIT_NOTIF,
     RESET_SHORT_CIRCUIT_NOTIF,
     RESET_MAP_RELOADED,
     ENABLE_DEVELOPER_MODE,
     MAP_EQUIPMENTS_CREATED,
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
+    SET_FULLSCREEN_DIAGRAM,
     SET_UPDATED_SUBSTATIONS_IDS,
     SET_DELETED_EQUIPMENT,
+    RESET_NETWORK_AREA_DIAGRAM_DEPTH,
+    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -108,8 +110,8 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
-import { loadSldStateFromSessionStorage } from './session-storage';
-import { ViewState } from '../components/diagrams/singleLineDiagram/utils';
+import { loadDiagramStateFromSessionStorage } from './session-storage';
+import { SvgType, ViewState } from '../components/diagrams/diagram-common';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -150,22 +152,21 @@ const initialState = {
     sensiNotif: false,
     shortCircuitNotif: false,
     filteredNominalVoltages: null,
-    fullScreenSldId: null,
-    fullScreenNadId: null,
+    fullScreenDiagram: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
     allReorderedTableDefinitionIndexes: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
-    voltageLevelsIdsForNad: [],
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
     studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
-    sldState: [],
+    diagramStates: [],
     reloadMap: true,
     updatedSubstationsIds: [],
     deletedEquipment: {},
+    networkAreaDiagramDepth: 0,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -177,7 +178,9 @@ export const reducer = createReducer(initialState, {
         state.studyUuid = action.studyRef[0];
 
         if (action.studyRef[0] != null) {
-            state.sldState = loadSldStateFromSessionStorage(action.studyRef[0]);
+            state.diagramStates = loadDiagramStateFromSessionStorage(
+                action.studyRef[0]
+            );
         }
     },
 
@@ -465,12 +468,11 @@ export const reducer = createReducer(initialState, {
         state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
     },
 
-    [FULLSCREEN_SINGLE_LINE_DIAGRAM_ID]: (state, action) => {
-        state.fullScreenSldId = action.fullScreenSldId;
-    },
-
-    [FULLSCREEN_NETWORK_AREA_DIAGRAM_ID]: (state, action) => {
-        state.fullScreenNadId = action.fullScreenNadId;
+    [SET_FULLSCREEN_DIAGRAM]: (state, action) => {
+        state.fullScreenDiagram = {
+            id: action.diagramId,
+            svgType: action.svgType,
+        };
     },
 
     [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {
@@ -533,9 +535,6 @@ export const reducer = createReducer(initialState, {
             ),
         ];
     },
-    [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
-        state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;
-    },
     [SET_MODIFICATIONS_IN_PROGRESS]: (state, action) => {
         state.isModificationsInProgress = action.isModificationsInProgress;
     },
@@ -552,94 +551,243 @@ export const reducer = createReducer(initialState, {
             state.studyDisplayMode = action.studyDisplayMode;
         }
     },
-    [OPEN_SLD]: (state, action) => {
-        const sldState = state.sldState;
-        const sldToOpenIndex = sldState.findIndex(
-            (sld) => sld.id === action.id
+    /*
+     * The following functions' goal are to update state.diagramStates with nodes of the following type :
+     * { id: 'diagramID', svgType: 'SvgType of the diagram', state: 'ViewState of the diagram' }
+     *
+     * Depending on the diagram's svgType, the state.diagramStates is different.
+     * For Network Area Diagrams (SvgType.NETWORK_AREA_DIAGRAM), all the states should be the same.
+     * As an example, if one is PINNED, then all of them should be.
+     * For Single Line Diagrams (SvgType.VOLTAGE_LEVEL or SvgType.SUBSTATION), each diagram has its own state.
+     */
+    [OPEN_DIAGRAM]: (state, action) => {
+        const diagramStates = state.diagramStates;
+        const diagramToOpenIndex = diagramStates.findIndex(
+            (diagram) =>
+                diagram.id === action.id && diagram.svgType === action.svgType
         );
 
-        // if sld was in state already, and was PINNED or OPENED, nothing happens
-        // except in fullscreen mode where we switch to the new sld in fullscreen.
-        if (
-            sldToOpenIndex >= 0 &&
-            [ViewState.OPENED, ViewState.PINNED].includes(
-                sldState[sldToOpenIndex].state
-            )
-        ) {
-            // If an SLD was in fullscreen, the new SLD takes its place
-            if (state.fullScreenSldId) {
-                state.fullScreenSldId = action.id;
-            }
-            return;
-        }
+        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            // First, we check if there is already a Network Area Diagram in the diagramStates.
+            const firstNadIndex = diagramStates.findIndex(
+                (diagram) => diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM
+            );
+            if (firstNadIndex < 0) {
+                // If there is no NAD, then we add the new one.
+                diagramStates.push({
+                    id: action.id,
+                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    state: ViewState.OPENED,
+                });
 
-        // in the other cases, we will open the targeted sld
-        // previously opened sld is now MINIMIZED
-        const previouslyOpenedSldIndex = sldState.findIndex(
-            (sld) => sld.state === ViewState.OPENED
-        );
-        if (previouslyOpenedSldIndex >= 0) {
-            sldState[previouslyOpenedSldIndex].state = ViewState.MINIMIZED;
-        }
-        // if the target sld was already in the state, hence in MINIMIZED state, we change its state to OPENED
-        if (sldToOpenIndex >= 0) {
-            sldState[sldToOpenIndex].state = ViewState.OPENED;
-        } else {
-            sldState.push({
-                id: action.id,
-                type: action.svgType,
-                state: ViewState.OPENED,
-            });
-        }
-
-        // If an SLD was in fullscreen, the new SLD takes its place
-        if (state.fullScreenSldId) {
-            state.fullScreenSldId = action.id;
-        }
-
-        state.sldState = sldState;
-    },
-    [MINIMIZE_SLD]: (state, action) => {
-        const sldState = state.sldState;
-        const sldToMinizeIndex = sldState.findIndex(
-            (sld) => sld.id === action.id
-        );
-        if (sldToMinizeIndex >= 0) {
-            sldState[sldToMinizeIndex].state = ViewState.MINIMIZED;
-        }
-
-        state.sldState = sldState;
-    },
-    [TOGGLE_PIN_SLD]: (state, action) => {
-        const sldState = state.sldState;
-        // search targeted sld among the sldState
-        const sldToPinToggleIndex = sldState.findIndex(
-            (sld) => sld.id === action.id
-        );
-        if (sldToPinToggleIndex >= 0) {
-            // when found, if was opened, it's now PINNED
-            const sldToPinState = sldState[sldToPinToggleIndex].state;
-            if (sldToPinState === ViewState.OPENED) {
-                sldState[sldToPinToggleIndex].state = ViewState.PINNED;
-            } else if (sldToPinState === ViewState.PINNED) {
-                // if sld is unpinned, the sld that had the state OPENED is now MINIMIZED
-                const currentlyOpenedSldIndex = sldState.findIndex(
-                    (sld) => sld.state === ViewState.OPENED
-                );
-                if (currentlyOpenedSldIndex >= 0) {
-                    sldState[currentlyOpenedSldIndex].state =
-                        ViewState.MINIMIZED;
+                // If there is already a diagram in fullscreen mode, the new opened NAD will take its place.
+                if (state.fullScreenDiagram?.id) {
+                    state.fullScreenDiagram = {
+                        id: action.id,
+                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    };
                 }
-                sldState[sldToPinToggleIndex].state = ViewState.OPENED;
+            } else {
+                // If there is already at least one NAD, and if it is minimized, then we change all of them to opened.
+                if (
+                    diagramStates[firstNadIndex].state === ViewState.MINIMIZED
+                ) {
+                    diagramStates.forEach((diagram) => {
+                        if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                            diagram.state = ViewState.OPENED;
+                        }
+                    });
+                }
+                // If the NAD to open is not already in the diagramStates, we add it.
+                if (diagramToOpenIndex < 0) {
+                    diagramStates.push({
+                        id: action.id,
+                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                        state: diagramStates[firstNadIndex].state,
+                    });
+                }
+
+                // If there is a SLD in fullscreen, we have to display in fullscreen the new NAD.
+                // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
+                if (
+                    state.fullScreenDiagram?.svgType &&
+                    state.fullScreenDiagram?.svgType !==
+                        SvgType.NETWORK_AREA_DIAGRAM
+                ) {
+                    state.fullScreenDiagram = {
+                        id: diagramStates[firstNadIndex].id,
+                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    };
+                }
+            }
+        } else {
+            // We check if the SLD to open is already in the diagramStates.
+            if (diagramToOpenIndex >= 0) {
+                // If the SLD to open is already in the diagramStates and it is minimized, then we change it to opened.
+                if (
+                    diagramStates[diagramToOpenIndex].state ===
+                    ViewState.MINIMIZED
+                ) {
+                    // We minimize all the other OPENED SLD.
+                    diagramStates.forEach((diagram) => {
+                        if (
+                            diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
+                            diagram.state === ViewState.OPENED
+                        ) {
+                            diagram.state = ViewState.MINIMIZED;
+                        }
+                    });
+                    // And update the one to open.
+                    diagramStates[diagramToOpenIndex].state = ViewState.OPENED;
+                } else {
+                    console.info(
+                        'Diagram already opened : ' +
+                            diagramStates[diagramToOpenIndex].id +
+                            ' (' +
+                            diagramStates[diagramToOpenIndex].svgType +
+                            ')'
+                    );
+                }
+            } else {
+                // We minimize all the other OPENED SLD.
+                diagramStates.forEach((diagram) => {
+                    if (
+                        diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
+                        diagram.state === ViewState.OPENED
+                    ) {
+                        diagram.state = ViewState.MINIMIZED;
+                    }
+                });
+                // And we add the new one.
+                diagramStates.push({
+                    id: action.id,
+                    svgType: action.svgType,
+                    state: ViewState.OPENED,
+                });
+            }
+
+            // If there is already a diagram in fullscreen mode, the new opened SLD will take its place.
+            if (state.fullScreenDiagram?.id) {
+                state.fullScreenDiagram = {
+                    id: action.id,
+                    svgType: action.svgType,
+                };
+            }
+        }
+        state.diagramStates = diagramStates;
+    },
+    [MINIMIZE_DIAGRAM]: (state, action) => {
+        const diagramStates = state.diagramStates;
+
+        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            // For network area diagrams, the ID is irrelevant, we will minimize all the NAD in the state.diagramStates.
+            diagramStates.forEach((diagram) => {
+                if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                    diagram.state = ViewState.MINIMIZED;
+                }
+            });
+        } else {
+            // For single line diagram, we will update the corresponding diagram.
+            const diagramToMinimizeIndex = diagramStates.findIndex(
+                (diagram) =>
+                    diagram.id === action.id &&
+                    diagram.svgType === action.svgType
+            );
+            if (diagramToMinimizeIndex >= 0) {
+                diagramStates[diagramToMinimizeIndex].state =
+                    ViewState.MINIMIZED;
+            }
+        }
+        state.diagramStates = diagramStates;
+    },
+    [TOGGLE_PIN_DIAGRAM]: (state, action) => {
+        const diagramStates = state.diagramStates;
+
+        // search targeted diagram among the diagramStates
+        const diagramToPinToggleIndex = diagramStates.findIndex(
+            (diagram) =>
+                diagram.id === action.id && diagram.svgType === action.svgType
+        );
+        if (diagramToPinToggleIndex >= 0) {
+            if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                // If the current NAD is PINNED, we put all NAD to OPENED. Otherwise, we pul them to PINNED.
+                const newStateForNads =
+                    diagramStates[diagramToPinToggleIndex].state ===
+                    ViewState.PINNED
+                        ? ViewState.OPENED
+                        : ViewState.PINNED;
+                diagramStates.forEach((diagram) => {
+                    if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                        diagram.state = newStateForNads;
+                    }
+                });
+            } else {
+                if (
+                    diagramStates[diagramToPinToggleIndex].state !==
+                    ViewState.PINNED
+                ) {
+                    // If the current SLD is minimized or opened, we pin it.
+                    diagramStates[diagramToPinToggleIndex].state =
+                        ViewState.PINNED;
+                } else {
+                    // If the current SLD is pinned, we check if there is already another SLD opened (there can only be one
+                    // SLD opened -not pinned- at a time). If there is, then we minimize the current SLD. If none, we open it.
+                    const currentlyOpenedDiagramIndex = diagramStates.findIndex(
+                        (diagram) =>
+                            diagram.state === ViewState.OPENED &&
+                            diagram.svgType === action.svgType
+                    );
+                    if (currentlyOpenedDiagramIndex >= 0) {
+                        diagramStates[diagramToPinToggleIndex].state =
+                            ViewState.MINIMIZED;
+                    } else {
+                        diagramStates[diagramToPinToggleIndex].state =
+                            ViewState.OPENED;
+                    }
+                }
             }
         }
 
-        state.sldState = sldState;
+        state.diagramStates = diagramStates;
     },
-    [CLOSE_SLD]: (state, action) => {
-        state.sldState = state.sldState.filter(
-            (sld) => !action.ids.includes(sld.id)
+    [CLOSE_DIAGRAM]: (state, action) => {
+        let diagramStates = state.diagramStates;
+
+        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            // If we close a NAD, we close all of them.
+            diagramStates = diagramStates.filter(
+                (diagram) => diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+            );
+        } else {
+            // If we close a SLD, we only remove one.
+            const diagramToCloseIndex = diagramStates.findIndex(
+                (diagram) =>
+                    diagram.id === action.id &&
+                    diagram.svgType === action.svgType
+            );
+            if (diagramToCloseIndex >= 0) {
+                diagramStates.splice(diagramToCloseIndex, 1);
+            }
+        }
+
+        state.diagramStates = diagramStates;
+    },
+    [CLOSE_DIAGRAMS]: (state, action) => {
+        const idsToClose = new Set(action.ids);
+        state.diagramStates = state.diagramStates.filter(
+            (diagram) => !idsToClose.has(diagram.id)
         );
+    },
+    [RESET_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
+        state.networkAreaDiagramDepth = 0;
+    },
+    [INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
+        state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
+    },
+    [DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
+        if (state.networkAreaDiagramDepth > 0) {
+            state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
+        }
     },
 });
 
