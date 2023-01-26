@@ -37,7 +37,7 @@ import {
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
-    setDeletedEquipment,
+    setDeletedEquipments,
     setUpdatedSubstationsIds,
 } from '../redux/actions';
 import Network from './network/network';
@@ -49,6 +49,7 @@ import {
     getFirstNodeOfType,
     isNodeBuilt,
     isNodeRenamed,
+    isSameNode,
 } from './graph/util/model-functions';
 import {
     getSecurityAnalysisRunningStatus,
@@ -59,6 +60,46 @@ import {
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
+
+function isWorthUpdate(
+    studyUpdatedForce,
+    fetcher,
+    lastUpdateRef,
+    nodeUuidRef,
+    nodeUuid,
+    invalidations
+) {
+    const headers = studyUpdatedForce?.eventData?.headers;
+    const updateType = headers?.[UPDATE_TYPE_HEADER];
+    const node = headers?.['node'];
+    const nodes = headers?.['nodes'];
+    if (nodeUuidRef.current !== nodeUuid) {
+        return true;
+    }
+    if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
+        return true;
+    }
+    if (
+        studyUpdatedForce &&
+        lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce
+    ) {
+        return false;
+    }
+    if (!updateType) {
+        return false;
+    }
+    if (invalidations.indexOf(updateType) <= -1) {
+        return false;
+    }
+    if (node === undefined && nodes === undefined) {
+        return true;
+    }
+    if (node === nodeUuid || nodes?.indexOf(nodeUuid) !== -1) {
+        return true;
+    }
+
+    return false;
+}
 
 export function useNodeData(
     studyUuid,
@@ -78,10 +119,12 @@ export function useNodeData(
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
         setIsPending(true);
+        setErrorMessage(undefined);
         fetcher(studyUuid, nodeUuid)
             .then((res) => {
-                if (nodeUuidRef.current === nodeUuid)
+                if (nodeUuidRef.current === nodeUuid) {
                     setResult(resultConversion ? resultConversion(res) : res);
+                }
             })
             .catch((err) => {
                 setErrorMessage(err.message);
@@ -92,22 +135,26 @@ export function useNodeData(
     /* initial fetch and update */
     useEffect(() => {
         if (!studyUuid || !nodeUuid) return;
-        const headers = studyUpdatedForce?.eventData?.headers;
-        const updateType = headers && headers[UPDATE_TYPE_HEADER];
-        const node = headers && headers['node'];
-        const nodes = headers && headers['nodes'];
-        const isUpdateForUs =
-            lastUpdateRef.current !== studyUpdatedForce &&
-            updateType &&
-            ((node === undefined && nodes === undefined) ||
-                node === nodeUuid ||
-                nodes?.indexOf(nodeUuid) !== -1) &&
-            invalidations.indexOf(updateType) !== -1;
-        lastUpdateRef.current = studyUpdatedForce;
+        const isUpdateForUs = isWorthUpdate(
+            studyUpdatedForce,
+            fetcher,
+            lastUpdateRef,
+            nodeUuidRef,
+            nodeUuid,
+            invalidations
+        );
+        lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
             update();
         }
-    }, [update, nodeUuid, invalidations, studyUpdatedForce, studyUuid]);
+    }, [
+        update,
+        fetcher,
+        nodeUuid,
+        invalidations,
+        studyUpdatedForce,
+        studyUuid,
+    ]);
 
     return [result, isPending, errorMessage, update];
 }
@@ -162,7 +209,9 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
 ];
-const UPDATE_TYPE_HEADER = 'updateType';
+export const UPDATE_TYPE_HEADER = 'updateType';
+const ERROR_HEADER = 'error';
+const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
 const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
@@ -182,6 +231,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyParentDirectoriesUuidsRef = useRef([]);
 
     const network = useSelector((state) => state.network);
+    const userName = useSelector((state) => state.user.profile.sub);
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
@@ -232,8 +282,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const loadNetworkRef = useRef();
-
     const [wsConnected, setWsConnected] = useState(false);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
@@ -242,31 +290,38 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const wsRef = useRef();
 
-    const checkFailNotifications = useCallback(
+    const displayErrorNotifications = useCallback(
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
+            const errorMessage = eventData.headers[ERROR_HEADER];
+            const userId = eventData.headers[USER_HEADER];
+            if (userId !== userName) return;
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
                     headerId: 'NodeBuildingError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'securityAnalysis_failed') {
                 snackError({
                     headerId: 'securityAnalysisError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'sensitivityAnalysis_failed') {
                 snackError({
                     headerId: 'sensitivityAnalysisError',
+                    messageTxt: errorMessage,
                 });
             }
             if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
                 snackError({
-                    headerId: 'shortCircuitAnalysisError',
+                    headerId: 'ShortCircuitAnalysisError',
+                    messageTxt: errorMessage,
                 });
             }
         },
-        [snackError]
+        [snackError, userName]
     );
 
     const connectNotifications = useCallback(
@@ -279,7 +334,7 @@ export function StudyContainer({ view, onChangeTab }) {
             });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
-                checkFailNotifications(eventData);
+                displayErrorNotifications(eventData);
                 dispatch(studyUpdated(eventData));
             };
             ws.onclose = function (event) {
@@ -310,7 +365,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return ws;
         },
         // Note: dispatch doesn't change
-        [dispatch, checkFailNotifications]
+        [dispatch, displayErrorNotifications]
     );
 
     const fetchStudyPath = useCallback(() => {
@@ -446,7 +501,6 @@ export function StudyContainer({ view, onChangeTab }) {
                         (node) => node.id === firstSelectedNode.id
                     ),
                 };
-                currentNodeRef.current = ModelFirstSelectedNode;
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
                 dispatch(
                     loadNetworkModificationTreeSuccess(
@@ -479,21 +533,11 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     function parseStudyNotification(studyUpdatedForce) {
-        const substationsIds =
-            studyUpdatedForce.eventData.headers['substationsIds'];
-        const substationsIdsArray = substationsIds
-            .substring(1, substationsIds.length - 1)
-            .split(', ');
+        const payload = studyUpdatedForce.eventData.payload;
+        const substationsIds = payload?.impactedSubstationsIds;
+        const deletedEquipments = payload?.deletedEquipments;
 
-        const deletedEquipmentId =
-            studyUpdatedForce.eventData.headers['deletedEquipmentId'];
-        const deletedEquipmentType =
-            studyUpdatedForce.eventData.headers['deletedEquipmentType'];
-
-        return [
-            substationsIdsArray,
-            { id: deletedEquipmentId, type: deletedEquipmentType },
-        ];
+        return [substationsIds, deletedEquipments];
     }
 
     useEffect(() => {
@@ -504,34 +548,43 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
-                const [substationsIds, deletedEquipment] =
+                const [substationsIds, deletedEquipments] =
                     parseStudyNotification(studyUpdatedForce);
-
+                if (deletedEquipments?.length > 0) {
+                    // removing deleted equipment from the network
+                    deletedEquipments.forEach((deletedEquipment) => {
+                        if (
+                            deletedEquipment?.equipmentId &&
+                            deletedEquipment?.equipmentType
+                        ) {
+                            console.info(
+                                'removing equipment with id=',
+                                deletedEquipment?.equipmentId,
+                                ' and type=',
+                                deletedEquipment?.equipmentType,
+                                ' from the network'
+                            );
+                            network.removeEquipment(
+                                deletedEquipment?.equipmentType,
+                                deletedEquipment?.equipmentId
+                            );
+                        }
+                    });
+                    dispatch(setDeletedEquipments(deletedEquipments));
+                }
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
-                    network.reloadImpactedSubstationsEquipments(substationsIds);
+                    network.reloadImpactedSubstationsEquipments(
+                        studyUuid,
+                        currentNodeRef.current,
+                        substationsIds
+                    );
                     dispatch(setUpdatedSubstationsIds(substationsIds));
-                }
-
-                // removing deleted equipment from the network
-                if (deletedEquipment?.id && deletedEquipment?.type) {
-                    console.info(
-                        'removing equipment with id=',
-                        deletedEquipment?.id,
-                        ' and type=',
-                        deletedEquipment?.type,
-                        ' from the network'
-                    );
-                    network.removeEquipment(
-                        deletedEquipment?.type,
-                        deletedEquipment?.id
-                    );
-                    dispatch(setDeletedEquipment(deletedEquipment));
                 }
             }
         }
-    }, [studyUpdatedForce, network, dispatch]);
+    }, [studyUpdatedForce, network, studyUuid, dispatch]);
 
     const loadNetwork = useCallback(
         (isUpdate) => {
@@ -568,7 +621,6 @@ export function StudyContainer({ view, onChangeTab }) {
         },
         [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
     );
-    loadNetworkRef.current = loadNetwork;
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -578,6 +630,14 @@ export function StudyContainer({ view, onChangeTab }) {
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) return;
         if (!isNodeBuilt(currentNode)) return;
+        // A modification has been added to the currentNode and this one has been built incrementally.
+        // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
+        if (
+            isSameNode(previousCurrentNode, currentNode) &&
+            isNodeBuilt(previousCurrentNode)
+        ) {
+            return;
+        }
         loadNetwork(true);
     }, [loadNetwork, currentNode, wsConnected]);
 
@@ -609,8 +669,8 @@ export function StudyContainer({ view, onChangeTab }) {
             snackInfo({
                 headerId: 'renameStudyNotification',
                 headerValues: {
-                    oldStudyPath: prevStudyPath,
-                    studyPath: studyPath,
+                    oldStudyName: prevStudyName,
+                    studyName: studyName,
                 },
             });
         }
@@ -644,8 +704,6 @@ export function StudyContainer({ view, onChangeTab }) {
             const ws = connectNotifications(studyUuid);
             const wsDirectory = connectDeletedStudyNotifications(studyUuid);
 
-            loadNetworkRef.current();
-
             // study cleanup at unmount event
             return function () {
                 websocketExpectedCloseRef.current = true;
@@ -655,7 +713,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(filteredNominalVoltagesUpdated(null));
             };
         }
-        // Note: dispach, loadNetworkRef, loadGeoData
+        // Note: dispach, loadGeoData
         // connectNotifications don't change
     }, [
         dispatch,
