@@ -354,11 +354,6 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
-export function fetchNADSvg(svgUrl) {
-    console.debug(svgUrl);
-    return backendFetchJson(svgUrl);
-}
-
 function getQueryParamsList(params, paramName) {
     if (params !== undefined && params.length > 0) {
         const urlSearchParams = new URLSearchParams();
@@ -1594,7 +1589,11 @@ export function modifyGenerator(
     busOrBusbarSectionId,
     modificationId,
     qPercent,
+    plannedActivePowerSetPoint,
+    startupCost,
     marginalCost,
+    plannedOutageRate,
+    forcedOutageRate,
     transientReactance,
     transformerReactance,
     voltageRegulationType,
@@ -1634,7 +1633,13 @@ export function modifyGenerator(
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         qPercent: toModificationOperation(qPercent),
+        plannedActivePowerSetPoint: toModificationOperation(
+            plannedActivePowerSetPoint
+        ),
+        startupCost: toModificationOperation(startupCost),
         marginalCost: toModificationOperation(marginalCost),
+        plannedOutageRate: toModificationOperation(plannedOutageRate),
+        forcedOutageRate: toModificationOperation(forcedOutageRate),
         transientReactance: toModificationOperation(transientReactance),
         stepUpTransformerReactance:
             toModificationOperation(transformerReactance),
