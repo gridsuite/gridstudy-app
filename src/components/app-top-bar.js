@@ -45,7 +45,7 @@ import {
     addShortCircuitNotif,
     addDynamicSimulationNotif,
     centerOnSubstation,
-    openNetworkAreaDiagram,
+    openDiagram,
     resetLoadflowNotif,
     resetSANotif,
     resetSensiNotif,
@@ -56,7 +56,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
+import { SvgType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
@@ -87,10 +87,6 @@ const CustomSuffixRenderer = ({ props, element }) => {
     const equipmentClasses = useEquipmentStyles();
     const network = useSelector((state) => state.network);
 
-    const voltageLevelsIdsForNad = useSelector(
-        (state) => state.voltageLevelsIdsForNad
-    );
-
     const enterOnSubstationCB = useCallback(
         (e, element) => {
             const substationId =
@@ -106,15 +102,11 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const openNetworkAreaDiagramCB = useCallback(
         (e, element) => {
-            dispatch(
-                openNetworkAreaDiagram(
-                    voltageLevelsIdsForNad.concat([element.id])
-                )
-            );
+            dispatch(openDiagram(element.id, SvgType.NETWORK_AREA_DIAGRAM));
             props.onClose && props.onClose();
             e.stopPropagation();
         },
-        [dispatch, props, voltageLevelsIdsForNad]
+        [dispatch, props]
     );
 
     if (
@@ -187,7 +179,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [isParametersOpen, setParametersOpen] = useState(false);
-    const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
+    const { openDiagramView } = useDiagram();
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
@@ -250,12 +242,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (optionInfos) => {
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
             if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
-                showSubstation(optionInfos.id);
+                openDiagramView(optionInfos.id, SvgType.SUBSTATION);
             } else {
-                showVoltageLevel(optionInfos.voltageLevelId);
+                openDiagramView(optionInfos.id, SvgType.VOLTAGE_LEVEL);
             }
         },
-        [onChangeTab, showSubstation, showVoltageLevel]
+        [onChangeTab, openDiagramView]
     );
 
     useEffect(() => {

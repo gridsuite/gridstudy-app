@@ -422,7 +422,7 @@ const NetworkMap = (props) => {
                 getCursor={cursorHandler}
                 pickingRadius={5}
             >
-                {props.waitingLoadGeoData && renderOverlay()}
+                {props.displayOverlayLoader && renderOverlay()}
                 {mapManualRefresh &&
                     reloadMapNeeded &&
                     isNodeBuilt(currentNode) && (
@@ -471,6 +471,7 @@ NetworkMap.defaultProps = {
     lineFlowAlertThreshold: 100,
     loadFlowStatus: RunningStatus.IDLE,
     visible: true,
+    displayOverlayLoader: false,
     disabled: false,
 };
 
@@ -497,6 +498,7 @@ NetworkMap.propTypes = {
     loadFlowStatus: PropTypes.oneOf(Object.values(RunningStatus)),
     visible: PropTypes.bool,
     updatedLines: PropTypes.array,
+    displayOverlayLoader: PropTypes.bool,
     disabled: PropTypes.bool,
 };
 
