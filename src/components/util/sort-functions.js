@@ -12,7 +12,7 @@ const innerSortByAlign = (align) => {
 };
 
 /*
- * Sorts by the object's "align" parameter. Values equal to "left "will be before "right" values, and others or undefined will be last.
+ * Sorts by the object's "align" parameter. Values equal to "left" will be before "right" values, and others or undefined will be last.
  */
 export const sortByAlign = (a, b) => {
     return innerSortByAlign(a && a.align) - innerSortByAlign(b && b.align);
