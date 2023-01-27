@@ -51,6 +51,14 @@ export const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
     },
     formDirectoryElementsError: {
+        display: 'flex',
+        gap: '8px',
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        border: '2px solid lightgray',
+        padding: 4,
+        borderRadius: '4px',
+        overflow: 'hidden',
         borderColor: theme.palette.error.main,
     },
     formDirectoryElements2: {
