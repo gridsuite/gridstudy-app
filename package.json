@@ -36,6 +36,7 @@
         "react-map-gl": "^6.0.0",
         "react-papaparse": "^4.1.0",
         "react-redux": "^8.0.0",
+        "react-resizable": "^3.0.4",
         "react-router-dom": "^6.0.0",
         "react-scripts": "^5.0.0",
         "react-virtualized": "^9.21.2",
