@@ -51,15 +51,7 @@ export const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
     },
     formDirectoryElementsError: {
-        display: 'flex',
-        gap: '8px',
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-        border: '2px solid lightgray',
-        padding: 4,
-        borderRadius: '4px',
-        overflow: 'hidden',
-        borderColor: 'red',
+        borderColor: theme.palette.error.main,
     },
     formDirectoryElements2: {
         display: 'flex',
@@ -183,6 +175,24 @@ export const gridItemWithTooltip = (field, tooltip = '', size = 6) => {
     return (
         <Grid item xs={size} align={'start'}>
             <Tooltip title={tooltip}>{field}</Tooltip>
+        </Grid>
+    );
+};
+
+export const gridItemWithErrorMsg = (
+    field,
+    size = 6,
+    error,
+    errorClassName
+) => {
+    return (
+        <Grid item xs={size} align={'start'}>
+            {field}
+            {error && (
+                <div className={errorClassName}>
+                    <FormattedMessage id={error} />
+                </div>
+            )}
         </Grid>
     );
 };

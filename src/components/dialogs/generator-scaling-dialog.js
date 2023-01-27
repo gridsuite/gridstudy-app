@@ -11,14 +11,17 @@ import { useParams } from 'react-router-dom';
 import ModificationDialog from './modificationDialog';
 import { useBooleanValue } from './inputs/boolean';
 import Grid from '@mui/material/Grid';
-import { ActivePowerAdornment, gridItem, GridSection } from './dialogUtils';
+import {
+    ActivePowerAdornment,
+    gridItem,
+    gridItemWithErrorMsg,
+    GridSection,
+} from './dialogUtils';
 import { EquipmentType } from './sensi/sensi-parameters-selector';
 import { VARIATION_MODE, VARIATION_TYPE } from '../network/constants';
 import { useExpandableValues } from './inputs/use-expandable-values';
 import makeStyles from '@mui/styles/makeStyles';
 import { generatorScaling } from '../../utils/rest-api';
-import Alert from '@mui/material/Alert';
-import { FormattedMessage } from 'react-intl';
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
@@ -41,10 +44,14 @@ export const useStyles = makeStyles((theme) => ({
     chipElement: {
         margin: 3,
         maxWidth: 200,
-        textOverflow: 'ellipsis',
     },
     padding: {
         padding: '15px',
+    },
+    errorMessage: {
+        color: theme.palette.error.main,
+        fontSize: 'small',
+        marginRight: theme.spacing(2),
     },
 }));
 
@@ -73,17 +80,19 @@ const GeneratorScalingVariation = ({
     });
 
     function itemFilter(value) {
-        if (variationMode === STACKING_UP) {
-            return value?.specificMetadata?.type === IDENTIFIER_LIST;
-        }
+        if (value?.type === elementType.FILTER) {
+            if (variationMode === STACKING_UP) {
+                return value?.specificMetadata?.type === IDENTIFIER_LIST;
+            }
 
-        if (variationMode === VENTILATION) {
-            return (
-                value?.specificMetadata?.type === IDENTIFIER_LIST &&
-                value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                    (fil) => !!fil.distributionKey
-                )
-            );
+            if (variationMode === VENTILATION) {
+                return (
+                    value?.specificMetadata?.type === IDENTIFIER_LIST &&
+                    value?.specificMetadata?.filterEquipmentsAttributes?.every(
+                        (fil) => !!fil.distributionKey
+                    )
+                );
+            }
         }
 
         return true;
@@ -106,6 +115,7 @@ const GeneratorScalingVariation = ({
     });
 
     const [variationValue, variationValueField] = useDoubleValue({
+        id: id + '_variationValue', // we add an id to make sur when changing labels, we don't create a new validation for this field
         label: fieldProps.isDeltaP ? 'DeltaP' : 'TargetPText',
         validation: {
             isFieldRequired: true,
@@ -117,13 +127,17 @@ const GeneratorScalingVariation = ({
     });
 
     useEffect(() => {
-        console.log('filters : ', filters);
         onChange(index, { id, filters, variationValue, variationMode });
     }, [onChange, filters, variationValue, variationMode, index, id]);
 
     return (
         <>
-            {gridItem(filtersField, 4)}
+            {gridItemWithErrorMsg(
+                filtersField,
+                4,
+                errors?.filterError,
+                classes.errorMessage
+            )}
             {gridItem(variationValueField, 2)}
             {gridItem(variationModeField, 4)}
         </>
@@ -143,8 +157,6 @@ const GeneratorScalingDialog = ({
     const inputForm = useInputForm();
 
     const [formValues, setFormValues] = useState(undefined);
-
-    const [error, setError] = useState(undefined);
 
     useEffect(() => {
         if (editData) {
@@ -179,18 +191,18 @@ const GeneratorScalingDialog = ({
                 });
             }
 
-            console.log('variations: ', val.variationMode, val.filters);
             if (
-                (val.variationMode === 'STACKING_UP' ||
-                    val.variationMode === 'VENTILATION') &&
-                !val.filters.every((f) => f.specificMetadata.type === 'IDENTIFIER_LIST')
+                (val.variationMode === STACKING_UP ||
+                    val.variationMode === VENTILATION) &&
+                !val.filters.every(
+                    (f) => f.specificMetadata.type === IDENTIFIER_LIST
+                )
             ) {
                 res.set(idx, {
                     ...res.get(idx),
                     error: true,
                     filterError: 'AllExplicitNamingFiltersError',
                 });
-                setError('AllExplicitNamingFiltersError');
             }
         });
         return res;
@@ -268,11 +280,6 @@ const GeneratorScalingDialog = ({
             <Grid container className={classes.padding}>
                 {gridItem(variationsField, 12)}
             </Grid>
-            {error && (
-                <Alert severity={'error'}>
-                    <FormattedMessage id={error} />
-                </Alert>
-            )}
         </ModificationDialog>
     );
 };
