@@ -33,8 +33,13 @@ export function networkCreated(network) {
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
-export function mapEquipmentsCreated(mapEquipments) {
-    return { type: MAP_EQUIPMENTS_CREATED, mapEquipments: mapEquipments };
+export function mapEquipmentsCreated(mapEquipments, newLines, newSubstations) {
+    return {
+        type: MAP_EQUIPMENTS_CREATED,
+        mapEquipments: mapEquipments,
+        newLines: newLines,
+        newSubstations: newSubstations,
+    };
 }
 
 export const NETWORK_EQUIPMENT_LOADED = 'NETWORK_EQUIPMENT_LOADED';
