@@ -152,8 +152,13 @@ const DirectoryItemSelector = (props) => {
                             props.types,
                             props.equipmentTypes
                         ).then((childrenWithMetada) => {
+                            const children = props.itemFilter
+                                ? childrenWithMetada.filter((val) =>
+                                      props.itemFilter(val)
+                                  )
+                                : childrenWithMetada;
                             // update directory content
-                            addToDirectory(nodeId, childrenWithMetada);
+                            addToDirectory(nodeId, children);
                         });
                     } else {
                         // update directory content
@@ -166,7 +171,7 @@ const DirectoryItemSelector = (props) => {
                     );
                 });
         },
-        [addToDirectory, contentFilter, props.types, props.equipmentTypes]
+        [props, contentFilter, addToDirectory]
     );
 
     useEffect(() => {

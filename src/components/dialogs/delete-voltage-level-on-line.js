@@ -78,7 +78,7 @@ const DeleteVoltageLevelOnLineDialog = ({
 
     const [lineToAttachTo1, lineToAttachTo1Field] = useAutocompleteField({
         id: 'lineToAttachTo1',
-        label: 'ID',
+        label: 'Line1',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
@@ -93,7 +93,7 @@ const DeleteVoltageLevelOnLineDialog = ({
 
     const [lineToAttachTo2, lineToAttachTo2Field] = useAutocompleteField({
         id: 'lineToAttachTo2',
-        label: 'ID',
+        label: 'Line2',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions?.sort(compareById),
@@ -108,7 +108,7 @@ const DeleteVoltageLevelOnLineDialog = ({
 
     const [newLine1Id, newLine1IdField] = useTextValue({
         id: 'replacingLine1Id',
-        label: 'ID',
+        label: 'ReplacingLineId',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         defaultValue: formValues?.replacingLine1Id,
@@ -116,7 +116,7 @@ const DeleteVoltageLevelOnLineDialog = ({
 
     const [newLine1Name, newLine1NameField] = useTextValue({
         id: 'replacingLine1Name',
-        label: 'Name',
+        label: 'ReplacingLineName',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.replacingLine1Name,

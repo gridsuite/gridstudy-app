@@ -17,24 +17,21 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
-    commonStyle,
     commonSldStyle,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
     NoSvg,
     LOADING_WIDTH,
-} from './utils';
+} from '../diagram-common';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
+import DiagramHeader from '../diagram-header';
 
 const customSldStyle = (theme) => {
     return {
@@ -59,7 +56,6 @@ const customSldStyle = (theme) => {
 
 const useStyles = makeStyles((theme) => ({
     divSld: { ...commonSldStyle(theme, customSldStyle(theme)) },
-    ...commonStyle(theme, {}),
 }));
 
 const PositionDiagram = forwardRef((props, ref) => {
@@ -89,12 +85,16 @@ const PositionDiagram = forwardRef((props, ref) => {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
-                    setSvg({
-                        svg: data.svg,
-                        metadata: data.metadata,
-                        error: null,
-                        svgUrl: props.svgUrl,
-                    });
+                    if (data !== null) {
+                        setSvg({
+                            svg: data.svg,
+                            metadata: data.metadata,
+                            error: null,
+                            svgUrl: props.svgUrl,
+                        });
+                    } else {
+                        setSvg(NoSvg);
+                    }
                     updateLoadingState(false);
                 })
                 .catch((errorMessage) => {
@@ -202,26 +202,11 @@ const PositionDiagram = forwardRef((props, ref) => {
             }}
         >
             <Box>
-                <Box className={classes.header}>
-                    <Box flexGrow={1}>
-                        <Typography>{props.diagramTitle}</Typography>
-                    </Box>
-                    <Box>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                            }}
-                        >
-                            <IconButton
-                                className={classes.close}
-                                onClick={onCloseHandler}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </Box>
-                    </Box>
-                </Box>
+                <DiagramHeader
+                    diagramTitle={props.diagramTitle}
+                    showCloseControl
+                    onClose={onCloseHandler}
+                />
             </Box>
             {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             <Box position="relative">

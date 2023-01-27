@@ -12,6 +12,9 @@ import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import { CopyType } from '../../network-modification-tree-pane';
+import { getLocalStorageTheme } from '../../../redux/local-storage';
+import { LIGHT_THEME } from '@gridsuite/commons-ui';
 
 const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
@@ -90,10 +93,28 @@ const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const selectedNodeForCopy = useSelector(
+        (state) => state.selectedNodeForCopy
+    );
 
     const isSelectedNode = () => {
         // TODO This is a hack, when ReactFlow v10 is available, we should remove this.
         return props.id === currentNode?.id;
+    };
+
+    const isSelectedForCut = () => {
+        return (
+            props.id === selectedNodeForCopy?.nodeId &&
+            selectedNodeForCopy?.copyType === CopyType.CUT
+        );
+    };
+
+    const getNodeOpacity = () => {
+        return isSelectedForCut()
+            ? getLocalStorageTheme() === LIGHT_THEME
+                ? 0.3
+                : 0.6
+            : 'unset';
     };
 
     return (
@@ -111,6 +132,9 @@ const NetworkModificationNode = (props) => {
                 isConnectable={false}
             />
             <Button
+                style={{
+                    opacity: getNodeOpacity(),
+                }}
                 className={
                     isSelectedNode()
                         ? classes.networkModificationSelected
