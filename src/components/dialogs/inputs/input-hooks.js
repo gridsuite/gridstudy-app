@@ -61,6 +61,7 @@ import RegulatingTerminalEdition, {
 import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
+import clsx from 'clsx';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -778,11 +779,9 @@ export const useDirectoryElements = ({
         return (
             <>
                 <FormControl
-                    className={
-                        errorMsg
-                            ? classes.formDirectoryElementsError
-                            : classes.formDirectoryElements1
-                    }
+                    className={clsx(classes.formDirectoryElements1, {
+                        [classes.formDirectoryElementsError]: errorMsg,
+                    })}
                     error={!!errorMsg}
                     aria-errormessage={errorMsg}
                 >
