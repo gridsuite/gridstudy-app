@@ -19,6 +19,8 @@ import {
     openDiagram,
     minimizeDiagram,
     togglePinDiagram,
+    closeDiagram,
+    closeDiagrams,
 } from './actions';
 import { SvgType, ViewState } from '../components/diagrams/diagram-common';
 
@@ -1049,4 +1051,154 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
             togglePinDiagram(3, SvgType.NETWORK_AREA_DIAGRAM)
         )
     ).toEqual(expectedState3);
+});
+
+test('reducer.CLOSE_DIAGRAM', () => {
+    // Try to close a non existant diagram
+    const initialState = {
+        diagramStates: [
+            {
+                id: 6,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+    const expectedState = {
+        diagramStates: [
+            {
+                id: 6,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+
+    expect(reducer(initialState, closeDiagram(6, SvgType.SUBSTATION))).toEqual(
+        expectedState
+    );
+
+    // Close a SLD
+    const initialState2 = {
+        diagramStates: [
+            {
+                id: 3,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 54,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState2 = {
+        diagramStates: [
+            {
+                id: 3,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState2, closeDiagram(54, SvgType.SUBSTATION))
+    ).toEqual(expectedState2);
+
+    // Close a NAD
+    const initialState3 = {
+        diagramStates: [
+            {
+                id: 32,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 64,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 64,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 82,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+    const expectedState3 = {
+        diagramStates: [
+            {
+                id: 64,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState3, closeDiagram(64, SvgType.NETWORK_AREA_DIAGRAM))
+    ).toEqual(expectedState3);
+});
+
+test('reducer.CLOSE_DIAGRAMS', () => {
+    // Close multiple diagrams, some exist, some don't
+    const initialState = {
+        diagramStates: [
+            {
+                id: 10,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 20,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 30,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 5,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 10,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 10,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState = {
+        diagramStates: [
+            {
+                id: 20,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 5,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(reducer(initialState, closeDiagrams([6, 10, 30, 455]))).toEqual(
+        expectedState
+    );
 });
