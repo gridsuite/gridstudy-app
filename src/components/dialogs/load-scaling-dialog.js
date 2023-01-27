@@ -104,6 +104,7 @@ const VariationSection = ({
     });
 
     const [variationValue, variationValueField] = useDoubleValue({
+        id: id + '_variationValue', // we add an id to make sur when changing labels, we don't create a new validation for this field
         label: fieldProps.isDeltaP ? 'DeltaP' : 'TargetP',
         validation: {
             isFieldRequired: true,
