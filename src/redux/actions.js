@@ -33,8 +33,13 @@ export function networkCreated(network) {
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
-export function mapEquipmentsCreated(mapEquipments) {
-    return { type: MAP_EQUIPMENTS_CREATED, mapEquipments: mapEquipments };
+export function mapEquipmentsCreated(mapEquipments, newLines, newSubstations) {
+    return {
+        type: MAP_EQUIPMENTS_CREATED,
+        mapEquipments: mapEquipments,
+        newLines: newLines,
+        newSubstations: newSubstations,
+    };
 }
 
 export const NETWORK_EQUIPMENT_LOADED = 'NETWORK_EQUIPMENT_LOADED';
@@ -549,11 +554,11 @@ export function setUpdatedSubstationsIds(updatedSubstationsIds) {
     };
 }
 
-export const SET_DELETED_EQUIPMENT = 'SET_DELETED_EQUIPMENT';
+export const SET_DELETED_EQUIPMENTS = 'SET_DELETED_EQUIPMENTS';
 
-export function setDeletedEquipment(deletedEquipment) {
+export function setDeletedEquipments(deletedEquipments) {
     return {
-        type: SET_DELETED_EQUIPMENT,
-        deletedEquipment: deletedEquipment,
+        type: SET_DELETED_EQUIPMENTS,
+        deletedEquipments: deletedEquipments,
     };
 }
