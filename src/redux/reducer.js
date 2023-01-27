@@ -725,7 +725,7 @@ export const reducer = createReducer(initialState, {
         );
         if (diagramToPinToggleIndex >= 0) {
             if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
-                // If the current NAD is PINNED, we put all NAD to OPENED. Otherwise, we pul them to PINNED.
+                // If the current NAD is PINNED, we set all NAD to OPENED. Otherwise, we set them to PINNED.
                 const newStateForNads =
                     diagramStates[diagramToPinToggleIndex].state ===
                     ViewState.PINNED

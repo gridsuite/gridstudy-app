@@ -17,6 +17,7 @@ import {
     decrementNetworkAreaDiagramDepth,
     setFullScreenDiagram,
     openDiagram,
+    minimizeDiagram,
 } from './actions';
 import { SvgType, ViewState } from '../components/diagrams/diagram-common';
 
@@ -514,4 +515,229 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(initialState8, openDiagram(79, SvgType.NETWORK_AREA_DIAGRAM))
     ).toEqual(expectedState8);
+});
+
+test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
+    // Try to minimize a nonexistant SLD
+    const initialState = { diagramStates: [] };
+    const expectedState = { diagramStates: [] };
+
+    expect(
+        reducer(initialState, minimizeDiagram(1, SvgType.VOLTAGE_LEVEL))
+    ).toEqual(expectedState);
+
+    // Try to minimize a nonexistant SLD (bis)
+    const initialState2 = {
+        diagramStates: [
+            {
+                id: 12,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState2 = {
+        diagramStates: [
+            {
+                id: 12,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState2, minimizeDiagram(33, SvgType.VOLTAGE_LEVEL))
+    ).toEqual(expectedState2);
+
+    // Minimize an open SLD
+    const initialState3 = {
+        diagramStates: [
+            {
+                id: 7,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState3 = {
+        diagramStates: [
+            {
+                id: 7,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState3, minimizeDiagram(7, SvgType.SUBSTATION))
+    ).toEqual(expectedState3);
+
+    // Minimize a pinned SLD
+    const initialState4 = {
+        diagramStates: [
+            {
+                id: 63,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 47,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 25,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState4 = {
+        diagramStates: [
+            {
+                id: 63,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 47,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 25,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState4, minimizeDiagram(47, SvgType.SUBSTATION))
+    ).toEqual(expectedState4);
+
+    // Minimize an already minimized SLD
+    const initialState5 = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 1,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 22,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+    const expectedState5 = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 1,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 22,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState5, minimizeDiagram(1, SvgType.VOLTAGE_LEVEL))
+    ).toEqual(expectedState5);
+});
+
+test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
+    // Minimize a NAD when there are multiple open NAD
+    const initialState = {
+        diagramStates: [
+            {
+                id: 10,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 200,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 10,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 200,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 3,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 4,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState = {
+        diagramStates: [
+            {
+                id: 10,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 200,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 10,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 200,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 3,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 4,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.MINIMIZED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(
+            initialState,
+            minimizeDiagram(200, SvgType.NETWORK_AREA_DIAGRAM)
+        )
+    ).toEqual(expectedState);
 });
