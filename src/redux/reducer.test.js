@@ -127,7 +127,11 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState3 = {
         diagramStates: [
             { id: 34, svgType: SvgType.SUBSTATION, state: ViewState.OPENED },
-            { id: 35, svgType: SvgType.VOLTAGE_LEVEL, state: ViewState.MINIMIZED },
+            {
+                id: 35,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.MINIMIZED,
+            },
         ],
     };
 
@@ -303,14 +307,211 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     ).toEqual(expectedState);
 
     // Open a NAD that is already opened
+    const initialState2 = {
+        diagramStates: [
+            {
+                id: 18,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState2 = {
+        diagramStates: [
+            {
+                id: 18,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState2, openDiagram(18, SvgType.NETWORK_AREA_DIAGRAM))
+    ).toEqual(expectedState2);
 
     // Open a NAD that is already minimized
+    const initialState3 = {
+        diagramStates: [
+            {
+                id: 51,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.MINIMIZED,
+            },
+        ],
+    };
+    const expectedState3 = {
+        diagramStates: [
+            {
+                id: 51,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState3, openDiagram(51, SvgType.NETWORK_AREA_DIAGRAM))
+    ).toEqual(expectedState3);
 
     // Open a NAD when another NAD is already open
+    const initialState4 = {
+        diagramStates: [
+            {
+                id: 74,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState4 = {
+        diagramStates: [
+            {
+                id: 74,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 22,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState4, openDiagram(22, SvgType.NETWORK_AREA_DIAGRAM))
+    ).toEqual(expectedState4);
 
     // Open a NAD when another NAD is already minimized
+    const initialState5 = {
+        diagramStates: [
+            {
+                id: 33,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.MINIMIZED,
+            },
+        ],
+    };
+    const expectedState5 = {
+        diagramStates: [
+            {
+                id: 33,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 44,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState5, openDiagram(44, SvgType.NETWORK_AREA_DIAGRAM))
+    ).toEqual(expectedState5);
 
     // Open a NAD when there is no other NAD and an SLD is in fullscreen
+    const initialState6 = {
+        diagramStates: [
+            {
+                id: 38,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+        ],
+        fullScreenDiagram: { id: 38, svgType: SvgType.VOLTAGE_LEVEL },
+    };
+    const expectedState6 = {
+        diagramStates: [
+            {
+                id: 38,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 28,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+        fullScreenDiagram: { id: 28, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+    };
+
+    expect(
+        reducer(initialState6, openDiagram(28, SvgType.NETWORK_AREA_DIAGRAM))
+    ).toEqual(expectedState6);
 
     // Open a NAD when there is another opened NAD and an SLD is in fullscreen
+    const initialState7 = {
+        diagramStates: [
+            {
+                id: 14,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 14,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.MINIMIZED,
+            },
+        ],
+        fullScreenDiagram: { id: 14, svgType: SvgType.VOLTAGE_LEVEL },
+    };
+    const expectedState7 = {
+        diagramStates: [
+            {
+                id: 14,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 14,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 39,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+        fullScreenDiagram: { id: 14, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+    };
+
+    expect(
+        reducer(initialState7, openDiagram(39, SvgType.NETWORK_AREA_DIAGRAM))
+    ).toEqual(expectedState7);
+
+    // Open a NAD when there is another NAD in fullscreen
+    const initialState8 = {
+        diagramStates: [
+            {
+                id: 85,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+        ],
+        fullScreenDiagram: { id: 85, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+    };
+    const expectedState8 = {
+        diagramStates: [
+            {
+                id: 85,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 79,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+        ],
+        fullScreenDiagram: { id: 85, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+    };
+
+    expect(
+        reducer(initialState8, openDiagram(79, SvgType.NETWORK_AREA_DIAGRAM))
+    ).toEqual(expectedState8);
 });
