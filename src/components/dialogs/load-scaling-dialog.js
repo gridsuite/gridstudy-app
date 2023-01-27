@@ -76,7 +76,10 @@ const VariationSection = ({
     const id = defaultValue?.id;
 
     function itemFilter(value) {
-        if (variationMode === VENTILATION) {
+        if (
+            value?.type === elementType.FILTER &&
+            variationMode === VENTILATION
+        ) {
             return (
                 value?.specificMetadata?.type === IDENTIFIER_LIST &&
                 value?.specificMetadata?.filterEquipmentsAttributes?.every(

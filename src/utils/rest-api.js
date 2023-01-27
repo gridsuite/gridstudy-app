@@ -1627,7 +1627,11 @@ export function modifyGenerator(
     busOrBusbarSectionId,
     modificationId,
     qPercent,
+    plannedActivePowerSetPoint,
+    startupCost,
     marginalCost,
+    plannedOutageRate,
+    forcedOutageRate,
     transientReactance,
     transformerReactance,
     voltageRegulationType,
@@ -1667,7 +1671,13 @@ export function modifyGenerator(
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         qPercent: toModificationOperation(qPercent),
+        plannedActivePowerSetPoint: toModificationOperation(
+            plannedActivePowerSetPoint
+        ),
+        startupCost: toModificationOperation(startupCost),
         marginalCost: toModificationOperation(marginalCost),
+        plannedOutageRate: toModificationOperation(plannedOutageRate),
+        forcedOutageRate: toModificationOperation(forcedOutageRate),
         transientReactance: toModificationOperation(transientReactance),
         stepUpTransformerReactance:
             toModificationOperation(transformerReactance),
