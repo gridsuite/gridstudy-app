@@ -570,6 +570,7 @@ export function DiagramPane({
                                     isComputationRunning={isComputationRunning}
                                     loadFlowStatus={loadFlowStatus}
                                     showInSpreadsheet={showInSpreadsheet}
+                                    align={diagramView.align}
                                 />
                             </React.Fragment>
                         );
