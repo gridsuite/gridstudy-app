@@ -22,7 +22,7 @@ import { VARIATION_MODE, VARIATION_TYPE } from '../network/constants';
 import { useExpandableValues } from './inputs/use-expandable-values';
 import makeStyles from '@mui/styles/makeStyles';
 import { generatorScaling } from '../../utils/rest-api';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
@@ -288,6 +288,6 @@ const GeneratorScalingDialog = ({
 GeneratorScalingDialog.prototype = {
     editData: PropTypes.object,
     currentNodeUuid: PropTypes.string,
-}
+};
 
 export default GeneratorScalingDialog;
