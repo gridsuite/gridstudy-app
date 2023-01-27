@@ -11,11 +11,11 @@ import { store } from './store';
 import { reducer } from './reducer';
 import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, OPEN_DIAGRAM,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
-    SET_FULLSCREEN_DIAGRAM,
-} from './actions';
-import { SvgType } from '../components/diagrams/diagram-common';
+    SET_FULLSCREEN_DIAGRAM
+} from "./actions";
+import { SvgType, ViewState } from "../components/diagrams/diagram-common";
 
 test('reducer.RESET_NETWORK_AREA_DIAGRAM_DEPTH', () => {
     const initialState = { networkAreaDiagramDepth: 12 };
@@ -103,4 +103,58 @@ test('reducer.SET_FULLSCREEN_DIAGRAM', () => {
             svgType: undefined,
         })
     ).toEqual(expectedState3);
+});
+
+test('reducer.OPEN_DIAGRAM.sld_specific', () => {
+    // Open a SLD from an empty diagramStates
+    const initialState = { diagramStates: [] };
+    const expectedState = { diagramStates: [{id: 65,
+            svgType: SvgType.SUBSTATION,
+            state: ViewState.OPENED,}] };
+
+    expect(
+        reducer(initialState, {
+            type: OPEN_DIAGRAM,
+            id: 65,
+            svgType: SvgType.SUBSTATION,
+        })
+    ).toEqual(expectedState);
+
+    // Open a SLD that is already opened
+
+    // Open a SLD that is already minimized
+
+    // Open a SLD that is already pinned
+
+    // Open a SLD when a NAD with the same ID is already opened
+
+    // Open a SLD in fullscreen instead of another diagram
+
+});
+
+test('reducer.OPEN_DIAGRAM.nad_specific', () => {
+    // Open a NAD from an empty diagramStates
+    const initialState = { diagramStates: [] };
+    const expectedState = { diagramStates: [{id: 65,
+            svgType: SvgType.SUBSTATION,
+            state: ViewState.OPENED,}] };
+
+    expect(
+        reducer(initialState, {
+            type: OPEN_DIAGRAM,
+            id: 65,
+            svgType: SvgType.SUBSTATION,
+        })
+    ).toEqual(expectedState);
+
+    // Open a NAD that is already opened
+
+    // Open a NAD that is already minimized
+
+    // Open a SLD that is already pinned
+
+    // Open a SLD when a NAD with the same ID is already opened
+
+    // Open a SLD in fullscreen instead of another diagram
+
 });
