@@ -108,7 +108,9 @@ const RegulatingTerminalForm = ({
                 );
             });
         } else {
-            setValue(`${id}.${EQUIPMENT}`, null);
+            //hack to work with freesolo autocomplete
+            //setting null would be more accurate but I did not find any way to make it work
+            setValue(`${id}.${EQUIPMENT}`, '');
             setEquipmentsOptions([]);
         }
     }, [
@@ -207,7 +209,6 @@ const RegulatingTerminalForm = ({
                          */
                             filterOptions={(options, params) => {
                                 const filtered = filter(options, params);
-
                                 if (
                                     params.inputValue !== '' &&
                                     !options.find(
