@@ -18,6 +18,7 @@ import {
     setFullScreenDiagram,
     openDiagram,
     minimizeDiagram,
+    togglePinDiagram,
 } from './actions';
 import { SvgType, ViewState } from '../components/diagrams/diagram-common';
 
@@ -740,4 +741,312 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
             minimizeDiagram(200, SvgType.NETWORK_AREA_DIAGRAM)
         )
     ).toEqual(expectedState);
+});
+
+test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
+    // Toggle a non existant diagram
+    const initialState = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 2,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+    const expectedState = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 2,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState, togglePinDiagram(1, SvgType.SUBSTATION))
+    ).toEqual(expectedState);
+
+    // Pin a SLD
+    const initialState2 = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 2,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState2 = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 2,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState2, togglePinDiagram(2, SvgType.SUBSTATION))
+    ).toEqual(expectedState2);
+
+    // Unpin a SLD when no other SLD is already open
+    const initialState3 = {
+        diagramStates: [
+            {
+                id: 31,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 32,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 33,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+    const expectedState3 = {
+        diagramStates: [
+            {
+                id: 31,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 32,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 33,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState3, togglePinDiagram(32, SvgType.SUBSTATION))
+    ).toEqual(expectedState3);
+
+    // Unpin a SLD when there is already another opened SLD
+    const initialState4 = {
+        diagramStates: [
+            {
+                id: 10,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 20,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 30,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 40,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 50,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState4 = {
+        diagramStates: [
+            {
+                id: 10,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 20,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 30,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 40,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 50,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState4, togglePinDiagram(40, SvgType.VOLTAGE_LEVEL))
+    ).toEqual(expectedState4);
+});
+
+test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
+    // Toggle a non existant diagram
+    const initialState = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 2,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+    const expectedState = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 2,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState, togglePinDiagram(1, SvgType.NETWORK_AREA_DIAGRAM))
+    ).toEqual(expectedState);
+
+    // Unpin a NAD
+    const initialState2 = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 2,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 3,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+    const expectedState2 = {
+        diagramStates: [
+            {
+                id: 1,
+                svgType: SvgType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 2,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 3,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(
+            initialState2,
+            togglePinDiagram(3, SvgType.NETWORK_AREA_DIAGRAM)
+        )
+    ).toEqual(expectedState2);
+
+    // Pin a NAD
+    const initialState3 = {
+        diagramStates: [
+            {
+                id: 3,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+            {
+                id: 4,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 5,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState3 = {
+        diagramStates: [
+            {
+                id: 3,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 4,
+                svgType: SvgType.VOLTAGE_LEVEL,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 5,
+                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.PINNED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(
+            initialState3,
+            togglePinDiagram(3, SvgType.NETWORK_AREA_DIAGRAM)
+        )
+    ).toEqual(expectedState3);
 });

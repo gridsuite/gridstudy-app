@@ -750,7 +750,8 @@ export const reducer = createReducer(initialState, {
                     const currentlyOpenedDiagramIndex = diagramStates.findIndex(
                         (diagram) =>
                             diagram.state === ViewState.OPENED &&
-                            diagram.svgType === action.svgType
+                            (diagram.svgType === SvgType.SUBSTATION ||
+                                diagram.svgType === SvgType.VOLTAGE_LEVEL)
                     );
                     if (currentlyOpenedDiagramIndex >= 0) {
                         diagramStates[diagramToPinToggleIndex].state =
