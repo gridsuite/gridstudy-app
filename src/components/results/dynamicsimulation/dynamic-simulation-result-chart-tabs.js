@@ -186,7 +186,6 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                     index={index}
                 >
                     <DynamicSimulationResultChart
-                        groupId={tab.id}
                         series={series}
                         selected={selectedIndex === index}
                     />

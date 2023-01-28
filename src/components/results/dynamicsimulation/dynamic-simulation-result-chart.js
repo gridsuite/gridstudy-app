@@ -65,12 +65,14 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(1),
     },
 }));
-const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
+const DynamicSimulationResultChart = ({ series, selected }) => {
     const classes = useStyles();
     const intl = useIntl();
 
     // button options synchronization
     const [sync, setSync] = useState(true);
+    // event to synchronize
+    const [syncEvent, setSyncEvent] = useState({});
 
     // tab id is auto increase and reset to zero when there is any tab
     const [plotIncId, setPlotIncId] = useState(1);
@@ -132,6 +134,8 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
     );
 
     const handleSync = useCallback(() => {
+        // clear cached sync event
+        setSyncEvent({});
         setSync((prev) => !prev);
     }, []);
 
@@ -200,6 +204,10 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
             breakpoint: breakpoint,
             cols: cols,
         }));
+    };
+
+    const handlePlotSyncEvent = (syncEvent) => {
+        setSyncEvent(syncEvent);
     };
 
     return (
@@ -306,7 +314,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                     <DynamicSimulationResultSeriesChart
                                         key={`${plot.id}`}
                                         id={`${plot.id}`}
-                                        groupId={`${groupId}`}
                                         index={index}
                                         selected={selectedIndex === index}
                                         onSelect={handleSelectIndex}
@@ -314,6 +321,8 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                         rightSeries={plot.rightSelectedSeries}
                                         onClose={handleClose}
                                         sync={sync}
+                                        onSyncEvent={handlePlotSyncEvent}
+                                        syncEvent={syncEvent}
                                     />
                                 </div>
                             ))}

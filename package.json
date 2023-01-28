@@ -20,7 +20,6 @@
         "core-js": "^3.6.4",
         "dagre": "^0.8.5",
         "deck.gl": "^8.0.0",
-        "eventemitter3": "^5.0.0",
         "geolib": "^3.2.1",
         "localized-countries": "^2.0.0",
         "lucene-escape-query": "^1.0.1",
