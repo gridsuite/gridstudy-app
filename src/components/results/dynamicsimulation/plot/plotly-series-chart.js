@@ -23,19 +23,16 @@ const PlotlySeriesChart = ({
     );
     //const [revision, setRevision] = useState(0);
 
-    const makeGetMarker = useMemo(
-        () => (opts) => {
-            return (s) => ({
-                color: 'rgba(255,255,255,0.5)',
-                line: {
-                    color: baseColors[s.index % baseColors.length]['500'],
-                    width: 1,
-                },
-                ...opts,
-            });
-        },
-        []
-    );
+    const makeGetMarker = useCallback((opts) => {
+        return (s) => ({
+            color: 'rgba(255,255,255,0.5)',
+            line: {
+                color: baseColors[s.index % baseColors.length]['500'],
+                width: 1,
+            },
+            ...opts,
+        });
+    }, []);
 
     const data = useMemo(() => {
         function seriesToData(getMarker, opts) {
@@ -82,8 +79,8 @@ const PlotlySeriesChart = ({
         [sync, groupId, id]
     );
 
-    useEffect(() => {
-        const syncOnRelayout = (channelId, senderId, eventData) => {
+    const syncOnRelayout = useCallback(
+        (channelId, senderId, eventData) => {
             if (channelId === groupId && senderId !== id && eventData) {
                 // exit when no change on x
                 if (
@@ -114,18 +111,24 @@ const PlotlySeriesChart = ({
                 // force refresh Plot in mutable layout but not work???
                 // setRevision((prev) => prev + 1);
             }
-        };
+        },
+        [groupId, id]
+    );
 
+    useEffect(() => {
         if (sync) {
             eventCenter.addListener(PlotEvents.ON_RELAYOUT, syncOnRelayout);
-        } else {
-            eventCenter.removeListener(PlotEvents.ON_RELAYOUT, syncOnRelayout);
         }
 
         return () => {
-            eventCenter.removeListener(PlotEvents.ON_RELAYOUT, syncOnRelayout);
+            if (sync) {
+                eventCenter.removeListener(
+                    PlotEvents.ON_RELAYOUT,
+                    syncOnRelayout
+                );
+            }
         };
-    }, [sync, groupId, id]);
+    }, [sync, syncOnRelayout]);
 
     const handleOnInitialized = (figure) => {
         setLayout(figure.layout);
