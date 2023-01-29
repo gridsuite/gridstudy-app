@@ -1104,12 +1104,8 @@ export function startDynamicSimulation(
     const body = JSON.stringify(dynamicSimulationConfiguration ?? {});
 
     console.debug({ startDynamicSimulationUrl, body });
-    return backendFetch(startDynamicSimulationUrl, {
+    return backendFetchJson(startDynamicSimulationUrl, {
         method: 'post',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
         body,
     });
 }
@@ -1133,7 +1129,7 @@ export function fetchDynamicSimulationStatus(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/dynamic-simulation/status';
     console.debug(url);
-    return backendFetchText(url);
+    return backendFetchJson(url);
 }
 
 export function fetchDynamicSimulationResultTimeSeries(
