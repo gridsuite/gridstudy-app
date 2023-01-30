@@ -108,9 +108,7 @@ const RegulatingTerminalForm = ({
                 );
             });
         } else {
-            //hack to work with freesolo autocomplete
-            //setting null would be more accurate but I did not find any way to make it work
-            setValue(`${id}.${EQUIPMENT}`, '');
+            setValue(`${id}.${EQUIPMENT}`, null);
             setEquipmentsOptions([]);
         }
     }, [
@@ -187,6 +185,14 @@ const RegulatingTerminalForm = ({
                     {
                         <AutocompleteInput
                             name={`${id}.${EQUIPMENT}`}
+                            //hack to work with freesolo autocomplete
+                            //setting null programatically when freesolo is enable wont empty the field
+                            inputTransform={(value) =>
+                                value === null ? '' : value
+                            }
+                            outputTransform={(value) =>
+                                value === '' ? null : value
+                            }
                             label="Equipment"
                             size="small"
                             freeSolo

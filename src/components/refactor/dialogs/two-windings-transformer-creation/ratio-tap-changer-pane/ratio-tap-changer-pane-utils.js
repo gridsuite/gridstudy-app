@@ -61,7 +61,6 @@ const ratioTapChangerValidationSchema = (id) => ({
         [LOW_TAP_POSITION]: yup
             .number()
             .nullable()
-            .min(0)
             .max(100)
             .when(ENABLED, {
                 is: true,
