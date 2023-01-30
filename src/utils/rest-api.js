@@ -1106,6 +1106,10 @@ export function startDynamicSimulation(
     console.debug({ startDynamicSimulationUrl, body });
     return backendFetchJson(startDynamicSimulationUrl, {
         method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
         body,
     });
 }
