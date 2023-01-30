@@ -763,7 +763,7 @@ const Diagram = forwardRef((props, ref) => {
                         <AlertInvalidNode noMargin={true} />
                     </Box>
                 ) : (
-                    <Box>
+                    <Box height={'100%'}>
                         {errorMessage && (
                             <Alert severity="error">{errorMessage}</Alert>
                         )}
@@ -780,6 +780,7 @@ const Diagram = forwardRef((props, ref) => {
                                     dangerouslySetInnerHTML={{
                                         __html: svg.svg,
                                     }}
+                                    style={{ height: '100%' }}
                                 />
                                 {displayBranchMenu()}
                                 {displayMenu(equipments.loads, 'load-menus')}
@@ -830,6 +831,7 @@ const Diagram = forwardRef((props, ref) => {
                                         props.loadFlowStatus !==
                                         RunningStatus.SUCCEED,
                                 })}
+                                style={{ height: '100%' }}
                             />
                         )}
 
