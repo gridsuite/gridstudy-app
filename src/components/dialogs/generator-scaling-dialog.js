@@ -195,8 +195,10 @@ const GeneratorScalingDialog = ({
             if (
                 (val.variationMode === STACKING_UP ||
                     val.variationMode === VENTILATION) &&
-                !val.filters.every(
-                    (f) => f.specificMetadata.type === IDENTIFIER_LIST
+                !val.filters.every((f) =>
+                    f.specificMetadata?.type
+                        ? f.specificMetadata?.type === IDENTIFIER_LIST
+                        : true
                 )
             ) {
                 res.set(idx, {
