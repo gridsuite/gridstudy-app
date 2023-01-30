@@ -233,13 +233,13 @@ const TwoWindingsTransformerCreationDialog = ({
             reset({
                 ...getTwoWindingsTransformerFormData({
                     equipmentId: twt.id + '(1)',
-                    equipmentName: twt.name,
+                    equipmentName: twt.name ?? '',
                     seriesResistance: twt.r,
                     seriesReactance: twt.x,
                     magnetizingConductance: twt.g,
                     magnetizingSusceptance: twt.b,
-                    ratedVoltageLevel1: twt.ratedU1,
-                    ratedVoltageLevel2: twt.ratedU2,
+                    ratedVoltage1: twt.ratedU1,
+                    ratedVoltage2: twt.ratedU2,
                     ratedS: twt.ratedS,
                     permanentLimit1: twt.permanentLimit1,
                     permanentLimit2: twt.permanentLimit2,
