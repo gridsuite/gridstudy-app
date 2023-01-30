@@ -39,7 +39,7 @@ import { RunningStatus } from '../util/running-status';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import BaseEquipmentMenu from '../menus/base-equipment-menu';
 import withEquipmentMenu from '../menus/equipment-menu';
-import withLineMenu from '../menus/line-menu';
+import withBranchMenu from '../menus/branch-menu';
 import { equipments } from '../network/network-equipments';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
@@ -132,7 +132,7 @@ const Diagram = forwardRef((props, ref) => {
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
-    const MenuLine = withLineMenu(BaseEquipmentMenu);
+    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
 
     const [modificationInProgress, setModificationInProgress] = useState(false);
 
@@ -602,16 +602,20 @@ const Diagram = forwardRef((props, ref) => {
         props.computedHeight,
     ]);
 
-    const displayMenuLine = () => {
+    const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.lines && (
-                <MenuLine
+            (equipmentMenu.equipmentType === equipments.lines ||
+                equipmentMenu.equipmentType ===
+                    equipments.twoWindingsTransformers) && (
+                <MenuBranch
                     id={equipmentMenu.equipmentId}
+                    equipmentType={equipmentMenu.equipmentType}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     currentNode={currentNode}
+                    studyUuid={props.studyUuid}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={(value) =>
                         setModificationInProgress(value)
@@ -777,7 +781,7 @@ const Diagram = forwardRef((props, ref) => {
                                         __html: svg.svg,
                                     }}
                                 />
-                                {displayMenuLine()}
+                                {displayBranchMenu()}
                                 {displayMenu(equipments.loads, 'load-menus')}
                                 {displayMenu(
                                     equipments.batteries,
@@ -798,10 +802,6 @@ const Diagram = forwardRef((props, ref) => {
                                 {displayMenu(
                                     equipments.shuntCompensators,
                                     'shunt-compensator-menus'
-                                )}
-                                {displayMenu(
-                                    equipments.twoWindingsTransformers,
-                                    'two-windings-transformer-menus'
                                 )}
                                 {displayMenu(
                                     equipments.threeWindingsTransformers,
