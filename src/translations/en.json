@@ -139,6 +139,7 @@
     "SecurityAnalysis": "Security analysis",
 
     "DynamicSimulation": "Dynamic simulation",
+    "DynamicSimulationGetMappingError": "Get dynamic mappings",
     "DynamicSimulationParameters": "Dynamic simulation parameters",
     "DynamicSimulationResults": "Dynamic simulation results",
     "DynamicSimulationRunError": "An error occurred while executing the dynamic simulation",

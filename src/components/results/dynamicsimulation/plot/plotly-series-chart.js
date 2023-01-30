@@ -4,11 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
+import PropTypes from 'prop-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import Plot from 'react-plotly.js';
 import { baseColors, defaultLayout } from './plot-config';
 import { eventCenter, PlotEvents } from './plot-events';
+import { SeriesType } from './plot-types';
 
 const PlotlySeriesChart = ({
     id,
@@ -148,6 +149,15 @@ const PlotlySeriesChart = ({
             //revision={revision}
         />
     );
+};
+
+PlotlySeriesChart.propTypes = {
+    id: PropTypes.string.isRequired,
+    groupId: PropTypes.string.isRequired,
+    index: PropTypes.number,
+    leftSeries: SeriesType,
+    rightSerie: SeriesType,
+    sync: PropTypes.bool,
 };
 
 export default memo(PlotlySeriesChart);

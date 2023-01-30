@@ -6,6 +6,7 @@
  */
 import './plot/react-grid-layout.main.css';
 import './plot/react-grid-layout.custom.css';
+import PropTypes from 'prop-types';
 import {
     Grid,
     Paper,
@@ -65,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: theme.spacing(1),
     },
 }));
+
 const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -203,12 +205,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
     };
 
     return (
-        <Grid
-            container
-            //direction={'row'}
-            //justifyContent={'space-between'}
-            //alignItems={'flex-start'}
-        >
+        <Grid container>
             <Grid item xs={9}>
                 <Grid
                     container
@@ -288,21 +285,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                         >
                             {plots.map((plot, index) => (
                                 <div key={plot.id.toString()}>
-                                    {/* used for testing layout */
-                                    /*<span className="text">{`ABC-${plot.id.toString()}`}</span>
-                                                                        <span
-                                        className="remove"
-                                        style={{
-                                            position: 'absolute',
-                                            right: '2px',
-                                            top: 0,
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() => handleClose(index)}
-                                    >
-                                        x
-                                    </span>
-                                    */}
                                     <DynamicSimulationResultSeriesChart
                                         key={`${plot.id}`}
                                         id={`${plot.id}`}
@@ -343,6 +325,16 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
             </Grid>
         </Grid>
     );
+};
+
+DynamicSimulationResultChart.propTypes = {
+    groupId: PropTypes.string.isRequired,
+    series: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string.name,
+        })
+    ),
+    selected: PropTypes.bool.isRequired,
 };
 
 export default memo(DynamicSimulationResultChart);

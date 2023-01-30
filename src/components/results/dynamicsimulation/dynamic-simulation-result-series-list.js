@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import PropTypes from 'prop-types';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
 import { Grid, List, ListSubheader, Typography } from '@mui/material';
 import { memo, useState } from 'react';
@@ -101,6 +102,14 @@ const DynamicSimulationResultSeriesList = ({
             ))}
         </List>
     );
+};
+
+DynamicSimulationResultSeriesList.propTypes = {
+    index: PropTypes.number,
+    items: PropTypes.arrayOf(PropTypes.object),
+    headers: PropTypes.arrayOf(PropTypes.string).isRequired,
+    onLeftAxisSelected: PropTypes.func.isRequired,
+    onRightAxisSelected: PropTypes.func.isRequired,
 };
 
 export default memo(DynamicSimulationResultSeriesList);

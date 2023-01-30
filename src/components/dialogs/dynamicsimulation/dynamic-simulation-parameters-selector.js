@@ -96,7 +96,7 @@ const DynamicSimulationParametersSelector = (props) => {
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'mappingsRetrievingError',
+                    headerId: 'DynamicSimulationGetMappingError',
                 });
             });
     }, [studyUuid, currentNodeUuid, snackError]);
@@ -127,7 +127,6 @@ const DynamicSimulationParametersSelector = (props) => {
                 xs={12}
                 justifyContent={'center'}
             >
-                {/* TODO list mappingName names and two spinners startTime, stopTime */}
                 <Grid item>{gridItem(mappingNameField, 6)}</Grid>
                 <Grid item>{gridItem(startTimeField, 3)}</Grid>
                 <Grid item>{gridItem(stopTimeField, 3)}</Grid>
@@ -168,6 +167,8 @@ DynamicSimulationParametersSelector.propTypes = {
     open: PropTypes.bool,
     onClose: PropTypes.func,
     onStart: PropTypes.func,
+    studyUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default DynamicSimulationParametersSelector;

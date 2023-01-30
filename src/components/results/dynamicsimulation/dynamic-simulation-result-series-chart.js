@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
+import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import PlotlySeriesChart from './plot/plotly-series-chart';
 import { Card, CardContent, CardHeader, Typography } from '@mui/material';
@@ -13,6 +13,8 @@ import TooltipIconButton from './common/tooltip-icon-button';
 import makeStyles from '@mui/styles/makeStyles';
 import { lighten } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
+import { SeriesType } from './plot/plot-types';
+
 const useStyles = makeStyles((theme) => ({
     closeButton: {
         cursor: 'pointer',
@@ -36,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.primary.main,
     },
 }));
+
 const DynamicSimulationResultSeriesChart = ({
     id,
     groupId,
@@ -99,6 +102,18 @@ const DynamicSimulationResultSeriesChart = ({
             </CardContent>
         </Card>
     );
+};
+
+DynamicSimulationResultSeriesChart.propTypes = {
+    id: PropTypes.string.isRequired,
+    groupId: PropTypes.string.isRequired,
+    index: PropTypes.number.isRequired,
+    selected: PropTypes.bool.isRequired,
+    leftSeries: SeriesType,
+    rightSeries: SeriesType,
+    onClose: PropTypes.func.isRequired,
+    onSelect: PropTypes.func.isRequired,
+    sync: PropTypes.bool,
 };
 
 export default memo(DynamicSimulationResultSeriesChart);

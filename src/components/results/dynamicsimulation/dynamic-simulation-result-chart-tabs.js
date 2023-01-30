@@ -4,17 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
-//import DataObjectIcon from '@mui/icons-material/DataObject';
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton, Stack, Tab } from '@mui/material';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
-// import ReactJson from 'react-json-view';
-// import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-//import { useSelector } from 'react-redux';
-//import { PARAM_THEME } from '../../../utils/config-params';
 import makeStyles from '@mui/styles/makeStyles';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
 import DraggableTab from './common/draggable-tab/draggable-tab';
@@ -36,8 +32,6 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
     const { timeseries } = result;
     const classes = useStyles();
 
-    // const selectedTheme = useSelector((state) => state[PARAM_THEME]);
-
     // tab id is auto increase and reset to zero when there is any tab
     const [tabIncId, setTabIncId] = useState(1);
 
@@ -46,7 +40,6 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
     const [tabs, setTabs] = useState([{ id: tabIncId }]);
 
     const series = useMemo(() => {
-        console.log('transformToRechartSeries is called');
         if (!timeseries) return [];
         return timeseries.map((elem, index) => {
             const metadata = elem.metadata;
@@ -97,7 +90,6 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
     };
 
     const handleDragEnd = (result) => {
-        console.log('dragEnd result = ', result);
         const newTabs = Array.from(tabs);
         const draggedTab = newTabs.splice(result.source.index, 1)[0];
         const destIndex = result.destination?.index;
@@ -113,9 +105,6 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
     return (
         <div className={classes.root}>
             <Stack direction="row" maxWidth={'100vw'}>
-                {/*<Tabs value={selectedIndex} onChange={handleTabsChange}>
-                    <Tab value={-1} icon={<DataObjectIcon />} />
-                </Tabs>*/}
                 {/* tab headers */}
                 <DroppableTabs
                     id={'1'}
@@ -166,19 +155,6 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                 </TooltipIconButton>
             </Stack>
             {/* tab contents */}
-            {/*<Visibility value={selectedIndex} index={-1}>
-                <ReactJson
-                    src={timeseries}
-                    onEdit={false}
-                    onAdd={false}
-                    onDelete={false}
-                    theme={
-                        selectedTheme === LIGHT_THEME
-                            ? 'rjv-default'
-                            : 'monokai'
-                    }
-                />
-            </Visibility>*/}
             {tabs.map((tab, index) => (
                 <Visibility
                     key={`tab-${tab.id}`}
@@ -194,6 +170,21 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
             ))}
         </div>
     );
+};
+
+DynamicSimulationResultChartTabs.propTypes = {
+    result: PropTypes.shape({
+        timeseries: PropTypes.arrayOf(
+            PropTypes.shape({
+                metadata: PropTypes.object,
+                chunks: PropTypes.arrayOf(
+                    PropTypes.shape({
+                        values: PropTypes.array,
+                    })
+                ),
+            })
+        ),
+    }),
 };
 
 export default DynamicSimulationResultChartTabs;

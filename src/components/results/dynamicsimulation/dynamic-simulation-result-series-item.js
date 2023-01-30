@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import PropTypes from 'prop-types';
 import {
     Checkbox,
     ListItem,
@@ -59,6 +60,17 @@ const DynamicSimulationResultSeriesItem = ({
             </ListItemButton>
         </ListItem>
     );
+};
+
+DynamicSimulationResultSeriesItem.propTypes = {
+    item: PropTypes.shape({
+        id: PropTypes.number,
+        label: PropTypes.string,
+    }).isRequired,
+    onChangeLeftAxis: PropTypes.func.isRequired,
+    onChangeRightAxis: PropTypes.func.isRequired,
+    leftAxisChecked: PropTypes.bool,
+    rightAxisChecked: PropTypes.bool,
 };
 
 export default DynamicSimulationResultSeriesItem;
