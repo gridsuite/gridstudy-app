@@ -76,7 +76,7 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     SET_FULLSCREEN_DIAGRAM,
     SET_UPDATED_SUBSTATIONS_IDS,
-    SET_DELETED_EQUIPMENT,
+    SET_DELETED_EQUIPMENTS,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
@@ -165,7 +165,7 @@ const initialState = {
     diagramStates: [],
     reloadMap: true,
     updatedSubstationsIds: [],
-    deletedEquipment: {},
+    deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
@@ -196,7 +196,22 @@ export const reducer = createReducer(initialState, {
     },
 
     [MAP_EQUIPMENTS_CREATED]: (state, action) => {
-        state.mapEquipments = action.mapEquipments;
+        let newMapEquipments;
+        //if it's not initialised yet we take the empty one given in action
+        if (!state.mapEquipments) {
+            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate();
+        } else {
+            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate();
+        }
+        if (action.newLines) {
+            newMapEquipments.lines = action.newLines;
+            newMapEquipments.completeLinesInfos();
+        }
+        if (action.newSubstations) {
+            newMapEquipments.substations = action.newSubstations;
+            newMapEquipments.completeSubstationsInfos();
+        }
+        state.mapEquipments = newMapEquipments;
     },
 
     [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
@@ -278,7 +293,7 @@ export const reducer = createReducer(initialState, {
                     state.currentTreeNode?.id
                 )
             ) {
-                //TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
+                // TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
                 // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
                 synchCurrentTreeNode(
                     state,
@@ -420,8 +435,8 @@ export const reducer = createReducer(initialState, {
         state.updatedSubstationsIds = action.updatedSubstationsIds;
     },
 
-    [SET_DELETED_EQUIPMENT]: (state, action) => {
-        state.deletedEquipment = action.deletedEquipment;
+    [SET_DELETED_EQUIPMENTS]: (state, action) => {
+        state.deletedEquipments = action.deletedEquipments;
     },
 
     [ADD_LOADFLOW_NOTIF]: (state) => {
@@ -510,7 +525,7 @@ export const reducer = createReducer(initialState, {
         state.currentTreeNode = action.currentTreeNode;
         // current node has changed, then will need to reload Geo Data
         state.updatedSubstationsIds = [];
-        state.deletedEquipment = {};
+        state.deletedEquipments = [];
         state.reloadMap = true;
     },
     [SELECTED_TREE_NODE_FOR_COPY]: (state, action) => {
@@ -710,7 +725,7 @@ export const reducer = createReducer(initialState, {
         );
         if (diagramToPinToggleIndex >= 0) {
             if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
-                // If the current NAD is PINNED, we put all NAD to OPENED. Otherwise, we pul them to PINNED.
+                // If the current NAD is PINNED, we set all NAD to OPENED. Otherwise, we set them to PINNED.
                 const newStateForNads =
                     diagramStates[diagramToPinToggleIndex].state ===
                     ViewState.PINNED
@@ -735,7 +750,8 @@ export const reducer = createReducer(initialState, {
                     const currentlyOpenedDiagramIndex = diagramStates.findIndex(
                         (diagram) =>
                             diagram.state === ViewState.OPENED &&
-                            diagram.svgType === action.svgType
+                            (diagram.svgType === SvgType.SUBSTATION ||
+                                diagram.svgType === SvgType.VOLTAGE_LEVEL)
                     );
                     if (currentlyOpenedDiagramIndex >= 0) {
                         diagramStates[diagramToPinToggleIndex].state =
