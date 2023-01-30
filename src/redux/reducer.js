@@ -296,7 +296,7 @@ export const reducer = createReducer(initialState, {
                     state.currentTreeNode?.id
                 )
             ) {
-                //TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
+                // TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
                 // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
                 synchCurrentTreeNode(
                     state,

@@ -6,7 +6,7 @@
  */
 import React, { useCallback } from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { OverflowableText } from '@gridsuite/commons-ui/';
 import IconButton from '@mui/material/IconButton';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import PushPinIcon from '@mui/icons-material/PushPin';
@@ -54,9 +54,10 @@ const DiagramHeader = (props) => {
 
     return (
         <Box className={classes.header}>
-            <Box flexGrow={1}>
-                <Typography>{props.diagramTitle}</Typography>
-            </Box>
+            <OverflowableText
+                style={{ flexGrow: '1' }}
+                text={props.diagramTitle}
+            />
             <Box>
                 <Box
                     sx={{
