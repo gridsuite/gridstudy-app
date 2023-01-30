@@ -39,7 +39,7 @@ import { SvgType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { ResizableBox } from 'react-resizable';
 import ResizePanelHandleIcon from '@mui/icons-material/MoreVert';
-import { useWindowDimensions } from '@gridsuite/commons-ui';
+import { useWindowWidth } from '@react-hook/window-size';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -79,24 +79,30 @@ const useStyles = makeStyles((theme) => ({
     },
     resizablePanel: {
         position: 'relative',
+        boxSizing: 'border-box',
+        // This panel's right border looks like the panel's handle but is only a decoy.
+        // The true handle is wider than it seems, to be easier to grip, and is invisible.
+        borderRightColor: theme.palette.action.disabled,
+        borderRightStyle: 'solid',
+        borderRightWidth: theme.spacing(0.5),
         '& .react-resizable-handle': {
             position: 'absolute',
-            width: theme.spacing(0.5),
+            width: theme.spacing(1),
             height: '100%',
             top: 0,
-            right: 0,
+            right: '-' + theme.spacing(0.75),
             cursor: 'col-resize',
-            backgroundColor: theme.palette.action.disabled,
+            backgroundColor: 'rgba(0, 0, 0, 0)', // The handle is invisible (alpha = 0)
+            zIndex: 5,
         },
     },
     innerResizablePanel: {
         flex: 'auto',
         height: '100%',
-        paddingRight: theme.spacing(0.5),
     },
     resizePanelHandleIcon: {
         bottom: '50%',
-        right: theme.spacing(-1.25),
+        right: theme.spacing(-1.75),
         position: 'absolute',
         color: theme.palette.text.disabled,
         transform: 'scale(0.5, 1.5)',
@@ -160,7 +166,7 @@ const StudyPane = ({
 
     const disabled = !isNodeBuilt(currentNode);
 
-    const { windowWidth } = useWindowDimensions();
+    const windowWidth = useWindowWidth();
 
     useEffect(() => {
         if (
