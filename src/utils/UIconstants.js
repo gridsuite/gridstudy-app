@@ -8,3 +8,5 @@
 export const SEARCH_FETCH_TIMEOUT_MILLIS = 1000; // 1 second
 export const TOOLTIP_DELAY = 1000;
 export const DRAWER_NODE_EDITOR_WIDTH = 400;
+export const TREE_PANEL_MIN_WIDTH_PERCENTAGE = 0.2;
+export const TREE_PANEL_MAX_WIDTH_PERCENTAGE = 0.8;
