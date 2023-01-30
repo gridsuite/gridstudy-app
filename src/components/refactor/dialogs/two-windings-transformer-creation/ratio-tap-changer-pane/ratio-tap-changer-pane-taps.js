@@ -159,7 +159,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
         [COLUMNS_DEFINITIONS, classes.tableCell, disabled, defaultCellRender]
     );
 
-    const generateTableColumns = () => {
+    const columns = useMemo(() => {
         let tableColumns = Object.values(COLUMNS_DEFINITIONS).map((c) => {
             if (c.editor) {
                 c.cellRenderer = editableCellRender;
@@ -167,7 +167,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             return c;
         });
         return tableColumns;
-    };
+    }, [COLUMNS_DEFINITIONS, editableCellRender]);
 
     const handleCreateRatioTapRule = (lowTapRatio, highTapRatio) => {
         const currentTapRows = getValues(`${RATIO_TAP_CHANGER}.${STEPS}`);
@@ -272,7 +272,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
         });
     }, [getValues, replace, trigger]);
 
-    const getCSVColumns = () => {
+    const csvColumns = useMemo(() => {
         return [
             intl.formatMessage({ id: 'Tap' }),
             intl.formatMessage({ id: 'ImportFileResistance' }),
@@ -281,7 +281,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             intl.formatMessage({ id: 'ImportFileSusceptance' }),
             intl.formatMessage({ id: 'Ratio' }),
         ];
-    };
+    }, [intl]);
 
     const parseIntData = (data, defaultValue) => {
         const intValue = parseInt(data);
@@ -421,10 +421,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 }}
             >
                 <Grid item xs={10}>
-                    <VirtualizedTable
-                        rows={ratioTapFields}
-                        columns={generateTableColumns()}
-                    />
+                    <VirtualizedTable rows={ratioTapFields} columns={columns} />
                 </Grid>
                 <RatioTapChangerPaneButtons
                     disabled={disabled}
@@ -447,7 +444,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 ruleType={RATIO_TAP}
                 openImportRuleDialog={openImportRuleDialog}
                 setOpenImportRuleDialog={setOpenImportRuleDialog}
-                csvColumns={getCSVColumns()}
+                csvColumns={csvColumns}
                 handleImportTapRule={handleImportTapRule}
             />
         </>

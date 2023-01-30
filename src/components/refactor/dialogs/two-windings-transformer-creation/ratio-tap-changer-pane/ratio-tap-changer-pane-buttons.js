@@ -68,7 +68,7 @@ const RatioTapChangerPaneButtons = ({
                 <Button
                     variant="contained"
                     onClick={() => setOpenImportRuleDialog(true)}
-                    disabled={disabled /*!ratioTapChangerEnabled*/}
+                    disabled={disabled}
                 >
                     <FormattedMessage id="ImportRegulationRule" />
                 </Button>

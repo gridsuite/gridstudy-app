@@ -341,7 +341,7 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const renderSubtitle = useMemo(() => {
+    const tabs = useMemo(() => {
         return (
             <TwoWindingsTransformerCreationDialogTabs
                 tabIndex={tabIndex}
@@ -498,7 +498,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 aria-labelledby="dialog-create-two-windings-transformer"
                 maxWidth={dialogWidth}
                 titleId="CreateTwoWindingsTransformer"
-                subtitle={renderSubtitle}
+                subtitle={tabs}
                 searchCopy={searchCopy}
                 {...dialogProps}
             >
