@@ -15,12 +15,12 @@
     "network_modifications/GENERATOR_MODIFICATION": "Modifying generator {computedLabel}",
     "network_modifications/LINE_CREATION": "Creating line {computedLabel}",
     "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Creating 2 windings transformer {computedLabel}",
-    "network_modifications/BRANCH_STATUS_MODIFICATION": "{action, select, TRIP {Trip line {computedLabel}} LOCKOUT {Lock out line {computedLabel}} ENERGISE_END_ONE {Energise {computedLabel} on {energizedEnd}} ENERGISE_END_TWO {Energise {computedLabel} on {energizedEnd}} SWITCH_ON {Switch on {computedLabel}} other {Modification line status {computedLabel}}}",
+    "network_modifications/BRANCH_STATUS_MODIFICATION": "{action, select, TRIP {Trip {computedLabel}} LOCKOUT {Lock out {computedLabel}} ENERGISE_END_ONE {Energise {computedLabel} on {energizedEnd}} ENERGISE_END_TWO {Energise {computedLabel} on {energizedEnd}} SWITCH_ON {Switch on {computedLabel}} other {Branch status modification {computedLabel}}}",
     "network_modifications/SHUNT_COMPENSATOR_CREATION": "Creating shunt compensator {computedLabel}",
     "network_modifications/GROOVY_SCRIPT": "Modification by script",
     "network_modifications/EQUIPMENT_ATTRIBUTE_MODIFICATION": "{equipmentAttributeName, select, open {{equipmentAttributeValue, select, true {Open {computedLabel}} other {Close {computedLabel}}}} other {Equipment modification {computedLabel}}}",
-    "network_modifications/creatingModification": "Creating hypothesis ...",
-    "network_modifications/deletingModification": "Deleting hypothesis ...",
-    "network_modifications/updatingModification": "Updating hypothesis ...",
-    "network_modifications/modifications": "Updating hypothesis list ..."
+    "network_modifications/creatingModification": "Creating modification ...",
+    "network_modifications/deletingModification": "Deleting modification ...",
+    "network_modifications/updatingModification": "Updating modification ...",
+    "network_modifications/modifications": "Updating modification list ..."
 }

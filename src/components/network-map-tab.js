@@ -14,7 +14,7 @@ import {
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
-import withLineMenu from './menus/line-menu';
+import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
@@ -181,7 +181,7 @@ export const NetworkMapTab = ({
         );
     }
 
-    const MenuLine = withLineMenu(BaseEquipmentMenu);
+    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
 
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
@@ -684,8 +684,10 @@ export const NetworkMapTab = ({
         return (
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
-                    withEquipment(MenuLine, {
+                    withEquipment(MenuBranch, {
                         currentNode,
+                        studyUuid,
+                        equipmentType: equipmentMenu.equipmentType,
                     })}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}

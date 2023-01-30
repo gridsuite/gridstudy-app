@@ -298,16 +298,19 @@
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
 
+    "ViewOnSpreadsheet": "Visualiser dans le tableur",
+
     "LockoutLine": "Consigner la ligne",
     "TripLine": "Déclencher la ligne",
-    "EnergiseOnOneEnd": "Mettre sous tension à vide depuis {substation}",
+    "EnergiseOnOneEndLine": "Mettre sous tension à vide depuis {substation}",
     "SwitchOnLine": "Mettre en service la ligne",
-    "ViewOnSpreadsheet": "Visualiser dans le tableur",
+    "Trip2WTransformer": "Déclencher le transformateur",
 
     "UnableToLockoutLine": "Impossible de consigner la ligne",
     "UnableToTripLine": "Impossible de déclencher la ligne",
-    "UnableToEnergiseLineEnd": "Impossible de mettre sous tension à vide",
+    "UnableToEnergiseOnOneEndLine": "Impossible de mettre sous tension à vide",
     "UnableToSwitchOnLine": "Impossible de mettre la ligne en service",
+    "UnableToTrip2WTransformer": "Impossible de déclencher le transformateur",
 
     "Provider": "Fournisseur\u00a0:",
     "Default": "Défaut",
