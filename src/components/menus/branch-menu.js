@@ -32,6 +32,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
+import { BRANCH_SIDE } from '../network/constants';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -223,7 +224,7 @@ const withBranchMenu =
                 {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
-                        onClick={() => handleEnergise('ONE')}
+                        onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
                             !isNodeEditable ||
                             (branch.terminal1Connected &&
@@ -259,7 +260,7 @@ const withBranchMenu =
                 {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
-                        onClick={() => handleEnergise('TWO')}
+                        onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
                             !isNodeEditable ||
                             (branch.terminal2Connected &&
