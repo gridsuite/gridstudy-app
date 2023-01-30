@@ -27,6 +27,7 @@ import {
     incrementNetworkAreaDiagramDepth,
     resetNetworkAreaDiagramDepth,
     setFullScreenDiagram,
+    networkAreaDiagramNbVoltageLevels,
 } from '../../redux/actions';
 
 import { AutoSizer } from 'react-virtualized';
@@ -322,12 +323,19 @@ const Diagram = forwardRef((props, ref) => {
                         if (data !== null) {
                             setSvg({
                                 svg: data.svg,
-                                metadata: isDiagramTypeSld
-                                    ? data.metadata
-                                    : null,
+                                metadata: data.metadata,
                                 error: null,
                                 svgUrl: props.svgUrl,
                             });
+                            if (
+                                props.svgType === SvgType.NETWORK_AREA_DIAGRAM
+                            ) {
+                                dispatch(
+                                    networkAreaDiagramNbVoltageLevels(
+                                        data?.metadata?.nbVoltageLevels
+                                    )
+                                );
+                            }
                         } else {
                             setSvg(NoSvg);
                         }
@@ -368,6 +376,7 @@ const Diagram = forwardRef((props, ref) => {
         props.diagramId,
         props.svgType,
         isNodeinNotifs,
+        dispatch,
     ]);
 
     // shouldResetPreferredSizes doesn't need to be a ref, but it makes the static checks happy

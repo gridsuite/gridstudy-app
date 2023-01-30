@@ -9,9 +9,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import IconButton from '@mui/material/IconButton';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     counterText: {
@@ -20,16 +23,22 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
     },
     incrementCounterIcon: {
-        bottom: theme.spacing(1),
-        left: theme.spacing(4.5),
+        bottom: theme.spacing(0),
+        left: theme.spacing(3.5),
         position: 'absolute',
         cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: 'transparent',
+        },
     },
     decrementCounterIcon: {
-        bottom: theme.spacing(1),
-        left: theme.spacing(1),
+        bottom: theme.spacing(0),
+        left: theme.spacing(0),
         position: 'absolute',
         cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: 'transparent',
+        },
     },
     fullScreenIcon: {
         bottom: theme.spacing(1),
@@ -64,6 +73,12 @@ const DiagramFooter = (props) => {
         () => onDecrementCounter && onDecrementCounter(),
         [onDecrementCounter]
     );
+    const nbVoltageLevels = useSelector(
+        (state) => state.networkAreaDiagramNbVoltageLevels
+    );
+    const networkAreaDiagramDepth = useSelector(
+        (state) => state.networkAreaDiagramDepth
+    );
 
     return (
         <div style={{ display: 'flex' }}>
@@ -74,14 +89,21 @@ const DiagramFooter = (props) => {
                             {props.counterText + props.counterValue}
                         </Typography>
                     )}
-                    <AddCircleIcon
-                        onClick={handleIncrementCounter}
+                    <IconButton
+                        disabled={
+                            nbVoltageLevels >
+                            NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
+                        }
                         className={classes.incrementCounterIcon}
-                    />
-                    <RemoveCircleIcon
-                        onClick={handleDecrementCounter}
+                    >
+                        <AddCircleIcon onClick={handleIncrementCounter} />
+                    </IconButton>
+                    <IconButton
+                        disabled={networkAreaDiagramDepth === 0}
                         className={classes.decrementCounterIcon}
-                    />
+                    >
+                        <RemoveCircleIcon onClick={handleDecrementCounter} />
+                    </IconButton>
                 </>
             )}
             {props.showFullscreenControl && (

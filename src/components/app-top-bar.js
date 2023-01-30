@@ -58,6 +58,7 @@ import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './util/search-matching-equipments';
+import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -83,6 +84,9 @@ const CustomSuffixRenderer = ({ props, element }) => {
     const dispatch = useDispatch();
     const equipmentClasses = useEquipmentStyles();
     const network = useSelector((state) => state.network);
+    const networkAreaDiagramNbVoltageLevels = useSelector(
+        (state) => state.networkAreaDiagramNbVoltageLevels
+    );
 
     const enterOnSubstationCB = useCallback(
         (e, element) => {
@@ -114,6 +118,10 @@ const CustomSuffixRenderer = ({ props, element }) => {
             <>
                 {element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name && (
                     <IconButton
+                        disabled={
+                            networkAreaDiagramNbVoltageLevels >
+                            NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
+                        }
                         onClick={(e) => openNetworkAreaDiagramCB(e, element)}
                         size={'small'}
                     >
