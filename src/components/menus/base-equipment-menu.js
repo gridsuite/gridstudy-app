@@ -84,6 +84,7 @@ const BaseEquipmentMenu = ({
             {equipmentType !== equipments.substations &&
                 equipmentType !== equipments.voltageLevels && (
                     <ItemViewInSpreadsheet
+                        key="ViewOnSpreadsheet"
                         equipmentType={equipmentType}
                         equipmentId={equipmentId}
                         itemText={intl.formatMessage({
@@ -102,6 +103,7 @@ const BaseEquipmentMenu = ({
                         parentMenuOpen={true}
                     >
                         <ItemViewInSpreadsheet
+                            key={equipment.id}
                             equipmentType={equipmentType}
                             equipmentId={equipment.id}
                             itemText={getNameOrId(equipment)}
@@ -111,6 +113,7 @@ const BaseEquipmentMenu = ({
                         {equipment.voltageLevels.map((voltageLevel) => (
                             // menus for all voltage levels in the substation
                             <ItemViewInSpreadsheet
+                                key={voltageLevel.id}
                                 equipmentType={equipments.voltageLevels}
                                 equipmentId={voltageLevel.id}
                                 itemText={getNameOrId(voltageLevel)}
@@ -132,18 +135,17 @@ const BaseEquipmentMenu = ({
                     >
                         {/* menus for the substation */}
                         <ItemViewInSpreadsheet
+                            key={equipment.substationId}
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
-                            itemText={() => {
-                                const substation = network.getSubstation(
-                                    equipment?.substationId
-                                );
-                                return getNameOrId(substation);
-                            }}
+                            itemText={getNameOrId(
+                                network.getSubstation(equipment.substationId)
+                            )}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {/* menus for the voltage level */}
                         <ItemViewInSpreadsheet
+                            key={equipment.id}
                             equipmentType={equipments.voltageLevels}
                             equipmentId={equipment.id}
                             itemText={getNameOrId(equipment)}

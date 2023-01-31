@@ -508,7 +508,6 @@ export function DiagramPane({
      * RENDER
      */
 
-    let currentAlign = 'left';
     return (
         <AutoSizer>
             {({ width, height }) => (
@@ -521,60 +520,55 @@ export function DiagramPane({
                         height: height + 'px',
                     }}
                 >
-                    {displayedDiagrams.map((diagramView) => {
-                        const alignChanged = currentAlign !== diagramView.align;
-                        if (alignChanged) {
-                            currentAlign = diagramView.align;
-                        }
-                        return (
-                            <React.Fragment
-                                key={diagramView.svgType + diagramView.id}
-                            >
-                                {
-                                    /*
-                                    When switching from displaying the left aligned diagrams to the right aligned ones, we put a space between them.
-                                    This space takes all the remaining space on screen and "pushes" the right aligned diagrams to the right of the screen.
-                                    */
-                                    alignChanged && (
+                    {displayedDiagrams.map((diagramView, index, array) => (
+                        <React.Fragment
+                            key={diagramView.svgType + diagramView.id}
+                        >
+                            {
+                                /*
+                                We put a space (a separator) before the first right aligned diagram.
+                                This space takes all the remaining space on screen and "pushes" the right aligned
+                                diagrams to the right of the screen.
+                                */
+                                array[index]?.align === 'right' &&
+                                    (index === 0 ||
+                                        array[index - 1]?.align === 'left') && (
                                         <div
                                             className={classes.separator}
                                         ></div>
                                     )
+                            }
+                            <Diagram
+                                diagramTitle={diagramView.name}
+                                ref={diagramView.ref}
+                                disabled={disabled}
+                                pinned={diagramView.state === ViewState.PINNED}
+                                diagramId={diagramView.id}
+                                svgType={diagramView.svgType}
+                                svgUrl={diagramView.svgUrl}
+                                studyUuid={studyUuid}
+                                // Size computation
+                                computedHeight={
+                                    // We are not harmonizing the NAD's height with the SLD's
+                                    diagramView.svgType !==
+                                    SvgType.NETWORK_AREA_DIAGRAM
+                                        ? computedHeight
+                                        : undefined
                                 }
-                                <Diagram
-                                    diagramTitle={diagramView.name}
-                                    ref={diagramView.ref}
-                                    disabled={disabled}
-                                    pinned={
-                                        diagramView.state === ViewState.PINNED
-                                    }
-                                    diagramId={diagramView.id}
-                                    svgType={diagramView.svgType}
-                                    svgUrl={diagramView.svgUrl}
-                                    studyUuid={studyUuid}
-                                    // Size computation
-                                    computedHeight={
-                                        // We are not harmonizing the NAD's height with the SLD's
-                                        diagramView.svgType !==
-                                        SvgType.NETWORK_AREA_DIAGRAM
-                                            ? computedHeight
-                                            : undefined
-                                    }
-                                    totalHeight={height}
-                                    totalWidth={width}
-                                    numberToDisplay={displayedDiagrams.length}
-                                    setDisplayedDiagramHeights={
-                                        setDisplayedDiagramHeights
-                                    }
-                                    // SLD specific
-                                    isComputationRunning={isComputationRunning}
-                                    loadFlowStatus={loadFlowStatus}
-                                    showInSpreadsheet={showInSpreadsheet}
-                                    align={diagramView.align}
-                                />
-                            </React.Fragment>
-                        );
-                    })}
+                                totalHeight={height}
+                                totalWidth={width}
+                                numberToDisplay={displayedDiagrams.length}
+                                setDisplayedDiagramHeights={
+                                    setDisplayedDiagramHeights
+                                }
+                                // SLD specific
+                                isComputationRunning={isComputationRunning}
+                                loadFlowStatus={loadFlowStatus}
+                                showInSpreadsheet={showInSpreadsheet}
+                                align={diagramView.align}
+                            />
+                        </React.Fragment>
+                    ))}
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                         spacing={1}

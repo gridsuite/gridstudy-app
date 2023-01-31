@@ -457,7 +457,6 @@ NetworkMap.defaultProps = {
     substations: [],
     lines: [],
     geoData: null,
-    useName: null,
     filteredNominalVoltages: null,
     labelsZoomThreshold: 9,
     arrowsZoomThreshold: 7,
@@ -478,7 +477,6 @@ NetworkMap.defaultProps = {
 NetworkMap.propTypes = {
     network: PropTypes.instanceOf(MapEquipments),
     geoData: PropTypes.instanceOf(GeoData),
-    useName: PropTypes.bool.isRequired,
     filteredNominalVoltages: PropTypes.array,
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
