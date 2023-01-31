@@ -122,6 +122,12 @@ export const SubstationLayout = {
     SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
 };
 
+export const SvgType = {
+    VOLTAGE_LEVEL: 'voltage-level',
+    SUBSTATION: 'substation',
+    NETWORK_AREA_DIAGRAM: 'network-area-diagram',
+};
+
 export function getEquipmentTypeFromFeederType(feederType) {
     switch (feederType) {
         case EQUIPMENT_TYPES.LINE.type:
@@ -228,15 +234,15 @@ export const computePaperAndSvgSizesIfReady = (
         } else {
             let tempMaxWidth, tempMaxHeight;
             switch (svgType) {
-                case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+                case SvgType.VOLTAGE_LEVEL:
                     tempMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
                     tempMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
                     break;
-                case EQUIPMENT_TYPES.SUBSTATION.type:
+                case SvgType.SUBSTATION:
                     tempMaxWidth = MAX_WIDTH_SUBSTATION;
                     tempMaxHeight = MAX_HEIGHT_SUBSTATION;
                     break;
-                case EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type:
+                case SvgType.NETWORK_AREA_DIAGRAM:
                     tempMaxWidth = MAX_WIDTH_NETWORK_AREA_DIAGRAM;
                     tempMaxHeight = MAX_HEIGHT_NETWORK_AREA_DIAGRAM;
                     break;

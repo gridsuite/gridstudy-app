@@ -30,7 +30,7 @@ import {
 } from '../network/constants';
 import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../graph/util/model-functions';
-import { EQUIPMENT_TYPES } from '../util/equipment-types';
+import { SvgType } from '../diagrams/diagram-common';
 
 /**
  * Creates a callback for _getting_ bus or busbar section for a given voltage level in a node.
@@ -172,7 +172,7 @@ export const useConnectivityValue = ({
     };
 
     const [voltageLevelObjOrId, voltageLevelField] = useAutocompleteField({
-        id: id ? id + '/voltage-level' : EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        id: id ? id + '/voltage-level' : SvgType.VOLTAGE_LEVEL,
         label: 'VoltageLevel',
         validation: validation,
         values: voltageLevelOptions,

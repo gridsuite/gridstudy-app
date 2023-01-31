@@ -52,7 +52,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import { useDiagram } from './diagrams/diagram-common';
+import { SvgType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
@@ -99,12 +99,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const openNetworkAreaDiagramCB = useCallback(
         (e, element) => {
-            dispatch(
-                openDiagram(
-                    element.id,
-                    EQUIPMENT_TYPES.NETWORK_AREA_DIAGRAM.type
-                )
-            );
+            dispatch(openDiagram(element.id, SvgType.NETWORK_AREA_DIAGRAM));
             props.onClose && props.onClose();
             e.stopPropagation();
         },
@@ -229,15 +224,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (optionInfos) => {
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
             if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION.type) {
-                openDiagramView(
-                    optionInfos.id,
-                    EQUIPMENT_TYPES.SUBSTATION.type
-                );
+                openDiagramView(optionInfos.id, SvgType.SUBSTATION);
             } else {
-                openDiagramView(
-                    optionInfos.id,
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
-                );
+                openDiagramView(optionInfos.id, SvgType.VOLTAGE_LEVEL);
             }
         },
         [onChangeTab, openDiagramView]

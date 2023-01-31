@@ -177,9 +177,9 @@ const EquipmentDeletionDialog = ({
         deleteEquipment(
             studyUuid,
             currentNodeUuid,
-            equipmentType.label.endsWith('CONVERTER_STATION')
+            EQUIPMENT_TYPES.type.endsWith('CONVERTER_STATION')
                 ? EQUIPMENT_TYPES.HVDC_CONVERTER_STATION.type
-                : equipmentType.label,
+                : EQUIPMENT_TYPES.type,
             equipmentOrId?.id || equipmentOrId,
             editData?.uuid
         ).catch((error) => {
