@@ -226,7 +226,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
                 openDiagramView(optionInfos.id, SvgType.SUBSTATION);
             } else {
-                openDiagramView(optionInfos.id, SvgType.VOLTAGE_LEVEL);
+                openDiagramView(
+                    optionInfos.voltageLevelId,
+                    SvgType.VOLTAGE_LEVEL
+                );
             }
         },
         [onChangeTab, openDiagramView]
