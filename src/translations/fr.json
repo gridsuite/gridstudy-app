@@ -590,6 +590,8 @@
     "RatioValuesError": "Les rapports de transformation doivent être ordonnés et sans duplication",
     "PhaseShiftValuesError": "Les valeurs de déphasage doivent être ordonnés et sans duplication",
     "TapPositionValueError": "Le nombre de prises ne doit pas dépasser la valeur {value}",
+    "CoherentLowTapPosition": "La valeur doit correspondre à la plus petite prise générée",
+    "CoherentHighTapPosition": "La valeur doit correspondre à la plus grande prise générée",
 
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",

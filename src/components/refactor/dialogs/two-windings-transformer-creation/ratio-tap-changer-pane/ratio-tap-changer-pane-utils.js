@@ -64,7 +64,18 @@ const ratioTapChangerValidationSchema = (id) => ({
             .max(100)
             .when(ENABLED, {
                 is: true,
-                then: (schema) => schema.required(),
+                then: (schema) =>
+                    schema
+                        .required()
+                        .test(
+                            'coherentLowTapPosition',
+                            'CoherentLowTapPosition',
+                            (lowTapPosition, context) =>
+                                isLowTapPositionCoherent(
+                                    lowTapPosition,
+                                    context
+                                )
+                        ),
             }),
         [HIGH_TAP_POSITION]: yup
             .number()
@@ -73,7 +84,18 @@ const ratioTapChangerValidationSchema = (id) => ({
             .max(100, 'HighTapPositionError')
             .when(ENABLED, {
                 is: true,
-                then: (schema) => schema.required(),
+                then: (schema) =>
+                    schema
+                        .required()
+                        .test(
+                            'coherentHighTapPosition',
+                            'CoherentHighTapPosition',
+                            (highTapPosition, context) =>
+                                isHighTapPositionCoherent(
+                                    highTapPosition,
+                                    context
+                                )
+                        ),
             }),
         [TAP_POSITION]: yup
             .number()
@@ -148,6 +170,17 @@ const ratioTapChangerValidationSchema = (id) => ({
 
 export const getRatioTapChangerValidationSchema = (id = RATIO_TAP_CHANGER) => {
     return ratioTapChangerValidationSchema(id);
+};
+
+const isLowTapPositionCoherent = (value, context) => {
+    console.log(context);
+    const stepsTap = context.parent[STEPS]?.map((step) => step[STEPS_TAP]);
+    return stepsTap.length > 0 ? value === Math.min(...stepsTap) : true;
+};
+
+const isHighTapPositionCoherent = (value, context) => {
+    const stepsTap = context.parent[STEPS]?.map((step) => step[STEPS_TAP]);
+    return stepsTap.length > 0 ? value === Math.max(...stepsTap) : true;
 };
 
 const ratioTapChangerEmptyFormData = (id) => ({
