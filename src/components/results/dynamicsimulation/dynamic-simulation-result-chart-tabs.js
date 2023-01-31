@@ -7,7 +7,7 @@
 import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { IconButton, Stack, Tab } from '@mui/material';
+import { IconButton, Stack } from '@mui/material';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
 import { useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -117,30 +117,25 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                                     key={index}
                                     index={index}
                                     value={index}
-                                >
-                                    <Tab
-                                        key={index}
-                                        value={index}
-                                        label={
-                                            <span
-                                                style={{
-                                                    'white-space': 'nowrap',
-                                                }}
+                                    label={
+                                        <span
+                                            style={{
+                                                'white-space': 'nowrap',
+                                            }}
+                                        >
+                                            {`${intl.formatMessage({
+                                                id: 'DynamicSimulationResultTab',
+                                            })} ${tab.id}`}
+                                            <IconButton
+                                                size="small"
+                                                component="span"
+                                                onClick={handleClose(index)}
                                             >
-                                                {`${intl.formatMessage({
-                                                    id: 'DynamicSimulationResultTab',
-                                                })} ${tab.id}`}
-                                                <IconButton
-                                                    size="small"
-                                                    component="span"
-                                                    onClick={handleClose(index)}
-                                                >
-                                                    <CloseIcon />
-                                                </IconButton>
-                                            </span>
-                                        }
-                                    />
-                                </DraggableTab>
+                                                <CloseIcon />
+                                            </IconButton>
+                                        </span>
+                                    }
+                                />
                             );
                         })
                     }

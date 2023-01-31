@@ -6,10 +6,10 @@
  */
 import PropTypes from 'prop-types';
 import { Draggable } from 'react-beautiful-dnd';
-import { cloneElement } from 'react';
+import Tab from '@mui/material/Tab';
 
 const DraggableTab = (props) => {
-    const { index, children } = props;
+    const { index, key, value, label, ...others } = props;
     return (
         <Draggable
             draggableId={`${index}`}
@@ -21,10 +21,13 @@ const DraggableTab = (props) => {
                     ref={draggableProvided.innerRef}
                     {...draggableProvided.draggableProps}
                 >
-                    {cloneElement(children, {
-                        ...props,
-                        ...draggableProvided.dragHandleProps,
-                    })}
+                    <Tab
+                        key={key}
+                        value={value}
+                        label={label}
+                        {...others}
+                        {...draggableProvided.dragHandleProps}
+                    />
                 </div>
             )}
         </Draggable>
@@ -33,7 +36,9 @@ const DraggableTab = (props) => {
 
 DraggableTab.propTypes = {
     index: PropTypes.number.isRequired,
-    children: PropTypes.node.isRequired,
+    key: PropTypes.number.isRequired,
+    value: PropTypes.number.isRequired,
+    label: PropTypes.node,
 };
 
 export default DraggableTab;
