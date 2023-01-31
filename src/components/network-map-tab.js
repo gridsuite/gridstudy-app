@@ -648,7 +648,9 @@ export const NetworkMapTab = ({
             // TODO REMOVE LATER
             if (!reloadMapNeeded) return;
             let updatingNode = currentNodeRef.current;
-            console.log('NNO chargement du node ' + updatingNode?.data?.label);
+            console.debug(
+                'Updating geo-data for node ' + updatingNode?.data?.label
+            );
             if (!isInitialized) {
                 loadMapEquipments(updatingNode);
                 loadAllGeoData(updatingNode);
