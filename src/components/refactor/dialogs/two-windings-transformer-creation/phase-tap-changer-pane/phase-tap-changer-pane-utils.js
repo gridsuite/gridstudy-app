@@ -90,8 +90,8 @@ const phaseTapChangerValidationSchema = (id) => ({
                     schema
                         .required()
                         .test(
-                            'coherentLowTapPosition',
-                            'CoherentLowTapPosition',
+                            'incoherentLowTapPosition',
+                            'IncoherentLowTapPositionError',
                             (lowTapPosition, context) =>
                                 isLowTapPositionCoherent(
                                     lowTapPosition,
@@ -110,8 +110,8 @@ const phaseTapChangerValidationSchema = (id) => ({
                     schema
                         .required()
                         .test(
-                            'coherentHighTapPosition',
-                            'CoherentHighTapPosition',
+                            'incoherentHighTapPosition',
+                            'InoherentHighTapPositionError',
                             (highTapPosition, context) =>
                                 isHighTapPositionCoherent(
                                     highTapPosition,

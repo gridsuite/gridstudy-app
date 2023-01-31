@@ -68,8 +68,8 @@ const ratioTapChangerValidationSchema = (id) => ({
                     schema
                         .required()
                         .test(
-                            'coherentLowTapPosition',
-                            'CoherentLowTapPosition',
+                            'incoherentLowTapPosition',
+                            'IncoherentLowTapPositionError',
                             (lowTapPosition, context) =>
                                 isLowTapPositionCoherent(
                                     lowTapPosition,
@@ -88,8 +88,8 @@ const ratioTapChangerValidationSchema = (id) => ({
                     schema
                         .required()
                         .test(
-                            'coherentHighTapPosition',
-                            'CoherentHighTapPosition',
+                            'incoherentHighTapPosition',
+                            'IncoherentHighTapPositionError',
                             (highTapPosition, context) =>
                                 isHighTapPositionCoherent(
                                     highTapPosition,
@@ -173,7 +173,6 @@ export const getRatioTapChangerValidationSchema = (id = RATIO_TAP_CHANGER) => {
 };
 
 const isLowTapPositionCoherent = (value, context) => {
-    console.log(context);
     const stepsTap = context.parent[STEPS]?.map((step) => step[STEPS_TAP]);
     return stepsTap.length > 0 ? value === Math.min(...stepsTap) : true;
 };
