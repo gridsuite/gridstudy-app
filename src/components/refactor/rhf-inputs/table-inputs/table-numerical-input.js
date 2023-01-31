@@ -59,7 +59,6 @@ export const TableNumericalInput = ({
             inputRef={ref}
             inputProps={{
                 style: {
-                    textAlign: 'center',
                     fontSize: 'small',
                 },
                 min: { min },
