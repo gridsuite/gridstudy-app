@@ -109,7 +109,6 @@ export const ConnectivityForm = ({
                     break;
             }
         } else {
-            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
             setBusOrBusbarSectionOptions([]);
         }
     }, [
@@ -118,6 +117,10 @@ export const ConnectivityForm = ({
         studyUuid,
         currentNode?.id,
     ]);
+
+    const resetBusBarSection = useCallback(() => {
+        setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
+    });
 
     const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
     const getObjectId = useCallback((object) => {
@@ -136,6 +139,7 @@ export const ConnectivityForm = ({
                     ? getConnectivityVoltageLevelData({ voltageLevelId: value })
                     : value
             }
+            onChangeCallback={resetBusBarSection}
             allowNewValue
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}

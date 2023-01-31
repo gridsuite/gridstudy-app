@@ -37,6 +37,7 @@ const AutocompleteInput = ({
     previousValue,
     formProps,
     allowNewValue,
+    onChangeCallback, // method called when input value is changing
     ...props
 }) => {
     const { validationSchema, getValues } = useFormContext();
@@ -46,6 +47,7 @@ const AutocompleteInput = ({
     } = useController({ name });
 
     const handleChange = (value) => {
+        onChangeCallback && onChangeCallback();
         //if free solo not enabled or if value is not of string type, we call onChange right away
         if (!allowNewValue || typeof value !== 'string') {
             onChange(outputTransform(value));

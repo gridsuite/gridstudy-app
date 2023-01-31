@@ -16,7 +16,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 
@@ -108,7 +108,6 @@ const RegulatingTerminalForm = ({
                 );
             });
         } else {
-            setValue(`${id}.${EQUIPMENT}`, null);
             setEquipmentsOptions([]);
         }
     }, [
@@ -117,6 +116,10 @@ const RegulatingTerminalForm = ({
         setValue,
         voltageLevelsEquipmentsOptionsPromise,
     ]);
+
+    const resetEquipment = useCallback(() => {
+        setValue(`${id}.${EQUIPMENT}`, null);
+    });
 
     return (
         <>
@@ -145,6 +148,7 @@ const RegulatingTerminalForm = ({
                             id="voltage-level"
                             options={voltageLevelOptions}
                             getOptionLabel={(vl) => (vl?.[ID] ? vl?.[ID] : '')}
+                            onChangeCallback={resetEquipment}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
