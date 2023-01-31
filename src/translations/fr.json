@@ -615,6 +615,15 @@
     "PhaseShiftValuesError": "Les valeurs de déphasage doivent être ordonnés et sans duplication",
     "TapPositionValueError": "Le nombre de prises ne doit pas dépasser la valeur {value}",
 
+    "GeneratorScaling": "Variation plan de production",
+    "IterativeLabel": "Itérative",
+    "VariationMode": "Mode de variation",
+    "ProportionalToPMax": "Proportionnel à Pmax",
+    "StackingUp": "Empilement",
+    "variations": "Variations",
+    "GeneratorScalingError" : "Erreur lors de la création de la variation du plan de production",
+    "AllExplicitNamingFiltersError": "Tous les types de filtres doivent être par nommage lorsque le mode de variation est empilement ou ventilation",
+
     "Tap":"Prise",
     "DeltaResistance":"Δ Résistance (%)",
     "DeltaReactance":"Δ Réactance (%)",
@@ -711,7 +720,7 @@
     "ReactivePowerSetpointMVAR": "Consigne de reactif (MVAR)",
     "EmptyList/bbs": "La liste de jeux de barres est vide",
     "EmptyList/connections": "La liste de connexions est vide",
-    "EmptyList/variations": "La liste de variations est vide",
+    "EmptyList/variations": "La liste des variations est vide",
 
     "UnsupportedView": "La fonction de recherche n'est pas disponible en vue arbre",
 

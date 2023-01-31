@@ -16,8 +16,8 @@ import PropTypes from 'prop-types';
 import { elementType } from '@gridsuite/commons-ui';
 import {
     ACTIVE_VARIATION_MODE,
-    LOAD_SCALABLE_TYPES,
     REACTIVE_VARIATION_MODE,
+    VARIATION_TYPE,
 } from '../network/constants';
 
 import { useExpandableValues } from './inputs/use-expandable-values';
@@ -227,7 +227,7 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
     const [variationType, variationTypeRadioButton] = useRadioValue({
         inputForm: inputForm,
         defaultValue: formValues?.variationType ?? 'DELTA_P',
-        possibleValues: LOAD_SCALABLE_TYPES,
+        possibleValues: VARIATION_TYPE,
     });
 
     const [variations, variationsField] = useExpandableValues({

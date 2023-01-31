@@ -615,6 +615,14 @@
     "PhaseShiftValuesError": "The values of the phase tap shifts must be ordered and without duplicates",
     "TapPositionValueError": "The number of taps must not exceed the value {value}",
 
+    "GeneratorScaling": "Generator scaling",
+    "IterativeLabel": "Iterative",
+    "VariationMode": "Variation mode",
+    "ProportionalToPMax": "Proportional to max P",
+    "StackingUp": "Stacking up",
+    "GeneratorScalingError" : "Error while creating a generator scaling",
+    "AllExplicitNamingFiltersError": "All filters types have to be Explicit Naming when variation mode is stacking up or ventilation",
+
     "Tap":"Tap",
     "DeltaResistance":"Δ Resistance (%)",
     "DeltaReactance":"Δ Reactance (%)",
