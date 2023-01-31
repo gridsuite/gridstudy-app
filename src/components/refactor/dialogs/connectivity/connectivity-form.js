@@ -20,7 +20,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
@@ -66,6 +66,8 @@ export const ConnectivityForm = ({
 
     const intl = useIntl();
 
+    const { setValue } = useFormContext();
+
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
@@ -107,6 +109,7 @@ export const ConnectivityForm = ({
                     break;
             }
         } else {
+            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
             setBusOrBusbarSectionOptions([]);
         }
     }, [
@@ -147,6 +150,10 @@ export const ConnectivityForm = ({
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
+            //hack to work with freesolo autocomplete
+            //setting null programatically when freesolo is enable wont empty the field
+            inputTransform={(value) => (value === null ? '' : value)}
+            outputTransform={(value) => (value === '' ? null : value)}
             name={`${id}.${BUS_OR_BUSBAR_SECTION}`}
             label="BusBarBus"
             options={busOrBusbarSectionOptions}
