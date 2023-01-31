@@ -4,8 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import './plot/react-grid-layout.main.css';
+import './plot/react-grid-layout.main.css'; // from /node_modules/react-grid-layout/css/styles.css
 import './plot/react-grid-layout.custom.css';
+// TODO place these css at global or directly into useStyles for ResponsiveGridLayout
 import PropTypes from 'prop-types';
 import {
     Grid,
@@ -38,9 +39,7 @@ const useStyles = makeStyles((theme) => ({
     },
     paperOptionsGroup: {
         display: 'flex',
-        //border: `1px solid ${theme.palette.divider}`,
         flexWrap: 'wrap',
-        //backgroundColor: lighten(theme.palette.background.paper, 0.2),
         padding: '2px',
         justifyContent: 'center',
         alignItems: 'center',
@@ -50,7 +49,6 @@ const useStyles = makeStyles((theme) => ({
         top: theme.spacing(2),
     },
     toolBar: {
-        //border: `1px solid ${theme.palette.divider}`,
         marginTop: theme.spacing(1),
     },
     removeStyle: {
@@ -194,8 +192,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         [plots]
     );
 
-    /* const handleLayoutChange = (layout) => {};*/
-
     const handleBreakpointChange = (breakpoint, cols) => {
         setGridLayout((prev) => ({
             ...prev,
@@ -270,7 +266,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                     <Grid item>
                         <ResponsiveGridLayout
                             className={'layout'}
-                            //cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
                             cols={{
                                 lg: gridLayout.cols,
                                 md: gridLayout.cols,
@@ -280,7 +275,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                             }}
                             rowHeight={570}
                             layout={gridLayout.items}
-                            //onLayoutChange={handleLayoutChange}
                             onBreakpointChange={handleBreakpointChange}
                         >
                             {plots.map((plot, index) => (

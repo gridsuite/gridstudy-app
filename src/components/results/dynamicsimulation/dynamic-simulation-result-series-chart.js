@@ -22,14 +22,10 @@ const useStyles = makeStyles((theme) => ({
     cardActive: {
         border: 'solid',
         borderColor: lighten(theme.palette.primary.main, 0.2),
-        //marginTop: theme.spacing(2),
     },
-    card: {
-        //marginTop: theme.spacing(2),
-    },
+    card: {},
     cardHeaderRoot: {
         backgroundColor: lighten(theme.palette.background.paper, 0.2),
-        //height: theme.spacing(4),
     },
     cardHeaderAction: {
         margin: 'auto',
@@ -52,12 +48,12 @@ const DynamicSimulationResultSeriesChart = ({
 }) => {
     const classes = useStyles();
     const intl = useIntl();
-    // Plotly
+
     return (
         <Card
             className={
                 selected
-                    ? `${classes.cardActive} ${classes.card}}`
+                    ? `${classes.cardActive} ${classes.card}`
                     : classes.card
             }
             onClick={() => onSelect(index)}

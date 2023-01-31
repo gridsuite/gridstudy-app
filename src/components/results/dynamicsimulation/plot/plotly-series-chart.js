@@ -22,6 +22,8 @@ const PlotlySeriesChart = ({
     const [layout, setLayout] = useState(
         JSON.parse(JSON.stringify(defaultLayout)) // deep clone can be done by lodash
     );
+
+    // force refresh Plot in mutable layout but not work???
     //const [revision, setRevision] = useState(0);
 
     const makeGetMarker = useCallback((opts) => {
