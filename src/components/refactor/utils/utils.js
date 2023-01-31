@@ -25,6 +25,8 @@ export const areArrayElementsUnique = (array) => {
     return uniqueAlphaValues.length === array.length;
 };
 
+//TODO : this method needs to be fixed in a future PR
+//all elements should be distinct, but this method can return true even if there are duplicates
 export const areArrayElementsOrdered = (array) => {
     if (array.length <= 1) return true;
     if (array[0] === array[1]) {

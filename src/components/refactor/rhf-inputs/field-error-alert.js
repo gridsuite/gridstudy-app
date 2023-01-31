@@ -17,11 +17,28 @@ const FieldErrorAlert = ({ name }) => {
     } = useController({
         name,
     });
+
+    const errorProps = (errorMsg) => {
+        if (typeof errorMsg === 'string') {
+            return {
+                id: errorMsg,
+            };
+        } else if (typeof errorMsg === 'object') {
+            return {
+                id: errorMsg.id,
+                values: {
+                    value: errorMsg.value,
+                },
+            };
+        }
+        return {};
+    };
+
     return (
         error?.message && (
             <Grid item xs={12}>
                 <Alert severity="error">
-                    <FormattedMessage id={error?.message} />
+                    <FormattedMessage {...errorProps(error?.message)} />
                 </Alert>
             </Grid>
         )

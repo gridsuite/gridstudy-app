@@ -80,7 +80,17 @@ const ratioTapChangerValidationSchema = (id) => ({
             .nullable()
             .when(ENABLED, {
                 is: true,
-                then: (schema) => schema.required(),
+                then: (schema) =>
+                    schema
+                        .required()
+                        .min(
+                            yup.ref(LOW_TAP_POSITION),
+                            'TapPositionBetweenLowAndHighTapPositionValue'
+                        )
+                        .max(
+                            yup.ref(HIGH_TAP_POSITION),
+                            'TapPositionBetweenLowAndHighTapPositionValue'
+                        ),
             }),
         [STEPS]: yup
             .array()
@@ -96,7 +106,7 @@ const ratioTapChangerValidationSchema = (id) => ({
             )
             .when(ENABLED, {
                 is: true,
-                then: (schema) => schema.min(1),
+                then: (schema) => schema.min(1, 'GeneratePhaseTapRowsError'),
             })
             .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
                 const ratioArray = array.map((step) => step[STEPS_RATIO]);

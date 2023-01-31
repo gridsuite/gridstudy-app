@@ -102,7 +102,17 @@ const phaseTapChangerValidationSchema = (id) => ({
             .nullable()
             .when(ENABLED, {
                 is: true,
-                then: (schema) => schema.required(),
+                then: (schema) =>
+                    schema
+                        .required()
+                        .min(
+                            yup.ref(LOW_TAP_POSITION),
+                            'TapPositionBetweenLowAndHighTapPositionValue'
+                        )
+                        .max(
+                            yup.ref(HIGH_TAP_POSITION),
+                            'TapPositionBetweenLowAndHighTapPositionValue'
+                        ),
             }),
         [STEPS]: yup
             .array()
@@ -119,7 +129,7 @@ const phaseTapChangerValidationSchema = (id) => ({
             )
             .when(ENABLED, {
                 is: true,
-                then: (schema) => schema.min(1),
+                then: (schema) => schema.min(1, 'GeneratePhaseTapRowsError'),
             })
             .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
                 const alphaArray = array.map((step) => step[STEPS_ALPHA]);

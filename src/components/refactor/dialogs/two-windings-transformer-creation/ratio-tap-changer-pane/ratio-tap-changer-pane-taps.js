@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 const RatioTapChangerPaneTaps = ({ disabled }) => {
     const intl = useIntl();
     const classes = useStyles();
-    const { trigger, getValues, setValue } = useFormContext();
+    const { trigger, getValues, setValue, setError } = useFormContext();
 
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
@@ -207,6 +207,21 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             );
             const currentTapRows = getValues(`${RATIO_TAP_CHANGER}.${STEPS}`);
 
+            // checking if not exceeding 100 steps before trying to generate
+            if (
+                currentHighTapPosition - currentLowTapPosition + 1 >
+                MAX_TAP_NUMBER
+            ) {
+                setError(`${RATIO_TAP_CHANGER}.${STEPS}`, {
+                    type: 'custom',
+                    message: {
+                        id: 'TapPositionValueError',
+                        value: MAX_TAP_NUMBER,
+                    },
+                });
+                return;
+            }
+
             //removing all steps not within the min/max values
             const newSteps = currentTapRows.filter(
                 (tapRow) =>
@@ -270,7 +285,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
 
             replace(newSteps);
         });
-    }, [getValues, replace, trigger]);
+    }, [getValues, replace, trigger, setError]);
 
     const csvColumns = useMemo(() => {
         return [
