@@ -369,6 +369,21 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
+    const computeRegulatinTerminalType = (
+        tapChangerValue,
+        currentEquipmentId
+    ) => {
+        if (tapChangerValue?.[EQUIPMENT]?.type) {
+            return tapChangerValue?.[EQUIPMENT]?.type;
+        }
+
+        if (currentEquipmentId === tapChangerValue?.[EQUIPMENT]?.id) {
+            return EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name;
+        }
+
+        return undefined;
+    };
+
     const onSubmit = useCallback(
         (twt) => {
             const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
@@ -391,12 +406,10 @@ const TwoWindingsTransformerCreationDialog = ({
                 ratioTap = {
                     regulatingTerminalId:
                         ratioTapChangerFormValues?.[EQUIPMENT]?.id,
-                    regulatingTerminalType:
-                        ratioTapChangerFormValues?.[EQUIPMENT]?.type ??
-                        characteristics[EQUIPMENT_ID] ===
-                            ratioTapChangerFormValues?.[EQUIPMENT]?.id
-                            ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
-                            : undefined,
+                    regulatingTerminalType: computeRegulatinTerminalType(
+                        ratioTapChangerFormValues,
+                        characteristics[EQUIPMENT_ID]
+                    ),
                     regulatingTerminalVlId:
                         ratioTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID],
                     ...ratioTapChangerFormValues,
@@ -412,12 +425,10 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                     regulatingTerminalId:
                         phaseTapChangerFormValues?.[EQUIPMENT]?.id,
-                    regulatingTerminalType:
-                        phaseTapChangerFormValues?.[EQUIPMENT]?.type ??
-                        (characteristics[EQUIPMENT_ID] ===
-                        phaseTapChangerFormValues?.[EQUIPMENT]?.id
-                            ? EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
-                            : undefined),
+                    regulatingTerminalType: computeRegulatinTerminalType(
+                        phaseTapChangerFormValues,
+                        characteristics[EQUIPMENT_ID]
+                    ),
                     regulatingTerminalVlId:
                         phaseTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID],
                     ...twt[PHASE_TAP_CHANGER],

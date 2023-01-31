@@ -159,7 +159,7 @@ const phaseTapChangerValidationSchema = (id) => ({
             .nullable()
             .shape({
                 [ID]: yup.string(),
-                [NAME]: yup.string(),
+                [NAME]: yup.string().nullable(),
                 [TYPE]: yup.string(),
             })
             .when([ENABLED, REGULATING], {

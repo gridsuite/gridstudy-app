@@ -222,8 +222,8 @@ const RegulatingTerminalForm = ({
                                     )
                                 ) {
                                     filtered.push({
-                                        type: equipmentSectionTypeDefaultValue,
-                                        id: params.inputValue,
+                                        [TYPE]: equipmentSectionTypeDefaultValue,
+                                        [ID]: params.inputValue,
                                     });
                                 }
                                 return filtered;
