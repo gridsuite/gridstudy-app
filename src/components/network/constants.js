@@ -64,11 +64,6 @@ export const REACTIVE_LIMIT_TYPES = [
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
 ];
 
-export const LOAD_SCALABLE_TYPES = [
-    { id: 'DELTA_P', label: 'DeltaP' },
-    { id: 'TARGET_P', label: 'TargetPText' },
-];
-
 export const ACTIVE_VARIATION_MODE = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
     { id: 'REGULAR_DISTRIBUTION', label: 'RegularDistribution' },
@@ -120,7 +115,27 @@ export const MODIFICATION_TYPE = {
     LINES_ATTACH_TO_SPLIT_LINES: 'LINES_ATTACH_TO_SPLIT_LINES',
     BRANCH_STATUS_MODIFICATION: 'BRANCH_STATUS_MODIFICATION',
     EQUIPMENT_ATTRIBUTE_MODIFICATION: 'EQUIPMENT_ATTRIBUTE_MODIFICATION',
+    GENERATOR_SCALING: 'GENERATOR_SCALING',
     LOAD_SCALING: 'LOAD_SCALING',
     DELETE_VOLTAGE_LEVEL_ON_LINE: 'DELETE_VOLTAGE_LEVEL_ON_LINE',
     DELETE_ATTACHING_LINE: 'DELETE_ATTACHING_LINE',
 };
+
+export const VARIATION_TYPE = [
+    { id: 'DELTA_P', label: 'DeltaP' },
+    { id: 'TARGET_P', label: 'TargetPText' },
+];
+
+export const VARIATION_MODE = [
+    { id: 'PROPORTIONAL', label: 'Proportional' },
+    {
+        id: 'PROPORTIONAL_TO_PMAX',
+        label: 'ProportionalToPMax',
+    },
+    {
+        id: 'REGULAR_DISTRIBUTION',
+        label: 'RegularDistribution',
+    },
+    { id: 'STACKING_UP', label: 'StackingUp' },
+    { id: 'VENTILATION', label: 'Ventilation' },
+];

@@ -1498,6 +1498,44 @@ export function switchOnBranch(studyUuid, currentNodeUuid, branchId) {
     );
 }
 
+export function generatorScaling(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    variationType,
+    isIterative,
+    variations
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.GENERATOR_SCALING,
+        variationType,
+        isIterative,
+        variations,
+    });
+
+    let generatorScalingUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('generator scaling update', body);
+        generatorScalingUrl =
+            generatorScalingUrl + '/' + encodeURIComponent(modificationUuid);
+    }
+
+    return backendFetch(generatorScalingUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function createLoad(
     studyUuid,
     currentNodeUuid,
@@ -2183,18 +2221,13 @@ export function loadScaling(
         variations,
     });
 
-    let loadScalingUrl;
+    let loadScalingUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
     if (modificationUuid) {
         console.info('load scaling update', body);
         loadScalingUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modifications/' +
-            encodeURIComponent(modificationUuid);
-    } else {
-        console.info('create load scaling', body);
-        loadScalingUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modifications';
+            loadScalingUrl + '/' + encodeURIComponent(modificationUuid);
     }
 
     return backendFetch(loadScalingUrl, {
