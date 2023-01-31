@@ -108,7 +108,7 @@ export const NetworkMapTab = ({
 
     const intlRef = useIntlRef();
     const [isInitialized, setInitialized] = useState(false);
-    const [waitingLoadData, setWaitingLoadData] = useState(true);
+    const [waitingLoadData, setWaitingLoadData] = useState(false);
 
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
@@ -637,23 +637,26 @@ export const NetworkMapTab = ({
     }, [deletedEquipments, mapEquipments]);
 
     useEffect(() => {
-        let previousCurrentNode = currentNodeRef.current;
-        currentNodeRef.current = currentNode;
-        // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
-        if (disabled) return;
-        if (refIsMapManualRefreshEnabled.current && isInitialized) return;
-        // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
-        // TODO REMOVE LATER
-        if (!reloadMapNeeded) return;
-        let updatingNode = currentNodeRef.current;
-        if (!isInitialized) {
-            loadMapEquipments(updatingNode);
-            loadAllGeoData(updatingNode);
-        } else {
-            updateMapEquipmentsAndGeoData(updatingNode);
+        if (!waitingLoadData) {
+            let previousCurrentNode = currentNodeRef.current;
+            currentNodeRef.current = currentNode;
+            // if only renaming, do not reload geo data
+            if (isNodeRenamed(previousCurrentNode, currentNode)) return;
+            if (disabled) return;
+            if (refIsMapManualRefreshEnabled.current && isInitialized) return;
+            // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
+            // TODO REMOVE LATER
+            if (!reloadMapNeeded) return;
+            let updatingNode = currentNodeRef.current;
+            console.log('NNO chargement du node ' + updatingNode?.data?.label);
+            if (!isInitialized) {
+                loadMapEquipments(updatingNode);
+                loadAllGeoData(updatingNode);
+            } else {
+                updateMapEquipmentsAndGeoData(updatingNode);
+            }
+            setInitialized(true);
         }
-        setInitialized(true);
         // Note: studyUuid and dispatch don't change
     }, [
         disabled,
@@ -664,6 +667,7 @@ export const NetworkMapTab = ({
         loadAllGeoData,
         isInitialized,
         reloadMapNeeded,
+        waitingLoadData,
         updatedSubstationsIds,
     ]);
 
