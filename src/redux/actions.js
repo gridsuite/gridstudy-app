@@ -317,6 +317,20 @@ export function resetShortCircuitNotif() {
     return { type: RESET_SHORT_CIRCUIT_NOTIF };
 }
 
+// --- Dynamic simulation ACTION - BEGIN
+export const ADD_DYNAMIC_SIMULATION_NOTIF = 'ADD_DYNAMIC_SIMULATION_NOTIF';
+
+export function addDynamicSimulationNotif() {
+    return { type: ADD_DYNAMIC_SIMULATION_NOTIF };
+}
+
+export const RESET_DYNAMIC_SIMULATION_NOTIF = 'RESET_DYNAMIC_SIMULATION_NOTIF';
+
+export function resetDynamicSimulationNotif() {
+    return { type: RESET_DYNAMIC_SIMULATION_NOTIF };
+}
+// --- Dynamic simulation ACTION - END
+
 export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
     'FILTERED_NOMINAL_VOLTAGES_UPDATED';
 
