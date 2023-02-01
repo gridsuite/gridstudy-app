@@ -474,7 +474,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                 openCreateRuleDialog={openCreateRuleDialog}
                 setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                 handleCreateTapRule={handleCreateAlphaTapRule}
-                allowNegativeValues={false}
+                allowNegativeValues={true}
             />
 
             <ImportRuleDialog
