@@ -25,12 +25,12 @@ import Papa from 'papaparse';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { CreateRuleDialog } from '../../../../dialogs/two-windings-transformer/create-rule-dialog';
-import { ImportRuleDialog } from '../../../../dialogs/two-windings-transformer/import-rule-dialog';
+import { CreateRuleDialog } from '../create-rule/create-rule-dialog';
+import { ImportRuleDialog } from '../import-rule-dialog';
 import {
     MAX_TAP_NUMBER,
     PHASE_TAP,
-} from '../../../../dialogs/two-windings-transformer/two-windings-transformer-creation-dialog';
+} from '../two-windings-transformer-creation-dialog';
 import VirtualizedTable from '../../../../util/virtualized-table';
 import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
 import IntegerInput from '../../../rhf-inputs/integer-input';
