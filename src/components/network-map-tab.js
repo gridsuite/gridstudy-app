@@ -368,7 +368,7 @@ export const NetworkMapTab = ({
     );
 
     const loadMissingGeoData = useCallback(
-        (node) => {
+        (node, mapEquipments) => {
             const notFoundSubstationIds = getEquipmentsNotFoundIds(
                 geoDataRef.current.substationPositionsById,
                 mapEquipments.substations
@@ -525,7 +525,7 @@ export const NetworkMapTab = ({
     );
 
     const loadGeoData = useCallback(
-        (node) => {
+        (node, mapEquipments) => {
             if (studyUuid && node) {
                 if (
                     // To manage a lineFullPath param change, if lineFullPath=true and linePositions is empty, we load all the geo data.
@@ -534,7 +534,7 @@ export const NetworkMapTab = ({
                     (!lineFullPath ||
                         geoDataRef.current.linePositionsById.size > 0)
                 ) {
-                    loadMissingGeoData(node);
+                    loadMissingGeoData(node, mapEquipments);
                 } else {
                     loadAllGeoData(node);
                 }
@@ -561,7 +561,7 @@ export const NetworkMapTab = ({
     );
 
     const updateMapEquipments = useCallback(
-        (node) => {
+        (node, mapEquipments) => {
             if (!isNodeBuilt(node) || !studyUuid || !mapEquipments) {
                 return Promise.reject();
             }
@@ -601,8 +601,8 @@ export const NetworkMapTab = ({
     );
 
     const updateMapEquipmentsAndGeoData = useCallback(
-        (node) => {
-            updateMapEquipments(node).then((any) => loadGeoData(node));
+        (node, mapEquipments) => {
+            updateMapEquipments(node, mapEquipments).then((any) => loadGeoData(node, mapEquipments));
         },
         [updateMapEquipments, loadGeoData]
     );
@@ -648,6 +648,7 @@ export const NetworkMapTab = ({
             // TODO REMOVE LATER
             if (!reloadMapNeeded) return;
             let updatingNode = currentNodeRef.current;
+            let updatingMapEquipments = mapEquipments;
             console.debug(
                 'Updating geo-data for node ' + updatingNode?.data?.label
             );
@@ -655,7 +656,7 @@ export const NetworkMapTab = ({
                 loadMapEquipments(updatingNode);
                 loadAllGeoData(updatingNode);
             } else {
-                updateMapEquipmentsAndGeoData(updatingNode);
+                updateMapEquipmentsAndGeoData(updatingNode, updatingMapEquipments);
             }
             setInitialized(true);
         }
@@ -678,7 +679,7 @@ export const NetworkMapTab = ({
         const prevLineFullPath = lineFullPathRef.current;
         lineFullPathRef.current = lineFullPath;
         if (isInitialized && lineFullPath && !prevLineFullPath) {
-            loadGeoData(currentNodeRef.current);
+            loadGeoData(currentNodeRef.current, mapEquipments);
         }
     }, [isInitialized, lineFullPath, loadGeoData]);
 
