@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 const PhaseTapChangerPaneTaps = ({ disabled }) => {
     const intl = useIntl();
     const classes = useStyles();
-    const { trigger, getValues, setValue, setError } = useFormContext();
+    const { getValues, setValue, setError, clearErrors } = useFormContext();
 
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
@@ -149,7 +149,6 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                         <Editor
                             key={row.dataKey + row.rowData.id}
                             name={`${PHASE_TAP_CHANGER}.${STEPS}[${row.rowIndex}].${row.dataKey}`}
-                            columnDefinition={COLUMNS_DEFINITIONS[index]}
                         />
                     </div>
                 );
@@ -190,76 +189,56 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
         [...Array(m - n + 1).keys()].map((i) => i + n);
 
     const generateTapRows = useCallback(() => {
-        // triggering validation on low/high tap rows before generating rows
-        Promise.all([
-            trigger(`${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`),
-            trigger(`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`),
-        ]).then((results) => {
-            //if any of the trigger returns false, it means one of the field validation didn't pass -> we don't generate rows
-            if (results.some((result) => !result)) {
-                return;
-            }
+        const currentLowTapPosition = getValues(
+            `${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`
+        );
+        const currentHighTapPosition = getValues(
+            `${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`
+        );
+        const currentTapRows = getValues(`${PHASE_TAP_CHANGER}.${STEPS}`);
 
-            const currentLowTapPosition = getValues(
-                `${PHASE_TAP_CHANGER}.${LOW_TAP_POSITION}`
-            );
-            const currentHighTapPosition = getValues(
-                `${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`
-            );
-            const currentTapRows = getValues(`${PHASE_TAP_CHANGER}.${STEPS}`);
+        if (
+            currentHighTapPosition < currentLowTapPosition ||
+            currentHighTapPosition > MAX_TAP_NUMBER
+        ) {
+            setError(`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`, {
+                type: 'custom',
+                message: 'HighTapPositionError',
+            });
+            return;
+        }
+        clearErrors(`${PHASE_TAP_CHANGER}.${HIGH_TAP_POSITION}`);
 
-            // checking if not exceeding 100 steps before trying to generate
-            if (
-                currentHighTapPosition - currentLowTapPosition + 1 >
-                MAX_TAP_NUMBER
-            ) {
-                setError(`${PHASE_TAP_CHANGER}.${STEPS}`, {
-                    type: 'custom',
-                    message: {
-                        id: 'TapPositionValueError',
-                        value: MAX_TAP_NUMBER,
-                    },
-                });
-                return;
-            }
+        // checking if not exceeding MAX_TAP_NUMBER steps before trying to generate
+        if (
+            currentHighTapPosition - currentLowTapPosition + 1 >
+            MAX_TAP_NUMBER
+        ) {
+            setError(`${PHASE_TAP_CHANGER}.${STEPS}`, {
+                type: 'custom',
+                message: {
+                    id: 'TapPositionValueError',
+                    value: MAX_TAP_NUMBER,
+                },
+            });
+            return;
+        }
+        clearErrors(`${PHASE_TAP_CHANGER}.${STEPS}`);
 
-            //removing all steps not within the min/max values
-            const newSteps = currentTapRows.filter(
-                (tapRow) =>
-                    tapRow[STEPS_TAP] >= currentLowTapPosition &&
-                    tapRow[STEPS_TAP] <= currentHighTapPosition
-            );
+        //removing all steps not within the min/max values
+        const newSteps = currentTapRows.filter(
+            (tapRow) =>
+                tapRow[STEPS_TAP] >= currentLowTapPosition &&
+                tapRow[STEPS_TAP] <= currentHighTapPosition
+        );
 
-            // if newSteps is empty, we fill it with empty rows
-            if (newSteps.length === 0) {
-                replace(
-                    arrayFromNToM(
-                        currentLowTapPosition,
-                        currentHighTapPosition
-                    ).map((i) => ({
-                        [STEPS_TAP]: i,
-                        [STEPS_RESISTANCE]: 0,
-                        [STEPS_REACTANCE]: 0,
-                        [STEPS_CONDUCTANCE]: 0,
-                        [STEPS_SUSCEPTANCE]: 0,
-                        [STEPS_RATIO]: 1,
-                        [STEPS_ALPHA]: 0,
-                    }))
-                );
-                return;
-            }
-
-            // if newSteps is not empty, we fill the gaps
-            const lowestTapRowIndex = newSteps?.[0][STEPS_TAP];
-            const highestTapRowIndex = lowestTapRowIndex + newSteps.length - 1;
-
-            //adding steps from lowTap to lowest current index
-            for (
-                let i = lowestTapRowIndex - 1;
-                i >= currentLowTapPosition;
-                i--
-            ) {
-                newSteps.unshift({
+        // if newSteps is empty, we fill it with empty rows
+        if (newSteps.length === 0) {
+            replace(
+                arrayFromNToM(
+                    currentLowTapPosition,
+                    currentHighTapPosition
+                ).map((i) => ({
                     [STEPS_TAP]: i,
                     [STEPS_RESISTANCE]: 0,
                     [STEPS_REACTANCE]: 0,
@@ -267,29 +246,43 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                     [STEPS_SUSCEPTANCE]: 0,
                     [STEPS_RATIO]: 1,
                     [STEPS_ALPHA]: 0,
-                });
-            }
+                }))
+            );
+            return;
+        }
 
-            //adding steps from highest current index to highTap
-            for (
-                let i = highestTapRowIndex + 1;
-                i <= currentHighTapPosition;
-                i++
-            ) {
-                newSteps.push({
-                    [STEPS_TAP]: i,
-                    [STEPS_RESISTANCE]: 0,
-                    [STEPS_REACTANCE]: 0,
-                    [STEPS_CONDUCTANCE]: 0,
-                    [STEPS_SUSCEPTANCE]: 0,
-                    [STEPS_RATIO]: 1,
-                    [STEPS_ALPHA]: 0,
-                });
-            }
+        // if newSteps is not empty, we fill the gaps
+        const lowestTapRowIndex = newSteps?.[0][STEPS_TAP];
+        const highestTapRowIndex = lowestTapRowIndex + newSteps.length - 1;
 
-            replace(newSteps);
-        });
-    }, [getValues, replace, trigger, setError]);
+        //adding steps from lowTap to lowest current index
+        for (let i = lowestTapRowIndex - 1; i >= currentLowTapPosition; i--) {
+            newSteps.unshift({
+                [STEPS_TAP]: i,
+                [STEPS_RESISTANCE]: 0,
+                [STEPS_REACTANCE]: 0,
+                [STEPS_CONDUCTANCE]: 0,
+                [STEPS_SUSCEPTANCE]: 0,
+                [STEPS_RATIO]: 1,
+                [STEPS_ALPHA]: 0,
+            });
+        }
+
+        //adding steps from highest current index to highTap
+        for (let i = highestTapRowIndex + 1; i <= currentHighTapPosition; i++) {
+            newSteps.push({
+                [STEPS_TAP]: i,
+                [STEPS_RESISTANCE]: 0,
+                [STEPS_REACTANCE]: 0,
+                [STEPS_CONDUCTANCE]: 0,
+                [STEPS_SUSCEPTANCE]: 0,
+                [STEPS_RATIO]: 1,
+                [STEPS_ALPHA]: 0,
+            });
+        }
+
+        replace(newSteps);
+    }, [getValues, replace, clearErrors, setError]);
 
     const csvColumns = useMemo(() => {
         return [

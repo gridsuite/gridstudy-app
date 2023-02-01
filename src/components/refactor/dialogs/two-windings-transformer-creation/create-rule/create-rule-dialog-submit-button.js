@@ -14,7 +14,6 @@ const CreateRuleDialogSubmitButton = ({ handleSave, allowNegativeValues }) => {
     });
 
     const isTapValuesInvalid = useCallback(() => {
-        console.log(highTapPositionWatcher, lowTapPositionWatcher);
         return (
             !highTapPositionWatcher ||
             !lowTapPositionWatcher ||
