@@ -581,10 +581,8 @@ export const NetworkMapTab = ({
                         isFullReload
                     );
                     setUpdatedLines(results[1]);
+                    setWaitingLoadData(false);
                 }
-            })
-            .finally(() => {
-                setWaitingLoadData(false);
             });
     }, [
         currentNode,

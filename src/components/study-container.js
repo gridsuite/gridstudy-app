@@ -594,17 +594,26 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
+                    const previousCurrentNode = currentNode;
                     console.info('Reload network equipments');
-                    network.reloadImpactedSubstationsEquipments(
-                        studyUuid,
-                        currentNodeRef.current,
-                        substationsIds
-                    );
+                    network
+                        .reloadImpactedSubstationsEquipments(
+                            studyUuid,
+                            currentNodeRef.current,
+                            substationsIds
+                        )
+                        .then((values) => {
+                            if (
+                                previousCurrentNode === currentNodeRef.current
+                            ) {
+                                network.updateNetworkEquipments(values);
+                            }
+                        });
                     dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
             }
         }
-    }, [studyUpdatedForce, network, studyUuid, dispatch]);
+    }, [studyUpdatedForce, network, studyUuid, dispatch, currentNode]);
 
     const loadNetwork = useCallback(
         (isUpdate) => {
