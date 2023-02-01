@@ -607,9 +607,11 @@ export function StudyContainer({ view, onChangeTab }) {
                                 previousCurrentNode === currentNodeRef.current
                             ) {
                                 network.updateNetworkEquipments(values);
+                                dispatch(
+                                    setUpdatedSubstationsIds(substationsIds)
+                                );
                             }
                         });
-                    dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
             }
         }
