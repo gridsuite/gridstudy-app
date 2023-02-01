@@ -5,19 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { forwardRef, memo, useCallback, useMemo, useState, useImperativeHandle } from 'react';
 import Plot from 'react-plotly.js';
 import { baseColors, defaultLayout } from './plot-config';
 import { PlotEvents } from './plot-events';
 
-const PlotlySeriesChart = ({
+const PlotlySeriesChart = forwardRef(({
     id,
     leftSeries,
     rightSeries,
     sync,
-    onSyncEvent,
-    syncEvent,
-}) => {
+    onSyncEvent
+}, ref) => {
     const [layout, setLayout] = useState(
         JSON.parse(JSON.stringify(defaultLayout)) // deep clone can be done by lodash
     );
@@ -79,8 +78,13 @@ const PlotlySeriesChart = ({
         [id, onSyncEvent]
     );
 
-    useEffect(() => {
-        const syncOnRelayout = (senderId, eventData) => {
+    useImperativeHandle(
+        ref,
+        () => ({
+        syncOnRelayout: (senderId, eventData) => {
+            if (!( sync && eventData.eventType === PlotEvents.ON_RELAYOUT)) {
+                return;
+            }
             if (senderId !== id && eventData) {
                 // exit when no change on x
                 if (
@@ -111,12 +115,8 @@ const PlotlySeriesChart = ({
                 // force refresh Plot in mutable layout but not work???
                 // setRevision((prev) => prev + 1);
             }
-        };
-
-        if (sync && syncEvent.eventType === PlotEvents.ON_RELAYOUT) {
-            syncOnRelayout(syncEvent.senderId, syncEvent.eventData);
-        }
-    }, [sync, id, syncEvent]);
+        },
+    }), [sync, id]);
 
     const handleOnInitialized = (figure) => {
         setLayout(figure.layout);
@@ -136,6 +136,6 @@ const PlotlySeriesChart = ({
             //revision={revision}
         />
     );
-};
+});
 
 export default memo(PlotlySeriesChart);
