@@ -20,6 +20,7 @@ import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-ta
 import AlertInvalidNode from './util/alert-invalid-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
+import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -106,6 +107,17 @@ export const ResultViewTab = ({
         );
     }
 
+    function renderDynamicSimulationResult() {
+        return (
+            <Paper className={classes.analysisResult}>
+                <DynamicSimulationResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                />
+            </Paper>
+        );
+    }
+
     useEffect(() => {
         if (!enableDeveloperMode) {
             // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
@@ -132,6 +144,12 @@ export const ResultViewTab = ({
                         })}
                         disabled={disabled}
                     />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'ShortCircuitAnalysisResults',
+                        })}
+                        disabled={disabled}
+                    />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
@@ -140,19 +158,22 @@ export const ResultViewTab = ({
                             disabled={disabled}
                         />
                     )}
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'ShortCircuitAnalysisResults',
-                        })}
-                        disabled={disabled}
-                    />
+                    {enableDeveloperMode && (
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'DynamicSimulationResults',
+                            })}
+                            disabled={disabled}
+                        />
+                    )}
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
             {tabIndex === 0 && !disabled && renderLoadFlowResult()}
             {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
-            {tabIndex === 2 && !disabled && renderSensitivityAnalysisResult()}
-            {tabIndex === 3 && !disabled && renderShortCircuitAnalysisResult()}
+            {tabIndex === 2 && !disabled && renderShortCircuitAnalysisResult()}
+            {tabIndex === 3 && !disabled && renderSensitivityAnalysisResult()}
+            {tabIndex === 4 && !disabled && renderDynamicSimulationResult()}
         </Paper>
     );
 };

@@ -61,6 +61,7 @@ import RegulatingTerminalEdition, {
 import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
+import clsx from 'clsx';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -719,9 +720,10 @@ export const useDirectoryElements = ({
     equipmentTypes,
     titleId,
     elementClassName,
+    required = false,
     itemFilter = undefined,
     errorMsg = undefined,
-    inputForm,
+    inputForm = undefined,
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(initialValues);
@@ -733,7 +735,7 @@ export const useDirectoryElements = ({
     refInitialValues.current = initialValues;
 
     useEffect(() => {
-        if (refInitialValues.current !== null) {
+        if (refInitialValues.current) {
             setValues(refInitialValues.current);
         }
     }, []);
@@ -742,7 +744,7 @@ export const useDirectoryElements = ({
         (item, index) => {
             let arr = [...values];
             arr.splice(index, 1);
-            inputForm.setHasChanged(arr.length > 0);
+            inputForm?.setHasChanged(arr.length > 0);
             setValues(arr);
         },
         [inputForm, values]
@@ -764,7 +766,7 @@ export const useDirectoryElements = ({
                 }
             });
             if (elementsToAdd.length > 0) {
-                inputForm.setHasChanged(true);
+                inputForm?.setHasChanged(true);
                 setValues(values.concat(elementsToAdd));
             }
 
@@ -777,7 +779,9 @@ export const useDirectoryElements = ({
         return (
             <>
                 <FormControl
-                    className={classes.formDirectoryElements1}
+                    className={clsx(classes.formDirectoryElements1, {
+                        [classes.formDirectoryElementsError]: errorMsg,
+                    })}
                     error={!!errorMsg}
                     aria-errormessage={errorMsg}
                 >
@@ -788,7 +792,6 @@ export const useDirectoryElements = ({
                                     id="elements"
                                     className={classes.labelDirectoryElements}
                                     error={!!errorMsg}
-                                    aria-errormessage={errorMsg}
                                 >
                                     <FieldLabel
                                         label={label}
@@ -845,6 +848,7 @@ export const useDirectoryElements = ({
             </>
         );
     }, [
+        classes.formDirectoryElementsError,
         classes.formDirectoryElements1,
         classes.labelDirectoryElements,
         classes.formDirectoryElements2,
