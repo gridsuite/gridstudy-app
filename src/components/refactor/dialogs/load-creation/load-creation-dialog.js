@@ -80,10 +80,7 @@ const LoadCreationDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const {
-        reset,
-        formState: { isDirty },
-    } = methods;
+    const { reset } = methods;
 
     const fromSearchCopyToFormValues = (load) => {
         fetchEquipmentInfos(
@@ -214,7 +211,6 @@ const LoadCreationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                disabledSave={!isDirty}
                 aria-labelledby="dialog-create-load"
                 maxWidth={'md'}
                 titleId="CreateLoad"
