@@ -67,3 +67,18 @@ export function getShortCircuitRunningStatus(shortCircuitStatus) {
             return RunningStatus.IDLE;
     }
 }
+
+export function getDynamicSimulationRunningStatus(dynamicSimulationStatus) {
+    switch (dynamicSimulationStatus) {
+        case 'CONVERGED':
+            return RunningStatus.SUCCEED;
+        case 'DIVERGED':
+            return RunningStatus.FAILED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
