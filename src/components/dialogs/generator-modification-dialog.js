@@ -112,13 +112,18 @@ const GeneratorModificationDialog = ({
     const [reactiveCapabilityCurveErrors, setReactiveCapabilityCurveErrors] =
         useState([]);
 
+    const [reactivePowerRequired, setReactivePowerRequired] = useState(false);
+
     const isActualRegulationDistant = (regulationType) => {
         return regulationType === REGULATION_TYPES.DISTANT.id;
     };
 
     const defaultReactiveCapabilityCurveChoice = () => {
-        if (getValueOrNull(formValues?.reactiveCapabilityCurve) === true) {
-            return 'CURVE';
+        const reactiveCapabilityChoice = getValueOrNull(
+            formValues?.reactiveCapabilityCurve
+        );
+        if (reactiveCapabilityChoice !== null) {
+            return reactiveCapabilityChoice ? 'CURVE' : 'MINMAX';
         } else if (generatorInfos?.minMaxReactiveLimits !== undefined) {
             return 'MINMAX';
         }
@@ -270,6 +275,7 @@ const GeneratorModificationDialog = ({
         label: 'MaximumReactivePower',
         validation: {
             isFieldNumeric: true,
+            isFieldRequired: reactivePowerRequired,
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
@@ -282,6 +288,7 @@ const GeneratorModificationDialog = ({
         label: 'MinimumReactivePower',
         validation: {
             isFieldNumeric: true,
+            isFieldRequired: reactivePowerRequired,
             valueLessThanOrEqualTo:
                 maximumReactivePower ||
                 generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
@@ -293,6 +300,17 @@ const GeneratorModificationDialog = ({
         previousValue:
             generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
     });
+
+    useEffect(() => {
+        setReactivePowerRequired(
+            (minimumReactivePower !== '' &&
+                !generatorInfos?.minMaxReactiveLimits?.minimumReactivePower) ||
+                (maximumReactivePower !== '' &&
+                    !generatorInfos?.minMaxReactiveLimits?.maximumReactivePower)
+                ? true
+                : undefined // if the field is not required then we set "reactivePowerRequired" to undefined so that the optional label is not displayed
+        );
+    }, [minimumReactivePower, maximumReactivePower, generatorInfos]);
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
@@ -524,12 +542,54 @@ const GeneratorModificationDialog = ({
         defaultValue: getValue(formValues?.stepUpTransformerReactance),
         previousValue: generatorInfos?.stepUpTransformerReactance,
     });
+
+    const [plannedActivePowerSetPoint, plannedActivePowerSetPointField] =
+        useDoubleValue({
+            label: 'PlannedActivePowerSetPoint',
+            adornment: ActivePowerAdornment,
+            inputForm: inputForm,
+            defaultValue: getValue(formValues?.plannedActivePowerSetPoint),
+            previousValue: generatorInfos?.plannedActivePowerSetPoint,
+        });
+
+    const [startupCost, startupCostField] = useDoubleValue({
+        label: 'StartupCost',
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.startupCost),
+        previousValue: generatorInfos?.startupCost,
+    });
+
     const [marginalCost, marginalCostField] = useDoubleValue({
         label: 'MarginalCost',
         inputForm: inputForm,
         defaultValue: getValue(formValues?.marginalCost),
         previousValue: generatorInfos?.marginalCost,
     });
+
+    const [plannedOutageRate, plannedOutageRateField] = useDoubleValue({
+        label: 'PlannedOutageRate',
+        validation: {
+            valueGreaterThanOrEqualTo: '0',
+            valueLessThanOrEqualTo: '1',
+            errorMsgId: 'RealPercentage',
+        },
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.plannedOutageRate),
+        previousValue: generatorInfos?.plannedOutageRate,
+    });
+
+    const [forcedOutageRate, forcedOutageRateField] = useDoubleValue({
+        label: 'ForcedOutageRate',
+        validation: {
+            valueGreaterThanOrEqualTo: '0',
+            valueLessThanOrEqualTo: '1',
+            errorMsgId: 'RealPercentage',
+        },
+        inputForm: inputForm,
+        defaultValue: getValue(formValues?.forcedOutageRate),
+        previousValue: generatorInfos?.forcedOutageRate,
+    });
+
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
         label: 'VoltageText',
         validation: {
@@ -566,6 +626,7 @@ const GeneratorModificationDialog = ({
         }
         if (isReactiveCapabilityCurveOn) {
             inputForm.removeValidation('MinimumReactivePower');
+            inputForm.removeValidation('MaximumReactivePower');
         }
     }, [
         inputForm,
@@ -690,9 +751,13 @@ const GeneratorModificationDialog = ({
             undefined,
             editData?.uuid,
             isVoltageRegulationOn && isDistantRegulation ? qPercent : null,
-            marginalCost ? marginalCost : null,
-            transientReactance ? transientReactance : null,
-            transformerReactance ? transformerReactance : null,
+            plannedActivePowerSetPoint ?? null,
+            startupCost ?? null,
+            marginalCost ?? null,
+            plannedOutageRate ?? null,
+            forcedOutageRate ?? null,
+            transientReactance ?? null,
+            transformerReactance ?? null,
             voltageRegulationType,
             isVoltageRegulationOn && isDistantRegulation
                 ? regulatingTerminal?.equipmentSection?.id
@@ -833,9 +898,17 @@ const GeneratorModificationDialog = ({
                     {gridItem(transformerReactanceField, 4)}
                 </Grid>
                 {/* Cost of start part */}
-                <GridSection title="MarginalCost" />
+                <GridSection title="Startup" />
                 <Grid container spacing={2}>
-                    {gridItem(marginalCostField, 4)}
+                    {gridItem(plannedActivePowerSetPointField, 4)}
+                    <Grid container item spacing={2}>
+                        {gridItem(startupCostField, 4)}
+                        {gridItem(marginalCostField, 4)}
+                    </Grid>
+                    <Grid container item spacing={2}>
+                        {gridItem(plannedOutageRateField, 4)}
+                        {gridItem(forcedOutageRateField, 4)}
+                    </Grid>
                 </Grid>
             </div>
         </ModificationDialog>

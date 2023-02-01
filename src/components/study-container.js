@@ -28,6 +28,7 @@ import {
     fetchSensitivityAnalysisStatus,
     connectDeletedStudyNotificationsWebsocket,
     fetchShortCircuitAnalysisStatus,
+    fetchDynamicSimulationStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -37,7 +38,7 @@ import {
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
-    setDeletedEquipment,
+    setDeletedEquipments,
     setUpdatedSubstationsIds,
 } from '../redux/actions';
 import Network from './network/network';
@@ -55,6 +56,7 @@ import {
     getSecurityAnalysisRunningStatus,
     getSensiRunningStatus,
     getShortCircuitRunningStatus,
+    getDynamicSimulationRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
@@ -209,6 +211,10 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
 ];
+const dynamicSimulationStatusInvalidations = [
+    'dynamicSimulation_status',
+    'dynamicSimulation_failed',
+];
 export const UPDATE_TYPE_HEADER = 'updateType';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
@@ -280,6 +286,15 @@ export function StudyContainer({ view, onChangeTab }) {
         getShortCircuitRunningStatus
     );
 
+    const [dynamicSimulationStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchDynamicSimulationStatus,
+        dynamicSimulationStatusInvalidations,
+        RunningStatus.IDLE,
+        getDynamicSimulationRunningStatus
+    );
+
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const [wsConnected, setWsConnected] = useState(false);
@@ -318,6 +333,11 @@ export function StudyContainer({ view, onChangeTab }) {
                 snackError({
                     headerId: 'ShortCircuitAnalysisError',
                     messageTxt: errorMessage,
+                });
+            }
+            if (updateTypeHeader === 'dynamicSimulation_failed') {
+                snackError({
+                    headerId: 'dynamicSimulationError',
                 });
             }
         },
@@ -533,21 +553,11 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     function parseStudyNotification(studyUpdatedForce) {
-        const substationsIds =
-            studyUpdatedForce.eventData.headers['substationsIds'];
-        const substationsIdsArray = substationsIds
-            .substring(1, substationsIds.length - 1)
-            .split(', ');
+        const payload = studyUpdatedForce.eventData.payload;
+        const substationsIds = payload?.impactedSubstationsIds;
+        const deletedEquipments = payload?.deletedEquipments;
 
-        const deletedEquipmentId =
-            studyUpdatedForce.eventData.headers['deletedEquipmentId'];
-        const deletedEquipmentType =
-            studyUpdatedForce.eventData.headers['deletedEquipmentType'];
-
-        return [
-            substationsIdsArray,
-            { id: deletedEquipmentId, type: deletedEquipmentType },
-        ];
+        return [substationsIds, deletedEquipments];
     }
 
     useEffect(() => {
@@ -558,9 +568,30 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
-                const [substationsIds, deletedEquipment] =
+                const [substationsIds, deletedEquipments] =
                     parseStudyNotification(studyUpdatedForce);
-
+                if (deletedEquipments?.length > 0) {
+                    // removing deleted equipment from the network
+                    deletedEquipments.forEach((deletedEquipment) => {
+                        if (
+                            deletedEquipment?.equipmentId &&
+                            deletedEquipment?.equipmentType
+                        ) {
+                            console.info(
+                                'removing equipment with id=',
+                                deletedEquipment?.equipmentId,
+                                ' and type=',
+                                deletedEquipment?.equipmentType,
+                                ' from the network'
+                            );
+                            network.removeEquipment(
+                                deletedEquipment?.equipmentType,
+                                deletedEquipment?.equipmentId
+                            );
+                        }
+                    });
+                    dispatch(setDeletedEquipments(deletedEquipments));
+                }
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
@@ -570,22 +601,6 @@ export function StudyContainer({ view, onChangeTab }) {
                         substationsIds
                     );
                     dispatch(setUpdatedSubstationsIds(substationsIds));
-                }
-
-                // removing deleted equipment from the network
-                if (deletedEquipment?.id && deletedEquipment?.type) {
-                    console.info(
-                        'removing equipment with id=',
-                        deletedEquipment?.id,
-                        ' and type=',
-                        deletedEquipment?.type,
-                        ' from the network'
-                    );
-                    network.removeEquipment(
-                        deletedEquipment?.type,
-                        deletedEquipment?.id
-                    );
-                    dispatch(setDeletedEquipment(deletedEquipment));
                 }
             }
         }
@@ -739,6 +754,9 @@ export function StudyContainer({ view, onChangeTab }) {
             SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
                 id: 'ShortCircuitAnalysis',
             }),
+            DYNAMIC_SIMULATION: intl.formatMessage({
+                id: 'DynamicSimulation',
+            }),
         };
     }, [intl]);
 
@@ -760,6 +778,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 securityAnalysisStatus={securityAnalysisStatus}
                 sensiStatus={sensiStatus}
                 shortCircuitStatus={shortCircuitStatus}
+                dynamicSimulationStatus={dynamicSimulationStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />

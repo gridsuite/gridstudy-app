@@ -14,7 +14,7 @@ import {
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
-import withLineMenu from './menus/line-menu';
+import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
@@ -87,6 +87,7 @@ export const NetworkMapTab = ({
     loadFlowStatus,
     sensiStatus,
     shortCircuitStatus,
+    dynamicSimulationStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -142,7 +143,8 @@ export const NetworkMapTab = ({
 
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
 
-    const deletedEquipment = useSelector((state) => state.deletedEquipment);
+    const deletedEquipments = useSelector((state) => state.deletedEquipments);
+
     const updatedSubstationsIds = useSelector(
         (state) => state.updatedSubstationsIds
     );
@@ -180,7 +182,7 @@ export const NetworkMapTab = ({
         );
     }
 
-    const MenuLine = withLineMenu(BaseEquipmentMenu);
+    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
 
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
@@ -601,13 +603,15 @@ export const NetworkMapTab = ({
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {
             return;
         }
-        if (deletedEquipment) {
-            mapEquipments?.removeEquipment(
-                deletedEquipment?.type,
-                deletedEquipment?.id
-            );
+        if (deletedEquipments?.length > 0 && mapEquipments) {
+            deletedEquipments.forEach((deletedEquipment) => {
+                mapEquipments.removeEquipment(
+                    deletedEquipment?.equipmentType,
+                    deletedEquipment?.equipmentId
+                );
+            });
         }
-    }, [deletedEquipment, mapEquipments]);
+    }, [deletedEquipments, mapEquipments]);
 
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
@@ -681,8 +685,10 @@ export const NetworkMapTab = ({
         return (
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
-                    withEquipment(MenuLine, {
+                    withEquipment(MenuBranch, {
                         currentNode,
+                        studyUuid,
+                        equipmentType: equipmentMenu.equipmentType,
                     })}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
@@ -790,6 +796,7 @@ export const NetworkMapTab = ({
                     securityAnalysisStatus={securityAnalysisStatus}
                     sensiStatus={sensiStatus}
                     shortCircuitStatus={shortCircuitStatus}
+                    dynamicSimulationStatus={dynamicSimulationStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}
@@ -808,6 +815,7 @@ NetworkMapTab.propTypes = {
     lineFlowColorMode: PropTypes.any,
     lineFlowAlertThreshold: PropTypes.number,
     loadFlowStatus: PropTypes.string,
+    dynamicSimulationStatus: PropTypes.string,
     view: PropTypes.any,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,

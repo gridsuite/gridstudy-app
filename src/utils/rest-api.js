@@ -7,7 +7,11 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
-import { MODIFICATION_TYPE } from '../components/network/constants';
+import {
+    MODIFICATION_TYPE,
+    BRANCH_STATUS_ACTION,
+    BRANCH_SIDE,
+} from '../components/network/constants';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -1069,6 +1073,118 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
+// --- Dynamic simulation API - BEGIN
+export function getDynamicMappings(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching dynamic mappings on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/mappings';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function startDynamicSimulation(
+    studyUuid,
+    currentNodeUuid,
+    mappingName,
+    dynamicSimulationConfiguration
+) {
+    console.info(
+        `Running dynamic simulation on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    let startDynamicSimulationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/run?';
+
+    // add request params
+    if (mappingName) {
+        startDynamicSimulationUrl += `mappingName=${mappingName}`;
+    }
+
+    // add body
+    const body = JSON.stringify(dynamicSimulationConfiguration ?? {});
+
+    console.debug({ startDynamicSimulationUrl, body });
+    return backendFetchJson(startDynamicSimulationUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
+
+export function stopDynamicSimulation(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping dynamic simulation on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopDynamicSimulationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/stop';
+    console.debug(stopDynamicSimulationUrl);
+    return backendFetch(stopDynamicSimulationUrl, { method: 'put' });
+}
+
+export function fetchDynamicSimulationStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching dynamic simulation status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/status';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchDynamicSimulationResultTimeSeries(
+    studyUuid,
+    currentNodeUuid
+) {
+    console.info(
+        `Fetching dynamic simulation time series result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/result/timeseries';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchDynamicSimulationResultTimeLine(
+    studyUuid,
+    currentNodeUuid
+) {
+    console.info(
+        `Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/result/timeline';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
+    // fetch parallel different results
+    const timeseriesPromise = fetchDynamicSimulationResultTimeSeries(
+        studyUuid,
+        currentNodeUuid
+    );
+    const statusPromise = fetchDynamicSimulationStatus(
+        studyUuid,
+        currentNodeUuid
+    );
+    return Promise.all([timeseriesPromise, statusPromise]).then(
+        ([timeseries, status]) => ({ timeseries, status })
+    );
+}
+
+// --- Dynamic simulation API - END
+
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');
     const url =
@@ -1426,12 +1542,12 @@ export function getShortCircuitParameters(studyUuid) {
     return backendFetchJson(getShortCircuitParams);
 }
 
-function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
-    const changeLineStatusUrl =
+function changeBranchStatus(studyUuid, currentNodeUuid, branchId, action) {
+    const changeBranchStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
-    console.debug('%s with body: %s', changeLineStatusUrl, status);
-    return backendFetch(changeLineStatusUrl, {
+    console.debug('%s with action: %s', changeBranchStatusUrl, action);
+    return backendFetch(changeBranchStatusUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -1439,39 +1555,97 @@ function changeLineStatus(studyUuid, currentNodeUuid, lineId, status) {
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.BRANCH_STATUS_MODIFICATION,
-            equipmentId: lineId,
-            action: status.toUpperCase(),
+            equipmentId: branchId,
+            action: action,
         }),
     });
 }
 
-export function lockoutLine(studyUuid, currentNodeUuid, lineId) {
-    console.info('locking out line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, currentNodeUuid, lineId, 'lockout');
-}
-
-export function tripLine(studyUuid, currentNodeUuid, lineId) {
-    console.info('tripping line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, currentNodeUuid, lineId, 'trip');
-}
-
-export function energiseLineEnd(studyUuid, currentNodeUuid, lineId, lineEnd) {
-    console.info('energise line ' + lineId + ' end ' + lineEnd + ' ...');
-    return changeLineStatus(
+export function lockoutBranch(studyUuid, currentNodeUuid, branchId) {
+    console.info('locking out branch ' + branchId + ' ...');
+    return changeBranchStatus(
         studyUuid,
         currentNodeUuid,
-        lineId,
-        lineEnd === 'ONE'
-            ? 'energise_end_one'
-            : lineEnd === 'TWO'
-            ? 'energise_end_two'
-            : null
+        branchId,
+        BRANCH_STATUS_ACTION.LOCKOUT
     );
 }
 
-export function switchOnLine(studyUuid, currentNodeUuid, lineId) {
-    console.info('switching on line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, currentNodeUuid, lineId, 'switch_on');
+export function tripBranch(studyUuid, currentNodeUuid, branchId) {
+    console.info('tripping branch ' + branchId + ' ...');
+    return changeBranchStatus(
+        studyUuid,
+        currentNodeUuid,
+        branchId,
+        BRANCH_STATUS_ACTION.TRIP
+    );
+}
+
+export function energiseBranchEnd(
+    studyUuid,
+    currentNodeUuid,
+    branchId,
+    branchSide
+) {
+    console.info(
+        'energise branch ' + branchId + ' on side ' + branchSide + ' ...'
+    );
+    return changeBranchStatus(
+        studyUuid,
+        currentNodeUuid,
+        branchId,
+        branchSide === BRANCH_SIDE.ONE
+            ? BRANCH_STATUS_ACTION.ENERGISE_END_ONE
+            : BRANCH_STATUS_ACTION.ENERGISE_END_TWO
+    );
+}
+
+export function switchOnBranch(studyUuid, currentNodeUuid, branchId) {
+    console.info('switching on branch ' + branchId + ' ...');
+    return changeBranchStatus(
+        studyUuid,
+        currentNodeUuid,
+        branchId,
+        BRANCH_STATUS_ACTION.SWITCH_ON
+    );
+}
+
+export function generatorScaling(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    variationType,
+    isIterative,
+    variations
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPE.GENERATOR_SCALING,
+        variationType,
+        isIterative,
+        variations,
+    });
+
+    let generatorScalingUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('generator scaling update', body);
+        generatorScalingUrl =
+            generatorScalingUrl + '/' + encodeURIComponent(modificationUuid);
+    }
+
+    return backendFetch(generatorScalingUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
 
 export function createLoad(
@@ -1589,7 +1763,11 @@ export function modifyGenerator(
     busOrBusbarSectionId,
     modificationId,
     qPercent,
+    plannedActivePowerSetPoint,
+    startupCost,
     marginalCost,
+    plannedOutageRate,
+    forcedOutageRate,
     transientReactance,
     transformerReactance,
     voltageRegulationType,
@@ -1629,7 +1807,13 @@ export function modifyGenerator(
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         qPercent: toModificationOperation(qPercent),
+        plannedActivePowerSetPoint: toModificationOperation(
+            plannedActivePowerSetPoint
+        ),
+        startupCost: toModificationOperation(startupCost),
         marginalCost: toModificationOperation(marginalCost),
+        plannedOutageRate: toModificationOperation(plannedOutageRate),
+        forcedOutageRate: toModificationOperation(forcedOutageRate),
         transientReactance: toModificationOperation(transientReactance),
         stepUpTransformerReactance:
             toModificationOperation(transformerReactance),
@@ -2149,18 +2333,13 @@ export function loadScaling(
         variations,
     });
 
-    let loadScalingUrl;
+    let loadScalingUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
     if (modificationUuid) {
         console.info('load scaling update', body);
         loadScalingUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modifications/' +
-            encodeURIComponent(modificationUuid);
-    } else {
-        console.info('create load scaling', body);
-        loadScalingUrl =
-            getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-            '/network-modifications';
+            loadScalingUrl + '/' + encodeURIComponent(modificationUuid);
     }
 
     return backendFetch(loadScalingUrl, {

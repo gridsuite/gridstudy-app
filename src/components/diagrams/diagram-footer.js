@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     },
     fullScreenIcon: {
         bottom: theme.spacing(1),
-        right: theme.spacing(1),
+        right: theme.spacing(2),
         position: 'absolute',
         cursor: 'pointer',
     },

@@ -55,6 +55,7 @@ const DirectoryItemSelector = (props) => {
                 return {
                     id: e.elementUuid,
                     name: e.elementName,
+                    specificMetadata: e.specificMetadata,
                     icon: getFileIcon(e.type, classes.icon),
                     children:
                         e.type === elementType.DIRECTORY
@@ -153,9 +154,14 @@ const DirectoryItemSelector = (props) => {
                             props.equipmentTypes
                         ).then((childrenWithMetada) => {
                             const children = props.itemFilter
-                                ? childrenWithMetada.filter((val) =>
-                                      props.itemFilter(val)
-                                  )
+                                ? childrenWithMetada.filter((val) => {
+                                      // Accept every directories
+                                      if (val.type === elementType.DIRECTORY) {
+                                          return true;
+                                      }
+                                      // otherwise filter with the custon itemFilter func
+                                      return props.itemFilter(val);
+                                  })
                                 : childrenWithMetada;
                             // update directory content
                             addToDirectory(nodeId, children);
