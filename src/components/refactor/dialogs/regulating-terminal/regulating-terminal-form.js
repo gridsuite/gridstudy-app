@@ -119,7 +119,7 @@ const RegulatingTerminalForm = ({
 
     const resetEquipment = useCallback(() => {
         setValue(`${id}.${EQUIPMENT}`, null);
-    });
+    }, [id, setValue]);
 
     return (
         <>

@@ -120,7 +120,7 @@ export const ConnectivityForm = ({
 
     const resetBusBarSection = useCallback(() => {
         setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
-    });
+    }, [id, setValue]);
 
     const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
     const getObjectId = useCallback((object) => {
@@ -156,13 +156,12 @@ export const ConnectivityForm = ({
             forcePopupIcon
             //hack to work with freesolo autocomplete
             //setting null programatically when freesolo is enable wont empty the field
-            inputTransform={(value) => (value === null ? '' : value)}
-            outputTransform={(value) => (value === '' ? null : value)}
             name={`${id}.${BUS_OR_BUSBAR_SECTION}`}
             label="BusBarBus"
             options={busOrBusbarSectionOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
+            inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) =>
                 typeof value === 'string'
                     ? getConnectivityBusBarSectionData({

@@ -128,7 +128,7 @@ const ratioTapChangerValidationSchema = (id) => ({
             )
             .when(ENABLED, {
                 is: true,
-                then: (schema) => schema.min(1, 'GeneratePhaseTapRowsError'),
+                then: (schema) => schema.min(1, 'GenerateRatioTapRowsError'),
             })
             .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
                 const ratioArray = array.map((step) => step[STEPS_RATIO]);

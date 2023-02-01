@@ -73,7 +73,6 @@ const LoadCreationForm = ({ voltageLevelOptionsPromise }) => {
 
     const connectivityForm = (
         <ConnectivityForm
-            label={'Connectivity'}
             withPosition={true}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
         />
