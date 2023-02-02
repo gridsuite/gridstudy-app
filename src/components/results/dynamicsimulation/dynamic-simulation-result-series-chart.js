@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import PropTypes from 'prop-types';
+import { forwardRef } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import PlotlySeriesChart from './plot/plotly-series-chart';
 import { Card, CardContent, CardHeader, Typography } from '@mui/material';
@@ -35,74 +36,78 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DynamicSimulationResultSeriesChart = ({
-    id,
-    groupId,
-    index,
-    selected,
-    leftSeries,
-    rightSeries,
-    onClose,
-    onSelect,
-    sync,
-}) => {
-    const classes = useStyles();
-    const intl = useIntl();
+const DynamicSimulationResultSeriesChart = forwardRef(
+    (
+        {
+            id,
+            index,
+            selected,
+            leftSeries,
+            rightSeries,
+            onClose,
+            onSelect,
+            sync,
+            onSyncEvent,
+        },
+        ref
+    ) => {
+        const classes = useStyles();
+        const intl = useIntl();
 
-    return (
-        <Card
-            className={
-                selected
-                    ? `${classes.cardActive} ${classes.card}`
-                    : classes.card
-            }
-            onClick={() => onSelect(index)}
-        >
-            <CardHeader
-                classes={{
-                    root: classes.cardHeaderRoot,
-                    action: classes.cardHeaderAction,
-                    avatar: classes.cardHeaderAvatar,
-                }}
-                avatar={
-                    <Typography variant={'h6'}>
-                        {`${intl.formatMessage({
-                            id: 'DynamicSimulationResultChart',
-                        })} ${id}`}
-                    </Typography>
+        return (
+            <Card
+                className={
+                    selected
+                        ? `${classes.cardActive} ${classes.card}`
+                        : classes.card
                 }
-                action={
-                    <TooltipIconButton
-                        toolTip={'Close graph'}
-                        className={classes.CloseButton}
-                        onClick={() => onClose(index)}
-                    >
-                        <CloseIcon />
-                    </TooltipIconButton>
-                }
-            />
-            <CardContent
-                // to avoid the wrapper is dragged when zooming the plot
-                onMouseDown={(event) => {
-                    event.stopPropagation();
-                }}
+                onClick={() => onSelect(index)}
             >
-                <PlotlySeriesChart
-                    id={id}
-                    groupId={groupId}
-                    index={index}
-                    leftSeries={leftSeries}
-                    rightSeries={rightSeries}
-                    sync={sync}
+                <CardHeader
+                    classes={{
+                        root: classes.cardHeaderRoot,
+                        action: classes.cardHeaderAction,
+                        avatar: classes.cardHeaderAvatar,
+                    }}
+                    avatar={
+                        <Typography variant={'h6'}>
+                            {`${intl.formatMessage({
+                                id: 'DynamicSimulationResultChart',
+                            })} ${id}`}
+                        </Typography>
+                    }
+                    action={
+                        <TooltipIconButton
+                            toolTip={'Close graph'}
+                            className={classes.CloseButton}
+                            onClick={() => onClose(index)}
+                        >
+                            <CloseIcon />
+                        </TooltipIconButton>
+                    }
                 />
-            </CardContent>
-        </Card>
-    );
-};
+                <CardContent
+                    // to avoid the wrapper is dragged when zooming the plot
+                    onMouseDown={(event) => {
+                        event.stopPropagation();
+                    }}
+                >
+                    <PlotlySeriesChart
+                        id={id}
+                        ref={ref}
+                        leftSeries={leftSeries}
+                        rightSeries={rightSeries}
+                        sync={sync}
+                        onSyncEvent={onSyncEvent}
+                    />
+                </CardContent>
+            </Card>
+        );
+    }
+);
 
 DynamicSimulationResultSeriesChart.propTypes = {
     id: PropTypes.string.isRequired,
-    groupId: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
     selected: PropTypes.bool.isRequired,
     leftSeries: SeriesType,
@@ -110,6 +115,7 @@ DynamicSimulationResultSeriesChart.propTypes = {
     onClose: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,
     sync: PropTypes.bool,
+    onSyncEvent: PropTypes.func,
 };
 
 export default memo(DynamicSimulationResultSeriesChart);
