@@ -68,7 +68,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
     const COLUMNS_DEFINITIONS = useMemo(() => {
         return [
             {
-                label: intl.formatMessage({ id: 'Tap' }).toUpperCase(),
+                label: 'Tap',
                 id: 'tap',
                 dataKey: STEPS_TAP,
                 numeric: true,
