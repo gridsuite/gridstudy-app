@@ -53,7 +53,7 @@ import {
     SingleLineDiagramViewer,
 } from '@powsybl/diagram-viewer';
 import {
-    SvgType,
+    DiagramType,
     getEquipmentTypeFromFeederType,
     useDiagram,
     computePaperAndSvgSizesIfReady,
@@ -173,7 +173,7 @@ const Diagram = forwardRef((props, ref) => {
             if (!network) {
                 return;
             }
-            openDiagramView(id, SvgType.VOLTAGE_LEVEL);
+            openDiagramView(id, DiagramType.VOLTAGE_LEVEL);
         },
         [network, openDiagramView]
     );
@@ -313,8 +313,8 @@ const Diagram = forwardRef((props, ref) => {
         if (props.svgUrl) {
             if (!isNodeinNotifs) {
                 const isDiagramTypeSld =
-                    props.svgType === SvgType.VOLTAGE_LEVEL ||
-                    props.svgType === SvgType.SUBSTATION;
+                    props.svgType === DiagramType.VOLTAGE_LEVEL ||
+                    props.svgType === DiagramType.SUBSTATION;
 
                 updateLoadingState(true);
                 fetchSvg(props.svgUrl)
@@ -399,7 +399,7 @@ const Diagram = forwardRef((props, ref) => {
         if (props.disabled) return;
 
         if (svg.svg) {
-            if (props.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            if (props.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 const diagramViewer = new NetworkAreaDiagramViewer(
                     svgRef.current,
                     svg.svg,
@@ -430,11 +430,11 @@ const Diagram = forwardRef((props, ref) => {
             } else {
                 // props.svgType is of Single Line Diagram type
                 let viewboxMaxWidth =
-                    props.svgType === SvgType.VOLTAGE_LEVEL
+                    props.svgType === DiagramType.VOLTAGE_LEVEL
                         ? MAX_WIDTH_VOLTAGE_LEVEL
                         : MAX_WIDTH_SUBSTATION;
                 let viewboxMaxHeight =
-                    props.svgType === SvgType.VOLTAGE_LEVEL
+                    props.svgType === DiagramType.VOLTAGE_LEVEL
                         ? MAX_HEIGHT_VOLTAGE_LEVEL
                         : MAX_HEIGHT_SUBSTATION;
                 let onNextVoltageCallback =
@@ -682,7 +682,7 @@ const Diagram = forwardRef((props, ref) => {
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagram(null));
         closeDiagramView(props.diagramId, props.svgType);
-        if (props.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+        if (props.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             dispatch(resetNetworkAreaDiagramDepth());
         }
     };
@@ -742,7 +742,7 @@ const Diagram = forwardRef((props, ref) => {
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}
                     showTogglePinControl={
-                        props.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                        props.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
                     }
                     onTogglePin={onTogglePinHandler}
                     pinned={props.pinned}
@@ -760,8 +760,8 @@ const Diagram = forwardRef((props, ref) => {
                     {errorMessage && (
                         <Alert severity="error">{errorMessage}</Alert>
                     )}
-                    {(props.svgType === SvgType.VOLTAGE_LEVEL ||
-                        props.svgType === SvgType.SUBSTATION) && (
+                    {(props.svgType === DiagramType.VOLTAGE_LEVEL ||
+                        props.svgType === DiagramType.SUBSTATION) && (
                         <>
                             <div
                                 ref={svgRef}
@@ -815,7 +815,7 @@ const Diagram = forwardRef((props, ref) => {
                             )}
                         </>
                     )}
-                    {props.svgType === SvgType.NETWORK_AREA_DIAGRAM && (
+                    {props.svgType === DiagramType.NETWORK_AREA_DIAGRAM && (
                         <div
                             id="nad-svg"
                             ref={svgRef}
@@ -830,7 +830,7 @@ const Diagram = forwardRef((props, ref) => {
                     {!loadingState && (
                         <DiagramFooter
                             showCounterControls={
-                                props.svgType === SvgType.NETWORK_AREA_DIAGRAM
+                                props.svgType === DiagramType.NETWORK_AREA_DIAGRAM
                             }
                             counterText={intl.formatMessage({
                                 id: 'depth',

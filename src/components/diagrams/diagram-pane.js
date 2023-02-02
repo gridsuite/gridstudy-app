@@ -25,7 +25,7 @@ import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import makeStyles from '@mui/styles/makeStyles';
-import { useDiagram, ViewState, SvgType } from './diagram-common';
+import { useDiagram, ViewState, DiagramType } from './diagram-common';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
@@ -134,7 +134,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state: state,
                     name: label,
                     svgUrl: svgUrl,
-                    svgType: SvgType.SUBSTATION,
+                    svgType: DiagramType.SUBSTATION,
                 };
             }
 
@@ -157,7 +157,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state: state,
                     name: label,
                     svgUrl: svgUrl,
-                    svgType: SvgType.VOLTAGE_LEVEL,
+                    svgType: DiagramType.VOLTAGE_LEVEL,
                     substationId: substation?.id,
                 };
             }
@@ -188,22 +188,22 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state: state,
                     name: nadTitle,
                     svgUrl: svgUrl,
-                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 };
             }
 
             if (!network) return;
-            if (diagramState.svgType === SvgType.VOLTAGE_LEVEL) {
+            if (diagramState.svgType === DiagramType.VOLTAGE_LEVEL) {
                 return createVoltageLevelDiagramView(
                     diagramState.id,
                     diagramState.state
                 );
-            } else if (diagramState.svgType === SvgType.SUBSTATION) {
+            } else if (diagramState.svgType === DiagramType.SUBSTATION) {
                 return createSubstationDiagramView(
                     diagramState.id,
                     diagramState.state
                 );
-            } else if (diagramState.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 return createNetworkAreaDiagramView(
                     diagramState.ids,
                     diagramState.state,
@@ -303,7 +303,7 @@ export function DiagramPane({
         let networkAreaViewState = ViewState.OPENED;
 
         diagramStates.forEach((diagramState) => {
-            if (diagramState.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 networkAreaIds.push(diagramState.id);
                 networkAreaViewState = diagramState.state; // They should all be the same value
             } else {
@@ -322,7 +322,7 @@ export function DiagramPane({
             let networkAreaDiagramView = createView({
                 ids: networkAreaIds,
                 state: networkAreaViewState,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 depth: networkAreaDiagramDepth,
             });
 
@@ -331,7 +331,7 @@ export function DiagramPane({
             if (networkAreaDiagramView) {
                 diagramViews.push(networkAreaDiagramView);
             } else {
-                closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
+                closeDiagramView(null, DiagramType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
             }
         }
         setViews(diagramViews);
@@ -387,7 +387,7 @@ export function DiagramPane({
                 .find(
                     (diagramView) =>
                         diagramView.id === id &&
-                        diagramView.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                        diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
                 )
                 ?.ref?.current?.reloadSvg();
         } else {
@@ -518,7 +518,7 @@ export function DiagramPane({
                             {
                                 /* This hack will add a space between all the SLD and the NAD. This space takes all the remaining space on screen. */
                                 diagramView.svgType ===
-                                    SvgType.NETWORK_AREA_DIAGRAM && (
+                                    DiagramType.NETWORK_AREA_DIAGRAM && (
                                     <div className={classes.separator}></div>
                                 )
                             }
@@ -535,7 +535,7 @@ export function DiagramPane({
                                 computedHeight={
                                     // We are not harmonizing the NAD's height with the SLD's
                                     diagramView.svgType !==
-                                    SvgType.NETWORK_AREA_DIAGRAM
+                                    DiagramType.NETWORK_AREA_DIAGRAM
                                         ? computedHeight
                                         : undefined
                                 }
@@ -565,7 +565,7 @@ export function DiagramPane({
                                 key={diagramView.svgType + diagramView.id}
                                 icon={
                                     diagramView.svgType ===
-                                    SvgType.NETWORK_AREA_DIAGRAM ? (
+                                    DiagramType.NETWORK_AREA_DIAGRAM ? (
                                         <>
                                             <ArrowUpwardIcon />
                                             <TimelineIcon />
