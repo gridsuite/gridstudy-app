@@ -429,7 +429,10 @@ const NetworkMap = (props) => {
                         <div className={classes.mapManualRefreshBackdrop}>
                             <Button
                                 onClick={() =>
-                                    props.onReloadMapClick(currentNode)
+                                    props.onReloadMapClick(
+                                        currentNode,
+                                        props.mapEquipments
+                                    )
                                 }
                                 aria-label="reload"
                                 color="inherit"
