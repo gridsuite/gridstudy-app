@@ -69,56 +69,51 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
     const COLUMNS_DEFINITIONS = useMemo(() => {
         return [
             {
-                label: intl.formatMessage({ id: 'Tap' }).toUpperCase(),
+                label: 'Tap',
                 id: 'tap',
                 dataKey: STEPS_TAP,
                 maxWidth: 200,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaResistance' })
-                    .toUpperCase(),
+                label: 'DeltaResistance',
                 id: 'resistance',
                 dataKey: STEPS_RESISTANCE,
                 editor: TableNumericalInput,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaReactance' })
-                    .toUpperCase(),
+                label: 'DeltaReactance',
                 id: 'reactance',
                 dataKey: STEPS_REACTANCE,
                 editor: TableNumericalInput,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaConductance' })
-                    .toUpperCase(),
+                label: 'DeltaConductance',
                 id: 'conductance',
                 dataKey: STEPS_CONDUCTANCE,
                 editor: TableNumericalInput,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaSusceptance' })
-                    .toUpperCase(),
+                label: 'DeltaSusceptance',
                 id: 'susceptance',
                 dataKey: STEPS_SUSCEPTANCE,
                 editor: TableNumericalInput,
             },
             {
-                label: intl.formatMessage({ id: 'Ratio' }).toUpperCase(),
+                label: 'Ratio',
                 id: 'ratio',
                 dataKey: STEPS_RATIO,
                 editor: TableNumericalInput,
             },
             {
-                label: intl.formatMessage({ id: 'Alpha' }).toUpperCase(),
+                label: 'Alpha',
                 id: 'alpha',
                 dataKey: STEPS_ALPHA,
                 editor: TableNumericalInput,
             },
-        ];
+        ].map((column) => ({
+            ...column,
+            label: intl.formatMessage({ id: column.label }).toUpperCase(),
+        }));
     }, [intl]);
 
     const defaultCellRender = useCallback(

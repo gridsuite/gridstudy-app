@@ -74,50 +74,45 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 numeric: true,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaResistance' })
-                    .toUpperCase(),
+                label: 'DeltaResistance',
                 id: 'resistance',
                 dataKey: STEPS_RESISTANCE,
                 numeric: true,
                 editor: TableNumericalInput,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaReactance' })
-                    .toUpperCase(),
+                label: 'DeltaReactance',
                 id: 'reactance',
                 dataKey: STEPS_REACTANCE,
                 numeric: true,
                 editor: TableNumericalInput,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaConductance' })
-                    .toUpperCase(),
+                label: 'DeltaConductance',
                 id: 'conductance',
                 dataKey: STEPS_CONDUCTANCE,
                 numeric: true,
                 editor: TableNumericalInput,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaSusceptance' })
-                    .toUpperCase(),
+                label: 'DeltaSusceptance',
                 id: 'susceptance',
                 dataKey: STEPS_SUSCEPTANCE,
                 numeric: true,
                 editor: TableNumericalInput,
             },
             {
-                label: intl.formatMessage({ id: 'Ratio' }).toUpperCase(),
+                label: 'Ratio',
                 id: 'ratio',
                 dataKey: STEPS_RATIO,
                 numeric: true,
                 fractionDigits: 5,
                 editor: TableNumericalInput,
             },
-        ];
+        ].map((column) => ({
+            ...column,
+            label: intl.formatMessage({ id: column.label }).toUpperCase(),
+        }));
     }, [intl]);
 
     const defaultCellRender = useCallback(
