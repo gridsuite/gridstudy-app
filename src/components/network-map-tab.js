@@ -112,7 +112,6 @@ export const NetworkMapTab = ({
 
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
-    geoDataRef.current = geoData;
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -435,6 +434,7 @@ export const NetworkMapTab = ({
                             fetchedLinePositions
                         );
                         setGeoData(newGeoData);
+                        geoDataRef.current = newGeoData;
                     }
                     setWaitingLoadTemporaryGeoData(false);
                 })
@@ -478,6 +478,7 @@ export const NetworkMapTab = ({
             );
             newGeoData.setSubstationPositions(data);
             setGeoData(newGeoData);
+            geoDataRef.current = newGeoData;
             setWaitingLoadGeoData(false);
         });
 
@@ -493,6 +494,7 @@ export const NetworkMapTab = ({
                       );
                       newGeoData.setLinePositions(data);
                       setGeoData(newGeoData);
+                      geoDataRef.current = newGeoData;
                   }
               );
 
