@@ -112,7 +112,6 @@ export const NetworkMapTab = ({
 
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
-    geoDataRef.current = geoData;
 
     const basicDataReady = mapEquipments && geoData;
 
@@ -439,6 +438,7 @@ export const NetworkMapTab = ({
                             fetchedLinePositions
                         );
                         setGeoData(newGeoData);
+                        geoDataRef.current = newGeoData;
                     }
                 })
                 .catch(function (error) {
