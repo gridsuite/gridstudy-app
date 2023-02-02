@@ -203,7 +203,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     diagramState.id,
                     diagramState.state
                 );
-            } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+            } else if (
+                diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+            ) {
                 return createNetworkAreaDiagramView(
                     diagramState.ids,
                     diagramState.state,

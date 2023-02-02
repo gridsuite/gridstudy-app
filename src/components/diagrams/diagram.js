@@ -830,7 +830,8 @@ const Diagram = forwardRef((props, ref) => {
                     {!loadingState && (
                         <DiagramFooter
                             showCounterControls={
-                                props.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                                props.svgType ===
+                                DiagramType.NETWORK_AREA_DIAGRAM
                             }
                             counterText={intl.formatMessage({
                                 id: 'depth',

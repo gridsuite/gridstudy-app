@@ -570,7 +570,8 @@ export const reducer = createReducer(initialState, {
         if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             // First, we check if there is already a Network Area Diagram in the diagramStates.
             const firstNadIndex = diagramStates.findIndex(
-                (diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                (diagram) =>
+                    diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
             );
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
@@ -593,7 +594,9 @@ export const reducer = createReducer(initialState, {
                     diagramStates[firstNadIndex].state === ViewState.MINIMIZED
                 ) {
                     diagramStates.forEach((diagram) => {
-                        if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                        if (
+                            diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                        ) {
                             diagram.state = ViewState.OPENED;
                         }
                     });
@@ -631,7 +634,8 @@ export const reducer = createReducer(initialState, {
                     // We minimize all the other OPENED SLD.
                     diagramStates.forEach((diagram) => {
                         if (
-                            diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
+                            diagram.svgType !==
+                                DiagramType.NETWORK_AREA_DIAGRAM &&
                             diagram.state === ViewState.OPENED
                         ) {
                             diagram.state = ViewState.MINIMIZED;
@@ -756,7 +760,8 @@ export const reducer = createReducer(initialState, {
         if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             // If we close a NAD, we close all of them.
             diagramStates = diagramStates.filter(
-                (diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
+                (diagram) =>
+                    diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
             );
         } else {
             // If we close a SLD, we only remove one.
