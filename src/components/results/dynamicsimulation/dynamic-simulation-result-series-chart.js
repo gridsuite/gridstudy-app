@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { forwardRef } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import PlotlySeriesChart from './plot/plotly-series-chart';
 import { Card, CardContent, CardHeader, Typography } from '@mui/material';
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.primary.main,
     },
 }));
-const DynamicSimulationResultSeriesChart = ({
+const DynamicSimulationResultSeriesChart = forwardRef(({
     id,
     index,
     selected,
@@ -46,8 +47,7 @@ const DynamicSimulationResultSeriesChart = ({
     onSelect,
     sync,
     onSyncEvent,
-    syncEvent,
-}) => {
+}, ref) => {
     const classes = useStyles();
     const intl = useIntl();
     // Plotly
@@ -91,15 +91,15 @@ const DynamicSimulationResultSeriesChart = ({
             >
                 <PlotlySeriesChart
                     id={id}
+                    ref={ref}
                     leftSeries={leftSeries}
                     rightSeries={rightSeries}
                     sync={sync}
                     onSyncEvent={onSyncEvent}
-                    syncEvent={syncEvent}
                 />
             </CardContent>
         </Card>
     );
-};
+});
 
 export default memo(DynamicSimulationResultSeriesChart);
