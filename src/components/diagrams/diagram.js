@@ -45,7 +45,6 @@ import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import {
-    isNodeBuilt,
     isNodeReadOnly,
     isNodeInNotificationList,
 } from '../graph/util/model-functions';
@@ -655,10 +654,6 @@ const Diagram = forwardRef((props, ref) => {
         sizeWidth = initialWidth;
     } else {
         sizeWidth = props.totalWidth; // happens during initialization if initial width value is undefined
-    }
-
-    if (!isNodeBuilt(currentNode)) {
-        sizeWidth = props.totalWidth / props.numberToDisplay; // prevents the diagram from becoming too big if the current node is not built
     }
 
     if (sizeWidth !== undefined) {
