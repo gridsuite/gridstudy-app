@@ -58,7 +58,7 @@ const phaseTapChangerValidationSchema = (id) => ({
         [CURRENT_LIMITER_REGULATING_VALUE]: yup
             .number()
             .nullable()
-            .min(0, 'CurrentLimiterGreaterThanZero')
+            .positive('CurrentLimiterGreaterThanZero')
             .when([ENABLED, REGULATING, REGULATION_MODE], {
                 is: (enabled, regulating, regulationMode) =>
                     enabled &&
@@ -79,7 +79,7 @@ const phaseTapChangerValidationSchema = (id) => ({
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
-            .min(0, 'TargetDeadbandGreaterThanZero'),
+            .positive('TargetDeadbandGreaterThanZero'),
         [LOW_TAP_POSITION]: yup
             .number()
             .nullable()
