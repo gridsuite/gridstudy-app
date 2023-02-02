@@ -33,8 +33,13 @@ export function networkCreated(network) {
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
-export function mapEquipmentsCreated(mapEquipments) {
-    return { type: MAP_EQUIPMENTS_CREATED, mapEquipments: mapEquipments };
+export function mapEquipmentsCreated(mapEquipments, newLines, newSubstations) {
+    return {
+        type: MAP_EQUIPMENTS_CREATED,
+        mapEquipments: mapEquipments,
+        newLines: newLines,
+        newSubstations: newSubstations,
+    };
 }
 
 export const NETWORK_EQUIPMENT_LOADED = 'NETWORK_EQUIPMENT_LOADED';
@@ -311,6 +316,20 @@ export const RESET_SHORT_CIRCUIT_NOTIF = 'RESET_SHORT_CIRCUIT_NOTIF';
 export function resetShortCircuitNotif() {
     return { type: RESET_SHORT_CIRCUIT_NOTIF };
 }
+
+// --- Dynamic simulation ACTION - BEGIN
+export const ADD_DYNAMIC_SIMULATION_NOTIF = 'ADD_DYNAMIC_SIMULATION_NOTIF';
+
+export function addDynamicSimulationNotif() {
+    return { type: ADD_DYNAMIC_SIMULATION_NOTIF };
+}
+
+export const RESET_DYNAMIC_SIMULATION_NOTIF = 'RESET_DYNAMIC_SIMULATION_NOTIF';
+
+export function resetDynamicSimulationNotif() {
+    return { type: RESET_DYNAMIC_SIMULATION_NOTIF };
+}
+// --- Dynamic simulation ACTION - END
 
 export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
     'FILTERED_NOMINAL_VOLTAGES_UPDATED';
