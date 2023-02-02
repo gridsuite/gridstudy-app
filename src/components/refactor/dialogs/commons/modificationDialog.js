@@ -16,8 +16,9 @@ import {
     DialogActions,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useButtonWithTooltip } from '../../dialogs/inputs/input-hooks';
+import { useButtonWithTooltip } from '../../../dialogs/inputs/input-hooks';
 import { useFormContext } from 'react-hook-form';
+import SubmitButton from './submitButton';
 
 /**
  * Generic Modification Dialog which manage basic common behaviors
@@ -35,7 +36,8 @@ const ModificationDialog = ({
     onClose,
     onClear,
     onSave,
-    disabledSave,
+    onValidationError,
+    disabledSave = false,
     searchCopy,
     subtitle,
     onValidated,
@@ -72,6 +74,9 @@ const ModificationDialog = ({
         closeAndClear(data, 'validateButtonClick');
     };
 
+    const handleValidationError = (errors) =>
+        onValidationError && onValidationError(errors);
+
     return (
         <Dialog
             onClose={handleClose}
@@ -92,12 +97,13 @@ const ModificationDialog = ({
                 <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button
-                    onClick={handleSubmit(handleValidate)}
+                <SubmitButton
+                    onClick={handleSubmit(
+                        handleValidate,
+                        handleValidationError
+                    )}
                     disabled={disabledSave}
-                >
-                    <FormattedMessage id="validate" />
-                </Button>
+                />
             </DialogActions>
         </Dialog>
     );
@@ -108,8 +114,9 @@ ModificationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
+    onValidationError: PropTypes.func,
     onValidated: PropTypes.func.isRequired,
-    disabledSave: PropTypes.bool.isRequired,
+    disabledSave: PropTypes.bool,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
 };

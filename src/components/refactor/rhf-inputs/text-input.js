@@ -33,9 +33,9 @@ const TextInput = ({
     customAdornment,
 }) => {
     const classes = useStyles();
-    const { validationSchema } = useFormContext();
+    const { validationSchema, getValues } = useFormContext();
     const {
-        field: { onChange, value },
+        field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
 
@@ -62,7 +62,7 @@ const TextInput = ({
             label={FieldLabel({
                 label,
                 optional:
-                    !isFieldRequired(name, validationSchema) &&
+                    !isFieldRequired(name, validationSchema, getValues()) &&
                     !formProps?.disabled,
             })}
             {...(adornment && {
@@ -88,6 +88,7 @@ const TextInput = ({
                     </InputAdornment>
                 ),
             }}
+            inputRef={ref}
             {...(clearable &&
                 adornment && {
                     handleClearValue: handleClearValue,

@@ -37,15 +37,17 @@ const AutocompleteInput = ({
     previousValue,
     formProps,
     allowNewValue,
+    onChangeCallback, // method called when input value is changing
     ...props
 }) => {
-    const { validationSchema } = useFormContext();
+    const { validationSchema, getValues } = useFormContext();
     const {
-        field: { onChange, value },
+        field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
 
     const handleChange = (value) => {
+        onChangeCallback && onChangeCallback();
         //if free solo not enabled or if value is not of string type, we call onChange right away
         if (!allowNewValue || typeof value !== 'string') {
             onChange(outputTransform(value));
@@ -82,8 +84,14 @@ const AutocompleteInput = ({
                 <TextField
                     label={FieldLabel({
                         label: label,
-                        optional: !isFieldRequired(name, validationSchema),
+                        optional:
+                            !isFieldRequired(
+                                name,
+                                validationSchema,
+                                getValues()
+                            ) && !props?.disabled,
                     })}
+                    inputRef={ref}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
                     {...genHelperPreviousValue(previousValue)}
                     {...genHelperError(error?.message)}
