@@ -15,7 +15,8 @@ import {
 } from '@mui/material';
 import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useCSVPicker } from '../inputs/input-hooks';
+import { useCSVPicker } from '../../../dialogs/inputs/input-hooks';
+
 import CsvDownloader from 'react-csv-downloader';
 import {
     MAX_TAP_NUMBER,
