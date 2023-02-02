@@ -10,14 +10,14 @@ import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { gridItem, GridSection } from './dialogUtils';
+import { ActivePowerAdornment, gridItem, GridSection } from './dialogUtils';
 import { loadScaling } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { elementType } from '@gridsuite/commons-ui';
 import {
     ACTIVE_VARIATION_MODE,
-    LOAD_SCALABLE_TYPES,
     REACTIVE_VARIATION_MODE,
+    VARIATION_TYPE,
 } from '../network/constants';
 
 import { useExpandableValues } from './inputs/use-expandable-values';
@@ -76,7 +76,10 @@ const VariationSection = ({
     const id = defaultValue?.id;
 
     function itemFilter(value) {
-        if (variationMode === VENTILATION) {
+        if (
+            value?.type === elementType.FILTER &&
+            variationMode === VENTILATION
+        ) {
             return (
                 value?.specificMetadata?.type === IDENTIFIER_LIST &&
                 value?.specificMetadata?.filterEquipmentsAttributes?.every(
@@ -104,12 +107,14 @@ const VariationSection = ({
     });
 
     const [variationValue, variationValueField] = useDoubleValue({
-        label: fieldProps.isDeltaP ? 'DeltaP' : 'TargetP',
+        id: id + '_variationValue', // we add an id to make sur when changing labels, we don't create a new validation for this field
+        label: fieldProps.isDeltaP ? 'DeltaP' : 'TargetPText',
         validation: {
             isFieldRequired: true,
         },
         defaultValue: defaultValue?.variationValue,
         inputForm: inputForm,
+        adornment: ActivePowerAdornment,
         errorMsg: errors?.variationValueError,
     });
 
@@ -222,7 +227,7 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
     const [variationType, variationTypeRadioButton] = useRadioValue({
         inputForm: inputForm,
         defaultValue: formValues?.variationType ?? 'DELTA_P',
-        possibleValues: LOAD_SCALABLE_TYPES,
+        possibleValues: VARIATION_TYPE,
     });
 
     const [variations, variationsField] = useExpandableValues({

@@ -28,6 +28,7 @@ import {
     fetchSensitivityAnalysisStatus,
     connectDeletedStudyNotificationsWebsocket,
     fetchShortCircuitAnalysisStatus,
+    fetchDynamicSimulationStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -54,6 +55,7 @@ import {
     getSecurityAnalysisRunningStatus,
     getSensiRunningStatus,
     getShortCircuitRunningStatus,
+    getDynamicSimulationRunningStatus,
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
@@ -209,6 +211,10 @@ const shortCircuitStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
 ];
+const dynamicSimulationStatusInvalidations = [
+    'dynamicSimulation_status',
+    'dynamicSimulation_failed',
+];
 export const UPDATE_TYPE_HEADER = 'updateType';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
@@ -280,6 +286,15 @@ export function StudyContainer({ view, onChangeTab }) {
         getShortCircuitRunningStatus
     );
 
+    const [dynamicSimulationStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchDynamicSimulationStatus,
+        dynamicSimulationStatusInvalidations,
+        RunningStatus.IDLE,
+        getDynamicSimulationRunningStatus
+    );
+
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const [wsConnected, setWsConnected] = useState(false);
@@ -318,6 +333,11 @@ export function StudyContainer({ view, onChangeTab }) {
                 snackError({
                     headerId: 'ShortCircuitAnalysisError',
                     messageTxt: errorMessage,
+                });
+            }
+            if (updateTypeHeader === 'dynamicSimulation_failed') {
+                snackError({
+                    headerId: 'dynamicSimulationError',
                 });
             }
         },
@@ -553,17 +573,20 @@ export function StudyContainer({ view, onChangeTab }) {
                 if (deletedEquipments?.length > 0) {
                     // removing deleted equipment from the network
                     deletedEquipments.forEach((deletedEquipment) => {
-                        if (deletedEquipment?.id && deletedEquipment?.type) {
+                        if (
+                            deletedEquipment?.equipmentId &&
+                            deletedEquipment?.equipmentType
+                        ) {
                             console.info(
                                 'removing equipment with id=',
-                                deletedEquipment?.id,
+                                deletedEquipment?.equipmentId,
                                 ' and type=',
-                                deletedEquipment?.type,
+                                deletedEquipment?.equipmentType,
                                 ' from the network'
                             );
                             network.removeEquipment(
-                                deletedEquipment?.type,
-                                deletedEquipment?.id
+                                deletedEquipment?.equipmentType,
+                                deletedEquipment?.equipmentId
                             );
                         }
                     });
@@ -731,6 +754,9 @@ export function StudyContainer({ view, onChangeTab }) {
             SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
                 id: 'ShortCircuitAnalysis',
             }),
+            DYNAMIC_SIMULATION: intl.formatMessage({
+                id: 'DynamicSimulation',
+            }),
         };
     }, [intl]);
 
@@ -752,6 +778,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 securityAnalysisStatus={securityAnalysisStatus}
                 sensiStatus={sensiStatus}
                 shortCircuitStatus={shortCircuitStatus}
+                dynamicSimulationStatus={dynamicSimulationStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />

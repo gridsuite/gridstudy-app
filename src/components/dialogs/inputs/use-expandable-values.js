@@ -62,7 +62,9 @@ export const useExpandableValues = ({
     }, []);
 
     const handleAddValue = useCallback(() => {
-        setValues((oldValues) => [...oldValues, {}]);
+        setValues((oldValues) => {
+            return [...oldValues, {}];
+        });
         setItemListError({
             show: false,
             type: '',

@@ -36,6 +36,7 @@ import { SLD_DISPLAY_MODE } from '../network/constants';
 import clsx from 'clsx';
 import { useNameOrId } from '../util/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
+import { sortByAlign } from '../util/sort-functions';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -313,7 +314,10 @@ export function DiagramPane({
                 // if current view cannot be found, it returns undefined
                 // in this case, we remove it from diagram states
                 if (singleLineDiagramView) {
-                    diagramViews.push(singleLineDiagramView);
+                    diagramViews.push({
+                        ...singleLineDiagramView,
+                        align: 'left',
+                    });
                 } else {
                     closeDiagramView(diagramState.id, diagramState.svgType);
                 }
@@ -331,7 +335,10 @@ export function DiagramPane({
             // if current view cannot be found, it returns undefined
             // in this case, we remove all the NAD from diagram states
             if (networkAreaDiagramView) {
-                diagramViews.push(networkAreaDiagramView);
+                diagramViews.push({
+                    ...networkAreaDiagramView,
+                    align: 'right',
+                });
             } else {
                 closeDiagramView(null, DiagramType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
             }
@@ -350,9 +357,11 @@ export function DiagramPane({
     const viewsRef = useRef();
     viewsRef.current = views;
 
-    const displayedDiagrams = views.filter((view) =>
-        [ViewState.OPENED, ViewState.PINNED].includes(view.state)
-    );
+    const displayedDiagrams = views
+        .filter((view) =>
+            [ViewState.OPENED, ViewState.PINNED].includes(view.state)
+        )
+        .sort(sortByAlign);
     const minimizedDiagrams = views.filter((view) =>
         [ViewState.MINIMIZED].includes(view.state)
     );
@@ -513,16 +522,23 @@ export function DiagramPane({
                         height: height + 'px',
                     }}
                 >
-                    {displayedDiagrams.map((diagramView) => (
+                    {displayedDiagrams.map((diagramView, index, array) => (
                         <React.Fragment
                             key={diagramView.svgType + diagramView.id}
                         >
                             {
-                                /* This hack will add a space between all the SLD and the NAD. This space takes all the remaining space on screen. */
-                                diagramView.svgType ===
-                                    DiagramType.NETWORK_AREA_DIAGRAM && (
-                                    <div className={classes.separator}></div>
-                                )
+                                /*
+                                We put a space (a separator) before the first right aligned diagram.
+                                This space takes all the remaining space on screen and "pushes" the right aligned
+                                diagrams to the right of the screen.
+                                */
+                                array[index]?.align === 'right' &&
+                                    (index === 0 ||
+                                        array[index - 1]?.align === 'left') && (
+                                        <div
+                                            className={classes.separator}
+                                        ></div>
+                                    )
                             }
                             <Diagram
                                 diagramTitle={diagramView.name}
@@ -551,6 +567,7 @@ export function DiagramPane({
                                 isComputationRunning={isComputationRunning}
                                 loadFlowStatus={loadFlowStatus}
                                 showInSpreadsheet={showInSpreadsheet}
+                                align={diagramView.align}
                             />
                         </React.Fragment>
                     ))}
