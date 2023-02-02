@@ -468,8 +468,6 @@ export const NetworkMapTab = ({
             studyUuid,
             getEquipmentsNotFoundIds,
             getMissingEquipmentsPositions,
-            mapEquipments?.substations,
-            mapEquipments?.lines,
             updateSubstationsTemporaryGeoData,
             updateLinesTemporaryGeoData,
         ]
@@ -594,7 +592,6 @@ export const NetworkMapTab = ({
         [
             dispatch,
             isUpdatedSubstationsApplied,
-            mapEquipments,
             studyUuid,
             updatedSubstationsIds,
         ]
@@ -602,7 +599,9 @@ export const NetworkMapTab = ({
 
     const updateMapEquipmentsAndGeoData = useCallback(
         (node, mapEquipments) => {
-            updateMapEquipments(node, mapEquipments).then((any) => loadGeoData(node, mapEquipments));
+            updateMapEquipments(node, mapEquipments).then((any) =>
+                loadGeoData(node, mapEquipments)
+            );
         },
         [updateMapEquipments, loadGeoData]
     );
@@ -613,10 +612,10 @@ export const NetworkMapTab = ({
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'loadflow'
             ) {
-                updateMapEquipments(currentNodeRef.current);
+                updateMapEquipments(currentNodeRef.current, mapEquipments);
             }
         }
-    }, [isInitialized, studyUpdatedForce, updateMapEquipments]);
+    }, [isInitialized, studyUpdatedForce, mapEquipments, updateMapEquipments]);
 
     useEffect(() => {
         setIsUpdatedSubstationsApplied(false);
@@ -647,8 +646,10 @@ export const NetworkMapTab = ({
             // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
             // TODO REMOVE LATER
             if (!reloadMapNeeded) return;
-            let updatingNode = currentNodeRef.current;
-            let updatingMapEquipments = mapEquipments;
+            let updatingNode = currentNode ? Object.assign(currentNode) : null;
+            let updatingMapEquipments = mapEquipments
+                ? Object.assign(mapEquipments)
+                : null;
             console.debug(
                 'Updating geo-data for node ' + updatingNode?.data?.label
             );
@@ -656,7 +657,10 @@ export const NetworkMapTab = ({
                 loadMapEquipments(updatingNode);
                 loadAllGeoData(updatingNode);
             } else {
-                updateMapEquipmentsAndGeoData(updatingNode, updatingMapEquipments);
+                updateMapEquipmentsAndGeoData(
+                    updatingNode,
+                    updatingMapEquipments
+                );
             }
             setInitialized(true);
         }
@@ -666,6 +670,7 @@ export const NetworkMapTab = ({
         studyUuid,
         currentNode,
         loadMapEquipments,
+        mapEquipments,
         updateMapEquipmentsAndGeoData,
         loadAllGeoData,
         isInitialized,
@@ -681,7 +686,7 @@ export const NetworkMapTab = ({
         if (isInitialized && lineFullPath && !prevLineFullPath) {
             loadGeoData(currentNodeRef.current, mapEquipments);
         }
-    }, [isInitialized, lineFullPath, loadGeoData]);
+    }, [isInitialized, lineFullPath, loadGeoData, mapEquipments]);
 
     /* TODO : this useEffect reloads the mapEquipments when, in manual refresh mode, the current node is built.
      */
