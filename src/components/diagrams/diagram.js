@@ -46,7 +46,6 @@ import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import {
-    isNodeBuilt,
     isNodeReadOnly,
     isNodeInNotificationList,
 } from '../graph/util/model-functions';
@@ -666,10 +665,6 @@ const Diagram = forwardRef((props, ref) => {
         sizeWidth = props.totalWidth; // happens during initialization if initial width value is undefined
     }
 
-    if (!isNodeBuilt(currentNode)) {
-        sizeWidth = props.totalWidth / props.numberToDisplay; // prevents the diagram from becoming too big if the current node is not built
-    }
-
     if (sizeWidth !== undefined) {
         initialWidth = sizeWidth; // setting initial width for the next SLD.
     }
@@ -772,7 +767,7 @@ const Diagram = forwardRef((props, ref) => {
                         <AlertInvalidNode noMargin={true} />
                     </Box>
                 ) : (
-                    <Box>
+                    <Box height={'100%'}>
                         {errorMessage && (
                             <Alert severity="error">{errorMessage}</Alert>
                         )}
@@ -789,6 +784,7 @@ const Diagram = forwardRef((props, ref) => {
                                     dangerouslySetInnerHTML={{
                                         __html: svg.svg,
                                     }}
+                                    style={{ height: '100%' }}
                                 />
                                 {displayBranchMenu()}
                                 {displayMenu(equipments.loads, 'load-menus')}
@@ -839,6 +835,7 @@ const Diagram = forwardRef((props, ref) => {
                                         props.loadFlowStatus !==
                                         RunningStatus.SUCCEED,
                                 })}
+                                style={{ height: '100%' }}
                             />
                         )}
 
