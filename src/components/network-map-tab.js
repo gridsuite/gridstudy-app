@@ -112,6 +112,7 @@ export const NetworkMapTab = ({
 
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
+    geoDataRef.current = geoData;
 
     const basicDataReady = mapEquipments && geoData;
 
