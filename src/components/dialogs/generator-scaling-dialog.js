@@ -17,12 +17,12 @@ import {
     gridItemWithErrorMsg,
     GridSection,
 } from './dialogUtils';
-import { EquipmentType } from './sensi/sensi-parameters-selector';
 import { VARIATION_MODE, VARIATION_TYPE } from '../network/constants';
 import { useExpandableValues } from './inputs/use-expandable-values';
 import makeStyles from '@mui/styles/makeStyles';
 import { generatorScaling } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
@@ -107,7 +107,7 @@ const GeneratorScalingVariation = ({
         },
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        equipmentTypes: [EquipmentType.GENERATOR],
+        equipmentTypes: [EQUIPMENT_TYPES.GENERATOR],
         itemFilter: itemFilter,
         elementClassName: classes.chipElement,
         required: true,
