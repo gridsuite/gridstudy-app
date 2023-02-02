@@ -200,7 +200,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
         }));
     };
 
-    // This ref used for collecting all child refs while rendering into an objet
+    // This ref used for collecting all child refs into an objet while rendering children
     /*
         {
             [key1]: childRef1,
@@ -210,18 +210,24 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
     */
     const childrenRef = useRef({});
 
-    const collectChildRefs = (childRef, childKey) => {
+    const collectChildRefs = useCallback((childRef, childKey) => {
         childrenRef.current = {
             ...childrenRef.current,
             ...(childRef && { [childKey]: childRef }),
         };
-    };
+    }, []);
 
-    const handlePlotSyncEvent = (syncEvent) => {
-        Object.values(childrenRef.current).forEach((childRef) =>
-            childRef.syncOnRelayout(syncEvent)
-        );
-    };
+    const handlePlotSyncEvent = useCallback(
+        (syncEvent) => {
+            console.log('sync = ' + sync);
+            if (sync) {
+                Object.values(childrenRef.current).forEach((childRef) =>
+                    childRef.syncOnRelayout(syncEvent)
+                );
+            }
+        },
+        [sync]
+    );
 
     return (
         <Grid container>
@@ -301,7 +307,7 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                             onBreakpointChange={handleBreakpointChange}
                         >
                             {plots.map((plot, index) => (
-                                <div key={plot.id.toString()}>
+                                <div key={`${plot.id}`}>
                                     <DynamicSimulationResultSeriesChart
                                         key={`${plot.id}`}
                                         ref={(currRef) =>
@@ -317,7 +323,6 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                                         leftSeries={plot.leftSelectedSeries}
                                         rightSeries={plot.rightSelectedSeries}
                                         onClose={handleClose}
-                                        sync={sync}
                                         onSyncEvent={handlePlotSyncEvent}
                                     />
                                 </div>

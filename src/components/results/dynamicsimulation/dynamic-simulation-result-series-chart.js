@@ -46,7 +46,6 @@ const DynamicSimulationResultSeriesChart = forwardRef(
             rightSeries,
             onClose,
             onSelect,
-            sync,
             onSyncEvent,
         },
         ref
@@ -97,7 +96,6 @@ const DynamicSimulationResultSeriesChart = forwardRef(
                         ref={ref}
                         leftSeries={leftSeries}
                         rightSeries={rightSeries}
-                        sync={sync}
                         onSyncEvent={onSyncEvent}
                     />
                 </CardContent>
@@ -114,7 +112,6 @@ DynamicSimulationResultSeriesChart.propTypes = {
     rightSeries: SeriesType,
     onClose: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,
-    sync: PropTypes.bool,
     onSyncEvent: PropTypes.func,
 };
 

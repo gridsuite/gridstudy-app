@@ -19,7 +19,8 @@ import { PlotEvents } from './plot-events';
 import { SeriesType } from './plot-types';
 
 const PlotlySeriesChart = forwardRef(
-    ({ id, leftSeries, rightSeries, sync, onSyncEvent }, ref) => {
+    ({ id, leftSeries, rightSeries, onSyncEvent }, ref) => {
+        console.log(id + ' plot re-render');
         const [layout, setLayout] = useState(
             JSON.parse(JSON.stringify(defaultLayout)) // deep clone can be done by lodash
         );
@@ -71,17 +72,14 @@ const PlotlySeriesChart = forwardRef(
         const handleOnRelayout = useCallback(
             (eventData) => {
                 // propagate sync data to parent
-                console.log('Sync value = ', sync);
-                if (sync) {
-                    console.log('Send sync event from ' + id, eventData);
-                    onSyncEvent({
-                        senderId: id,
-                        eventType: PlotEvents.ON_RELAYOUT,
-                        eventData: eventData,
-                    });
-                }
+                console.log('Send sync event from ' + id, eventData);
+                onSyncEvent({
+                    senderId: id,
+                    eventType: PlotEvents.ON_RELAYOUT,
+                    eventData: eventData,
+                });
             },
-            [sync, id, onSyncEvent]
+            [id, onSyncEvent]
         );
 
         useImperativeHandle(
@@ -165,7 +163,6 @@ PlotlySeriesChart.propTypes = {
     id: PropTypes.string.isRequired,
     leftSeries: SeriesType,
     rightSerie: SeriesType,
-    sync: PropTypes.bool,
     onSyncEvent: PropTypes.func,
 };
 
