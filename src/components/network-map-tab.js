@@ -561,7 +561,7 @@ export const NetworkMapTab = ({
 
         dispatch(resetMapReloaded());
 
-        const previousCurrentNode = currentNode;
+        const currentNodeAtReloadCalling = currentNodeRef.current;
 
         return mapEquipments
             .reloadImpactedSubstationsEquipments(
@@ -570,8 +570,10 @@ export const NetworkMapTab = ({
                 updatedSubstationsToSend
             )
             .then((results) => {
-                const isFullReload = updatedSubstationsToSend ? false : true;
-                if (previousCurrentNode === currentNodeRef.current) {
+                if (currentNodeAtReloadCalling === currentNodeRef.current) {
+                    const isFullReload = updatedSubstationsToSend
+                        ? false
+                        : true;
                     mapEquipments.updateSubstations(
                         mapEquipments.checkAndGetValues(results[0]),
                         isFullReload
@@ -594,13 +596,13 @@ export const NetworkMapTab = ({
     ]);
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
-        const previousCurrentNode = currentNode;
+        const currentNodeAtReloadCalling = currentNodeRef.current;
         updateMapEquipments().then(() => {
-            if (previousCurrentNode === currentNodeRef.current) {
+            if (currentNodeAtReloadCalling === currentNodeRef.current) {
                 loadGeoData();
             }
         });
-    }, [currentNode, updateMapEquipments, loadGeoData]);
+    }, [updateMapEquipments, loadGeoData]);
 
     useEffect(() => {
         if (isInitialized && studyUpdatedForce.eventData.headers) {

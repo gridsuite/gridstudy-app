@@ -594,7 +594,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
-                    const previousCurrentNode = currentNode;
+                    const currentNodeAtReloadCalling = currentNodeRef.current;
                     console.info('Reload network equipments');
                     network
                         .reloadImpactedSubstationsEquipments(
@@ -604,7 +604,8 @@ export function StudyContainer({ view, onChangeTab }) {
                         )
                         .then((values) => {
                             if (
-                                previousCurrentNode === currentNodeRef.current
+                                currentNodeAtReloadCalling ===
+                                currentNodeRef.current
                             ) {
                                 network.updateNetworkEquipments(values);
                                 dispatch(
@@ -615,7 +616,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         }
-    }, [studyUpdatedForce, network, studyUuid, dispatch, currentNode]);
+    }, [studyUpdatedForce, network, studyUuid, dispatch]);
 
     const loadNetwork = useCallback(
         (isUpdate) => {
