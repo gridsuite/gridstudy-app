@@ -84,13 +84,15 @@ function handleError(response) {
     });
 }
 
-function prepareRequest(init, token) {
+function prepareRequest(init, token, controller) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             'Argument 2 of backendFetch is not an object' + typeof init
         );
     }
     const initCopy = Object.assign({}, init);
+    const signal = controller ? controller.signal : undefined;
+    initCopy.signal = signal;
     initCopy.headers = new Headers(initCopy.headers || {});
     const tokenCopy = token ? token : getToken();
     initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
@@ -113,8 +115,8 @@ export function backendFetchText(url, init, token) {
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
 }
 
-export function backendFetchJson(url, init, token) {
-    const initCopy = prepareRequest(init, token);
+export function backendFetchJson(url, init, token, controller) {
+    const initCopy = prepareRequest(init, token, controller);
     return safeFetch(url, initCopy).then((safeResponse) => safeResponse.json());
 }
 
@@ -390,14 +392,20 @@ export function fetchSvg(svgUrl) {
     );
 }
 
-export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
+export function fetchSubstations(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    controller
+) {
     return fetchEquipments(
         studyUuid,
         currentNodeUuid,
         substationsIds,
         'Substations',
         'substations',
-        true
+        true,
+        controller
     );
 }
 
@@ -423,14 +431,20 @@ export function fetchSubstationPositions(
     return backendFetchJson(fetchSubstationPositionsUrl);
 }
 
-export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
+export function fetchLines(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    controller
+) {
     return fetchEquipments(
         studyUuid,
         currentNodeUuid,
         substationsIds,
         'Lines',
         'lines',
-        true
+        true,
+        controller
     );
 }
 
@@ -643,7 +657,8 @@ export function fetchEquipments(
     substationsIds,
     equipmentType,
     equipmentPath,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    controller
 ) {
     console.info(
         `Fetching equipments '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
@@ -663,7 +678,7 @@ export function fetchEquipments(
         '?' +
         getQueryParamsList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl, null, null, controller);
 }
 
 export function fetchEquipmentInfos(
@@ -2573,7 +2588,7 @@ export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
     return backendFetchJson(fetchLoadFlowInfosUrl);
 }
 
-export function fetchNetworkModifications(studyUuid, nodeUuid) {
+export function fetchNetworkModifications(studyUuid, nodeUuid, controller) {
     console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
     const modificationsGetUrl =
         PREFIX_STUDY_QUERIES +
@@ -2584,7 +2599,7 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
         '/network-modifications';
 
     console.debug(modificationsGetUrl);
-    return backendFetchJson(modificationsGetUrl);
+    return backendFetchJson(modificationsGetUrl, null, null, controller);
 }
 
 export function fetchNetworkModification(modificationUuid) {
@@ -2677,7 +2692,8 @@ function fetchMapEquipment(
     substationsIds,
     equipmentType,
     equipmentPath,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    controller
 ) {
     console.info(
         `Fetching map ' + ${equipmentType} + ' data of study '${studyUuid}' and node '${currentNodeUuid}'...`
@@ -2707,7 +2723,7 @@ function fetchMapEquipment(
     }
 
     console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl, null, null, controller);
 }
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
@@ -2730,7 +2746,8 @@ export function fetchMapSubstations(
     studyUuid,
     currentNodeUuid,
     substationsIds,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    controller
 ) {
     return fetchMapEquipment(
         studyUuid,
@@ -2738,7 +2755,8 @@ export function fetchMapSubstations(
         substationsIds,
         'substations',
         'map-substations',
-        inUpstreamBuiltParentNode
+        inUpstreamBuiltParentNode,
+        controller
     );
 }
 
@@ -2746,7 +2764,8 @@ export function fetchMapLines(
     studyUuid,
     currentNodeUuid,
     substationsIds,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    controller
 ) {
     return fetchMapEquipment(
         studyUuid,
@@ -2754,6 +2773,7 @@ export function fetchMapLines(
         substationsIds,
         'lines',
         'map-lines',
-        inUpstreamBuiltParentNode
+        inUpstreamBuiltParentNode,
+        controller
     );
 }

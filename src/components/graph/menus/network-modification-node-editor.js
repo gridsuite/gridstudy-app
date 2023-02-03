@@ -441,11 +441,23 @@ const NetworkModificationNodeEditor = () => {
         [fillNotification]
     );
 
+    const controller = useRef();
+    useEffect(() => {
+        if (controller.current) {
+            controller.current.abort();
+        }
+    }, [controller, currentTreeNode?.id]);
+
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
         if (currentTreeNode?.type !== 'NETWORK_MODIFICATION') return;
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentTreeNode?.id)
+        controller.current = new AbortController();
+        fetchNetworkModifications(
+            studyUuid,
+            currentTreeNode?.id,
+            controller.current
+        )
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -454,9 +466,13 @@ const NetworkModificationNodeEditor = () => {
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
+                if (error.name === 'AbortError') {
+                    console.log('Request automatically cancelled.');
+                } else {
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                }
             })
             .finally(() => {
                 setPendingState(false);

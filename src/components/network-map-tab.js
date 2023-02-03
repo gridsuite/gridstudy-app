@@ -544,46 +544,64 @@ export const NetworkMapTab = ({
         dispatch(resetMapReloaded());
     }, [currentNode, dispatch, intlRef, setErrorMessage, studyUuid]);
 
-    const updateMapEquipments = useCallback(() => {
-        if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
-            return Promise.reject();
+    const updateMapEquipments = useCallback(
+        (controller) => {
+            if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
+                return Promise.reject();
+            }
+            console.info('Update map equipments');
+            setWaitingLoadData(true);
+            const updatedSubstationsToSend =
+                !refIsMapManualRefreshEnabled.current &&
+                !isUpdatedSubstationsApplied &&
+                updatedSubstationsIds?.length > 0
+                    ? updatedSubstationsIds
+                    : undefined;
+
+            if (updatedSubstationsToSend) {
+                setIsUpdatedSubstationsApplied(true);
+            }
+
+            dispatch(resetMapReloaded());
+
+            return mapEquipments
+                .reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    updatedSubstationsToSend,
+                    setUpdatedLines,
+                    controller
+                )
+                .finally(() => {
+                    setWaitingLoadData(false);
+                });
+        },
+        [
+            currentNode,
+            dispatch,
+            isUpdatedSubstationsApplied,
+            mapEquipments,
+            studyUuid,
+            updatedSubstationsIds,
+        ]
+    );
+
+    const controller = useRef();
+    useEffect(() => {
+        if (controller.current) {
+            controller.current.abort();
         }
-        console.info('Update map equipments');
-        setWaitingLoadData(true);
-        const updatedSubstationsToSend =
-            !refIsMapManualRefreshEnabled.current &&
-            !isUpdatedSubstationsApplied &&
-            updatedSubstationsIds?.length > 0
-                ? updatedSubstationsIds
-                : undefined;
-
-        if (updatedSubstationsToSend) {
-            setIsUpdatedSubstationsApplied(true);
-        }
-
-        dispatch(resetMapReloaded());
-
-        return mapEquipments
-            .reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                updatedSubstationsToSend,
-                setUpdatedLines
-            )
-            .finally(() => {
-                setWaitingLoadData(false);
-            });
-    }, [
-        currentNode,
-        dispatch,
-        isUpdatedSubstationsApplied,
-        mapEquipments,
-        studyUuid,
-        updatedSubstationsIds,
-    ]);
+    }, [controller, currentNode]);
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
-        updateMapEquipments().then(loadGeoData);
+        controller.current = new AbortController();
+        updateMapEquipments(controller.current)
+            .then(loadGeoData)
+            .catch((err) => {
+                if (err.name === 'AbortError') {
+                    console.log('Request automatically cancelled.');
+                }
+            });
     }, [updateMapEquipments, loadGeoData]);
 
     useEffect(() => {

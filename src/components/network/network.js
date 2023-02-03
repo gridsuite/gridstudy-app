@@ -423,20 +423,40 @@ export default class Network {
                     })
                 );
         });
-        Promise.all(fetchers).then((values) => {
-            values.forEach((value) => {
-                this.lazyLoaders.get(value.equipment).fetched = true;
-                this.setEquipment(value.equipment, value.values);
+        Promise.all(fetchers)
+            .then((values) => {
+                values.forEach((value) => {
+                    this.lazyLoaders.get(value.equipment).fetched = true;
+                    this.setEquipment(value.equipment, value.values);
+                });
+                this.dispatch(networkCreated(this));
+            })
+            .catch((err) => {
+                if (err.name === 'AbortError') {
+                    console.log('Request automatically cancelled.');
+                }
             });
-            this.dispatch(networkCreated(this));
-        });
     }
 
-    constructor(studyUuid, currentNodeUuid, errHandler, dispatch, prefetch) {
+    constructor(
+        studyUuid,
+        currentNodeUuid,
+        errHandler,
+        dispatch,
+        prefetch,
+        controller
+    ) {
         this.generateEquipementHandler({
-            substations: () => fetchSubstations(studyUuid, currentNodeUuid),
+            substations: () =>
+                fetchSubstations(
+                    studyUuid,
+                    currentNodeUuid,
+                    undefined,
+                    controller
+                ),
             loads: () => fetchLoads(studyUuid, currentNodeUuid),
-            lines: () => fetchLines(studyUuid, currentNodeUuid),
+            lines: () =>
+                fetchLines(studyUuid, currentNodeUuid, undefined, controller),
             twoWindingsTransformers: () =>
                 fetchTwoWindingsTransformers(studyUuid, currentNodeUuid),
             threeWindingsTransformers: () =>
@@ -488,13 +508,15 @@ export default class Network {
     reloadImpactedSubstationsEquipments(
         studyUuid,
         currentNode,
-        substationsIds
+        substationsIds,
+        controller
     ) {
         if (substationsIds) {
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
                 currentNode?.id,
-                substationsIds
+                substationsIds,
+                controller
             );
             updatedEquipments
                 .then((values) => {
@@ -536,7 +558,9 @@ export default class Network {
                 })
                 .catch(function (error) {
                     console.error(error.message);
-                    if (this.errHandler) this.errHandler(error);
+                    if (error.name === 'AbortError') {
+                        console.log('Request automatically cancelled.');
+                    } else if (this.errHandler) this.errHandler(error);
                 });
         }
     }

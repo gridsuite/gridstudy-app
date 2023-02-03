@@ -82,17 +82,22 @@ export default class MapEquipments {
         studyUuid,
         currentNode,
         substationsIds,
-        handleUpdatedLines
+        handleUpdatedLines,
+        controller
     ) {
         const updatedSubstations = fetchMapSubstations(
             studyUuid,
             currentNode?.id,
-            substationsIds
+            substationsIds,
+            undefined,
+            controller
         );
         const updatedLines = fetchMapLines(
             studyUuid,
             currentNode?.id,
-            substationsIds
+            substationsIds,
+            undefined,
+            controller
         );
         const isFullReload = substationsIds ? false : true;
 
@@ -105,7 +110,9 @@ export default class MapEquipments {
             })
             .catch((error) => {
                 console.error(error.message);
-                if (this.errHandler) {
+                if (error.name === 'AbortError') {
+                    console.log('Request automatically cancelled.');
+                } else if (this.errHandler) {
                     this.errHandler(
                         this.intlRef.current.formatMessage({
                             id: 'MapEquipmentsLoadError',
@@ -120,7 +127,9 @@ export default class MapEquipments {
             })
             .catch((error) => {
                 console.error(error.message);
-                if (this.errHandler) {
+                if (error.name === 'AbortError') {
+                    console.log('Request automatically cancelled.');
+                } else if (this.errHandler) {
                     this.errHandler(
                         this.intlRef.current.formatMessage({
                             id: 'MapEquipmentsLoadError',

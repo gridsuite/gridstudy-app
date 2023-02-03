@@ -606,13 +606,20 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUpdatedForce, network, studyUuid, dispatch]);
 
+    const controller = useRef();
+    useEffect(() => {
+        if (controller.current) {
+            controller.current.abort();
+        }
+    }, [controller, currentNode]);
+
     const loadNetwork = useCallback(
         (isUpdate) => {
             if (!isNodeBuilt(currentNode) || !studyUuid) {
                 return;
             }
             console.info(`Loading network of study '${studyUuid}'...`);
-
+            controller.current = new AbortController();
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
                 // In order to avoid glitches during sld and map rendering,
@@ -625,14 +632,16 @@ export function StudyContainer({ view, onChangeTab }) {
                     dispatch,
                     {
                         equipments: [equipments.lines, equipments.substations],
-                    }
+                    },
+                    controller.current
                 );
             } else {
                 const network = new Network(
                     studyUuid,
                     currentNode?.id,
                     displayNetworkLoadingFailMessage,
-                    dispatch
+                    dispatch,
+                    controller.current
                 );
                 // For initial network loading, no need to initialize lines and substations at first,
                 // lazy loading will do the job (no glitches to avoid)
