@@ -112,7 +112,6 @@ export const NetworkMapTab = ({
 
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
-    geoDataRef.current = geoData;
 
     const basicDataReady = mapEquipments && geoData;
 
@@ -439,6 +438,7 @@ export const NetworkMapTab = ({
                             fetchedLinePositions
                         );
                         setGeoData(newGeoData);
+                        geoDataRef.current = newGeoData;
                     }
                 })
                 .catch(function (error) {
@@ -480,6 +480,7 @@ export const NetworkMapTab = ({
             );
             newGeoData.setSubstationPositions(data);
             setGeoData(newGeoData);
+            geoDataRef.current = newGeoData;
         });
 
         const linePositionsDone = !lineFullPath
@@ -494,6 +495,7 @@ export const NetworkMapTab = ({
                       );
                       newGeoData.setLinePositions(data);
                       setGeoData(newGeoData);
+                      geoDataRef.current = newGeoData;
                   }
               );
 
