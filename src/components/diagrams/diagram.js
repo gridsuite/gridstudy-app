@@ -720,13 +720,6 @@ const Diagram = forwardRef((props, ref) => {
                     height: '100%',
                     position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
                     overflow: 'hidden',
-                    // We hide this diagram if another diagram is in fullscreen mode.
-                    display:
-                        !fullScreenDiagram?.id ||
-                        (props.diagramId === fullScreenDiagram.id &&
-                            props.svgType === fullScreenDiagram.svgType)
-                            ? ''
-                            : 'none',
                 }}
             >
                 <Box>
