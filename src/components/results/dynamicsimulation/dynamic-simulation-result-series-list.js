@@ -6,10 +6,9 @@
  */
 import PropTypes from 'prop-types';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
-import { Grid, List, ListSubheader, Typography } from '@mui/material';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { debounce, Grid, List, ListSubheader, Typography } from '@mui/material';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
-import useDebounce from '../hook/useDebounce';
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -35,10 +34,6 @@ const DynamicSimulationResultSeriesList = ({
     const [leftAxisChecked, setLeftAxisChecked] = useState([]);
     const [rightAxisChecked, setRightAxisChecked] = useState([]);
 
-    // use debounce to delay propagating changes
-    const leftAxisCheckedDebounce = useDebounce(leftAxisChecked, 300);
-    const rightAxisCheckedDebounce = useDebounce(rightAxisChecked, 300);
-
     const classes = useStyle();
 
     const handleToggle = useCallback((id, setAxisChecked) => {
@@ -57,27 +52,36 @@ const DynamicSimulationResultSeriesList = ({
 
     const handleToggleLeftAxis = useCallback(
         (id) => {
-            handleToggle(id, setLeftAxisChecked, onLeftAxisSelected);
+            handleToggle(id, setLeftAxisChecked);
         },
-        [handleToggle, onLeftAxisSelected]
+        [handleToggle]
     );
 
     const handleToggleRightAxis = useCallback(
         (id) => {
-            handleToggle(id, setRightAxisChecked, onRightAxisSelected);
+            handleToggle(id, setRightAxisChecked);
         },
-        [handleToggle, onRightAxisSelected]
+        [handleToggle]
+    );
+
+    const delayedOnLeftAxisSelected = useMemo(
+        () => debounce(onLeftAxisSelected, 500),
+        [onLeftAxisSelected]
+    );
+    const delayedOnRightAxisSelected = useMemo(
+        () => debounce(onRightAxisSelected, 500),
+        [onRightAxisSelected]
     );
 
     useEffect(() => {
         // propagate changes
-        onLeftAxisSelected(index, leftAxisCheckedDebounce);
-    }, [leftAxisCheckedDebounce, index, onLeftAxisSelected]);
+        delayedOnLeftAxisSelected(index, leftAxisChecked);
+    }, [leftAxisChecked, index, delayedOnLeftAxisSelected]);
 
     useEffect(() => {
         // propagate changes
-        onRightAxisSelected(index, rightAxisCheckedDebounce);
-    }, [rightAxisCheckedDebounce, index, onRightAxisSelected]);
+        delayedOnRightAxisSelected(index, rightAxisChecked);
+    }, [rightAxisChecked, index, delayedOnRightAxisSelected]);
 
     const renderHeaders = () => {
         return (
