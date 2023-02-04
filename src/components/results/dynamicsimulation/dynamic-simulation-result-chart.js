@@ -32,6 +32,9 @@ import { useIntl } from 'react-intl';
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const useStyles = makeStyles((theme) => ({
+    graph: {
+        overflowY: 'auto',
+    },
     addButton: {
         borderRadius: '50%',
         marginRight: theme.spacing(10),
@@ -103,25 +106,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         setSelectedIndex(index);
     }, []);
 
-    const handleLeftAxisSelected = (index, axisSelected) => {
-        const newPlots = Array.from(plots);
-        newPlots[index].leftSelectedSeries = selectedSeries(axisSelected);
-        setPlots(newPlots);
-    };
-
-    const handleRightAxisSelected = (index, axisSelected) => {
-        const newPlots = Array.from(plots);
-        newPlots[index].rightSelectedSeries = selectedSeries(axisSelected);
-        setPlots(newPlots);
-    };
-
-    const items = useMemo(() => {
-        return series.map((s, index) => ({
-            id: index,
-            label: s.name,
-        }));
-    }, [series]);
-
     const selectedSeries = useCallback(
         (axisSelected) => {
             return series.filter(
@@ -130,6 +114,38 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         },
         [series]
     );
+
+    const handleLeftAxisSelected = useCallback(
+        (index, axisSelected) => {
+            setPlots((prev) => {
+                console.log('handleLeftAxisSelected');
+                const newPlots = Array.from(prev);
+                newPlots[index].leftSelectedSeries =
+                    selectedSeries(axisSelected);
+                return newPlots;
+            });
+        },
+        [selectedSeries]
+    );
+
+    const handleRightAxisSelected = useCallback(
+        (index, axisSelected) => {
+            setPlots((prev) => {
+                const newPlots = Array.from(prev);
+                newPlots[index].rightSelectedSeries =
+                    selectedSeries(axisSelected);
+                return newPlots;
+            });
+        },
+        [selectedSeries]
+    );
+
+    const items = useMemo(() => {
+        return series.map((s, index) => ({
+            id: index,
+            label: s.name,
+        }));
+    }, [series]);
 
     const handleSync = useCallback(() => {
         setSync((prev) => !prev);
@@ -265,6 +281,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                     </Grid>
                     <Grid item>
                         <ResponsiveGridLayout
+                            styles={{ overflowY: 'auto' }}
                             className={'layout'}
                             cols={{
                                 lg: gridLayout.cols,

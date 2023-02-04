@@ -12,20 +12,25 @@ import {
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
+import { memo, useState } from 'react';
 
 const DynamicSimulationResultSeriesItem = ({
     item: { id, label },
     onChangeLeftAxis,
     onChangeRightAxis,
-    leftAxisChecked,
-    rightAxisChecked,
 }) => {
+    console.log('re-render item ' + label + ' ' + id);
+    const [leftAxisChecked, setLeftAxisChecked] = useState(false);
+    const [rightAxisChecked, setRightAxisChecked] = useState(false);
+
     const handleToggleLeftAxis = (id) => {
-        return onChangeLeftAxis(id);
+        onChangeLeftAxis(id);
+        setLeftAxisChecked((prev) => !prev);
     };
 
     const handleToggleRightAxis = (id) => {
-        return onChangeRightAxis(id);
+        onChangeRightAxis(id);
+        setRightAxisChecked((prev) => !prev);
     };
 
     return (
@@ -34,7 +39,7 @@ const DynamicSimulationResultSeriesItem = ({
             secondaryAction={
                 <Checkbox
                     edge={'end'}
-                    onChange={handleToggleRightAxis(id)}
+                    onChange={() => handleToggleRightAxis(id)}
                     checked={rightAxisChecked}
                     inputProps={{ 'aria-labelledby': `right-axis-label-${id}` }}
                 />
@@ -43,7 +48,7 @@ const DynamicSimulationResultSeriesItem = ({
         >
             <ListItemButton
                 role={undefined}
-                onClick={handleToggleLeftAxis(id)}
+                onClick={() => handleToggleLeftAxis(id)}
                 dense
             >
                 <ListItemIcon>
@@ -69,8 +74,6 @@ DynamicSimulationResultSeriesItem.propTypes = {
     }).isRequired,
     onChangeLeftAxis: PropTypes.func.isRequired,
     onChangeRightAxis: PropTypes.func.isRequired,
-    leftAxisChecked: PropTypes.bool,
-    rightAxisChecked: PropTypes.bool,
 };
 
-export default DynamicSimulationResultSeriesItem;
+export default memo(DynamicSimulationResultSeriesItem);

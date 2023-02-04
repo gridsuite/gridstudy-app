@@ -7,8 +7,9 @@
 import PropTypes from 'prop-types';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
 import { Grid, List, ListSubheader, Typography } from '@mui/material';
-import { memo, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
+import useDebounce from '../hook/useDebounce';
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -30,45 +31,53 @@ const DynamicSimulationResultSeriesList = ({
     onLeftAxisSelected,
     onRightAxisSelected,
 }) => {
+    console.log('re-render list ' + index);
     const [leftAxisChecked, setLeftAxisChecked] = useState([]);
     const [rightAxisChecked, setRightAxisChecked] = useState([]);
 
+    // use debounce to delay propagating changes
+    const leftAxisCheckedDebounce = useDebounce(leftAxisChecked, 300);
+    const rightAxisCheckedDebounce = useDebounce(rightAxisChecked, 300);
+
     const classes = useStyle();
 
-    function handleToggle(id, axisChecked, setAxisChecked, onAxisSelected) {
-        console.log('handleToggle id=', id);
-        const currIndex = axisChecked.indexOf(id);
-        const newChecked = [...axisChecked];
+    const handleToggle = useCallback((id, setAxisChecked) => {
+        setAxisChecked((prev) => {
+            console.log('handleToggle id=', id);
+            const currIndex = prev.indexOf(id);
+            const newChecked = [...prev];
+            if (currIndex === -1) {
+                newChecked.push(id);
+            } else {
+                newChecked.splice(currIndex, 1);
+            }
+            return newChecked;
+        });
+    }, []);
 
-        if (currIndex === -1) {
-            newChecked.push(id);
-        } else {
-            newChecked.splice(currIndex, 1);
-        }
+    const handleToggleLeftAxis = useCallback(
+        (id) => {
+            handleToggle(id, setLeftAxisChecked, onLeftAxisSelected);
+        },
+        [handleToggle, onLeftAxisSelected]
+    );
 
-        setAxisChecked(newChecked);
+    const handleToggleRightAxis = useCallback(
+        (id) => {
+            handleToggle(id, setRightAxisChecked, onRightAxisSelected);
+        },
+        [handleToggle, onRightAxisSelected]
+    );
 
+    useEffect(() => {
         // propagate changes
-        onAxisSelected(index, [...newChecked]);
-    }
+        onLeftAxisSelected(index, leftAxisCheckedDebounce);
+    }, [leftAxisCheckedDebounce, index, onLeftAxisSelected]);
 
-    const handleToggleLeftAxis = (id) => () => {
-        handleToggle(
-            id,
-            leftAxisChecked,
-            setLeftAxisChecked,
-            onLeftAxisSelected
-        );
-    };
-
-    const handleToggleRightAxis = (id) => () => {
-        handleToggle(
-            id,
-            rightAxisChecked,
-            setRightAxisChecked,
-            onRightAxisSelected
-        );
-    };
+    useEffect(() => {
+        // propagate changes
+        onRightAxisSelected(index, rightAxisCheckedDebounce);
+    }, [rightAxisCheckedDebounce, index, onRightAxisSelected]);
 
     const renderHeaders = () => {
         return (
@@ -96,8 +105,6 @@ const DynamicSimulationResultSeriesList = ({
                     item={item}
                     onChangeLeftAxis={handleToggleLeftAxis}
                     onChangeRightAxis={handleToggleRightAxis}
-                    leftAxisChecked={leftAxisChecked.indexOf(item.id) !== -1}
-                    rightAxisChecked={rightAxisChecked.indexOf(item.id) !== -1}
                 />
             ))}
         </List>

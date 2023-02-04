@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
     card: {},
     cardHeaderRoot: {
         backgroundColor: lighten(theme.palette.background.paper, 0.2),
+        '&:hover': {
+            background: lighten(theme.palette.background.paper, 0.3),
+            cursor: 'move',
+        },
     },
     cardHeaderAction: {
         margin: 'auto',
