@@ -695,27 +695,6 @@ const Diagram = forwardRef((props, ref) => {
      * RENDER
      */
 
-    const contentSingleLineDiagramRender = () => {
-        return (
-            <SingleLineDiagramContent
-                ref={svgRef}
-                svg={svg}
-                loadFlowStatus={props.loadFlowStatus}
-                displayBranchMenu={displayBranchMenu}
-                displayMenu={displayMenu}
-            />
-        );
-    };
-
-    const contentNetworkAreaDiagramRender = () => {
-        return (
-            <NetworkAreaDiagramContent
-                ref={svgRef}
-                loadFlowStatus={props.loadFlowStatus}
-            />
-        );
-    };
-
     return !svg.error ? (
         <DiagramResizableBox
             align={props.align}
@@ -777,11 +756,21 @@ const Diagram = forwardRef((props, ref) => {
                         )}
 
                         {(props.svgType === SvgType.VOLTAGE_LEVEL ||
-                            props.svgType === SvgType.SUBSTATION) &&
-                            contentSingleLineDiagramRender()}
-                        {props.svgType === SvgType.NETWORK_AREA_DIAGRAM &&
-                            contentNetworkAreaDiagramRender()}
-
+                            props.svgType === SvgType.SUBSTATION) && (
+                            <SingleLineDiagramContent
+                                ref={svgRef}
+                                svg={svg}
+                                loadFlowStatus={props.loadFlowStatus}
+                                displayBranchMenu={displayBranchMenu}
+                                displayMenu={displayMenu}
+                            />
+                        )}
+                        {props.svgType === SvgType.NETWORK_AREA_DIAGRAM && (
+                            <NetworkAreaDiagramContent
+                                ref={svgRef}
+                                loadFlowStatus={props.loadFlowStatus}
+                            />
+                        )}
                         {!loadingState && (
                             <DiagramFooter
                                 showCounterControls={
