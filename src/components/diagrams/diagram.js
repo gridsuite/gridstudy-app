@@ -33,8 +33,6 @@ import { AutoSizer } from 'react-virtualized';
 
 import { useIntl } from 'react-intl';
 
-import clsx from 'clsx';
-import { RunningStatus } from '../util/running-status';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import BaseEquipmentMenu from '../menus/base-equipment-menu';
 import withEquipmentMenu from '../menus/equipment-menu';
@@ -72,6 +70,8 @@ import makeStyles from '@mui/styles/makeStyles';
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
+import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
+import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 
 const customSldStyle = (theme) => {
     return {
@@ -707,8 +707,41 @@ const Diagram = forwardRef((props, ref) => {
      * RENDER
      */
 
-    const contentRender = () => {
+    const contentSingleLineDiagramRender = () => {
         return (
+            <SingleLineDiagramContent
+                ref={svgRef}
+                svg={svg}
+                loadFlowStatus={props.loadFlowStatus}
+                displayBranchMenu={displayBranchMenu}
+                displayMenu={displayMenu}
+            />
+        );
+    };
+
+    const contentNetworkAreaDiagramRender = () => {
+        return (
+            <NetworkAreaDiagramContent
+                ref={svgRef}
+                loadFlowStatus={props.loadFlowStatus}
+            />
+        );
+    };
+
+    return !svg.error ? (
+        <DiagramResizableBox
+            align={props.align}
+            height={sizeHeight}
+            width={sizeWidth}
+            // We disable the resizeBox if a diagram is in fullscreen
+            disableResize={fullScreenDiagram?.id}
+            // We hide this diagram if another diagram is in fullscreen mode.
+            hide={
+                fullScreenDiagram?.id &&
+                (fullScreenDiagram.id !== props.diagramId ||
+                    fullScreenDiagram.svgType !== props.svgType)
+            }
+        >
             <Paper
                 elevation={4}
                 square={true}
@@ -754,73 +787,12 @@ const Diagram = forwardRef((props, ref) => {
                         {errorMessage && (
                             <Alert severity="error">{errorMessage}</Alert>
                         )}
+
                         {(props.svgType === SvgType.VOLTAGE_LEVEL ||
-                            props.svgType === SvgType.SUBSTATION) && (
-                            <>
-                                <div
-                                    ref={svgRef}
-                                    className={clsx(classes.divSld, {
-                                        [classes.divInvalid]:
-                                            props.loadFlowStatus !==
-                                            RunningStatus.SUCCEED,
-                                    })}
-                                    dangerouslySetInnerHTML={{
-                                        __html: svg.svg,
-                                    }}
-                                    style={{ height: '100%' }}
-                                />
-                                {displayBranchMenu()}
-                                {displayMenu(equipments.loads, 'load-menus')}
-                                {displayMenu(
-                                    equipments.batteries,
-                                    'battery-menus'
-                                )}
-                                {displayMenu(
-                                    equipments.danglingLines,
-                                    'dangling-line-menus'
-                                )}
-                                {displayMenu(
-                                    equipments.generators,
-                                    'generator-menus'
-                                )}
-                                {displayMenu(
-                                    equipments.staticVarCompensators,
-                                    'static-var-compensator-menus'
-                                )}
-                                {displayMenu(
-                                    equipments.shuntCompensators,
-                                    'shunt-compensator-menus'
-                                )}
-                                {displayMenu(
-                                    equipments.threeWindingsTransformers,
-                                    'three-windings-transformer-menus'
-                                )}
-                                {displayMenu(
-                                    equipments.hvdcLines,
-                                    'hvdc-line-menus'
-                                )}
-                                {displayMenu(
-                                    equipments.lccConverterStations,
-                                    'lcc-converter-station-menus'
-                                )}
-                                {displayMenu(
-                                    equipments.vscConverterStations,
-                                    'vsc-converter-station-menus'
-                                )}
-                            </>
-                        )}
-                        {props.svgType === SvgType.NETWORK_AREA_DIAGRAM && (
-                            <div
-                                id="nad-svg"
-                                ref={svgRef}
-                                className={clsx(classes.divNad, {
-                                    [classes.divInvalid]:
-                                        props.loadFlowStatus !==
-                                        RunningStatus.SUCCEED,
-                                })}
-                                style={{ height: '100%' }}
-                            />
-                        )}
+                            props.svgType === SvgType.SUBSTATION) &&
+                            contentSingleLineDiagramRender()}
+                        {props.svgType === SvgType.NETWORK_AREA_DIAGRAM &&
+                            contentNetworkAreaDiagramRender()}
 
                         {!loadingState && (
                             <DiagramFooter
@@ -843,24 +815,6 @@ const Diagram = forwardRef((props, ref) => {
                     </Box>
                 )}
             </Paper>
-        );
-    };
-
-    return !svg.error ? (
-        <DiagramResizableBox
-            align={props.align}
-            height={sizeHeight}
-            width={sizeWidth}
-            // We disable the resizeBox if a diagram is in fullscreen
-            disableResize={fullScreenDiagram?.id}
-            // We hide this diagram if another diagram is in fullscreen mode.
-            hide={
-                fullScreenDiagram?.id &&
-                (fullScreenDiagram.id !== props.diagramId ||
-                    fullScreenDiagram.svgType !== props.svgType)
-            }
-        >
-            {contentRender()}
         </DiagramResizableBox>
     ) : (
         <></>
