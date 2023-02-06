@@ -24,6 +24,7 @@ import { fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
     commonSldStyle,
+    commonDiagramStyle,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
     NoSvg,
@@ -33,8 +34,10 @@ import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
 
-const customSldStyle = (theme) => {
-    return {
+const useStyles = makeStyles((theme) => ({
+    ...commonDiagramStyle(theme),
+    divSld: {
+        ...commonSldStyle(theme),
         '& .sld-in .sld-label': {
             display: 'none',
         },
@@ -48,14 +51,9 @@ const customSldStyle = (theme) => {
             display: 'none',
         },
         '& .arrow': {
-            fill: theme.palette.text.primary,
             pointerEvents: 'none',
         },
-    };
-};
-
-const useStyles = makeStyles((theme) => ({
-    divSld: { ...commonSldStyle(theme, customSldStyle(theme)) },
+    },
 }));
 
 const PositionDiagram = forwardRef((props, ref) => {

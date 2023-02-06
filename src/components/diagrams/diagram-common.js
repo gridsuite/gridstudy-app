@@ -34,7 +34,7 @@ export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
 export const MAP_BOTTOM_OFFSET = 80;
 export const BORDERS = 2; // we use content-size: border-box so this needs to be included..
 
-export const commonSldStyle = (theme, customStyle) => {
+export const commonSldStyle = (theme) => {
     return {
         '& svg': {
             // necessary because the default (inline-block) adds vertical space
@@ -55,39 +55,18 @@ export const commonSldStyle = (theme, customStyle) => {
             {
                 stroke: theme.palette.text.primary,
             },
-
         '& .sld-flash, .sld-lock': {
             stroke: 'none',
             fill: theme.palette.text.primary,
         },
+        '& .arrow': {
+            fill: theme.palette.text.primary,
+        },
         overflow: 'hidden',
-        ...customStyle,
     };
 };
 
-export const commonNadStyle = (theme, customStyle) => {
-    return {
-        '& svg': {
-            // necessary because the default (inline-block) adds vertical space
-            // to our otherwise pixel accurate computations (this makes a
-            // scrollbar appear in fullscreen mode)
-            display: 'block',
-            width: '100%',
-            height: '100%',
-        },
-        '& .nad-label-box': {
-            color: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
-        },
-        '& .nad-text-edges': {
-            stroke: theme.palette.text.primary,
-        },
-        overflow: 'hidden',
-        ...customStyle,
-    };
-};
-
-export const commonDiagramStyle = (theme, customStyle) => {
+export const commonDiagramStyle = (theme) => {
     return {
         divInvalid: {
             '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle':
@@ -104,7 +83,6 @@ export const commonDiagramStyle = (theme, customStyle) => {
                 '1px solid ' + theme.palette.action.disabledBackground,
             borderRight: '1px solid ' + theme.palette.action.hover,
         },
-        ...customStyle,
     };
 };
 

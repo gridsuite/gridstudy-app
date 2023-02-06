@@ -55,8 +55,6 @@ import {
     useDiagram,
     computePaperAndSvgSizesIfReady,
     commonDiagramStyle,
-    commonSldStyle,
-    commonNadStyle,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
@@ -73,17 +71,7 @@ import DiagramResizableBox from './diagram-resizable-box';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 
-const customSldStyle = (theme) => {
-    return {
-        '& .arrow': {
-            fill: theme.palette.text.primary,
-        },
-    };
-};
-
 const useStyles = makeStyles((theme) => ({
-    divSld: commonSldStyle(theme, customSldStyle(theme)),
-    divNad: commonNadStyle(theme),
     ...commonDiagramStyle(theme),
 }));
 

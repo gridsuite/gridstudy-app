@@ -12,17 +12,11 @@ import { equipments } from '../../network/network-equipments';
 import makeStyles from '@mui/styles/makeStyles';
 import { commonDiagramStyle, commonSldStyle } from '../diagram-common';
 
-const customSldStyle = (theme) => {
-    return {
-        '& .arrow': {
-            fill: theme.palette.text.primary,
-        },
-    };
-};
-
 const useStyles = makeStyles((theme) => ({
-    divSld: commonSldStyle(theme, customSldStyle(theme)),
     ...commonDiagramStyle(theme),
+    divSld: {
+        ...commonSldStyle(theme),
+    },
 }));
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
