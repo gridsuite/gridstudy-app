@@ -9,7 +9,13 @@ import { useNodeData } from './study-container';
 import { fetchSensitivityAnalysisResult } from '../utils/rest-api';
 import WaitingLoader from './util/waiting-loader';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { CHANGE_WAYS, KeyedColumnsRowIndexer } from '@gridsuite/commons-ui';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -18,6 +24,8 @@ import { TablePagination } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
 
 const sensitivityAnalysisResultInvalidations = ['sensitivityAnalysisResult'];
+
+const loaderTimeoutMillis = 800;
 
 export const FUNCTION_TYPES = Object.freeze([
     'BRANCH_ACTIVE_POWER_1',
@@ -125,6 +133,8 @@ function PagedSensitivityResult({
     const [version, setVersion] = useState();
     const [overAllCount, setOverAllCount] = useState(null);
     const [filteredCount, setFilteredCount] = useState(null);
+    const [allowsShowingLoader, setAllowsShowingLoader] = useState(false);
+    const timerRef = useRef(null);
 
     const synthRef = useRef();
     const [next, prev] = [{}, synthRef.current];
@@ -136,6 +146,10 @@ function PagedSensitivityResult({
     next.page = prev?.page;
     next.userRowsPerPage = prev?.userRowsPerPage;
     next.version = prev?.version;
+
+    useEffect(() => {
+        return () => clearTimeout(timerRef.current);
+    }, []);
 
     if (
         tellDiff('node', prev?.nodeUuid, nodeUuid) ||
@@ -237,6 +251,11 @@ function PagedSensitivityResult({
                 chunkSize: userRowsPerPage,
             };
             addIndexerParamsToSelector(next.indexer, selector);
+            setAllowsShowingLoader(false);
+            timerRef.current = setTimeout(
+                () => setAllowsShowingLoader(true),
+                loaderTimeoutMillis
+            );
 
             return fetchSensitivityAnalysisResult(
                 studyUuid,
@@ -268,6 +287,7 @@ function PagedSensitivityResult({
     if (!prev?.isFetchNeedy) {
         // OK, next
     } else if (fetched && prev.fetched !== fetched) {
+        clearTimeout(timerRef.current);
         next.isFetchNeedy = false;
         setOverAllCount(fetched.totalSensitivitiesCount);
         setFilteredCount(fetched.filteredSensitivitiesCount);
@@ -283,9 +303,11 @@ function PagedSensitivityResult({
 
     synthRef.current = next;
 
+    const showsLoading = isLoading && allowsShowingLoader;
+
     return (
         <>
-            <WaitingLoader message={'LoadingRemoteData'} loading={isLoading}>
+            <WaitingLoader message={'LoadingRemoteData'} loading={showsLoading}>
                 {fetched?.sensitivities && (
                     <SensitivityAnalysisResult
                         result={fetched?.sensitivities}
