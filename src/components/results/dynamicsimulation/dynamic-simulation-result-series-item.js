@@ -19,7 +19,6 @@ const DynamicSimulationResultSeriesItem = ({
     onChangeLeftAxis,
     onChangeRightAxis,
 }) => {
-    console.log('re-render item ' + label + ' ' + id);
     const [leftAxisChecked, setLeftAxisChecked] = useState(false);
     const [rightAxisChecked, setRightAxisChecked] = useState(false);
 

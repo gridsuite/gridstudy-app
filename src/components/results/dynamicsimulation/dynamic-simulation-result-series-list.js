@@ -30,7 +30,6 @@ const DynamicSimulationResultSeriesList = ({
     onLeftAxisSelected,
     onRightAxisSelected,
 }) => {
-    console.log('re-render list ' + index);
     const [leftAxisChecked, setLeftAxisChecked] = useState([]);
     const [rightAxisChecked, setRightAxisChecked] = useState([]);
 
@@ -38,7 +37,6 @@ const DynamicSimulationResultSeriesList = ({
 
     const handleToggle = useCallback((id, setAxisChecked) => {
         setAxisChecked((prev) => {
-            console.log('handleToggle id=', id);
             const currIndex = prev.indexOf(id);
             const newChecked = [...prev];
             if (currIndex === -1) {

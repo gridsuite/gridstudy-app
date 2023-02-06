@@ -9,6 +9,7 @@ import './plot/react-grid-layout.custom.css';
 // TODO place these css at global or directly into useStyles for ResponsiveGridLayout
 import PropTypes from 'prop-types';
 import {
+    Box,
     Grid,
     Paper,
     TextField,
@@ -26,14 +27,16 @@ import AddIcon from '@mui/icons-material/Add';
 import SyncIcon from '@mui/icons-material/Sync';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
 import makeStyles from '@mui/styles/makeStyles';
-import { Box } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const ResponsiveGridLayout = WidthProvider(Responsive);
 const useStyles = makeStyles((theme) => ({
     graph: {
+        maxHeight: 'calc(100vh - 340px)',
+        paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
+        overflowX: 'hidden',
     },
     addButton: {
         borderRadius: '50%',
@@ -41,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.primary.main,
     },
     paperOptionsGroup: {
+        marginLeft: theme.spacing(2),
         display: 'flex',
         flexWrap: 'wrap',
         padding: '2px',
@@ -79,7 +83,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
     const [plotIncId, setPlotIncId] = useState(1);
     const [plots, setPlots] = useState([
         {
-            id: plotIncId,
+            id: `1`,
             leftSelectedSeries: [],
             rightSelectedSeries: [],
         },
@@ -87,18 +91,15 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const [gridLayout, setGridLayout] = useState({
-        items:
-            plots.length > 0
-                ? [
-                      {
-                          i: plots[0].id.toString(),
-                          x: 0,
-                          y: 0,
-                          w: 1,
-                          h: 1,
-                      },
-                  ]
-                : [],
+        items: [
+            {
+                i: `1`,
+                x: 0,
+                y: 0,
+                w: 1,
+                h: 5,
+            },
+        ],
         cols: 1,
     });
 
@@ -118,7 +119,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
     const handleLeftAxisSelected = useCallback(
         (index, axisSelected) => {
             setPlots((prev) => {
-                console.log('handleLeftAxisSelected');
                 const newPlots = Array.from(prev);
                 newPlots[index].leftSelectedSeries =
                     selectedSeries(axisSelected);
@@ -155,7 +155,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         setPlots((prev) => [
             ...prev,
             {
-                id: plotIncId + 1,
+                id: `${plotIncId + 1}`,
                 leftSelectedSeries: [],
                 rightSelectedSeries: [],
             },
@@ -167,11 +167,11 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
             items: [
                 ...prev.items,
                 {
-                    i: (plotIncId + 1).toString(),
-                    x: prev.items.length % (prev.cols || 12),
+                    i: `${plotIncId + 1}`,
+                    x: prev.items.length % prev.cols,
                     y: Infinity, // put new item at the bottom
                     w: 1,
-                    h: 1,
+                    h: 5,
                 },
             ],
         }));
@@ -216,6 +216,11 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         }));
     };
 
+    const handleLayoutChange = (layout) => {
+        // fake window resize event to force plotly to be responsible to a layout change
+        window.dispatchEvent(new Event('resize'));
+    };
+
     return (
         <Grid container>
             <Grid item xs={9}>
@@ -238,6 +243,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                     className={classes.paperOptionsGroup}
                                 >
                                     <ToggleButton
+                                        size={'small'}
                                         value="sync"
                                         selected={sync}
                                         onChange={handleSync}
@@ -255,6 +261,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                     </Typography>
                                     <TextField
                                         className={classes.colsInput}
+                                        size={'small'}
                                         type="number"
                                         value={gridLayout.cols}
                                         onChange={handleChangeCols}
@@ -280,37 +287,46 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                         </Grid>
                     </Grid>
                     <Grid item>
-                        <ResponsiveGridLayout
-                            styles={{ overflowY: 'auto' }}
-                            className={'layout'}
-                            cols={{
-                                lg: gridLayout.cols,
-                                md: gridLayout.cols,
-                                sm: gridLayout.cols,
-                                xs: 1,
-                                xxs: 1,
-                            }}
-                            rowHeight={570}
-                            layout={gridLayout.items}
-                            onBreakpointChange={handleBreakpointChange}
-                        >
-                            {plots.map((plot, index) => (
-                                <div key={plot.id.toString()}>
-                                    <DynamicSimulationResultSeriesChart
-                                        key={`${plot.id}`}
-                                        id={`${plot.id}`}
-                                        groupId={`${groupId}`}
-                                        index={index}
-                                        selected={selectedIndex === index}
-                                        onSelect={handleSelectIndex}
-                                        leftSeries={plot.leftSelectedSeries}
-                                        rightSeries={plot.rightSelectedSeries}
-                                        onClose={handleClose}
-                                        sync={sync}
-                                    />
-                                </div>
-                            ))}
-                        </ResponsiveGridLayout>
+                        <div className={classes.graph}>
+                            <ResponsiveGridLayout
+                                className={`layout`}
+                                cols={{
+                                    lg: gridLayout.cols,
+                                    md: gridLayout.cols,
+                                    sm: gridLayout.cols,
+                                    xs: 1,
+                                    xxs: 1,
+                                }}
+                                isBounded={true}
+                                rowHeight={65}
+                                onBreakpointChange={handleBreakpointChange}
+                                onLayoutChange={handleLayoutChange}
+                            >
+                                {plots.map((plot, index) => (
+                                    <div
+                                        key={plot.id}
+                                        data-grid={gridLayout.items.find(
+                                            (item) => item.i === plot.id
+                                        )}
+                                    >
+                                        <DynamicSimulationResultSeriesChart
+                                            key={`${plot.id}`}
+                                            id={`${plot.id}`}
+                                            groupId={`${groupId}`}
+                                            index={index}
+                                            selected={selectedIndex === index}
+                                            onSelect={handleSelectIndex}
+                                            leftSeries={plot.leftSelectedSeries}
+                                            rightSeries={
+                                                plot.rightSelectedSeries
+                                            }
+                                            onClose={handleClose}
+                                            sync={sync}
+                                        />
+                                    </div>
+                                ))}
+                            </ResponsiveGridLayout>
+                        </div>
                     </Grid>
                 </Grid>
             </Grid>
