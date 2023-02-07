@@ -55,7 +55,8 @@ export const areNumbersOrdered = (array) => {
         }
         if (order === null) {
             order = current < nextOne ? 'asc' : 'desc';
-        } else if (
+        }
+        if (
             (order === 'asc' && current > nextOne) ||
             (order === 'desc' && current < nextOne)
         ) {
