@@ -117,7 +117,6 @@ const TwoWindingsTransformerCreationDialog = ({
     editData,
     currentNodeUuid,
     voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
     ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -538,9 +537,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 >
                     <RatioTapChangerPane
                         voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-                        voltageLevelsEquipmentsOptionsPromise={
-                            voltageLevelsEquipmentsOptionsPromise
-                        }
                     />
                 </Box>
 
@@ -553,9 +549,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 >
                     <PhaseTapChangerPane
                         voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-                        voltageLevelsEquipmentsOptionsPromise={
-                            voltageLevelsEquipmentsOptionsPromise
-                        }
                     />
                 </Box>
 
@@ -574,10 +567,6 @@ const TwoWindingsTransformerCreationDialog = ({
 TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

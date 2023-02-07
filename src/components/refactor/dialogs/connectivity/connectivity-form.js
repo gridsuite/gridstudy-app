@@ -83,6 +83,20 @@ export const ConnectivityForm = ({
         });
     }, [voltageLevelOptionsPromise]);
 
+    /*  useEffect(() => {
+        fetchEquipmentsIds(
+            studyUuid,
+            currentNode?.id,
+            undefined,
+            'VOLTAGE_LEVEL',
+            true
+        ).then((values) => {
+            setVoltageLevelOptions(
+                values.sort((a, b) => a.localeCompare(b.id))
+            );
+        });
+    }, [currentNode, studyUuid]); */
+
     useEffect(() => {
         if (watchVoltageLevelId) {
             switch (watchVoltageLevelTopologyKind) {

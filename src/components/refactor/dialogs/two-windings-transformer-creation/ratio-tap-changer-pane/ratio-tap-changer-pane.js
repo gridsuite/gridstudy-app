@@ -96,9 +96,6 @@ const RatioTapChangerPane = ({
             id={id}
             disabled={!ratioTapChangerEnabledWatcher || !regulatingWatch}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-            voltageLevelsEquipmentsOptionsPromise={
-                voltageLevelsEquipmentsOptionsPromise
-            }
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
             }

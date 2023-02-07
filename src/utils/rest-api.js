@@ -666,6 +666,66 @@ export function fetchEquipments(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
+export function fetchVoltageLevelEquipments(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+
+    voltageLevelId,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching equipments of study '${studyUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
+    const fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map' +
+        '/voltage-level-equipments/' +
+        encodeURIComponent(voltageLevelId) +
+        '?' +
+        getQueryParamsList(substationsIds, 'substationId') +
+        urlSearchParams.toString();
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
+}
+
+export function fetchEquipmentsIds(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    equipmentType,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+    const fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/' +
+        'equipments-ids' +
+        '?' +
+        'equipmentType=' +
+        equipmentType;
+    getQueryParamsList(substationsIds, 'substationId');
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
+}
+
 export function fetchEquipmentInfos(
     studyUuid,
     currentNodeUuid,

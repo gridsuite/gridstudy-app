@@ -235,6 +235,18 @@ const NetworkModificationNodeEditor = () => {
         };
     }
 
+    /*  function withEquipmentsIds(equipmentType, p) {
+        const equipmentsIdsOptionsPromise = fetchEquipmentsIds(
+            studyUuid,
+            currentTreeNode?.id,
+            equipmentType
+        );
+        return {
+            ...p,
+            equipmentIdsOptionsPromise: equipmentsIdsOptionsPromise,
+        };
+    } */
+
     function withLines(p) {
         const lineOptionsPromise = fetchLines(
             studyUuid,
@@ -282,7 +294,12 @@ const NetworkModificationNodeEditor = () => {
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
-            dialog: () => adapt(LoadCreationDialog, withVLs),
+            //dialog: () => adapt(LoadCreationDialog, fetchEquipmentsIds()),
+            dialog: () =>
+                adapt(
+                    LoadCreationDialog
+                    //withEquipmentsIds(EquipmentType.LOAD)
+                ),
             icon: <AddIcon />,
         },
         LOAD_MODIFICATION: {
@@ -327,12 +344,7 @@ const NetworkModificationNodeEditor = () => {
         TWO_WINDINGS_TRANSFORMER_CREATION: {
             onlyDeveloperMode: true,
             label: 'CreateTwoWindingsTransformer',
-            dialog: () =>
-                adapt(
-                    TwoWindingsTransformerCreationDialog,
-                    withVLs,
-                    withVLsAndEquipments
-                ),
+            dialog: () => adapt(TwoWindingsTransformerCreationDialog, withVLs),
             icon: <AddIcon />,
         },
         SUBSTATION_CREATION: {
