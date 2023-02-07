@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { useIntl } from 'react-intl';
@@ -111,14 +111,15 @@ const OverloadedLinesView = (props) => {
         setLines(
             props.mapEquipments?.lines
                 .map((line) => makeData(line))
+                .filter((line) => line.overload > props.lineFlowAlertThreshold)
                 .sort((a, b) => b.overload - a.overload)
         );
-    }, [props.mapEquipments, props.lineFlowAlertThreshold, props.disabled]);
-
-    const filter = useCallback(
-        (line) => line.overload > props.lineFlowAlertThreshold,
-        [props.lineFlowAlertThreshold]
-    );
+    }, [
+        props.mapEquipments,
+        props.mapEquipments?.lines,
+        props.lineFlowAlertThreshold,
+        props.disabled,
+    ]);
 
     function MakeCell(label, color) {
         return (
@@ -167,7 +168,6 @@ const OverloadedLinesView = (props) => {
                     rowStyle={{ alignItems: 'stretch' }}
                     rowHeight={ROW_HEIGHT}
                     classes={{ tableRow: classes.rowCell }}
-                    filter={filter}
                     sortable={true}
                     columns={[
                         {
@@ -225,15 +225,15 @@ const OverloadedLinesView = (props) => {
 };
 
 OverloadedLinesView.defaultProps = {
-    lines: [],
+    disabled: true,
     lineFlowAlertThreshold: 100,
-    network: null,
+    mapEquipments: {},
 };
 
 OverloadedLinesView.propTypes = {
-    lines: PropTypes.array,
+    disabled: PropTypes.bool,
     lineFlowAlertThreshold: PropTypes.number,
-    network: PropTypes.object,
+    mapEquipments: PropTypes.object,
 };
 
 export default OverloadedLinesView;
