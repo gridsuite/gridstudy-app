@@ -40,6 +40,19 @@ export const PERMANENT_LIMIT = 'permanentLimit';
 export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
 
+export const ENERGY_SOURCE = 'energySource';
+export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
+export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
+export const RATED_NOMINAL_POWER = 'ratedNominalPower';
+export const ACTIVE_POWER_SET_POINT = 'activePowerSetPoint';
+export const TRANSIENT_REACTANCE = 'transientReactance';
+export const TRANSFORMER_REACTANCE = 'transformerReactance';
+export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
+export const STARTUP_COST = 'startupCost';
+export const MARGINAL_COST = 'marginalCost';
+export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
+export const FORCED_OUTAGE_RATE = 'forcedOutageRate';
+
 export const ENABLED = 'enabled';
 export const REGULATING = 'regulating';
 export const TARGET_DEADBAND = 'targetDeadband';
