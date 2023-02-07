@@ -544,62 +544,51 @@ export const NetworkMapTab = ({
         dispatch(resetMapReloaded());
     }, [currentNode, dispatch, intlRef, setErrorMessage, studyUuid]);
 
-    const updateMapEquipments = useCallback(() => {
-        if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
-            return Promise.reject();
-        }
-        console.info('Update map equipments');
-        setWaitingLoadData(true);
-        const updatedSubstationsToSend =
-            !refIsMapManualRefreshEnabled.current &&
-            !isUpdatedSubstationsApplied &&
-            updatedSubstationsIds?.length > 0
-                ? updatedSubstationsIds
-                : undefined;
+    const updateMapEquipments = useCallback(
+        (currentNodeAtReloadCalling) => {
+            if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
+                return Promise.reject();
+            }
+            console.info('Update map equipments');
+            setWaitingLoadData(true);
+            const updatedSubstationsToSend =
+                !refIsMapManualRefreshEnabled.current &&
+                !isUpdatedSubstationsApplied &&
+                updatedSubstationsIds?.length > 0
+                    ? updatedSubstationsIds
+                    : undefined;
 
-        if (updatedSubstationsToSend) {
-            setIsUpdatedSubstationsApplied(true);
-        }
+            if (updatedSubstationsToSend) {
+                setIsUpdatedSubstationsApplied(true);
+            }
 
-        dispatch(resetMapReloaded());
+            dispatch(resetMapReloaded());
 
-        const currentNodeAtReloadCalling = currentNodeRef.current;
-
-        return mapEquipments
-            .reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                updatedSubstationsToSend
-            )
-            .then((results) => {
-                if (currentNodeAtReloadCalling === currentNodeRef.current) {
-                    const isFullReload = updatedSubstationsToSend
-                        ? false
-                        : true;
-                    mapEquipments.updateSubstations(
-                        mapEquipments.checkAndGetValues(results[0]),
-                        isFullReload
-                    );
-                    mapEquipments.updateLines(
-                        mapEquipments.checkAndGetValues(results[1]),
-                        isFullReload
-                    );
-                    setUpdatedLines(results[1]);
+            return mapEquipments
+                .reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    updatedSubstationsToSend,
+                    setUpdatedLines,
+                    currentNodeAtReloadCalling
+                )
+                .finally(() => {
                     setWaitingLoadData(false);
-                }
-            });
-    }, [
-        currentNode,
-        dispatch,
-        isUpdatedSubstationsApplied,
-        mapEquipments,
-        studyUuid,
-        updatedSubstationsIds,
-    ]);
+                });
+        },
+        [
+            currentNode,
+            dispatch,
+            isUpdatedSubstationsApplied,
+            mapEquipments,
+            studyUuid,
+            updatedSubstationsIds,
+        ]
+    );
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
         const currentNodeAtReloadCalling = currentNodeRef.current;
-        updateMapEquipments().then(() => {
+        updateMapEquipments(currentNodeAtReloadCalling).then(() => {
             if (currentNodeAtReloadCalling === currentNodeRef.current) {
                 loadGeoData();
             }
