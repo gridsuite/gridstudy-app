@@ -4,7 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    useRef,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
@@ -271,11 +277,17 @@ const GeneratorModificationDialog = ({
         previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
     });
 
+    const minimumReactivePowerRef = useRef();
+
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
         label: 'MaximumReactivePower',
         validation: {
             isFieldNumeric: true,
             isFieldRequired: reactivePowerRequired,
+            valueGreaterThanOrEqualTo:
+                minimumReactivePowerRef.current ||
+                generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
+            errorMsgId: 'MaxReactivePowerGreaterThanMinReactivePower',
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
@@ -292,7 +304,7 @@ const GeneratorModificationDialog = ({
             valueLessThanOrEqualTo:
                 maximumReactivePower ||
                 generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
-            errorMsgId: 'MinReactivePowerLessThanMaxActivePower',
+            errorMsgId: 'MinReactivePowerLessThanMaxReactivePower',
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
@@ -302,6 +314,7 @@ const GeneratorModificationDialog = ({
     });
 
     useEffect(() => {
+        minimumReactivePowerRef.current = minimumReactivePower;
         setReactivePowerRequired(
             (minimumReactivePower !== '' &&
                 !generatorInfos?.minMaxReactiveLimits?.minimumReactivePower) ||
