@@ -12,7 +12,7 @@ import {
     BRANCH_STATUS_ACTION,
     BRANCH_SIDE,
 } from '../components/network/constants';
-import { MODIFICATION_TYPES } from '../components/util/modifications-type';
+import { MODIFICATION_TYPES } from '../components/util/modification-type';
 import { EQUIPMENT_TYPES } from '../components/util/equipment-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =

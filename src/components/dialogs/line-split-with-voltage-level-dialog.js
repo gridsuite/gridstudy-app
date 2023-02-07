@@ -40,7 +40,7 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import { MODIFICATION_TYPES } from '../util/modifications-type';
+import { MODIFICATION_TYPES } from '../util/modification-type';
 import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 /**
