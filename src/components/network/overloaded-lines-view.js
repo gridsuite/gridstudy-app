@@ -171,7 +171,7 @@ const OverloadedLinesView = (props) => {
                     sortable={true}
                     columns={[
                         {
-                            width: 150,
+                            width: 180,
                             label: intl.formatMessage({ id: 'Name' }),
                             dataKey: 'name',
                             numeric: false,
@@ -186,7 +186,7 @@ const OverloadedLinesView = (props) => {
                             label: intl.formatMessage({ id: 'Load' }),
                             dataKey: 'load',
                             numeric: true,
-                            width: 70,
+                            width: 120,
                             fractionDigits: 1,
                             headerRenderer: ({ label }) => MakeHead(label),
                         },
@@ -194,7 +194,7 @@ const OverloadedLinesView = (props) => {
                             label: intl.formatMessage({ id: 'Intensity' }),
                             dataKey: 'intensity',
                             numeric: true,
-                            width: 70,
+                            width: 120,
                             headerRenderer: ({ label }) => MakeHead(label),
                             fractionDigits: 1,
                         },
@@ -202,7 +202,7 @@ const OverloadedLinesView = (props) => {
                             label: intl.formatMessage({ id: 'Limit' }),
                             dataKey: 'limit',
                             numeric: true,
-                            width: 70,
+                            width: 120,
                             fractionDigits: 1,
                             headerRenderer: ({ label }) => MakeHead(label),
                         },
