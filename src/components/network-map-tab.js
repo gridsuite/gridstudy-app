@@ -564,17 +564,41 @@ export const NetworkMapTab = ({
 
             dispatch(resetMapReloaded());
 
-            return mapEquipments
-                .reloadImpactedSubstationsEquipments(
+            const isFullReload = updatedSubstationsToSend ? false : true;
+            const [updatedSubstations, updatedLines] =
+                mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
                     updatedSubstationsToSend,
                     setUpdatedLines,
                     currentNodeAtReloadCalling
-                )
-                .finally(() => {
-                    setWaitingLoadData(false);
-                });
+                );
+
+            updatedSubstations.then((values) => {
+                if (
+                    currentNodeAtReloadCalling?.id ===
+                    currentNodeRef.current?.id
+                ) {
+                    mapEquipments.updateSubstations(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                }
+            });
+            updatedLines.then((values) => {
+                if (
+                    currentNodeAtReloadCalling?.id ===
+                    currentNodeRef.current?.id
+                ) {
+                    mapEquipments.updateLines(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                    setUpdatedLines(values);
+                }
+            });
+
+            return Promise.all([updatedSubstations, updatedLines]);
         },
         [
             currentNode,
@@ -591,6 +615,7 @@ export const NetworkMapTab = ({
         updateMapEquipments(currentNodeAtReloadCalling).then(() => {
             if (currentNodeAtReloadCalling === currentNodeRef.current) {
                 loadGeoData();
+                setWaitingLoadData(false);
             }
         });
     }, [updateMapEquipments, loadGeoData]);

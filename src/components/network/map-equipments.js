@@ -81,9 +81,7 @@ export default class MapEquipments {
     reloadImpactedSubstationsEquipments(
         studyUuid,
         currentNode,
-        substationsIds,
-        handleUpdatedLines,
-        currentNodeAtReloadCalling
+        substationsIds
     ) {
         const updatedSubstations = fetchMapSubstations(
             studyUuid,
@@ -95,47 +93,27 @@ export default class MapEquipments {
             currentNode?.id,
             substationsIds
         );
-        const isFullReload = substationsIds ? false : true;
-        updatedSubstations
-            .then((values) => {
-                if (currentNodeAtReloadCalling?.id === currentNode?.id) {
-                    this.updateSubstations(
-                        this.checkAndGetValues(values),
-                        isFullReload
-                    );
-                }
-            })
-            .catch((error) => {
-                console.error(error.message);
-                if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
-                }
-            });
-        updatedLines
-            .then((values) => {
-                if (currentNodeAtReloadCalling?.id === currentNode?.id) {
-                    this.updateLines(
-                        this.checkAndGetValues(values),
-                        isFullReload
-                    );
-                    handleUpdatedLines(values);
-                }
-            })
-            .catch((error) => {
-                console.error(error.message);
-                if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
-                }
-            });
-        return Promise.all([updatedSubstations, updatedLines]);
+        updatedSubstations.catch((error) => {
+            console.error(error.message);
+            if (this.errHandler) {
+                this.errHandler(
+                    this.intlRef.current.formatMessage({
+                        id: 'MapEquipmentsLoadError',
+                    })
+                );
+            }
+        });
+        updatedLines.catch((error) => {
+            console.error(error.message);
+            if (this.errHandler) {
+                this.errHandler(
+                    this.intlRef.current.formatMessage({
+                        id: 'MapEquipmentsLoadError',
+                    })
+                );
+            }
+        });
+        return [updatedSubstations, updatedLines];
     }
 
     completeSubstationsInfos(equipementsToIndex) {
