@@ -95,12 +95,13 @@ export default class MapEquipments {
             currentNode?.id,
             substationsIds
         );
+        const isFullReload = substationsIds ? false : true;
         updatedSubstations
             .then((values) => {
                 if (currentNodeAtReloadCalling?.id === currentNode?.id) {
                     this.updateSubstations(
                         this.checkAndGetValues(values),
-                        !!substationsIds
+                        isFullReload
                     );
                 }
             })
@@ -119,7 +120,7 @@ export default class MapEquipments {
                 if (currentNodeAtReloadCalling?.id === currentNode?.id) {
                     this.updateLines(
                         this.checkAndGetValues(values),
-                        !!substationsIds
+                        isFullReload
                     );
                     handleUpdatedLines(values);
                 }
