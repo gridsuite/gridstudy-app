@@ -73,4 +73,7 @@ test('utils.areNumbersOrdered', () => {
     expect(areNumbersOrdered([false, 5])).toBeFalsy();
     expect(areNumbersOrdered(['hello'])).toBeFalsy();
     expect(areNumbersOrdered([])).toBeTruthy();
+    expect(areNumbersOrdered()).toBeFalsy();
+    expect(areNumbersOrdered({})).toBeFalsy();
+    expect(areNumbersOrdered({ length: 1 })).toBeFalsy();
 });

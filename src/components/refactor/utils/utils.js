@@ -32,6 +32,9 @@ export const areArrayElementsUnique = (array) => {
  * @returns {boolean}
  */
 export const areNumbersOrdered = (array) => {
+    if (!Array.isArray(array)) {
+        return false;
+    }
     if (array.length === 0) {
         return true;
     }
