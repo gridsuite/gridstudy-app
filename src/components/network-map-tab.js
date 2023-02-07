@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     divOverloadedLineView: {
         right: 45,
         top: 10,
-        minWidth: '500px',
+        minWidth: '600px',
         position: 'absolute',
         height: '70%',
         opacity: '1',
