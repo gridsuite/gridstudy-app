@@ -6,6 +6,7 @@
  */
 
 import { getIn } from 'yup/lib/util/reach';
+import { toNumber } from '../../util/validation-functions';
 
 export const isFieldRequired = (fieldName, schema, values) => {
     const { schema: fieldSchema, parent: parentValues } =
@@ -25,25 +26,46 @@ export const areArrayElementsUnique = (array) => {
     return uniqueAlphaValues.length === array.length;
 };
 
-//TODO : this method needs to be fixed in a future PR
-//all elements should be distinct, but this method can return true even if there are duplicates
-export const areArrayElementsOrdered = (array) => {
-    if (array.length <= 1) return true;
-    if (array[0] === array[1]) {
+/**
+ * Returns true if every element of this array is a number and they are ordered (ascending or descending)
+ * @param array or numbers
+ * @returns {boolean}
+ */
+export const areNumbersOrdered = (array) => {
+    if (!Array.isArray(array)) {
         return false;
-    } else if (array[0] < array[1]) {
-        for (let index = 0; index < array.length - 1; index++) {
-            if (array[index] >= array[index + 1]) {
-                return false;
-            }
-        }
-    } else if (array[0] > array[1]) {
-        for (let index = 0; index < array.length - 1; index++) {
-            if (array[index] <= array[index + 1]) {
-                return false;
-            }
-        }
+    }
+    if (array.length === 0) {
+        return true;
+    }
+    if (array.length === 1) {
+        return !isNaN(toNumber(array[0]));
     }
 
+    let current = toNumber(array[0]);
+    if (isNaN(current)) {
+        return false;
+    }
+    let order = null;
+
+    for (let i = 1; i < array.length; i++) {
+        const nextOne = toNumber(array[i]);
+        if (isNaN(nextOne)) {
+            return false;
+        }
+        if (current === nextOne) {
+            continue;
+        }
+        if (order === null) {
+            order = current < nextOne ? 'asc' : 'desc';
+        }
+        if (
+            (order === 'asc' && current > nextOne) ||
+            (order === 'desc' && current < nextOne)
+        ) {
+            return false;
+        }
+        current = nextOne;
+    }
     return true;
 };
