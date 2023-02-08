@@ -216,11 +216,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         }));
     };
 
-    const handleLayoutChange = (layout) => {
-        // fake window resize event to force plotly to be responsible to a layout change
-        window.dispatchEvent(new Event('resize'));
-    };
-
     return (
         <Grid container>
             <Grid item xs={9}>
@@ -300,7 +295,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                 isBounded={true}
                                 rowHeight={65}
                                 onBreakpointChange={handleBreakpointChange}
-                                onLayoutChange={handleLayoutChange}
                             >
                                 {plots.map((plot, index) => (
                                     <div
