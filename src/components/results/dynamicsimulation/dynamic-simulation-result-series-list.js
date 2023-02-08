@@ -6,14 +6,14 @@
  */
 import PropTypes from 'prop-types';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
-import { Grid, List, ListSubheader, Typography } from '@mui/material';
-import { memo, useState } from 'react';
+import { debounce, Grid, List, ListSubheader, Typography } from '@mui/material';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyle = makeStyles((theme) => ({
     root: {
         width: '100%',
-        maxHeight: 'calc(100vh - 300px)',
+        maxHeight: 'calc(100vh - 280px)',
         overflow: 'auto',
     },
     headerItem: {
@@ -35,40 +35,51 @@ const DynamicSimulationResultSeriesList = ({
 
     const classes = useStyle();
 
-    function handleToggle(id, axisChecked, setAxisChecked, onAxisSelected) {
-        console.log('handleToggle id=', id);
-        const currIndex = axisChecked.indexOf(id);
-        const newChecked = [...axisChecked];
+    const handleToggle = useCallback((id, setAxisChecked) => {
+        setAxisChecked((prev) => {
+            const currIndex = prev.indexOf(id);
+            const newChecked = [...prev];
+            if (currIndex === -1) {
+                newChecked.push(id);
+            } else {
+                newChecked.splice(currIndex, 1);
+            }
+            return newChecked;
+        });
+    }, []);
 
-        if (currIndex === -1) {
-            newChecked.push(id);
-        } else {
-            newChecked.splice(currIndex, 1);
-        }
+    const handleToggleLeftAxis = useCallback(
+        (id) => {
+            handleToggle(id, setLeftAxisChecked);
+        },
+        [handleToggle]
+    );
 
-        setAxisChecked(newChecked);
+    const handleToggleRightAxis = useCallback(
+        (id) => {
+            handleToggle(id, setRightAxisChecked);
+        },
+        [handleToggle]
+    );
 
+    const delayedOnLeftAxisSelected = useMemo(
+        () => debounce(onLeftAxisSelected, 500),
+        [onLeftAxisSelected]
+    );
+    const delayedOnRightAxisSelected = useMemo(
+        () => debounce(onRightAxisSelected, 500),
+        [onRightAxisSelected]
+    );
+
+    useEffect(() => {
         // propagate changes
-        onAxisSelected(index, [...newChecked]);
-    }
+        delayedOnLeftAxisSelected(index, leftAxisChecked);
+    }, [leftAxisChecked, index, delayedOnLeftAxisSelected]);
 
-    const handleToggleLeftAxis = (id) => () => {
-        handleToggle(
-            id,
-            leftAxisChecked,
-            setLeftAxisChecked,
-            onLeftAxisSelected
-        );
-    };
-
-    const handleToggleRightAxis = (id) => () => {
-        handleToggle(
-            id,
-            rightAxisChecked,
-            setRightAxisChecked,
-            onRightAxisSelected
-        );
-    };
+    useEffect(() => {
+        // propagate changes
+        delayedOnRightAxisSelected(index, rightAxisChecked);
+    }, [rightAxisChecked, index, delayedOnRightAxisSelected]);
 
     const renderHeaders = () => {
         return (
@@ -96,8 +107,6 @@ const DynamicSimulationResultSeriesList = ({
                     item={item}
                     onChangeLeftAxis={handleToggleLeftAxis}
                     onChangeRightAxis={handleToggleRightAxis}
-                    leftAxisChecked={leftAxisChecked.indexOf(item.id) !== -1}
-                    rightAxisChecked={rightAxisChecked.indexOf(item.id) !== -1}
                 />
             ))}
         </List>
