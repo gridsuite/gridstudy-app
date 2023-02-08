@@ -154,7 +154,6 @@ const PlotlySeriesChart = ({
     const handleOnPurge = (figure, graphDiv) => {
         // unsubscribe resize event
         resizeObserverRef.current.unobserve(graphDiv);
-        resizeObserverRef.current.disconnect();
     };
 
     return (
