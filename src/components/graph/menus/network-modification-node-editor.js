@@ -202,7 +202,8 @@ const NetworkModificationNodeEditor = () => {
                 open={true}
                 onClose={handleCloseDialog}
                 onValidated={handleValidatedDialog}
-                currentNodeUuid={currentTreeNode.id}
+                currentNodeUuid={currentTreeNode?.id}
+                studyUuid={studyUuid}
                 editData={editData}
                 {...props}
             />
@@ -234,18 +235,6 @@ const NetworkModificationNodeEditor = () => {
             voltageLevelOptionsPromise: voltageLevelOptionsPromise,
         };
     }
-
-    /*  function withEquipmentsIds(equipmentType, p) {
-        const equipmentsIdsOptionsPromise = fetchEquipmentsIds(
-            studyUuid,
-            currentTreeNode?.id,
-            equipmentType
-        );
-        return {
-            ...p,
-            equipmentIdsOptionsPromise: equipmentsIdsOptionsPromise,
-        };
-    } */
 
     function withLines(p) {
         const lineOptionsPromise = fetchLines(
@@ -294,12 +283,7 @@ const NetworkModificationNodeEditor = () => {
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
-            //dialog: () => adapt(LoadCreationDialog, fetchEquipmentsIds()),
-            dialog: () =>
-                adapt(
-                    LoadCreationDialog
-                    //withEquipmentsIds(EquipmentType.LOAD)
-                ),
+            dialog: () => adapt(LoadCreationDialog),
             icon: <AddIcon />,
         },
         LOAD_MODIFICATION: {
@@ -344,7 +328,7 @@ const NetworkModificationNodeEditor = () => {
         TWO_WINDINGS_TRANSFORMER_CREATION: {
             onlyDeveloperMode: true,
             label: 'CreateTwoWindingsTransformer',
-            dialog: () => adapt(TwoWindingsTransformerCreationDialog, withVLs),
+            dialog: () => adapt(TwoWindingsTransformerCreationDialog),
             icon: <AddIcon />,
         },
         SUBSTATION_CREATION: {

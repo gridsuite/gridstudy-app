@@ -32,7 +32,9 @@ import PhaseTapChangerPaneTaps from './phase-tap-changer-pane-taps';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
-    voltageLevelOptionsPromise,
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelOptions = [],
 }) => {
     const phaseTapChangerEnabledWatch = useWatch({
         name: `${id}.${ENABLED}`,
@@ -115,10 +117,12 @@ const PhaseTapChangerPane = ({
         <RegulatingTerminalForm
             id={id}
             disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
             }
+            studyUuid={studyUuid}
+            currentNodeUuid={currentNodeUuid}
+            voltageLevelOptions={voltageLevelOptions}
         />
     );
 

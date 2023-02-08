@@ -25,8 +25,9 @@ import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelOptions = [],
 }) => {
     const ratioTapChangerEnabledWatcher = useWatch({
         name: `${id}.${ENABLED}`,
@@ -95,10 +96,12 @@ const RatioTapChangerPane = ({
         <RegulatingTerminalForm
             id={id}
             disabled={!ratioTapChangerEnabledWatcher || !regulatingWatch}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
             }
+            studyUuid={studyUuid}
+            currentNodeUuid={currentNodeUuid}
+            voltageLevelOptions={voltageLevelOptions}
         />
     );
 

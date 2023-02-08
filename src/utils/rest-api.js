@@ -445,6 +445,21 @@ export function fetchVoltageLevels(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
+export function fetchVoltageLevelsIdAndTopology(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds
+) {
+    return fetchEquipments(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'Voltage-levels',
+        'voltage-levels-topology',
+        true
+    );
+}
+
 export function fetchVoltageLevelsEquipments(
     studyUuid,
     currentNodeUuid,
@@ -720,8 +735,9 @@ export function fetchEquipmentsIds(
         'equipments-ids' +
         '?' +
         'equipmentType=' +
-        equipmentType;
-    getQueryParamsList(substationsIds, 'substationId');
+        equipmentType +
+        getQueryParamsList(substationsIds, 'substationId') +
+        urlSearchParams.toString();
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
 }
