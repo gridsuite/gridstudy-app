@@ -35,7 +35,7 @@ import {
 } from 'components/refactor/utils/field-constants';
 import { REGULATION_MODES } from '../../../../network/constants';
 import {
-    areArrayElementsOrdered,
+    areNumbersOrdered,
     areArrayElementsUnique,
 } from '../../../utils/utils';
 import yup from '../../../utils/yup-config';
@@ -111,7 +111,7 @@ const phaseTapChangerValidationSchema = (id) => ({
                         .required()
                         .test(
                             'incoherentHighTapPosition',
-                            'InoherentHighTapPositionError',
+                            'IncoherentHighTapPositionError',
                             (highTapPosition, context) =>
                                 isHighTapPositionCoherent(
                                     highTapPosition,
@@ -156,7 +156,7 @@ const phaseTapChangerValidationSchema = (id) => ({
             .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
                 const alphaArray = array.map((step) => step[STEPS_ALPHA]);
                 return (
-                    areArrayElementsOrdered(alphaArray) &&
+                    areNumbersOrdered(alphaArray) &&
                     areArrayElementsUnique(alphaArray)
                 );
             }),
