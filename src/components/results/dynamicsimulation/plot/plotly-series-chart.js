@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import PropTypes from 'prop-types';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Plot from 'react-plotly.js';
 import { baseColors, defaultLayout } from './plot-config';
 import { eventCenter, PlotEvents } from './plot-events';
 import { SeriesType } from './plot-types';
+import { debounce } from '@mui/material';
 
 const PlotlySeriesChart = ({
     id,
@@ -19,6 +20,17 @@ const PlotlySeriesChart = ({
     rightSeries,
     sync,
 }) => {
+    // these states used for responsible
+    const plotRef = useRef(null);
+    const resizeObserverRef = useRef(
+        new ResizeObserver(
+            debounce((entries) => {
+                plotRef.current.resizeHandler();
+            }),
+            500
+        )
+    );
+
     const [layout, setLayout] = useState(
         JSON.parse(JSON.stringify(defaultLayout)) // deep clone can be done by lodash
     );
@@ -133,21 +145,30 @@ const PlotlySeriesChart = ({
         };
     }, [sync, syncOnRelayout]);
 
-    const handleOnInitialized = (figure) => {
+    const handleOnInitialized = (figure, graphDiv) => {
         setLayout(figure.layout);
+        // make inside plot responsible to parent div's resize event
+        resizeObserverRef.current.observe(graphDiv);
+    };
+
+    const handleOnPurge = (figure, graphDiv) => {
+        // unsubscribe resize event
+        resizeObserverRef.current.unobserve(graphDiv);
     };
 
     return (
         <Plot
+            ref={plotRef}
             data={data}
             layout={layout}
             useResizeHandler={true}
             style={{
                 width: '100%',
-                height: '100%',
+                height: '95%',
             }}
             onRelayout={handleOnRelayout}
             onInitialized={handleOnInitialized}
+            onPurge={handleOnPurge}
             //revision={revision}
         />
     );
