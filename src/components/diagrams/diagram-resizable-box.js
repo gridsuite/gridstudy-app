@@ -69,16 +69,18 @@ const DiagramResizableBox = (props) => {
                     !props.disableResize && props?.align === 'left',
             })}
         >
-            {props.children}
-            {!props.disableResize && (
-                <ResizeHandleIcon
-                    className={
-                        props?.align === 'right'
-                            ? classes.resizeHandleIconLeft
-                            : classes.resizeHandleIconRight
-                    }
-                />
-            )}
+            <>
+                {props.children}
+                {!props.disableResize && (
+                    <ResizeHandleIcon
+                        className={
+                            props?.align === 'right'
+                                ? classes.resizeHandleIconLeft
+                                : classes.resizeHandleIconRight
+                        }
+                    />
+                )}
+            </>
         </ResizableBox>
     );
 };
