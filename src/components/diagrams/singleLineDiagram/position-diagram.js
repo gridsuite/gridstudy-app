@@ -18,13 +18,11 @@ import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
-    commonSldStyle,
-    commonDiagramStyle,
+    useDiagramStyles,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
     NoSvg,
@@ -33,31 +31,11 @@ import {
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
-
-const useStyles = makeStyles((theme) => ({
-    ...commonDiagramStyle(theme),
-    divSld: {
-        ...commonSldStyle(theme),
-        '& .sld-in .sld-label': {
-            display: 'none',
-        },
-        '& .sld-out .sld-label': {
-            display: 'none',
-        },
-        '& .sld-arrow-in': {
-            display: 'none',
-        },
-        '& .sld-arrow-out': {
-            display: 'none',
-        },
-        '& .arrow': {
-            pointerEvents: 'none',
-        },
-    },
-}));
+import clsx from 'clsx';
 
 const PositionDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
+    const classes = useDiagramStyles();
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const { snackError } = useSnackMessage();
@@ -175,8 +153,6 @@ const PositionDiagram = forwardRef((props, ref) => {
         serverHeight,
     ]);
 
-    const classes = useStyles();
-
     const onCloseHandler = () => {
         if (props.onClose !== null) {
             setSvg(NoSvg);
@@ -210,7 +186,11 @@ const PositionDiagram = forwardRef((props, ref) => {
             <Box position="relative">
                 <div
                     ref={svgRef}
-                    className={classes.divSld}
+                    className={clsx(
+                        classes.divDiagram,
+                        classes.divSingleLineDiagram,
+                        classes.divDiagramReadOnly
+                    )}
                     dangerouslySetInnerHTML={{ __html: svg.svg }}
                 />
             </Box>

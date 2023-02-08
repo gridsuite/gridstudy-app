@@ -19,6 +19,7 @@ import {
     NAD_INVALID_LOADFLOW_OPACITY,
 } from '../../utils/colors';
 import { equipments } from '../network/network-equipments';
+import makeStyles from '@mui/styles/makeStyles';
 
 export const LOADING_WIDTH = 150;
 export const LOADING_HEIGHT = 150;
@@ -34,8 +35,8 @@ export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
 export const MAP_BOTTOM_OFFSET = 80;
 export const BORDERS = 2; // we use content-size: border-box so this needs to be included..
 
-export const commonSldStyle = (theme) => {
-    return {
+export const useDiagramStyles = makeStyles((theme) => ({
+    divDiagram: {
         '& svg': {
             // necessary because the default (inline-block) adds vertical space
             // to our otherwise pixel accurate computations (this makes a
@@ -44,6 +45,18 @@ export const commonSldStyle = (theme) => {
             width: '100%',
             height: '100%',
         },
+        overflow: 'hidden',
+    },
+    divNetworkAreaDiagram: {
+        '& .nad-label-box': {
+            color: theme.palette.text.primary,
+            'font-family': theme.typography.fontFamily,
+        },
+        '& .nad-text-edges': {
+            stroke: theme.palette.text.primary,
+        },
+    },
+    divSingleLineDiagram: {
         '& polyline': {
             pointerEvents: 'none',
         },
@@ -62,29 +75,38 @@ export const commonSldStyle = (theme) => {
         '& .arrow': {
             fill: theme.palette.text.primary,
         },
-        overflow: 'hidden',
-    };
-};
-
-export const commonDiagramStyle = (theme) => {
-    return {
-        divInvalid: {
-            '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle':
-                {
-                    opacity: INVALID_LOADFLOW_OPACITY,
-                },
-            '& .nad-edge-infos': {
-                opacity: NAD_INVALID_LOADFLOW_OPACITY,
-            },
+    },
+    divDiagramReadOnly: {
+        '& .sld-in .sld-label': {
+            display: 'none',
         },
-        paperBorders: {
-            borderLeft: '1px solid ' + theme.palette.action.disabled,
-            borderBottom:
-                '1px solid ' + theme.palette.action.disabledBackground,
-            borderRight: '1px solid ' + theme.palette.action.hover,
+        '& .sld-out .sld-label': {
+            display: 'none',
         },
-    };
-};
+        '& .sld-arrow-in': {
+            display: 'none',
+        },
+        '& .sld-arrow-out': {
+            display: 'none',
+        },
+        '& .arrow': {
+            pointerEvents: 'none',
+        },
+    },
+    divDiagramInvalid: {
+        '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle': {
+            opacity: INVALID_LOADFLOW_OPACITY,
+        },
+        '& .nad-edge-infos': {
+            opacity: NAD_INVALID_LOADFLOW_OPACITY,
+        },
+    },
+    paperBorders: {
+        borderLeft: '1px solid ' + theme.palette.action.disabled,
+        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
+        borderRight: '1px solid ' + theme.palette.action.hover,
+    },
+}));
 
 export const ViewState = {
     PINNED: 'pinned',

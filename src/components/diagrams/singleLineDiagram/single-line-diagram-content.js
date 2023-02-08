@@ -9,18 +9,10 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
 import { equipments } from '../../network/network-equipments';
-import makeStyles from '@mui/styles/makeStyles';
-import { commonDiagramStyle, commonSldStyle } from '../diagram-common';
-
-const useStyles = makeStyles((theme) => ({
-    ...commonDiagramStyle(theme),
-    divSld: {
-        ...commonSldStyle(theme),
-    },
-}));
+import { useDiagramStyles } from '../diagram-common';
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
-    const classes = useStyles();
+    const classes = useDiagramStyles();
 
     const { loadFlowStatus, svg, displayBranchMenu, displayMenu } = props;
 
@@ -28,10 +20,14 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         <>
             <div
                 ref={ref}
-                className={clsx(classes.divSld, {
-                    [classes.divInvalid]:
-                        loadFlowStatus !== RunningStatus.SUCCEED,
-                })}
+                className={clsx(
+                    classes.divDiagram,
+                    classes.divSingleLineDiagram,
+                    {
+                        [classes.divDiagramInvalid]:
+                            loadFlowStatus !== RunningStatus.SUCCEED,
+                    }
+                )}
                 dangerouslySetInnerHTML={{
                     __html: svg.svg,
                 }}

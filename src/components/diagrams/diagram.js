@@ -54,7 +54,7 @@ import {
     getEquipmentTypeFromFeederType,
     useDiagram,
     computePaperAndSvgSizesIfReady,
-    commonDiagramStyle,
+    useDiagramStyles,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
@@ -64,16 +64,11 @@ import {
     NoSvg,
     LOADING_WIDTH,
 } from './diagram-common';
-import makeStyles from '@mui/styles/makeStyles';
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-
-const useStyles = makeStyles((theme) => ({
-    ...commonDiagramStyle(theme),
-}));
 
 let initialWidth, initialHeight;
 
@@ -88,7 +83,7 @@ const Diagram = forwardRef((props, ref) => {
     const diagramViewerRef = useRef();
 
     const theme = useTheme();
-    const classes = useStyles();
+    const classes = useDiagramStyles();
     const intl = useIntl();
 
     const {
