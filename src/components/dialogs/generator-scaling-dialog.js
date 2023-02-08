@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useParams } from 'react-router-dom';
 import ModificationDialog from './modificationDialog';
-import { useBooleanValue } from './inputs/boolean';
 import Grid from '@mui/material/Grid';
 import {
     ActivePowerAdornment,
@@ -217,15 +216,6 @@ const GeneratorScalingDialog = ({
         possibleValues: VARIATION_TYPE,
     });
 
-    const [isIterative, iterativeField] = useBooleanValue({
-        label: 'IterativeLabel',
-        defaultValue:
-            formValues?.isIterative === undefined
-                ? true
-                : formValues?.isIterative,
-        inputForm: inputForm,
-    });
-
     const [variations, variationsField] = useExpandableValues({
         id: 'variations',
         labelAddValue: 'CreateVariation',
@@ -252,7 +242,6 @@ const GeneratorScalingDialog = ({
             currentNodeUuid,
             editData?.uuid ?? undefined,
             variationType,
-            isIterative,
             variations
         ).catch((errorMessage) => {
             snackError({
@@ -276,8 +265,6 @@ const GeneratorScalingDialog = ({
             <Grid className={classes.padding}>
                 {gridItem(variationTypeField, 8)}
             </Grid>
-
-            <Grid container>{gridItem(iterativeField, 8)}</Grid>
 
             <GridSection title="Variations" />
             <Grid container className={classes.padding}>
