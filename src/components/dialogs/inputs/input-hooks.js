@@ -46,7 +46,11 @@ import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
-import { isNodeExists } from '../../../utils/rest-api';
+import {
+    fetchVoltageLevelEquipments,
+    fetchVoltageLevelsIdAndTopology,
+    isNodeExists,
+} from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useParameterState } from '../parameters/parameters';
 import {
@@ -487,13 +491,14 @@ export const useRegulatingTerminalValue = ({
     },
     disabled = false,
     inputForm,
-    voltageLevelOptionsPromise,
     direction = 'row',
     voltageLevelIdDefaultValue,
     equipmentSectionTypeDefaultValue,
     equipmentSectionIdDefaultValue,
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
+    studyUuid,
+    currentNodeUuid,
 }) => {
     const [regulatingTerminal, setRegulatingTerminal] = useState({
         voltageLevel: voltageLevelIdDefaultValue,
@@ -512,7 +517,7 @@ export const useRegulatingTerminalValue = ({
         });
     }, [inputForm.toggleClear]);
 
-    useEffect(() => {
+    /*   useEffect(() => {
         if (!voltageLevelOptionsPromise) return;
 
         voltageLevelOptionsPromise.then((values) => {
@@ -523,7 +528,34 @@ export const useRegulatingTerminalValue = ({
             );
             setVoltageLevelsEquipments(values);
         });
-    }, [voltageLevelOptionsPromise]);
+    }, [voltageLevelOptionsPromise]); */
+
+    useEffect(() => {
+        if (studyUuid && currentNodeUuid)
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a.id.localeCompare(b.id))
+                    );
+                }
+            );
+    }, [studyUuid, currentNodeUuid]);
+
+    useEffect(() => {
+        if (regulatingTerminal?.voltageLevel?.id) {
+            fetchVoltageLevelEquipments(
+                studyUuid,
+                currentNodeUuid,
+                undefined,
+                regulatingTerminal?.voltageLevel?.id,
+                true
+            ).then((values) => {
+                setVoltageLevelsEquipments(values);
+            });
+        } else {
+            setVoltageLevelsEquipments([]);
+        }
+    }, [regulatingTerminal, studyUuid, currentNodeUuid]);
 
     useEffect(() => {
         if (!voltageLevelOptions) return;

@@ -685,7 +685,6 @@ export function fetchVoltageLevelEquipments(
     studyUuid,
     currentNodeUuid,
     substationsIds,
-
     voltageLevelId,
     inUpstreamBuiltParentNode
 ) {
@@ -723,21 +722,24 @@ export function fetchEquipmentsIds(
         `Fetching equipments ids '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
     let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
-    const fetchEquipmentsUrl =
+
+    let fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map/' +
         'equipments-ids' +
         '?' +
         'equipmentType=' +
         equipmentType +
-        getQueryParamsList(substationsIds, 'substationId') +
-        urlSearchParams.toString();
+        getQueryParamsList(substationsIds, 'substationId');
+
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+        fetchEquipmentsUrl =
+            fetchEquipmentsUrl + '&' + urlSearchParams.toString();
+    }
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
 }

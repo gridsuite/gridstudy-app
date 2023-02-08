@@ -43,9 +43,9 @@ export const REGULATING_VOLTAGE_LEVEL = 'regulating-voltage-level';
 export const REGULATING_EQUIPMENT = 'regulating-equipment';
 
 export function makeRefreshRegulatingTerminalSectionsCallback() {
-    return (voltageLevel, putter) => {
-        if (voltageLevel?.equipments) {
-            putter(voltageLevel.equipments);
+    return (equipments, putter) => {
+        if (equipments) {
+            putter(equipments);
         } else {
             putter([]);
         }
@@ -141,11 +141,7 @@ const RegulatingTerminalEdition = ({
     useEffect(() => {
         if (voltageLevelEquipmentsCallback) {
             voltageLevelEquipmentsCallback(
-                voltageLevelsEquipments.find(
-                    (vlEquipment) =>
-                        vlEquipment?.voltageLevel?.id ===
-                        regulatingTerminalValue?.voltageLevel?.id
-                ),
+                voltageLevelsEquipments,
                 setEquipmentsOptions
             );
         }

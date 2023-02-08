@@ -69,14 +69,12 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Dialog to create a generator in the network
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param voltageLevelsEquipmentsOptionsPromise Promise handling list of voltage level equipment options
  * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const GeneratorCreationDialog = ({
     voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
     currentNodeUuid,
     editData,
     ...dialogProps
@@ -338,6 +336,8 @@ const GeneratorCreationDialog = ({
 
     const [regulatingTerminal, regulatingTerminalField] =
         useRegulatingTerminalValue({
+            studyUuid,
+            currentNodeUuid,
             label: 'RegulatingTerminalGenerator',
             validation: {
                 isFieldRequired:
@@ -348,7 +348,6 @@ const GeneratorCreationDialog = ({
             disabled:
                 !voltageRegulation ||
                 !isDistantRegulation(voltageRegulationType),
-            voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
                 formValues?.regulatingTerminalVlId || null,
             equipmentSectionTypeDefaultValue:
@@ -698,10 +697,6 @@ const GeneratorCreationDialog = ({
 GeneratorCreationDialog.propTypes = {
     editData: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

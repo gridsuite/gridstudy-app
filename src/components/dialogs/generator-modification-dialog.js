@@ -47,7 +47,11 @@ import {
     REGULATING_VOLTAGE_LEVEL,
 } from './regulating-terminal-edition';
 import { useNullableBooleanValue } from './inputs/boolean';
-import { modifyGenerator } from '../../utils/rest-api';
+import {
+    fetchEquipmentInfos,
+    fetchEquipmentsIds,
+    modifyGenerator,
+} from '../../utils/rest-api';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { useReactiveCapabilityCurveTableValues } from './inputs/reactive-capability-curve-table';
 import {
@@ -87,9 +91,6 @@ function getValueOrNull(val) {
 const GeneratorModificationDialog = ({
     editData,
     currentNodeUuid,
-    equipmentOptionsPromise,
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
     ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -118,13 +119,15 @@ const GeneratorModificationDialog = ({
         return regulationType === REGULATION_TYPES.DISTANT.id;
     };
 
+    const [generatorInformation, setGeneratorInformation] = useState();
+
     const defaultReactiveCapabilityCurveChoice = () => {
         const reactiveCapabilityChoice = getValueOrNull(
             formValues?.reactiveCapabilityCurve
         );
         if (reactiveCapabilityChoice !== null) {
             return reactiveCapabilityChoice ? 'CURVE' : 'MINMAX';
-        } else if (generatorInfos?.minMaxReactiveLimits !== undefined) {
+        } else if (generatorInformation?.minMaxReactiveLimits !== undefined) {
             return 'MINMAX';
         }
         return 'CURVE';
@@ -134,12 +137,22 @@ const GeneratorModificationDialog = ({
         useState(true);
 
     useEffect(() => {
-        if (!equipmentOptionsPromise) return;
+        /*   if (!equipmentOptionsPromise) return;
         equipmentOptionsPromise.then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
+        }); */
+        fetchEquipmentsIds(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            'GENERATOR',
+            true
+        ).then((values) => {
+            setEquipmentOptions(values);
+            setLoadingEquipmentOptions(false);
         });
-    }, [equipmentOptionsPromise]);
+    }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
         if (editData) {
@@ -153,31 +166,47 @@ const GeneratorModificationDialog = ({
             : { id: '' };
     }, [formValues]);
 
-    const [generatorInfos, generatorIdField] = useAutocompleteField({
+    const [generatorId, generatorIdField] = useAutocompleteField({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        values: equipmentOptions?.sort(compareById),
+        values: equipmentOptions?.sort((a, b) => a.localeCompare(b)),
         allowNewValue: true,
         getLabel: getIdOrSelf,
         defaultValue:
-            equipmentOptions?.find((e) => e.id === formValueEquipmentId?.id) ||
+            equipmentOptions?.find((e) => e === formValueEquipmentId?.id) ||
             formValueEquipmentId,
         loading: loadingEquipmentOptions,
     });
+
+    useEffect(() => {
+        if (formValueEquipmentId?.id) {
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNodeUuid,
+                'generators',
+                formValueEquipmentId?.id,
+                false
+            ).then((value) => {
+                if (value) {
+                    setGeneratorInformation(value);
+                }
+            });
+        }
+    }, [currentNodeUuid, studyUuid, formValueEquipmentId]);
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: getValue(formValues?.equipmentName) || undefined,
-        previousValue: generatorInfos?.name,
+        previousValue: generatorInformation?.name,
         clearable: true,
     });
 
     const energySourceLabelId = getEnergySourceLabel(
-        generatorInfos?.energySource
+        generatorInformation?.energySource
     );
     const previousEnergySourceLabel = energySourceLabelId
         ? intl.formatMessage({
@@ -202,7 +231,7 @@ const GeneratorModificationDialog = ({
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.maxActivePower),
-        previousValue: generatorInfos?.maxP,
+        previousValue: generatorInformation?.maxP,
         clearable: true,
     });
 
@@ -210,13 +239,14 @@ const GeneratorModificationDialog = ({
         label: 'MinimumActivePowerText',
         validation: {
             isFieldNumeric: true,
-            valueLessThanOrEqualTo: maximumActivePower || generatorInfos?.maxP,
+            valueLessThanOrEqualTo:
+                maximumActivePower || generatorInformation?.maxP,
             errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.minActivePower),
-        previousValue: generatorInfos?.minP,
+        previousValue: generatorInformation?.minP,
         clearable: true,
     });
 
@@ -236,8 +266,10 @@ const GeneratorModificationDialog = ({
     });
 
     const isPreviousReactiveCapabilityCurveOn = useMemo(() => {
-        return generatorInfos?.reactiveCapabilityCurvePoints !== undefined;
-    }, [generatorInfos]);
+        return (
+            generatorInformation?.reactiveCapabilityCurvePoints !== undefined
+        );
+    }, [generatorInformation]);
 
     const isReactiveCapabilityCurveOn = useMemo(() => {
         return reactiveCapabilityCurveChoice === 'CURVE';
@@ -268,7 +300,7 @@ const GeneratorModificationDialog = ({
         defaultValues: formValues?.reactiveCapabilityCurvePoints,
         isReactiveCapabilityCurveOn: reactiveCapabilityCurveOn,
         isModificationForm: true,
-        previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
+        previousValues: generatorInformation?.reactiveCapabilityCurvePoints,
     });
 
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
@@ -281,7 +313,7 @@ const GeneratorModificationDialog = ({
         inputForm: inputForm,
         defaultValue: getValue(formValues?.maximumReactivePower),
         previousValue:
-            generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
+            generatorInformation?.minMaxReactiveLimits?.maximumReactivePower,
     });
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
@@ -291,26 +323,29 @@ const GeneratorModificationDialog = ({
             isFieldRequired: reactivePowerRequired,
             valueLessThanOrEqualTo:
                 maximumReactivePower ||
-                generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
+                generatorInformation?.minMaxReactiveLimits
+                    ?.maximumReactivePower,
             errorMsgId: 'MinReactivePowerLessThanMaxActivePower',
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.minimumReactivePower),
         previousValue:
-            generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
+            generatorInformation?.minMaxReactiveLimits?.minimumReactivePower,
     });
 
     useEffect(() => {
         setReactivePowerRequired(
             (minimumReactivePower !== '' &&
-                !generatorInfos?.minMaxReactiveLimits?.minimumReactivePower) ||
+                !generatorInformation?.minMaxReactiveLimits
+                    ?.minimumReactivePower) ||
                 (maximumReactivePower !== '' &&
-                    !generatorInfos?.minMaxReactiveLimits?.maximumReactivePower)
+                    !generatorInformation?.minMaxReactiveLimits
+                        ?.maximumReactivePower)
                 ? true
                 : undefined // if the field is not required then we set "reactivePowerRequired" to undefined so that the optional label is not displayed
         );
-    }, [minimumReactivePower, maximumReactivePower, generatorInfos]);
+    }, [minimumReactivePower, maximumReactivePower, generatorInformation]);
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
@@ -322,7 +357,7 @@ const GeneratorModificationDialog = ({
         adornment: MVAPowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.ratedNominalPower),
-        previousValue: generatorInfos?.ratedS,
+        previousValue: generatorInformation?.ratedS,
         clearable: true,
     });
 
@@ -334,14 +369,14 @@ const GeneratorModificationDialog = ({
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.activePowerSetpoint),
-        previousValue: generatorInfos?.targetP,
+        previousValue: generatorInformation?.targetP,
         clearable: true,
     });
 
     let previousRegulation = '';
-    if (generatorInfos?.voltageRegulatorOn)
+    if (generatorInformation?.voltageRegulatorOn)
         previousRegulation = intl.formatMessage({ id: 'On' });
-    else if (generatorInfos?.voltageRegulatorOn === false)
+    else if (generatorInformation?.voltageRegulatorOn === false)
         previousRegulation = intl.formatMessage({ id: 'Off' });
 
     const [voltageRegulation, voltageRegulationField] = useNullableBooleanValue(
@@ -365,7 +400,7 @@ const GeneratorModificationDialog = ({
         adornment: percentageTextField,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.qPercent),
-        previousValue: generatorInfos?.qPercent,
+        previousValue: generatorInformation?.qPercent,
     });
 
     const withVoltageRegulationInputs = () => {
@@ -392,15 +427,15 @@ const GeneratorModificationDialog = ({
 
     const isPreviousRegulationDistant = useCallback(() => {
         return (
-            getPreviousRegulationType(generatorInfos) ===
+            getPreviousRegulationType(generatorInformation) ===
             REGULATION_TYPES.DISTANT
         );
-    }, [generatorInfos]);
+    }, [generatorInformation]);
 
-    function getPreviousRegulationType(generatorInfos) {
-        if (generatorInfos?.voltageRegulatorOn) {
-            return generatorInfos?.regulatingTerminalVlId ||
-                generatorInfos?.regulatingTerminalConnectableId
+    function getPreviousRegulationType(generatorInformation) {
+        if (generatorInformation?.voltageRegulatorOn) {
+            return generatorInformation?.regulatingTerminalVlId ||
+                generatorInformation?.regulatingTerminalConnectableId
                 ? REGULATION_TYPES.DISTANT
                 : REGULATION_TYPES.LOCAL;
         } else {
@@ -409,10 +444,10 @@ const GeneratorModificationDialog = ({
     }
 
     const previousRegulationTypeLabel = getPreviousRegulationType(
-        generatorInfos
+        generatorInformation
     )?.label
         ? intl.formatMessage({
-              id: getPreviousRegulationType(generatorInfos)?.label,
+              id: getPreviousRegulationType(generatorInformation)?.label,
           })
         : undefined;
     const [voltageRegulationType, voltageRegulationTypeField] =
@@ -425,12 +460,12 @@ const GeneratorModificationDialog = ({
         });
 
     let previousFrequencyRegulation = '';
-    if (generatorInfos?.activePowerControlOn) {
+    if (generatorInformation?.activePowerControlOn) {
         previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
     } else if (
-        generatorInfos?.activePowerControlOn === false ||
-        (generatorInfos?.id !== '' &&
-            generatorInfos?.activePowerControlOn === undefined)
+        generatorInformation?.activePowerControlOn === false ||
+        (generatorInformation?.id !== '' &&
+            generatorInformation?.activePowerControlOn === undefined)
     ) {
         previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
     }
@@ -448,17 +483,17 @@ const GeneratorModificationDialog = ({
         return (
             voltageRegulation === true ||
             (voltageRegulation === null &&
-                generatorInfos?.voltageRegulatorOn === true)
+                generatorInformation?.voltageRegulatorOn === true)
         );
-    }, [voltageRegulation, generatorInfos]);
+    }, [voltageRegulation, generatorInformation]);
 
     const isFrequencyRegulationOn = useMemo(() => {
         return (
             frequencyRegulation === true ||
             (frequencyRegulation === null &&
-                generatorInfos?.activePowerControlOn === true)
+                generatorInformation?.activePowerControlOn === true)
         );
-    }, [frequencyRegulation, generatorInfos]);
+    }, [frequencyRegulation, generatorInformation]);
 
     const isDistantRegulation = useMemo(() => {
         return (
@@ -469,6 +504,8 @@ const GeneratorModificationDialog = ({
 
     const [regulatingTerminal, regulatingTerminalField] =
         useRegulatingTerminalValue({
+            studyUuid,
+            currentNodeUuid,
             label: 'RegulatingTerminalGenerator',
             validation: {
                 isFieldRequired:
@@ -478,7 +515,6 @@ const GeneratorModificationDialog = ({
             },
             inputForm: inputForm,
             disabled: !isDistantRegulation,
-            voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
                 getValue(formValues?.regulatingTerminalVlId) || null,
             equipmentSectionTypeDefaultValue:
@@ -490,12 +526,12 @@ const GeneratorModificationDialog = ({
                 getValue(formValues?.regulatingTerminalId) ||
                 null,
             previousRegulatingTerminalValue:
-                generatorInfos?.regulatingTerminalVlId,
+                generatorInformation?.regulatingTerminalVlId,
             previousEquipmentSectionTypeValue:
-                generatorInfos?.regulatingTerminalConnectableType
-                    ? generatorInfos?.regulatingTerminalConnectableType +
+                generatorInformation?.regulatingTerminalConnectableType
+                    ? generatorInformation?.regulatingTerminalConnectableType +
                       ' : ' +
-                      generatorInfos?.regulatingTerminalConnectableId
+                      generatorInformation?.regulatingTerminalConnectableId
                     : null,
         });
 
@@ -514,7 +550,7 @@ const GeneratorModificationDialog = ({
         validation: {
             isFieldRequired:
                 frequencyRegulation &&
-                !validateValueIsGreaterThan(generatorInfos?.droop, 0), // The field is required if active power regulation is ON and there is no previous valid value.
+                !validateValueIsGreaterThan(generatorInformation?.droop, 0), // The field is required if active power regulation is ON and there is no previous valid value.
             valueGreaterThan: 0,
             errorMsgId: 'DroopGreaterThanZero',
         },
@@ -524,7 +560,7 @@ const GeneratorModificationDialog = ({
             disabled: frequencyRegulation !== null && !frequencyRegulation,
         },
         defaultValue: getValue(formValues?.droop),
-        previousValue: generatorInfos?.droop,
+        previousValue: generatorInformation?.droop,
     });
 
     const [transientReactance, transientReactanceField] = useDoubleValue({
@@ -532,7 +568,7 @@ const GeneratorModificationDialog = ({
         adornment: OhmAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.transientReactance),
-        previousValue: generatorInfos?.transientReactance,
+        previousValue: generatorInformation?.transientReactance,
     });
 
     const [transformerReactance, transformerReactanceField] = useDoubleValue({
@@ -540,7 +576,7 @@ const GeneratorModificationDialog = ({
         adornment: OhmAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.stepUpTransformerReactance),
-        previousValue: generatorInfos?.stepUpTransformerReactance,
+        previousValue: generatorInformation?.stepUpTransformerReactance,
     });
 
     const [plannedActivePowerSetPoint, plannedActivePowerSetPointField] =
@@ -549,21 +585,21 @@ const GeneratorModificationDialog = ({
             adornment: ActivePowerAdornment,
             inputForm: inputForm,
             defaultValue: getValue(formValues?.plannedActivePowerSetPoint),
-            previousValue: generatorInfos?.plannedActivePowerSetPoint,
+            previousValue: generatorInformation?.plannedActivePowerSetPoint,
         });
 
     const [startupCost, startupCostField] = useDoubleValue({
         label: 'StartupCost',
         inputForm: inputForm,
         defaultValue: getValue(formValues?.startupCost),
-        previousValue: generatorInfos?.startupCost,
+        previousValue: generatorInformation?.startupCost,
     });
 
     const [marginalCost, marginalCostField] = useDoubleValue({
         label: 'MarginalCost',
         inputForm: inputForm,
         defaultValue: getValue(formValues?.marginalCost),
-        previousValue: generatorInfos?.marginalCost,
+        previousValue: generatorInformation?.marginalCost,
     });
 
     const [plannedOutageRate, plannedOutageRateField] = useDoubleValue({
@@ -575,7 +611,7 @@ const GeneratorModificationDialog = ({
         },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.plannedOutageRate),
-        previousValue: generatorInfos?.plannedOutageRate,
+        previousValue: generatorInformation?.plannedOutageRate,
     });
 
     const [forcedOutageRate, forcedOutageRateField] = useDoubleValue({
@@ -587,7 +623,7 @@ const GeneratorModificationDialog = ({
         },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.forcedOutageRate),
-        previousValue: generatorInfos?.forcedOutageRate,
+        previousValue: generatorInformation?.forcedOutageRate,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
@@ -601,7 +637,7 @@ const GeneratorModificationDialog = ({
         formProps: { disabled: voltageRegulation === false },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.voltageSetpoint),
-        previousValue: generatorInfos?.targetV,
+        previousValue: generatorInformation?.targetV,
         clearable: true,
     });
 
@@ -614,7 +650,7 @@ const GeneratorModificationDialog = ({
         inputForm: inputForm,
         formProps: { disabled: voltageRegulation === true },
         defaultValue: getValue(formValues?.reactivePowerSetpoint),
-        previousValue: generatorInfos?.targetQ,
+        previousValue: generatorInformation?.targetQ,
         clearable: true,
     });
 
@@ -664,7 +700,7 @@ const GeneratorModificationDialog = ({
             displayedPreviousValues &&
             reactiveCapabilityCurve &&
             reactiveCapabilityCurve.length ===
-                generatorInfos?.reactiveCapabilityCurvePoints?.length &&
+                generatorInformation?.reactiveCapabilityCurvePoints?.length &&
             reactiveCapabilityCurve.filter(
                 (point) =>
                     point.p !== '' || point.qminP !== '' || point.qmaxP !== ''
@@ -698,7 +734,11 @@ const GeneratorModificationDialog = ({
             });
             return pointsToStore;
         }
-    }, [displayedPreviousValues, reactiveCapabilityCurve, generatorInfos]);
+    }, [
+        displayedPreviousValues,
+        reactiveCapabilityCurve,
+        generatorInformation,
+    ]);
 
     const handleValidation = () => {
         // ReactiveCapabilityCurveCreation validation
@@ -737,7 +777,7 @@ const GeneratorModificationDialog = ({
         modifyGenerator(
             studyUuid,
             currentNodeUuid,
-            generatorInfos?.id,
+            generatorInformation?.id,
             sanitizeString(generatorName),
             energySource,
             minimumActivePower,
@@ -919,14 +959,6 @@ GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
     currentNodeUuid: PropTypes.string,
     equipmentOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

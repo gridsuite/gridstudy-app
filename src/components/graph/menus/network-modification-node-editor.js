@@ -305,13 +305,13 @@ const NetworkModificationNodeEditor = () => {
             label: 'ModifyGenerator',
             dialog: () =>
                 adapt(
-                    GeneratorModificationDialog,
-                    withEquipmentModificationOptions(
+                    GeneratorModificationDialog
+                    /*  withEquipmentModificationOptions(
                         'Generators',
                         equipments.generators
-                    ),
-                    withVLs,
-                    withVLsAndEquipments
+                    ), */
+                    /*  withVLs, */
+                    // withVLsAndEquipments
                 ),
             icon: <AddIcon />,
         },
