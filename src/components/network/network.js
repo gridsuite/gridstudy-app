@@ -496,40 +496,49 @@ export default class Network {
                 currentNode?.id,
                 substationsIds
             );
-            updatedEquipments.catch(function (error) {
-                console.error(error.message);
-                if (this.errHandler) this.errHandler(error);
-            });
-            return updatedEquipments;
+            updatedEquipments
+                .then((values) => {
+                    this.updateSubstations(
+                        this.checkAndGetValues(values.substations)
+                    );
+                    this.updateLines(this.checkAndGetValues(values.lines));
+                    this.updateTwoWindingsTransformers(
+                        this.checkAndGetValues(values.twoWindingsTransformers)
+                    );
+                    this.updateThreeWindingsTransformers(
+                        this.checkAndGetValues(values.threeWindingsTransformers)
+                    );
+                    this.updateGenerators(
+                        this.checkAndGetValues(values.generators)
+                    );
+                    this.updateLoads(this.checkAndGetValues(values.loads));
+                    this.updateBatteries(
+                        this.checkAndGetValues(values.batteries)
+                    );
+                    this.updateDanglingLines(
+                        this.checkAndGetValues(values.danglingLines)
+                    );
+                    this.updateLccConverterStations(
+                        this.checkAndGetValues(values.lccConverterStations)
+                    );
+                    this.updateVscConverterStations(
+                        this.checkAndGetValues(values.vscConverterStations)
+                    );
+                    this.updateHvdcLines(
+                        this.checkAndGetValues(values.hvdcLines)
+                    );
+                    this.updateShuntCompensators(
+                        this.checkAndGetValues(values.shuntCompensators)
+                    );
+                    this.updateStaticVarCompensators(
+                        this.checkAndGetValues(values.staticVarCompensators)
+                    );
+                })
+                .catch(function (error) {
+                    console.error(error.message);
+                    if (this.errHandler) this.errHandler(error);
+                });
         }
-    }
-
-    updateNetworkEquipments(values) {
-        this.updateSubstations(this.checkAndGetValues(values.substations));
-        this.updateLines(this.checkAndGetValues(values.lines));
-        this.updateTwoWindingsTransformers(
-            this.checkAndGetValues(values.twoWindingsTransformers)
-        );
-        this.updateThreeWindingsTransformers(
-            this.checkAndGetValues(values.threeWindingsTransformers)
-        );
-        this.updateGenerators(this.checkAndGetValues(values.generators));
-        this.updateLoads(this.checkAndGetValues(values.loads));
-        this.updateBatteries(this.checkAndGetValues(values.batteries));
-        this.updateDanglingLines(this.checkAndGetValues(values.danglingLines));
-        this.updateLccConverterStations(
-            this.checkAndGetValues(values.lccConverterStations)
-        );
-        this.updateVscConverterStations(
-            this.checkAndGetValues(values.vscConverterStations)
-        );
-        this.updateHvdcLines(this.checkAndGetValues(values.hvdcLines));
-        this.updateShuntCompensators(
-            this.checkAndGetValues(values.shuntCompensators)
-        );
-        this.updateStaticVarCompensators(
-            this.checkAndGetValues(values.staticVarCompensators)
-        );
     }
 
     removeEquipment(equipmentType, equipmentId) {

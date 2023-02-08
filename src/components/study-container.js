@@ -594,25 +594,13 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
-                    const currentNodeAtReloadCalling = currentNodeRef.current;
                     console.info('Reload network equipments');
-                    network
-                        .reloadImpactedSubstationsEquipments(
-                            studyUuid,
-                            currentNodeRef.current,
-                            substationsIds
-                        )
-                        .then((values) => {
-                            if (
-                                currentNodeAtReloadCalling ===
-                                currentNodeRef.current
-                            ) {
-                                network.updateNetworkEquipments(values);
-                                dispatch(
-                                    setUpdatedSubstationsIds(substationsIds)
-                                );
-                            }
-                        });
+                    network.reloadImpactedSubstationsEquipments(
+                        studyUuid,
+                        currentNodeRef.current,
+                        substationsIds
+                    );
+                    dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
             }
         }
