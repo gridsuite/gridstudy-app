@@ -612,12 +612,15 @@ export const NetworkMapTab = ({
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
         const currentNodeAtReloadCalling = currentNodeRef.current;
-        updateMapEquipments(currentNodeAtReloadCalling).then(() => {
-            if (currentNodeAtReloadCalling === currentNodeRef.current) {
-                loadGeoData();
+        updateMapEquipments(currentNodeAtReloadCalling)
+            .then(() => {
+                if (currentNodeAtReloadCalling === currentNodeRef.current) {
+                    loadGeoData();
+                }
+            })
+            .finally(() => {
                 setWaitingLoadData(false);
-            }
-        });
+            });
     }, [updateMapEquipments, loadGeoData]);
 
     useEffect(() => {
