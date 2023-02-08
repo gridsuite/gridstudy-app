@@ -544,46 +544,83 @@ export const NetworkMapTab = ({
         dispatch(resetMapReloaded());
     }, [currentNode, dispatch, intlRef, setErrorMessage, studyUuid]);
 
-    const updateMapEquipments = useCallback(() => {
-        if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
-            return Promise.reject();
-        }
-        console.info('Update map equipments');
-        setWaitingLoadData(true);
-        const updatedSubstationsToSend =
-            !refIsMapManualRefreshEnabled.current &&
-            !isUpdatedSubstationsApplied &&
-            updatedSubstationsIds?.length > 0
-                ? updatedSubstationsIds
-                : undefined;
+    const updateMapEquipments = useCallback(
+        (currentNodeAtReloadCalling) => {
+            if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
+                return Promise.reject();
+            }
+            console.info('Update map equipments');
+            setWaitingLoadData(true);
+            const updatedSubstationsToSend =
+                !refIsMapManualRefreshEnabled.current &&
+                !isUpdatedSubstationsApplied &&
+                updatedSubstationsIds?.length > 0
+                    ? updatedSubstationsIds
+                    : undefined;
 
-        if (updatedSubstationsToSend) {
-            setIsUpdatedSubstationsApplied(true);
-        }
+            if (updatedSubstationsToSend) {
+                setIsUpdatedSubstationsApplied(true);
+            }
 
-        dispatch(resetMapReloaded());
+            dispatch(resetMapReloaded());
 
-        return mapEquipments
-            .reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                updatedSubstationsToSend,
-                setUpdatedLines
-            )
+            const isFullReload = updatedSubstationsToSend ? false : true;
+            const [updatedSubstations, updatedLines] =
+                mapEquipments.reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    updatedSubstationsToSend,
+                    setUpdatedLines,
+                    currentNodeAtReloadCalling
+                );
+
+            updatedSubstations.then((values) => {
+                if (
+                    currentNodeAtReloadCalling?.id ===
+                    currentNodeRef.current?.id
+                ) {
+                    mapEquipments.updateSubstations(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                }
+            });
+            updatedLines.then((values) => {
+                if (
+                    currentNodeAtReloadCalling?.id ===
+                    currentNodeRef.current?.id
+                ) {
+                    mapEquipments.updateLines(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                    setUpdatedLines(values);
+                }
+            });
+
+            return Promise.all([updatedSubstations, updatedLines]);
+        },
+        [
+            currentNode,
+            dispatch,
+            isUpdatedSubstationsApplied,
+            mapEquipments,
+            studyUuid,
+            updatedSubstationsIds,
+        ]
+    );
+
+    const updateMapEquipmentsAndGeoData = useCallback(() => {
+        const currentNodeAtReloadCalling = currentNodeRef.current;
+        updateMapEquipments(currentNodeAtReloadCalling)
+            .then(() => {
+                if (currentNodeAtReloadCalling === currentNodeRef.current) {
+                    loadGeoData();
+                }
+            })
             .finally(() => {
                 setWaitingLoadData(false);
             });
-    }, [
-        currentNode,
-        dispatch,
-        isUpdatedSubstationsApplied,
-        mapEquipments,
-        studyUuid,
-        updatedSubstationsIds,
-    ]);
-
-    const updateMapEquipmentsAndGeoData = useCallback(() => {
-        updateMapEquipments().then(loadGeoData);
     }, [updateMapEquipments, loadGeoData]);
 
     useEffect(() => {
