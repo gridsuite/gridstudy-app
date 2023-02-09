@@ -19,7 +19,7 @@ import {
 import { Responsive, WidthProvider } from 'react-grid-layout';
 
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState, useRef } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
 import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
+const DynamicSimulationResultChart = ({ series, selected }) => {
     const classes = useStyles();
     const intl = useIntl();
 
@@ -216,6 +216,35 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         }));
     };
 
+    // This ref used for collecting all child refs into an objet while rendering children
+    /*
+        {
+            [key1]: childRef1,
+            ...
+            [keyN]: childRefN
+        }
+    */
+    const childrenRef = useRef({});
+
+    const collectChildRefs = useCallback((childRef, childKey) => {
+        childrenRef.current = {
+            ...childrenRef.current,
+            ...(childRef && { [childKey]: childRef }),
+        };
+    }, []);
+
+    const handlePlotSyncEvent = useCallback(
+        (syncEvent) => {
+            console.log('sync = ' + sync);
+            if (sync) {
+                Object.values(childrenRef.current).forEach((childRef) =>
+                    childRef.syncOnRelayout(syncEvent)
+                );
+            }
+        },
+        [sync]
+    );
+
     return (
         <Grid container>
             <Grid item xs={9}>
@@ -305,8 +334,13 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                     >
                                         <DynamicSimulationResultSeriesChart
                                             key={`${plot.id}`}
+                                            ref={(currRef) =>
+                                                collectChildRefs(
+                                                    currRef,
+                                                    `${plot.id}`
+                                                )
+                                            }
                                             id={`${plot.id}`}
-                                            groupId={`${groupId}`}
                                             index={index}
                                             selected={selectedIndex === index}
                                             onSelect={handleSelectIndex}
@@ -315,7 +349,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                                 plot.rightSelectedSeries
                                             }
                                             onClose={handleClose}
-                                            sync={sync}
+                                            onSyncEvent={handlePlotSyncEvent}
                                         />
                                     </div>
                                 ))}
