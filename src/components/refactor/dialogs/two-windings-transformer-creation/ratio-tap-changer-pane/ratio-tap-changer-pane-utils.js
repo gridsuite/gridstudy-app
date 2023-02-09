@@ -32,7 +32,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
 import {
-    areArrayElementsOrdered,
+    areNumbersOrdered,
     areArrayElementsUnique,
 } from '../../../utils/utils';
 import yup from '../../../utils/yup-config';
@@ -133,7 +133,7 @@ const ratioTapChangerValidationSchema = (id) => ({
             .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
                 const ratioArray = array.map((step) => step[STEPS_RATIO]);
                 return (
-                    areArrayElementsOrdered(ratioArray) &&
+                    areNumbersOrdered(ratioArray) &&
                     areArrayElementsUnique(ratioArray)
                 );
             }),
