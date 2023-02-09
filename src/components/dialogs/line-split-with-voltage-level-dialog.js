@@ -106,8 +106,8 @@ const LineSplitWithVoltageLevelDialog = ({
             if (voltageLevelOptions?.length) return voltageLevelOptions;
             else return [];
         const asVL = {
-            id: newVoltageLevel.equipmentId,
-            name: newVoltageLevel.equipmentName,
+            id: newVoltageLevel.id,
+            name: newVoltageLevel.name,
             substationId: newVoltageLevel.substationId,
             busbarSections: newVoltageLevel.busbarSections,
         };
@@ -141,7 +141,7 @@ const LineSplitWithVoltageLevelDialog = ({
         if (fv) {
             if (fv.existingVoltageLevelId) return fv.existingVoltageLevelId;
             if (fv.mayNewVoltageLevelInfos)
-                return fv.mayNewVoltageLevelInfos.equipmentId;
+                return fv.mayNewVoltageLevelInfos.id;
         }
         return '';
     };
@@ -229,7 +229,7 @@ const LineSplitWithVoltageLevelDialog = ({
         if (
             newVoltageLevel &&
             voltageLevelOrIdRef.current &&
-            vlId !== newVoltageLevel.equipmentId
+            vlId !== newVoltageLevel.id
         ) {
             // switch from new voltage level to existing voltage level
             setNewVoltageLevel(null);
@@ -257,7 +257,7 @@ const LineSplitWithVoltageLevelDialog = ({
         if (
             typeof voltageLevelOrId === 'string' &&
             newVoltageLevel &&
-            newVoltageLevel.equipmentId !== voltageLevelOrId
+            newVoltageLevel.id !== voltageLevelOrId
         ) {
             const ret = makeVoltageLevelCreationParams(
                 voltageLevelOrId,
@@ -353,8 +353,8 @@ const LineSplitWithVoltageLevelDialog = ({
             return new Promise(() => {
                 const preparedVoltageLevel = {
                     type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
-                    equipmentId: voltageLevelId,
-                    equipmentName: voltageLevelName,
+                    id: voltageLevelId,
+                    name: voltageLevelName,
                     nominalVoltage: nominalVoltage,
                     substationId: substationId,
                     busbarSections: busbarSections,

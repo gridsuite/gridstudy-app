@@ -776,7 +776,7 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
         body: JSON.stringify({
             type: MODIFICATION_TYPE.EQUIPMENT_ATTRIBUTE_MODIFICATION,
             equipmentType: 'SWITCH',
-            equipmentId: switchId,
+            id: switchId,
             equipmentAttributeName: 'open',
             equipmentAttributeValue: open,
         }),
@@ -1555,7 +1555,7 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branchId, action) {
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.BRANCH_STATUS_MODIFICATION,
-            equipmentId: branchId,
+            id: branchId,
             action: action,
         }),
     });
@@ -1651,18 +1651,9 @@ export function generatorScaling(
 export function createLoad(
     studyUuid,
     currentNodeUuid,
-    id,
-    name,
-    loadType,
-    activePower,
-    reactivePower,
-    voltageLevelId,
-    busOrBusbarSectionId,
+    load,
     isUpdate = false,
-    modificationUuid,
-    connectionDirection,
-    connectionName,
-    connectionPosition
+    modificationUuid
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1683,16 +1674,7 @@ export function createLoad(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.LOAD_CREATION,
-            equipmentId: id,
-            equipmentName: name,
-            loadType: loadType,
-            activePower: activePower,
-            reactivePower: reactivePower,
-            voltageLevelId: voltageLevelId,
-            busOrBusbarSectionId: busOrBusbarSectionId,
-            connectionDirection: connectionDirection,
-            connectionName: connectionName,
-            connectionPosition: connectionPosition,
+            ...load,
         }),
     });
 }
@@ -1729,8 +1711,8 @@ export function modifyLoad(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.LOAD_MODIFICATION,
-            equipmentId: id,
-            equipmentName: toModificationOperation(name),
+            id: id,
+            name: toModificationOperation(name),
             loadType: toModificationOperation(loadType),
             activePower: toModificationOperation(activePower),
             reactivePower: toModificationOperation(reactivePower),
@@ -1794,8 +1776,8 @@ export function modifyGenerator(
 
     const generatorModification = {
         type: MODIFICATION_TYPE.GENERATOR_MODIFICATION,
-        equipmentId: generatorId,
-        equipmentName: toModificationOperation(name),
+        id: generatorId,
+        name: toModificationOperation(name),
         energySource: toModificationOperation(energySource),
         minActivePower: toModificationOperation(minimumActivePower),
         maxActivePower: toModificationOperation(maximumActivePower),
@@ -1897,8 +1879,8 @@ export function createGenerator(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.GENERATOR_CREATION,
-            equipmentId: id,
-            equipmentName: name,
+            id: id,
+            name: name,
             energySource: energySource,
             minActivePower: minActivePower,
             maxActivePower: maxActivePower,
@@ -1968,8 +1950,8 @@ export function createShuntCompensator(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.SHUNT_COMPENSATOR_CREATION,
-            equipmentId: shuntCompensatorId,
-            equipmentName: shuntCompensatorName,
+            id: shuntCompensatorId,
+            name: shuntCompensatorName,
             maximumNumberOfSections: maximumNumberOfSections,
             currentNumberOfSections: currentNumberOfSections,
             isIdenticalSection: identicalSections,
@@ -2028,8 +2010,8 @@ export function createLine(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.LINE_CREATION,
-            equipmentId: lineId,
-            equipmentName: lineName,
+            id: lineId,
+            name: lineName,
             seriesResistance: seriesResistance,
             seriesReactance: seriesReactance,
             shuntConductance1: shuntConductance1,
@@ -2105,8 +2087,8 @@ export function createTwoWindingsTransformer(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.TWO_WINDINGS_TRANSFORMER_CREATION,
-            equipmentId: twoWindingsTransformerId,
-            equipmentName: twoWindingsTransformerName,
+            id: twoWindingsTransformerId,
+            name: twoWindingsTransformerName,
             seriesResistance: seriesResistance,
             seriesReactance: seriesReactance,
             magnetizingConductance: magnetizingConductance,
@@ -2152,8 +2134,8 @@ export function createSubstation(
 
     const body = JSON.stringify({
         type: MODIFICATION_TYPE.SUBSTATION_CREATION,
-        equipmentId: substationId,
-        equipmentName: substationName,
+        id: substationId,
+        name: substationName,
         substationCountry: substationCountry === '' ? null : substationCountry,
         properties: asObj,
     });
@@ -2200,8 +2182,8 @@ export function createVoltageLevel({
 
     const body = JSON.stringify({
         type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
-        equipmentId: voltageLevelId,
-        equipmentName: voltageLevelName,
+        id: voltageLevelId,
+        name: voltageLevelName,
         nominalVoltage: nominalVoltage,
         substationId: substationId,
         busbarSections: busbarSections,
@@ -2558,7 +2540,7 @@ export function deleteEquipment(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.EQUIPMENT_DELETION,
-            equipmentId: equipmentId,
+            id: equipmentId,
             equipmentType: equipmentType,
         }),
     });

@@ -143,8 +143,8 @@ const SubstationCreationDialog = ({
 
     const toFormValues = (substation) => {
         return {
-            equipmentId: substation.id + '(1)',
-            equipmentName: substation.name ?? '',
+            id: substation.id + '(1)',
+            name: substation.name ?? '',
             substationCountryLabel: substation.countryName,
             substationCountry: substation.countryCode,
             properties: substation.properties,
@@ -181,7 +181,7 @@ const SubstationCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentId,
+        defaultValue: formValues?.id,
     });
 
     const [substationName, substationNameField] = useTextValue({
@@ -189,7 +189,7 @@ const SubstationCreationDialog = ({
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName,
+        defaultValue: formValues?.name,
     });
 
     const [substationCountry, substationCountryField] = useCountryValue({

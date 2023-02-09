@@ -21,8 +21,7 @@ import {
     CURRENT_LIMITS_2,
     ENABLED,
     EQUIPMENT,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
+    NAME,
     FLOW_SET_POINT_REGULATING_VALUE,
     ID,
     LOAD_TAP_CHANGING_CAPABILITIES,
@@ -149,8 +148,8 @@ const TwoWindingsTransformerCreationDialog = ({
         (twt) => {
             reset({
                 ...getTwoWindingsTransformerFormData({
-                    equipmentId: twt.equipmentId,
-                    equipmentName: twt.equipmentName,
+                    id: twt.id,
+                    name: twt.name,
                     seriesResistance: twt.seriesResistance,
                     seriesReactance: twt.seriesReactance,
                     magnetizingConductance: twt.magnetizingConductance,
@@ -236,8 +235,8 @@ const TwoWindingsTransformerCreationDialog = ({
         (twt) => {
             reset({
                 ...getTwoWindingsTransformerFormData({
-                    equipmentId: twt.id + '(1)',
-                    equipmentName: twt.name ?? '',
+                    id: twt.id + '(1)',
+                    name: twt.name ?? '',
                     seriesResistance: twt.r,
                     seriesReactance: twt.x,
                     magnetizingConductance: twt.g,
@@ -412,7 +411,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         ratioTapChangerFormValues?.[EQUIPMENT]?.id,
                     regulatingTerminalType: computeRegulatinTerminalType(
                         ratioTapChangerFormValues,
-                        characteristics[EQUIPMENT_ID]
+                        characteristics[ID]
                     ),
                     regulatingTerminalVlId:
                         ratioTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID],
@@ -431,7 +430,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         phaseTapChangerFormValues?.[EQUIPMENT]?.id,
                     regulatingTerminalType: computeRegulatinTerminalType(
                         phaseTapChangerFormValues,
-                        characteristics[EQUIPMENT_ID]
+                        characteristics[ID]
                     ),
                     regulatingTerminalVlId:
                         phaseTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID],
@@ -442,8 +441,8 @@ const TwoWindingsTransformerCreationDialog = ({
             createTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,
-                characteristics[EQUIPMENT_ID],
-                sanitizeString(characteristics[EQUIPMENT_NAME]),
+                characteristics[ID],
+                sanitizeString(characteristics[NAME]),
                 characteristics[SERIES_RESISTANCE],
                 characteristics[SERIES_REACTANCE],
                 characteristics[MAGNETIZING_CONDUCTANCE],

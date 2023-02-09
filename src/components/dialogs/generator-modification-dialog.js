@@ -148,9 +148,7 @@ const GeneratorModificationDialog = ({
     }, [editData]);
 
     const formValueEquipmentId = useMemo(() => {
-        return formValues?.equipmentId
-            ? { id: formValues?.equipmentId }
-            : { id: '' };
+        return formValues?.id ? { id: formValues?.id } : { id: '' };
     }, [formValues]);
 
     const [generatorInfos, generatorIdField] = useAutocompleteField({
@@ -171,7 +169,7 @@ const GeneratorModificationDialog = ({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: getValue(formValues?.equipmentName) || undefined,
+        defaultValue: getValue(formValues?.name) || undefined,
         previousValue: generatorInfos?.name,
         clearable: true,
     });

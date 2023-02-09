@@ -265,8 +265,8 @@ const VoltageLevelCreationDialog = ({
 
     const toFormValues = (voltageLevel) => {
         return {
-            equipmentId: voltageLevel.id + '(1)',
-            equipmentName: voltageLevel.name ?? '',
+            id: voltageLevel.id + '(1)',
+            name: voltageLevel.name ?? '',
             nominalVoltage: voltageLevel.nominalVoltage,
             substationId: voltageLevel.substationId,
             busbarSections: voltageLevel.busbarSections,
@@ -301,7 +301,7 @@ const VoltageLevelCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentId,
+        defaultValue: formValues?.id,
     });
 
     const [voltageLevelName, voltageLevelNameField] = useTextValue({
@@ -309,7 +309,7 @@ const VoltageLevelCreationDialog = ({
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName || '',
+        defaultValue: formValues?.name || '',
     });
 
     const [nominalVoltage, nominalVoltageField] = useDoubleValue({

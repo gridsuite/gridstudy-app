@@ -91,8 +91,8 @@ const LineAttachToVoltageLevelDialog = ({
             if (voltageLevelOptions?.length) return voltageLevelOptions;
             else return [];
         const asVL = {
-            id: newVoltageLevel.equipmentId,
-            name: newVoltageLevel.equipmentName,
+            id: newVoltageLevel.id,
+            name: newVoltageLevel.name,
             substationId: newVoltageLevel.substationId,
             busbarSections: newVoltageLevel.busbarSections,
         };
@@ -127,7 +127,7 @@ const LineAttachToVoltageLevelDialog = ({
         if (fv) {
             if (fv.existingVoltageLevelId) return fv.existingVoltageLevelId;
             if (fv.mayNewVoltageLevelInfos)
-                return fv.mayNewVoltageLevelInfos.equipmentId;
+                return fv.mayNewVoltageLevelInfos.id;
         }
         return '';
     };
@@ -215,7 +215,7 @@ const LineAttachToVoltageLevelDialog = ({
         if (
             newVoltageLevel &&
             voltageLevelOrIdRef.current &&
-            vlId !== newVoltageLevel.equipmentId
+            vlId !== newVoltageLevel.id
         ) {
             // switch from new voltage level to existing voltage level
             setNewVoltageLevel(null);
@@ -243,7 +243,7 @@ const LineAttachToVoltageLevelDialog = ({
         if (
             typeof voltageLevelOrId === 'string' &&
             newVoltageLevel &&
-            newVoltageLevel.equipmentId !== voltageLevelOrId
+            newVoltageLevel.id !== voltageLevelOrId
         ) {
             const ret = makeVoltageLevelCreationParams(
                 voltageLevelOrId,
@@ -281,7 +281,7 @@ const LineAttachToVoltageLevelDialog = ({
             forceValidation: true,
             isFieldRequired: true,
         },
-        defaultValue: lineToEdit?.equipmentId,
+        defaultValue: lineToEdit?.id,
         formProps: { disabled: true },
     });
 
@@ -385,8 +385,8 @@ const LineAttachToVoltageLevelDialog = ({
             return new Promise(() => {
                 const preparedVoltageLevel = {
                     type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
-                    equipmentId: voltageLevelId,
-                    equipmentName: voltageLevelName,
+                    id: voltageLevelId,
+                    name: voltageLevelName,
                     nominalVoltage: nominalVoltage,
                     substationId: substationId,
                     busbarSections: busbarSections,
@@ -443,8 +443,8 @@ const LineAttachToVoltageLevelDialog = ({
             return new Promise(() => {
                 const preparedLine = {
                     type: MODIFICATION_TYPE.LINE_CREATION,
-                    equipmentId: lineId,
-                    equipmentName: lineName,
+                    id: lineId,
+                    name: lineName,
                     seriesResistance: seriesResistance,
                     seriesReactance: seriesReactance,
                     shuntConductance1: shuntConductance1,

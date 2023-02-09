@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const EQUIPMENT_ID = 'equipmentId';
-export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
-export const ACTIVE_POWER = 'activePower';
-export const REACTIVE_POWER = 'reactivePower';
+export const P0 = 'p0';
+export const Q0 = 'q0';
 
 export const CONNECTIVITY = 'connectivity';
 export const VOLTAGE_LEVEL = 'voltageLevel';

@@ -77,8 +77,8 @@ const LineCreationDialog = ({
 
     const toFormValues = (line) => {
         return {
-            equipmentId: line.id + '(1)',
-            equipmentName: line.name ?? '',
+            id: line.id + '(1)',
+            name: line.name ?? '',
             seriesResistance: line.r,
             seriesReactance: line.x,
             shuntConductance1: line.g1,
@@ -125,7 +125,7 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentId,
+        defaultValue: formValues?.id,
     });
 
     const [lineName, lineNameField] = useTextValue({
@@ -133,7 +133,7 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName,
+        defaultValue: formValues?.name,
     });
 
     const [seriesResistance, seriesResistanceField] = useDoubleValue({

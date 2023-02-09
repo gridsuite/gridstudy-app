@@ -90,7 +90,7 @@ export const ModificationListItem = ({
                     modif.lineToAttachTo2Id
                 );
             default:
-                return modif.equipmentId || '';
+                return modif.id || '';
         }
     }, [modif]);
 
@@ -115,11 +115,11 @@ export const ModificationListItem = ({
             if (modif.type === 'BRANCH_STATUS_MODIFICATION') {
                 if (modif.action === 'ENERGISE_END_ONE') {
                     res.energizedEnd = getVoltageLevelLabel(
-                        network.getLine(modif.equipmentId)?.voltageLevelId1
+                        network.getLine(modif.id)?.voltageLevelId1
                     );
                 } else if (modif.action === 'ENERGISE_END_TWO') {
                     res.energizedEnd = getVoltageLevelLabel(
-                        network.getLine(modif.equipmentId)?.voltageLevelId2
+                        network.getLine(modif.id)?.voltageLevelId2
                     );
                 }
             }

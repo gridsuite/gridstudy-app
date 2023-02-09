@@ -26,8 +26,8 @@ import {
     CONNECTIVITY_2,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
+    ID,
+    NAME,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
     PERMANENT_LIMIT,
@@ -54,7 +54,7 @@ const TwoWindingsTransformerPane = ({
     // CHARACTERISTICS TAP PANE
     const twoWindingsTransformerIdField = (
         <TextInput
-            name={`${id}.${EQUIPMENT_ID}`}
+            name={`${id}.${ID}`}
             label="ID"
             formProps={filledTextField}
         />
@@ -62,7 +62,7 @@ const TwoWindingsTransformerPane = ({
 
     const twoWindingsTransformerNameField = (
         <TextInput
-            name={`${id}.${EQUIPMENT_NAME}`}
+            name={`${id}.${NAME}`}
             label="Name"
             formProps={filledTextField}
         />

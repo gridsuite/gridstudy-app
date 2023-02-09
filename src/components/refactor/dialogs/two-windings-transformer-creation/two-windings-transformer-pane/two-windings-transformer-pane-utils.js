@@ -11,8 +11,8 @@ import {
     CONNECTIVITY_2,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
+    ID,
+    NAME,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
     PERMANENT_LIMIT,
@@ -30,8 +30,8 @@ import {
 
 const twoWindingsTransformerValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
+        [ID]: yup.string().required(),
+        [NAME]: yup.string(),
         [SERIES_RESISTANCE]: yup.number().nullable().required(),
         [SERIES_REACTANCE]: yup.number().nullable().required(),
         [MAGNETIZING_CONDUCTANCE]: yup.number().nullable().required(),
@@ -67,8 +67,8 @@ export const getTwoWindingsTransformerValidationSchema = (
 
 const twoWindingsTransformerEmptyFormData = (id) => ({
     [id]: {
-        [EQUIPMENT_ID]: '',
-        [EQUIPMENT_NAME]: '',
+        [ID]: '',
+        [NAME]: '',
         [SERIES_RESISTANCE]: null,
         [SERIES_REACTANCE]: null,
         [MAGNETIZING_CONDUCTANCE]: null,
@@ -95,8 +95,8 @@ export const getTwoWindingsTransformerEmptyFormData = (
 
 export const getTwoWindingsTransformerFormData = (
     {
-        equipmentId,
-        equipmentName = '',
+        id,
+        name = '',
         seriesResistance = null,
         seriesReactance = null,
         magnetizingConductance = null,
@@ -109,12 +109,12 @@ export const getTwoWindingsTransformerFormData = (
         connectivity1 = null,
         connectivity2 = null,
     },
-    id = CHARACTERISTICS
+    objectId = CHARACTERISTICS
 ) => {
     return {
-        [id]: {
-            [EQUIPMENT_ID]: equipmentId,
-            [EQUIPMENT_NAME]: equipmentName,
+        [objectId]: {
+            [ID]: id,
+            [NAME]: name,
             [SERIES_RESISTANCE]: seriesResistance,
             [SERIES_REACTANCE]: seriesReactance,
             [MAGNETIZING_CONDUCTANCE]: magnetizingConductance,

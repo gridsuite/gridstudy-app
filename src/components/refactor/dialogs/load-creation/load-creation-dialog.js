@@ -8,11 +8,14 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    ACTIVE_POWER,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
+    P0,
+    ID,
+    NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    Q0,
+    CONNECTIVITY,
+    VOLTAGE_LEVEL,
+    BUS_OR_BUSBAR_SECTION,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
@@ -22,10 +25,6 @@ import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import {
-    UNDEFINED_CONNECTION_DIRECTION,
-    UNDEFINED_LOAD_TYPE,
-} from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
@@ -43,22 +42,22 @@ import LoadCreationForm from './load-creation-form';
  */
 
 const emptyFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
+    [ID]: '',
+    [NAME]: '',
     [LOAD_TYPE]: null,
-    [ACTIVE_POWER]: null,
-    [REACTIVE_POWER]: null,
+    [P0]: null,
+    [Q0]: null,
     ...getConnectivityEmptyFormData(),
 };
 
 const schema = yup
     .object()
     .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
+        [ID]: yup.string().required(),
+        [NAME]: yup.string(),
         [LOAD_TYPE]: yup.string().nullable(),
-        [ACTIVE_POWER]: yup.number().nullable().required(),
-        [REACTIVE_POWER]: yup.number().nullable().required(),
+        [P0]: yup.number().nullable().required(),
+        [Q0]: yup.number().nullable().required(),
         ...getConnectivityFormValidationSchema(),
     })
     .required();
@@ -91,11 +90,11 @@ const LoadCreationDialog = ({
             true
         ).then((vlResult) => {
             reset({
-                [EQUIPMENT_ID]: load.id + '(1)',
-                [EQUIPMENT_NAME]: load.name ?? '',
+                [ID]: load.id + '(1)',
+                [NAME]: load.name ?? '',
                 [LOAD_TYPE]: load.type,
-                [ACTIVE_POWER]: load.p0,
-                [REACTIVE_POWER]: load.q0,
+                [P0]: load.p0,
+                [Q0]: load.q0,
                 ...getConnectivityFormData({
                     voltageLevelId: load.voltageLevelId,
                     voltageLevelTopologyKind: vlResult.topologyKind,
@@ -121,11 +120,11 @@ const LoadCreationDialog = ({
             )
                 .then((vlResult) => {
                     reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
+                        [ID]: load.id,
+                        [NAME]: load.name ?? '',
                         [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
+                        [P0]: load.activePower,
+                        [Q0]: load.reactivePower,
                         ...getConnectivityFormData({
                             voltageLevelId: load.voltageLevelId,
                             voltageLevelTopologyKind: vlResult.topologyKind,
@@ -141,11 +140,11 @@ const LoadCreationDialog = ({
                 }) // if voltage level can't be found, we fill the form with minimal infos
                 .catch(() => {
                     reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
+                        [ID]: load.id,
+                        [NAME]: load.name ?? '',
                         [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
+                        [P0]: load.activePower,
+                        [Q0]: load.reactivePower,
                         ...getConnectivityFormData({
                             voltageLevelId: load.voltageLevelId,
                             busbarSectionId: load.busOrBusbarSectionId,
@@ -175,22 +174,26 @@ const LoadCreationDialog = ({
 
     const onSubmit = useCallback(
         (load) => {
+            const loadToSave = {
+                ...load,
+                ...load?.[CONNECTIVITY],
+                voltageLevelId: load[CONNECTIVITY][VOLTAGE_LEVEL][ID],
+                busOrBusbarSectionId:
+                    load[CONNECTIVITY][BUS_OR_BUSBAR_SECTION][ID],
+                [NAME]: sanitizeString(load[NAME]),
+            };
+
+            //removing properties that don't need to be sent to backend
+            delete loadToSave[CONNECTIVITY];
+            delete loadToSave[VOLTAGE_LEVEL];
+            delete loadToSave[BUS_OR_BUSBAR_SECTION];
+
             createLoad(
                 studyUuid,
                 currentNodeUuid,
-                load[EQUIPMENT_ID],
-                sanitizeString(load[EQUIPMENT_NAME]),
-                !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
-                load[ACTIVE_POWER],
-                load[REACTIVE_POWER],
-                load.connectivity.voltageLevel.id,
-                load.connectivity.busOrBusbarSection.id,
+                loadToSave,
                 editData ? true : false,
-                editData ? editData.uuid : undefined,
-                load.connectivity?.connectionDirection ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                load.connectivity?.connectionName ?? null,
-                load.connectivity?.connectionPosition ?? null
+                editData ? editData.uuid : undefined
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

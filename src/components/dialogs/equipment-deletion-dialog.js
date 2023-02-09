@@ -147,7 +147,7 @@ const EquipmentDeletionDialog = ({
             formProps: filledTextField,
             inputForm: inputForm,
             values: equipmentsFound,
-            defaultValue: editData?.equipmentId || '',
+            defaultValue: editData?.id || '',
         });
 
     const handleChangeEquipmentType = (event) => {

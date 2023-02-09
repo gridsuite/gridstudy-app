@@ -69,8 +69,8 @@ const LinesAttachToSplitLinesDialog = ({
             if (voltageLevelOptions?.length) return voltageLevelOptions;
             else return [];
         const asVL = {
-            id: newVoltageLevel.equipmentId,
-            name: newVoltageLevel.equipmentName,
+            id: newVoltageLevel.id,
+            name: newVoltageLevel.name,
             substationId: newVoltageLevel.substationId,
             busbarSections: newVoltageLevel.busbarSections,
         };
@@ -218,7 +218,7 @@ const LinesAttachToSplitLinesDialog = ({
         if (
             newVoltageLevel &&
             voltageLevelOrIdRef.current &&
-            vlId !== newVoltageLevel.equipmentId
+            vlId !== newVoltageLevel.id
         ) {
             // switch from new voltage level to existing voltage level
             setNewVoltageLevel(null);

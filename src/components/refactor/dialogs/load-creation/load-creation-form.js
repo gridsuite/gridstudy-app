@@ -7,11 +7,11 @@
 
 import Grid from '@mui/material/Grid';
 import {
-    ACTIVE_POWER,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
+    P0,
+    ID,
+    NAME,
     LOAD_TYPE,
-    REACTIVE_POWER,
+    Q0,
 } from 'components/refactor/utils/field-constants';
 import React from 'react';
 import {
@@ -30,18 +30,14 @@ import { ConnectivityForm } from '../connectivity/connectivity-form';
 const LoadCreationForm = ({ voltageLevelOptionsPromise }) => {
     const loadIdField = (
         <TextInput
-            name={EQUIPMENT_ID}
+            name={ID}
             label={'ID'}
             formProps={{ autoFocus: true, ...filledTextField }}
         />
     );
 
     const loadNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
+        <TextInput name={NAME} label={'Name'} formProps={filledTextField} />
     );
 
     const loadTypeField = (
@@ -57,7 +53,7 @@ const LoadCreationForm = ({ voltageLevelOptionsPromise }) => {
 
     const activePowerField = (
         <FloatInput
-            name={ACTIVE_POWER}
+            name={P0}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
         />
@@ -65,7 +61,7 @@ const LoadCreationForm = ({ voltageLevelOptionsPromise }) => {
 
     const reactivePowerField = (
         <FloatInput
-            name={REACTIVE_POWER}
+            name={Q0}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
         />

@@ -108,8 +108,8 @@ const GeneratorCreationDialog = ({
 
     const toFormValues = (generator) => {
         return {
-            equipmentId: generator.id + '(1)',
-            equipmentName: generator.name ?? '',
+            id: generator.id + '(1)',
+            name: generator.name ?? '',
             energySource: generator.energySource,
             maxActivePower: generator.maxP,
             minActivePower: generator.minP,
@@ -172,7 +172,7 @@ const GeneratorCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentId,
+        defaultValue: formValues?.id,
     });
 
     const [generatorName, generatorNameField] = useTextValue({
@@ -180,7 +180,7 @@ const GeneratorCreationDialog = ({
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName,
+        defaultValue: formValues?.name,
     });
 
     const [energySource, energySourceField] = useEnumValue({

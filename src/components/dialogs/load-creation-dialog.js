@@ -60,8 +60,8 @@ const LoadCreationDialog = ({
 
     const toFormValues = (load) => {
         return {
-            equipmentId: load.id + '(1)',
-            equipmentName: load.name ?? '',
+            id: load.id + '(1)',
+            name: load.name ?? '',
             loadType: load.type,
             activePower: load.p0,
             reactivePower: load.q0,
@@ -92,7 +92,7 @@ const LoadCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentId,
+        defaultValue: formValues?.id,
     });
 
     const [loadName, loadNameField] = useTextValue({
@@ -100,7 +100,7 @@ const LoadCreationDialog = ({
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName,
+        defaultValue: formValues?.name,
     });
 
     const [loadType, loadTypeField] = useOptionalEnumValue({

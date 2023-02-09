@@ -59,8 +59,8 @@ const ShuntCompensatorCreationDialog = ({
 
     const toFormValues = (shuntCompensator) => {
         return {
-            equipmentId: shuntCompensator.id + '(1)',
-            equipmentName: shuntCompensator.name ?? '',
+            id: shuntCompensator.id + '(1)',
+            name: shuntCompensator.name ?? '',
             maximumNumberOfSections: shuntCompensator.maximumSectionCount,
             currentNumberOfSections: shuntCompensator.sectionCount,
             susceptancePerSection: shuntCompensator.bperSection,
@@ -91,7 +91,7 @@ const ShuntCompensatorCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentId,
+        defaultValue: formValues?.id,
     });
 
     const [shuntCompensatorName, shuntCompensatorNameField] = useTextValue({
@@ -99,7 +99,7 @@ const ShuntCompensatorCreationDialog = ({
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName,
+        defaultValue: formValues?.name,
     });
 
     const [maximumNumberOfSections, maximumNumberOfSectionsField] =

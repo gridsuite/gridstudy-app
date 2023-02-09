@@ -78,9 +78,7 @@ const LoadModificationDialog = ({
     }, [editData]);
 
     const formValueEquipmentId = useMemo(() => {
-        return formValues?.equipmentId
-            ? { id: formValues?.equipmentId }
-            : { id: '' };
+        return formValues?.id ? { id: formValues?.id } : { id: '' };
     }, [formValues]);
 
     const [loadInfos, loadIdField] = useAutocompleteField({
@@ -101,9 +99,7 @@ const LoadModificationDialog = ({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName
-            ? formValues.equipmentName.value
-            : undefined,
+        defaultValue: formValues?.name ? formValues.name.value : undefined,
         previousValue: loadInfos?.name,
         clearable: true,
     });
