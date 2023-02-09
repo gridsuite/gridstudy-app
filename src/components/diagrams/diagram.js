@@ -754,7 +754,6 @@ const Diagram = forwardRef((props, ref) => {
                             props.svgType === SvgType.SUBSTATION) && (
                             <SingleLineDiagramContent
                                 ref={svgRef}
-                                svg={svg}
                                 loadFlowStatus={props.loadFlowStatus}
                                 displayBranchMenu={displayBranchMenu}
                                 displayMenu={displayMenu}
@@ -808,6 +807,7 @@ Diagram.propTypes = {
     svgUrl: PropTypes.string,
     studyUuid: PropTypes.string.isRequired,
     align: PropTypes.string,
+    loadFlowStatus: PropTypes.any,
 
     // Size computation
     computedHeight: PropTypes.number,
@@ -818,7 +818,6 @@ Diagram.propTypes = {
 
     // SLD specific
     isComputationRunning: PropTypes.bool.isRequired,
-    loadFlowStatus: PropTypes.any,
     showInSpreadsheet: PropTypes.func,
 };
 

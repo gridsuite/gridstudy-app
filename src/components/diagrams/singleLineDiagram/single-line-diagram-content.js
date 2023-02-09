@@ -14,7 +14,7 @@ import { useDiagramStyles } from '../diagram-common';
 const SingleLineDiagramContent = forwardRef((props, ref) => {
     const classes = useDiagramStyles();
 
-    const { loadFlowStatus, svg, displayBranchMenu, displayMenu } = props;
+    const { loadFlowStatus, displayBranchMenu, displayMenu } = props;
 
     return (
         <>
@@ -28,9 +28,6 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                             loadFlowStatus !== RunningStatus.SUCCEED,
                     }
                 )}
-                dangerouslySetInnerHTML={{
-                    __html: svg.svg,
-                }}
                 style={{ height: '100%' }}
             />
             {displayBranchMenu()}
@@ -64,7 +61,6 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
 });
 
 SingleLineDiagramContent.propTypes = {
-    svg: PropTypes.any,
     loadFlowStatus: PropTypes.any,
     displayBranchMenu: PropTypes.func,
     displayMenu: PropTypes.func,

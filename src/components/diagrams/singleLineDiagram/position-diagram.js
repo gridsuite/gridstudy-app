@@ -191,7 +191,6 @@ const PositionDiagram = forwardRef((props, ref) => {
                         classes.divSingleLineDiagram,
                         classes.divDiagramReadOnly
                     )}
-                    dangerouslySetInnerHTML={{ __html: svg.svg }}
                 />
             </Box>
         </Paper>
