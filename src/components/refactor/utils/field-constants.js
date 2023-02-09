@@ -42,10 +42,12 @@ export const CONNECTIVITY_2 = 'connectivity2';
 
 export const ENABLED = 'enabled';
 export const REGULATING = 'regulating';
+export const REGULATION_TYPE = 'regulationType';
 export const TARGET_DEADBAND = 'targetDeadband';
 export const LOW_TAP_POSITION = 'lowTapPosition';
 export const HIGH_TAP_POSITION = 'highTapPosition';
 export const TAP_POSITION = 'tapPosition';
+export const REGULATION_SIDE = 'regulationSide';
 
 //tap-changer-pane-taps
 export const STEPS = 'steps';
@@ -65,5 +67,6 @@ export const TARGET_V = 'targetV';
 //tab phase_tap_changer
 export const PHASE_TAP_CHANGER = 'phaseTapChanger';
 export const REGULATION_MODE = 'regulationMode';
+export const VOLTAGE = 'voltage';
 export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
