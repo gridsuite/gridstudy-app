@@ -14,7 +14,7 @@ const NO_ERROR = {
  * Returns a Number corresponding to provided value, or NaN if not a valid number per
  * Gridsuite's standard (allows either coma or dots for decimal).
  */
-function toNumber(value) {
+export function toNumber(value) {
     if (typeof value === 'number') {
         return value;
     } else if (typeof value === 'string') {
