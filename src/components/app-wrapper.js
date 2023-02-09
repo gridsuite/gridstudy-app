@@ -40,6 +40,8 @@ import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import networkModification_en from '../translations/network-modifications-en.json';
 import networkModification_fr from '../translations/network-modifications-fr.json';
+import messages_plugins_en from '../plugins/translations/en.json';
+import messages_plugins_fr from '../plugins/translations/fr.json';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
@@ -100,6 +102,7 @@ const messages = {
         ...element_search_en,
         ...equipment_search_en,
         ...card_error_boundary_en,
+        ...messages_plugins_en, // keep it at the end to allow translation overwritting
     },
     fr: {
         ...treeview_finder_fr,
@@ -112,6 +115,7 @@ const messages = {
         ...element_search_fr,
         ...equipment_search_fr,
         ...card_error_boundary_fr,
+        ...messages_plugins_fr, // keep it at the end to allow translation overwritting
     },
 };
 

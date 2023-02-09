@@ -146,7 +146,7 @@ const SubstationCreationDialog = ({
             equipmentId: substation.id + '(1)',
             equipmentName: substation.name ?? '',
             substationCountryLabel: substation.countryName,
-            substationCountry: null,
+            substationCountry: substation.countryCode,
             properties: substation.properties,
         };
     };

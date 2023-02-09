@@ -21,6 +21,7 @@ import {
 import { equipments } from '../network/network-equipments';
 
 export const LOADING_WIDTH = 150;
+export const LOADING_HEIGHT = 150;
 export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
 export const MAX_HEIGHT_VOLTAGE_LEVEL = 700;
 export const MAX_WIDTH_SUBSTATION = 1200;
@@ -102,42 +103,6 @@ export const commonDiagramStyle = (theme, customStyle) => {
             borderBottom:
                 '1px solid ' + theme.palette.action.disabledBackground,
             borderRight: '1px solid ' + theme.palette.action.hover,
-        },
-        resizableRight: {
-            position: 'relative',
-            '& .react-resizable-handle': {
-                position: 'absolute',
-                width: theme.spacing(2),
-                height: theme.spacing(2),
-                bottom: 0,
-                right: 0,
-                cursor: 'se-resize',
-            },
-        },
-        resizableLeft: {
-            position: 'relative',
-            '& .react-resizable-handle': {
-                position: 'absolute',
-                width: theme.spacing(2),
-                height: theme.spacing(2),
-                bottom: 0,
-                left: 0,
-                cursor: 'sw-resize',
-            },
-        },
-        resizeHandleIconRight: {
-            bottom: theme.spacing(-0.5),
-            right: theme.spacing(-0.5),
-            position: 'absolute',
-            transform: 'rotate(45deg)',
-            color: theme.palette.action.disabled,
-        },
-        resizeHandleIconLeft: {
-            bottom: theme.spacing(-0.5),
-            left: theme.spacing(-0.5),
-            position: 'absolute',
-            transform: 'rotate(135deg)',
-            color: theme.palette.action.disabled,
         },
         ...customStyle,
     };
@@ -285,7 +250,8 @@ export const computePaperAndSvgSizesIfReady = (
                     console.warn(
                         'Unknown type in computePaperAndSvgSizesIfReady'
                     );
-                    tempMaxWidth = tempMaxHeight = LOADING_WIDTH;
+                    tempMaxWidth = LOADING_WIDTH;
+                    tempMaxHeight = LOADING_HEIGHT;
             }
             svgWidth = Math.min(svgPreferredWidth, totalWidth, tempMaxWidth);
             svgHeight = Math.min(
