@@ -11,7 +11,6 @@ import {
     deleteModifications,
     fetchNetworkModification,
     changeNetworkModificationOrder,
-    fetchEquipments,
     fetchSubstations,
     fetchLines,
     fetchVoltageLevels,
@@ -25,7 +24,6 @@ import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
-import { equipments } from '../../network/network-equipments';
 import { ModificationListItem } from './modification-list-item';
 import {
     Checkbox,
@@ -260,26 +258,6 @@ const NetworkModificationNodeEditor = () => {
         };
     }
 
-    function withEquipmentModificationOptions(resourceType, resource) {
-        const equipmentOptionsPromise = fetchEquipments(
-            studyUuid,
-            currentTreeNode?.id,
-            [],
-            resourceType,
-            resource,
-            true
-        );
-
-        function withFetchedOptions(p) {
-            return {
-                ...p,
-                equipmentOptionsPromise: equipmentOptionsPromise,
-            };
-        }
-
-        return withFetchedOptions;
-    }
-
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
@@ -288,11 +266,7 @@ const NetworkModificationNodeEditor = () => {
         },
         LOAD_MODIFICATION: {
             label: 'ModifyLoad',
-            dialog: () =>
-                adapt(
-                    LoadModificationDialog,
-                    withEquipmentModificationOptions('Loads', equipments.loads)
-                ),
+            dialog: () => adapt(LoadModificationDialog),
             icon: <AddIcon />,
         },
         GENERATOR_CREATION: {
@@ -303,16 +277,7 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_MODIFICATION: {
             label: 'ModifyGenerator',
-            dialog: () =>
-                adapt(
-                    GeneratorModificationDialog
-                    /*  withEquipmentModificationOptions(
-                        'Generators',
-                        equipments.generators
-                    ), */
-                    /*  withVLs, */
-                    // withVLsAndEquipments
-                ),
+            dialog: () => adapt(GeneratorModificationDialog),
             icon: <AddIcon />,
         },
         SHUNT_COMPENSATOR_CREATION: {

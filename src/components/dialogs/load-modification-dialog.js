@@ -11,7 +11,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { modifyLoad } from '../../utils/rest-api';
+import {
+    fetchEquipmentInfos,
+    fetchEquipmentsIds,
+    modifyLoad,
+} from '../../utils/rest-api';
 import {
     LOAD_TYPES,
     UNDEFINED_LOAD_TYPE,
@@ -25,7 +29,6 @@ import {
 } from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
-    compareById,
     filledTextField,
     getIdOrSelf,
     gridItem,
@@ -45,7 +48,6 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
 const LoadModificationDialog = ({
     editData,
     currentNodeUuid,
-    equipmentOptionsPromise,
     ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -62,14 +64,20 @@ const LoadModificationDialog = ({
 
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
+    const [loadInfo, setloadInfo] = useState();
 
     useEffect(() => {
-        if (!equipmentOptionsPromise) return;
-        equipmentOptionsPromise.then((values) => {
+        fetchEquipmentsIds(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            'LOAD',
+            true
+        ).then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
         });
-    }, [equipmentOptionsPromise]);
+    }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
         if (editData) {
@@ -83,12 +91,12 @@ const LoadModificationDialog = ({
             : { id: '' };
     }, [formValues]);
 
-    const [loadInfos, loadIdField] = useAutocompleteField({
+    const [loadId, loadIdField] = useAutocompleteField({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        values: equipmentOptions?.sort(compareById),
+        values: equipmentOptions?.sort((a, b) => a.localeCompare(b)),
         allowNewValue: true,
         getLabel: getIdOrSelf,
         defaultValue:
@@ -97,6 +105,43 @@ const LoadModificationDialog = ({
         loading: loadingEquipmentOptions,
     });
 
+    const id = useMemo(() => {
+        let id;
+        if (typeof loadId === 'object') {
+            if (loadId?.id !== '') {
+                id = loadId?.id;
+            }
+        } else {
+            if (loadId !== '') {
+                id = loadId;
+            }
+        }
+        return id ?? formValueEquipmentId?.id;
+    }, [loadId, formValueEquipmentId]);
+
+    const fetchGeneratorInformation = async (
+        studyUuid,
+        currentNodeUuid,
+        equipmentId
+    ) => {
+        const value = await fetchEquipmentInfos(
+            studyUuid,
+            currentNodeUuid,
+            'loads',
+            equipmentId,
+            false
+        );
+        if (value) {
+            setloadInfo(value);
+        }
+    };
+
+    useEffect(() => {
+        if (id) {
+            fetchGeneratorInformation(studyUuid, currentNodeUuid, id);
+        }
+    }, [studyUuid, currentNodeUuid, id]);
+
     const [loadName, loadNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
@@ -104,11 +149,11 @@ const LoadModificationDialog = ({
         defaultValue: formValues?.equipmentName
             ? formValues.equipmentName.value
             : undefined,
-        previousValue: loadInfos?.name,
+        previousValue: loadInfo?.name,
         clearable: true,
     });
 
-    const loadTypeLabelId = getLoadTypeLabel(loadInfos?.type);
+    const loadTypeLabelId = getLoadTypeLabel(loadInfo?.type);
     const previousLoadTypeLabel = loadTypeLabelId
         ? intl.formatMessage({
               id: loadTypeLabelId,
@@ -134,7 +179,7 @@ const LoadModificationDialog = ({
             isFieldNumeric: true,
         },
         adornment: ActivePowerAdornment,
-        previousValue: loadInfos?.p0,
+        previousValue: loadInfo?.p0,
         inputForm: inputForm,
         defaultValue: formValues?.activePower
             ? formValues.activePower.value
@@ -148,7 +193,7 @@ const LoadModificationDialog = ({
             isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
-        previousValue: loadInfos?.q0,
+        previousValue: loadInfo?.q0,
         inputForm: inputForm,
         defaultValue: formValues?.reactivePower
             ? formValues.reactivePower.value
@@ -164,7 +209,7 @@ const LoadModificationDialog = ({
         modifyLoad(
             studyUuid,
             currentNodeUuid,
-            loadInfos?.id,
+            loadInfo?.id,
             sanitizeString(loadName),
             loadType,
             activePower,
