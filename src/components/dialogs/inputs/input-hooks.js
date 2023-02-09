@@ -517,19 +517,6 @@ export const useRegulatingTerminalValue = ({
         });
     }, [inputForm.toggleClear]);
 
-    /*   useEffect(() => {
-        if (!voltageLevelOptionsPromise) return;
-
-        voltageLevelOptionsPromise.then((values) => {
-            setVoltageLevelOptions(
-                Array.from(values, (val) => val.voltageLevel).sort((a, b) =>
-                    a.id.localeCompare(b.id)
-                )
-            );
-            setVoltageLevelsEquipments(values);
-        });
-    }, [voltageLevelOptionsPromise]); */
-
     useEffect(() => {
         if (studyUuid && currentNodeUuid)
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(

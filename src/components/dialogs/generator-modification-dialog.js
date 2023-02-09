@@ -50,7 +50,7 @@ import {
     fetchEquipmentInfos,
     fetchEquipmentsIds,
     modifyGenerator,
-} from '../../utils/rest-api';
+} from 'utils/rest-api';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { useReactiveCapabilityCurveTableValues } from './inputs/reactive-capability-curve-table';
 import {
