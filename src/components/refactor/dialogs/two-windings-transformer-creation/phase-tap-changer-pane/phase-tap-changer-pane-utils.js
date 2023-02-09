@@ -33,7 +33,6 @@ import {
     TARGET_DEADBAND,
     TOPOLOGY_KIND,
     TYPE,
-    VOLTAGE,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
 import {
