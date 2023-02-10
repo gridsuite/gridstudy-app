@@ -410,23 +410,25 @@ const TapChangerPaneTable = ({
             })}
             placement="left"
         >
-            <IconButton
-                onClick={() => setOpenCreateRuleDialog(true)}
-                disabled={disabled || tapFields.length === 0}
-                sx={{
-                    position: 'absolute',
-                    right: 0,
-                    top: 0,
-                    padding: 1.5,
-                }}
-                //TODO uncomment if you can fix the vertical alignment of 'column.label'
-                // sx={{
-                //     paddingTop: 0,
-                //     paddingRight: 0,
-                // }}
-            >
-                <AddchartIcon />
-            </IconButton>
+            <span>
+                <IconButton
+                    onClick={() => setOpenCreateRuleDialog(true)}
+                    disabled={disabled || tapFields.length === 0}
+                    sx={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        padding: 1.5,
+                    }}
+                    //TODO uncomment if you can fix the vertical alignment of 'column.label'
+                    // sx={{
+                    //     paddingTop: 0,
+                    //     paddingRight: 0,
+                    // }}
+                >
+                    <AddchartIcon />
+                </IconButton>
+            </span>
         </Tooltip>
     );
 

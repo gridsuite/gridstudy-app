@@ -48,13 +48,15 @@ const TapChangerPaneButtons = ({
                         })}
                         placement="top"
                     >
-                        <IconButton
-                            color="primary"
-                            onClick={() => handleUploadButton()}
-                            disabled={disabled}
-                        >
-                            <UploadIcon />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                color="primary"
+                                onClick={() => handleUploadButton()}
+                                disabled={disabled}
+                            >
+                                <UploadIcon />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Grid>
             </Grid>
@@ -73,13 +75,15 @@ const TapChangerPaneButtons = ({
                         })}
                         placement="top"
                     >
-                        <IconButton
-                            color="primary"
-                            onClick={() => handleAddButton()}
-                            disabled={disabled}
-                        >
-                            <AddCircleIcon />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                color="primary"
+                                onClick={() => handleAddButton()}
+                                disabled={disabled}
+                            >
+                                <AddCircleIcon />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Grid>
                 <Grid item>
@@ -89,13 +93,15 @@ const TapChangerPaneButtons = ({
                         })}
                         placement="top"
                     >
-                        <IconButton
-                            color="primary"
-                            onClick={() => handleDeleteButton()}
-                            disabled={disabled || noRowsSelected}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                color="primary"
+                                onClick={() => handleDeleteButton()}
+                                disabled={disabled || noRowsSelected}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Grid>
                 <Grid item>
@@ -105,13 +111,15 @@ const TapChangerPaneButtons = ({
                         })}
                         placement="top"
                     >
-                        <IconButton
-                            color="primary"
-                            onClick={() => handleMoveUpButton()}
-                            disabled={disabled || noRowsSelected}
-                        >
-                            <ArrowUpwardIcon />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                color="primary"
+                                onClick={() => handleMoveUpButton()}
+                                disabled={disabled || noRowsSelected}
+                            >
+                                <ArrowUpwardIcon />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Grid>
                 <Grid item>
@@ -121,13 +129,15 @@ const TapChangerPaneButtons = ({
                         })}
                         placement="top"
                     >
-                        <IconButton
-                            color="primary"
-                            onClick={() => handleMoveDownButton()}
-                            disabled={disabled || noRowsSelected}
-                        >
-                            <ArrowDownwardIcon />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                color="primary"
+                                onClick={() => handleMoveDownButton()}
+                                disabled={disabled || noRowsSelected}
+                            >
+                                <ArrowDownwardIcon />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Grid>
             </Grid>
