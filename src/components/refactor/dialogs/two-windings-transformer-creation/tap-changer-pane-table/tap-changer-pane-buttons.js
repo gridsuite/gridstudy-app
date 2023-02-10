@@ -17,6 +17,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { STEPS } from 'components/refactor/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
+import PropTypes from 'prop-types';
 
 const TapChangerPaneButtons = ({
     tapChanger,
@@ -34,7 +35,7 @@ const TapChangerPaneButtons = ({
         name: `${tapChanger}.${STEPS}`,
     });
 
-    const noRowSelected = !currentTapRows.some((row) => row.selected);
+    const noRowsSelected = !currentTapRows.some((row) => row.selected);
 
     return (
         <Grid container item>
@@ -91,7 +92,7 @@ const TapChangerPaneButtons = ({
                         <IconButton
                             color="primary"
                             onClick={() => handleDeleteButton()}
-                            disabled={disabled || noRowSelected}
+                            disabled={disabled || noRowsSelected}
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -107,7 +108,7 @@ const TapChangerPaneButtons = ({
                         <IconButton
                             color="primary"
                             onClick={() => handleMoveUpButton()}
-                            disabled={disabled || noRowSelected}
+                            disabled={disabled || noRowsSelected}
                         >
                             <ArrowUpwardIcon />
                         </IconButton>
@@ -123,7 +124,7 @@ const TapChangerPaneButtons = ({
                         <IconButton
                             color="primary"
                             onClick={() => handleMoveDownButton()}
-                            disabled={disabled || noRowSelected}
+                            disabled={disabled || noRowsSelected}
                         >
                             <ArrowDownwardIcon />
                         </IconButton>
@@ -132,6 +133,17 @@ const TapChangerPaneButtons = ({
             </Grid>
         </Grid>
     );
+};
+
+TapChangerPaneButtons.prototype = {
+    tapChanger: PropTypes.string.isRequired,
+    handleAddButton: PropTypes.func.isRequired,
+    handleDeleteButton: PropTypes.func.isRequired,
+    handleMoveUpButton: PropTypes.func.isRequired,
+    handleMoveDownButton: PropTypes.func.isRequired,
+    handleUploadButton: PropTypes.func.isRequired,
+    uploadButtonMessageId: PropTypes.string.isRequired,
+    disabled: PropTypes.bool,
 };
 
 export default TapChangerPaneButtons;

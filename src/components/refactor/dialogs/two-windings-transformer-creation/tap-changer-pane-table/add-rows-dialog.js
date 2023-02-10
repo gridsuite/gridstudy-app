@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 function AddRowsDialog({ open, handleAddRowsButton, onClose }) {
     const [rowNumber, setRowNumber] = useState(1);
@@ -40,5 +41,11 @@ function AddRowsDialog({ open, handleAddRowsButton, onClose }) {
         </Dialog>
     );
 }
+
+AddRowsDialog.prototype = {
+    open: PropTypes.bool,
+    handleAddRowsButton: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
+};
 
 export default AddRowsDialog;

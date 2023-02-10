@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import React, { useCallback, useEffect, useState } from 'react';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import {
     Checkbox,
     Grid,
@@ -19,17 +21,8 @@ import {
 } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import {
-    HIGH_TAP_POSITION,
-    LOW_TAP_POSITION,
-    STEPS,
-    STEPS_TAP,
-    TAP_POSITION,
-} from 'components/refactor/utils/field-constants';
-import Papa from 'papaparse';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
 import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
 import IntegerInput from '../../../rhf-inputs/integer-input';
@@ -39,7 +32,15 @@ import CheckboxInput from '../../../rhf-inputs/booleans/checkbox-input';
 import AddRowsDialog from './add-rows-dialog';
 import { CreateRuleDialog } from '../create-rule/create-rule-dialog';
 import { ImportRuleDialog } from '../import-rule-dialog';
+import {
+    HIGH_TAP_POSITION,
+    LOW_TAP_POSITION,
+    STEPS,
+    STEPS_TAP,
+    TAP_POSITION,
+} from 'components/refactor/utils/field-constants';
 import { MAX_TAP_NUMBER } from '../two-windings-transformer-creation-dialog';
+import PropTypes from 'prop-types';
 
 function MultiCheckbox({
     associatedArrayName,
@@ -94,14 +95,8 @@ const TapChangerPaneTable = ({
     handleImportRow,
 }) => {
     const intl = useIntl();
-    const { trigger, getValues, setValue, setError } = useFormContext();
-    const lowTapPosition = useWatch({
-        name: `${tapChanger}.${LOW_TAP_POSITION}`,
-    });
 
-    const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
-    const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
-    const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
+    const { trigger, getValues, setValue, setError } = useFormContext();
 
     const {
         fields: tapFields, // don't use it to access form data ! check doc
@@ -114,7 +109,13 @@ const TapChangerPaneTable = ({
         name: `${tapChanger}.${STEPS}`,
     });
 
-    console.log('tapFields', tapFields);
+    const lowTapPosition = useWatch({
+        name: `${tapChanger}.${LOW_TAP_POSITION}`,
+    });
+
+    const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
+    const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
+    const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
 
     function renderTableCell(rowIndex, column) {
         let CustomTableCell = column.editable
@@ -574,6 +575,18 @@ const TapChangerPaneTable = ({
             />
         </Grid>
     );
+};
+
+TapChangerPaneTable.prototype = {
+    tapChanger: PropTypes.string.isRequired,
+    ruleType: PropTypes.string.isRequired,
+    createTapRuleColumn: PropTypes.string.isRequired,
+    disabled: PropTypes.bool,
+    columnsDefinition: PropTypes.object.isRequired,
+    csvColumns: PropTypes.object.isRequired,
+    createRuleMessageId: PropTypes.string.isRequired,
+    importRuleMessageId: PropTypes.string.isRequired,
+    handleImportRow: PropTypes.func.isRequired,
 };
 
 export default TapChangerPaneTable;
