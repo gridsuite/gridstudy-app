@@ -26,54 +26,49 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
     const COLUMNS_DEFINITIONS = useMemo(() => {
         return [
             {
-                label: intl.formatMessage({ id: 'Tap' }).toUpperCase(),
+                label: 'Tap',
                 dataKey: STEPS_TAP,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaResistance' })
-                    .toUpperCase(),
+                label: 'DeltaResistance',
                 dataKey: STEPS_RESISTANCE,
                 initialValue: 0,
                 editable: true,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaReactance' })
-                    .toUpperCase(),
+                label: 'DeltaReactance',
                 dataKey: STEPS_REACTANCE,
                 initialValue: 0,
                 editable: true,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaConductance' })
-                    .toUpperCase(),
+                label: 'DeltaConductance',
                 dataKey: STEPS_CONDUCTANCE,
                 initialValue: 0,
                 editable: true,
             },
             {
-                label: intl
-                    .formatMessage({ id: 'DeltaSusceptance' })
-                    .toUpperCase(),
+                label: 'DeltaSusceptance',
                 dataKey: STEPS_SUSCEPTANCE,
                 initialValue: 0,
                 editable: true,
             },
             {
-                label: intl.formatMessage({ id: 'Ratio' }).toUpperCase(),
+                label: 'Ratio',
                 dataKey: STEPS_RATIO,
                 initialValue: 1,
                 editable: true,
             },
             {
-                label: intl.formatMessage({ id: 'Alpha' }).toUpperCase(),
+                label: 'Alpha',
                 dataKey: STEPS_ALPHA,
                 initialValue: 0,
                 editable: true,
             },
-        ];
+        ].map((column) => ({
+            ...column,
+            label: intl.formatMessage({ id: column.label }).toUpperCase(),
+        }));
     }, [intl]);
 
     const csvColumns = useMemo(() => {
