@@ -295,9 +295,6 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
     useEffect(() => {
         if (props.svgUrl) {
             if (!isNodeinNotifs) {
-                const isDiagramTypeSld =
-                    props.svgType === SvgType.VOLTAGE_LEVEL ||
-                    props.svgType === SvgType.SUBSTATION;
 
                 setLoadingState(true);
                 fetchSvg(props.svgUrl)
@@ -305,9 +302,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                         if (data !== null) {
                             setSvg({
                                 svg: data.svg,
-                                metadata: isDiagramTypeSld // TODO CHARLY clean this later
-                                    ? data.metadata
-                                    : null,
+                                metadata: data.metadata,
                                 error: null,
                                 svgUrl: props.svgUrl,
                             });
@@ -336,10 +331,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                     .finally(() => {
                         setLoadingState(false);
                         setModificationInProgress(false);
-                        if (isDiagramTypeSld) {
-                            // TODO CHARLY clean this later
-                            setLocallySwitchedBreaker(null);
-                        }
+                        setLocallySwitchedBreaker(null);
                     });
             }
         } else {
@@ -461,12 +453,12 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
             //     diagramViewer.getOriginalHeight()
             // )
 
-            // If a previous SLD was loaded, we keep the user's zoom and scoll state for the current render
+            // If a previous diagram was loaded, we keep the user's zoom and scoll state for the current render
             if (diagramViewerRef.current) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
             }
 
-            // on sld resizing, we need to refresh zoom to avoid exceeding max or min zoom
+            // on diagram resizing, we need to refresh zoom to avoid exceeding max or min zoom
             // this is due to a svg.panzoom.js package's behaviour
             //diagramViewer.refreshZoom(); // TODO CHARLY seems useless ?
 
@@ -557,13 +549,11 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
 
     return (
         <>
-            {
-                <Box height={2}>
-                    {(loadingState || modificationInProgress) && (
-                        <LinearProgress />
-                    )}
-                </Box>
-            }
+            <Box height={2}>
+                {(loadingState || modificationInProgress) && (
+                    <LinearProgress />
+                )}
+            </Box>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <div
                 ref={svgRef}
