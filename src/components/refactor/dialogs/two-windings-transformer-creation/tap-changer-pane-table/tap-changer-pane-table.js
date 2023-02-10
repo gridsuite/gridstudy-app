@@ -420,11 +420,6 @@ const TapChangerPaneTable = ({
                         top: 0,
                         padding: 1.5,
                     }}
-                    //TODO uncomment if you can fix the vertical alignment of 'column.label'
-                    // sx={{
-                    //     paddingTop: 0,
-                    //     paddingRight: 0,
-                    // }}
                 >
                     <AddchartIcon />
                 </IconButton>
@@ -450,19 +445,6 @@ const TapChangerPaneTable = ({
                     </TableCell>
                     {columnsDefinition.map((column, index) => (
                         <TableCell key={column.dataKey}>
-                            {/* TODO uncomment if you can fix the vertical alignment of 'column.label' */}
-                            {/*{index === columnsDefinition.length - 1 ? (*/}
-                            {/*    <Grid container>*/}
-                            {/*        <Grid item xs={8} sx={{verticalAlign: 'middle', display: 'table-cell'}}>*/}
-                            {/*            {column.label}*/}
-                            {/*        </Grid>*/}
-                            {/*        <Grid item xs={4}>*/}
-                            {/*            {createRuleButton}*/}
-                            {/*        </Grid>*/}
-                            {/*    </Grid>*/}
-                            {/*) : (*/}
-                            {/*    column.label*/}
-                            {/*)}*/}
                             {column.label}
                             {index === columnsDefinition.length - 1 &&
                                 createRuleButton}
@@ -534,7 +516,7 @@ const TapChangerPaneTable = ({
                             <TableContainer
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
-                                sx={{ minHeight: 200, maxHeight: 440 }}
+                                sx={{ minHeight: 200, maxHeight: 500 }}
                             >
                                 <Table stickyHeader size="small">
                                     {renderTableHead()}
