@@ -14,7 +14,7 @@ import {
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
-import withLineMenu from './menus/line-menu';
+import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     divOverloadedLineView: {
         right: 45,
         top: 10,
-        minWidth: '500px',
+        minWidth: '600px',
         position: 'absolute',
         height: '70%',
         opacity: '1',
@@ -87,6 +87,7 @@ export const NetworkMapTab = ({
     loadFlowStatus,
     sensiStatus,
     shortCircuitStatus,
+    dynamicSimulationStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -111,7 +112,6 @@ export const NetworkMapTab = ({
 
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
-    geoDataRef.current = geoData;
 
     const basicDataReady = mapEquipments && geoData;
 
@@ -181,7 +181,7 @@ export const NetworkMapTab = ({
         );
     }
 
-    const MenuLine = withLineMenu(BaseEquipmentMenu);
+    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
 
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
@@ -438,6 +438,7 @@ export const NetworkMapTab = ({
                             fetchedLinePositions
                         );
                         setGeoData(newGeoData);
+                        geoDataRef.current = newGeoData;
                     }
                 })
                 .catch(function (error) {
@@ -479,6 +480,7 @@ export const NetworkMapTab = ({
             );
             newGeoData.setSubstationPositions(data);
             setGeoData(newGeoData);
+            geoDataRef.current = newGeoData;
         });
 
         const linePositionsDone = !lineFullPath
@@ -493,6 +495,7 @@ export const NetworkMapTab = ({
                       );
                       newGeoData.setLinePositions(data);
                       setGeoData(newGeoData);
+                      geoDataRef.current = newGeoData;
                   }
               );
 
@@ -541,46 +544,83 @@ export const NetworkMapTab = ({
         dispatch(resetMapReloaded());
     }, [currentNode, dispatch, intlRef, setErrorMessage, studyUuid]);
 
-    const updateMapEquipments = useCallback(() => {
-        if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
-            return Promise.reject();
-        }
-        console.info('Update map equipments');
-        setWaitingLoadData(true);
-        const updatedSubstationsToSend =
-            !refIsMapManualRefreshEnabled.current &&
-            !isUpdatedSubstationsApplied &&
-            updatedSubstationsIds?.length > 0
-                ? updatedSubstationsIds
-                : undefined;
+    const updateMapEquipments = useCallback(
+        (currentNodeAtReloadCalling) => {
+            if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
+                return Promise.reject();
+            }
+            console.info('Update map equipments');
+            setWaitingLoadData(true);
+            const updatedSubstationsToSend =
+                !refIsMapManualRefreshEnabled.current &&
+                !isUpdatedSubstationsApplied &&
+                updatedSubstationsIds?.length > 0
+                    ? updatedSubstationsIds
+                    : undefined;
 
-        if (updatedSubstationsToSend) {
-            setIsUpdatedSubstationsApplied(true);
-        }
+            if (updatedSubstationsToSend) {
+                setIsUpdatedSubstationsApplied(true);
+            }
 
-        dispatch(resetMapReloaded());
+            dispatch(resetMapReloaded());
 
-        return mapEquipments
-            .reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                updatedSubstationsToSend,
-                setUpdatedLines
-            )
+            const isFullReload = updatedSubstationsToSend ? false : true;
+            const [updatedSubstations, updatedLines] =
+                mapEquipments.reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    updatedSubstationsToSend,
+                    setUpdatedLines,
+                    currentNodeAtReloadCalling
+                );
+
+            updatedSubstations.then((values) => {
+                if (
+                    currentNodeAtReloadCalling?.id ===
+                    currentNodeRef.current?.id
+                ) {
+                    mapEquipments.updateSubstations(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                }
+            });
+            updatedLines.then((values) => {
+                if (
+                    currentNodeAtReloadCalling?.id ===
+                    currentNodeRef.current?.id
+                ) {
+                    mapEquipments.updateLines(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                    setUpdatedLines(values);
+                }
+            });
+
+            return Promise.all([updatedSubstations, updatedLines]);
+        },
+        [
+            currentNode,
+            dispatch,
+            isUpdatedSubstationsApplied,
+            mapEquipments,
+            studyUuid,
+            updatedSubstationsIds,
+        ]
+    );
+
+    const updateMapEquipmentsAndGeoData = useCallback(() => {
+        const currentNodeAtReloadCalling = currentNodeRef.current;
+        updateMapEquipments(currentNodeAtReloadCalling)
+            .then(() => {
+                if (currentNodeAtReloadCalling === currentNodeRef.current) {
+                    loadGeoData();
+                }
+            })
             .finally(() => {
                 setWaitingLoadData(false);
             });
-    }, [
-        currentNode,
-        dispatch,
-        isUpdatedSubstationsApplied,
-        mapEquipments,
-        studyUuid,
-        updatedSubstationsIds,
-    ]);
-
-    const updateMapEquipmentsAndGeoData = useCallback(() => {
-        updateMapEquipments().then(loadGeoData);
     }, [updateMapEquipments, loadGeoData]);
 
     useEffect(() => {
@@ -684,8 +724,10 @@ export const NetworkMapTab = ({
         return (
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
-                    withEquipment(MenuLine, {
+                    withEquipment(MenuBranch, {
                         currentNode,
+                        studyUuid,
+                        equipmentType: equipmentMenu.equipmentType,
                     })}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
@@ -793,6 +835,7 @@ export const NetworkMapTab = ({
                     securityAnalysisStatus={securityAnalysisStatus}
                     sensiStatus={sensiStatus}
                     shortCircuitStatus={shortCircuitStatus}
+                    dynamicSimulationStatus={dynamicSimulationStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}
@@ -811,6 +854,7 @@ NetworkMapTab.propTypes = {
     lineFlowColorMode: PropTypes.any,
     lineFlowAlertThreshold: PropTypes.number,
     loadFlowStatus: PropTypes.string,
+    dynamicSimulationStatus: PropTypes.string,
     view: PropTypes.any,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,

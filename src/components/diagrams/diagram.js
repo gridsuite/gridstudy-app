@@ -38,13 +38,12 @@ import { RunningStatus } from '../util/running-status';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import BaseEquipmentMenu from '../menus/base-equipment-menu';
 import withEquipmentMenu from '../menus/equipment-menu';
-import withLineMenu from '../menus/line-menu';
+import withBranchMenu from '../menus/branch-menu';
 import { equipments } from '../network/network-equipments';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import {
-    isNodeBuilt,
     isNodeReadOnly,
     isNodeInNotificationList,
 } from '../graph/util/model-functions';
@@ -72,6 +71,7 @@ import {
 import makeStyles from '@mui/styles/makeStyles';
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
+import DiagramResizableBox from './diagram-resizable-box';
 
 const customSldStyle = (theme) => {
     return {
@@ -130,7 +130,7 @@ const Diagram = forwardRef((props, ref) => {
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
-    const MenuLine = withLineMenu(BaseEquipmentMenu);
+    const MenuBranch = withBranchMenu(BaseEquipmentMenu);
 
     const [modificationInProgress, setModificationInProgress] = useState(false);
 
@@ -600,16 +600,20 @@ const Diagram = forwardRef((props, ref) => {
         props.computedHeight,
     ]);
 
-    const displayMenuLine = () => {
+    const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.lines && (
-                <MenuLine
+            (equipmentMenu.equipmentType === equipments.lines ||
+                equipmentMenu.equipmentType ===
+                    equipments.twoWindingsTransformers) && (
+                <MenuBranch
                     id={equipmentMenu.equipmentId}
+                    equipmentType={equipmentMenu.equipmentType}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     currentNode={currentNode}
+                    studyUuid={props.studyUuid}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={(value) =>
                         setModificationInProgress(value)
@@ -649,10 +653,6 @@ const Diagram = forwardRef((props, ref) => {
         sizeWidth = initialWidth;
     } else {
         sizeWidth = props.totalWidth; // happens during initialization if initial width value is undefined
-    }
-
-    if (!isNodeBuilt(currentNode)) {
-        sizeWidth = props.totalWidth / props.numberToDisplay; // prevents the diagram from becoming too big if the current node is not built
     }
 
     if (sizeWidth !== undefined) {
@@ -707,146 +707,161 @@ const Diagram = forwardRef((props, ref) => {
      * RENDER
      */
 
-    return !svg.error ? (
-        <Paper
-            elevation={4}
-            square={true}
-            className={classes.paperBorders}
-            style={{
-                pointerEvents: 'auto',
-                width: sizeWidth,
-                minWidth: LOADING_WIDTH,
-                height: sizeHeight,
-                position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
-                overflow: 'hidden',
-                // We hide this diagram if another diagram is in fullscreen mode.
-                display:
-                    !fullScreenDiagram?.id ||
-                    (props.diagramId === fullScreenDiagram.id &&
-                        props.svgType === fullScreenDiagram.svgType)
-                        ? ''
-                        : 'none',
-            }}
-        >
-            <Box>
-                <AutoSizer
-                    onResize={({ height }) => {
-                        setHeaderPreferredHeight(height);
-                    }}
-                >
-                    {() => /* just for measuring the header */ {}}
-                </AutoSizer>
-
-                <DiagramHeader
-                    diagramTitle={props.diagramTitle}
-                    showMinimizeControl
-                    onMinimize={onMinimizeHandler}
-                    showTogglePinControl={
-                        props.svgType !== SvgType.NETWORK_AREA_DIAGRAM
-                    }
-                    onTogglePin={onTogglePinHandler}
-                    pinned={props.pinned}
-                    showCloseControl
-                    onClose={onCloseHandler}
-                />
-            </Box>
-            {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
-            {props.disabled ? (
-                <Box position="relative" left={0} right={0} top={0}>
-                    <AlertInvalidNode noMargin={true} />
-                </Box>
-            ) : (
+    const contentRender = () => {
+        return (
+            <Paper
+                elevation={4}
+                square={true}
+                className={classes.paperBorders}
+                style={{
+                    pointerEvents: 'auto',
+                    width: '100%',
+                    minWidth: LOADING_WIDTH,
+                    height: '100%',
+                    position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
+                    overflow: 'hidden',
+                }}
+            >
                 <Box>
-                    {errorMessage && (
-                        <Alert severity="error">{errorMessage}</Alert>
-                    )}
-                    {(props.svgType === SvgType.VOLTAGE_LEVEL ||
-                        props.svgType === SvgType.SUBSTATION) && (
-                        <>
+                    <AutoSizer
+                        onResize={({ height }) => {
+                            setHeaderPreferredHeight(height);
+                        }}
+                    >
+                        {() => /* just for measuring the header */ {}}
+                    </AutoSizer>
+
+                    <DiagramHeader
+                        diagramTitle={props.diagramTitle}
+                        showMinimizeControl
+                        onMinimize={onMinimizeHandler}
+                        showTogglePinControl={
+                            props.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                        }
+                        onTogglePin={onTogglePinHandler}
+                        pinned={props.pinned}
+                        showCloseControl
+                        onClose={onCloseHandler}
+                    />
+                </Box>
+                {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
+                {props.disabled ? (
+                    <Box position="relative" left={0} right={0} top={0}>
+                        <AlertInvalidNode noMargin={true} />
+                    </Box>
+                ) : (
+                    <Box height={'100%'}>
+                        {errorMessage && (
+                            <Alert severity="error">{errorMessage}</Alert>
+                        )}
+                        {(props.svgType === SvgType.VOLTAGE_LEVEL ||
+                            props.svgType === SvgType.SUBSTATION) && (
+                            <>
+                                <div
+                                    ref={svgRef}
+                                    className={clsx(classes.divSld, {
+                                        [classes.divInvalid]:
+                                            props.loadFlowStatus !==
+                                            RunningStatus.SUCCEED,
+                                    })}
+                                    dangerouslySetInnerHTML={{
+                                        __html: svg.svg,
+                                    }}
+                                    style={{ height: '100%' }}
+                                />
+                                {displayBranchMenu()}
+                                {displayMenu(equipments.loads, 'load-menus')}
+                                {displayMenu(
+                                    equipments.batteries,
+                                    'battery-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.danglingLines,
+                                    'dangling-line-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.generators,
+                                    'generator-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.staticVarCompensators,
+                                    'static-var-compensator-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.shuntCompensators,
+                                    'shunt-compensator-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.threeWindingsTransformers,
+                                    'three-windings-transformer-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.hvdcLines,
+                                    'hvdc-line-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.lccConverterStations,
+                                    'lcc-converter-station-menus'
+                                )}
+                                {displayMenu(
+                                    equipments.vscConverterStations,
+                                    'vsc-converter-station-menus'
+                                )}
+                            </>
+                        )}
+                        {props.svgType === SvgType.NETWORK_AREA_DIAGRAM && (
                             <div
+                                id="nad-svg"
                                 ref={svgRef}
-                                className={clsx(classes.divSld, {
+                                className={clsx(classes.divNad, {
                                     [classes.divInvalid]:
                                         props.loadFlowStatus !==
                                         RunningStatus.SUCCEED,
                                 })}
-                                dangerouslySetInnerHTML={{
-                                    __html: svg.svg,
-                                }}
+                                style={{ height: '100%' }}
                             />
-                            {displayMenuLine()}
-                            {displayMenu(equipments.loads, 'load-menus')}
-                            {displayMenu(equipments.batteries, 'battery-menus')}
-                            {displayMenu(
-                                equipments.danglingLines,
-                                'dangling-line-menus'
-                            )}
-                            {displayMenu(
-                                equipments.generators,
-                                'generator-menus'
-                            )}
-                            {displayMenu(
-                                equipments.staticVarCompensators,
-                                'static-var-compensator-menus'
-                            )}
-                            {displayMenu(
-                                equipments.shuntCompensators,
-                                'shunt-compensator-menus'
-                            )}
-                            {displayMenu(
-                                equipments.twoWindingsTransformers,
-                                'two-windings-transformer-menus'
-                            )}
-                            {displayMenu(
-                                equipments.threeWindingsTransformers,
-                                'three-windings-transformer-menus'
-                            )}
-                            {displayMenu(
-                                equipments.hvdcLines,
-                                'hvdc-line-menus'
-                            )}
-                            {displayMenu(
-                                equipments.lccConverterStations,
-                                'lcc-converter-station-menus'
-                            )}
-                            {displayMenu(
-                                equipments.vscConverterStations,
-                                'vsc-converter-station-menus'
-                            )}
-                        </>
-                    )}
-                    {props.svgType === SvgType.NETWORK_AREA_DIAGRAM && (
-                        <div
-                            id="nad-svg"
-                            ref={svgRef}
-                            className={clsx(classes.divNad, {
-                                [classes.divInvalid]:
-                                    props.loadFlowStatus !==
-                                    RunningStatus.SUCCEED,
-                            })}
-                        />
-                    )}
+                        )}
 
-                    {!loadingState && (
-                        <DiagramFooter
-                            showCounterControls={
-                                props.svgType === SvgType.NETWORK_AREA_DIAGRAM
-                            }
-                            counterText={intl.formatMessage({
-                                id: 'depth',
-                            })}
-                            counterValue={networkAreaDiagramDepth}
-                            onIncrementCounter={onIncrementDepthHandler}
-                            onDecrementCounter={onDecrementDepthHandler}
-                            showFullscreenControl
-                            fullScreenActive={fullScreenDiagram?.id}
-                            onStartFullScreen={onShowFullScreenHandler}
-                            onStopFullScreen={onHideFullScreenHandler}
-                        />
-                    )}
-                </Box>
-            )}
-        </Paper>
+                        {!loadingState && (
+                            <DiagramFooter
+                                showCounterControls={
+                                    props.svgType ===
+                                    SvgType.NETWORK_AREA_DIAGRAM
+                                }
+                                counterText={intl.formatMessage({
+                                    id: 'depth',
+                                })}
+                                counterValue={networkAreaDiagramDepth}
+                                onIncrementCounter={onIncrementDepthHandler}
+                                onDecrementCounter={onDecrementDepthHandler}
+                                showFullscreenControl
+                                fullScreenActive={fullScreenDiagram?.id}
+                                onStartFullScreen={onShowFullScreenHandler}
+                                onStopFullScreen={onHideFullScreenHandler}
+                            />
+                        )}
+                    </Box>
+                )}
+            </Paper>
+        );
+    };
+
+    return !svg.error ? (
+        <DiagramResizableBox
+            align={props.align}
+            height={sizeHeight}
+            width={sizeWidth}
+            // We disable the resizeBox if a diagram is in fullscreen
+            disableResize={fullScreenDiagram?.id}
+            // We hide this diagram if another diagram is in fullscreen mode.
+            hide={
+                fullScreenDiagram?.id &&
+                (fullScreenDiagram.id !== props.diagramId ||
+                    fullScreenDiagram.svgType !== props.svgType)
+            }
+        >
+            {contentRender()}
+        </DiagramResizableBox>
     ) : (
         <></>
     );
@@ -855,6 +870,7 @@ const Diagram = forwardRef((props, ref) => {
 Diagram.defaultProps = {
     pinned: false,
     disabled: false,
+    align: 'left',
 };
 
 Diagram.propTypes = {
@@ -865,6 +881,7 @@ Diagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     svgUrl: PropTypes.string,
     studyUuid: PropTypes.string.isRequired,
+    align: PropTypes.string,
 
     // Size computation
     computedHeight: PropTypes.number,

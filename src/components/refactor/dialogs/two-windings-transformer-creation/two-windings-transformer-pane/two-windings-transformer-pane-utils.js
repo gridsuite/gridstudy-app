@@ -39,20 +39,20 @@ const twoWindingsTransformerValidationSchema = (id) => ({
         [RATED_S]: yup
             .number()
             .nullable()
-            .min(0, 'RatedNominalPowerGreaterThanZero'),
+            .positive('RatedNominalPowerGreaterThanZero'),
         [RATED_VOLTAGE_1]: yup.number().nullable().required(),
         [RATED_VOLTAGE_2]: yup.number().nullable().required(),
         [CURRENT_LIMITS_1]: yup.object().shape({
             [PERMANENT_LIMIT]: yup
                 .number()
                 .nullable()
-                .min(0, 'permanentCurrentLimitGreaterThanZero'),
+                .positive('permanentCurrentLimitGreaterThanZero'),
         }),
         [CURRENT_LIMITS_2]: yup.object().shape({
             [PERMANENT_LIMIT]: yup
                 .number()
                 .nullable()
-                .min(0, 'permanentCurrentLimitGreaterThanZero'),
+                .positive('permanentCurrentLimitGreaterThanZero'),
         }),
         ...getConnectivityFormValidationSchema(CONNECTIVITY_1),
         ...getConnectivityFormValidationSchema(CONNECTIVITY_2),

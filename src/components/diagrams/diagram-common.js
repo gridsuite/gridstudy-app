@@ -21,6 +21,7 @@ import {
 import { equipments } from '../network/network-equipments';
 
 export const LOADING_WIDTH = 150;
+export const LOADING_HEIGHT = 150;
 export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
 export const MAX_HEIGHT_VOLTAGE_LEVEL = 700;
 export const MAX_WIDTH_SUBSTATION = 1200;
@@ -249,7 +250,8 @@ export const computePaperAndSvgSizesIfReady = (
                     console.warn(
                         'Unknown type in computePaperAndSvgSizesIfReady'
                     );
-                    tempMaxWidth = tempMaxHeight = LOADING_WIDTH;
+                    tempMaxWidth = LOADING_WIDTH;
+                    tempMaxHeight = LOADING_HEIGHT;
             }
             svgWidth = Math.min(svgPreferredWidth, totalWidth, tempMaxWidth);
             svgHeight = Math.min(

@@ -34,11 +34,7 @@ export default class MapEquipments {
     initEquipments(studyUuid, currentNodeUuid) {
         fetchMapSubstations(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
-                this.substations = val;
-                this.completeSubstationsInfos();
-                this.dispatch(
-                    mapEquipmentsCreated(this.newMapEquipmentForUpdate())
-                );
+                this.dispatch(mapEquipmentsCreated(this, undefined, val));
             })
             .catch((error) => {
                 console.error(error.message);
@@ -52,11 +48,7 @@ export default class MapEquipments {
             });
         fetchMapLines(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
-                this.lines = val;
-                this.completeLinesInfos();
-                this.dispatch(
-                    mapEquipmentsCreated(this.newMapEquipmentForUpdate())
-                );
+                this.dispatch(mapEquipmentsCreated(this, val, undefined));
             })
             .catch((error) => {
                 console.error(error.message);
@@ -89,8 +81,7 @@ export default class MapEquipments {
     reloadImpactedSubstationsEquipments(
         studyUuid,
         currentNode,
-        substationsIds,
-        handleUpdatedLines
+        substationsIds
     ) {
         const updatedSubstations = fetchMapSubstations(
             studyUuid,
@@ -102,41 +93,27 @@ export default class MapEquipments {
             currentNode?.id,
             substationsIds
         );
-        const isFullReload = substationsIds ? false : true;
-
-        updatedSubstations
-            .then((values) => {
-                this.updateSubstations(
-                    this.checkAndGetValues(values),
-                    isFullReload
+        updatedSubstations.catch((error) => {
+            console.error(error.message);
+            if (this.errHandler) {
+                this.errHandler(
+                    this.intlRef.current.formatMessage({
+                        id: 'MapEquipmentsLoadError',
+                    })
                 );
-            })
-            .catch((error) => {
-                console.error(error.message);
-                if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
-                }
-            });
-        updatedLines
-            .then((values) => {
-                this.updateLines(this.checkAndGetValues(values), isFullReload);
-                handleUpdatedLines(values);
-            })
-            .catch((error) => {
-                console.error(error.message);
-                if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
-                }
-            });
-        return Promise.all([updatedLines, updatedSubstations]);
+            }
+        });
+        updatedLines.catch((error) => {
+            console.error(error.message);
+            if (this.errHandler) {
+                this.errHandler(
+                    this.intlRef.current.formatMessage({
+                        id: 'MapEquipmentsLoadError',
+                    })
+                );
+            }
+        });
+        return [updatedSubstations, updatedLines];
     }
 
     completeSubstationsInfos(equipementsToIndex) {

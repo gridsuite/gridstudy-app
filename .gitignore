@@ -6,6 +6,7 @@
 
 # webstorm
 /.idea
+/coverage
 
 # misc
 .env.local
