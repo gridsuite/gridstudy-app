@@ -29,7 +29,6 @@ const BooleanInput = ({ name, label, formProps, Input }) => {
         <Input
             checked={value}
             onChange={(e) => handleChangeValue(e)}
-            value="checked"
             inputProps={{
                 'aria-label': 'primary checkbox',
             }}
