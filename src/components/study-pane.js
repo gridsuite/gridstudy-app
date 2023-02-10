@@ -18,7 +18,7 @@ import {
 import Paper from '@mui/material/Paper';
 import { equipments } from './network/network-equipments';
 import PropTypes from 'prop-types';
-import NetworkTable from './network/network-table';
+import NetworkTableAG from './network/network-table-ag';
 import clsx from 'clsx';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -317,21 +317,23 @@ const StudyPane = ({
 
     function renderTableView() {
         return (
-            <Paper className={clsx('singlestretch-child', classes.table)}>
-                <NetworkTable
-                    network={network}
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    equipmentId={tableEquipment.id}
-                    equipmentType={tableEquipment.type}
-                    equipmentChanged={tableEquipment.changed}
-                    loadFlowStatus={getLoadFlowRunningStatus(
-                        loadFlowInfos?.loadFlowStatus
-                    )}
-                    disabled={disabled}
-                    visible={props.view === StudyView.SPREADSHEET}
-                />
-            </Paper>
+            props.view === StudyView.SPREADSHEET && (
+                <Paper className={clsx('singlestretch-child', classes.table)}>
+                    <NetworkTableAG
+                        network={network}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        equipmentId={tableEquipment.id}
+                        equipmentType={tableEquipment.type}
+                        equipmentChanged={tableEquipment.changed}
+                        loadFlowStatus={getLoadFlowRunningStatus(
+                            loadFlowInfos?.loadFlowStatus
+                        )}
+                        disabled={disabled}
+                        visible={props.view === StudyView.SPREADSHEET}
+                    />
+                </Paper>
+            )
         );
     }
 

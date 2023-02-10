@@ -90,7 +90,7 @@ import {
     saveLocalStorageLanguage,
     getLocalStorageComputedLanguage,
 } from './local-storage';
-import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
+import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables-ag';
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
@@ -502,7 +502,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {
-        let newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
+        const newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
         action.displayedColumnsNamesParams.forEach((param) => {
             if (param) {
                 newDisplayedColumnsNames[param.index] = param.value;
