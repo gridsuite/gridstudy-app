@@ -1,0 +1,137 @@
+/**
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import React from 'react';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import UploadIcon from '@mui/icons-material/Upload';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import { STEPS } from 'components/refactor/utils/field-constants';
+import { useWatch } from 'react-hook-form';
+import { useIntl } from 'react-intl';
+
+const TapChangerPaneButtons = ({
+    tapChanger,
+    handleAddButton,
+    handleDeleteButton,
+    handleMoveUpButton,
+    handleMoveDownButton,
+    handleUploadButton,
+    uploadButtonMessageId,
+    disabled,
+}) => {
+    const intl = useIntl();
+
+    const currentTapRows = useWatch({
+        name: `${tapChanger}.${STEPS}`,
+    });
+
+    const noRowSelected = !currentTapRows.some((row) => row.selected);
+
+    return (
+        <Grid container item>
+            {/* left buttons */}
+            <Grid container item spacing={1} xs={6}>
+                <Grid item>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: uploadButtonMessageId,
+                        })}
+                        placement="top"
+                    >
+                        <IconButton
+                            color="primary"
+                            onClick={() => handleUploadButton()}
+                            disabled={disabled}
+                        >
+                            <UploadIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Grid>
+            </Grid>
+            {/* right buttons */}
+            <Grid
+                container
+                item
+                spacing={1}
+                xs={6}
+                sx={{ justifyContent: 'flex-end' }}
+            >
+                <Grid item>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'AddRows',
+                        })}
+                        placement="top"
+                    >
+                        <IconButton
+                            color="primary"
+                            onClick={() => handleAddButton()}
+                            disabled={disabled}
+                        >
+                            <AddCircleIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Grid>
+                <Grid item>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'DeleteRows',
+                        })}
+                        placement="top"
+                    >
+                        <IconButton
+                            color="primary"
+                            onClick={() => handleDeleteButton()}
+                            disabled={disabled || noRowSelected}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Grid>
+                <Grid item>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'MoveUpRows',
+                        })}
+                        placement="top"
+                    >
+                        <IconButton
+                            color="primary"
+                            onClick={() => handleMoveUpButton()}
+                            disabled={disabled || noRowSelected}
+                        >
+                            <ArrowUpwardIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Grid>
+                <Grid item>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'MoveDownRows',
+                        })}
+                        placement="top"
+                    >
+                        <IconButton
+                            color="primary"
+                            onClick={() => handleMoveDownButton()}
+                            disabled={disabled || noRowSelected}
+                        >
+                            <ArrowDownwardIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Grid>
+            </Grid>
+        </Grid>
+    );
+};
+
+export default TapChangerPaneButtons;

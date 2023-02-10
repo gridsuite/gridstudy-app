@@ -619,7 +619,15 @@
     "HighTapRatio":"Ratio (high tap position)",
     "ImportRegulationRule":"Import regulation rule",
 
-    "GenerateTapRows" : "Generate tap rows",
+    "AddRows": "Add rows",
+    "DeleteRows": "Delete rows",
+    "MoveUpRows": "Move up rows",
+    "MoveDownRows": "Move down rows",
+
+    "AddTapRowsDialogTitle" : "How many rows do you want to add ?",
+    "AddTapRowsButton" : "Add",
+
+    "DragAndDrop": "Drag and Drop",
 
     "CreateDephasingRule":"Create dephasing rule",
     "LowTapAlpha":"Shift angle (low tap position)",

@@ -24,7 +24,7 @@ import {
     gridItem,
 } from '../../../../dialogs/dialogUtils';
 import { REGULATION_MODES } from '../../../../network/constants';
-import BooleanInput from '../../../rhf-inputs/boolean-input';
+import SwitchInput from "../../../rhf-inputs/booleans/switch-input";
 import FloatInput from '../../../rhf-inputs/float-input';
 import SelectInput from '../../../rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
@@ -48,7 +48,7 @@ const PhaseTapChangerPane = ({
     });
 
     const phaseTapChangerEnabledField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${ENABLED}`}
             label="ConfigurePhaseTapChanger"
         />
@@ -64,7 +64,7 @@ const PhaseTapChangerPane = ({
     );
 
     const regulatingField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${REGULATING}`}
             label="Regulating"
             formProps={{

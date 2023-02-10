@@ -6,13 +6,12 @@
  */
 
 import React, { useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import PropTypes from 'prop-types';
 import { useController } from 'react-hook-form';
 
-const BooleanInput = ({ name, label, formProps }) => {
+const BooleanInput = ({ name, label, formProps, Input }) => {
     const {
         field: { onChange, value },
     } = useController({ name });
@@ -26,31 +25,35 @@ const BooleanInput = ({ name, label, formProps }) => {
         [onChange]
     );
 
-    return (
-        <FormControlLabel
-            control={
-                <Switch
-                    checked={value}
-                    onChange={(e) => handleChangeValue(e)}
-                    value="checked"
-                    inputProps={{
-                        'aria-label': 'primary checkbox',
-                    }}
-                    {...formProps}
-                />
-            }
-            label={intl.formatMessage({
-                id: label,
-            })}
+    const CustomInput = (
+        <Input
+            checked={value}
+            onChange={(e) => handleChangeValue(e)}
+            value="checked"
+            inputProps={{
+                'aria-label': 'primary checkbox',
+            }}
+            {...formProps}
         />
     );
+
+    if (label) {
+        return (
+            <FormControlLabel
+                control={CustomInput}
+                label={intl.formatMessage({ id: label })}
+            />
+        );
+    }
+
+    return CustomInput;
 };
 
 BooleanInput.propTypes = {
-    label: PropTypes.string.isRequired,
-    value: PropTypes.any,
-    onChange: PropTypes.func,
+    name: PropTypes.string.isRequired,
+    label: PropTypes.string,
     formProps: PropTypes.object,
+    Input: PropTypes.elementType.isRequired,
 };
 
 export default BooleanInput;

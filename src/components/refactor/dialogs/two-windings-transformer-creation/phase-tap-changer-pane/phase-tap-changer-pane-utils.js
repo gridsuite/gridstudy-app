@@ -83,42 +83,11 @@ const phaseTapChangerValidationSchema = (id) => ({
         [LOW_TAP_POSITION]: yup
             .number()
             .nullable()
-            .max(100)
             .when(ENABLED, {
                 is: true,
-                then: (schema) =>
-                    schema
-                        .required()
-                        .test(
-                            'incoherentLowTapPosition',
-                            'IncoherentLowTapPositionError',
-                            (lowTapPosition, context) =>
-                                isLowTapPositionCoherent(
-                                    lowTapPosition,
-                                    context
-                                )
-                        ),
+                then: (schema) => schema.required(),
             }),
-        [HIGH_TAP_POSITION]: yup
-            .number()
-            .nullable()
-            .min(yup.ref(LOW_TAP_POSITION), 'HighTapPositionError')
-            .max(100, 'HighTapPositionError')
-            .when([ENABLED], {
-                is: true,
-                then: (schema) =>
-                    schema
-                        .required()
-                        .test(
-                            'incoherentHighTapPosition',
-                            'InoherentHighTapPositionError',
-                            (highTapPosition, context) =>
-                                isHighTapPositionCoherent(
-                                    highTapPosition,
-                                    context
-                                )
-                        ),
-            }),
+        [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup
             .number()
             .nullable()
@@ -193,16 +162,6 @@ const phaseTapChangerValidationSchema = (id) => ({
 
 export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
     return phaseTapChangerValidationSchema(id);
-};
-
-const isLowTapPositionCoherent = (value, context) => {
-    const stepsTap = context.parent[STEPS]?.map((step) => step[STEPS_TAP]);
-    return stepsTap.length > 0 ? value === Math.min(...stepsTap) : true;
-};
-
-const isHighTapPositionCoherent = (value, context) => {
-    const stepsTap = context.parent[STEPS]?.map((step) => step[STEPS_TAP]);
-    return stepsTap.length > 0 ? value === Math.max(...stepsTap) : true;
 };
 
 const phaseTapChangerEmptyFormData = (id) => ({
