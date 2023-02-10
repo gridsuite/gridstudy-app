@@ -24,7 +24,7 @@ import {
     gridItem,
 } from '../../../../dialogs/dialogUtils';
 import { REGULATION_MODES } from '../../../../network/constants';
-import SwitchInput from "../../../rhf-inputs/booleans/switch-input";
+import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
 import FloatInput from '../../../rhf-inputs/float-input';
 import SelectInput from '../../../rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';

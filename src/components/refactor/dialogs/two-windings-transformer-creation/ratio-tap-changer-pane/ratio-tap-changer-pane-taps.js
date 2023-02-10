@@ -17,7 +17,7 @@ import {
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerPaneTable from '../tap-changer-pane-table/tap-changer-pane-table';
-import { RATIO_TAP } from '../two-windings-transformer-creation-dialog'
+import { RATIO_TAP } from '../two-windings-transformer-creation-dialog';
 
 const RatioTapChangerPaneTaps = ({ disabled }) => {
     const intl = useIntl();
