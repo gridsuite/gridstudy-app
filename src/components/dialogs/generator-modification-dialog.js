@@ -277,6 +277,7 @@ const GeneratorModificationDialog = ({
         previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
     });
 
+    // We need this here because we can't access lexical declaration 'minimumReactivePower' before initialization
     const minimumReactivePowerRef = useRef();
 
     const [maximumReactivePower, maximumReactivePowerField] = useDoubleValue({
