@@ -41,7 +41,6 @@ import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creati
 import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation-dialog';
 import LineCreationDialog from '../../dialogs/line-creation-dialog';
-import { default as TwoWindingsTransformerCreationDialogOld } from '../../dialogs/two-windings-transformer/two-windings-transformer-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
@@ -323,17 +322,6 @@ const NetworkModificationNodeEditor = () => {
         LINE_CREATION: {
             label: 'CreateLine',
             dialog: () => adapt(LineCreationDialog, withVLs),
-            icon: <AddIcon />,
-        },
-        TWO_WINDINGS_TRANSFORMER_CREATION_OLD: {
-            onlyDeveloperMode: true,
-            label: 'CreateTwoWindingsTransformer',
-            dialog: () =>
-                adapt(
-                    TwoWindingsTransformerCreationDialogOld,
-                    withVLs,
-                    withVLsAndEquipments
-                ),
             icon: <AddIcon />,
         },
         TWO_WINDINGS_TRANSFORMER_CREATION: {

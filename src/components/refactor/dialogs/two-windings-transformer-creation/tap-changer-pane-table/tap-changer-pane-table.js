@@ -31,15 +31,15 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useIntl } from 'react-intl';
-import { CreateRuleDialog } from '../../../../dialogs/two-windings-transformer/create-rule-dialog';
-import { ImportRuleDialog } from '../../../../dialogs/two-windings-transformer/import-rule-dialog';
-import { MAX_TAP_NUMBER } from '../../../../dialogs/two-windings-transformer/two-windings-transformer-creation-dialog';
 import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
 import IntegerInput from '../../../rhf-inputs/integer-input';
 import { TableNumericalInput } from '../../../rhf-inputs/table-inputs/table-numerical-input';
 import TapChangerPaneButtons from './tap-changer-pane-buttons';
 import CheckboxInput from '../../../rhf-inputs/booleans/checkbox-input';
 import AddRowsDialog from './add-rows-dialog';
+import { CreateRuleDialog } from '../create-rule/create-rule-dialog';
+import { ImportRuleDialog } from '../import-rule-dialog';
+import { MAX_TAP_NUMBER } from '../two-windings-transformer-creation-dialog';
 
 function MultiCheckbox({
     associatedArrayName,
