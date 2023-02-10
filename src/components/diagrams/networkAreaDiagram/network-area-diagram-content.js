@@ -17,7 +17,6 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
 
     return (
         <div
-            id="nad-svg"
             ref={ref}
             className={clsx(classes.divDiagram, classes.divNetworkAreaDiagram, {
                 [classes.divDiagramInvalid]:

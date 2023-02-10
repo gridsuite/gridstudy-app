@@ -620,7 +620,6 @@ DiagramPane.propTypes = {
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
-    onNextVoltageLevelClick: PropTypes.func,
     disabled: PropTypes.bool,
     visible: PropTypes.bool,
 };
