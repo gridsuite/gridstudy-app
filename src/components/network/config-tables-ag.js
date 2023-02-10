@@ -17,6 +17,7 @@ import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { ENERGY_SOURCES, LOAD_TYPES } from './constants';
 import NumericCellEditor from './numericCellEditor.jsx';
 import { Checkbox } from '@mui/material';
+import { booleanCellRender } from './cell-renderers';
 
 /**
  * Used for boolean cell data value to render a checkbox
@@ -27,23 +28,6 @@ import { Checkbox } from '@mui/material';
  * @param {any} rowIndex rowIndex of element
  * @returns {JSX.Element} Component template
  */
-
-const booleanCellRender = (rowData, key, style) => {
-    const isChecked = rowData.value;
-    return (
-        <div key={key} style={style}>
-            <div>
-                {isChecked !== undefined && (
-                    <Checkbox
-                        color="default"
-                        checked={isChecked}
-                        disableRipple={true}
-                    />
-                )}
-            </div>
-        </div>
-    );
-};
 
 const generateTapPositions = (params) => {
     return Array.from(
