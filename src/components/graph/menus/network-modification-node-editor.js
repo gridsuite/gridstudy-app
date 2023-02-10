@@ -40,7 +40,7 @@ import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
 import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation-dialog';
-import LineCreationDialog from '../../dialogs/line-creation-dialog';
+
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
@@ -66,6 +66,7 @@ import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
+import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
