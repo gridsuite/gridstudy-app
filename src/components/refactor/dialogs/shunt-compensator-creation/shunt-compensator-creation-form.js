@@ -28,6 +28,7 @@ import {
 
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
+import FloatInput from 'components/refactor/rhf-inputs/float-input';
 
 const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
     const disabledChecked = { disabled: true };
@@ -73,7 +74,7 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
     );
 
     const susceptancePerSectionField = (
-        <IntegerInput
+        <FloatInput
             name={SUSCEPTANCE_PER_SECTION}
             label={'ShuntSusceptancePerSection'}
             adornment={SusceptanceAdornment}
