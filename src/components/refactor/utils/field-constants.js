@@ -67,3 +67,9 @@ export const PHASE_TAP_CHANGER = 'phaseTapChanger';
 export const REGULATION_MODE = 'regulationMode';
 export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
+
+//ShuntCompensator
+export const MAXIMUM_NUMBER_OF_SECTIONS = 'maximumNumberOfSections';
+export const CURRENT_NUMBER_OF_SECTIONS = 'currentNumberOfSections';
+export const IDENTICAL_SECTIONS = 'identicalSections';
+export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
