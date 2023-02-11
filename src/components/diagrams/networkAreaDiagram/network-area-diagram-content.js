@@ -19,46 +19,35 @@ import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
 import {
     LOADING_HEIGHT,
-    LOADING_WIDTH, MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
-    MAX_HEIGHT_SUBSTATION,
-    MAX_HEIGHT_VOLTAGE_LEVEL,
+    LOADING_WIDTH,
+    MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-    MAX_WIDTH_SUBSTATION,
-    MAX_WIDTH_VOLTAGE_LEVEL,
     NoSvg,
-    SvgType,
-    useDiagramStyles
-} from "../diagram-common";
-
-import { fetchSvg } from "../../../utils/rest-api";
-import { isNodeInNotificationList, isNodeReadOnly } from "../../graph/util/model-functions";
-import { useTheme } from "@mui/material/styles";
-import withBranchMenu from "../../menus/branch-menu";
-import BaseEquipmentMenu from "../../menus/base-equipment-menu";
-
-import { useIntlRef, useSnackMessage } from "@gridsuite/commons-ui";
-import { useIsAnyNodeBuilding } from "../../util/is-any-node-building-hook";
-import { NetworkAreaDiagramViewer, SingleLineDiagramViewer } from "@powsybl/diagram-viewer";
-import LinearProgress from "@mui/material/LinearProgress";
-import Box from "@mui/material/Box";
+    useDiagramStyles,
+} from '../diagram-common';
+import { fetchSvg } from '../../../utils/rest-api';
+import { isNodeInNotificationList } from '../../graph/util/model-functions';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
+import LinearProgress from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
 
 const NetworkAreaDiagramContent = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
     const classes = useDiagramStyles();
-    const theme = useTheme();
-    const { loadFlowStatus } = props;
     const network = useSelector((state) => state.network);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
-    const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
     const [forceState, updateState] = useState(false);
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const [loadingState, setLoadingState] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
     const notificationIdList = useSelector((state) => state.notificationIdList);
+
+    /**
+     * MANUAL UPDATE SYSTEM
+     */
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
@@ -73,15 +62,38 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
         [forceUpdate]
     );
 
+    /**
+     * DIAGRAM CONTENT BUILDING
+     */
+
     const isNodeinNotifs = isNodeInNotificationList(
         currentNode,
         notificationIdList
     );
 
+    useLayoutEffect(() => {
+        if (svg.svg) {
+            const diagramViewer = new NetworkAreaDiagramViewer(
+                svgRef.current,
+                svg.svg,
+                LOADING_WIDTH,
+                LOADING_HEIGHT,
+                MAX_WIDTH_NETWORK_AREA_DIAGRAM,
+                MAX_HEIGHT_NETWORK_AREA_DIAGRAM
+            );
+
+            // If a previous diagram was loaded, we keep the user's zoom and scoll state for the current render
+            if (diagramViewerRef.current) {
+                diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
+            }
+
+            diagramViewerRef.current = diagramViewer;
+        }
+    }, [network, props.svgUrl, svg, currentNode, ref, loadingState]);
+
     useEffect(() => {
         if (props.svgUrl) {
             if (!isNodeinNotifs) {
-
                 setLoadingState(true);
                 fetchSvg(props.svgUrl)
                     .then((data) => {
@@ -106,7 +118,7 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
                         });
                         let msg;
                         if (error.status === 404) {
-                            msg = `Voltage level ${props.diagramId} not found`; // TODO change this error message
+                            msg = `Voltage level not found`;
                         } else {
                             msg = error.message;
                         }
@@ -121,64 +133,25 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
         } else {
             setSvg(NoSvg);
         }
-    }, [
-        props.svgUrl,
-        forceState,
-        snackError,
-        intlRef,
-        props.diagramId,
-        props.svgType,
-        isNodeinNotifs,
-    ]);
+    }, [props.svgUrl, forceState, snackError, intlRef, isNodeinNotifs]);
 
-    useLayoutEffect(() => {
-        if (props.disabled) return;
-
-        if (svg.svg) {
-            const diagramViewer = new NetworkAreaDiagramViewer(
-                svgRef.current,
-                svg.svg,
-                LOADING_WIDTH, // svgFinalWidth,
-                LOADING_HEIGHT, // svgFinalHeight,
-                MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-                MAX_HEIGHT_NETWORK_AREA_DIAGRAM
-            );
-
-            // If a previous diagram was loaded, we keep the user's zoom and scoll state for the current render
-            if (diagramViewerRef.current) {
-                diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
-            }
-
-            diagramViewerRef.current = diagramViewer;
-        }
-    }, [
-        network,
-        props.diagramId,
-        props.svgUrl,
-        svg,
-        currentNode,
-        props.isComputationRunning,
-        isAnyNodeBuilding,
-        props.svgType,
-        theme,
-        ref,
-        props.disabled,
-        loadingState,
-    ]);
+    /**
+     * RENDER
+     */
 
     return (
         <>
-            <Box height={2}>
-                {(loadingState) && (
-                    <LinearProgress />
-                )}
-            </Box>
+            <Box height={2}>{loadingState && <LinearProgress />}</Box>
             <div
                 ref={svgRef}
-                className={clsx(classes.divDiagram, classes.divNetworkAreaDiagram, {
-                    [classes.divDiagramInvalid]:
-                        loadFlowStatus !== RunningStatus.SUCCEED,
-                })}
+                className={clsx(
+                    classes.divDiagram,
+                    classes.divNetworkAreaDiagram,
+                    {
+                        [classes.divDiagramInvalid]:
+                            props.loadFlowStatus !== RunningStatus.SUCCEED,
+                    }
+                )}
                 style={{ height: '100%' }}
             />
         </>
@@ -187,6 +160,7 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
 
 NetworkAreaDiagramContent.propTypes = {
     loadFlowStatus: PropTypes.any,
+    svgUrl: PropTypes.string,
 };
 
 export default NetworkAreaDiagramContent;

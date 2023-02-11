@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
     PARAM_CENTER_LABEL,
@@ -256,9 +255,9 @@ export function DiagramPane({
     const [views, setViews] = useState([]);
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
 
-    const [displayedDiagramHeights, setDisplayedDiagramHeights] = useState([]);
-    const displayedDiagramHeightsRef = useRef();
-    displayedDiagramHeightsRef.current = displayedDiagramHeights;
+    // const [displayedDiagramHeights, setDisplayedDiagramHeights] = useState([]);
+    // const displayedDiagramHeightsRef = useRef();
+    // displayedDiagramHeightsRef.current = displayedDiagramHeights;
 
     const createView = useDisplayView(network, studyUuid, currentNode);
 
@@ -475,34 +474,34 @@ export function DiagramPane({
      * DIAGRAM SIZE COMPUTATION
      */
 
-    const [computedHeight, setComputedHeight] = useState();
-
-    // Here the goal is to remove from this list of heights every diagram height that correspond to a minimized diagram
-    useEffect(() => {
-        let displayedDiagramHeights_ =
-            displayedDiagramHeightsRef.current?.filter((displayedHeight) =>
-                views
-                    .filter((sld) => sld.state !== ViewState.MINIMIZED)
-                    .map((sld) => sld.svgType + sld.id)
-                    .includes(displayedHeight.svgType + displayedHeight.id)
-            );
-
-        setDisplayedDiagramHeights(displayedDiagramHeights_);
-    }, [views]);
-
-    useEffect(() => {
-        const initialHeights = [
-            ...displayedDiagramHeights.map(
-                (displayedHeight) => displayedHeight.initialHeight
-            ),
-        ];
-        if (initialHeights.length > 0) {
-            const newComputedHeight = Math.max(...initialHeights);
-            if (newComputedHeight) {
-                setComputedHeight(newComputedHeight);
-            }
-        }
-    }, [displayedDiagramHeights]);
+    // const [computedHeight, setComputedHeight] = useState();
+    //
+    // // Here the goal is to remove from this list of heights every diagram height that correspond to a minimized diagram
+    // useEffect(() => {
+    //     let displayedDiagramHeights_ =
+    //         displayedDiagramHeightsRef.current?.filter((displayedHeight) =>
+    //             views
+    //                 .filter((sld) => sld.state !== ViewState.MINIMIZED)
+    //                 .map((sld) => sld.svgType + sld.id)
+    //                 .includes(displayedHeight.svgType + displayedHeight.id)
+    //         );
+    //
+    //     setDisplayedDiagramHeights(displayedDiagramHeights_);
+    // }, [views]);
+    //
+    // useEffect(() => {
+    //     const initialHeights = [
+    //         ...displayedDiagramHeights.map(
+    //             (displayedHeight) => displayedHeight.initialHeight
+    //         ),
+    //     ];
+    //     if (initialHeights.length > 0) {
+    //         const newComputedHeight = Math.max(...initialHeights);
+    //         if (newComputedHeight) {
+    //             setComputedHeight(newComputedHeight);
+    //         }
+    //     }
+    // }, [displayedDiagramHeights]);
 
     /**
      * RENDER
@@ -539,33 +538,18 @@ export function DiagramPane({
                                     )
                             }
                             <Diagram
-                                diagramTitle={diagramView.name}
                                 ref={diagramView.ref}
-                                disabled={disabled}
-                                pinned={diagramView.state === ViewState.PINNED}
+                                align={diagramView.align}
                                 diagramId={diagramView.id}
-                                svgType={diagramView.svgType}
-                                svgUrl={diagramView.svgUrl}
-                                studyUuid={studyUuid}
-                                // Size computation
-                                computedHeight={
-                                    // We are not harmonizing the NAD's height with the SLD's
-                                    diagramView.svgType !==
-                                    SvgType.NETWORK_AREA_DIAGRAM
-                                        ? computedHeight
-                                        : undefined
-                                }
-                                totalHeight={height}
-                                totalWidth={width}
-                                numberToDisplay={displayedDiagrams.length}
-                                setDisplayedDiagramHeights={
-                                    setDisplayedDiagramHeights
-                                }
-                                // SLD specific
+                                diagramTitle={diagramView.name}
+                                disabled={disabled}
                                 isComputationRunning={isComputationRunning}
                                 loadFlowStatus={loadFlowStatus}
+                                pinned={diagramView.state === ViewState.PINNED}
                                 showInSpreadsheet={showInSpreadsheet}
-                                align={diagramView.align}
+                                studyUuid={studyUuid}
+                                svgType={diagramView.svgType}
+                                svgUrl={diagramView.svgUrl}
                             />
                         </React.Fragment>
                     ))}
