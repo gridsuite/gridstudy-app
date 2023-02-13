@@ -1,16 +1,13 @@
-import React, { useRef, useMemo, useCallback, useEffect } from 'react';
-import { AgGridReact } from 'ag-grid-react'; // the AG Grid React Component
+import React, { useMemo, useCallback, useEffect } from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+import 'ag-grid-community/styles/ag-theme-material.css';
 
-import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
-import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
-import 'ag-grid-community/styles/ag-theme-material.css'; // Optional theme CSS
-
-import { makeStyles, useTheme } from '@mui/styles';
+import { useTheme } from '@mui/styles';
 import LoaderWithOverlay from '../util/loader-with-overlay';
-import clsx from 'clsx';
-import { DARK_THEME, LIGHT_THEME } from '@gridsuite/commons-ui';
 
-export const EquipmentTableAG = ({
+export const EquipmentTable = ({
     rows,
     columns,
     scrollTop,
@@ -28,14 +25,6 @@ export const EquipmentTableAG = ({
     const cellClickedListener = useCallback((event) => {
         console.log('cellClicked', event);
     }, []);
-
-    // Example using Grid's API
-    const buttonListener = useCallback(
-        (e) => {
-            gridRef.current.api.deselectAll();
-        },
-        [gridRef]
-    );
 
     const getRowId = useMemo(() => {
         return (params) => params.data.id;
@@ -68,19 +57,18 @@ export const EquipmentTableAG = ({
             )}
             {props.fetched && (
                 <div style={{ height: '100%' }}>
-                    {/* On div wrapping Grid a) specify theme CSS Class Class and b) sets Grid size */}
                     <div
                         className={theme.aggrid}
                         style={{ width: 'auto', height: '100%' }}
                     >
                         <AgGridReact
-                            ref={gridRef} // Ref for accessing Grid's API
-                            rowData={rows} // Row Data for Rows
-                            columnDefs={columns} // Column Defs for Columns
-                            defaultColDef={defaultColDef} // Default Column Properties
-                            animateRows={true} // Optional - set to 'true' to have rows animate when sorted
-                            rowSelection="multiple" // Options - allows click selection of rows
-                            onCellClicked={cellClickedListener} // Optional - registering for Grid Event
+                            ref={gridRef}
+                            rowData={rows}
+                            columnDefs={columns}
+                            defaultColDef={defaultColDef}
+                            animateRows={true}
+                            rowSelection="multiple"
+                            onCellClicked={cellClickedListener}
                             suppressPropertyNamesCheck={true}
                             getRowStyle={getRowStyle}
                             enableCellTextSelection={true}

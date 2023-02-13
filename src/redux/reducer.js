@@ -90,7 +90,7 @@ import {
     saveLocalStorageLanguage,
     getLocalStorageComputedLanguage,
 } from './local-storage';
-import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables-ag';
+import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/config-tables';
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,

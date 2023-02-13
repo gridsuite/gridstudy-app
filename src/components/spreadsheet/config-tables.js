@@ -5,17 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { equipments } from './network-equipments';
+import { equipments } from '../network/network-equipments';
 import {
     NumericalField,
     NameField,
     EnumField,
     BooleanListField,
     TapChangerSelector,
-} from './equipment-table-editors';
+} from '../network/equipment-table-editors';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
-import { ENERGY_SOURCES, LOAD_TYPES } from './constants';
-import NumericCellEditor from './numericCellEditor.jsx';
+import { ENERGY_SOURCES, LOAD_TYPES } from '../network/constants';
+import NumericCellEditor from '../network/numericCellEditor.jsx';
 import { Checkbox } from '@mui/material';
 import { booleanCellRender } from './cell-renderers';
 

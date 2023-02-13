@@ -18,7 +18,6 @@ import {
 import Paper from '@mui/material/Paper';
 import { equipments } from './network/network-equipments';
 import PropTypes from 'prop-types';
-import NetworkTableAG from './network/network-table-ag';
 import clsx from 'clsx';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -37,6 +36,7 @@ import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { SvgType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
+import NetworkTable from './spreadsheet/network-table';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -319,7 +319,7 @@ const StudyPane = ({
         return (
             props.view === StudyView.SPREADSHEET && (
                 <Paper className={clsx('singlestretch-child', classes.table)}>
-                    <NetworkTableAG
+                    <NetworkTable
                         network={network}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
