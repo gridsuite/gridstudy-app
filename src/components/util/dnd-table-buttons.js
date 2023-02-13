@@ -17,6 +17,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
+import { SELECTED } from '../refactor/utils/field-constants';
 
 const DndTableButtons = ({
     arrayFormName,
@@ -34,7 +35,7 @@ const DndTableButtons = ({
         name: arrayFormName,
     });
 
-    const noRowsSelected = !currentRows.some((row) => row.selected);
+    const noRowsSelected = !currentRows.some((row) => row[SELECTED]);
 
     return (
         <Grid container item>

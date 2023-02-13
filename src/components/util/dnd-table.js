@@ -26,6 +26,7 @@ import DndTableButtons from './dnd-table-buttons';
 import { TableNumericalInput } from '../refactor/rhf-inputs/table-inputs/table-numerical-input';
 import CheckboxInput from '../refactor/rhf-inputs/booleans/checkbox-input';
 import PropTypes from 'prop-types';
+import { SELECTED } from '../refactor/utils/field-constants';
 
 function MultiCheckbox({
     arrayFormName,
@@ -36,7 +37,7 @@ function MultiCheckbox({
         name: arrayFormName,
     });
 
-    const allRowSelected = arrayToWatch.every((row) => row.selected);
+    const allRowSelected = arrayToWatch.every((row) => row[SELECTED]);
 
     return (
         <Checkbox
@@ -103,26 +104,26 @@ const DndTable = ({
 
     function selectAllRows() {
         for (let i = 0; i < tapFields.length; i++) {
-            setValue(`${arrayFormName}[${i}].selected`, true);
+            setValue(`${arrayFormName}[${i}].${SELECTED}`, true);
         }
     }
 
     function unselectAllRows() {
         for (let i = 0; i < tapFields.length; i++) {
-            setValue(`${arrayFormName}[${i}].selected`, false);
+            setValue(`${arrayFormName}[${i}].${SELECTED}`, false);
         }
     }
 
     function moveUpSelectedRows() {
         const currentTapRows = getValues(arrayFormName);
 
-        if (currentTapRows[0].selected) {
+        if (currentTapRows[0][SELECTED]) {
             // we can't move up more the rows, so we stop
             return;
         }
 
         for (let i = 1; i < currentTapRows.length; i++) {
-            if (currentTapRows[i].selected) {
+            if (currentTapRows[i][SELECTED]) {
                 swap(i - 1, i);
             }
         }
@@ -131,13 +132,13 @@ const DndTable = ({
     function moveDownSelectedRows() {
         const currentTapRows = getValues(arrayFormName);
 
-        if (currentTapRows[currentTapRows.length - 1].selected) {
+        if (currentTapRows[currentTapRows.length - 1][SELECTED]) {
             // we can't move down more the rows, so we stop
             return;
         }
 
         for (let i = currentTapRows.length - 2; i >= 0; i--) {
-            if (currentTapRows[i].selected) {
+            if (currentTapRows[i][SELECTED]) {
                 swap(i, i + 1);
             }
         }
@@ -204,7 +205,7 @@ const DndTable = ({
                                 </Tooltip>
                                 <TableCell>
                                     <CheckboxInput
-                                        name={`${arrayFormName}[${index}].selected`}
+                                        name={`${arrayFormName}[${index}].${SELECTED}`}
                                     />
                                 </TableCell>
                                 {columnsDefinition.map((column) =>
