@@ -15,7 +15,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import makeStyles from '@mui/styles/makeStyles';
 import {
@@ -95,12 +94,11 @@ function getValueOrNull(val) {
  */
 const GeneratorModificationDialog = ({
     editData,
+    studyUuid,
     currentNodeUuid,
     voltageLevelsIdsAndTopologyPromise,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const intl = useIntl();
 
     const classes = useStyles();
