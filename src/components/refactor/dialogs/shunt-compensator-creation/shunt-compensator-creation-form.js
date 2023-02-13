@@ -23,7 +23,6 @@ import {
     gridItem,
     GridSection,
     SusceptanceAdornment,
-    toPositiveIntValue,
 } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
@@ -53,7 +52,7 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
         <IntegerInput
             name={MAXIMUM_NUMBER_OF_SECTIONS}
             label={'ShuntMaximumNumberOfSections'}
-            transformValue={toPositiveIntValue}
+            isPositive={true}
         />
     );
 
@@ -61,7 +60,7 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
         <IntegerInput
             name={CURRENT_NUMBER_OF_SECTIONS}
             label={'ShuntCurrentNumberOfSections'}
-            transformValue={toPositiveIntValue}
+            isPositive={true}
         />
     );
 

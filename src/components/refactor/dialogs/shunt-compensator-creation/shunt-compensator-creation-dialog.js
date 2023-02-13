@@ -13,6 +13,10 @@ import {
     CURRENT_NUMBER_OF_SECTIONS,
     IDENTICAL_SECTIONS,
     SUSCEPTANCE_PER_SECTION,
+    CONNECTIVITY,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
@@ -40,7 +44,7 @@ const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [MAXIMUM_NUMBER_OF_SECTIONS]: 1,
     [CURRENT_NUMBER_OF_SECTIONS]: 0,
-    [IDENTICAL_SECTIONS]: false,
+    [IDENTICAL_SECTIONS]: true,
     [SUSCEPTANCE_PER_SECTION]: null,
     ...getConnectivityEmptyFormData(),
 };
@@ -56,7 +60,7 @@ const schema = yup
             .required(),
         [CURRENT_NUMBER_OF_SECTIONS]: yup
             .number()
-            .moreThan(-1, 'ShuntCompensatorErrorCurrentLessThanMaximum')
+            .min(0, 'ShuntCompensatorErrorCurrentLessThanZero')
             .max(
                 yup.ref(MAXIMUM_NUMBER_OF_SECTIONS),
                 'ShuntCompensatorErrorCurrentLessThanMaximum'
@@ -213,13 +217,13 @@ const ShuntCompensatorCreationDialog = ({
                 shuntCompensator[CURRENT_NUMBER_OF_SECTIONS],
                 shuntCompensator[IDENTICAL_SECTIONS],
                 shuntCompensator[SUSCEPTANCE_PER_SECTION],
-                shuntCompensator.connectivity,
+                shuntCompensator[CONNECTIVITY],
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                shuntCompensator.connectivity?.connectionDirection ??
+                shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                shuntCompensator?.connectivity?.connectionName ?? null,
-                shuntCompensator?.connectivity?.connectionPosition ?? null
+                shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME] ?? null,
+                shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
