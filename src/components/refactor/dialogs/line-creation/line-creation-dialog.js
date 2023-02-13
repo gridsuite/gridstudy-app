@@ -8,6 +8,10 @@
 import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITS_1,
@@ -21,6 +25,7 @@ import {
     SHUNT_CONDUCTANCE_2,
     SHUNT_SUSCEPTANCE_1,
     SHUNT_SUSCEPTANCE_2,
+    VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
@@ -51,7 +56,7 @@ import LineCreationForm from './line-creation-form';
  */
 
 const emptyFormData = {
-    [EQUIPMENT_ID]: null,
+    [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getConnectivityEmptyFormData(CONNECTIVITY_1),
     ...getConnectivityEmptyFormData(CONNECTIVITY_2),
@@ -65,31 +70,6 @@ const emptyFormData = {
     [CURRENT_LIMITS_2]: { [PERMANENT_LIMIT]: null },
 };
 
-const schema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        ...getConnectivityFormValidationSchema(CONNECTIVITY_1),
-        ...getConnectivityFormValidationSchema(CONNECTIVITY_2),
-        [SERIES_RESISTANCE]: yup.number().nullable().required(),
-        [SERIES_REACTANCE]: yup.number().nullable().required(),
-        [SHUNT_SUSCEPTANCE_1]: yup.number(),
-        [SHUNT_CONDUCTANCE_1]: yup.number(),
-        [SHUNT_SUSCEPTANCE_2]: yup.number(),
-        [SHUNT_CONDUCTANCE_2]: yup.number(),
-        [CURRENT_LIMITS_1]: yup.object().shape({
-            [PERMANENT_LIMIT]: yup.number().nullable(),
-        }),
-        [CURRENT_LIMITS_2]: yup.object().shape({
-            [PERMANENT_LIMIT]: yup
-                .number()
-                .nullable()
-                .positive('permanentCurrentLimitGreaterThanZero'),
-        }),
-    })
-    .required();
-
 const LineCreationDialog = ({
     editData,
     currentNodeUuid,
@@ -98,6 +78,32 @@ const LineCreationDialog = ({
     voltageLevelOptionsPromise,
     ...dialogProps
 }) => {
+    const schema = yup
+        .object()
+        .shape({
+            [EQUIPMENT_ID]: yup.string().required(),
+            [EQUIPMENT_NAME]: yup.string(),
+            ...(displayConnectivity &&
+                getConnectivityFormValidationSchema(CONNECTIVITY_1)),
+            ...(displayConnectivity &&
+                getConnectivityFormValidationSchema(CONNECTIVITY_2)),
+            [SERIES_RESISTANCE]: yup.number().nullable().required(),
+            [SERIES_REACTANCE]: yup.number().nullable().required(),
+            [SHUNT_SUSCEPTANCE_1]: yup.number().nullable(),
+            [SHUNT_CONDUCTANCE_1]: yup.number().nullable(),
+            [SHUNT_SUSCEPTANCE_2]: yup.number().nullable(),
+            [SHUNT_CONDUCTANCE_2]: yup.number().nullable(),
+            [CURRENT_LIMITS_1]: yup.object().shape({
+                [PERMANENT_LIMIT]: yup.number().nullable(),
+            }),
+            [CURRENT_LIMITS_2]: yup.object().shape({
+                [PERMANENT_LIMIT]: yup
+                    .number()
+                    .nullable()
+                    .positive('permanentCurrentLimitGreaterThanZero'),
+            }),
+        })
+        .required();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { snackError } = useSnackMessage();
@@ -127,26 +133,28 @@ const LineCreationDialog = ({
             [CURRENT_LIMITS_2]: {
                 [PERMANENT_LIMIT]: line.permanentLimit2,
             },
-            ...getConnectivityFormData(
-                {
-                    voltageLevelId: line.voltageLevelId1,
-                    busbarSectionId: null,
-                    connectionDirection: line.connectionDirection1,
-                    connectionName: line.connectionName1,
-                    connectionPosition: line.connectionPosition1,
-                },
-                CONNECTIVITY_1
-            ),
-            ...getConnectivityFormData(
-                {
-                    voltageLevelId: line.voltageLevelId2,
-                    busbarSectionId: null,
-                    connectionDirection: line.connectionDirection2,
-                    connectionName: line.connectionName2,
-                    connectionPosition: line.connectionPosition2,
-                },
-                CONNECTIVITY_2
-            ),
+            ...(displayConnectivity &&
+                getConnectivityFormData(
+                    {
+                        voltageLevelId: line.voltageLevelId1,
+                        busbarSectionId: null,
+                        connectionDirection: line.connectionDirection1,
+                        connectionName: line.connectionName1,
+                        connectionPosition: line.connectionPosition1,
+                    },
+                    CONNECTIVITY_1
+                )),
+            ...(displayConnectivity &&
+                getConnectivityFormData(
+                    {
+                        voltageLevelId: line.voltageLevelId2,
+                        busbarSectionId: null,
+                        connectionDirection: line.connectionDirection2,
+                        connectionName: line.connectionName2,
+                        connectionPosition: line.connectionPosition2,
+                    },
+                    CONNECTIVITY_2
+                )),
         });
     };
 
@@ -213,28 +221,28 @@ const LineCreationDialog = ({
                 currentNodeUuid,
                 line[EQUIPMENT_ID],
                 sanitizeString(line[EQUIPMENT_NAME]),
-                line.seriesResistance,
-                line.seriesReactance,
-                line.ShuntConductance1,
-                line.shuntSusceptance1,
-                line.ShuntConductance2,
-                line.shuntSusceptance2,
-                line.connectivity1?.voltageLevel?.id,
-                line.connectivity1?.busOrBusbarSection?.id,
-                line.connectivity2?.voltageLevel?.id,
-                line.connectivity2?.busOrBusbarSection?.id,
-                line.currentLimits1?.permanentLimit,
-                line.currentLimits2?.permanentLimit,
+                line[SERIES_RESISTANCE],
+                line[SERIES_REACTANCE],
+                line[SHUNT_CONDUCTANCE_1],
+                line[SHUNT_SUSCEPTANCE_1],
+                line[SHUNT_CONDUCTANCE_2],
+                line[SHUNT_SUSCEPTANCE_2],
+                line[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id,
+                line[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
+                line[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
+                line[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
+                line[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
+                line[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                line.connectivity1?.connectionName ?? null,
-                line.connectivity1?.connectionDirection ??
+                line[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? null,
+                line[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                line.connectivity2?.connectionName ?? null,
-                line.connectivity2?.connectionDirection ??
+                line[CONNECTIVITY_2]?.[CONNECTION_NAME] ?? null,
+                line[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                line.connectivity1?.connectionPosition ?? null,
-                line.connectivity2?.connectionPosition ?? null
+                line[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
+                line[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

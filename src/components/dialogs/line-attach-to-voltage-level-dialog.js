@@ -584,10 +584,11 @@ const LineAttachToVoltageLevelDialog = ({
                         open={true}
                         onClose={onLineDialogClose}
                         currentNodeUuid={currentNodeUuid}
-                        substationOptionsPromise={substationOptionsPromise}
+                        voltageLevelOptionsPromise={substationOptionsPromise}
                         displayConnectivity={false}
                         onCreateLine={onLineDo}
                         editData={lineToEdit}
+                        {...dialogProps}
                     />
                 )}
             </ModificationDialog>

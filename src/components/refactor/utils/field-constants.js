@@ -69,7 +69,7 @@ export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
 
 //line
-export const SHUNT_CONDUCTANCE_1 = 'ShuntConductance1';
-export const SHUNT_CONDUCTANCE_2 = 'ShuntConductance2';
+export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
+export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
 export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
 export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
