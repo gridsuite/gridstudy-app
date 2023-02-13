@@ -19,6 +19,7 @@ import { ImportRuleDialog } from '../import-rule-dialog';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
+    SELECTED,
     STEPS,
     STEPS_TAP,
     TAP_POSITION,
@@ -127,7 +128,7 @@ const TapChangerPaneTable = ({
 
         let rowsToDelete = [];
         for (let i = 0; i < currentTapRows.length; i++) {
-            if (currentTapRows[i].selected) {
+            if (currentTapRows[i][SELECTED]) {
                 rowsToDelete.push(i);
             }
         }
