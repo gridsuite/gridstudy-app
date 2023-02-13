@@ -26,6 +26,7 @@ import RegulatingTerminalForm from '../../regulating-terminal/regulating-termina
 import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
 import { REGULATION_TYPES, SIDE } from '../../../../network/constants';
 import SelectInput from '../../../rhf-inputs/select-input';
+import { useCallback } from 'react';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
@@ -77,13 +78,17 @@ const RatioTapChangerPane = ({
         />
     );
 
-    const isVoltageRegulationOn = () => {
+    const isVoltageRegulationOn = useCallback(() => {
         return (
             regulatingWatch &&
             ratioTapLoadTapChangingCapabilitiesWatcher &&
             ratioTapChangerEnabledWatcher
         );
-    };
+    }, [
+        regulatingWatch,
+        ratioTapLoadTapChangingCapabilitiesWatcher,
+        ratioTapChangerEnabledWatcher,
+    ]);
 
     const regulationTypeField = (
         <SelectInput

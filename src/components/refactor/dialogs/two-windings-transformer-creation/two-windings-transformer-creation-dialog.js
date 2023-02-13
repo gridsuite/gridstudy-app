@@ -149,6 +149,22 @@ const TwoWindingsTransformerCreationDialog = ({
             : null;
     };
 
+    const getTapSide = (twt, tap) => {
+        return tap?.regulatingTerminalId === twt.equipmentId
+            ? tap?.regulatingTerminalVlId === twt?.voltageLevelId1
+                ? SIDE.SIDE1.id
+                : SIDE.SIDE2.id
+            : null;
+    };
+
+    const getRegulationType = (twt, tap) => {
+        return tap?.regulatingTerminalId != null
+            ? tap?.regulatingTerminalId === twt.equipmentId
+                ? REGULATION_TYPES.LOCAL.id
+                : REGULATION_TYPES.DISTANT.id
+            : null;
+    };
+
     const fromEditDataToFormValues = useCallback(
         (twt) => {
             reset({
@@ -190,20 +206,11 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                     regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE],
                     regulating: twt?.[PHASE_TAP_CHANGER]?.[REGULATING],
-                    regulationType:
-                        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId ===
-                        twt.equipmentId
-                            ? REGULATION_TYPES.LOCAL.id
-                            : REGULATION_TYPES.DISTANT.id,
-                    regulationSide:
-                        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId ===
-                        twt.equipmentId
-                            ? twt?.[PHASE_TAP_CHANGER]
-                                  ?.regulatingTerminalVlId ===
-                              twt?.voltageLevelId1
-                                ? SIDE.SIDE1.id
-                                : SIDE.SIDE2.id
-                            : undefined,
+                    regulationType: getRegulationType(
+                        twt,
+                        twt?.[PHASE_TAP_CHANGER]
+                    ),
+                    regulationSide: getTapSide(twt, twt?.[PHASE_TAP_CHANGER]),
                     currentLimiterRegulatingValue:
                         twt?.[PHASE_TAP_CHANGER]?.regulationValue,
                     flowSetpointRegulatingValue:
@@ -230,20 +237,11 @@ const TwoWindingsTransformerCreationDialog = ({
                             LOAD_TAP_CHANGING_CAPABILITIES
                         ],
                     regulating: twt?.[RATIO_TAP_CHANGER]?.[REGULATING],
-                    regulationType:
-                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId ===
-                        twt.equipmentId
-                            ? REGULATION_TYPES.LOCAL.id
-                            : REGULATION_TYPES.DISTANT.id,
-                    regulationSide:
-                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId ===
-                        twt.equipmentId
-                            ? twt?.[RATIO_TAP_CHANGER]
-                                  ?.regulatingTerminalVlId ===
-                              twt?.voltageLevelId1
-                                ? SIDE.SIDE1.id
-                                : SIDE.SIDE2.id
-                            : undefined,
+                    regulationType: getRegulationType(
+                        twt,
+                        twt?.[RATIO_TAP_CHANGER]
+                    ),
+                    regulationSide: getTapSide(twt, twt?.[RATIO_TAP_CHANGER]),
                     targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
                     targetDeadband: twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
                     lowTapPosition:
@@ -306,7 +304,11 @@ const TwoWindingsTransformerCreationDialog = ({
                             LOAD_TAP_CHANGING_CAPABILITIES
                         ],
                     regulating: twt?.[RATIO_TAP_CHANGER]?.[REGULATING],
-                    regulationType: undefined,
+                    regulationType:
+                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId ===
+                        twt.equipmentId
+                            ? REGULATION_TYPES.LOCAL.id
+                            : REGULATION_TYPES.DISTANT.id,
                     regulationSide:
                         twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId ===
                         twt.equipmentId
@@ -315,7 +317,7 @@ const TwoWindingsTransformerCreationDialog = ({
                               twt?.voltageLevelId1
                                 ? SIDE.SIDE1.id
                                 : SIDE.SIDE2.id
-                            : undefined,
+                            : null,
                     targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
                     targetDeadband: isNaN(
                         twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND]
@@ -343,7 +345,11 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                     regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE],
                     regulating: twt?.[PHASE_TAP_CHANGER]?.[REGULATING],
-                    regulationType: undefined,
+                    regulationType:
+                        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId ===
+                        twt.equipmentId
+                            ? REGULATION_TYPES.LOCAL.id
+                            : REGULATION_TYPES.DISTANT.id,
                     regulationSide:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId ===
                         twt.equipmentId
@@ -352,7 +358,7 @@ const TwoWindingsTransformerCreationDialog = ({
                               twt?.voltageLevelId1
                                 ? SIDE.SIDE1.id
                                 : SIDE.SIDE2.id
-                            : undefined,
+                            : null,
                     currentLimiterRegulatingValue:
                         twt?.[PHASE_TAP_CHANGER]?.regulationValue,
                     flowSetpointRegulatingValue:

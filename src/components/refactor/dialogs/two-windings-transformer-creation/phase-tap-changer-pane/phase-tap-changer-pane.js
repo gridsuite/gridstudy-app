@@ -35,6 +35,7 @@ import FloatInput from '../../../rhf-inputs/float-input';
 import SelectInput from '../../../rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneTaps from './phase-tap-changer-pane-taps';
+import { useCallback } from 'react';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -53,16 +54,16 @@ const PhaseTapChangerPane = ({
         name: `${id}.${REGULATING}`,
     });
 
+    const regulationTypeWatch = useWatch({
+        name: `${id}.${REGULATION_TYPE}`,
+    });
+
     const phaseTapChangerEnabledField = (
         <BooleanInput
             name={`${id}.${ENABLED}`}
             label="ConfigurePhaseTapChanger"
         />
     );
-
-    const regulationTypeWatch = useWatch({
-        name: `${id}.${REGULATION_TYPE}`,
-    });
 
     const regulationModeField = (
         <SelectInput
@@ -89,13 +90,13 @@ const PhaseTapChangerPane = ({
         />
     );
 
-    const isVoltageRegulationOn = () => {
+    const isVoltageRegulationOn = useCallback(() => {
         return (
             regulatingWatch &&
             regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id &&
             phaseTapChangerEnabledWatch
         );
-    };
+    }, [regulatingWatch, regulationModeWatch, phaseTapChangerEnabledWatch]);
 
     const regulationTypeField = (
         <SelectInput
@@ -219,10 +220,7 @@ const PhaseTapChangerPane = ({
                                     alignItems: 'center',
                                 }}
                             >
-                                {regulationTypeWatch ===
-                                    REGULATION_TYPES.DISTANT.id && (
-                                    <FormattedMessage id="DistantRegulatedTerminal" />
-                                )}
+                                <FormattedMessage id="DistantRegulatedTerminal" />
                             </Grid>
                             {gridItem(regulatingTerminalField, 8)}
                         </Grid>
@@ -239,10 +237,7 @@ const PhaseTapChangerPane = ({
                                     alignItems: 'center',
                                 }}
                             >
-                                {regulationTypeWatch ===
-                                    REGULATION_TYPES.LOCAL.id && (
-                                    <FormattedMessage id="RegulatedTerminal" />
-                                )}
+                                <FormattedMessage id="RegulatedTerminal" />
                             </Grid>
                             {gridItem(sideField, 4)}
                         </Grid>
