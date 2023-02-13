@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import DynamicSimulationResultSeriesChart from './dynamic-simulation-result-series-chart';
 import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
@@ -94,6 +94,11 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
     const classes = useStyles();
     const intl = useIntl();
 
+    // store the previous layout when scaling in order to restore later
+    const prevLayoutRef = useRef([]);
+
+    // plotIdScale
+    const [plotIdScale, setPlotIdScale] = useState(undefined);
     // button options switch wide screen / normal screen
     const [wideScreen, setWideScreen] = useState(false);
     // button options hide/show series/list
@@ -218,6 +223,50 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         }));
     }, []);
 
+    const handlePlotScale = useCallback(
+        (plotId, plotScale) => {
+            // set grid layout
+            setGridLayout((prev) => {
+                let newItems;
+                // must clone each item, not only the array to force RGL responsive
+                if (plotScale) {
+                    const backupItems = prev.items.map((item) => ({ ...item }));
+                    prevLayoutRef.current = backupItems; // memorize layout
+
+                    newItems = prev.items.map((item) => ({
+                        ...item,
+                        x: Infinity,
+                        y: Infinity,
+                        w: 0,
+                        h: 0,
+                    }));
+
+                    // scale only one current item
+                    let scaleItem = newItems.find((item) => item.i === plotId);
+
+                    scaleItem.w = prev.cols; // set to full width of container
+                    scaleItem.h = 10; // max height of the container
+                    scaleItem.x = 0;
+                    scaleItem.y = 0;
+                } else {
+                    // restore all items
+                    newItems = prevLayoutRef.current.map((item) => ({
+                        ...item,
+                    }));
+                }
+
+                return {
+                    ...prev,
+                    items: newItems,
+                };
+            });
+
+            // set the current plot id in scaling
+            setPlotIdScale(plotScale ? plotId : undefined);
+        },
+        [prevLayoutRef]
+    );
+
     const handleClose = useCallback(
         (index) => {
             const newPlots = Array.from(plots);
@@ -243,6 +292,14 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
             ...prev,
             breakpoint: breakpoint,
             cols: cols,
+        }));
+    };
+
+    const handleLayoutChange = (layout, allLayouts) => {
+        // save the internal changes to the component's state
+        setGridLayout((prev) => ({
+            ...prev,
+            items: allLayouts.lg.map((item) => ({ ...item })),
         }));
     };
 
@@ -358,16 +415,24 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                         xs: 1,
                                         xxs: 1,
                                     }}
+                                    layouts={{
+                                        lg: gridLayout.items,
+                                    }}
                                     isBounded={true}
-                                    rowHeight={wideScreen ? 80 : 60}
+                                    rowHeight={wideScreen ? 80 : 55}
                                     onBreakpointChange={handleBreakpointChange}
+                                    onLayoutChange={handleLayoutChange}
                                 >
                                     {plots.map((plot, index) => (
-                                        <div
+                                        <Box
                                             key={plot.id}
-                                            data-grid={gridLayout.items.find(
-                                                (item) => item.i === plot.id
-                                            )}
+                                            sx={{
+                                                display: plotIdScale
+                                                    ? plotIdScale !== plot.id
+                                                        ? 'none'
+                                                        : 'block'
+                                                    : 'block',
+                                            }}
                                         >
                                             <DynamicSimulationResultSeriesChart
                                                 key={`${plot.id}`}
@@ -386,8 +451,9 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                                 }
                                                 onClose={handleClose}
                                                 sync={sync}
+                                                onPlotScale={handlePlotScale}
                                             />
-                                        </div>
+                                        </Box>
                                     ))}
                                 </ResponsiveGridLayout>
                             </Box>

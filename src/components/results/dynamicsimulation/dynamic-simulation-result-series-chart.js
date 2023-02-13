@@ -6,9 +6,17 @@
  */
 import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
+import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
+import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import PlotlySeriesChart from './plot/plotly-series-chart';
-import { Card, CardContent, CardHeader, Typography } from '@mui/material';
-import { memo } from 'react';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    ToggleButton,
+    Typography,
+} from '@mui/material';
+import { memo, useCallback, useState } from 'react';
 import TooltipIconButton from './common/tooltip-icon-button';
 import makeStyles from '@mui/styles/makeStyles';
 import { lighten } from '@mui/material/styles';
@@ -16,6 +24,11 @@ import { useIntl } from 'react-intl';
 import { SeriesType } from './plot/plot-types';
 
 const useStyles = makeStyles((theme) => ({
+    plotScaleButton: {
+        marginRight: theme.spacing(2),
+        border: 'none',
+        borderRadius: '50%',
+    },
     closeButton: {
         cursor: 'pointer',
     },
@@ -53,9 +66,25 @@ const DynamicSimulationResultSeriesChart = ({
     onClose,
     onSelect,
     sync,
+    onPlotScale = () => {},
 }) => {
     const classes = useStyles();
     const intl = useIntl();
+
+    // button options switch scale plot / restore plot
+    const [plotScale, setPlotScale] = useState(false);
+
+    const handlePlotScale = useCallback(
+        (plotId) => {
+            setPlotScale((prev) => {
+                return !prev;
+            });
+
+            // propagate change
+            onPlotScale(plotId, !plotScale);
+        },
+        [onPlotScale, plotScale]
+    );
 
     return (
         <Card
@@ -80,13 +109,28 @@ const DynamicSimulationResultSeriesChart = ({
                     </Typography>
                 }
                 action={
-                    <TooltipIconButton
-                        toolTip={'Close graph'}
-                        className={classes.CloseButton}
-                        onClick={() => onClose(index)}
-                    >
-                        <CloseIcon />
-                    </TooltipIconButton>
+                    <>
+                        <ToggleButton
+                            className={classes.plotScaleButton}
+                            size={'small'}
+                            value={'plotScale'}
+                            selected={plotScale}
+                            onChange={() => handlePlotScale(id)}
+                        >
+                            {plotScale ? (
+                                <FullscreenExitSharpIcon />
+                            ) : (
+                                <FitScreenSharpIcon />
+                            )}
+                        </ToggleButton>
+                        <TooltipIconButton
+                            toolTip={'Close graph'}
+                            className={classes.CloseButton}
+                            onClick={() => onClose(index)}
+                        >
+                            <CloseIcon />
+                        </TooltipIconButton>
+                    </>
                 }
             />
             <CardContent
