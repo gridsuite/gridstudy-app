@@ -26,7 +26,7 @@ import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import { MenuOpen } from '@mui/icons-material';
-import ResponsibleGridLayout from './common/gridlayout/responsible-grid-layout';
+import ResponsiveGridLayout from './common/gridlayout/responsive-grid-layout';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const useStyles = makeStyles((theme) => ({
@@ -303,7 +303,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                 <Grid container>
                     <Grid item xs>
                         <Box className={classes.graph}>
-                            <ResponsibleGridLayout
+                            <ResponsiveGridLayout
                                 className={`layout`}
                                 cols={{
                                     lg: gridLayout.cols,
@@ -339,7 +339,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                         />
                                     </div>
                                 ))}
-                            </ResponsibleGridLayout>
+                            </ResponsiveGridLayout>
                         </Box>
                     </Grid>
                     <Grid item xs={'auto'}>
