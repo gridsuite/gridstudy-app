@@ -16,7 +16,7 @@ import {
 } from 'components/refactor/utils/field-constants';
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import TapChangerPaneTable from '../tap-changer-pane-table/tap-changer-pane-table';
+import TapChangerPaneTaps from '../tap-changer-pane-table/tap-changer-pane-taps';
 import { RATIO_TAP } from '../two-windings-transformer-creation-dialog';
 
 const RatioTapChangerPaneTaps = ({ disabled }) => {
@@ -124,7 +124,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
     };
 
     return (
-        <TapChangerPaneTable
+        <TapChangerPaneTaps
             tapChanger={RATIO_TAP_CHANGER}
             ruleType={RATIO_TAP}
             createTapRuleColumn={STEPS_RATIO}

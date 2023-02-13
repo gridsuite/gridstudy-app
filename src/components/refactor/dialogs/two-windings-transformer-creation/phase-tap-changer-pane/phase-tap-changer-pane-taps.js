@@ -17,7 +17,7 @@ import {
 } from 'components/refactor/utils/field-constants';
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import TapChangerPaneTable from '../tap-changer-pane-table/tap-changer-pane-table';
+import TapChangerPaneTaps from '../tap-changer-pane-table/tap-changer-pane-taps';
 import { PHASE_TAP } from '../two-windings-transformer-creation-dialog';
 
 const PhaseTapChangerPaneTaps = ({ disabled }) => {
@@ -149,7 +149,7 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
     };
 
     return (
-        <TapChangerPaneTable
+        <TapChangerPaneTaps
             tapChanger={PHASE_TAP_CHANGER}
             ruleType={PHASE_TAP}
             createTapRuleColumn={STEPS_ALPHA}
