@@ -31,7 +31,6 @@ import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
-
 import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,

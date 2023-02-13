@@ -44,6 +44,9 @@ import LineCreationForm from './line-creation-form';
  * Dialog to create a load in the network
  * @param currentNodeUuid The node we are currently working on
  * @param editData the data to edit
+ * @param onCreateLine callback to customize line creation process
+ * @param displayConnectivity to display connectivity section or not
+ * @param voltageLevelOptionsPromise a promise that will bring available voltage levels
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
