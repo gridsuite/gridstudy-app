@@ -28,7 +28,7 @@ import { useIntl } from 'react-intl';
 import { MenuOpen } from '@mui/icons-material';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
-import ResponsibleGridLayout from './common/gridlayout/responsible-grid-layout';
+import ResponsiveGridLayout from './common/gridlayout/responsive-grid-layout';
 import { lighten } from '@mui/material/styles';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
@@ -349,7 +349,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                     })`,
                                 }}
                             >
-                                <ResponsibleGridLayout
+                                <ResponsiveGridLayout
                                     className={`layout`}
                                     cols={{
                                         lg: gridLayout.cols,
@@ -389,7 +389,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                             />
                                         </div>
                                     ))}
-                                </ResponsibleGridLayout>
+                                </ResponsiveGridLayout>
                             </Box>
                         </Grid>
                         <Grid item xs={'auto'}>
