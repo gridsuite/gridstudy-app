@@ -14,13 +14,12 @@ import UploadIcon from '@mui/icons-material/Upload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { STEPS } from 'components/refactor/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
-const TapChangerPaneButtons = ({
-    tapChanger,
+const DndTableButtons = ({
+    arrayFormName,
     handleAddButton,
     handleDeleteButton,
     handleMoveUpButton,
@@ -31,11 +30,11 @@ const TapChangerPaneButtons = ({
 }) => {
     const intl = useIntl();
 
-    const currentTapRows = useWatch({
-        name: `${tapChanger}.${STEPS}`,
+    const currentRows = useWatch({
+        name: arrayFormName,
     });
 
-    const noRowsSelected = !currentTapRows.some((row) => row.selected);
+    const noRowsSelected = !currentRows.some((row) => row.selected);
 
     return (
         <Grid container item>
@@ -145,7 +144,7 @@ const TapChangerPaneButtons = ({
     );
 };
 
-TapChangerPaneButtons.prototype = {
+DndTableButtons.prototype = {
     tapChanger: PropTypes.string.isRequired,
     handleAddButton: PropTypes.func.isRequired,
     handleDeleteButton: PropTypes.func.isRequired,
@@ -156,4 +155,4 @@ TapChangerPaneButtons.prototype = {
     disabled: PropTypes.bool,
 };
 
-export default TapChangerPaneButtons;
+export default DndTableButtons;

@@ -7,28 +7,12 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
-import {
-    Checkbox,
-    Grid,
-    IconButton,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Tooltip,
-} from '@mui/material';
+import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
 import IntegerInput from '../../../rhf-inputs/integer-input';
-import { TableNumericalInput } from '../../../rhf-inputs/table-inputs/table-numerical-input';
-import TapChangerPaneButtons from './tap-changer-pane-buttons';
-import CheckboxInput from '../../../rhf-inputs/booleans/checkbox-input';
+import DndTable from '../../../../util/dnd-table';
 import AddRowsDialog from './add-rows-dialog';
 import { CreateRuleDialog } from '../create-rule/create-rule-dialog';
 import { ImportRuleDialog } from '../import-rule-dialog';
@@ -41,47 +25,6 @@ import {
 } from 'components/refactor/utils/field-constants';
 import { MAX_TAP_NUMBER } from '../two-windings-transformer-creation-dialog';
 import PropTypes from 'prop-types';
-
-function MultiCheckbox({
-    associatedArrayName,
-    selectedPropName,
-    handleClickIfChecked,
-    handleClickIfUnchecked,
-}) {
-    const arrayToWatch = useWatch({
-        name: associatedArrayName,
-    });
-
-    const allRowSelected = arrayToWatch.every((row) => row[selectedPropName]);
-
-    return (
-        <Checkbox
-            checked={arrayToWatch.length > 0 && allRowSelected}
-            onChange={(event) => {
-                event.target.checked
-                    ? handleClickIfChecked()
-                    : handleClickIfUnchecked();
-            }}
-        />
-    );
-}
-
-function DefaultTableCell({ tapChanger, rowIndex, column }) {
-    const valueToWatch = useWatch({
-        name: `${tapChanger}.${STEPS}[${rowIndex}].${column.dataKey}`,
-    });
-    return <TableCell key={column.dataKey}>{valueToWatch}</TableCell>;
-}
-
-function EditableTableCell({ tapChanger, rowIndex, column }) {
-    return (
-        <TableCell key={column.dataKey}>
-            <TableNumericalInput
-                name={`${tapChanger}.${STEPS}[${rowIndex}].${column.dataKey}`}
-            />
-        </TableCell>
-    );
-}
 
 const TapChangerPaneTable = ({
     tapChanger,
@@ -98,16 +41,16 @@ const TapChangerPaneTable = ({
 
     const { trigger, getValues, setValue, setError } = useFormContext();
 
+    const useFieldArrayOutput = useFieldArray({
+        name: `${tapChanger}.${STEPS}`,
+    });
+
     const {
         fields: tapFields, // don't use it to access form data ! check doc
         replace,
-        move,
-        swap,
         append,
         remove,
-    } = useFieldArray({
-        name: `${tapChanger}.${STEPS}`,
-    });
+    } = useFieldArrayOutput;
 
     const lowTapPosition = useWatch({
         name: `${tapChanger}.${LOW_TAP_POSITION}`,
@@ -116,20 +59,6 @@ const TapChangerPaneTable = ({
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
     const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
-
-    function renderTableCell(rowIndex, column) {
-        let CustomTableCell = column.editable
-            ? EditableTableCell
-            : DefaultTableCell;
-        return (
-            <CustomTableCell
-                key={rowIndex.toString() + column.dataKey}
-                tapChanger={tapChanger}
-                rowIndex={rowIndex}
-                column={column}
-            />
-        );
-    }
 
     function handleAddRowsButton() {
         // triggering validation on low tap position before generating rows (the field is required)
@@ -193,18 +122,6 @@ const TapChangerPaneTable = ({
         setOpenAddRowsDialog(false);
     }
 
-    function selectAllRows() {
-        for (let i = 0; i < tapFields.length; i++) {
-            setValue(`${tapChanger}.${STEPS}[${i}].selected`, true);
-        }
-    }
-
-    function unselectAllRows() {
-        for (let i = 0; i < tapFields.length; i++) {
-            setValue(`${tapChanger}.${STEPS}[${i}].selected`, false);
-        }
-    }
-
     function deleteSelectedRows() {
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
@@ -221,47 +138,13 @@ const TapChangerPaneTable = ({
             `${tapChanger}.${HIGH_TAP_POSITION}`
         );
 
-        const newHighTapPosition = currentHighTapPosition - rowsToDelete.length;
+        let newHighTapPosition;
+        if (currentTapRows.length === rowsToDelete.length) {
+            newHighTapPosition = null;
+        } else {
+            newHighTapPosition = currentHighTapPosition - rowsToDelete.length;
+        }
         setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
-    }
-
-    function moveUpSelectedRows() {
-        const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
-
-        if (currentTapRows[0].selected) {
-            // we can't move up more the rows, so we stop
-            return;
-        }
-
-        for (let i = 1; i < currentTapRows.length; i++) {
-            if (currentTapRows[i].selected) {
-                swap(i - 1, i);
-            }
-        }
-    }
-
-    function moveDownSelectedRows() {
-        const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
-
-        if (currentTapRows[currentTapRows.length - 1].selected) {
-            // we can't move down more the rows, so we stop
-            return;
-        }
-
-        for (let i = currentTapRows.length - 2; i >= 0; i--) {
-            if (currentTapRows[i].selected) {
-                swap(i, i + 1);
-            }
-        }
-    }
-
-    function onDragEnd(result) {
-        // dropped outside the list
-        if (!result.destination) {
-            return;
-        }
-
-        move(result.source.index, result.destination.index);
     }
 
     const resetTapNumbers = useCallback(
@@ -427,74 +310,11 @@ const TapChangerPaneTable = ({
         </Tooltip>
     );
 
-    //TODO fix alignment of column names when no rows ?
-    function renderTableHead() {
-        return (
-            <TableHead>
-                <TableRow>
-                    <TableCell>
-                        {/* empty cell for the drag and drop column */}
-                    </TableCell>
-                    <TableCell>
-                        <MultiCheckbox
-                            associatedArrayName={`${tapChanger}.${STEPS}`}
-                            selectedPropName={'selected'}
-                            handleClickIfChecked={selectAllRows}
-                            handleClickIfUnchecked={unselectAllRows}
-                        />
-                    </TableCell>
-                    {columnsDefinition.map((column, index) => (
-                        <TableCell key={column.dataKey}>
-                            {column.label}
-                            {index === columnsDefinition.length - 1 &&
-                                createRuleButton}
-                        </TableCell>
-                    ))}
-                </TableRow>
-            </TableHead>
-        );
-    }
-
-    function renderTableBody(providedDroppable) {
-        return (
-            <TableBody>
-                {tapFields.map((row, index) => (
-                    <Draggable
-                        key={row.id}
-                        draggableId={row.id.toString()}
-                        index={index}
-                    >
-                        {(provided, snapshot) => (
-                            <TableRow
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                            >
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DragAndDrop',
-                                    })}
-                                    placement="right"
-                                >
-                                    <TableCell {...provided.dragHandleProps}>
-                                        <DragIndicatorIcon />
-                                    </TableCell>
-                                </Tooltip>
-                                <TableCell>
-                                    <CheckboxInput
-                                        name={`${tapChanger}.${STEPS}[${index}].selected`}
-                                    />
-                                </TableCell>
-                                {columnsDefinition.map((column) =>
-                                    renderTableCell(index, column)
-                                )}
-                            </TableRow>
-                        )}
-                    </Draggable>
-                ))}
-                {providedDroppable.placeholder}
-            </TableBody>
-        );
-    }
+    const completedColumnsDefinition = columnsDefinition.map((column, index) =>
+        index === columnsDefinition.length - 1
+            ? { ...column, extra: createRuleButton }
+            : column
+    );
 
     return (
         <Grid item container spacing={1}>
@@ -509,32 +329,13 @@ const TapChangerPaneTable = ({
                     {tapPositionField}
                 </Grid>
             </Grid>
-            <Grid item container>
-                <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="tapTable">
-                        {(provided, snapshot) => (
-                            <TableContainer
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                sx={{ minHeight: 200, maxHeight: 500 }}
-                            >
-                                <Table stickyHeader size="small">
-                                    {renderTableHead()}
-                                    {renderTableBody(provided)}
-                                </Table>
-                            </TableContainer>
-                        )}
-                    </Droppable>
-                </DragDropContext>
-                <FieldErrorAlert name={`${tapChanger}.${STEPS}`} />
-            </Grid>
-            <TapChangerPaneButtons
-                tapChanger={tapChanger}
+            <DndTable
+                arrayFormName={`${tapChanger}.${STEPS}`}
+                useFieldArrayOutput={useFieldArrayOutput}
                 disabled={disabled}
+                columnsDefinition={completedColumnsDefinition}
                 handleAddButton={handleAddRowsButton}
                 handleDeleteButton={deleteSelectedRows}
-                handleMoveUpButton={moveUpSelectedRows}
-                handleMoveDownButton={moveDownSelectedRows}
                 handleUploadButton={() => setOpenImportRuleDialog(true)}
                 uploadButtonMessageId={importRuleMessageId}
             />
