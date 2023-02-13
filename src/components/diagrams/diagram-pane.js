@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
@@ -273,8 +273,6 @@ export function DiagramPane({
 
     const createView = useDisplayView(network, studyUuid, currentNode);
 
-    const dispatch = useDispatch();
-
     const diagramStates = useSelector((state) => state.diagramStates);
 
     const networkAreaDiagramDepth = useSelector(
@@ -485,7 +483,6 @@ export function DiagramPane({
         // Note: studyUuid, and loadNetwork don't change
     }, [
         studyUpdatedForce,
-        dispatch,
         studyUuid,
         updateDiagram,
         closeDiagramViews,
