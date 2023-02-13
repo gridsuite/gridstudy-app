@@ -66,10 +66,9 @@ const TapChangerPaneTaps = ({
         trigger(`${tapChanger}.${LOW_TAP_POSITION}`).then((result) => {
             // if the trigger returns false, it means the field validation didn't pass -> we don't generate rows
             // the user will see the low tap field in red
-            if (!result) {
-                return;
+            if (result) {
+                setOpenAddRowsDialog(true);
             }
-            setOpenAddRowsDialog(true);
         });
     }
 
@@ -109,7 +108,7 @@ const TapChangerPaneTaps = ({
                     ...accumulator,
                     [currentValue.dataKey]: currentValue.initialValue,
                 }),
-                { selected: false, [STEPS_TAP]: currentHighestTap }
+                { [SELECTED]: false, [STEPS_TAP]: currentHighestTap }
             );
             tapRowsToAdd.push(newRow);
         }
@@ -156,12 +155,12 @@ const TapChangerPaneTaps = ({
                 return;
             }
 
-            const lowestTapPosition = getValues(
+            const currentLowTapPosition = getValues(
                 `${tapChanger}.${LOW_TAP_POSITION}`
             );
 
             for (
-                let tapPosition = lowestTapPosition, index = 0;
+                let tapPosition = currentLowTapPosition, index = 0;
                 index < currentTapRows.length;
                 tapPosition++, index++
             ) {
@@ -170,6 +169,12 @@ const TapChangerPaneTaps = ({
                     tapPosition
                 );
             }
+
+            const newHighTapPosition =
+                currentTapRows.length !== 0
+                    ? currentLowTapPosition + currentTapRows.length - 1
+                    : null;
+            setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
         [tapChanger, getValues, setValue]
     );
@@ -177,25 +182,14 @@ const TapChangerPaneTaps = ({
     // Adjust high tap position when low tap position change + remove red if value fixed
     useEffect(() => {
         trigger(`${tapChanger}.${LOW_TAP_POSITION}`).then((result) => {
-            if (!result) {
-                return;
+            if (result) {
+                resetTapNumbers(null);
             }
-
-            const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
-            const newHighTapPosition =
-                currentTapRows.length !== 0
-                    ? lowTapPosition + currentTapRows.length - 1
-                    : null;
-            setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
-
-            resetTapNumbers(null);
         });
     }, [
         trigger,
         tapChanger,
         lowTapPosition, // the only value supposed to change
-        getValues,
-        setValue,
         resetTapNumbers,
     ]);
 
@@ -220,6 +214,14 @@ const TapChangerPaneTaps = ({
         }
     };
 
+    function handleImportTapRuleButton() {
+        trigger(`${tapChanger}.${LOW_TAP_POSITION}`).then((result) => {
+            if (result) {
+                setOpenImportRuleDialog(true);
+            }
+        });
+    }
+
     const handleImportTapRule = (selectedFile, setFileParseError) => {
         Papa.parse(selectedFile, {
             header: true,
@@ -234,23 +236,11 @@ const TapChangerPaneTaps = ({
                     );
                     return;
                 }
-                let rows = results.data.map(handleImportRow);
+                let rows = results.data.map((val) => ({
+                    ...handleImportRow(val),
+                    [SELECTED]: false,
+                }));
                 if (rows && rows.length > 0) {
-                    let tapValues = rows.map((row) => {
-                        return parseInt(row[STEPS_TAP]);
-                    });
-                    let tempLowTapPosition = Math.min(...tapValues);
-                    let tempHighTapPosition = Math.max(...tapValues);
-
-                    setValue(
-                        `${tapChanger}.${LOW_TAP_POSITION}`,
-                        tempLowTapPosition
-                    );
-                    setValue(
-                        `${tapChanger}.${HIGH_TAP_POSITION}`,
-                        tempHighTapPosition
-                    );
-
                     replace(rows);
                 }
             },
@@ -337,7 +327,7 @@ const TapChangerPaneTaps = ({
                 columnsDefinition={completedColumnsDefinition}
                 handleAddButton={handleAddRowsButton}
                 handleDeleteButton={deleteSelectedRows}
-                handleUploadButton={() => setOpenImportRuleDialog(true)}
+                handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
             />
             <CreateRuleDialog

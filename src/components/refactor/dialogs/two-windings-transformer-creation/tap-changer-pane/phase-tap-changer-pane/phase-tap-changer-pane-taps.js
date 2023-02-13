@@ -73,7 +73,6 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
 
     const csvColumns = useMemo(() => {
         return [
-            intl.formatMessage({ id: 'Tap' }),
             intl.formatMessage({ id: 'ImportFileResistance' }),
             intl.formatMessage({ id: 'ImportFileReactance' }),
             intl.formatMessage({ id: 'ImportFileConductance' }),
@@ -90,7 +89,6 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
 
     const handleImportRow = (val) => {
         return {
-            [STEPS_TAP]: val[intl.formatMessage({ id: 'Tap' })],
             [STEPS_RESISTANCE]: parseIntData(
                 val[
                     intl.formatMessage({
