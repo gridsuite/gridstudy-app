@@ -87,13 +87,13 @@ const DndTable = ({
         swap,
     } = useFieldArrayOutput;
 
-    function renderTableCell(rowIndex, column) {
+    function renderTableCell(rowId, rowIndex, column) {
         let CustomTableCell = column.editable
             ? EditableTableCell
             : DefaultTableCell;
         return (
             <CustomTableCell
-                key={rowIndex.toString() + column.dataKey}
+                key={rowId + column.dataKey}
                 arrayFormName={arrayFormName}
                 rowIndex={rowIndex}
                 column={column}
@@ -167,7 +167,7 @@ const DndTable = ({
                             handleClickIfUnchecked={unselectAllRows}
                         />
                     </TableCell>
-                    {columnsDefinition.map((column, index) => (
+                    {columnsDefinition.map((column) => (
                         <TableCell key={column.dataKey}>
                             {column.label}
                             {column.extra}
@@ -208,7 +208,7 @@ const DndTable = ({
                                     />
                                 </TableCell>
                                 {columnsDefinition.map((column) =>
-                                    renderTableCell(index, column)
+                                    renderTableCell(row.id, index, column)
                                 )}
                             </TableRow>
                         )}
