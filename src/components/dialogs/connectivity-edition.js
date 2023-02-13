@@ -30,7 +30,6 @@ import {
 } from '../network/constants';
 import { useIntl } from 'react-intl';
 import { isNodeBuilt } from '../graph/util/model-functions';
-import { DiagramType } from '../diagrams/diagram-common';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 /**
@@ -173,7 +172,9 @@ export const useConnectivityValue = ({
     };
 
     const [voltageLevelObjOrId, voltageLevelField] = useAutocompleteField({
-        id: id ? id + '/' +EQUIPMENT_TYPES.VOLTAGE_LEVEL.type : EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        id: id
+            ? id + '/' + EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
+            : EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
         label: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
         validation: validation,
         values: voltageLevelOptions,
