@@ -179,6 +179,8 @@ const GeneratorModificationDialog = ({
         loading: loadingEquipmentOptions,
     });
 
+    // It's temporary, I added this method to avoid breaking the useAutocompleteField component in modification forms.
+    // It will be improved with the refactoring
     const id = useMemo(() => {
         let id;
         if (typeof generatorId === 'object') {
