@@ -29,6 +29,9 @@ function AddRowsDialog({ open, handleAddRowsButton, onClose }) {
                 />
             </DialogContent>
             <DialogActions>
+                <Button onClick={onClose}>
+                    <FormattedMessage id="cancel" />
+                </Button>
                 <Button
                     onClick={() => {
                         handleAddRowsButton(rowNumber);
