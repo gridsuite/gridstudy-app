@@ -22,12 +22,12 @@ import {
     ActivePowerAdornment,
     AmpereAdornment,
     gridItem,
-} from '../../../../dialogs/dialogUtils';
-import { REGULATION_MODES } from '../../../../network/constants';
-import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
-import FloatInput from '../../../rhf-inputs/float-input';
-import SelectInput from '../../../rhf-inputs/select-input';
-import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
+} from '../../../../../dialogs/dialogUtils';
+import { REGULATION_MODES } from '../../../../../network/constants';
+import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
+import FloatInput from '../../../../rhf-inputs/float-input';
+import SelectInput from '../../../../rhf-inputs/select-input';
+import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneTaps from './phase-tap-changer-pane-taps';
 
 const PhaseTapChangerPane = ({

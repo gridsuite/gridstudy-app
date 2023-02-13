@@ -15,13 +15,13 @@ import {
 } from '@mui/material';
 import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useCSVPicker } from '../../../dialogs/inputs/input-hooks';
+import { useCSVPicker } from '../../../../dialogs/inputs/input-hooks';
 
 import CsvDownloader from 'react-csv-downloader';
 import {
     MAX_TAP_NUMBER,
     PHASE_TAP,
-} from './two-windings-transformer-creation-dialog';
+} from '../two-windings-transformer-creation-dialog';
 
 export const ImportRuleDialog = (props) => {
     const handleCloseDialog = () => {

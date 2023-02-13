@@ -14,8 +14,8 @@ import { useIntl } from 'react-intl';
 import IntegerInput from '../../../rhf-inputs/integer-input';
 import DndTable from '../../../../util/dnd-table';
 import AddRowsDialog from './add-rows-dialog';
-import { CreateRuleDialog } from '../create-rule/create-rule-dialog';
-import { ImportRuleDialog } from '../import-rule-dialog';
+import { CreateRuleDialog } from './create-rule/create-rule-dialog';
+import { ImportRuleDialog } from './import-rule-dialog';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,

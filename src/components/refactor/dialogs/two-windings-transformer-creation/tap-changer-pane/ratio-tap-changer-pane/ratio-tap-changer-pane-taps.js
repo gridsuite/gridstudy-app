@@ -16,8 +16,8 @@ import {
 } from 'components/refactor/utils/field-constants';
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import TapChangerPaneTaps from '../tap-changer-pane-table/tap-changer-pane-taps';
-import { RATIO_TAP } from '../two-windings-transformer-creation-dialog';
+import TapChangerPaneTaps from '../tap-changer-pane-taps';
+import { RATIO_TAP } from '../../two-windings-transformer-creation-dialog';
 
 const RatioTapChangerPaneTaps = ({ disabled }) => {
     const intl = useIntl();

@@ -61,18 +61,18 @@ import {
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
-import PhaseTapChangerPane from './phase-tap-changer-pane/phase-tap-changer-pane';
+import PhaseTapChangerPane from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerValidationSchema,
-} from './phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import RatioTapChangerPane from './ratio-tap-changer-pane/ratio-tap-changer-pane';
+} from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+import RatioTapChangerPane from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerValidationSchema,
-} from './ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+} from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import TwoWindingsTransformerCreationDialogTabs from './two-windings-transformer-creation-dialog-tabs';
 import TwoWindingsTransformerPane from './two-windings-transformer-pane/two-windings-transformer-pane';
 import {

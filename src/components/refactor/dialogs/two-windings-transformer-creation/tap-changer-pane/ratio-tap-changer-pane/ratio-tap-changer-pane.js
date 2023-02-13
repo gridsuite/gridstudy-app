@@ -17,10 +17,10 @@ import {
 } from 'components/refactor/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { gridItem, VoltageAdornment } from '../../../../dialogs/dialogUtils';
-import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
-import FloatInput from '../../../rhf-inputs/float-input';
-import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
+import { gridItem, VoltageAdornment } from '../../../../../dialogs/dialogUtils';
+import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
+import FloatInput from '../../../../rhf-inputs/float-input';
+import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
 
 const RatioTapChangerPane = ({
