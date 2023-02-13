@@ -304,20 +304,11 @@ const TwoWindingsTransformerCreationDialog = ({
                             LOAD_TAP_CHANGING_CAPABILITIES
                         ],
                     regulating: twt?.[RATIO_TAP_CHANGER]?.[REGULATING],
-                    regulationType:
-                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId ===
-                        twt.equipmentId
-                            ? REGULATION_TYPES.LOCAL.id
-                            : REGULATION_TYPES.DISTANT.id,
-                    regulationSide:
-                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId ===
-                        twt.equipmentId
-                            ? twt?.[RATIO_TAP_CHANGER]
-                                  ?.regulatingTerminalVlId ===
-                              twt?.voltageLevelId1
-                                ? SIDE.SIDE1.id
-                                : SIDE.SIDE2.id
-                            : null,
+                    regulationType: getRegulationType(
+                        twt,
+                        twt?.[RATIO_TAP_CHANGER]
+                    ),
+                    regulationSide: getTapSide(twt, twt?.[RATIO_TAP_CHANGER]),
                     targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
                     targetDeadband: isNaN(
                         twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND]
@@ -345,20 +336,11 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
                     regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE],
                     regulating: twt?.[PHASE_TAP_CHANGER]?.[REGULATING],
-                    regulationType:
-                        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId ===
-                        twt.equipmentId
-                            ? REGULATION_TYPES.LOCAL.id
-                            : REGULATION_TYPES.DISTANT.id,
-                    regulationSide:
-                        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId ===
-                        twt.equipmentId
-                            ? twt?.[PHASE_TAP_CHANGER]
-                                  ?.regulatingTerminalVlId ===
-                              twt?.voltageLevelId1
-                                ? SIDE.SIDE1.id
-                                : SIDE.SIDE2.id
-                            : null,
+                    regulationType: getRegulationType(
+                        twt,
+                        twt?.[PHASE_TAP_CHANGER]
+                    ),
+                    regulationSide: getTapSide(twt, twt?.[PHASE_TAP_CHANGER]),
                     currentLimiterRegulatingValue:
                         twt?.[PHASE_TAP_CHANGER]?.regulationValue,
                     flowSetpointRegulatingValue:
