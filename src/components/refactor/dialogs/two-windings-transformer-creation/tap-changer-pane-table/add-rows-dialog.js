@@ -13,8 +13,13 @@ import PropTypes from 'prop-types';
 function AddRowsDialog({ open, handleAddRowsButton, onClose }) {
     const [rowNumber, setRowNumber] = useState(1);
 
+    function handleOnClose() {
+        setRowNumber(1);
+        onClose();
+    }
+
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={handleOnClose}>
             <DialogTitle>
                 <FormattedMessage id="AddTapRowsDialogTitle" />
             </DialogTitle>
@@ -29,13 +34,13 @@ function AddRowsDialog({ open, handleAddRowsButton, onClose }) {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>
+                <Button onClick={handleOnClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
                     onClick={() => {
                         handleAddRowsButton(rowNumber);
-                        onClose();
+                        handleOnClose();
                     }}
                 >
                     <FormattedMessage id="AddTapRowsButton" />
