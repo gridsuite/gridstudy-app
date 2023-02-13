@@ -11,23 +11,7 @@ import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import { useParams } from 'react-router-dom';
-import {
-    deleteEquipment,
-    fetchBatteries,
-    fetchDanglingLines,
-    fetchGenerators,
-    fetchHvdcLines,
-    fetchLccConverterStations,
-    fetchLines,
-    fetchLoads,
-    fetchShuntCompensators,
-    fetchStaticVarCompensators,
-    fetchSubstations,
-    fetchThreeWindingsTransformers,
-    fetchTwoWindingsTransformers,
-    fetchVoltageLevels,
-    fetchVscConverterStations,
-} from '../../utils/rest-api';
+import { deleteEquipment } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { validateField } from '../util/validation-functions';
 import { useInputForm } from './inputs/input-hooks';
@@ -35,48 +19,6 @@ import { compareById, filledTextField, getIdOrSelf } from './dialogUtils';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import ModificationDialog from './modificationDialog';
 import { EQUIPMENT_TYPES } from '../util/equipment-types';
-
-const equipmentTypes = {
-    LINE: {
-        fetchers: [fetchLines],
-    },
-    TWO_WINDINGS_TRANSFORMER: {
-        fetchers: [fetchTwoWindingsTransformers],
-    },
-    THREE_WINDINGS_TRANSFORMER: {
-        fetchers: [fetchThreeWindingsTransformers],
-    },
-    GENERATOR: {
-        fetchers: [fetchGenerators],
-    },
-    LOAD: {
-        fetchers: [fetchLoads],
-    },
-    BATTERY: {
-        fetchers: [fetchBatteries],
-    },
-    DANGLING_LINE: {
-        fetchers: [fetchDanglingLines],
-    },
-    HVDC_LINE: {
-        fetchers: [fetchHvdcLines],
-    },
-    HVDC_CONVERTER_STATION: {
-        fetchers: [fetchLccConverterStations, fetchVscConverterStations],
-    },
-    SHUNT_COMPENSATOR: {
-        fetchers: [fetchShuntCompensators],
-    },
-    STATIC_VAR_COMPENSATOR: {
-        fetchers: [fetchStaticVarCompensators],
-    },
-    SUBSTATION: {
-        fetchers: [fetchSubstations],
-    },
-    VOLTAGE_LEVEL: {
-        fetchers: [fetchVoltageLevels],
-    },
-};
 
 const defaultEquipmentType = EQUIPMENT_TYPES.LINE.type;
 
@@ -99,7 +41,7 @@ const EquipmentDeletionDialog = ({
     const inputForm = useInputForm();
 
     const [equipmentType, setEquipmentType] = useState(
-        equipmentTypes[editData?.equipmentType] ?? defaultEquipmentType
+        EQUIPMENT_TYPES[editData?.equipmentType] ?? defaultEquipmentType
     );
 
     const [equipmentsFound, setEquipmentsFound] = useState([]);
@@ -222,7 +164,7 @@ const EquipmentDeletionDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            {Object.values(equipmentTypes).map((values) => {
+                            {Object.values(EQUIPMENT_TYPES).map((values) => {
                                 return (
                                     <MenuItem key={values.label} value={values}>
                                         {intl.formatMessage({
