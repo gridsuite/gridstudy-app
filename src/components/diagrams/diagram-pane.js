@@ -28,12 +28,12 @@ import {
     useDiagram,
     ViewState,
     SvgType,
-    MAX_WIDTH_SUBSTATION,
-    MAX_WIDTH_VOLTAGE_LEVEL,
-    MAX_HEIGHT_SUBSTATION,
-    MAX_HEIGHT_VOLTAGE_LEVEL,
-    MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-    MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
+    DEFAULT_WIDTH_SUBSTATION,
+    DEFAULT_WIDTH_VOLTAGE_LEVEL,
+    DEFAULT_HEIGHT_SUBSTATION,
+    DEFAULT_HEIGHT_VOLTAGE_LEVEL,
+    DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM,
+    DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM,
 } from './diagram-common';
 import {
     isNodeBuilt,
@@ -266,19 +266,11 @@ export function DiagramPane({
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [views, setViews] = useState([]);
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
-
-    // const [displayedDiagramHeights, setDisplayedDiagramHeights] = useState([]);
-    // const displayedDiagramHeightsRef = useRef();
-    // displayedDiagramHeightsRef.current = displayedDiagramHeights;
-
     const createView = useDisplayView(network, studyUuid, currentNode);
-
     const diagramStates = useSelector((state) => state.diagramStates);
-
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
-
     const notificationIdList = useSelector((state) => state.notificationIdList);
 
     useEffect(() => {
@@ -287,10 +279,8 @@ export function DiagramPane({
 
     const { openDiagramView, closeDiagramView, closeDiagramViews } =
         useDiagram();
-
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
-
     const classes = useStyles();
 
     /**
@@ -326,12 +316,12 @@ export function DiagramPane({
                         align: 'left',
                         defaultWidth:
                             diagramState.svgType === SvgType.SUBSTATION
-                                ? MAX_WIDTH_SUBSTATION / 2
-                                : MAX_WIDTH_VOLTAGE_LEVEL / 2, // TODO CHARLY define default values instead of this division
+                                ? DEFAULT_WIDTH_SUBSTATION
+                                : DEFAULT_WIDTH_VOLTAGE_LEVEL,
                         defaultHeight:
                             diagramState.svgType === SvgType.SUBSTATION
-                                ? MAX_HEIGHT_SUBSTATION / 2
-                                : MAX_HEIGHT_VOLTAGE_LEVEL / 2,
+                                ? DEFAULT_HEIGHT_SUBSTATION
+                                : DEFAULT_HEIGHT_VOLTAGE_LEVEL,
                     });
                 } else {
                     closeDiagramView(diagramState.id, diagramState.svgType);
@@ -353,8 +343,8 @@ export function DiagramPane({
                 diagramViews.push({
                     ...networkAreaDiagramView,
                     align: 'right',
-                    defaultWidth: MAX_WIDTH_NETWORK_AREA_DIAGRAM / 2,
-                    defaultHeight: MAX_HEIGHT_NETWORK_AREA_DIAGRAM / 2,
+                    defaultWidth: DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM,
+                    defaultHeight: DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM,
                 });
             } else {
                 closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
@@ -488,39 +478,6 @@ export function DiagramPane({
         closeDiagramViews,
         network,
     ]);
-
-    /**
-     * DIAGRAM SIZE COMPUTATION
-     */
-
-    // const [computedHeight, setComputedHeight] = useState();
-    //
-    // // Here the goal is to remove from this list of heights every diagram height that correspond to a minimized diagram
-    // useEffect(() => {
-    //     let displayedDiagramHeights_ =
-    //         displayedDiagramHeightsRef.current?.filter((displayedHeight) =>
-    //             views
-    //                 .filter((sld) => sld.state !== ViewState.MINIMIZED)
-    //                 .map((sld) => sld.svgType + sld.id)
-    //                 .includes(displayedHeight.svgType + displayedHeight.id)
-    //         );
-    //
-    //     setDisplayedDiagramHeights(displayedDiagramHeights_);
-    // }, [views]);
-    //
-    // useEffect(() => {
-    //     const initialHeights = [
-    //         ...displayedDiagramHeights.map(
-    //             (displayedHeight) => displayedHeight.initialHeight
-    //         ),
-    //     ];
-    //     if (initialHeights.length > 0) {
-    //         const newComputedHeight = Math.max(...initialHeights);
-    //         if (newComputedHeight) {
-    //             setComputedHeight(newComputedHeight);
-    //         }
-    //     }
-    // }, [displayedDiagramHeights]);
 
     /**
      * RENDER

@@ -97,7 +97,7 @@ const Diagram = (props) => {
     return (
         <DiagramResizableBox
             align={props.align}
-            height={shouldBeFullscreen ? props.fullscreenHeight : props.height} // TODO CHARLY test if "import { Resizable } from 're-resizable';" (which allows percents) is better (as in '100%', saves two props)
+            height={shouldBeFullscreen ? props.fullscreenHeight : props.height}
             width={shouldBeFullscreen ? props.fullscreenWidth : props.width}
             // We disable the resizeBox if a diagram is in fullscreen
             disableResize={fullScreenDiagram?.id}
