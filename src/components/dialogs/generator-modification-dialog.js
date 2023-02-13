@@ -464,14 +464,18 @@ const GeneratorModificationDialog = ({
         });
 
     let previousFrequencyRegulation = '';
-    if (generatorInfo?.activePowerControlOn) {
-        previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
-    } else if (
-        generatorInfo?.activePowerControlOn === false ||
-        (generatorInfo?.id !== '' &&
-            generatorInfo?.activePowerControlOn === undefined)
-    ) {
-        previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
+    if (!generatorInfo) {
+        previousFrequencyRegulation = undefined;
+    } else {
+        if (generatorInfo?.activePowerControlOn) {
+            previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
+        } else if (
+            generatorInfo?.activePowerControlOn === false ||
+            (generatorInfo?.id !== '' &&
+                generatorInfo?.activePowerControlOn === undefined)
+        ) {
+            previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
+        }
     }
 
     const [frequencyRegulation, frequencyRegulationField] =
