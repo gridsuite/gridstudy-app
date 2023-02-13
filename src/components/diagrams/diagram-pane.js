@@ -36,6 +36,8 @@ import clsx from 'clsx';
 import { useNameOrId } from '../util/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
 import { sortByAlign } from '../util/sort-functions';
+import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
+import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 
 const useDisplayView = (network, studyUuid, currentNode) => {
     const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -538,19 +540,38 @@ export function DiagramPane({
                                     )
                             }
                             <Diagram
-                                ref={diagramView.ref}
                                 align={diagramView.align}
                                 diagramId={diagramView.id}
                                 diagramTitle={diagramView.name}
                                 disabled={disabled}
-                                isComputationRunning={isComputationRunning}
-                                loadFlowStatus={loadFlowStatus}
                                 pinned={diagramView.state === ViewState.PINNED}
-                                showInSpreadsheet={showInSpreadsheet}
-                                studyUuid={studyUuid}
                                 svgType={diagramView.svgType}
-                                svgUrl={diagramView.svgUrl}
-                            />
+                            >
+                                {(diagramView.svgType ===
+                                    SvgType.VOLTAGE_LEVEL ||
+                                    diagramView.svgType ===
+                                        SvgType.SUBSTATION) && (
+                                    <SingleLineDiagramContent
+                                        ref={diagramView.ref}
+                                        loadFlowStatus={loadFlowStatus}
+                                        svgUrl={diagramView.svgUrl}
+                                        isComputationRunning={
+                                            isComputationRunning
+                                        }
+                                        showInSpreadsheet={showInSpreadsheet}
+                                        studyUuid={studyUuid}
+                                        svgType={diagramView.svgType}
+                                    />
+                                )}
+                                {diagramView.svgType ===
+                                    SvgType.NETWORK_AREA_DIAGRAM && (
+                                    <NetworkAreaDiagramContent
+                                        ref={diagramView.ref}
+                                        loadFlowStatus={loadFlowStatus}
+                                        svgUrl={diagramView.svgUrl}
+                                    />
+                                )}
+                            </Diagram>
                         </React.Fragment>
                     ))}
                     <Stack

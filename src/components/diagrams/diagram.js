@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { forwardRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
@@ -27,10 +27,8 @@ import {
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
-import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
-import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 
-const Diagram = forwardRef((props, ref) => {
+const Diagram = (props) => {
     const dispatch = useDispatch();
 
     const classes = useDiagramStyles();
@@ -132,28 +130,7 @@ const Diagram = forwardRef((props, ref) => {
                     </Box>
                 ) : (
                     <Box height={'100%'}>
-                        {(props.svgType === SvgType.VOLTAGE_LEVEL ||
-                            props.svgType === SvgType.SUBSTATION) && (
-                            <SingleLineDiagramContent
-                                ref={ref}
-                                loadFlowStatus={props.loadFlowStatus}
-                                isComputationRunning={
-                                    props.isComputationRunning
-                                }
-                                showInSpreadsheet={props.showInSpreadsheet}
-                                studyUuid={props.studyUuid}
-                                svgType={props.svgType}
-                                svgUrl={props.svgUrl}
-                            />
-                        )}
-                        {props.svgType === SvgType.NETWORK_AREA_DIAGRAM && (
-                            <NetworkAreaDiagramContent
-                                ref={ref}
-                                loadFlowStatus={props.loadFlowStatus}
-                                svgUrl={props.svgUrl}
-                            />
-                        )}
-
+                        {props.children}
                         <DiagramFooter
                             showCounterControls={
                                 props.svgType === SvgType.NETWORK_AREA_DIAGRAM
@@ -174,7 +151,7 @@ const Diagram = forwardRef((props, ref) => {
             </Paper>
         </DiagramResizableBox>
     );
-});
+};
 
 Diagram.defaultProps = {
     pinned: false,
@@ -187,13 +164,9 @@ Diagram.propTypes = {
     diagramId: PropTypes.string.isRequired,
     diagramTitle: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
-    isComputationRunning: PropTypes.bool.isRequired,
-    loadFlowStatus: PropTypes.any,
     pinned: PropTypes.bool,
-    showInSpreadsheet: PropTypes.func,
-    studyUuid: PropTypes.string.isRequired,
     svgType: PropTypes.string.isRequired,
-    svgUrl: PropTypes.string,
+    children: PropTypes.node,
 };
 
 export default Diagram;
