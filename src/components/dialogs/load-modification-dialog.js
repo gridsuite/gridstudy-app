@@ -119,26 +119,21 @@ const LoadModificationDialog = ({
         return id ?? formValueEquipmentId?.id;
     }, [loadId, formValueEquipmentId]);
 
-    const fetchGeneratorInformation = async (
-        studyUuid,
-        currentNodeUuid,
-        equipmentId
-    ) => {
-        const value = await fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            'loads',
-            equipmentId,
-            false
-        );
-        if (value) {
-            setloadInfo(value);
-        }
-    };
-
     useEffect(() => {
         if (id) {
-            fetchGeneratorInformation(studyUuid, currentNodeUuid, id);
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNodeUuid,
+                'loads',
+                id,
+                false
+            ).then((value) => {
+                if (value) {
+                    setloadInfo(value);
+                }
+            });
+        } else {
+            setloadInfo(null);
         }
     }, [studyUuid, currentNodeUuid, id]);
 

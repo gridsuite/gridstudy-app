@@ -103,7 +103,7 @@ const RegulatingTerminalForm = ({
         } else {
             setEquipmentsOptions([]);
         }
-    }, [watchVoltageLevelId, id, setValue, studyUuid, currentNodeUuid]);
+    }, [watchVoltageLevelId, id, studyUuid, currentNodeUuid]);
 
     const resetEquipment = useCallback(() => {
         setValue(`${id}.${EQUIPMENT}`, null);

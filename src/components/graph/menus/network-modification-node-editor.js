@@ -14,8 +14,8 @@ import {
     fetchSubstations,
     fetchLines,
     fetchVoltageLevels,
-    fetchVoltageLevelsEquipments,
     copyOrMoveModifications,
+    fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -213,16 +213,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLsAndEquipments(p) {
-        const voltageLevelsEquipmentsOptionsPromise =
-            fetchVoltageLevelsEquipments(studyUuid, currentTreeNode?.id);
-        return {
-            ...p,
-            voltageLevelsEquipmentsOptionsPromise:
-                voltageLevelsEquipmentsOptionsPromise,
-        };
-    }
-
     function withVLs(p) {
         const voltageLevelOptionsPromise = fetchVoltageLevels(
             studyUuid,
@@ -231,6 +221,16 @@ const NetworkModificationNodeEditor = () => {
         return {
             ...p,
             voltageLevelOptionsPromise: voltageLevelOptionsPromise,
+        };
+    }
+
+    function withVLsIdsAndTopology(p) {
+        const voltageLevelsIdsAndTopologyPromise =
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentTreeNode?.id);
+        return {
+            ...p,
+            voltageLevelsIdsAndTopologyPromise:
+                voltageLevelsIdsAndTopologyPromise,
         };
     }
 
@@ -272,12 +272,18 @@ const NetworkModificationNodeEditor = () => {
         GENERATOR_CREATION: {
             label: 'CreateGenerator',
             dialog: () =>
-                adapt(GeneratorCreationDialog, withVLs, withVLsAndEquipments),
+                adapt(
+                    GeneratorCreationDialog,
+                    withVLs,
+                    //withVLsAndEquipments,
+                    withVLsIdsAndTopology
+                ),
             icon: <AddIcon />,
         },
         GENERATOR_MODIFICATION: {
             label: 'ModifyGenerator',
-            dialog: () => adapt(GeneratorModificationDialog),
+            dialog: () =>
+                adapt(GeneratorModificationDialog, withVLsIdsAndTopology),
             icon: <AddIcon />,
         },
         SHUNT_COMPENSATOR_CREATION: {

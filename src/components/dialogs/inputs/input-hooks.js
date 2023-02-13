@@ -48,7 +48,6 @@ import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import {
     fetchVoltageLevelEquipments,
-    fetchVoltageLevelsIdAndTopology,
     isNodeExists,
 } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
@@ -499,6 +498,7 @@ export const useRegulatingTerminalValue = ({
     previousEquipmentSectionTypeValue,
     studyUuid,
     currentNodeUuid,
+    voltageLevelsIdsAndTopologyPromise,
 }) => {
     const [regulatingTerminal, setRegulatingTerminal] = useState({
         voltageLevel: voltageLevelIdDefaultValue,
@@ -519,14 +519,12 @@ export const useRegulatingTerminalValue = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid)
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-    }, [studyUuid, currentNodeUuid]);
+            voltageLevelsIdsAndTopologyPromise.then((values) => {
+                setVoltageLevelOptions(
+                    values.sort((a, b) => a.id.localeCompare(b.id))
+                );
+            });
+    }, [studyUuid, currentNodeUuid, voltageLevelsIdsAndTopologyPromise]);
 
     useEffect(() => {
         if (regulatingTerminal?.voltageLevel?.id) {

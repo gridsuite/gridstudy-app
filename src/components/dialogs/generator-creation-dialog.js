@@ -75,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
  */
 const GeneratorCreationDialog = ({
     voltageLevelOptionsPromise,
+    voltageLevelsIdsAndTopologyPromise,
     currentNodeUuid,
     editData,
     ...dialogProps
@@ -358,6 +359,7 @@ const GeneratorCreationDialog = ({
                 formValues?.regulatingTerminalConnectableId ||
                 formValues?.regulatingTerminalId ||
                 null,
+            voltageLevelsIdsAndTopologyPromise,
         });
 
     const removeUnnecessaryFieldsValidation = useCallback(() => {
@@ -697,6 +699,10 @@ const GeneratorCreationDialog = ({
 GeneratorCreationDialog.propTypes = {
     editData: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
+        then: PropTypes.func.isRequired,
+        catch: PropTypes.func.isRequired,
+    }),
+    voltageLevelsIdsAndTopologyPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

@@ -90,6 +90,7 @@ function getValueOrNull(val) {
 const GeneratorModificationDialog = ({
     editData,
     currentNodeUuid,
+    voltageLevelsIdsAndTopologyPromise,
     ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -188,26 +189,21 @@ const GeneratorModificationDialog = ({
         return id ?? formValueEquipmentId?.id;
     }, [generatorId, formValueEquipmentId]);
 
-    const fetchGeneratorInformation = async (
-        studyUuid,
-        currentNodeUuid,
-        equipmentId
-    ) => {
-        const value = await fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            'generators',
-            equipmentId,
-            false
-        );
-        if (value) {
-            setGeneratorInfo(value);
-        }
-    };
-
     useEffect(() => {
         if (id) {
-            fetchGeneratorInformation(studyUuid, currentNodeUuid, id);
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNodeUuid,
+                'generators',
+                id,
+                false
+            ).then((value) => {
+                if (value) {
+                    setGeneratorInfo(value);
+                }
+            });
+        } else {
+            setGeneratorInfo(null);
         }
     }, [studyUuid, currentNodeUuid, id]);
 
@@ -541,6 +537,7 @@ const GeneratorModificationDialog = ({
                       ' : ' +
                       generatorInfo?.regulatingTerminalConnectableId
                     : null,
+            voltageLevelsIdsAndTopologyPromise,
         });
 
     useEffect(() => {
