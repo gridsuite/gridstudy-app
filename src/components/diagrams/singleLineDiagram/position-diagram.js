@@ -26,7 +26,7 @@ import {
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
     NoSvg,
-    LOADING_WIDTH,
+    MIN_WIDTH,
 } from '../diagram-common';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
@@ -169,7 +169,7 @@ const PositionDiagram = forwardRef((props, ref) => {
             style={{
                 pointerEvents: 'auto',
                 width: serverWidth,
-                minWidth: LOADING_WIDTH,
+                minWidth: MIN_WIDTH,
                 height: serverHeight,
                 position: 'relative',
                 overflow: 'hidden',

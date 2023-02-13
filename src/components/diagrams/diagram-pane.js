@@ -24,7 +24,17 @@ import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import makeStyles from '@mui/styles/makeStyles';
-import { useDiagram, ViewState, SvgType } from './diagram-common';
+import {
+    useDiagram,
+    ViewState,
+    SvgType,
+    MAX_WIDTH_SUBSTATION,
+    MAX_WIDTH_VOLTAGE_LEVEL,
+    MAX_HEIGHT_SUBSTATION,
+    MAX_HEIGHT_VOLTAGE_LEVEL,
+    MAX_WIDTH_NETWORK_AREA_DIAGRAM,
+    MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
+} from './diagram-common';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
@@ -316,6 +326,14 @@ export function DiagramPane({
                     diagramViews.push({
                         ...singleLineDiagramView,
                         align: 'left',
+                        defaultWidth:
+                            diagramState.svgType === SvgType.SUBSTATION
+                                ? MAX_WIDTH_SUBSTATION / 2
+                                : MAX_WIDTH_VOLTAGE_LEVEL / 2, // TODO CHARLY define default values instead of this division
+                        defaultHeight:
+                            diagramState.svgType === SvgType.SUBSTATION
+                                ? MAX_HEIGHT_SUBSTATION / 2
+                                : MAX_HEIGHT_VOLTAGE_LEVEL / 2,
                     });
                 } else {
                     closeDiagramView(diagramState.id, diagramState.svgType);
@@ -337,6 +355,8 @@ export function DiagramPane({
                 diagramViews.push({
                     ...networkAreaDiagramView,
                     align: 'right',
+                    defaultWidth: MAX_WIDTH_NETWORK_AREA_DIAGRAM / 2,
+                    defaultHeight: MAX_HEIGHT_NETWORK_AREA_DIAGRAM / 2,
                 });
             } else {
                 closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
@@ -546,6 +566,10 @@ export function DiagramPane({
                                 disabled={disabled}
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
+                                width={diagramView.defaultWidth}
+                                height={diagramView.defaultHeight}
+                                fullscreenWidth={width}
+                                fullscreenHeight={height}
                             >
                                 {(diagramView.svgType ===
                                     SvgType.VOLTAGE_LEVEL ||

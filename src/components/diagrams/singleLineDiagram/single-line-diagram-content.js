@@ -20,8 +20,8 @@ import { RunningStatus } from '../../util/running-status';
 import { equipments } from '../../network/network-equipments';
 import {
     getEquipmentTypeFromFeederType,
-    LOADING_HEIGHT,
-    LOADING_WIDTH,
+    MIN_HEIGHT,
+    MIN_WIDTH,
     MAX_HEIGHT_SUBSTATION,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_SUBSTATION,
@@ -217,8 +217,8 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                 svg.svg, //svgContent
                 svg.metadata, //svg metadata
                 props.svgType, //svg type
-                LOADING_WIDTH, // minWidth
-                LOADING_HEIGHT, // minHeight
+                MIN_WIDTH, // minWidth
+                MIN_HEIGHT, // minHeight
 
                 // maxWidth
                 props.svgType === SvgType.VOLTAGE_LEVEL

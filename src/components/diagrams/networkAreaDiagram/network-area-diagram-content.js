@@ -18,8 +18,8 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
 import {
-    LOADING_HEIGHT,
-    LOADING_WIDTH,
+    MIN_HEIGHT,
+    MIN_WIDTH,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     NoSvg,
@@ -76,8 +76,8 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 svg.svg,
-                LOADING_WIDTH,
-                LOADING_HEIGHT,
+                MIN_WIDTH,
+                MIN_HEIGHT,
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM
             );

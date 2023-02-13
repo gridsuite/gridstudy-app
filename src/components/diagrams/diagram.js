@@ -21,6 +21,7 @@ import {
     SvgType,
     useDiagram,
     useDiagramStyles,
+    MIN_WIDTH,
     LOADING_WIDTH,
     LOADING_HEIGHT,
 } from './diagram-common';
@@ -38,6 +39,15 @@ const Diagram = (props) => {
         useDiagram();
 
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
+
+    const shouldBeHidden =
+        fullScreenDiagram?.id &&
+        (fullScreenDiagram.id !== props.diagramId ||
+            fullScreenDiagram.svgType !== props.svgType);
+
+    const shouldBeFullscreen =
+        fullScreenDiagram?.id === props.diagramId &&
+        fullScreenDiagram?.svgType === props.svgType;
 
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
@@ -87,16 +97,12 @@ const Diagram = (props) => {
     return (
         <DiagramResizableBox
             align={props.align}
-            height={2 * LOADING_HEIGHT}
-            width={2 * LOADING_WIDTH}
+            height={shouldBeFullscreen ? props.fullscreenHeight : props.height} // TODO CHARLY test if "import { Resizable } from 're-resizable';" (which allows percents) is better (as in '100%', saves two props)
+            width={shouldBeFullscreen ? props.fullscreenWidth : props.width}
             // We disable the resizeBox if a diagram is in fullscreen
             disableResize={fullScreenDiagram?.id}
             // We hide this diagram if another diagram is in fullscreen mode.
-            hide={
-                fullScreenDiagram?.id &&
-                (fullScreenDiagram.id !== props.diagramId ||
-                    fullScreenDiagram.svgType !== props.svgType)
-            }
+            hide={shouldBeHidden}
         >
             <Paper
                 elevation={4}
@@ -105,7 +111,7 @@ const Diagram = (props) => {
                 style={{
                     pointerEvents: 'auto',
                     width: '100%',
-                    minWidth: LOADING_WIDTH,
+                    minWidth: MIN_WIDTH,
                     height: '100%',
                     position: 'relative',
                     overflow: 'hidden',
@@ -157,6 +163,10 @@ Diagram.defaultProps = {
     pinned: false,
     disabled: false,
     align: 'left',
+    width: LOADING_WIDTH,
+    height: LOADING_HEIGHT,
+    fullscreenWidth: LOADING_WIDTH,
+    fullscreenHeight: LOADING_HEIGHT,
 };
 
 Diagram.propTypes = {
@@ -167,6 +177,10 @@ Diagram.propTypes = {
     pinned: PropTypes.bool,
     svgType: PropTypes.string.isRequired,
     children: PropTypes.node,
+    width: PropTypes.number,
+    height: PropTypes.number,
+    fullscreenWidth: PropTypes.number,
+    fullscreenHeight: PropTypes.number,
 };
 
 export default Diagram;

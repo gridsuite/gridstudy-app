@@ -21,8 +21,10 @@ import {
 import { equipments } from '../network/network-equipments';
 import makeStyles from '@mui/styles/makeStyles';
 
-export const LOADING_WIDTH = 150;
-export const LOADING_HEIGHT = 150;
+export const LOADING_WIDTH = 300;
+export const LOADING_HEIGHT = 300;
+export const MIN_WIDTH = 150;
+export const MIN_HEIGHT = 150;
 export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
 export const MAX_HEIGHT_VOLTAGE_LEVEL = 700;
 export const MAX_WIDTH_SUBSTATION = 1200;
