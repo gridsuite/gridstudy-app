@@ -9,7 +9,6 @@ import TextInput from '../../rhf-inputs/text-input';
 import {
     ACTIVE_POWER_SET_POINT,
     DROOP,
-    ENABLED,
     ENERGY_SOURCE,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -22,8 +21,6 @@ import {
     MINIMUM_REACTIVE_POWER,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
-    Q_MAX_P,
-    Q_MIN_P,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
@@ -60,9 +57,7 @@ import { ConnectivityForm } from '../connectivity/connectivity-form';
 import FloatInput from '../../rhf-inputs/float-input';
 import RadioInput from '../../rhf-inputs/radio-input';
 import RegulatingTerminalForm from '../regulating-terminal/regulating-terminal-form';
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import { useWatch } from 'react-hook-form';
-import { useEffect } from 'react';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import BooleanInput from '../../rhf-inputs/boolean-input';
 import { Box } from '@mui/system';
