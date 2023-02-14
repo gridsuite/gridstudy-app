@@ -17,7 +17,8 @@ const ReactiveCapabilityCurveForm = ({ index, labelSuffix }) => {
     const pField = (
         <FloatInput
             name={`${id}.${index}.${P}`}
-            label={'P' + labelSuffix}
+            label={'P'}
+            labelValues={{labelSuffix: labelSuffix}}
             adornment={ActivePowerAdornment}
         />
     );
@@ -25,7 +26,8 @@ const ReactiveCapabilityCurveForm = ({ index, labelSuffix }) => {
     const qminPField = (
         <FloatInput
             name={`${id}.${index}.${Q_MIN_P}`}
-            label={'QminP' + labelSuffix}
+            label={'QminP'}
+            labelValues={{labelSuffix: labelSuffix}}
             adornment={ReactivePowerAdornment}
         />
     );
@@ -33,7 +35,8 @@ const ReactiveCapabilityCurveForm = ({ index, labelSuffix }) => {
     const qmaxPField = (
         <FloatInput
             name={`${id}.${index}.${Q_MAX_P}`}
-            label={'QmaxP' + labelSuffix}
+            label={'QmaxP'}
+            labelValues={{labelSuffix: labelSuffix}}
             adornment={ActivePowerAdornment}
         />
     );

@@ -38,6 +38,7 @@ const FloatInput = (props) => {
 FloatInput.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
+    labelValues: PropTypes.string,
     adornment: PropTypes.object,
     acceptValue: PropTypes.func,
     formProps: PropTypes.object,

@@ -8,7 +8,7 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -70,10 +70,14 @@ import {
 } from '../regulating-terminal/regulating-terminal-form-utils';
 import { createGenerator } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
-import {REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION} from '../../../network/constants';
-
-const regulatingTerminalValidationSchema = (id = REGULATING_TERMINAL) => ({
-});
+import {
+    REGULATION_TYPES,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '../../../network/constants';
+import {
+    toNumber,
+    validateValueIsANumber,
+} from '../../../util/validation-functions';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -120,15 +124,26 @@ const schema = yup
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [STARTUP_COST]: yup.number().nullable(),
         [MARGINAL_COST]: yup.number().nullable(),
-        [PLANNED_OUTAGE_RATE]: yup.number().nullable(),
-        [FORCED_OUTAGE_RATE]: yup.number().nullable(),
+        [PLANNED_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage'),
+        [FORCED_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage'),
         [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().required(),
         [MINIMUM_REACTIVE_POWER]: yup.number().nullable(),
         [MAXIMUM_REACTIVE_POWER]: yup.number().nullable(),
-        [REACTIVE_POWER_SET_POINT]: yup.number().when([VOLTAGE_REGULATION], {
-            is: false,
-            then: (schema) => schema.required(),
-        }),
+        [REACTIVE_POWER_SET_POINT]: yup
+            .number()
+            .nullable()
+            .when([VOLTAGE_REGULATION], {
+                is: false,
+                then: (schema) => schema.required(),
+            }),
         [FREQUENCY_REGULATION]: yup.bool().required(),
         [REACTIVE_CAPABILITY_CURVE_TABLE]: yup
             .array()
@@ -136,10 +151,6 @@ const schema = yup
                 is: 'CURVE',
                 then: (schema) =>
                     schema
-                        .min(
-                            2,
-                            'ReactiveCapabilityCurveCreationErrorMissingPoints'
-                        )
                         .of(
                             yup.object().shape({
                                 [Q_MAX_P]: yup.number().required(),
@@ -153,15 +164,36 @@ const schema = yup
                                 [P]: yup
                                     .number()
                                     .required()
-                                    .moreThan(
+                                    .min(
                                         yup.ref(Q_MIN_P),
                                         'ReactiveCapabilityCurveCreationErrorPOutOfRange'
                                     )
-                                    .lessThan(
+                                    .max(
                                         yup.ref(Q_MAX_P),
                                         'ReactiveCapabilityCurveCreationErrorPOutOfRange'
                                     ),
                             })
+                        )
+                        .min(
+                            2,
+                            'ReactiveCapabilityCurveCreationErrorMissingPoints'
+                        )
+                        .test(
+                            'validateP',
+                            'ReactiveCapabilityCurveCreationErrorPInvalid',
+                            (values) => {
+                                const everyValidP = values
+                                    .map((element) =>
+                                        // Note : convertion toNumber is necessary here to prevent corner cases like if
+                                        // two values are "-0" and "0", which would be considered different by the Set below.
+                                        validateValueIsANumber(element.p)
+                                            ? toNumber(element.p)
+                                            : null
+                                    )
+                                    .filter((p) => p !== null);
+                                const setOfPs = [...new Set(everyValidP)];
+                                return setOfPs.length === everyValidP.length;
+                            }
                         ),
             }),
         [VOLTAGE_REGULATION]: yup.bool().required(),
@@ -195,7 +227,8 @@ const schema = yup
                 })
                 .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
                     is: (voltageRegulation, voltageRegulationType) =>
-                        voltageRegulation && voltageRegulationType === 'DISTANT',
+                        voltageRegulation &&
+                        voltageRegulationType === REGULATION_TYPES.DISTANT.id,
                     then: (schema) => schema.required(),
                 }),
             [EQUIPMENT]: yup
@@ -208,7 +241,8 @@ const schema = yup
                 })
                 .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
                     is: (voltageRegulation, voltageRegulationType) =>
-                        voltageRegulation && voltageRegulationType === 'DISTANT',
+                        voltageRegulation &&
+                        voltageRegulationType === REGULATION_TYPES.DISTANT.id,
                     then: (schema) => schema.required(),
                 }),
         }),
@@ -236,7 +270,6 @@ const GeneratorCreationDialog = ({
 
     const { reset } = methods;
     const fromSearchCopyToFormValues = (generator) => {
-        console.log('gen  ', generator);
         reset({
             [EQUIPMENT_ID]: generator.id + '(1)',
             [EQUIPMENT_NAME]: generator.name ?? '',
@@ -265,7 +298,11 @@ const GeneratorCreationDialog = ({
             [DROOP]: generator.droop,
             [TRANSIENT_REACTANCE]: generator.transientReactance,
             [TRANSFORMER_REACTANCE]: generator.stepUpTransformerReactance,
-            [VOLTAGE_REGULATION_TYPE]: generator.voltageRegulationType,
+            [VOLTAGE_REGULATION_TYPE]:
+                generator?.regulatingTerminalId ||
+                generator?.regulatingTerminalConnectableId
+                    ? REGULATION_TYPES.DISTANT.id
+                    : REGULATION_TYPES.LOCAL.id,
             [REACTIVE_CAPABILITY_CURVE_TABLE]:
                 generator.reactiveCapabilityCurvePoints,
             [MINIMUM_REACTIVE_POWER]:
@@ -278,7 +315,7 @@ const GeneratorCreationDialog = ({
                 : 'CURVE',
             [REACTIVE_CAPABILITY_CURVE_TABLE]:
                 generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
-            ...getRegulatingTerminalFormData({
+            [REGULATING_TERMINAL]: getRegulatingTerminalFormData({
                 equipmentId:
                     generator.regulatingTerminalConnectableId ||
                     generator.regulatingTerminalId,
@@ -296,6 +333,61 @@ const GeneratorCreationDialog = ({
         setFormValues: fromSearchCopyToFormValues,
     });
 
+    useEffect(() => {
+        console.log('editData  ', editData);
+        if (editData) {
+            reset({
+                [EQUIPMENT_ID]: editData.equipmentId,
+                [EQUIPMENT_NAME]: editData.equipmentName ?? '',
+                [ENERGY_SOURCE]: editData.energySource,
+                [MAXIMUM_ACTIVE_POWER]: editData.maxActivePower,
+                [MINIMUM_ACTIVE_POWER]: editData.minActivePower,
+                [RATED_NOMINAL_POWER]: editData.ratedNominalPower,
+                [ACTIVE_POWER_SET_POINT]: editData.activePowerSetpoint,
+                [VOLTAGE_REGULATION]: editData.voltageRegulationOn,
+                [VOLTAGE_SET_POINT]: editData.voltageSetpoint,
+                [REACTIVE_POWER_SET_POINT]: editData.targetQ,
+                ...getConnectivityFormData({
+                    voltageLevelId: editData.voltageLevelId,
+                    busbarSectionId: editData.busOrBusbarSectionId,
+                    connectionDirection: editData.connectionDirection,
+                    connectionName: editData.connectionName,
+                    connectionPosition: editData.connectionPosition,
+                }),
+                [PLANNED_ACTIVE_POWER_SET_POINT]:
+                    editData.plannedActivePowerSetPoint,
+                [STARTUP_COST]: editData.startupCost,
+                [MARGINAL_COST]: editData.marginalCost,
+                [PLANNED_OUTAGE_RATE]: editData.plannedOutageRate,
+                [FORCED_OUTAGE_RATE]: editData.forcedOutageRate,
+                [FREQUENCY_REGULATION]: editData.participate,
+                [DROOP]: editData.droop,
+                [TRANSIENT_REACTANCE]: editData.transientReactance,
+                [TRANSFORMER_REACTANCE]: editData.stepUpTransformerReactance,
+                [VOLTAGE_REGULATION_TYPE]: editData?.regulatingTerminalId
+                    ? REGULATION_TYPES.DISTANT.id
+                    : REGULATION_TYPES.LOCAL.id,
+                [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                    editData.reactiveCapabilityCurvePoints,
+                [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower,
+                [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower,
+                [Q_PERCENT]: editData.qPercent,
+                [REACTIVE_CAPABILITY_CURVE_CHOICE]:
+                    editData?.minimumReactivePower ||
+                    editData?.maximumReactivePower
+                        ? 'MINMAX'
+                        : 'CURVE',
+                [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                    editData?.reactiveCapabilityCurvePoints ?? [{}, {}],
+                [REGULATING_TERMINAL]: getRegulatingTerminalFormData({
+                    equipmentId: editData.regulatingTerminalId,
+                    equipmentType: editData.regulatingTerminalType,
+                    voltageLevelId: editData.regulatingTerminalVlId,
+                }),
+            });
+        }
+    }, [editData, reset]);
+
     const clear = useCallback(() => {}, []);
 
     const onSubmit = useCallback(
@@ -305,7 +397,9 @@ const GeneratorCreationDialog = ({
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation =
                 generator[VOLTAGE_REGULATION] &&
-                generator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
+                generator[VOLTAGE_REGULATION_TYPE] ===
+                    REGULATION_TYPES.DISTANT.id;
+
             createGenerator(
                 studyUuid,
                 currentNodeUuid,
@@ -352,10 +446,10 @@ const GeneratorCreationDialog = ({
                 isReactiveCapabilityCurveOn
                     ? generator[REACTIVE_CAPABILITY_CURVE_TABLE]
                     : null,
-                generator[CONNECTIVITY]?.[CONNECTION_DIRECTION]?.id ??
+                generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                [CONNECTIVITY]?.[CONNECTION_NAME]?.id ?? null,
-                generator[CONNECTIVITY]?.[CONNECTION_POSITION]?.id ?? null
+                generator[CONNECTIVITY]?.[CONNECTION_NAME] ?? null,
+                generator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

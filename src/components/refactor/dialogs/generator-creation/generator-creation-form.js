@@ -52,7 +52,7 @@ import {
     REGULATION_TYPES,
 } from '../../../network/constants';
 import Grid from '@mui/material/Grid';
-import React, {useEffect} from 'react';
+import React from 'react';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import FloatInput from '../../rhf-inputs/float-input';
 import RadioInput from '../../rhf-inputs/radio-input';
@@ -62,6 +62,7 @@ import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reacti
 import BooleanInput from '../../rhf-inputs/boolean-input';
 import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
+import FieldErrorAlert from "../../rhf-inputs/field-error-alert";
 
 const headerIds = [
     'ActivePowerText',
@@ -216,11 +217,6 @@ const GeneratorCreationForm = ({
         />
     );
 
-    const test = useWatch({name: VOLTAGE_REGULATION_TYPE})
-    useEffect(() => {
-        console.log('test : ', test);
-    }, [test])
-
     const voltageSetPointField = (
         <FloatInput
             name={VOLTAGE_SET_POINT}
@@ -322,6 +318,7 @@ const GeneratorCreationForm = ({
             )}
         </>
     );
+
     return (
         <>
             <Grid container spacing={2}>
