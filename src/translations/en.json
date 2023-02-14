@@ -157,7 +157,7 @@
     "DynamicSimulationTimeSeriesLabel": "Time Series",
     "DynamicSimulationTimeLineLabel": "Time Line",
     "DynamicSimulationResultTypeLabel": "Result type",
-    "DynamicSimulationResultLayoutCols": "Max number of columns",
+    "DynamicSimulationResultLayoutCols": "Columns",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
@@ -496,7 +496,8 @@
     "PlannedOutageRate": "Planning outage rate",
     "ForcedOutageRate": "Forced outage rate",
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
-    "MinReactivePowerLessThanMaxActivePower": "Minimum reactive power value must be less or equal than maximum reactive power value",
+    "MinReactivePowerLessThanMaxReactivePower": "Minimum reactive power value must be less or equal than maximum reactive power value",
+    "MaxReactivePowerGreaterThanMinReactivePower": "Maximum reactive power value must be greater or equal than minimum reactive power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "DroopGreaterThanZero": "The droop value must be strictly positive",
