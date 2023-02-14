@@ -202,7 +202,7 @@ const GeneratorModificationDialog = ({
                 currentNodeUuid,
                 'generators',
                 id,
-                false
+                true
             ).then((value) => {
                 if (value) {
                     setGeneratorInfo(value);

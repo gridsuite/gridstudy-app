@@ -676,7 +676,8 @@ export function fetchEquipments(
         '/network-map/' +
         equipmentPath +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId');
+        getQueryParamsList(substationsIds, 'substationId') +
+        urlSearchParams.toString();
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
 }
