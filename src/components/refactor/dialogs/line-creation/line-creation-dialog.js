@@ -118,44 +118,47 @@ const LineCreationDialog = ({
     const { reset } = methods;
 
     const fromSearchCopyToFormValues = (line) => {
-        reset({
-            [EQUIPMENT_ID]: line.id + '(1)',
-            [EQUIPMENT_NAME]: line.name ?? '',
-            [SHUNT_CONDUCTANCE_1]: line.g1,
-            [SHUNT_SUSCEPTANCE_1]: line.b1,
-            [SHUNT_CONDUCTANCE_2]: line.g2,
-            [SHUNT_SUSCEPTANCE_2]: line.b2,
-            [SERIES_RESISTANCE]: line.r,
-            [SERIES_REACTANCE]: line.x,
-            [CURRENT_LIMITS_1]: {
-                [PERMANENT_LIMIT]: line.permanentLimit1,
+        reset(
+            {
+                [EQUIPMENT_ID]: line.id + '(1)',
+                [EQUIPMENT_NAME]: line.name ?? '',
+                [SHUNT_CONDUCTANCE_1]: line.g1,
+                [SHUNT_SUSCEPTANCE_1]: line.b1,
+                [SHUNT_CONDUCTANCE_2]: line.g2,
+                [SHUNT_SUSCEPTANCE_2]: line.b2,
+                [SERIES_RESISTANCE]: line.r,
+                [SERIES_REACTANCE]: line.x,
+                [CURRENT_LIMITS_1]: {
+                    [PERMANENT_LIMIT]: line.permanentLimit1,
+                },
+                [CURRENT_LIMITS_2]: {
+                    [PERMANENT_LIMIT]: line.permanentLimit2,
+                },
+                ...(displayConnectivity &&
+                    getConnectivityFormData(
+                        {
+                            voltageLevelId: line.voltageLevelId1,
+                            busbarSectionId: null,
+                            connectionDirection: line.connectionDirection1,
+                            connectionName: line.connectionName1,
+                            connectionPosition: line.connectionPosition1,
+                        },
+                        CONNECTIVITY_1
+                    )),
+                ...(displayConnectivity &&
+                    getConnectivityFormData(
+                        {
+                            voltageLevelId: line.voltageLevelId2,
+                            busbarSectionId: null,
+                            connectionDirection: line.connectionDirection2,
+                            connectionName: line.connectionName2,
+                            connectionPosition: line.connectionPosition2,
+                        },
+                        CONNECTIVITY_2
+                    )),
             },
-            [CURRENT_LIMITS_2]: {
-                [PERMANENT_LIMIT]: line.permanentLimit2,
-            },
-            ...(displayConnectivity &&
-                getConnectivityFormData(
-                    {
-                        voltageLevelId: line.voltageLevelId1,
-                        busbarSectionId: null,
-                        connectionDirection: line.connectionDirection1,
-                        connectionName: line.connectionName1,
-                        connectionPosition: line.connectionPosition1,
-                    },
-                    CONNECTIVITY_1
-                )),
-            ...(displayConnectivity &&
-                getConnectivityFormData(
-                    {
-                        voltageLevelId: line.voltageLevelId2,
-                        busbarSectionId: null,
-                        connectionDirection: line.connectionDirection2,
-                        connectionName: line.connectionName2,
-                        connectionPosition: line.connectionPosition2,
-                    },
-                    CONNECTIVITY_2
-                )),
-        });
+            { keepDefaultValues: true }
+        );
     };
 
     const fromEditDataToFormValues = useCallback(
