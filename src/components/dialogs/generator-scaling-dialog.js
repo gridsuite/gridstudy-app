@@ -106,7 +106,7 @@ const GeneratorScalingVariation = ({
         },
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        equipmentTypes: [EQUIPMENT_TYPES.GENERATOR],
+        equipmentTypes: [EQUIPMENT_TYPES.GENERATOR.type],
         itemFilter: itemFilter,
         elementClassName: classes.chipElement,
         required: true,

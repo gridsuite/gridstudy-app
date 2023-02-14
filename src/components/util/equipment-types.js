@@ -68,6 +68,15 @@ export const EQUIPMENT_TYPES = {
         type: 'HVDC_CONVERTER_STATION',
         fetchers: [fetchLccConverterStations, fetchVscConverterStations],
     },
+    /**
+     * these are ComponentTypeNames from powsybl-single-line-diagram but we put them here because some ComponentTypeNames are also EquipmentsNames
+     */
+    VSC_CONVERTER_STATION: {
+        type: 'VSC_CONVERTER_STATION',
+    },
+    LCC_CONVERTER_STATION: {
+        type: 'LCC_CONVERTER_STATION',
+    },
     BUSBAR_SECTION: {
         type: 'BUSBAR_SECTION',
     },
@@ -76,12 +85,6 @@ export const EQUIPMENT_TYPES = {
     },
     SWITCH: {
         type: 'SWITCH',
-    },
-    VSC_CONVERTER_STATION: {
-        type: 'VSC_CONVERTER_STATION',
-    },
-    LCC_CONVERTER_STATION: {
-        type: 'LCC_CONVERTER_STATION',
     },
     CAPACITOR: {
         type: 'CAPACITOR',
