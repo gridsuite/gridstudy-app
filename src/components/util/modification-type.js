@@ -56,4 +56,7 @@ export const MODIFICATION_TYPES = {
     DELETE_ATTACHING_LINE: {
         type: 'DELETE_ATTACHING_LINE',
     },
+    GENERATOR_SCALING: {
+        type: 'GENERATOR_SCALING',
+    },
 };

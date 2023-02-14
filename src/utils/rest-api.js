@@ -8,7 +8,6 @@ import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
 import {
-    MODIFICATION_TYPE,
     BRANCH_STATUS_ACTION,
     BRANCH_SIDE,
 } from '../components/network/constants';
@@ -1556,7 +1555,7 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branchId, action) {
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPE.BRANCH_STATUS_MODIFICATION,
+            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION,
             equipmentId: branchId,
             action: action,
         }),
@@ -1620,7 +1619,7 @@ export function generatorScaling(
     variations
 ) {
     const body = JSON.stringify({
-        type: MODIFICATION_TYPE.GENERATOR_SCALING,
+        type: MODIFICATION_TYPES.GENERATOR_SCALING,
         variationType,
         variations,
     });
