@@ -173,7 +173,7 @@ const TwoWindingsTransformerCreationDialog = ({
             : null;
     };
 
-    const getRegulationTypeForCopy= (twt, tap) => {
+    const getRegulationTypeForCopy = (twt, tap) => {
         return tap?.regulatingTerminalConnectableId != null
             ? tap?.regulatingTerminalConnectableId === twt.id
                 ? REGULATION_TYPES.LOCAL.id
@@ -226,7 +226,10 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt,
                         twt?.[PHASE_TAP_CHANGER]
                     ),
-                    regulationSide: getTapSideForEdit(twt, twt?.[PHASE_TAP_CHANGER]),
+                    regulationSide: getTapSideForEdit(
+                        twt,
+                        twt?.[PHASE_TAP_CHANGER]
+                    ),
                     currentLimiterRegulatingValue:
                         twt?.[PHASE_TAP_CHANGER]?.regulationValue,
                     flowSetpointRegulatingValue:
@@ -257,7 +260,10 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt,
                         twt?.[RATIO_TAP_CHANGER]
                     ),
-                    regulationSide: getTapSideForEdit(twt, twt?.[RATIO_TAP_CHANGER]),
+                    regulationSide: getTapSideForEdit(
+                        twt,
+                        twt?.[RATIO_TAP_CHANGER]
+                    ),
                     targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
                     targetDeadband: twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
                     lowTapPosition:
@@ -324,7 +330,10 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt,
                         twt?.[RATIO_TAP_CHANGER]
                     ),
-                    regulationSide: getTapSideForCopy(twt, twt?.[RATIO_TAP_CHANGER]),
+                    regulationSide: getTapSideForCopy(
+                        twt,
+                        twt?.[RATIO_TAP_CHANGER]
+                    ),
                     targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
                     targetDeadband: isNaN(
                         twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND]
@@ -356,7 +365,10 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt,
                         twt?.[PHASE_TAP_CHANGER]
                     ),
-                    regulationSide: getTapSideForCopy(twt, twt?.[PHASE_TAP_CHANGER]),
+                    regulationSide: getTapSideForCopy(
+                        twt,
+                        twt?.[PHASE_TAP_CHANGER]
+                    ),
                     currentLimiterRegulatingValue:
                         twt?.[PHASE_TAP_CHANGER]?.regulationValue,
                     flowSetpointRegulatingValue:
@@ -374,7 +386,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
                     steps: twt?.[PHASE_TAP_CHANGER]?.[STEPS],
                     voltageLevelId:
-                    twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
+                        twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
                     equipmentId:
                         twt?.[PHASE_TAP_CHANGER]
                             ?.regulatingTerminalConnectableId,
