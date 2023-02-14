@@ -157,7 +157,7 @@
     "DynamicSimulationTimeSeriesLabel": "Time Series",
     "DynamicSimulationTimeLineLabel": "Time Line",
     "DynamicSimulationResultTypeLabel": "Type de resultat",
-    "DynamicSimulationResultLayoutCols": "Nombre maximum de colonnes",
+    "DynamicSimulationResultLayoutCols": "Colonnes",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
@@ -490,7 +490,8 @@
     "PlannedOutageRate": "Indisponibilité programmée",
     "ForcedOutageRate": "Indisponibilité fortuite",
     "MinActivePowerLessThanMaxActivePower": "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
-    "MinReactivePowerLessThanMaxActivePower": "La valeur de la puissance réactive min doit être inférieure ou égale à la valeur de la puissance réactive max",
+    "MinReactivePowerLessThanMaxReactivePower": "La valeur de la puissance réactive min doit être inférieure ou égale à la valeur de la puissance réactive max",
+    "MaxReactivePowerGreaterThanMinReactivePower": "La valeur de la puissance réactive max doit être supérieure ou égale à la valeur de la puissance réactive min",
     "RatedNominalPowerGreaterThanZero": "La valeur de la puissance nominale doit être strictement positive",
     "VoltageGreaterThanZero": "La valeur de la tension doit être strictement positive",
     "DroopGreaterThanZero": "La valeur de participation doit être strictement positive",
@@ -604,9 +605,7 @@
     "TapPositionBetweenLowAndHighTapPositionValue": "La valeur de la prise courante doit être comprise entre la valeur de Prise min et Prise max",
     "TerminalRef":"Terminal réglé",
     "GenerateRatioTapRowsError": "Veuillez générer les prises du régleur",
-    "IncoherentRatioLowTapPositionError": "La valeur du champ Prise min du régleur ne correspond pas aux données de ses prises",
     "GeneratePhaseTapRowsError": "Veuillez générer les prises du déphaseur",
-    "IncoherentPhaseLowTapPositionError": "La valeur du champ Prise min du déphaseur ne correspond pas aux données de ses prises",
     "IncoherentRatioTapPositionError": "La valeur du champ Prise courante du régleur n'est pas présente dans les données de ses prises",
     "IncoherentPhaseTapPositionError": "La valeur du champ Prise courante du déphaseur n'est pas présente dans les données de ses prises",
     "IncoherentRatioRegulatingTerminalError": "La valeur du Terminal distant réglé du régleur doit être renseignée",
@@ -614,6 +613,8 @@
     "RatioValuesError": "Les rapports de transformation doivent être ordonnés et sans duplication",
     "PhaseShiftValuesError": "Les valeurs de déphasage doivent être ordonnés et sans duplication",
     "TapPositionValueError": "Le nombre de prises ne doit pas dépasser la valeur {value}",
+    "IncoherentLowTapPositionError": "La valeur doit correspondre à la plus petite prise générée",
+    "IncoherentHighTapPositionError": "La valeur doit correspondre à la plus grande prise générée",
 
     "GeneratorScaling": "Variation plan de production",
     "IterativeLabel": "Itérative",
@@ -767,5 +768,9 @@
     "ConnectionPosition": "Position départ",
     "DisplayTakenPositions": "Afficher les positions prises",
     "ResultsThresholdGreaterOrEqualDefaultValue": "La valeur du seuil minimal de sensibilité doit être supérieure ou égale à la valeur par défaut",
-    "NodeNotBuildPositionMessage": "Veuillez choisir un poste ou attendre le chargement complet des données"
+    "NodeNotBuildPositionMessage": "Veuillez choisir un poste ou attendre le chargement complet des données",
+
+    "YupRequired": "Ce champ doit être renseigné",
+    "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
+    "YupNotTypeDefault": "La valeur du champ n'est pas au bon format"
 }

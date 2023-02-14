@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import { ResizableBox } from 'react-resizable';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchSvg, updateSwitchState } from '../../utils/rest-api';
@@ -45,7 +44,6 @@ import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import {
-    isNodeBuilt,
     isNodeReadOnly,
     isNodeInNotificationList,
 } from '../graph/util/model-functions';
@@ -73,7 +71,7 @@ import {
 import makeStyles from '@mui/styles/makeStyles';
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
-import ResizeHandleIcon from '@mui/icons-material/ChevronRight';
+import DiagramResizableBox from './diagram-resizable-box';
 
 const customSldStyle = (theme) => {
     return {
@@ -657,10 +655,6 @@ const Diagram = forwardRef((props, ref) => {
         sizeWidth = props.totalWidth; // happens during initialization if initial width value is undefined
     }
 
-    if (!isNodeBuilt(currentNode)) {
-        sizeWidth = props.totalWidth / props.numberToDisplay; // prevents the diagram from becoming too big if the current node is not built
-    }
-
     if (sizeWidth !== undefined) {
         initialWidth = sizeWidth; // setting initial width for the next SLD.
     }
@@ -726,13 +720,6 @@ const Diagram = forwardRef((props, ref) => {
                     height: '100%',
                     position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
                     overflow: 'hidden',
-                    // We hide this diagram if another diagram is in fullscreen mode.
-                    display:
-                        !fullScreenDiagram?.id ||
-                        (props.diagramId === fullScreenDiagram.id &&
-                            props.svgType === fullScreenDiagram.svgType)
-                            ? ''
-                            : 'none',
                 }}
             >
                 <Box>
@@ -763,7 +750,7 @@ const Diagram = forwardRef((props, ref) => {
                         <AlertInvalidNode noMargin={true} />
                     </Box>
                 ) : (
-                    <Box>
+                    <Box height={'100%'}>
                         {errorMessage && (
                             <Alert severity="error">{errorMessage}</Alert>
                         )}
@@ -780,6 +767,7 @@ const Diagram = forwardRef((props, ref) => {
                                     dangerouslySetInnerHTML={{
                                         __html: svg.svg,
                                     }}
+                                    style={{ height: '100%' }}
                                 />
                                 {displayBranchMenu()}
                                 {displayMenu(equipments.loads, 'load-menus')}
@@ -830,6 +818,7 @@ const Diagram = forwardRef((props, ref) => {
                                         props.loadFlowStatus !==
                                         RunningStatus.SUCCEED,
                                 })}
+                                style={{ height: '100%' }}
                             />
                         )}
 
@@ -858,41 +847,21 @@ const Diagram = forwardRef((props, ref) => {
     };
 
     return !svg.error ? (
-        <ResizableBox
-            height={sizeHeight ?? LOADING_WIDTH}
-            width={sizeWidth ?? LOADING_WIDTH}
-            className={clsx({
-                [classes.resizableLeft]:
-                    !fullScreenDiagram?.id && props?.align === 'right',
-                [classes.resizableRight]:
-                    !fullScreenDiagram?.id && props?.align === 'left',
-            })}
-            minConstraints={[LOADING_WIDTH, LOADING_WIDTH]}
-            resizeHandles={props?.align === 'right' ? ['sw'] : undefined}
-            axis={fullScreenDiagram?.id ? 'none' : undefined} // disables the resizeBox if in fullscreen
-            style={{
-                // We hide this diagram if another diagram is in fullscreen mode.
-                display:
-                    !fullScreenDiagram?.id ||
-                    (props.diagramId === fullScreenDiagram.id &&
-                        props.svgType === fullScreenDiagram.svgType)
-                        ? ''
-                        : 'none',
-            }}
+        <DiagramResizableBox
+            align={props.align}
+            height={sizeHeight}
+            width={sizeWidth}
+            // We disable the resizeBox if a diagram is in fullscreen
+            disableResize={fullScreenDiagram?.id}
+            // We hide this diagram if another diagram is in fullscreen mode.
+            hide={
+                fullScreenDiagram?.id &&
+                (fullScreenDiagram.id !== props.diagramId ||
+                    fullScreenDiagram.svgType !== props.svgType)
+            }
         >
-            <>
-                {contentRender()}
-                {!fullScreenDiagram?.id && (
-                    <ResizeHandleIcon
-                        className={
-                            props?.align === 'right'
-                                ? classes.resizeHandleIconLeft
-                                : classes.resizeHandleIconRight
-                        }
-                    />
-                )}
-            </>
-        </ResizableBox>
+            {contentRender()}
+        </DiagramResizableBox>
     ) : (
         <></>
     );
