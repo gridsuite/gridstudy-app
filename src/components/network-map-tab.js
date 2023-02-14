@@ -598,7 +598,9 @@ export const NetworkMapTab = ({
                 }
             });
 
-            return Promise.all([updatedSubstations, updatedLines]);
+            return Promise.all([updatedSubstations, updatedLines]).finally(() =>
+                setWaitingLoadData(false)
+            );
         },
         [
             currentNode,
