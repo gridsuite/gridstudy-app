@@ -12,11 +12,11 @@ import {
     LOW_TAP_POSITION,
     RATIO_TAP_CHANGER,
     STEPS,
-    STEPS_CONDUCTANCE,
+    G,
     STEPS_RATIO,
-    STEPS_REACTANCE,
-    STEPS_RESISTANCE,
-    STEPS_SUSCEPTANCE,
+    X,
+    R,
+    B,
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/refactor/utils/field-constants';
@@ -74,30 +74,30 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 numeric: true,
             },
             {
-                label: 'DeltaResistance',
-                id: 'resistance',
-                dataKey: STEPS_RESISTANCE,
+                label: 'DeltaR',
+                id: 'r',
+                dataKey: R,
                 numeric: true,
                 editor: TableNumericalInput,
             },
             {
-                label: 'DeltaReactance',
-                id: 'reactance',
-                dataKey: STEPS_REACTANCE,
+                label: 'DeltaX',
+                id: 'x',
+                dataKey: X,
                 numeric: true,
                 editor: TableNumericalInput,
             },
             {
-                label: 'DeltaConductance',
-                id: 'conductance',
-                dataKey: STEPS_CONDUCTANCE,
+                label: 'DeltaG',
+                id: 'g',
+                dataKey: G,
                 numeric: true,
                 editor: TableNumericalInput,
             },
             {
-                label: 'DeltaSusceptance',
-                id: 'susceptance',
-                dataKey: STEPS_SUSCEPTANCE,
+                label: 'DeltaB',
+                id: 'b',
+                dataKey: B,
                 numeric: true,
                 editor: TableNumericalInput,
             },
@@ -237,10 +237,10 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     currentHighTapPosition
                 ).map((i) => ({
                     [STEPS_TAP]: i,
-                    [STEPS_RESISTANCE]: 0,
-                    [STEPS_REACTANCE]: 0,
-                    [STEPS_CONDUCTANCE]: 0,
-                    [STEPS_SUSCEPTANCE]: 0,
+                    [R]: 0,
+                    [X]: 0,
+                    [G]: 0,
+                    [B]: 0,
                     [STEPS_RATIO]: 1,
                 }))
             );
@@ -255,10 +255,10 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
         for (let i = lowestTapRowIndex - 1; i >= currentLowTapPosition; i--) {
             newSteps.unshift({
                 [STEPS_TAP]: i,
-                [STEPS_RESISTANCE]: 0,
-                [STEPS_REACTANCE]: 0,
-                [STEPS_CONDUCTANCE]: 0,
-                [STEPS_SUSCEPTANCE]: 0,
+                [R]: 0,
+                [X]: 0,
+                [G]: 0,
+                [B]: 0,
                 [STEPS_RATIO]: 1,
             });
         }
@@ -267,10 +267,10 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
         for (let i = highestTapRowIndex + 1; i <= currentHighTapPosition; i++) {
             newSteps.push({
                 [STEPS_TAP]: i,
-                [STEPS_RESISTANCE]: 0,
-                [STEPS_REACTANCE]: 0,
-                [STEPS_CONDUCTANCE]: 0,
-                [STEPS_SUSCEPTANCE]: 0,
+                [R]: 0,
+                [X]: 0,
+                [G]: 0,
+                [B]: 0,
                 [STEPS_RATIO]: 1,
             });
         }
@@ -281,10 +281,10 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
     const csvColumns = useMemo(() => {
         return [
             intl.formatMessage({ id: 'Tap' }),
-            intl.formatMessage({ id: 'ImportFileResistance' }),
-            intl.formatMessage({ id: 'ImportFileReactance' }),
-            intl.formatMessage({ id: 'ImportFileConductance' }),
-            intl.formatMessage({ id: 'ImportFileSusceptance' }),
+            intl.formatMessage({ id: 'ImportFileR' }),
+            intl.formatMessage({ id: 'ImportFileX' }),
+            intl.formatMessage({ id: 'ImportFileG' }),
+            intl.formatMessage({ id: 'ImportFileB' }),
             intl.formatMessage({ id: 'Ratio' }),
         ];
     }, [intl]);
@@ -311,34 +311,34 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 let rows = results.data.map((val) => {
                     return {
                         [STEPS_TAP]: val[intl.formatMessage({ id: 'Tap' })],
-                        [STEPS_RESISTANCE]: parseIntData(
+                        [R]: parseIntData(
                             val[
                                 intl.formatMessage({
-                                    id: 'ImportFileResistance',
+                                    id: 'ImportFileR',
                                 })
                             ],
                             0
                         ),
-                        [STEPS_REACTANCE]: parseIntData(
+                        [X]: parseIntData(
                             val[
                                 intl.formatMessage({
-                                    id: 'ImportFileReactance',
+                                    id: 'ImportFileX',
                                 })
                             ],
                             0
                         ),
-                        [STEPS_CONDUCTANCE]: parseIntData(
+                        [G]: parseIntData(
                             val[
                                 intl.formatMessage({
-                                    id: 'ImportFileConductance',
+                                    id: 'ImportFileG',
                                 })
                             ],
                             0
                         ),
-                        [STEPS_SUSCEPTANCE]: parseIntData(
+                        [B]: parseIntData(
                             val[
                                 intl.formatMessage({
-                                    id: 'ImportFileSusceptance',
+                                    id: 'ImportFileB',
                                 })
                             ],
                             0

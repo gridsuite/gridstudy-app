@@ -13,14 +13,14 @@ import {
     CURRENT_LIMITS_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    MAGNETIZING_CONDUCTANCE,
-    MAGNETIZING_SUSCEPTANCE,
+    G,
+    B,
     PERMANENT_LIMIT,
     RATED_S,
-    RATED_VOLTAGE_1,
-    RATED_VOLTAGE_2,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
+    RATED_U1,
+    RATED_U2,
+    X,
+    R,
 } from 'components/refactor/utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
@@ -32,16 +32,16 @@ const twoWindingsTransformerValidationSchema = (id) => ({
     [id]: yup.object().shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
-        [SERIES_RESISTANCE]: yup.number().nullable().required(),
-        [SERIES_REACTANCE]: yup.number().nullable().required(),
-        [MAGNETIZING_CONDUCTANCE]: yup.number().nullable().required(),
-        [MAGNETIZING_SUSCEPTANCE]: yup.number().nullable().required(),
+        [R]: yup.number().nullable().required(),
+        [X]: yup.number().nullable().required(),
+        [G]: yup.number().nullable().required(),
+        [B]: yup.number().nullable().required(),
         [RATED_S]: yup
             .number()
             .nullable()
             .positive('RatedNominalPowerGreaterThanZero'),
-        [RATED_VOLTAGE_1]: yup.number().nullable().required(),
-        [RATED_VOLTAGE_2]: yup.number().nullable().required(),
+        [RATED_U1]: yup.number().nullable().required(),
+        [RATED_U2]: yup.number().nullable().required(),
         [CURRENT_LIMITS_1]: yup.object().shape({
             [PERMANENT_LIMIT]: yup
                 .number()
@@ -69,13 +69,13 @@ const twoWindingsTransformerEmptyFormData = (id) => ({
     [id]: {
         [EQUIPMENT_ID]: '',
         [EQUIPMENT_NAME]: '',
-        [SERIES_RESISTANCE]: null,
-        [SERIES_REACTANCE]: null,
-        [MAGNETIZING_CONDUCTANCE]: null,
-        [MAGNETIZING_SUSCEPTANCE]: null,
+        [R]: null,
+        [X]: null,
+        [G]: null,
+        [B]: null,
         [RATED_S]: null,
-        [RATED_VOLTAGE_1]: null,
-        [RATED_VOLTAGE_2]: null,
+        [RATED_U1]: null,
+        [RATED_U2]: null,
         [CURRENT_LIMITS_1]: {
             [PERMANENT_LIMIT]: null,
         },
@@ -97,13 +97,13 @@ export const getTwoWindingsTransformerFormData = (
     {
         equipmentId,
         equipmentName = '',
-        seriesResistance = null,
-        seriesReactance = null,
-        magnetizingConductance = null,
-        magnetizingSusceptance = null,
+        r = null,
+        x = null,
+        g = null,
+        b = null,
         ratedS = null,
-        ratedVoltage1 = null,
-        ratedVoltage2 = null,
+        ratedU1 = null,
+        ratedU2 = null,
         permanentLimit1 = null,
         permanentLimit2 = null,
         connectivity1 = null,
@@ -115,13 +115,13 @@ export const getTwoWindingsTransformerFormData = (
         [id]: {
             [EQUIPMENT_ID]: equipmentId,
             [EQUIPMENT_NAME]: equipmentName,
-            [SERIES_RESISTANCE]: seriesResistance,
-            [SERIES_REACTANCE]: seriesReactance,
-            [MAGNETIZING_CONDUCTANCE]: magnetizingConductance,
-            [MAGNETIZING_SUSCEPTANCE]: magnetizingSusceptance,
+            [R]: r,
+            [X]: x,
+            [G]: g,
+            [B]: b,
             [RATED_S]: ratedS,
-            [RATED_VOLTAGE_1]: ratedVoltage1,
-            [RATED_VOLTAGE_2]: ratedVoltage2,
+            [RATED_U1]: ratedU1,
+            [RATED_U2]: ratedU2,
             [CURRENT_LIMITS_1]: {
                 [PERMANENT_LIMIT]: permanentLimit1,
             },

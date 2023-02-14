@@ -17,11 +17,11 @@ import {
     RATIO_TAP_CHANGER,
     REGULATING,
     STEPS,
-    STEPS_CONDUCTANCE,
+    G,
     STEPS_RATIO,
-    STEPS_REACTANCE,
-    STEPS_RESISTANCE,
-    STEPS_SUSCEPTANCE,
+    X,
+    R,
+    B,
     STEPS_TAP,
     SUBSTATION_ID,
     TAP_POSITION,
@@ -119,10 +119,10 @@ const ratioTapChangerValidationSchema = (id) => ({
             .of(
                 yup.object().shape({
                     [STEPS_TAP]: yup.number().required(),
-                    [STEPS_RESISTANCE]: yup.number(),
-                    [STEPS_REACTANCE]: yup.number(),
-                    [STEPS_CONDUCTANCE]: yup.number(),
-                    [STEPS_SUSCEPTANCE]: yup.number(),
+                    [R]: yup.number(),
+                    [X]: yup.number(),
+                    [G]: yup.number(),
+                    [B]: yup.number(),
                     [STEPS_RATIO]: yup.number(),
                 })
             )

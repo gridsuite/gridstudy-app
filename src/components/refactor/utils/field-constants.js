@@ -27,18 +27,21 @@ export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';
 
 export const CHARACTERISTICS = 'characteristics';
-export const SERIES_RESISTANCE = 'seriesResistance';
-export const SERIES_REACTANCE = 'seriesReactance';
-export const MAGNETIZING_CONDUCTANCE = 'magnetizingConductance';
-export const MAGNETIZING_SUSCEPTANCE = 'magnetizingSusceptance';
+export const R = 'r';
+export const X = 'x';
+export const G = 'g';
+export const B = 'b';
 export const RATED_S = 'ratedS';
-export const RATED_VOLTAGE_1 = 'ratedVoltage1';
-export const RATED_VOLTAGE_2 = 'ratedVoltage2';
+export const RATED_U1 = 'ratedU1';
+export const RATED_U2 = 'ratedU2';
 export const CURRENT_LIMITS_1 = 'currentLimits1';
 export const CURRENT_LIMITS_2 = 'currentLimits2';
 export const PERMANENT_LIMIT = 'permanentLimit';
 export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
+
+export const POSITION_1 = 'position1';
+export const POSITION_2 = 'position2';
 
 export const ENABLED = 'enabled';
 export const REGULATING = 'regulating';
@@ -50,10 +53,6 @@ export const TAP_POSITION = 'tapPosition';
 //tap-changer-pane-taps
 export const STEPS = 'steps';
 export const STEPS_TAP = 'index';
-export const STEPS_RESISTANCE = 'r';
-export const STEPS_REACTANCE = 'x';
-export const STEPS_CONDUCTANCE = 'g';
-export const STEPS_SUSCEPTANCE = 'b';
 export const STEPS_RATIO = 'rho';
 export const STEPS_ALPHA = 'alpha';
 
@@ -67,6 +66,8 @@ export const PHASE_TAP_CHANGER = 'phaseTapChanger';
 export const REGULATION_MODE = 'regulationMode';
 export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
+
+export const REGULATING_TERMINAL = 'regulatingTerminal';
 
 //line
 export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';

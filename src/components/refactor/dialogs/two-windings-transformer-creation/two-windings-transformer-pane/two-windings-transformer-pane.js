@@ -28,14 +28,14 @@ import {
     CURRENT_LIMITS_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    MAGNETIZING_CONDUCTANCE,
-    MAGNETIZING_SUSCEPTANCE,
+    G,
+    B,
     PERMANENT_LIMIT,
     RATED_S,
-    RATED_VOLTAGE_1,
-    RATED_VOLTAGE_2,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
+    RATED_U1,
+    RATED_U2,
+    X,
+    R,
 } from 'components/refactor/utils/field-constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -68,34 +68,34 @@ const TwoWindingsTransformerPane = ({
         />
     );
 
-    const seriesResistanceField = (
+    const rField = (
         <FloatInput
-            name={`${id}.${SERIES_RESISTANCE}`}
-            label="SeriesResistanceText"
+            name={`${id}.${R}`}
+            label="rText"
             adornment={OhmAdornment}
         />
     );
 
-    const seriesReactanceField = (
+    const xField = (
         <FloatInput
-            name={`${id}.${SERIES_REACTANCE}`}
-            label="SeriesReactanceText"
+            name={`${id}.${X}`}
+            label="xText"
             adornment={OhmAdornment}
         />
     );
 
-    const magnetizingConductanceField = (
+    const gField = (
         <FloatInput
-            name={`${id}.${MAGNETIZING_CONDUCTANCE}`}
-            label="MagnetizingConductance"
+            name={`${id}.${G}`}
+            label="G"
             adornment={MicroSusceptanceAdornment}
         />
     );
 
-    const magnetizingSusceptanceField = (
+    const bField = (
         <FloatInput
-            name={`${id}.${MAGNETIZING_SUSCEPTANCE}`}
-            label="MagnetizingSusceptance"
+            name={`${id}.${B}`}
+            label="B"
             adornment={MicroSusceptanceAdornment}
         />
     );
@@ -108,18 +108,18 @@ const TwoWindingsTransformerPane = ({
         />
     );
 
-    const ratedVoltage1Field = (
+    const ratedU1Field = (
         <FloatInput
-            name={`${id}.${RATED_VOLTAGE_1}`}
-            label="RatedVoltage"
+            name={`${id}.${RATED_U1}`}
+            label="RatedU"
             adornment={VoltageAdornment}
         />
     );
 
-    const ratedVoltage2Field = (
+    const ratedU2Field = (
         <FloatInput
-            name={`${id}.${RATED_VOLTAGE_2}`}
-            label="RatedVoltage"
+            name={`${id}.${RATED_U2}`}
+            label="RatedU"
             adornment={VoltageAdornment}
         />
     );
@@ -203,10 +203,10 @@ const TwoWindingsTransformerPane = ({
                 </Grid>
             </Grid>
             <Grid container spacing={2}>
-                {gridItem(seriesResistanceField)}
-                {gridItem(seriesReactanceField)}
-                {gridItem(magnetizingConductanceField)}
-                {gridItem(magnetizingSusceptanceField)}
+                {gridItem(rField)}
+                {gridItem(xField)}
+                {gridItem(gField)}
+                {gridItem(bField)}
                 {gridItem(ratedSField)}
             </Grid>
             <Grid container spacing={2}>
@@ -222,8 +222,8 @@ const TwoWindingsTransformerPane = ({
                 </Grid>
             </Grid>
             <Grid container spacing={2}>
-                {gridItem(ratedVoltage1Field)}
-                {gridItem(ratedVoltage2Field)}
+                {gridItem(ratedU1Field)}
+                {gridItem(ratedU2Field)}
             </Grid>
             {/* <br /> */}
             <Grid container spacing={2}>
