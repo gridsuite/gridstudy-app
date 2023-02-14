@@ -24,7 +24,7 @@ import {
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/refactor/utils/field-constants';
-import { MAX_TAP_NUMBER } from '../two-windings-transformer-creation-dialog';
+import { MAX_TAP_CHANGER_STEPS_NUMBER } from '../two-windings-transformer-creation-dialog';
 import PropTypes from 'prop-types';
 
 const TapChangerSteps = ({
@@ -79,12 +79,12 @@ const TapChangerSteps = ({
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
         // checking if not exceeding 100 steps
-        if (currentTapRows.length + numberOfRows > MAX_TAP_NUMBER) {
+        if (currentTapRows.length + numberOfRows > MAX_TAP_CHANGER_STEPS_NUMBER) {
             setError(`${tapChanger}.${STEPS}`, {
                 type: 'custom',
                 message: {
                     id: 'TapPositionValueError',
-                    value: MAX_TAP_NUMBER,
+                    value: MAX_TAP_CHANGER_STEPS_NUMBER,
                 },
             });
             return;
@@ -227,11 +227,11 @@ const TapChangerSteps = ({
             header: true,
             skipEmptyLines: true,
             complete: function (results) {
-                if (results.data.length > MAX_TAP_NUMBER) {
+                if (results.data.length > MAX_TAP_CHANGER_STEPS_NUMBER) {
                     setFileParseError(
                         intl.formatMessage(
                             { id: 'TapPositionValueError' },
-                            { value: MAX_TAP_NUMBER }
+                            { value: MAX_TAP_CHANGER_STEPS_NUMBER }
                         )
                     );
                     return;

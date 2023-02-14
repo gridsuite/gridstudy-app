@@ -19,7 +19,7 @@ import { useCSVPicker } from '../../../../dialogs/inputs/input-hooks';
 
 import CsvDownloader from 'react-csv-downloader';
 import {
-    MAX_TAP_NUMBER,
+    MAX_TAP_CHANGER_STEPS_NUMBER,
     PHASE_TAP,
 } from '../two-windings-transformer-creation-dialog';
 
@@ -35,7 +35,7 @@ export const ImportRuleDialog = (props) => {
                 : 'ImportRegulationRule',
         header: props.csvColumns,
         resetTrigger: props.openImportRuleDialog,
-        maxTapNumber: MAX_TAP_NUMBER,
+        maxTapNumber: MAX_TAP_CHANGER_STEPS_NUMBER,
     });
 
     const handleSave = () => {

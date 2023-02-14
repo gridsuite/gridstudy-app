@@ -111,7 +111,7 @@ export const TwoWindingsTransformerCreationDialogTab = {
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
-export const MAX_TAP_NUMBER = 100;
+export const MAX_TAP_CHANGER_STEPS_NUMBER = 100;
 
 const TwoWindingsTransformerCreationDialog = ({
     editData,
