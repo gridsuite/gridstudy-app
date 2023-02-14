@@ -301,11 +301,11 @@ const TapChangerPaneTaps = ({
         </Tooltip>
     );
 
-    const completedColumnsDefinition = columnsDefinition.map((column, index) =>
-        index === columnsDefinition.length - 1
-            ? { ...column, extra: createRuleButton }
-            : column
-    );
+    const completedColumnsDefinition = columnsDefinition;
+    completedColumnsDefinition[completedColumnsDefinition.length - 1] = {
+        ...completedColumnsDefinition[completedColumnsDefinition.length - 1],
+        extra: createRuleButton,
+    };
 
     return (
         <Grid item container spacing={1}>

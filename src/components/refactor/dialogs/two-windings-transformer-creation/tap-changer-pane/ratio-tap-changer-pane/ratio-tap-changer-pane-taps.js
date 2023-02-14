@@ -17,6 +17,7 @@ import {
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerPaneTaps from '../tap-changer-pane-taps';
+import { parseIntData } from '../../../../../dialogs/dialogUtils';
 import { RATIO_TAP } from '../../two-windings-transformer-creation-dialog';
 
 const RatioTapChangerPaneTaps = ({ disabled }) => {
@@ -73,11 +74,6 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             intl.formatMessage({ id: 'Ratio' }),
         ];
     }, [intl]);
-
-    const parseIntData = (data, defaultValue) => {
-        const intValue = parseInt(data);
-        return isNaN(intValue) ? defaultValue : intValue;
-    };
 
     const handleImportRow = (val) => {
         return {

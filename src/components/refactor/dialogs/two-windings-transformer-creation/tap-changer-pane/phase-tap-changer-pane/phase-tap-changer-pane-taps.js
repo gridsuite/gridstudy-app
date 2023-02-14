@@ -18,6 +18,7 @@ import {
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerPaneTaps from '../tap-changer-pane-taps';
+import { parseIntData } from '../../../../../dialogs/dialogUtils';
 import { PHASE_TAP } from '../../two-windings-transformer-creation-dialog';
 
 const PhaseTapChangerPaneTaps = ({ disabled }) => {
@@ -81,11 +82,6 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
             intl.formatMessage({ id: 'ImportFileAlpha' }),
         ];
     }, [intl]);
-
-    const parseIntData = (data, defaultValue) => {
-        const intValue = parseInt(data);
-        return isNaN(intValue) ? defaultValue : intValue;
-    };
 
     const handleImportRow = (val) => {
         return {

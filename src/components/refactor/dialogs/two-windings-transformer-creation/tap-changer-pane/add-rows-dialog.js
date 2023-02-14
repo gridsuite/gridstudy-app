@@ -58,7 +58,7 @@ function AddRowsDialog({ open, handleAddRowsButton, onClose }) {
 }
 
 AddRowsDialog.prototype = {
-    open: PropTypes.bool,
+    open: PropTypes.bool.isRequired,
     handleAddRowsButton: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
 };
