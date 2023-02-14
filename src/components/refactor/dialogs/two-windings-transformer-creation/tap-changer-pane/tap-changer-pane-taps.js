@@ -31,12 +31,12 @@ const TapChangerPaneTaps = ({
     tapChanger,
     ruleType,
     createTapRuleColumn,
-    disabled,
     columnsDefinition,
     csvColumns,
     createRuleMessageId,
     importRuleMessageId,
     handleImportRow,
+    disabled,
 }) => {
     const intl = useIntl();
 
@@ -357,12 +357,12 @@ TapChangerPaneTaps.prototype = {
     tapChanger: PropTypes.string.isRequired,
     ruleType: PropTypes.string.isRequired,
     createTapRuleColumn: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
     columnsDefinition: PropTypes.object.isRequired,
     csvColumns: PropTypes.object.isRequired,
     createRuleMessageId: PropTypes.string.isRequired,
     importRuleMessageId: PropTypes.string.isRequired,
     handleImportRow: PropTypes.func.isRequired,
+    disabled: PropTypes.bool,
 };
 
 export default TapChangerPaneTaps;

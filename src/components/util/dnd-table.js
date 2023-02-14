@@ -71,12 +71,12 @@ function EditableTableCell({ arrayFormName, rowIndex, column }) {
 const DndTable = ({
     arrayFormName,
     useFieldArrayOutput,
-    disabled,
     columnsDefinition,
     handleAddButton,
     handleDeleteButton,
     handleUploadButton,
     uploadButtonMessageId,
+    disabled,
 }) => {
     const intl = useIntl();
 
@@ -256,15 +256,14 @@ const DndTable = ({
 };
 
 DndTable.prototype = {
-    tapChanger: PropTypes.string.isRequired,
-    ruleType: PropTypes.string.isRequired,
-    createTapRuleColumn: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
+    arrayFormName: PropTypes.string.isRequired,
+    useFieldArrayOutput: PropTypes.object.isRequired,
     columnsDefinition: PropTypes.object.isRequired,
-    csvColumns: PropTypes.object.isRequired,
-    createRuleMessageId: PropTypes.string.isRequired,
-    importRuleMessageId: PropTypes.string.isRequired,
-    handleImportRow: PropTypes.func.isRequired,
+    handleAddButton: PropTypes.func.isRequired,
+    handleDeleteButton: PropTypes.func.isRequired,
+    handleUploadButton: PropTypes.func.isRequired,
+    uploadButtonMessageId: PropTypes.string.isRequired,
+    disabled: PropTypes.bool,
 };
 
 export default DndTable;

@@ -146,7 +146,7 @@ const DndTableButtons = ({
 };
 
 DndTableButtons.prototype = {
-    tapChanger: PropTypes.string.isRequired,
+    arrayFormName: PropTypes.string.isRequired,
     handleAddButton: PropTypes.func.isRequired,
     handleDeleteButton: PropTypes.func.isRequired,
     handleMoveUpButton: PropTypes.func.isRequired,
