@@ -96,6 +96,7 @@ const RatioTapChangerPane = ({
             label={'RegulationType'}
             options={Object.values(REGULATION_TYPES)}
             disabled={!isVoltageRegulationOn()}
+            size={'small'}
         />
     );
 
@@ -105,6 +106,7 @@ const RatioTapChangerPane = ({
             label={'RegulatedSide'}
             options={Object.values(SIDE)}
             disabled={!regulatingWatch || !ratioTapChangerEnabledWatcher}
+            size={'small'}
         />
     );
 
