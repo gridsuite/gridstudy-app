@@ -334,7 +334,6 @@ const GeneratorCreationDialog = ({
     });
 
     useEffect(() => {
-        console.log('editData  ', editData);
         if (editData) {
             reset({
                 [EQUIPMENT_ID]: editData.equipmentId,
@@ -392,7 +391,6 @@ const GeneratorCreationDialog = ({
 
     const onSubmit = useCallback(
         (generator) => {
-            console.log('generator : ', generator);
             const isReactiveCapabilityCurveOn =
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation =

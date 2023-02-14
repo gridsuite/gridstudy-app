@@ -68,7 +68,6 @@ const ModificationDialog = ({
     };
 
     const handleValidate = (data) => {
-        console.log('data : ', data);
         onValidated();
         onSave(data);
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
@@ -76,7 +75,6 @@ const ModificationDialog = ({
     };
 
     const handleValidationError = (errors) => {
-        console.log('test : ', errors);
         return onValidationError && onValidationError(errors);
     };
 

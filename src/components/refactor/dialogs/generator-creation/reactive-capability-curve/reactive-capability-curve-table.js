@@ -14,8 +14,8 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { useStyles } from '../../../../dialogs/dialogUtils';
 import { useFieldArray, useForm } from 'react-hook-form';
 import ReactiveCapabilityCurveForm from './reactive-capability-curve-form';
-import {P, Q_MAX_P, Q_MIN_P, REACTIVE_CAPABILITY_CURVE_TABLE} from '../../../utils/field-constants';
-import FieldErrorAlert from "../../../rhf-inputs/field-error-alert";
+import { REACTIVE_CAPABILITY_CURVE_TABLE } from '../../../utils/field-constants';
+import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
 
 function getId(value) {
     return value?.id ? value.id : 'defaultId';
@@ -79,11 +79,7 @@ export const ReactiveCapabilityCurveTable = ({
                                 <IconButton
                                     className={classes.icon}
                                     key={id + index}
-                                    onClick={() => insert(rows.length === 2 ? 1 : rows.length - 2, {
-                                        [P]: '',
-                                        [Q_MIN_P]: '',
-                                        [Q_MAX_P]: ''
-                                    })}
+                                    onClick={() => insert(rows.length - 1, {})}
                                     disabled={disabled}
                                     style={{ top: '-1em' }}
                                 >
@@ -94,7 +90,7 @@ export const ReactiveCapabilityCurveTable = ({
                     </Grid>
                 );
             })}
-            <FieldErrorAlert name={REACTIVE_CAPABILITY_CURVE_TABLE}/>
+            <FieldErrorAlert name={REACTIVE_CAPABILITY_CURVE_TABLE} />
         </Grid>
     );
 };
