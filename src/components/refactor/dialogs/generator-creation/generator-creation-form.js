@@ -52,7 +52,7 @@ import {
     REGULATION_TYPES,
 } from '../../../network/constants';
 import Grid from '@mui/material/Grid';
-import React from 'react';
+import React, {useEffect} from 'react';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import FloatInput from '../../rhf-inputs/float-input';
 import RadioInput from '../../rhf-inputs/radio-input';
@@ -215,6 +215,11 @@ const GeneratorCreationForm = ({
             size={'small'}
         />
     );
+
+    const test = useWatch({name: VOLTAGE_REGULATION_TYPE})
+    useEffect(() => {
+        console.log('test : ', test);
+    }, [test])
 
     const voltageSetPointField = (
         <FloatInput

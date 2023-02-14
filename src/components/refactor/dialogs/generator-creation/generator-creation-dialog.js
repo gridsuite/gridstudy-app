@@ -70,39 +70,9 @@ import {
 } from '../regulating-terminal/regulating-terminal-form-utils';
 import { createGenerator } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
+import {REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION} from '../../../network/constants';
 
 const regulatingTerminalValidationSchema = (id = REGULATING_TERMINAL) => ({
-    [id]: yup.object().shape({
-        [VOLTAGE_LEVEL]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string(),
-                [SUBSTATION_ID]: yup.string(),
-                [NOMINAL_VOLTAGE]: yup.string(),
-                [TOPOLOGY_KIND]: yup.string().nullable(),
-            })
-            .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
-                is: (voltageRegulation, voltageRegulationType) =>
-                    voltageRegulation && voltageRegulationType === 'DISTANT',
-                then: (schema) => schema.required(),
-            }),
-        [EQUIPMENT]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string().nullable(),
-                [TYPE]: yup.string(),
-            })
-            .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
-                is: (voltageRegulation, voltageRegulationType) =>
-                    voltageRegulation && voltageRegulationType === 'DISTANT',
-                then: (schema) => schema.required(),
-            }),
-    }),
 });
 
 const emptyFormData = {
@@ -111,7 +81,7 @@ const emptyFormData = {
     [VOLTAGE_REGULATION]: false,
     [FREQUENCY_REGULATION]: false,
     [ENERGY_SOURCE]: 'OTHER',
-    [VOLTAGE_REGULATION_TYPE]: 'LOCAL',
+    [VOLTAGE_REGULATION_TYPE]: REGULATION_TYPES.LOCAL.id,
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
     [RATED_NOMINAL_POWER]: null,
@@ -127,7 +97,6 @@ const emptyFormData = {
     [MAXIMUM_REACTIVE_POWER]: null,
     [REACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
-    [VOLTAGE_REGULATION_TYPE]: null,
     [VOLTAGE_SET_POINT]: null,
     [REACTIVE_CAPABILITY_CURVE_TABLE]: [{}, {}],
     [Q_PERCENT]: null,
@@ -213,7 +182,36 @@ const schema = yup
             is: true,
             then: (schema) => schema.required(),
         }),
-        ...regulatingTerminalValidationSchema(),
+        [REGULATING_TERMINAL]: yup.object().shape({
+            [VOLTAGE_LEVEL]: yup
+                .object()
+                .nullable()
+                .shape({
+                    [ID]: yup.string(),
+                    [NAME]: yup.string(),
+                    [SUBSTATION_ID]: yup.string(),
+                    [NOMINAL_VOLTAGE]: yup.string(),
+                    [TOPOLOGY_KIND]: yup.string().nullable(),
+                })
+                .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
+                    is: (voltageRegulation, voltageRegulationType) =>
+                        voltageRegulation && voltageRegulationType === 'DISTANT',
+                    then: (schema) => schema.required(),
+                }),
+            [EQUIPMENT]: yup
+                .object()
+                .nullable()
+                .shape({
+                    [ID]: yup.string(),
+                    [NAME]: yup.string().nullable(),
+                    [TYPE]: yup.string(),
+                })
+                .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
+                    is: (voltageRegulation, voltageRegulationType) =>
+                        voltageRegulation && voltageRegulationType === 'DISTANT',
+                    then: (schema) => schema.required(),
+                }),
+        }),
         ...getConnectivityFormValidationSchema(),
     })
     .required();
@@ -267,6 +265,7 @@ const GeneratorCreationDialog = ({
             [DROOP]: generator.droop,
             [TRANSIENT_REACTANCE]: generator.transientReactance,
             [TRANSFORMER_REACTANCE]: generator.stepUpTransformerReactance,
+            [VOLTAGE_REGULATION_TYPE]: generator.voltageRegulationType,
             [REACTIVE_CAPABILITY_CURVE_TABLE]:
                 generator.reactiveCapabilityCurvePoints,
             [MINIMUM_REACTIVE_POWER]:
@@ -306,7 +305,7 @@ const GeneratorCreationDialog = ({
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation =
                 generator[VOLTAGE_REGULATION] &&
-                generator[VOLTAGE_REGULATION_TYPE] === 'DISTANT';
+                generator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
             createGenerator(
                 studyUuid,
                 currentNodeUuid,
