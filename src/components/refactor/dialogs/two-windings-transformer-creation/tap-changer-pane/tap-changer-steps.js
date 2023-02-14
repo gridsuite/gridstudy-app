@@ -79,7 +79,10 @@ const TapChangerSteps = ({
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
         // checking if not exceeding 100 steps
-        if (currentTapRows.length + numberOfRows > MAX_TAP_CHANGER_STEPS_NUMBER) {
+        if (
+            currentTapRows.length + numberOfRows >
+            MAX_TAP_CHANGER_STEPS_NUMBER
+        ) {
             setError(`${tapChanger}.${STEPS}`, {
                 type: 'custom',
                 message: {
