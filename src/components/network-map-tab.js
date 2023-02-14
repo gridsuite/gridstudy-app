@@ -619,9 +619,6 @@ export const NetworkMapTab = ({
                 if (currentNodeAtReloadCalling === currentNodeRef.current) {
                     loadGeoData();
                 }
-            })
-            .finally(() => {
-                setWaitingLoadData(false);
             });
     }, [updateMapEquipments, loadGeoData]);
 
