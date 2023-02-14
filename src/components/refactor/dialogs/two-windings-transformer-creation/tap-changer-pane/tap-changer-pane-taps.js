@@ -47,7 +47,7 @@ const TapChangerPaneTaps = ({
     });
 
     const {
-        fields: tapFields, // don't use it to access form data ! check doc
+        fields: tapSteps, // don't use it to access form data ! check doc
         replace,
         append,
         remove,
@@ -148,9 +148,9 @@ const TapChangerPaneTaps = ({
     }
 
     const resetTapNumbers = useCallback(
-        (tapFields) => {
+        (tapSteps) => {
             const currentTapRows =
-                tapFields ?? getValues(`${tapChanger}.${STEPS}`);
+                tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
             if (currentTapRows.length === 0) {
                 return;
             }
@@ -193,10 +193,10 @@ const TapChangerPaneTaps = ({
         resetTapNumbers,
     ]);
 
-    // when we detect a change in tapFields (so when the size or the order of the list of rows change), we reset the tap fields
+    // when we detect a change in tapSteps (so when the size or the order of the list of rows change), we reset the tap fields
     useEffect(() => {
-        resetTapNumbers(tapFields);
-    }, [tapFields, resetTapNumbers]);
+        resetTapNumbers(tapSteps);
+    }, [tapSteps, resetTapNumbers]);
 
     const handleCreateTapRule = (lowTap, highTap) => {
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
@@ -287,7 +287,7 @@ const TapChangerPaneTaps = ({
             <span>
                 <IconButton
                     onClick={() => setOpenCreateRuleDialog(true)}
-                    disabled={disabled || tapFields.length === 0}
+                    disabled={disabled || tapSteps.length === 0}
                     sx={{
                         position: 'absolute',
                         right: 0,
