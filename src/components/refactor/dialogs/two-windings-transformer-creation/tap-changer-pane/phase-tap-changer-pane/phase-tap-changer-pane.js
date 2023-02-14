@@ -28,7 +28,7 @@ import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
 import FloatInput from '../../../../rhf-inputs/float-input';
 import SelectInput from '../../../../rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
-import PhaseTapChangerPaneTaps from './phase-tap-changer-pane-taps';
+import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -175,7 +175,7 @@ const PhaseTapChangerPane = ({
                         {gridItem(regulatingTerminalField, 8)}
                     </Grid>
                 )}
-                <PhaseTapChangerPaneTaps
+                <PhaseTapChangerPaneSteps
                     disabled={!phaseTapChangerEnabledWatch}
                 />
             </Grid>

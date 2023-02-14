@@ -27,7 +27,7 @@ import {
 import { MAX_TAP_NUMBER } from '../two-windings-transformer-creation-dialog';
 import PropTypes from 'prop-types';
 
-const TapChangerPaneTaps = ({
+const TapChangerSteps = ({
     tapChanger,
     ruleType,
     createTapRuleColumn,
@@ -353,7 +353,7 @@ const TapChangerPaneTaps = ({
     );
 };
 
-TapChangerPaneTaps.prototype = {
+TapChangerSteps.prototype = {
     tapChanger: PropTypes.string.isRequired,
     ruleType: PropTypes.string.isRequired,
     createTapRuleColumn: PropTypes.string.isRequired,
@@ -365,4 +365,4 @@ TapChangerPaneTaps.prototype = {
     disabled: PropTypes.bool,
 };
 
-export default TapChangerPaneTaps;
+export default TapChangerSteps;

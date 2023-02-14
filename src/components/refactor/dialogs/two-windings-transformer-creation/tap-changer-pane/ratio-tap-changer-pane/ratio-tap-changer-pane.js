@@ -21,7 +21,7 @@ import { gridItem, VoltageAdornment } from '../../../../../dialogs/dialogUtils';
 import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
 import FloatInput from '../../../../rhf-inputs/float-input';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
-import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
+import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
@@ -155,7 +155,7 @@ const RatioTapChangerPane = ({
                     </Grid>
                 )}
 
-                <RatioTapChangerPaneTaps
+                <RatioTapChangerPaneSteps
                     disabled={!ratioTapChangerEnabledWatcher}
                 />
             </Grid>

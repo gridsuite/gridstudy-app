@@ -6,7 +6,8 @@
  */
 
 import {
-    RATIO_TAP_CHANGER,
+    PHASE_TAP_CHANGER,
+    STEPS_ALPHA,
     STEPS_CONDUCTANCE,
     STEPS_RATIO,
     STEPS_REACTANCE,
@@ -16,11 +17,11 @@ import {
 } from 'components/refactor/utils/field-constants';
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import TapChangerPaneTaps from '../tap-changer-pane-taps';
+import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../../dialogs/dialogUtils';
-import { RATIO_TAP } from '../../two-windings-transformer-creation-dialog';
+import { PHASE_TAP } from '../../two-windings-transformer-creation-dialog';
 
-const RatioTapChangerPaneTaps = ({ disabled }) => {
+const PhaseTapChangerPaneSteps = ({ disabled }) => {
     const intl = useIntl();
 
     const COLUMNS_DEFINITIONS = useMemo(() => {
@@ -59,6 +60,12 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                 initialValue: 1,
                 editable: true,
             },
+            {
+                label: 'Alpha',
+                dataKey: STEPS_ALPHA,
+                initialValue: 0,
+                editable: true,
+            },
         ].map((column) => ({
             ...column,
             label: intl.formatMessage({ id: column.label }).toUpperCase(),
@@ -72,6 +79,7 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             intl.formatMessage({ id: 'ImportFileConductance' }),
             intl.formatMessage({ id: 'ImportFileSusceptance' }),
             intl.formatMessage({ id: 'Ratio' }),
+            intl.formatMessage({ id: 'ImportFileAlpha' }),
         ];
     }, [intl]);
 
@@ -114,22 +122,39 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
             )
                 ? 1
                 : parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
+            [STEPS_ALPHA]: isNaN(
+                parseFloat(
+                    val[
+                        intl.formatMessage({
+                            id: 'ImportFileAlpha',
+                        })
+                    ]
+                )
+            )
+                ? 1
+                : parseFloat(
+                      val[
+                          intl.formatMessage({
+                              id: 'ImportFileAlpha',
+                          })
+                      ]
+                  ),
         };
     };
 
     return (
-        <TapChangerPaneTaps
-            tapChanger={RATIO_TAP_CHANGER}
-            ruleType={RATIO_TAP}
-            createTapRuleColumn={STEPS_RATIO}
+        <TapChangerSteps
+            tapChanger={PHASE_TAP_CHANGER}
+            ruleType={PHASE_TAP}
+            createTapRuleColumn={STEPS_ALPHA}
             columnsDefinition={COLUMNS_DEFINITIONS}
             csvColumns={csvColumns}
-            createRuleMessageId="CreateRegulationRule"
-            importRuleMessageId="ImportRegulationRule"
+            createRuleMessageId="CreateDephasingRule"
+            importRuleMessageId="ImportDephasingRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
         />
     );
 };
 
-export default RatioTapChangerPaneTaps;
+export default PhaseTapChangerPaneSteps;
