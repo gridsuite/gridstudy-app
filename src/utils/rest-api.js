@@ -1555,7 +1555,7 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branchId, action) {
             'Content-Type': 'application/text',
         },
         body: JSON.stringify({
-            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION,
+            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
             equipmentId: branchId,
             action: action,
         }),
@@ -1619,7 +1619,7 @@ export function generatorScaling(
     variations
 ) {
     const body = JSON.stringify({
-        type: MODIFICATION_TYPES.GENERATOR_SCALING,
+        type: MODIFICATION_TYPES.GENERATOR_SCALING.type,
         variationType,
         variations,
     });
