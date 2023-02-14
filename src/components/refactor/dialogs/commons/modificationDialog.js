@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
     Button,
@@ -50,6 +50,10 @@ const ModificationDialog = ({
         handleClick: searchCopy?.handleOpenSearchDialog,
     });
 
+    useEffect(() => {
+        console.log()
+    })
+
     const closeAndClear = (event, reason) => {
         onClear();
         onClose(event, reason);
@@ -68,6 +72,7 @@ const ModificationDialog = ({
     };
 
     const handleValidate = (data) => {
+        console.log('data : ', data);
         onValidated();
         onSave(data);
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
@@ -75,7 +80,10 @@ const ModificationDialog = ({
     };
 
     const handleValidationError = (errors) =>
-        onValidationError && onValidationError(errors);
+    {
+        console.log('test : ', errors);
+        return onValidationError && onValidationError(errors);
+    }
 
     return (
         <Dialog

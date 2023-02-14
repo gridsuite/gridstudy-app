@@ -5,37 +5,100 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from "../../rhf-inputs/text-input";
+import TextInput from '../../rhf-inputs/text-input';
 import {
     ACTIVE_POWER_SET_POINT,
+    DROOP,
+    ENABLED,
     ENERGY_SOURCE,
     EQUIPMENT_ID,
-    EQUIPMENT_NAME, FORCED_OUTAGE_RATE, MARGINAL_COST,
+    EQUIPMENT_NAME,
+    FORCED_OUTAGE_RATE,
+    FREQUENCY_REGULATION,
+    MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
+    MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    PLANNED_ACTIVE_POWER_SET_POINT, PLANNED_OUTAGE_RATE,
-    RATED_NOMINAL_POWER, STARTUP_COST,
+    MINIMUM_REACTIVE_POWER,
+    PLANNED_ACTIVE_POWER_SET_POINT,
+    PLANNED_OUTAGE_RATE,
+    Q_MAX_P,
+    Q_MIN_P,
+    Q_PERCENT,
+    RATED_NOMINAL_POWER,
+    REACTIVE_CAPABILITY_CURVE_CHOICE,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
+    REACTIVE_POWER_SET_POINT,
+    REGULATING_TERMINAL,
+    STARTUP_COST,
     TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE
-} from "../../utils/field-constants";
+    TRANSIENT_REACTANCE,
+    VOLTAGE_REGULATION,
+    VOLTAGE_REGULATION_TYPE,
+    VOLTAGE_SET_POINT,
+} from '../../utils/field-constants';
 import {
     ActivePowerAdornment,
     filledTextField,
     gridItem,
     GridSection,
-    MVAPowerAdornment, OhmAdornment
-} from "../../../dialogs/dialogUtils";
-import SelectInput from "../../rhf-inputs/select-input";
-import {ENERGY_SOURCES, REACTIVE_LIMIT_TYPES} from "../../../network/constants";
-import Grid from "@mui/material/Grid";
-import React from "react";
-import {ConnectivityForm} from "../connectivity/connectivity-form";
-import FloatInput from "../../rhf-inputs/float-input";
-import RadioInput from "../../rhf-inputs/radio-input";
-import RegulatingTerminalForm from "../regulating-terminal/regulating-terminal-form";
-import {EQUIPMENT_TYPE} from "@gridsuite/commons-ui";
+    MVAPowerAdornment,
+    OhmAdornment,
+    percentageTextField,
+    ReactivePowerAdornment,
+    VoltageAdornment,
+} from '../../../dialogs/dialogUtils';
+import SelectInput from '../../rhf-inputs/select-input';
+import {
+    ENERGY_SOURCES,
+    REACTIVE_LIMIT_TYPES,
+    REGULATION_TYPES,
+} from '../../../network/constants';
+import Grid from '@mui/material/Grid';
+import React from 'react';
+import { ConnectivityForm } from '../connectivity/connectivity-form';
+import FloatInput from '../../rhf-inputs/float-input';
+import RadioInput from '../../rhf-inputs/radio-input';
+import RegulatingTerminalForm from '../regulating-terminal/regulating-terminal-form';
+import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
+import { useWatch } from 'react-hook-form';
+import { useEffect } from 'react';
+import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
+import BooleanInput from '../../rhf-inputs/boolean-input';
+import { Box } from '@mui/system';
+import { FormattedMessage } from 'react-intl';
 
-const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipmentsOptionsPromise}) => {
+const headerIds = [
+    'ActivePowerText',
+    'MinimumReactivePower',
+    'MaximumReactivePower',
+];
+
+const GeneratorCreationForm = ({
+    voltageLevelOptionsPromise,
+    voltageLevelsEquipmentsOptionsPromise,
+}) => {
+    const reactiveCapabilityCurveChoice = useWatch({
+        name: REACTIVE_CAPABILITY_CURVE_CHOICE,
+    });
+
+    const isVoltageRegulationOn = useWatch({
+        name: VOLTAGE_REGULATION,
+    });
+
+    const voltageRegulationType = useWatch({
+        name: VOLTAGE_REGULATION_TYPE,
+    });
+
+    const isFrequencyRegulationOn = useWatch({
+        name: FREQUENCY_REGULATION,
+    });
+
+    const isReactiveCapabilityCurveOn =
+        reactiveCapabilityCurveChoice !== 'MINMAX';
+    const isDistantRegulation =
+        voltageRegulationType === REGULATION_TYPES.DISTANT.id;
+
     const generatorIdField = (
         <TextInput
             name={EQUIPMENT_ID}
@@ -76,7 +139,7 @@ const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipme
             label={'MaximumActivePowerText'}
             adornment={ActivePowerAdornment}
         />
-    )
+    );
 
     const minimumActivePowerField = (
         <FloatInput
@@ -84,7 +147,7 @@ const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipme
             label={'MaximumActivePowerText'}
             adornment={ActivePowerAdornment}
         />
-    )
+    );
 
     const ratedNominalPowerField = (
         <FloatInput
@@ -92,7 +155,39 @@ const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipme
             label={'MaximumActivePowerText'}
             adornment={MVAPowerAdornment}
         />
-    )
+    );
+
+    const reactiveCapabilityCurveChoiceRadioField = (
+        <RadioInput
+            name={`${REACTIVE_CAPABILITY_CURVE_CHOICE}`}
+            defaultValue={'CURVE'}
+            possibleValues={REACTIVE_LIMIT_TYPES}
+        />
+    );
+
+    const reactiveCapabilityCurveTableField = (
+        <ReactiveCapabilityCurveTable
+            name={REACTIVE_CAPABILITY_CURVE_TABLE}
+            tableHeadersIds={headerIds}
+            isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
+        />
+    );
+
+    const minimumReactivePowerField = (
+        <FloatInput
+            name={MINIMUM_REACTIVE_POWER}
+            label={'MinimumReactivePower'}
+            adornment={ReactivePowerAdornment}
+        />
+    );
+
+    const maximumReactivePowerField = (
+        <FloatInput
+            name={MAXIMUM_REACTIVE_POWER}
+            label={'MaximumReactivePower'}
+            adornment={ReactivePowerAdornment}
+        />
+    );
 
     const activePowerSetPointField = (
         <FloatInput
@@ -100,26 +195,73 @@ const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipme
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
         />
-    )
+    );
 
-    /*const test = (
-        <RadioInput
-            name={''}
-            defaultValue={'MINMAX'}
-            possibleValues={REACTIVE_LIMIT_TYPES}
+    const voltageRegulationField = (
+        <BooleanInput
+            name={VOLTAGE_REGULATION}
+            label={'VoltageRegulationText'}
         />
-    )
+    );
 
-    let regulatingWatch = false;
+    const reactivePowerSetPointField = (
+        <FloatInput
+            name={REACTIVE_POWER_SET_POINT}
+            label={'ReactivePowerText'}
+            adornment={ReactivePowerAdornment}
+        />
+    );
+
+    const voltageRegulationTypeField = (
+        <SelectInput
+            options={Object.values(REGULATION_TYPES)}
+            name={VOLTAGE_REGULATION_TYPE}
+            label={'RegulationTypeText'}
+            size={'small'}
+        />
+    );
+
+    const voltageSetPointField = (
+        <FloatInput
+            name={VOLTAGE_SET_POINT}
+            label={'VoltageText'}
+            adornment={VoltageAdornment}
+        />
+    );
+
     const regulatingTerminalField = (
         <RegulatingTerminalForm
-            id={'id'}
-            disabled={!regulatingWatch}
+            id={REGULATING_TERMINAL}
             voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-            voltageLevelsEquipmentsOptionsPromise={voltageLevelsEquipmentsOptionsPromise}
+            voltageLevelsEquipmentsOptionsPromise={
+                voltageLevelsEquipmentsOptionsPromise
+            }
             equipmentSectionTypeDefaultValue={''}
         />
-    )*/
+    );
+
+    const qPercentField = (
+        <FloatInput
+            name={Q_PERCENT}
+            label={'QPercentText'}
+            adornment={percentageTextField}
+        />
+    );
+
+    const frequencyRegulationField = (
+        <BooleanInput
+            name={FREQUENCY_REGULATION}
+            label={'FrequencyRegulation'}
+        />
+    );
+
+    const droopField = (
+        <FloatInput
+            name={DROOP}
+            label={'Droop'}
+            adornment={percentageTextField}
+        />
+    );
 
     const transientReactanceField = (
         <FloatInput
@@ -127,7 +269,7 @@ const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipme
             label={'TransientReactance'}
             adornment={OhmAdornment}
         />
-    )
+    );
 
     const transformerReactanceField = (
         <FloatInput
@@ -135,7 +277,7 @@ const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipme
             label={'TransformerReactance'}
             adornment={OhmAdornment}
         />
-    )
+    );
 
     const plannedActivePowerSetPointField = (
         <FloatInput
@@ -143,38 +285,43 @@ const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipme
             label={'PlannedActivePowerSetPoint'}
             adornment={ActivePowerAdornment}
         />
-    )
+    );
 
     const startupCostField = (
-        <FloatInput
-            name={STARTUP_COST}
-            label={'StartupCost'}
-        />
-    )
+        <FloatInput name={STARTUP_COST} label={'StartupCost'} />
+    );
 
     const marginalCostField = (
-        <FloatInput
-            name={MARGINAL_COST}
-            label={'MarginalCost'}
-        />
-    )
+        <FloatInput name={MARGINAL_COST} label={'MarginalCost'} />
+    );
 
     const plannedOutageRateField = (
-        <FloatInput
-            name={PLANNED_OUTAGE_RATE}
-            label={'PlannedOutageRate'}
-        />
-    )
+        <FloatInput name={PLANNED_OUTAGE_RATE} label={'PlannedOutageRate'} />
+    );
 
     const forcedOutageRateField = (
-        <FloatInput
-            name={FORCED_OUTAGE_RATE}
-            label={'ForcedOutageRate'}
-        />
-    )
+        <FloatInput name={FORCED_OUTAGE_RATE} label={'ForcedOutageRate'} />
+    );
 
-
-
+    const voltageRegulationFields = (
+        <>
+            {gridItem(voltageRegulationTypeField, 4)}
+            <Box sx={{ width: '100%' }} />
+            <Grid item xs={4} justifySelf={'end'} />
+            {gridItem(voltageSetPointField, 4)}
+            <Box sx={{ width: '100%' }} />
+            {isDistantRegulation && (
+                <>
+                    <Grid item xs={4} justifySelf={'end'}>
+                        <FormattedMessage id="RegulatingTerminalGenerator" />
+                    </Grid>
+                    {gridItem(regulatingTerminalField, 8)}
+                    <Grid item xs={4} justifySelf={'end'} />
+                    {gridItem(qPercentField, 4)}
+                </>
+            )}
+        </>
+    );
     return (
         <>
             <Grid container spacing={2}>
@@ -192,9 +339,29 @@ const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipme
                 {gridItem(maximumActivePowerField, 4)}
                 {gridItem(ratedNominalPowerField, 4)}
             </Grid>
+            <GridSection title="ReactiveLimits" />
+            <Grid container spacing={2}>
+                {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
+            </Grid>
+            <Grid container spacing={2}>
+                {!isReactiveCapabilityCurveOn &&
+                    gridItem(minimumReactivePowerField, 4)}
+                {!isReactiveCapabilityCurveOn &&
+                    gridItem(maximumReactivePowerField, 4)}
+                {isReactiveCapabilityCurveOn &&
+                    gridItem(reactiveCapabilityCurveTableField, 12)}
+            </Grid>
             <GridSection title="Setpoints" />
-            <Grid container spacing={2} >
+            <Grid container spacing={2}>
                 {gridItem(activePowerSetPointField, 4)}
+                <Box sx={{ width: '100%' }} />
+                {gridItem(voltageRegulationField, 4)}
+                {!isVoltageRegulationOn &&
+                    gridItem(reactivePowerSetPointField, 4)}
+                {isVoltageRegulationOn && voltageRegulationFields}
+                <Box sx={{ width: '100%' }} />
+                {gridItem(frequencyRegulationField, 4)}
+                {isFrequencyRegulationOn && gridItem(droopField, 4)}
             </Grid>
             <GridSection title="ShortCircuit" />
             <Grid container spacing={2}>
@@ -217,6 +384,6 @@ const GeneratorCreationForm = ({voltageLevelOptionsPromise, voltageLevelsEquipme
             </Grid>
         </>
     );
-}
+};
 
 export default GeneratorCreationForm;

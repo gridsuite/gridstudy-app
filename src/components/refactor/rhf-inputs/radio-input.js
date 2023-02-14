@@ -1,14 +1,13 @@
 import FormControl from '@mui/material/FormControl';
 import { FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useState } from '@types/react';
 import { useController } from 'react-hook-form';
 
 const RadioInput = ({ name, label, id, defaultValue, possibleValues }) => {
     const {
-        field: { onChange, value, ref },
-        fieldState: { error },
-    } = useController({ name, defaultValue });
+        field: { onChange, value },
+    } = useController({ name });
+
     const intl = useIntl();
 
     return (
@@ -30,9 +29,9 @@ const RadioInput = ({ name, label, id, defaultValue, possibleValues }) => {
             >
                 {possibleValues.map((value) => (
                     <FormControlLabel
-                        key={value.id}
-                        value={value.id}
                         control={<Radio />}
+                        value={value.id}
+                        key={value.id}
                         label={intl.formatMessage({ id: value.label })}
                     />
                 ))}
