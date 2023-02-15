@@ -62,7 +62,6 @@ import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reacti
 import BooleanInput from '../../rhf-inputs/boolean-input';
 import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
-import FieldErrorAlert from "../../rhf-inputs/field-error-alert";
 
 const headerIds = [
     'ActivePowerText',
