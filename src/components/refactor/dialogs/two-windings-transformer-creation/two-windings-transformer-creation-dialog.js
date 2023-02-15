@@ -508,7 +508,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             ratioTapChangerFormValues,
                             characteristics[EQUIPMENT_ID]
                         ),
-                        type: computeRegulatinTerminalType(
+                        type: computeRegulatingTerminalType(
                             ratioTapChangerFormValues,
                             characteristics[EQUIPMENT_ID]
                         ),
@@ -534,7 +534,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             phaseTapChangerFormValues,
                             characteristics[EQUIPMENT_ID]
                         ),
-                        type: computeRegulatinTerminalType(
+                        type: computeRegulatingTerminalType(
                             phaseTapChangerFormValues,
                             characteristics[EQUIPMENT_ID]
                         ),
