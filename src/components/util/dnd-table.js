@@ -24,6 +24,7 @@ import { useIntl } from 'react-intl';
 import FieldErrorAlert from '../refactor/rhf-inputs/field-error-alert';
 import DndTableButtons from './dnd-table-buttons';
 import { TableNumericalInput } from '../refactor/rhf-inputs/table-inputs/table-numerical-input';
+import { TableReadOnlyInput } from '../refactor/rhf-inputs/table-inputs/table-read-only-input';
 import CheckboxInput from '../refactor/rhf-inputs/booleans/checkbox-input';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../refactor/utils/field-constants';
@@ -52,10 +53,13 @@ function MultiCheckbox({
 }
 
 function DefaultTableCell({ arrayFormName, rowIndex, column }) {
-    const valueToWatch = useWatch({
-        name: `${arrayFormName}[${rowIndex}].${column.dataKey}`,
-    });
-    return <TableCell key={column.dataKey}>{valueToWatch}</TableCell>;
+    return (
+        <TableCell key={column.dataKey}>
+            <TableReadOnlyInput
+                name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+            />
+        </TableCell>
+    );
 }
 
 function EditableTableCell({ arrayFormName, rowIndex, column }) {
