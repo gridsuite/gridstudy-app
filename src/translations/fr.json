@@ -520,6 +520,7 @@
     "ShuntMaximumNumberOfSections": "Nombre de sections disponibles",
     "CreateShuntCompensator": "Créer un moyen de compensation statique",
     "ShuntCompensatorErrorMaximumLessThanOne": "Le nombre maximum de sections doit être supérieur à 0",
+    "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
 
     "CreateSubstation": "Créer un site",
