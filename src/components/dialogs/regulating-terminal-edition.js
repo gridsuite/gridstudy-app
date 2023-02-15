@@ -55,7 +55,7 @@ export function makeRefreshRegulatingTerminalSectionsCallback() {
 const RegulatingTerminalEdition = ({
     validation,
     inputForm,
-    voltageLevelsOptions,
+    voltageLevelOptions,
     regulatingTerminalValue,
     voltageLevelEquipments,
     onChangeVoltageLevel,
@@ -208,7 +208,7 @@ const RegulatingTerminalEdition = ({
                         selectOnFocus
                         disabled={disabled}
                         id="voltage-level"
-                        options={voltageLevelsOptions}
+                        options={voltageLevelOptions}
                         getOptionLabel={(vl) => (vl?.id ? vl.id : '')}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
@@ -334,7 +334,7 @@ const RegulatingTerminalEdition = ({
 
 RegulatingTerminalEdition.propTypes = {
     validation: PropTypes.object,
-    voltageLevelsOptions: PropTypes.arrayOf(PropTypes.object),
+    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     regulatingTerminalValue: PropTypes.object,
     onChangeVoltageLevel: PropTypes.func.isRequired,
     onChangeEquipmentSection: PropTypes.func.isRequired,
