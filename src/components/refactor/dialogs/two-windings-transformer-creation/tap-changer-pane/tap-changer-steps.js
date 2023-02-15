@@ -40,7 +40,8 @@ const TapChangerSteps = ({
 }) => {
     const intl = useIntl();
 
-    const { trigger, getValues, setValue, setError } = useFormContext();
+    const { trigger, getValues, setValue, setError, clearErrors } =
+        useFormContext();
 
     const useFieldArrayOutput = useFieldArray({
         name: `${tapChanger}.${STEPS}`,
@@ -92,6 +93,7 @@ const TapChangerSteps = ({
             });
             return;
         }
+        clearErrors(`${tapChanger}.${STEPS}`);
 
         let currentHighestTap;
         if (currentTapRows.length === 0) {
