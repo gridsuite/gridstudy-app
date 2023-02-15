@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -19,7 +19,8 @@ import { useIntl } from 'react-intl';
 import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../util/equipmentInfosHandler';
-
+import EditIcon from '@mui/icons-material/Edit';
+import GeneratorModificationDialog from '../dialogs/generator-modification-dialog';
 const useStyles = makeStyles((theme) => ({
     menuItem: {
         padding: '0px',
@@ -64,9 +65,9 @@ const BaseEquipmentMenu = ({
     handleViewInSpreadsheet,
 }) => {
     const intl = useIntl();
-
+    const classes = useStyles();
     const network = useSelector((state) => state.network);
-
+    const [openDialog, setOpenDialog] = useState(false);
     function getEquipment(equipmentType, equipmentId) {
         if (equipmentType === equipments.substations) {
             return network.getSubstation(equipmentId);
@@ -76,6 +77,11 @@ const BaseEquipmentMenu = ({
             return null;
         }
     }
+
+    const handleEditGenerator = () => {
+        setOpenDialog(true);
+    };
+
     const equipment = getEquipment(equipmentType, equipmentId);
     const { getNameOrId } = useNameOrId();
     return (
@@ -83,15 +89,37 @@ const BaseEquipmentMenu = ({
             {/* menus for equipment other than substation and voltage level */}
             {equipmentType !== equipments.substations &&
                 equipmentType !== equipments.voltageLevels && (
-                    <ItemViewInSpreadsheet
-                        key="ViewOnSpreadsheet"
-                        equipmentType={equipmentType}
-                        equipmentId={equipmentId}
-                        itemText={intl.formatMessage({
-                            id: 'ViewOnSpreadsheet',
-                        })}
-                        handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    />
+                    <>
+                        <ItemViewInSpreadsheet
+                            key="ViewOnSpreadsheet"
+                            equipmentType={equipmentType}
+                            equipmentId={equipmentId}
+                            itemText={intl.formatMessage({
+                                id: 'ViewOnSpreadsheet',
+                            })}
+                            handleViewInSpreadsheet={handleViewInSpreadsheet}
+                        />
+                        {equipmentType === equipments.generators && (
+                            <MenuItem
+                                className={classes.menuItem}
+                                onClick={() => handleEditGenerator()}
+                            >
+                                <ListItemIcon>
+                                    <EditIcon></EditIcon>
+                                </ListItemIcon>
+                                <ListItemText
+                                    className={classes.listItemText}
+                                    primary={
+                                        <Typography noWrap>
+                                            {intl.formatMessage({
+                                                id: 'edit',
+                                            })}
+                                        </Typography>
+                                    }
+                                ></ListItemText>
+                            </MenuItem>
+                        )}
+                    </>
                 )}
 
             {/* menus for equipment substation */}
@@ -153,6 +181,13 @@ const BaseEquipmentMenu = ({
                         />
                     </NestedMenuItem>
                 </>
+            )}
+            {openDialog && (
+                <GeneratorModificationDialog
+                    open={openDialog}
+                    onClose={() => setOpenDialog(false)}
+                    editData={equipment}
+                ></GeneratorModificationDialog>
             )}
         </>
     );
