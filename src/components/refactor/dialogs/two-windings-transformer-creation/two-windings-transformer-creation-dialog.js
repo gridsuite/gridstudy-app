@@ -301,6 +301,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     permanentLimit2: twt.permanentLimit2,
                     ...getConnectivityFormData(
                         {
+                            busbarSectionId: twt.busOrBusbarSectionId1,
                             connectionDirection: twt.connectionDirection1,
                             connectionName: twt.connectionName1,
                             connectionPosition: twt.connectionPosition1,
@@ -310,6 +311,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                     ...getConnectivityFormData(
                         {
+                            busbarSectionId: twt.busOrBusbarSectionId2,
                             connectionDirection: twt.connectionDirection2,
                             connectionName: twt.connectionName2,
                             connectionPosition: twt.connectionPosition2,
