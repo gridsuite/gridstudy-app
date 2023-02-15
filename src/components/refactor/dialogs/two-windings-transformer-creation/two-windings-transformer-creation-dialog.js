@@ -11,9 +11,9 @@ import { Box } from '@mui/material';
 import {
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
+    DIRECTION,
+    LABEL,
+    ORDER,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
@@ -44,6 +44,7 @@ import {
     TARGET_DEADBAND,
     TARGET_V,
     VOLTAGE_LEVEL,
+    POSITION,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -460,14 +461,14 @@ const TwoWindingsTransformerCreationDialog = ({
                 phaseTap,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? null,
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
+                characteristics[CONNECTIVITY_1]?.[POSITION]?.[LABEL] ?? null,
+                characteristics[CONNECTIVITY_1]?.[POSITION]?.[DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
+                characteristics[CONNECTIVITY_2]?.[POSITION]?.[LABEL] ?? null,
+                characteristics[CONNECTIVITY_2]?.[POSITION]?.[DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null
+                characteristics[CONNECTIVITY_1]?.[POSITION]?.[ORDER] ?? null,
+                characteristics[CONNECTIVITY_2]?.[POSITION]?.[ORDER] ?? null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

@@ -7,9 +7,9 @@
 
 import {
     BUS_OR_BUSBAR_SECTION,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
+    DIRECTION,
+    LABEL,
+    ORDER,
     CONNECTIVITY,
     ID,
     NAME,
@@ -17,6 +17,7 @@ import {
     SUBSTATION_ID,
     TOPOLOGY_KIND,
     VOLTAGE_LEVEL,
+    POSITION,
 } from 'components/refactor/utils/field-constants';
 import yup from '../../utils/yup-config';
 
@@ -41,9 +42,11 @@ const connectivityValidationSchema = (id) => ({
                 [ID]: yup.string(),
                 [NAME]: yup.string(),
             }),
-        [CONNECTION_DIRECTION]: yup.string().nullable(),
-        [CONNECTION_NAME]: yup.string(),
-        [CONNECTION_POSITION]: yup.number().nullable(),
+        [POSITION]: yup.object().shape({
+            [DIRECTION]: yup.string().nullable(),
+            [LABEL]: yup.string(),
+            [ORDER]: yup.number().nullable(),
+        }),
     }),
 });
 
@@ -55,9 +58,11 @@ const connectivityEmptyFormData = (id) => ({
     [id]: {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
-        [CONNECTION_DIRECTION]: null,
-        [CONNECTION_NAME]: '',
-        [CONNECTION_POSITION]: null,
+        [POSITION]: {
+            [DIRECTION]: null,
+            [LABEL]: '',
+            [ORDER]: null,
+        },
     },
 });
 
@@ -127,9 +132,11 @@ export const getConnectivityFormData = (
                 busbarSectionId,
                 busbarSectionName,
             }),
-            [CONNECTION_DIRECTION]: connectionDirection,
-            [CONNECTION_NAME]: connectionName,
-            [CONNECTION_POSITION]: connectionPosition,
+            [POSITION]: {
+                [DIRECTION]: connectionDirection,
+                [LABEL]: connectionName,
+                [ORDER]: connectionPosition,
+            },
         },
     };
 };

@@ -17,9 +17,10 @@ export const SUBSTATION_ID = 'substationId';
 export const NOMINAL_VOLTAGE = 'nominalVoltage';
 export const TOPOLOGY_KIND = 'topologyKind';
 export const BUS_OR_BUSBAR_SECTION = 'busOrBusbarSection';
-export const CONNECTION_DIRECTION = 'connectionDirection';
-export const CONNECTION_NAME = 'connectionName';
-export const CONNECTION_POSITION = 'connectionPosition';
+export const POSITION = 'position';
+export const DIRECTION = 'direction';
+export const LABEL = 'label';
+export const ORDER = 'order';
 
 export const EQUIPMENT = 'equipment';
 export const TYPE = 'type';

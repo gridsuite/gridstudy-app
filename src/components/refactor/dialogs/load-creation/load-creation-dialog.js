@@ -92,7 +92,7 @@ const LoadCreationDialog = ({
             reset({
                 [ID]: load.id + '(1)',
                 [NAME]: load.name ?? '',
-                [LOAD_TYPE]: load.type,
+                [LOAD_TYPE]: load.loadType,
                 [P0]: load.p0,
                 [Q0]: load.q0,
                 ...getConnectivityFormData({
@@ -123,8 +123,8 @@ const LoadCreationDialog = ({
                         [ID]: load.id,
                         [NAME]: load.name ?? '',
                         [LOAD_TYPE]: load.loadType,
-                        [P0]: load.activePower,
-                        [Q0]: load.reactivePower,
+                        [P0]: load.p0,
+                        [Q0]: load.q0,
                         ...getConnectivityFormData({
                             voltageLevelId: load.voltageLevelId,
                             voltageLevelTopologyKind: vlResult.topologyKind,
@@ -132,9 +132,9 @@ const LoadCreationDialog = ({
                             voltageLevelNominalVoltage: vlResult.nominalVoltage,
                             voltageLevelSubstationId: vlResult.substationId,
                             busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
+                            connectionDirection: load.position.direction,
+                            connectionName: load.position.label,
+                            connectionPosition: load.position.order,
                         }),
                     });
                 }) // if voltage level can't be found, we fill the form with minimal infos
@@ -143,14 +143,14 @@ const LoadCreationDialog = ({
                         [ID]: load.id,
                         [NAME]: load.name ?? '',
                         [LOAD_TYPE]: load.loadType,
-                        [P0]: load.activePower,
-                        [Q0]: load.reactivePower,
+                        [P0]: load.p0,
+                        [Q0]: load.q0,
                         ...getConnectivityFormData({
                             voltageLevelId: load.voltageLevelId,
                             busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
+                            connectionDirection: load.position.direction,
+                            connectionName: load.position.label,
+                            connectionPosition: load.position.order,
                         }),
                     });
                 });

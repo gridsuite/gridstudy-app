@@ -11,13 +11,14 @@ import { IconButton, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
     BUS_OR_BUSBAR_SECTION,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
+    DIRECTION,
+    LABEL,
+    ORDER,
     CONNECTIVITY,
     ID,
     TOPOLOGY_KIND,
     VOLTAGE_LEVEL,
+    POSITION,
 } from 'components/refactor/utils/field-constants';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -174,12 +175,12 @@ export const ConnectivityForm = ({
     );
 
     const newConnectionNameField = (
-        <TextInput name={`${id}.${CONNECTION_NAME}`} label="ConnectionName" />
+        <TextInput name={`${id}.${POSITION}.${LABEL}`} label="ConnectionName" />
     );
 
     const newConnectionDirectionField = (
         <SelectInput
-            name={`${id}.${CONNECTION_DIRECTION}`}
+            name={`${id}.${POSITION}.${DIRECTION}`}
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
             fullWidth
@@ -224,7 +225,7 @@ export const ConnectivityForm = ({
 
     const newConnectionPositionField = (
         <IntegerInput
-            name={`${id}.${CONNECTION_POSITION}`}
+            name={`${id}.${POSITION}.${ORDER}`}
             label="ConnectionPosition"
             customAdornment={positionIconAdorment(
                 isNodeBuilt(currentNode),
