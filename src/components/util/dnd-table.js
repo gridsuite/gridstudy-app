@@ -34,6 +34,7 @@ function MultiCheckbox({
     arrayFormName,
     handleClickIfChecked,
     handleClickIfUnchecked,
+    ...props
 }) {
     const arrayToWatch = useWatch({
         name: arrayFormName,
@@ -49,6 +50,7 @@ function MultiCheckbox({
                     ? handleClickIfChecked()
                     : handleClickIfUnchecked();
             }}
+            {...props}
         />
     );
 }
@@ -90,7 +92,7 @@ const DndTable = ({
     const { getValues, setValue } = useFormContext();
 
     const {
-        fields: tapFields, // don't use it to access form data ! check doc
+        fields: tapSteps, // don't use it to access form data ! check doc
         move,
         swap,
     } = useFieldArrayOutput;
@@ -111,13 +113,13 @@ const DndTable = ({
     }
 
     function selectAllRows() {
-        for (let i = 0; i < tapFields.length; i++) {
+        for (let i = 0; i < tapSteps.length; i++) {
             setValue(`${arrayFormName}[${i}].${SELECTED}`, true);
         }
     }
 
     function unselectAllRows() {
-        for (let i = 0; i < tapFields.length; i++) {
+        for (let i = 0; i < tapSteps.length; i++) {
             setValue(`${arrayFormName}[${i}].${SELECTED}`, false);
         }
     }
@@ -174,6 +176,7 @@ const DndTable = ({
                             arrayFormName={arrayFormName}
                             handleClickIfChecked={selectAllRows}
                             handleClickIfUnchecked={unselectAllRows}
+                            disabled={disabled || tapSteps.length === 0}
                         />
                     </TableCell>
                     {columnsDefinition.map((column) => (
@@ -198,7 +201,7 @@ const DndTable = ({
     function renderTableBody(providedDroppable) {
         return (
             <TableBody>
-                {tapFields.map((row, index) => (
+                {tapSteps.map((row, index) => (
                     <Draggable
                         key={row.id}
                         draggableId={row.id.toString()}
@@ -215,13 +218,18 @@ const DndTable = ({
                                     })}
                                     placement="right"
                                 >
-                                    <TableCell {...provided.dragHandleProps}>
+                                    <TableCell
+                                        {...(disabled
+                                            ? {}
+                                            : { ...provided.dragHandleProps })}
+                                    >
                                         <DragIndicatorIcon />
                                     </TableCell>
                                 </Tooltip>
                                 <TableCell>
                                     <CheckboxInput
                                         name={`${arrayFormName}[${index}].${SELECTED}`}
+                                        formProps={{ disabled }}
                                     />
                                 </TableCell>
                                 {columnsDefinition.map((column) =>
@@ -240,7 +248,7 @@ const DndTable = ({
         <Grid item container spacing={1}>
             <Grid item container>
                 <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="tapTable">
+                    <Droppable droppableId="tapTable" isDropDisabled={disabled}>
                         {(provided, snapshot) => (
                             <TableContainer
                                 ref={provided.innerRef}
