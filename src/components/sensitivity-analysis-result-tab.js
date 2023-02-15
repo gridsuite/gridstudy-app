@@ -122,6 +122,8 @@ const tellDiff = (what, was, now) => {
     return false;
 };
 
+const RETRY_LIMIT_COUNT = 2;
+
 function PagedSensitivityResult({
     nOrNkIndex,
     sensiKindIndex,
@@ -135,6 +137,7 @@ function PagedSensitivityResult({
     const [filteredCount, setFilteredCount] = useState(null);
     const [allowsShowingLoader, setAllowsShowingLoader] = useState(false);
     const timerRef = useRef(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     const synthRef = useRef();
     const [next, prev] = [{}, synthRef.current];
@@ -161,6 +164,7 @@ function PagedSensitivityResult({
         setOverAllCount(null);
         setFilteredCount(null);
         setVersion(0);
+        setRetryCount(0);
 
         const pars = [true, false, null, setVersion];
         const rowIndexer = new KeyedColumnsRowIndexer(...pars);
@@ -179,7 +183,13 @@ function PagedSensitivityResult({
         next.isFetchNeedy = prev.isFetchNeedy;
         next.askedFilterVersion = prev.askedFilterVersion;
     } else if (!prev.fetched) {
-        // probably fetch failed, worth retrying
+        // probably fetch failed, worth retrying ?
+        if (retryCount >= RETRY_LIMIT_COUNT) {
+            // avoid recreating a fetcher
+            next.fetcher = prev.fetcher;
+        } else {
+            setRetryCount((prevCount) => prevCount + 1);
+        }
     } else if (prev.fetched.sensitivities.length === overAllCount) {
         if (
             userRowsPerPage <= 0 ||
@@ -289,6 +299,7 @@ function PagedSensitivityResult({
     } else if (fetched && prev.fetched !== fetched) {
         clearTimeout(timerRef.current);
         next.isFetchNeedy = false;
+        setRetryCount(0);
         setOverAllCount(fetched.totalSensitivitiesCount);
         setFilteredCount(fetched.filteredSensitivitiesCount);
         next.indexer.setColFilterOuterParams('funcId', fetched.allFunctionIds);
@@ -297,6 +308,7 @@ function PagedSensitivityResult({
         next.indexer.setColFilterOuterParams('contingencyId', contingencyIds);
     } else if (!isLoading && prev?.isLoading && errorMessage) {
         next.isFetchNeedy = false; // for next change to try and fetch
+        console.warn('sensi results fetch', errorMessage, retryCount);
     }
     next.fetched = fetched;
     next.isLoading = isLoading;
