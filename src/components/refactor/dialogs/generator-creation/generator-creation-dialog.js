@@ -387,7 +387,9 @@ const GeneratorCreationDialog = ({
         }
     }, [editData, reset]);
 
-    const clear = useCallback(() => {}, []);
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
 
     const onSubmit = useCallback(
         (generator) => {
