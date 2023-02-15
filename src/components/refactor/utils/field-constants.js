@@ -45,10 +45,12 @@ export const POSITION_2 = 'position2';
 
 export const ENABLED = 'enabled';
 export const REGULATING = 'regulating';
+export const REGULATION_TYPE = 'regulationType';
 export const TARGET_DEADBAND = 'targetDeadband';
 export const LOW_TAP_POSITION = 'lowTapPosition';
 export const HIGH_TAP_POSITION = 'highTapPosition';
 export const TAP_POSITION = 'tapPosition';
+export const REGULATION_SIDE = 'regulationSide';
 
 //tap-changer-pane-taps
 export const STEPS = 'steps';
