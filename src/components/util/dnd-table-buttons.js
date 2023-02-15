@@ -36,6 +36,8 @@ const DndTableButtons = ({
     });
 
     const noRowsSelected = !currentRows.some((row) => row[SELECTED]);
+    const firstRowSelected = currentRows[0]?.[SELECTED];
+    const lastRowSelected = currentRows[currentRows.length - 1]?.[SELECTED];
 
     return (
         <Grid container item>
@@ -115,7 +117,11 @@ const DndTableButtons = ({
                             <IconButton
                                 color="primary"
                                 onClick={() => handleMoveUpButton()}
-                                disabled={disabled || noRowsSelected}
+                                disabled={
+                                    disabled ||
+                                    noRowsSelected ||
+                                    firstRowSelected
+                                }
                             >
                                 <ArrowUpwardIcon />
                             </IconButton>
@@ -133,7 +139,11 @@ const DndTableButtons = ({
                             <IconButton
                                 color="primary"
                                 onClick={() => handleMoveDownButton()}
-                                disabled={disabled || noRowsSelected}
+                                disabled={
+                                    disabled ||
+                                    noRowsSelected ||
+                                    lastRowSelected
+                                }
                             >
                                 <ArrowDownwardIcon />
                             </IconButton>

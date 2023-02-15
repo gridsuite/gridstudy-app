@@ -52,21 +52,23 @@ function MultiCheckbox({
     );
 }
 
-function DefaultTableCell({ arrayFormName, rowIndex, column }) {
+function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     return (
         <TableCell key={column.dataKey}>
             <TableReadOnlyInput
                 name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                {...props}
             />
         </TableCell>
     );
 }
 
-function EditableTableCell({ arrayFormName, rowIndex, column }) {
+function EditableTableCell({ arrayFormName, rowIndex, column, ...props }) {
     return (
         <TableCell key={column.dataKey}>
             <TableNumericalInput
                 name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                {...props}
             />
         </TableCell>
     );
@@ -102,6 +104,7 @@ const DndTable = ({
                 arrayFormName={arrayFormName}
                 rowIndex={rowIndex}
                 column={column}
+                disabled={disabled}
             />
         );
     }
@@ -233,7 +236,7 @@ const DndTable = ({
                             <TableContainer
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
-                                sx={{ minHeight: 200, maxHeight: 500 }}
+                                sx={{ minHeight: 200, maxHeight: 450 }}
                             >
                                 <Table stickyHeader size="small">
                                     {renderTableHead()}
