@@ -598,7 +598,9 @@ export const NetworkMapTab = ({
                 }
             });
 
-            return Promise.all([updatedSubstations, updatedLines]);
+            return Promise.all([updatedSubstations, updatedLines]).finally(() =>
+                setWaitingLoadData(false)
+            );
         },
         [
             currentNode,
@@ -612,15 +614,11 @@ export const NetworkMapTab = ({
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
         const currentNodeAtReloadCalling = currentNodeRef.current;
-        updateMapEquipments(currentNodeAtReloadCalling)
-            .then(() => {
-                if (currentNodeAtReloadCalling === currentNodeRef.current) {
-                    loadGeoData();
-                }
-            })
-            .finally(() => {
-                setWaitingLoadData(false);
-            });
+        updateMapEquipments(currentNodeAtReloadCalling).then(() => {
+            if (currentNodeAtReloadCalling === currentNodeRef.current) {
+                loadGeoData();
+            }
+        });
     }, [updateMapEquipments, loadGeoData]);
 
     useEffect(() => {
