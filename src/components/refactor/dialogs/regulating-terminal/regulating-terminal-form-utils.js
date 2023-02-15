@@ -56,6 +56,12 @@ export const getRegulatingTerminalEmptyFormData = () => {
     return regulatingTerminalEmptyFormData();
 };
 
+export const getRegulatingTerminalEmptyFormDataWithId = (
+    id = REGULATING_TERMINAL
+) => ({
+    [id]: regulatingTerminalEmptyFormData(),
+});
+
 export const getRegulatingTerminalVoltageLevelData = ({
     voltageLevelId,
     voltageLevelName = '',

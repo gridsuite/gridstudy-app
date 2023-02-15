@@ -36,11 +36,8 @@ import {
     MINIMUM_REACTIVE_POWER,
     NAME,
     NOMINAL_VOLTAGE,
-    P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
-    Q_MAX_P,
-    Q_MIN_P,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
@@ -65,7 +62,7 @@ import {
 } from '../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
 import {
-    getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalEmptyFormDataWithId,
     getRegulatingTerminalFormData,
 } from '../regulating-terminal/regulating-terminal-form-utils';
 import { createGenerator } from '../../../../utils/rest-api';
@@ -75,9 +72,9 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../../../network/constants';
 import {
-    toNumber,
-    validateValueIsANumber,
-} from '../../../util/validation-functions';
+    getReactiveCapabilityCurveEmptyFormData,
+    getReactiveCapabilityCurveValidationSchema,
+} from './reactive-capability-curve/reactive-capability-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -102,10 +99,10 @@ const emptyFormData = {
     [REACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
     [VOLTAGE_SET_POINT]: null,
-    [REACTIVE_CAPABILITY_CURVE_TABLE]: [{}, {}],
     [Q_PERCENT]: null,
     [DROOP]: null,
-    ...getRegulatingTerminalEmptyFormData(),
+    ...getRegulatingTerminalEmptyFormDataWithId(),
+    ...getReactiveCapabilityCurveEmptyFormData(),
     ...getConnectivityEmptyFormData(),
 };
 
@@ -118,7 +115,7 @@ const schema = yup
         [MAXIMUM_ACTIVE_POWER]: yup.number().required(),
         [MINIMUM_ACTIVE_POWER]: yup.number().required(),
         [RATED_NOMINAL_POWER]: yup.number().nullable(),
-        [ACTIVE_POWER_SET_POINT]: yup.number().required(),
+        [ACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
         [TRANSIENT_REACTANCE]: yup.number().nullable(),
         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
@@ -134,7 +131,7 @@ const schema = yup
             .nullable()
             .min(0, 'RealPercentage')
             .max(1, 'RealPercentage'),
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().required(),
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
         [MINIMUM_REACTIVE_POWER]: yup.number().nullable(),
         [MAXIMUM_REACTIVE_POWER]: yup.number().nullable(),
         [REACTIVE_POWER_SET_POINT]: yup
@@ -145,75 +142,33 @@ const schema = yup
                 then: (schema) => schema.required(),
             }),
         [FREQUENCY_REGULATION]: yup.bool().required(),
-        [REACTIVE_CAPABILITY_CURVE_TABLE]: yup
-            .array()
-            .when([REACTIVE_CAPABILITY_CURVE_CHOICE], {
-                is: 'CURVE',
-                then: (schema) =>
-                    schema
-                        .of(
-                            yup.object().shape({
-                                [Q_MAX_P]: yup.number().required(),
-                                [Q_MIN_P]: yup
-                                    .number()
-                                    .required()
-                                    .lessThan(
-                                        yup.ref(Q_MAX_P),
-                                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
-                                    ),
-                                [P]: yup
-                                    .number()
-                                    .required()
-                                    .min(
-                                        yup.ref(Q_MIN_P),
-                                        'ReactiveCapabilityCurveCreationErrorPOutOfRange'
-                                    )
-                                    .max(
-                                        yup.ref(Q_MAX_P),
-                                        'ReactiveCapabilityCurveCreationErrorPOutOfRange'
-                                    ),
-                            })
-                        )
-                        .min(
-                            2,
-                            'ReactiveCapabilityCurveCreationErrorMissingPoints'
-                        )
-                        .test(
-                            'validateP',
-                            'ReactiveCapabilityCurveCreationErrorPInvalid',
-                            (values) => {
-                                const everyValidP = values
-                                    .map((element) =>
-                                        // Note : convertion toNumber is necessary here to prevent corner cases like if
-                                        // two values are "-0" and "0", which would be considered different by the Set below.
-                                        validateValueIsANumber(element.p)
-                                            ? toNumber(element.p)
-                                            : null
-                                    )
-                                    .filter((p) => p !== null);
-                                const setOfPs = [...new Set(everyValidP)];
-                                return setOfPs.length === everyValidP.length;
-                            }
-                        ),
+        [VOLTAGE_REGULATION]: yup.bool().nullable().required(),
+        [VOLTAGE_REGULATION_TYPE]: yup
+            .string()
+            .nullable()
+            .when([VOLTAGE_REGULATION], {
+                is: true,
+                then: (schema) => schema.required(),
             }),
-        [VOLTAGE_REGULATION]: yup.bool().required(),
-        [VOLTAGE_REGULATION_TYPE]: yup.string().when([VOLTAGE_REGULATION], {
-            is: true,
-            then: (schema) => schema.required(),
-        }),
-        [VOLTAGE_SET_POINT]: yup.number().when([VOLTAGE_REGULATION], {
-            is: true,
-            then: (schema) => schema.required(),
-        }),
+        [VOLTAGE_SET_POINT]: yup
+            .number()
+            .nullable()
+            .when([VOLTAGE_REGULATION], {
+                is: true,
+                then: (schema) => schema.required(),
+            }),
         [Q_PERCENT]: yup
             .number()
             .nullable()
             .max(100, 'NormalizedPercentage')
             .min(0, 'NormalizedPercentage'),
-        [DROOP]: yup.number().when([FREQUENCY_REGULATION], {
-            is: true,
-            then: (schema) => schema.required(),
-        }),
+        [DROOP]: yup
+            .number()
+            .nullable()
+            .when([FREQUENCY_REGULATION], {
+                is: true,
+                then: (schema) => schema.required(),
+            }),
         [REGULATING_TERMINAL]: yup.object().shape({
             [VOLTAGE_LEVEL]: yup
                 .object()
@@ -246,6 +201,7 @@ const schema = yup
                     then: (schema) => schema.required(),
                 }),
         }),
+        ...getReactiveCapabilityCurveValidationSchema(),
         ...getConnectivityFormValidationSchema(),
     })
     .required();

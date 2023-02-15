@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     P,
@@ -12,7 +19,7 @@ import {
 } from '../../../../dialogs/dialogUtils';
 import React from 'react';
 
-const ReactiveCapabilityCurveForm = ({ index, labelSuffix }) => {
+const ReactiveCapabilityCurveRowForm = ({ index, labelSuffix }) => {
     const id = REACTIVE_CAPABILITY_CURVE_TABLE;
     const pField = (
         <FloatInput
@@ -50,4 +57,4 @@ const ReactiveCapabilityCurveForm = ({ index, labelSuffix }) => {
     );
 };
 
-export default ReactiveCapabilityCurveForm;
+export default ReactiveCapabilityCurveRowForm;

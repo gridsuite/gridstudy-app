@@ -12,30 +12,20 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { useStyles } from '../../../../dialogs/dialogUtils';
-import { useFieldArray, useForm } from 'react-hook-form';
-import ReactiveCapabilityCurveForm from './reactive-capability-curve-form';
+import { useFieldArray } from 'react-hook-form';
+import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import { REACTIVE_CAPABILITY_CURVE_TABLE } from '../../../utils/field-constants';
 import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
-
-function getId(value) {
-    return value?.id ? value.id : 'defaultId';
-}
 
 export const ReactiveCapabilityCurveTable = ({
     tableHeadersIds,
     disabled = false,
 }) => {
-    const { control } = useForm({
-        name: `${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-        defaultValues: {
-            [REACTIVE_CAPABILITY_CURVE_TABLE]: [{}, {}],
-        },
-    });
     const {
         fields: rows,
         insert,
         remove,
-    } = useFieldArray({ control, name: `${REACTIVE_CAPABILITY_CURVE_TABLE}` });
+    } = useFieldArray({ name: `${REACTIVE_CAPABILITY_CURVE_TABLE}` });
     const classes = useStyles();
 
     return (
@@ -47,15 +37,14 @@ export const ReactiveCapabilityCurveTable = ({
             ))}
 
             {rows.map((value, index, displayedValues) => {
-                const id = getId(value);
                 let labelSuffix;
                 if (index === 0) labelSuffix = 'min';
                 else if (index === displayedValues.length - 1)
                     labelSuffix = 'max';
                 else labelSuffix = index.toString();
                 return (
-                    <Grid key={id + index} container spacing={3} item>
-                        <ReactiveCapabilityCurveForm
+                    <Grid key={value.id} container spacing={3} item>
+                        <ReactiveCapabilityCurveRowForm
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
@@ -63,7 +52,7 @@ export const ReactiveCapabilityCurveTable = ({
                         <Grid item xs={1}>
                             <IconButton
                                 className={classes.icon}
-                                key={id + index}
+                                key={value.id}
                                 onClick={() => remove(index)}
                                 disabled={
                                     disabled ||
@@ -78,7 +67,7 @@ export const ReactiveCapabilityCurveTable = ({
                             <Grid item xs={1}>
                                 <IconButton
                                     className={classes.icon}
-                                    key={id + index}
+                                    key={value.id}
                                     onClick={() => insert(rows.length - 1, {})}
                                     disabled={disabled}
                                     style={{ top: '-1em' }}

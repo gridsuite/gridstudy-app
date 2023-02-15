@@ -48,7 +48,7 @@ export function isBlankOrEmpty(value) {
  * Returns true if the value is a valid number, per Gridsuite's standard (allows either coma or dots for decimal).
  */
 export function validateValueIsANumber(value) {
-    if (value === undefined || value === '') {
+    if (value === undefined || value === '' || value === null) {
         return false;
     }
     return !isNaN(toNumber(value));
