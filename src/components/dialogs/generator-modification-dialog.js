@@ -88,7 +88,7 @@ function getValueOrNull(val) {
 /**
  * Dialog to create a generator in the network
  * @param currentNodeUuid the currently selected tree node
- * @param equipmentOptionsPromise Promise handling list of generator options
+ * @param voltageLevelsIdsAndTopologyPromise Promise handling list of generator options
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
@@ -479,20 +479,14 @@ const GeneratorModificationDialog = ({
         });
 
     let previousFrequencyRegulation = '';
-    if (!generatorInfos) {
-        previousFrequencyRegulation = undefined;
-    } else {
-        if (generatorInfos?.activePowerControlOn) {
-            previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
-        } else if (
-            generatorInfos?.activePowerControlOn === false ||
-            (generatorInfos?.id !== '' &&
-                generatorInfos?.activePowerControlOn === undefined)
-        ) {
-            previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
-        }
+    if (generatorInfos?.activePowerControlOn) {
+        previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
+    } else if (
+        generatorInfos?.activePowerControlOn === false ||
+        (generatorInfos && generatorInfos.activePowerControlOn === undefined)
+    ) {
+        previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
     }
-
     const [frequencyRegulation, frequencyRegulationField] =
         useNullableBooleanValue({
             label: 'FrequencyRegulation',
@@ -978,7 +972,7 @@ const GeneratorModificationDialog = ({
 GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
     currentNodeUuid: PropTypes.string,
-    equipmentOptionsPromise: PropTypes.shape({
+    voltageLevelsIdsAndTopologyPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),

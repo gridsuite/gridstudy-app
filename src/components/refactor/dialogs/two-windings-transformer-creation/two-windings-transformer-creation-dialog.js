@@ -123,7 +123,6 @@ const TwoWindingsTransformerCreationDialog = ({
     editData,
     currentNodeUuid,
     studyUuid,
-    voltageLevelOptionsPromise,
     ...dialogProps
 }) => {
     const { snackError } = useSnackMessage();
@@ -690,10 +689,6 @@ const TwoWindingsTransformerCreationDialog = ({
 
 TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
-    voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
     currentNodeUuid: PropTypes.string,
 };
 

@@ -507,8 +507,8 @@ export const useRegulatingTerminalValue = ({
             type: equipmentSectionTypeDefaultValue,
         },
     });
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [voltageLevelsEquipments, setVoltageLevelsEquipments] = useState([]);
+    const [voltageLevelsOptions, setVoltageLevelsOptions] = useState([]);
+    const [voltageLevelEquipments, setVoltageLevelEquipments] = useState([]);
 
     useEffect(() => {
         setRegulatingTerminal({
@@ -520,7 +520,7 @@ export const useRegulatingTerminalValue = ({
     useEffect(() => {
         if (studyUuid && currentNodeUuid)
             voltageLevelsIdsAndTopologyPromise.then((values) => {
-                setVoltageLevelOptions(
+                setVoltageLevelsOptions(
                     values.sort((a, b) => a.id.localeCompare(b.id))
                 );
             });
@@ -535,20 +535,20 @@ export const useRegulatingTerminalValue = ({
                 regulatingTerminal?.voltageLevel?.id,
                 true
             ).then((values) => {
-                setVoltageLevelsEquipments(values);
+                setVoltageLevelEquipments(values);
             });
         } else {
-            setVoltageLevelsEquipments([]);
+            setVoltageLevelEquipments([]);
         }
     }, [regulatingTerminal, studyUuid, currentNodeUuid]);
 
     useEffect(() => {
-        if (!voltageLevelOptions) return;
+        if (!voltageLevelsOptions) return;
         setRegulatingTerminal({
             voltageLevel: voltageLevelIdDefaultValue
                 ? {
                       id: voltageLevelIdDefaultValue,
-                      topologyKind: voltageLevelOptions.find(
+                      topologyKind: voltageLevelsOptions.find(
                           (vl) => vl.id === voltageLevelIdDefaultValue
                       )?.topologyKind,
                   }
@@ -563,7 +563,7 @@ export const useRegulatingTerminalValue = ({
                     : null,
         });
     }, [
-        voltageLevelOptions,
+        voltageLevelsOptions,
         equipmentSectionIdDefaultValue,
         equipmentSectionTypeDefaultValue,
         voltageLevelIdDefaultValue,
@@ -587,9 +587,9 @@ export const useRegulatingTerminalValue = ({
                 validation={validation}
                 inputForm={inputForm}
                 disabled={disabled}
-                voltageLevelOptions={voltageLevelOptions}
+                voltageLevelOptions={voltageLevelsOptions}
                 regulatingTerminalValue={regulatingTerminal}
-                voltageLevelsEquipments={voltageLevelsEquipments}
+                voltageLevelsEquipments={voltageLevelEquipments}
                 onChangeVoltageLevel={(value) => setVoltageLevel(value)}
                 onChangeEquipmentSection={(equipmentSection) =>
                     setEquipmentSection(equipmentSection)
@@ -611,9 +611,9 @@ export const useRegulatingTerminalValue = ({
         validation,
         inputForm,
         disabled,
-        voltageLevelOptions,
+        voltageLevelsOptions,
         regulatingTerminal,
-        voltageLevelsEquipments,
+        voltageLevelEquipments,
         direction,
         equipmentSectionTypeDefaultValue,
         previousRegulatingTerminalValue,
