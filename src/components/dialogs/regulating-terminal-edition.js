@@ -55,9 +55,9 @@ export function makeRefreshRegulatingTerminalSectionsCallback() {
 const RegulatingTerminalEdition = ({
     validation,
     inputForm,
-    voltageLevelOptions,
+    voltageLevelsOptions,
     regulatingTerminalValue,
-    voltageLevelsEquipments,
+    voltageLevelEquipments,
     onChangeVoltageLevel,
     onChangeEquipmentSection,
     direction,
@@ -141,7 +141,7 @@ const RegulatingTerminalEdition = ({
     useEffect(() => {
         if (voltageLevelEquipmentsCallback) {
             voltageLevelEquipmentsCallback(
-                voltageLevelsEquipments,
+                voltageLevelEquipments,
                 setEquipmentsOptions
             );
         }
@@ -149,7 +149,7 @@ const RegulatingTerminalEdition = ({
         regulatingTerminalValue?.voltageLevel?.id,
         setEquipmentsOptions,
         voltageLevelEquipmentsCallback,
-        voltageLevelsEquipments,
+        voltageLevelEquipments,
     ]);
 
     useEffect(() => {
@@ -208,7 +208,7 @@ const RegulatingTerminalEdition = ({
                         selectOnFocus
                         disabled={disabled}
                         id="voltage-level"
-                        options={voltageLevelOptions}
+                        options={voltageLevelsOptions}
                         getOptionLabel={(vl) => (vl?.id ? vl.id : '')}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
@@ -334,14 +334,14 @@ const RegulatingTerminalEdition = ({
 
 RegulatingTerminalEdition.propTypes = {
     validation: PropTypes.object,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    voltageLevelsOptions: PropTypes.arrayOf(PropTypes.object),
     regulatingTerminalValue: PropTypes.object,
     onChangeVoltageLevel: PropTypes.func.isRequired,
     onChangeEquipmentSection: PropTypes.func.isRequired,
     direction: PropTypes.string,
     disabled: PropTypes.bool,
     voltageLevelEquipmentsCallback: PropTypes.func.isRequired,
-    voltageLevelsEquipments: PropTypes.arrayOf(PropTypes.object),
+    voltageLevelEquipments: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default RegulatingTerminalEdition;

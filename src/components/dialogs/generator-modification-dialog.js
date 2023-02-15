@@ -345,7 +345,7 @@ const GeneratorModificationDialog = ({
             valueLessThanOrEqualTo:
                 maximumReactivePower ||
                 generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
-            errorMsgId: 'MinReactivePowerLessThanMaxActivePower',
+            errorMsgId: 'MinReactivePowerLessThanMaxReactivePower',
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
@@ -451,10 +451,10 @@ const GeneratorModificationDialog = ({
         );
     }, [generatorInfos]);
 
-    function getPreviousRegulationType(generatorInformation) {
-        if (generatorInformation?.voltageRegulatorOn) {
-            return generatorInformation?.regulatingTerminalVlId ||
-                generatorInformation?.regulatingTerminalConnectableId
+    function getPreviousRegulationType(generatorInfos) {
+        if (generatorInfos?.voltageRegulatorOn) {
+            return generatorInfos?.regulatingTerminalVlId ||
+                generatorInfos?.regulatingTerminalConnectableId
                 ? REGULATION_TYPES.DISTANT
                 : REGULATION_TYPES.LOCAL;
         } else {

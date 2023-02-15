@@ -587,9 +587,9 @@ export const useRegulatingTerminalValue = ({
                 validation={validation}
                 inputForm={inputForm}
                 disabled={disabled}
-                voltageLevelOptions={voltageLevelsOptions}
+                voltageLevelsOptions={voltageLevelsOptions}
                 regulatingTerminalValue={regulatingTerminal}
-                voltageLevelsEquipments={voltageLevelEquipments}
+                voltageLevelEquipments={voltageLevelEquipments}
                 onChangeVoltageLevel={(value) => setVoltageLevel(value)}
                 onChangeEquipmentSection={(equipmentSection) =>
                     setEquipmentSection(equipmentSection)
