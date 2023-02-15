@@ -119,7 +119,7 @@ const GeneratorCreationDialog = ({
             voltageSetpoint: generator.targetV,
             reactivePowerSetpoint: generator.targetQ,
             voltageLevelId: generator.voltageLevelId,
-            busOrBusbarSectionId: null,
+            busOrBusbarSectionId: generator.busOrBusbarSectionId,
             plannedActivePowerSetPoint: generator.plannedActivePowerSetPoint,
             startupCost: generator.startupCost,
             marginalCost: generator.marginalCost,
