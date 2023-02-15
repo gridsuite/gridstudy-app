@@ -10,7 +10,7 @@ import TextInput from './text-input';
 import PropTypes from 'prop-types';
 import { toPositiveIntValue } from 'components/dialogs/dialogUtils';
 
-const IntegerInput = (props, isPositive) => {
+const IntegerInput = ({ isInputPositiveOnly = false, ...props }) => {
     const inputTransform = (value) => {
         if ('-' === value) return value;
         return value === null || isNaN(value) ? '' : value.toString();
@@ -24,7 +24,9 @@ const IntegerInput = (props, isPositive) => {
 
     return (
         <TextInput
-            outputTransform={isPositive ? toPositiveIntValue : toIntOrNullValue}
+            outputTransform={
+                isInputPositiveOnly ? toPositiveIntValue : toIntOrNullValue
+            }
             inputTransform={inputTransform}
             {...props}
         />

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     EQUIPMENT_ID,
@@ -22,10 +22,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import {
-    createShuntCompensator,
-    fetchEquipmentInfos,
-} from '../../../../utils/rest-api';
+import { createShuntCompensator } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
@@ -56,7 +53,7 @@ const schema = yup
         [EQUIPMENT_NAME]: yup.string(),
         [MAXIMUM_NUMBER_OF_SECTIONS]: yup
             .number()
-            .moreThan(0, 'ShuntCompensatorErrorMaximumLessThanOne')
+            .min(1, 'ShuntCompensatorErrorMaximumLessThanOne')
             .required(),
         [CURRENT_NUMBER_OF_SECTIONS]: yup
             .number()
@@ -89,8 +86,6 @@ const ShuntCompensatorCreationDialog = ({
 
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'shunt-compensators';
-
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
@@ -98,14 +93,8 @@ const ShuntCompensatorCreationDialog = ({
 
     const { reset } = methods;
 
-    const fromSearchCopyToFormValues = (shuntCompensator) => {
-        fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            'voltage-levels',
-            shuntCompensator.voltageLevelId,
-            true
-        ).then((vlResult) => {
+    const fromSearchCopyToFormValues = useCallback(
+        (shuntCompensator) => {
             reset({
                 [EQUIPMENT_ID]: shuntCompensator.id + '(1)',
                 [EQUIPMENT_NAME]: shuntCompensator.name ?? '',
@@ -114,88 +103,45 @@ const ShuntCompensatorCreationDialog = ({
                 [CURRENT_NUMBER_OF_SECTIONS]: shuntCompensator.sectionCount,
                 [SUSCEPTANCE_PER_SECTION]: shuntCompensator.bperSection,
                 ...getConnectivityFormData({
-                    voltageLevelId: shuntCompensator.voltageLevelId,
-                    voltageLevelTopologyKind: vlResult.topologyKind,
-                    voltageLevelName: vlResult.name,
-                    voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                    voltageLevelSubstationId: vlResult.substationId,
+                    busbarSectionId: shuntCompensator.busOrBusbarSectionId,
                     connectionDirection: shuntCompensator.connectionDirection,
                     connectionName: shuntCompensator.connectionName,
                     connectionPosition: shuntCompensator.connectionPosition,
+                    voltageLevelId: shuntCompensator.voltageLevelId,
                 }),
             });
-        });
-    };
+        },
+        [reset]
+    );
 
     const fromEditDataToFormValues = useCallback(
         (shuntCompensator) => {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'voltage-levels',
-                shuntCompensator.voltageLevelId,
-                true
-            )
-                .then((vlResult) => {
-                    reset({
-                        [EQUIPMENT_ID]: shuntCompensator.equipmentId,
-                        [EQUIPMENT_NAME]: shuntCompensator.equipmentName ?? '',
-                        [MAXIMUM_NUMBER_OF_SECTIONS]:
-                            shuntCompensator.maximumNumberOfSections,
-                        [CURRENT_NUMBER_OF_SECTIONS]:
-                            shuntCompensator.currentNumberOfSections,
-                        [IDENTICAL_SECTIONS]:
-                            shuntCompensator.isIdenticalSection,
-                        [SUSCEPTANCE_PER_SECTION]:
-                            shuntCompensator.susceptancePerSection,
-                        ...getConnectivityFormData({
-                            voltageLevelId: shuntCompensator.voltageLevelId,
-                            voltageLevelTopologyKind: vlResult.topologyKind,
-                            voltageLevelName: vlResult.name,
-                            voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                            voltageLevelSubstationId: vlResult.substationId,
-                            busbarSectionId:
-                                shuntCompensator.busOrBusbarSectionId,
-                            connectionDirection:
-                                shuntCompensator.connectionDirection,
-                            connectionName: shuntCompensator.connectionName,
-                            connectionPosition:
-                                shuntCompensator.connectionPosition,
-                        }),
-                    });
-                }) // if voltage level can't be found, we fill the form with minimal infos
-                .catch(() => {
-                    reset({
-                        [EQUIPMENT_ID]: shuntCompensator.equipmentId,
-                        [EQUIPMENT_NAME]: shuntCompensator.equipmentName ?? '',
-                        [MAXIMUM_NUMBER_OF_SECTIONS]:
-                            shuntCompensator.maximumNumberOfSections,
-                        [CURRENT_NUMBER_OF_SECTIONS]:
-                            shuntCompensator.currentNumberOfSections,
-                        [IDENTICAL_SECTIONS]:
-                            shuntCompensator.isIdenticalSection,
-                        [SUSCEPTANCE_PER_SECTION]:
-                            shuntCompensator.susceptancePerSection,
-                        ...getConnectivityFormData({
-                            voltageLevelId: shuntCompensator.voltageLevelId,
-                            busbarSectionId:
-                                shuntCompensator.busOrBusbarSectionId,
-                            connectionDirection:
-                                shuntCompensator.connectionDirection,
-                            connectionName: shuntCompensator.connectionName,
-                            connectionPosition:
-                                shuntCompensator.connectionPosition,
-                        }),
-                    });
-                });
+            reset({
+                [EQUIPMENT_ID]: shuntCompensator.equipmentId,
+                [EQUIPMENT_NAME]: shuntCompensator.equipmentName ?? '',
+                [MAXIMUM_NUMBER_OF_SECTIONS]:
+                    shuntCompensator.maximumNumberOfSections,
+                [CURRENT_NUMBER_OF_SECTIONS]:
+                    shuntCompensator.currentNumberOfSections,
+                [IDENTICAL_SECTIONS]: shuntCompensator.isIdenticalSection,
+                [SUSCEPTANCE_PER_SECTION]:
+                    shuntCompensator.susceptancePerSection,
+                ...getConnectivityFormData({
+                    busbarSectionId: shuntCompensator.busOrBusbarSectionId,
+                    connectionDirection: shuntCompensator.connectionDirection,
+                    connectionName: shuntCompensator.connectionName,
+                    connectionPosition: shuntCompensator.connectionPosition,
+                    voltageLevelId: shuntCompensator.voltageLevelId,
+                }),
+            });
         },
-        [studyUuid, currentNodeUuid, reset]
+        [reset]
     );
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
+        equipmentPath: 'shunt-compensators',
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
     });
@@ -256,7 +202,7 @@ const ShuntCompensatorCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={'SHUNT_COMPENSATOR'}
+                    equipmentType={EQUIPMENT_TYPE.SHUNT_COMPENSATOR.name}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

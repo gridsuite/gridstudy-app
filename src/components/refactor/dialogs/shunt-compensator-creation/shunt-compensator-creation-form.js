@@ -52,7 +52,7 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
         <IntegerInput
             name={MAXIMUM_NUMBER_OF_SECTIONS}
             label={'ShuntMaximumNumberOfSections'}
-            isPositive={true}
+            isInputPositiveOnly={true}
         />
     );
 
@@ -60,7 +60,7 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
         <IntegerInput
             name={CURRENT_NUMBER_OF_SECTIONS}
             label={'ShuntCurrentNumberOfSections'}
-            isPositive={true}
+            isInputPositiveOnly={true}
         />
     );
 
