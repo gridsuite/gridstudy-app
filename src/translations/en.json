@@ -520,6 +520,7 @@
     "ShuntMaximumNumberOfSections": "Maximum number of sections",
     "CreateShuntCompensator": "Create shunt compensator",
     "ShuntCompensatorErrorMaximumLessThanOne": "Maximum number of sections should be greater than 0",
+    "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
 
     "CreateSubstation": "Create substation",
