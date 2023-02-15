@@ -75,3 +75,9 @@ export const MAXIMUM_NUMBER_OF_SECTIONS = 'maximumNumberOfSections';
 export const CURRENT_NUMBER_OF_SECTIONS = 'currentNumberOfSections';
 export const IDENTICAL_SECTIONS = 'identicalSections';
 export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
+
+//line
+export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
+export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
+export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
+export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
