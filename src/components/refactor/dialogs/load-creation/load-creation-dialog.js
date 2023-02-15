@@ -98,6 +98,7 @@ const LoadCreationDialog = ({
                 [REACTIVE_POWER]: load.q0,
                 ...getConnectivityFormData({
                     voltageLevelId: load.voltageLevelId,
+                    busbarSectionId: load.busOrBusbarSectionId,
                     voltageLevelTopologyKind: vlResult.topologyKind,
                     voltageLevelName: vlResult.name,
                     voltageLevelNominalVoltage: vlResult.nominalVoltage,

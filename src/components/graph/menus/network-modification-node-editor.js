@@ -38,9 +38,9 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
-import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation-dialog';
-import LineCreationDialog from '../../dialogs/line-creation-dialog';
+import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
+import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
 import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
