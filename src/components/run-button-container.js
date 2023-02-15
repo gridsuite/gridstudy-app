@@ -350,7 +350,7 @@ export function RunButtonContainer({
 }
 
 RunButtonContainer.propTypes = {
-    runnable: PropTypes.arrayOf(PropTypes.string),
+    runnable: PropTypes.object,
     actionOnRunnable: PropTypes.shape({
         action: PropTypes.func,
         text: PropTypes.string,

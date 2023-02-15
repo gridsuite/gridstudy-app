@@ -86,9 +86,9 @@ const LineCreationDialog = ({
             shuntConductance2: line.g2,
             shuntSusceptance2: line.b2,
             voltageLevelId1: line.voltageLevelId1,
-            busOrBusbarSectionId1: null,
+            busOrBusbarSectionId1: line.busOrBusbarSectionId1,
             voltageLevelId2: line.voltageLevelId2,
-            busOrBusbarSectionId2: null,
+            busOrBusbarSectionId2: line.busOrBusbarSectionId2,
             currentLimits1: {
                 permanentLimit: line.permanentLimit1,
             },
