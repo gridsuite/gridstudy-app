@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     divOverloadedLineView: {
         right: 45,
         top: 10,
-        minWidth: '600px',
+        minWidth: '700px',
         position: 'absolute',
         height: '70%',
         opacity: '1',
@@ -822,8 +822,10 @@ export const NetworkMapTab = ({
                 <div className={classes.divOverloadedLineView}>
                     <OverloadedLinesView
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        mapEquipments={mapEquipments}
                         disabled={disabled}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        mapEquipments={mapEquipments}
                     />
                 </div>
             )}
