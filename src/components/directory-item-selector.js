@@ -259,6 +259,7 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
                 return {
                     ...pn,
                     elementName: n.elementName,
+                    type: n.type,
                     accessRights: n.accessRights,
                     subdirectoriesCount: n.subdirectoriesCount,
                     parentUuid: nodeId,
