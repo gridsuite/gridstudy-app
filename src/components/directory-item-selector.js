@@ -55,6 +55,7 @@ const DirectoryItemSelector = (props) => {
                 return {
                     id: e.elementUuid,
                     name: e.elementName,
+                    type: e.type,
                     specificMetadata: e.specificMetadata,
                     icon: getFileIcon(e.type, classes.icon),
                     children:
