@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { Box } from '@mui/system';
 import {
     Checkbox,
     Grid,
@@ -177,8 +178,16 @@ const DndTable = ({
                     </TableCell>
                     {columnsDefinition.map((column) => (
                         <TableCell key={column.dataKey}>
-                            {column.label}
-                            {column.extra}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                {column.label}
+                                {column.extra}
+                            </Box>
                         </TableCell>
                     ))}
                 </TableRow>

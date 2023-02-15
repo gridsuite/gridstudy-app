@@ -293,12 +293,6 @@ const TapChangerSteps = ({
                 <IconButton
                     onClick={() => setOpenCreateRuleDialog(true)}
                     disabled={disabled || tapSteps.length === 0}
-                    sx={{
-                        position: 'absolute',
-                        right: 0,
-                        top: 0,
-                        padding: 1.5,
-                    }}
                 >
                     <AddchartIcon />
                 </IconButton>
