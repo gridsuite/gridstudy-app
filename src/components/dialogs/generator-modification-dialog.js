@@ -123,7 +123,7 @@ const GeneratorModificationDialog = ({
         return regulationType === REGULATION_TYPES.DISTANT.id;
     };
 
-    const [generatorInfo, setGeneratorInfo] = useState();
+    const [generatorInfos, setGeneratorInfos] = useState();
 
     const defaultReactiveCapabilityCurveChoice = () => {
         const reactiveCapabilityChoice = getValueOrNull(
@@ -131,7 +131,7 @@ const GeneratorModificationDialog = ({
         );
         if (reactiveCapabilityChoice !== null) {
             return reactiveCapabilityChoice ? 'CURVE' : 'MINMAX';
-        } else if (generatorInfo?.minMaxReactiveLimits !== undefined) {
+        } else if (generatorInfos?.minMaxReactiveLimits !== undefined) {
             return 'MINMAX';
         }
         return 'CURVE';
@@ -205,11 +205,11 @@ const GeneratorModificationDialog = ({
                 true
             ).then((value) => {
                 if (value) {
-                    setGeneratorInfo(value);
+                    setGeneratorInfos(value);
                 }
             });
         } else {
-            setGeneratorInfo(null);
+            setGeneratorInfos(null);
         }
     }, [studyUuid, currentNodeUuid, id]);
 
@@ -218,12 +218,12 @@ const GeneratorModificationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: getValue(formValues?.equipmentName) || undefined,
-        previousValue: generatorInfo?.name,
+        previousValue: generatorInfos?.name,
         clearable: true,
     });
 
     const energySourceLabelId = getEnergySourceLabel(
-        generatorInfo?.energySource
+        generatorInfos?.energySource
     );
     const previousEnergySourceLabel = energySourceLabelId
         ? intl.formatMessage({
@@ -248,7 +248,7 @@ const GeneratorModificationDialog = ({
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.maxActivePower),
-        previousValue: generatorInfo?.maxP,
+        previousValue: generatorInfos?.maxP,
         clearable: true,
     });
 
@@ -256,13 +256,13 @@ const GeneratorModificationDialog = ({
         label: 'MinimumActivePowerText',
         validation: {
             isFieldNumeric: true,
-            valueLessThanOrEqualTo: maximumActivePower || generatorInfo?.maxP,
+            valueLessThanOrEqualTo: maximumActivePower || generatorInfos?.maxP,
             errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.minActivePower),
-        previousValue: generatorInfo?.minP,
+        previousValue: generatorInfos?.minP,
         clearable: true,
     });
 
@@ -282,8 +282,8 @@ const GeneratorModificationDialog = ({
     });
 
     const isPreviousReactiveCapabilityCurveOn = useMemo(() => {
-        return generatorInfo?.reactiveCapabilityCurvePoints !== undefined;
-    }, [generatorInfo]);
+        return generatorInfos?.reactiveCapabilityCurvePoints !== undefined;
+    }, [generatorInfos]);
 
     const isReactiveCapabilityCurveOn = useMemo(() => {
         return reactiveCapabilityCurveChoice === 'CURVE';
@@ -314,7 +314,7 @@ const GeneratorModificationDialog = ({
         defaultValues: formValues?.reactiveCapabilityCurvePoints,
         isReactiveCapabilityCurveOn: reactiveCapabilityCurveOn,
         isModificationForm: true,
-        previousValues: generatorInfo?.reactiveCapabilityCurvePoints,
+        previousValues: generatorInfos?.reactiveCapabilityCurvePoints,
     });
 
     // We need this here because we can't access lexical declaration 'minimumReactivePower' before initialization
@@ -327,14 +327,14 @@ const GeneratorModificationDialog = ({
             isFieldRequired: reactivePowerRequired,
             valueGreaterThanOrEqualTo:
                 minimumReactivePowerRef.current ||
-                generatorInfo?.minMaxReactiveLimits?.minimumReactivePower,
+                generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
             errorMsgId: 'MaxReactivePowerGreaterThanMinReactivePower',
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.maximumReactivePower),
         previousValue:
-            generatorInfo?.minMaxReactiveLimits?.maximumReactivePower,
+            generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
     });
 
     const [minimumReactivePower, minimumReactivePowerField] = useDoubleValue({
@@ -344,27 +344,27 @@ const GeneratorModificationDialog = ({
             isFieldRequired: reactivePowerRequired,
             valueLessThanOrEqualTo:
                 maximumReactivePower ||
-                generatorInfo?.minMaxReactiveLimits?.maximumReactivePower,
+                generatorInfos?.minMaxReactiveLimits?.maximumReactivePower,
             errorMsgId: 'MinReactivePowerLessThanMaxActivePower',
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.minimumReactivePower),
         previousValue:
-            generatorInfo?.minMaxReactiveLimits?.minimumReactivePower,
+            generatorInfos?.minMaxReactiveLimits?.minimumReactivePower,
     });
 
     useEffect(() => {
         minimumReactivePowerRef.current = minimumReactivePower;
         setReactivePowerRequired(
             (minimumReactivePower !== '' &&
-                !generatorInfo?.minMaxReactiveLimits?.minimumReactivePower) ||
+                !generatorInfos?.minMaxReactiveLimits?.minimumReactivePower) ||
                 (maximumReactivePower !== '' &&
-                    !generatorInfo?.minMaxReactiveLimits?.maximumReactivePower)
+                    !generatorInfos?.minMaxReactiveLimits?.maximumReactivePower)
                 ? true
                 : undefined // if the field is not required then we set "reactivePowerRequired" to undefined so that the optional label is not displayed
         );
-    }, [minimumReactivePower, maximumReactivePower, generatorInfo]);
+    }, [minimumReactivePower, maximumReactivePower, generatorInfos]);
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
@@ -376,7 +376,7 @@ const GeneratorModificationDialog = ({
         adornment: MVAPowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.ratedNominalPower),
-        previousValue: generatorInfo?.ratedS,
+        previousValue: generatorInfos?.ratedS,
         clearable: true,
     });
 
@@ -388,14 +388,14 @@ const GeneratorModificationDialog = ({
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.activePowerSetpoint),
-        previousValue: generatorInfo?.targetP,
+        previousValue: generatorInfos?.targetP,
         clearable: true,
     });
 
     let previousRegulation = '';
-    if (generatorInfo?.voltageRegulatorOn)
+    if (generatorInfos?.voltageRegulatorOn)
         previousRegulation = intl.formatMessage({ id: 'On' });
-    else if (generatorInfo?.voltageRegulatorOn === false)
+    else if (generatorInfos?.voltageRegulatorOn === false)
         previousRegulation = intl.formatMessage({ id: 'Off' });
 
     const [voltageRegulation, voltageRegulationField] = useNullableBooleanValue(
@@ -419,7 +419,7 @@ const GeneratorModificationDialog = ({
         adornment: percentageTextField,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.qPercent),
-        previousValue: generatorInfo?.qPercent,
+        previousValue: generatorInfos?.qPercent,
     });
 
     const withVoltageRegulationInputs = () => {
@@ -446,10 +446,10 @@ const GeneratorModificationDialog = ({
 
     const isPreviousRegulationDistant = useCallback(() => {
         return (
-            getPreviousRegulationType(generatorInfo) ===
+            getPreviousRegulationType(generatorInfos) ===
             REGULATION_TYPES.DISTANT
         );
-    }, [generatorInfo]);
+    }, [generatorInfos]);
 
     function getPreviousRegulationType(generatorInformation) {
         if (generatorInformation?.voltageRegulatorOn) {
@@ -462,10 +462,11 @@ const GeneratorModificationDialog = ({
         }
     }
 
-    const previousRegulationTypeLabel = getPreviousRegulationType(generatorInfo)
-        ?.label
+    const previousRegulationTypeLabel = getPreviousRegulationType(
+        generatorInfos
+    )?.label
         ? intl.formatMessage({
-              id: getPreviousRegulationType(generatorInfo)?.label,
+              id: getPreviousRegulationType(generatorInfos)?.label,
           })
         : undefined;
     const [voltageRegulationType, voltageRegulationTypeField] =
@@ -478,15 +479,15 @@ const GeneratorModificationDialog = ({
         });
 
     let previousFrequencyRegulation = '';
-    if (!generatorInfo) {
+    if (!generatorInfos) {
         previousFrequencyRegulation = undefined;
     } else {
-        if (generatorInfo?.activePowerControlOn) {
+        if (generatorInfos?.activePowerControlOn) {
             previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
         } else if (
-            generatorInfo?.activePowerControlOn === false ||
-            (generatorInfo?.id !== '' &&
-                generatorInfo?.activePowerControlOn === undefined)
+            generatorInfos?.activePowerControlOn === false ||
+            (generatorInfos?.id !== '' &&
+                generatorInfos?.activePowerControlOn === undefined)
         ) {
             previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
         }
@@ -505,17 +506,17 @@ const GeneratorModificationDialog = ({
         return (
             voltageRegulation === true ||
             (voltageRegulation === null &&
-                generatorInfo?.voltageRegulatorOn === true)
+                generatorInfos?.voltageRegulatorOn === true)
         );
-    }, [voltageRegulation, generatorInfo]);
+    }, [voltageRegulation, generatorInfos]);
 
     const isFrequencyRegulationOn = useMemo(() => {
         return (
             frequencyRegulation === true ||
             (frequencyRegulation === null &&
-                generatorInfo?.activePowerControlOn === true)
+                generatorInfos?.activePowerControlOn === true)
         );
-    }, [frequencyRegulation, generatorInfo]);
+    }, [frequencyRegulation, generatorInfos]);
 
     const isDistantRegulation = useMemo(() => {
         return (
@@ -548,12 +549,12 @@ const GeneratorModificationDialog = ({
                 getValue(formValues?.regulatingTerminalId) ||
                 null,
             previousRegulatingTerminalValue:
-                generatorInfo?.regulatingTerminalVlId,
+                generatorInfos?.regulatingTerminalVlId,
             previousEquipmentSectionTypeValue:
-                generatorInfo?.regulatingTerminalConnectableType
-                    ? generatorInfo?.regulatingTerminalConnectableType +
+                generatorInfos?.regulatingTerminalConnectableType
+                    ? generatorInfos?.regulatingTerminalConnectableType +
                       ' : ' +
-                      generatorInfo?.regulatingTerminalConnectableId
+                      generatorInfos?.regulatingTerminalConnectableId
                     : null,
             voltageLevelsIdsAndTopologyPromise,
         });
@@ -573,7 +574,7 @@ const GeneratorModificationDialog = ({
         validation: {
             isFieldRequired:
                 frequencyRegulation &&
-                !validateValueIsGreaterThan(generatorInfo?.droop, 0), // The field is required if active power regulation is ON and there is no previous valid value.
+                !validateValueIsGreaterThan(generatorInfos?.droop, 0), // The field is required if active power regulation is ON and there is no previous valid value.
             valueGreaterThan: 0,
             errorMsgId: 'DroopGreaterThanZero',
         },
@@ -583,7 +584,7 @@ const GeneratorModificationDialog = ({
             disabled: frequencyRegulation !== null && !frequencyRegulation,
         },
         defaultValue: getValue(formValues?.droop),
-        previousValue: generatorInfo?.droop,
+        previousValue: generatorInfos?.droop,
     });
 
     const [transientReactance, transientReactanceField] = useDoubleValue({
@@ -591,7 +592,7 @@ const GeneratorModificationDialog = ({
         adornment: OhmAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.transientReactance),
-        previousValue: generatorInfo?.transientReactance,
+        previousValue: generatorInfos?.transientReactance,
     });
 
     const [transformerReactance, transformerReactanceField] = useDoubleValue({
@@ -599,7 +600,7 @@ const GeneratorModificationDialog = ({
         adornment: OhmAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.stepUpTransformerReactance),
-        previousValue: generatorInfo?.stepUpTransformerReactance,
+        previousValue: generatorInfos?.stepUpTransformerReactance,
     });
 
     const [plannedActivePowerSetPoint, plannedActivePowerSetPointField] =
@@ -608,21 +609,21 @@ const GeneratorModificationDialog = ({
             adornment: ActivePowerAdornment,
             inputForm: inputForm,
             defaultValue: getValue(formValues?.plannedActivePowerSetPoint),
-            previousValue: generatorInfo?.plannedActivePowerSetPoint,
+            previousValue: generatorInfos?.plannedActivePowerSetPoint,
         });
 
     const [startupCost, startupCostField] = useDoubleValue({
         label: 'StartupCost',
         inputForm: inputForm,
         defaultValue: getValue(formValues?.startupCost),
-        previousValue: generatorInfo?.startupCost,
+        previousValue: generatorInfos?.startupCost,
     });
 
     const [marginalCost, marginalCostField] = useDoubleValue({
         label: 'MarginalCost',
         inputForm: inputForm,
         defaultValue: getValue(formValues?.marginalCost),
-        previousValue: generatorInfo?.marginalCost,
+        previousValue: generatorInfos?.marginalCost,
     });
 
     const [plannedOutageRate, plannedOutageRateField] = useDoubleValue({
@@ -634,7 +635,7 @@ const GeneratorModificationDialog = ({
         },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.plannedOutageRate),
-        previousValue: generatorInfo?.plannedOutageRate,
+        previousValue: generatorInfos?.plannedOutageRate,
     });
 
     const [forcedOutageRate, forcedOutageRateField] = useDoubleValue({
@@ -646,7 +647,7 @@ const GeneratorModificationDialog = ({
         },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.forcedOutageRate),
-        previousValue: generatorInfo?.forcedOutageRate,
+        previousValue: generatorInfos?.forcedOutageRate,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
@@ -660,7 +661,7 @@ const GeneratorModificationDialog = ({
         formProps: { disabled: voltageRegulation === false },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.voltageSetpoint),
-        previousValue: generatorInfo?.targetV,
+        previousValue: generatorInfos?.targetV,
         clearable: true,
     });
 
@@ -673,7 +674,7 @@ const GeneratorModificationDialog = ({
         inputForm: inputForm,
         formProps: { disabled: voltageRegulation === true },
         defaultValue: getValue(formValues?.reactivePowerSetpoint),
-        previousValue: generatorInfo?.targetQ,
+        previousValue: generatorInfos?.targetQ,
         clearable: true,
     });
 
@@ -723,7 +724,7 @@ const GeneratorModificationDialog = ({
             displayedPreviousValues &&
             reactiveCapabilityCurve &&
             reactiveCapabilityCurve.length ===
-                generatorInfo?.reactiveCapabilityCurvePoints?.length &&
+                generatorInfos?.reactiveCapabilityCurvePoints?.length &&
             reactiveCapabilityCurve.filter(
                 (point) =>
                     point.p !== '' || point.qminP !== '' || point.qmaxP !== ''
@@ -757,7 +758,7 @@ const GeneratorModificationDialog = ({
             });
             return pointsToStore;
         }
-    }, [displayedPreviousValues, reactiveCapabilityCurve, generatorInfo]);
+    }, [displayedPreviousValues, reactiveCapabilityCurve, generatorInfos]);
 
     const handleValidation = () => {
         // ReactiveCapabilityCurveCreation validation
