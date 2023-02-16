@@ -11,9 +11,9 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyle = makeStyles((theme) => ({
-    root: (wideScreen) => ({
+    root: ({ fitScreen }) => ({
         width: '100%',
-        maxHeight: `calc(100vh - ${wideScreen ? '60px' : '330px'})`,
+        maxHeight: `calc(100vh - ${fitScreen ? '60px' : '330px'})`,
         overflow: 'auto',
     }),
     headerItem: {
@@ -29,12 +29,12 @@ const DynamicSimulationResultSeriesList = ({
     headers,
     onLeftAxisSelected,
     onRightAxisSelected,
-    wideScreen = false,
+    fitScreen = false,
 }) => {
     const [leftAxisChecked, setLeftAxisChecked] = useState([]);
     const [rightAxisChecked, setRightAxisChecked] = useState([]);
 
-    const classes = useStyle(wideScreen);
+    const classes = useStyle({ fitScreen });
 
     const handleToggle = useCallback((id, setAxisChecked) => {
         setAxisChecked((prev) => {
@@ -120,7 +120,7 @@ DynamicSimulationResultSeriesList.propTypes = {
     headers: PropTypes.arrayOf(PropTypes.string).isRequired,
     onLeftAxisSelected: PropTypes.func.isRequired,
     onRightAxisSelected: PropTypes.func.isRequired,
-    wideScreen: PropTypes.bool,
+    fitScreen: PropTypes.bool,
 };
 
 export default memo(DynamicSimulationResultSeriesList);

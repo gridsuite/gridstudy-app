@@ -33,15 +33,16 @@ import { lighten } from '@mui/material/styles';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const useStyles = makeStyles((theme) => ({
-    graph: {
+    graph: ({ fitScreen }) => ({
         paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
         overflowX: 'hidden',
-    },
+        height: `calc(100vh - ${fitScreen ? '60px' : '330px'})`,
+    }),
     menuCloseButton: {
         transform: 'scaleX(-1)',
     },
-    wideScreenButton: {
+    fitScreenButton: {
         marginRight: theme.spacing(2),
     },
     addButton: {
@@ -78,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
     colsInput: {
         marginLeft: theme.spacing(1),
     },
-    wideScreen: {
+    fitScreen: ({ fitScreen }) => ({
         top: 0,
         bottom: 0,
         left: 0,
@@ -87,11 +88,12 @@ const useStyles = makeStyles((theme) => ({
         background: lighten(theme.palette.background.paper, 0.05),
         opacity: 0.99,
         zIndex: 199,
-    },
+        position: fitScreen ? 'fixed' : 'relative',
+    }),
+    gridLayoutItem: ({ plotIdScale }) => {},
 }));
 
 const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
-    const classes = useStyles();
     const intl = useIntl();
 
     // store the previous layout when scaling in order to restore later
@@ -99,8 +101,8 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
 
     // plotIdScale
     const [plotIdScale, setPlotIdScale] = useState(undefined);
-    // button options switch wide screen / normal screen
-    const [wideScreen, setWideScreen] = useState(false);
+    // button options switch fit screen / normal screen
+    const [fitScreen, setFitScreen] = useState(false);
     // button options hide/show series/list
     const [showSeriesList, setShowSeriesList] = useState(true);
     // button options synchronization
@@ -174,8 +176,8 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         }));
     }, [series]);
 
-    const handleWideScreen = useCallback(() => {
-        setWideScreen((prev) => !prev);
+    const handleFitScreen = useCallback(() => {
+        setFitScreen((prev) => !prev);
     }, []);
 
     const handleShowSeriesList = useCallback(() => {
@@ -303,11 +305,10 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         }));
     };
 
+    const classes = useStyles({ fitScreen, plotIdScale });
+
     return (
-        <Box
-            className={classes.wideScreen}
-            style={{ position: wideScreen ? 'fixed' : 'relative' }}
-        >
+        <Box className={classes.fitScreen}>
             <Grid container direction={'column'} alignItems={'stretch'}>
                 <Grid item>
                     <Grid
@@ -365,13 +366,13 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                 className={classes.paperOptionsGroup}
                             >
                                 <ToggleButton
-                                    className={classes.wideScreenButton}
+                                    className={classes.fitScreenButton}
                                     size={'small'}
-                                    value={'wideScreen'}
-                                    selected={wideScreen}
-                                    onChange={handleWideScreen}
+                                    value={'fitScreen'}
+                                    selected={fitScreen}
+                                    onChange={handleFitScreen}
                                 >
-                                    {wideScreen ? (
+                                    {fitScreen ? (
                                         <FullscreenExitSharpIcon />
                                     ) : (
                                         <FitScreenSharpIcon />
@@ -398,14 +399,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                 <Grid item>
                     <Grid container>
                         <Grid item xs>
-                            <Box
-                                className={classes.graph}
-                                sx={{
-                                    height: `calc(100vh - ${
-                                        wideScreen ? '60px' : '330px'
-                                    })`,
-                                }}
-                            >
+                            <Box className={classes.graph}>
                                 <ResponsiveGridLayout
                                     className={`layout`}
                                     cols={{
@@ -419,7 +413,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                         lg: gridLayout.items,
                                     }}
                                     isBounded={true}
-                                    rowHeight={wideScreen ? 80 : 55}
+                                    rowHeight={fitScreen ? 80 : 55}
                                     onBreakpointChange={handleBreakpointChange}
                                     onLayoutChange={handleLayoutChange}
                                 >
@@ -482,7 +476,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                             onRightAxisSelected={
                                                 handleRightAxisSelected
                                             }
-                                            wideScreen={wideScreen}
+                                            fitScreen={fitScreen}
                                         />
                                     </Visibility>
                                 ))}
