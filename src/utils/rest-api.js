@@ -2028,8 +2028,8 @@ export function createLine(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.LINE_CREATION,
-            equipmentId: lineId,
-            equipmentName: lineName,
+            id: lineId,
+            name: lineName,
             r: r,
             x: x,
             shuntConductance1: shuntConductance1,
@@ -2109,8 +2109,8 @@ export function createTwoWindingsTransformer(
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPE.TWO_WINDINGS_TRANSFORMER_CREATION,
-            equipmentId: twoWindingsTransformerId,
-            equipmentName: twoWindingsTransformerName,
+            id: twoWindingsTransformerId,
+            name: twoWindingsTransformerName,
             r: r,
             x: x,
             g: g,
@@ -2118,8 +2118,12 @@ export function createTwoWindingsTransformer(
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            currentLimits1: permanentCurrentLimit1,
-            currentLimits2: permanentCurrentLimit2,
+            currentLimits1: {
+                permanentLimit: permanentCurrentLimit1,
+            },
+            currentLimits2: {
+                permanentLimit: permanentCurrentLimit2,
+            },
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
