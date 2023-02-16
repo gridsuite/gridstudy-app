@@ -263,6 +263,11 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
 
             // set the current plot id in scaling
             setPlotIdScale(plotScale ? plotId : undefined);
+
+            // auto switch in full view
+            if (plotScale) {
+                setFullView(plotScale);
+            }
         },
         [prevLayoutRef]
     );
