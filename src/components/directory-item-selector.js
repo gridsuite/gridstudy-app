@@ -180,7 +180,6 @@ const DirectoryItemSelector = (props) => {
     );
 
     useEffect(() => {
-        console.log('here 1 ');
         if (openRef.current && studyUpdatedForce.eventData.headers) {
             if (
                 Object.values(notificationType).includes(
@@ -188,15 +187,14 @@ const DirectoryItemSelector = (props) => {
                 )
             ) {
                 if (!studyUpdatedForce.eventData.headers['isRootDirectory']) {
-                    console.log(
-                        'here 2 ',
-                        studyUpdatedForce.eventData.headers['directoryUuid']
-                    );
-                    fetchDirectory(
-                        studyUpdatedForce.eventData.headers['directoryUuid']
-                    );
+                    const nodeID = studyUpdatedForce.eventData.headers['directoryUuid'];
+                    // We need to check if the node id sent by notification is in the nodes map,
+                    // otherwise the fetchDirectory call will build a new ghost node with this id and put it in the Map.
+                    // It will be called later when browsing the directory tree
+                    if (nodeMap.current[nodeID]) {
+                        fetchDirectory(nodeID);
+                    }
                 } else {
-                    console.log('here 3');
                     updateRootDirectories();
                 }
             }

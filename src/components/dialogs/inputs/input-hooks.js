@@ -750,7 +750,7 @@ export const useDirectoryElements = ({
     const { snackError } = useSnackMessage();
     const refInitialValues = useRef();
     refInitialValues.current = initialValues;
-    const [types] = useState([elementType]);
+    const types = useMemo(() => [elementType], [elementType])
 
     useEffect(() => {
         if (refInitialValues.current) {
