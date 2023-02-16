@@ -95,32 +95,33 @@ const TapChangerSteps = ({
         }
         clearErrors(`${tapChanger}.${STEPS}`);
 
-        let currentHighestTap;
+        let nextHighestTap;
         if (currentTapRows.length === 0) {
-            currentHighestTap = currentLowTapPosition - 1; // we do + 1 right after
+            nextHighestTap = currentLowTapPosition;
         } else {
-            currentHighestTap =
-                currentTapRows[currentTapRows.length - 1][STEPS_TAP];
+            nextHighestTap =
+                currentTapRows[currentTapRows.length - 1][STEPS_TAP] + 1;
         }
 
         const tapRowsToAdd = [];
         for (let i = 0; i < numberOfRows; i++) {
-            // we directly use currentHighestTap + 1 as first tap value
-            currentHighestTap++;
             // we remove STEPS_TAP from the columns with slice
             const newRow = columnsDefinition.slice(1).reduce(
                 (accumulator, currentValue) => ({
                     ...accumulator,
                     [currentValue.dataKey]: currentValue.initialValue,
                 }),
-                { [SELECTED]: false, [STEPS_TAP]: currentHighestTap }
+                { [SELECTED]: false, [STEPS_TAP]: nextHighestTap }
             );
             tapRowsToAdd.push(newRow);
+            if (i !== numberOfRows - 1) {
+                nextHighestTap++;
+            }
         }
 
         // note : an id prop is automatically added in each row
         append(tapRowsToAdd);
-        setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, currentHighestTap);
+        setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, nextHighestTap);
     }
 
     function handleCloseAddRowsDialog() {
