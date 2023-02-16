@@ -43,9 +43,9 @@ export const REGULATING_VOLTAGE_LEVEL = 'regulating-voltage-level';
 export const REGULATING_EQUIPMENT = 'regulating-equipment';
 
 export function makeRefreshRegulatingTerminalSectionsCallback() {
-    return (voltageLevel, putter) => {
-        if (voltageLevel?.equipments) {
-            putter(voltageLevel.equipments);
+    return (equipments, putter) => {
+        if (equipments) {
+            putter(equipments);
         } else {
             putter([]);
         }
@@ -57,7 +57,7 @@ const RegulatingTerminalEdition = ({
     inputForm,
     voltageLevelOptions,
     regulatingTerminalValue,
-    voltageLevelsEquipments,
+    voltageLevelEquipments,
     onChangeVoltageLevel,
     onChangeEquipmentSection,
     direction,
@@ -141,11 +141,7 @@ const RegulatingTerminalEdition = ({
     useEffect(() => {
         if (voltageLevelEquipmentsCallback) {
             voltageLevelEquipmentsCallback(
-                voltageLevelsEquipments.find(
-                    (vlEquipment) =>
-                        vlEquipment?.voltageLevel?.id ===
-                        regulatingTerminalValue?.voltageLevel?.id
-                ),
+                voltageLevelEquipments,
                 setEquipmentsOptions
             );
         }
@@ -153,7 +149,7 @@ const RegulatingTerminalEdition = ({
         regulatingTerminalValue?.voltageLevel?.id,
         setEquipmentsOptions,
         voltageLevelEquipmentsCallback,
-        voltageLevelsEquipments,
+        voltageLevelEquipments,
     ]);
 
     useEffect(() => {
@@ -345,7 +341,7 @@ RegulatingTerminalEdition.propTypes = {
     direction: PropTypes.string,
     disabled: PropTypes.bool,
     voltageLevelEquipmentsCallback: PropTypes.func.isRequired,
-    voltageLevelsEquipments: PropTypes.arrayOf(PropTypes.object),
+    voltageLevelEquipments: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default RegulatingTerminalEdition;
