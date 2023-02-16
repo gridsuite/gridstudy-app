@@ -116,7 +116,9 @@ export function backendFetchText(url, init, token) {
 
 export function backendFetchJson(url, init, token) {
     const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.json());
+    return safeFetch(url, initCopy).then((safeResponse) =>
+        safeResponse.status === 204 ? null : safeResponse.json()
+    );
 }
 
 export function fetchValidateUser(user) {

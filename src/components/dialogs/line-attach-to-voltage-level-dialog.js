@@ -31,7 +31,6 @@ import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
-import LineCreationDialog from './line-creation-dialog';
 import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
@@ -40,6 +39,7 @@ import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import { MODIFICATION_TYPES } from '../util/modification-type';
 
 /**
@@ -584,10 +584,11 @@ const LineAttachToVoltageLevelDialog = ({
                         open={true}
                         onClose={onLineDialogClose}
                         currentNodeUuid={currentNodeUuid}
-                        substationOptionsPromise={substationOptionsPromise}
+                        voltageLevelOptionsPromise={substationOptionsPromise}
                         displayConnectivity={false}
                         onCreateLine={onLineDo}
                         editData={lineToEdit}
+                        {...dialogProps}
                     />
                 )}
             </ModificationDialog>
