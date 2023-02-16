@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import { useParams } from 'react-router-dom';
@@ -63,6 +63,7 @@ const ACTIVE_VAR_MODE_DEFAULT_VALUE = 'PROPORTIONAL';
 const REACTIVE_VAR_MODE_DEFAULT_VALUE = 'CONSTANT_Q';
 const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 const VENTILATION = 'VENTILATION';
+const LOADS = [EquipmentType.LOAD];
 
 const VariationSection = ({
     index,
@@ -75,21 +76,36 @@ const VariationSection = ({
     const classes = useStyles();
     const id = defaultValue?.id;
 
-    function itemFilter(value) {
-        if (
-            value?.type === elementType.FILTER &&
-            variationMode === VENTILATION
-        ) {
-            return (
-                value?.specificMetadata?.type === IDENTIFIER_LIST &&
-                value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                    (filter) => !!filter.distributionKey
-                )
-            );
-        }
+    const [variationMode, variationModeField] = useOptionalEnumValue({
+        label: 'ActiveVariationMode',
+        inputForm: inputForm,
+        enumObjects: ACTIVE_VARIATION_MODE,
+        validation: {
+            isFieldRequired: true,
+        },
+        defaultValue:
+            defaultValue?.variationMode ?? ACTIVE_VAR_MODE_DEFAULT_VALUE,
+        errorMsg: errors?.variationModeError,
+    });
 
-        return true;
-    }
+    const itemFilter = useCallback(
+        (value) => {
+            if (
+                value?.type === elementType.FILTER &&
+                variationMode === VENTILATION
+            ) {
+                return (
+                    value?.specificMetadata?.type === IDENTIFIER_LIST &&
+                    value?.specificMetadata?.filterEquipmentsAttributes?.every(
+                        (filter) => !!filter.distributionKey
+                    )
+                );
+            }
+
+            return true;
+        },
+        [variationMode]
+    );
 
     const [filters, filtersField] = useDirectoryElements({
         label: 'filter',
@@ -98,7 +114,7 @@ const VariationSection = ({
             isFieldRequired: true,
         },
         elementType: elementType.FILTER,
-        equipmentTypes: [EquipmentType.LOAD],
+        equipmentTypes: LOADS,
         itemFilter: itemFilter,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
@@ -116,18 +132,6 @@ const VariationSection = ({
         inputForm: inputForm,
         adornment: ActivePowerAdornment,
         errorMsg: errors?.variationValueError,
-    });
-
-    const [variationMode, variationModeField] = useOptionalEnumValue({
-        label: 'ActiveVariationMode',
-        inputForm: inputForm,
-        enumObjects: ACTIVE_VARIATION_MODE,
-        validation: {
-            isFieldRequired: true,
-        },
-        defaultValue:
-            defaultValue?.variationMode ?? ACTIVE_VAR_MODE_DEFAULT_VALUE,
-        errorMsg: errors?.variationModeError,
     });
 
     const [reactiveVariationMode, reactiveVariationModeField] =

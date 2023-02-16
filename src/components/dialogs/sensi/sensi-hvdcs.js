@@ -9,10 +9,11 @@ import { useDirectoryElements, useEnumValue } from '../inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from '../dialogUtils';
 import {
+    HVDC_EQUIPMENT_TYPES,
+    MONITORED_BRANCHES_EQUIPMENT_TYPES,
     SensiChecked,
     SENSITIVITY_TYPES,
     useStyles,
-    EquipmentType,
 } from './sensi-parameters-selector';
 
 export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
@@ -29,10 +30,7 @@ export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
             ? defaultValue.monitoredBranches
             : [],
         elementType: elementType.FILTER,
-        equipmentTypes: [
-            EquipmentType.LINE,
-            EquipmentType.TWO_WINDINGS_TRANSFORMER,
-        ],
+        equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -41,7 +39,7 @@ export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
         label: 'HvdcLines',
         initialValues: defaultValue.hvdcs ? defaultValue.hvdcs : [],
         elementType: elementType.FILTER,
-        equipmentTypes: [EquipmentType.HVDC_LINE],
+        equipmentTypes: HVDC_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
