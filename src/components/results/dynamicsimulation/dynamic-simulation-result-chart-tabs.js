@@ -115,12 +115,13 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                             return (
                                 <DraggableTab
                                     key={index}
+                                    id={`tab-${tab.id}`}
                                     index={index}
                                     value={index}
                                     label={
                                         <span
                                             style={{
-                                                'white-space': 'nowrap',
+                                                whiteSpace: 'nowrap',
                                             }}
                                         >
                                             {`${intl.formatMessage({
@@ -157,7 +158,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                     index={index}
                 >
                     <DynamicSimulationResultChart
-                        groupId={tab.id}
+                        groupId={`${tab.id}`}
                         series={series}
                         selected={selectedIndex === index}
                     />
