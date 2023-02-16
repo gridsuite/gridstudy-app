@@ -17,7 +17,6 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
 import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
@@ -66,11 +65,9 @@ const schema = yup
 const LoadCreationDialog = ({
     editData,
     currentNodeUuid,
-    voltageLevelOptionsPromise,
+    studyUuid,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const { snackError } = useSnackMessage();
 
     const equipmentPath = 'loads';
@@ -219,7 +216,8 @@ const LoadCreationDialog = ({
                 {...dialogProps}
             >
                 <LoadCreationForm
-                    voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+                    currentNodeUuid={currentNodeUuid}
+                    studyUuid={studyUuid}
                 />
 
                 <EquipmentSearchDialog
