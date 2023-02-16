@@ -33,16 +33,16 @@ import { lighten } from '@mui/material/styles';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const useStyles = makeStyles((theme) => ({
-    graph: ({ fitScreen }) => ({
+    gridLayout: ({ fullView }) => ({
         paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
         overflowX: 'hidden',
-        height: `calc(100vh - ${fitScreen ? '60px' : '330px'})`,
+        height: `calc(100vh - ${fullView ? '60px' : '330px'})`,
     }),
     menuCloseButton: {
         transform: 'scaleX(-1)',
     },
-    fitScreenButton: {
+    fullViewButton: {
         marginRight: theme.spacing(2),
     },
     addButton: {
@@ -79,17 +79,16 @@ const useStyles = makeStyles((theme) => ({
     colsInput: {
         marginLeft: theme.spacing(1),
     },
-    fitScreen: ({ fitScreen }) => ({
+    fullView: {
         top: 0,
         bottom: 0,
         left: 0,
         right: 0,
-        display: 'flex',
         background: lighten(theme.palette.background.paper, 0.05),
         opacity: 0.99,
         zIndex: 199,
-        position: fitScreen ? 'fixed' : 'relative',
-    }),
+        position: 'fixed',
+    },
 }));
 
 const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
@@ -100,8 +99,8 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
 
     // plotIdScale
     const [plotIdScale, setPlotIdScale] = useState(undefined);
-    // button options switch fit screen / normal screen
-    const [fitScreen, setFitScreen] = useState(false);
+    // button options switch full view / normal view
+    const [fullView, setFullView] = useState(false);
     // button options hide/show series/list
     const [showSeriesList, setShowSeriesList] = useState(true);
     // button options synchronization
@@ -175,8 +174,8 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         }));
     }, [series]);
 
-    const handleFitScreen = useCallback(() => {
-        setFitScreen((prev) => !prev);
+    const handleFullView = useCallback(() => {
+        setFullView((prev) => !prev);
     }, []);
 
     const handleShowSeriesList = useCallback(() => {
@@ -304,187 +303,186 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         }));
     };
 
-    const classes = useStyles({ fitScreen, plotIdScale });
+    const classes = useStyles({ fullView, plotIdScale });
 
     return (
-        <Box className={classes.fitScreen}>
-            <Grid container direction={'column'} alignItems={'stretch'}>
-                <Grid item>
-                    <Grid
-                        container
-                        className={classes.toolBar}
-                        alignItems="center"
-                        justify="center"
-                    >
-                        <Grid item>
-                            <Paper
-                                elevation={2}
-                                className={classes.paperOptionsGroup}
+        <Grid
+            className={fullView ? classes.fullView : ''}
+            container
+            direction={'column'}
+            alignItems={'stretch'}
+        >
+            <Grid item>
+                <Grid
+                    container
+                    className={classes.toolBar}
+                    alignItems="center"
+                    justify="center"
+                >
+                    <Grid item>
+                        <Paper
+                            elevation={2}
+                            className={classes.paperOptionsGroup}
+                        >
+                            <ToggleButton
+                                size={'small'}
+                                value="sync"
+                                selected={sync}
+                                onChange={handleSync}
                             >
-                                <ToggleButton
-                                    size={'small'}
-                                    value="sync"
-                                    selected={sync}
-                                    onChange={handleSync}
-                                >
-                                    {sync ? <SyncIcon /> : <SyncDisabledIcon />}
-                                </ToggleButton>
-                                <Typography className={classes.colsLabel}>
-                                    {`${intl.formatMessage({
-                                        id: 'DynamicSimulationResultLayoutCols',
-                                    })}`}
-                                </Typography>
-                                <TextField
-                                    className={classes.colsInput}
-                                    size={'small'}
-                                    type="number"
-                                    value={gridLayout.cols}
-                                    onChange={handleChangeCols}
-                                    InputProps={{
-                                        inputProps: {
-                                            max: 3,
-                                            min: 1,
-                                        },
-                                    }}
-                                />
-                            </Paper>
-                        </Grid>
-                        <Grid item ml={2}>
-                            <TooltipIconButton
-                                toolTip={'Add a graph'}
-                                className={classes.addButton}
-                                onClick={handleAddNewPlot}
-                            >
-                                <AddIcon />
-                            </TooltipIconButton>
-                        </Grid>
-                        <Grid item xs />
-                        <Grid item xs={'auto'}>
-                            <Paper
-                                elevation={2}
-                                className={classes.paperOptionsGroup}
-                            >
-                                <ToggleButton
-                                    className={classes.fitScreenButton}
-                                    size={'small'}
-                                    value={'fitScreen'}
-                                    selected={fitScreen}
-                                    onChange={handleFitScreen}
-                                >
-                                    {fitScreen ? (
-                                        <FullscreenExitSharpIcon />
-                                    ) : (
-                                        <FitScreenSharpIcon />
-                                    )}
-                                </ToggleButton>
-                                <ToggleButton
-                                    size={'small'}
-                                    value="showSeriesList"
-                                    selected={showSeriesList}
-                                    onChange={handleShowSeriesList}
-                                >
-                                    {showSeriesList ? (
-                                        <MenuOpen
-                                            className={classes.menuCloseButton}
-                                        />
-                                    ) : (
-                                        <MenuOpen />
-                                    )}
-                                </ToggleButton>
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item>
-                    <Grid container>
-                        <Grid item xs>
-                            <Box className={classes.graph}>
-                                <ResponsiveGridLayout
-                                    className={`layout`}
-                                    cols={{
-                                        lg: gridLayout.cols,
-                                        md: gridLayout.cols,
-                                        sm: gridLayout.cols,
-                                        xs: 1,
-                                        xxs: 1,
-                                    }}
-                                    layouts={{
-                                        lg: gridLayout.items,
-                                    }}
-                                    isBounded={true}
-                                    rowHeight={fitScreen ? 80 : 55}
-                                    onBreakpointChange={handleBreakpointChange}
-                                    onLayoutChange={handleLayoutChange}
-                                >
-                                    {plots.map((plot, index) => (
-                                        <Box
-                                            key={plot.id}
-                                            sx={{
-                                                display: plotIdScale
-                                                    ? plotIdScale !== plot.id
-                                                        ? 'none'
-                                                        : 'block'
-                                                    : 'block',
-                                            }}
-                                        >
-                                            <DynamicSimulationResultSeriesChart
-                                                key={`${plot.id}`}
-                                                id={`${plot.id}`}
-                                                groupId={`${groupId}`}
-                                                index={index}
-                                                selected={
-                                                    selectedIndex === index
-                                                }
-                                                onSelect={handleSelectIndex}
-                                                leftSeries={
-                                                    plot.leftSelectedSeries
-                                                }
-                                                rightSeries={
-                                                    plot.rightSelectedSeries
-                                                }
-                                                onClose={handleClose}
-                                                sync={sync}
-                                                onPlotScale={handlePlotScale}
-                                            />
-                                        </Box>
-                                    ))}
-                                </ResponsiveGridLayout>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={'auto'}>
-                            <Box
-                                sx={{
-                                    width: 'auto',
-                                    display: showSeriesList ? 'block' : 'none',
+                                {sync ? <SyncIcon /> : <SyncDisabledIcon />}
+                            </ToggleButton>
+                            <Typography className={classes.colsLabel}>
+                                {`${intl.formatMessage({
+                                    id: 'DynamicSimulationResultLayoutCols',
+                                })}`}
+                            </Typography>
+                            <TextField
+                                className={classes.colsInput}
+                                size={'small'}
+                                type="number"
+                                value={gridLayout.cols}
+                                onChange={handleChangeCols}
+                                InputProps={{
+                                    inputProps: {
+                                        max: 3,
+                                        min: 1,
+                                    },
                                 }}
+                            />
+                        </Paper>
+                    </Grid>
+                    <Grid item ml={2}>
+                        <TooltipIconButton
+                            toolTip={'Add a graph'}
+                            className={classes.addButton}
+                            onClick={handleAddNewPlot}
+                        >
+                            <AddIcon />
+                        </TooltipIconButton>
+                    </Grid>
+                    <Grid item xs />
+                    <Grid item xs={'auto'}>
+                        <Paper
+                            elevation={2}
+                            className={classes.paperOptionsGroup}
+                        >
+                            <ToggleButton
+                                className={classes.fullViewButton}
+                                size={'small'}
+                                value={'fullView'}
+                                selected={fullView}
+                                onChange={handleFullView}
                             >
-                                {plots.map((plot, index) => (
-                                    <Visibility
-                                        key={`plot-${plot.id}`}
-                                        value={selectedIndex}
-                                        index={index}
-                                        visible={selected}
-                                    >
-                                        <DynamicSimulationResultSeriesList
-                                            index={index}
-                                            items={items}
-                                            headers={headers}
-                                            onLeftAxisSelected={
-                                                handleLeftAxisSelected
-                                            }
-                                            onRightAxisSelected={
-                                                handleRightAxisSelected
-                                            }
-                                            fitScreen={fitScreen}
-                                        />
-                                    </Visibility>
-                                ))}
-                            </Box>
-                        </Grid>
+                                {fullView ? (
+                                    <FullscreenExitSharpIcon />
+                                ) : (
+                                    <FitScreenSharpIcon />
+                                )}
+                            </ToggleButton>
+                            <ToggleButton
+                                size={'small'}
+                                value="showSeriesList"
+                                selected={showSeriesList}
+                                onChange={handleShowSeriesList}
+                            >
+                                {showSeriesList ? (
+                                    <MenuOpen
+                                        className={classes.menuCloseButton}
+                                    />
+                                ) : (
+                                    <MenuOpen />
+                                )}
+                            </ToggleButton>
+                        </Paper>
                     </Grid>
                 </Grid>
             </Grid>
-        </Box>
+            <Grid item>
+                <Grid container>
+                    <Grid item xs>
+                        <Box className={classes.gridLayout}>
+                            <ResponsiveGridLayout
+                                className={`layout`}
+                                cols={{
+                                    lg: gridLayout.cols,
+                                    md: gridLayout.cols,
+                                    sm: gridLayout.cols,
+                                    xs: 1,
+                                    xxs: 1,
+                                }}
+                                layouts={{
+                                    lg: gridLayout.items,
+                                }}
+                                isBounded={true}
+                                rowHeight={fullView ? 80 : 55}
+                                onBreakpointChange={handleBreakpointChange}
+                                onLayoutChange={handleLayoutChange}
+                            >
+                                {plots.map((plot, index) => (
+                                    <Box
+                                        key={plot.id}
+                                        sx={{
+                                            display: plotIdScale
+                                                ? plotIdScale !== plot.id
+                                                    ? 'none'
+                                                    : 'block'
+                                                : 'block',
+                                        }}
+                                    >
+                                        <DynamicSimulationResultSeriesChart
+                                            key={`${plot.id}`}
+                                            id={`${plot.id}`}
+                                            groupId={`${groupId}`}
+                                            index={index}
+                                            selected={selectedIndex === index}
+                                            onSelect={handleSelectIndex}
+                                            leftSeries={plot.leftSelectedSeries}
+                                            rightSeries={
+                                                plot.rightSelectedSeries
+                                            }
+                                            onClose={handleClose}
+                                            sync={sync}
+                                            onPlotScale={handlePlotScale}
+                                        />
+                                    </Box>
+                                ))}
+                            </ResponsiveGridLayout>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={'auto'}>
+                        <Box
+                            sx={{
+                                width: 'auto',
+                                display: showSeriesList ? 'block' : 'none',
+                            }}
+                        >
+                            {plots.map((plot, index) => (
+                                <Visibility
+                                    key={`plot-${plot.id}`}
+                                    value={selectedIndex}
+                                    index={index}
+                                    visible={selected}
+                                >
+                                    <DynamicSimulationResultSeriesList
+                                        index={index}
+                                        items={items}
+                                        headers={headers}
+                                        onLeftAxisSelected={
+                                            handleLeftAxisSelected
+                                        }
+                                        onRightAxisSelected={
+                                            handleRightAxisSelected
+                                        }
+                                        fullView={fullView}
+                                    />
+                                </Visibility>
+                            ))}
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
     );
 };
 
