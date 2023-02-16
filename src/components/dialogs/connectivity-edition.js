@@ -236,8 +236,11 @@ export const useConnectivityValue = ({
     ]);
 
     useEffect(() => {
-        if (voltageLevelObjOrId) {
-            if (voltageLevelObjOrId?.id !== voltageLevelIdDefaultValue) {
+        const voltageLevelId = voltageLevelObjOrId?.id
+            ? voltageLevelObjOrId.id
+            : voltageLevelObjOrId;
+        if (voltageLevelId) {
+            if (voltageLevelId !== voltageLevelIdDefaultValue) {
                 setBbsIdInitOver(null);
             }
 
