@@ -352,7 +352,7 @@ DynamicSimulationResultChart.propTypes = {
     groupId: PropTypes.string.isRequired,
     series: PropTypes.arrayOf(
         PropTypes.shape({
-            name: PropTypes.string.name,
+            name: PropTypes.string.isRequired,
         })
     ),
     selected: PropTypes.bool.isRequired,
