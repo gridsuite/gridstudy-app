@@ -42,10 +42,12 @@ export const CONNECTIVITY_2 = 'connectivity2';
 
 export const ENABLED = 'enabled';
 export const REGULATING = 'regulating';
+export const REGULATION_TYPE = 'regulationType';
 export const TARGET_DEADBAND = 'targetDeadband';
 export const LOW_TAP_POSITION = 'lowTapPosition';
 export const HIGH_TAP_POSITION = 'highTapPosition';
 export const TAP_POSITION = 'tapPosition';
+export const REGULATION_SIDE = 'regulationSide';
 
 //tap-changer-pane-taps
 export const STEPS = 'steps';
@@ -67,6 +69,18 @@ export const PHASE_TAP_CHANGER = 'phaseTapChanger';
 export const REGULATION_MODE = 'regulationMode';
 export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
+
+//ShuntCompensator
+export const MAXIMUM_NUMBER_OF_SECTIONS = 'maximumNumberOfSections';
+export const CURRENT_NUMBER_OF_SECTIONS = 'currentNumberOfSections';
+export const IDENTICAL_SECTIONS = 'identicalSections';
+export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
+
+//line
+export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
+export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
+export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
+export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 
 // dnd table
 export const SELECTED = 'selected';
