@@ -47,7 +47,9 @@ const useStyles = makeStyles((theme) => ({
 
 const TwoWindingsTransformerPane = ({
     id = CHARACTERISTICS,
-    voltageLevelOptionsPromise,
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelOptions,
 }) => {
     const classes = useStyles();
 
@@ -143,7 +145,9 @@ const TwoWindingsTransformerPane = ({
     const connectivity1Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_1}`}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+            studyUuid={studyUuid}
+            currentNodeUuid={currentNodeUuid}
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             direction="column"
         />
@@ -152,7 +156,9 @@ const TwoWindingsTransformerPane = ({
     const connectivity2Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_2}`}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+            studyUuid={studyUuid}
+            currentNodeUuid={currentNodeUuid}
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             direction="column"
         />
