@@ -121,8 +121,8 @@ export const MAX_TAP_NUMBER = 100;
 
 const TwoWindingsTransformerCreationDialog = ({
     editData,
-    currentNodeUuid,
     studyUuid,
+    currentNodeUuid,
     ...dialogProps
 }) => {
     const { snackError } = useSnackMessage();
@@ -689,6 +689,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
 TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
+    studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
 };
 

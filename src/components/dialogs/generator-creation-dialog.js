@@ -9,7 +9,6 @@ import { FormattedMessage } from 'react-intl';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 import { createGenerator } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
@@ -70,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a generator in the network
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
+ * @param studyUuid the study we are currently working on
  * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -77,12 +77,11 @@ const useStyles = makeStyles((theme) => ({
 const GeneratorCreationDialog = ({
     voltageLevelOptionsPromise,
     voltageLevelsIdsAndTopologyPromise,
+    studyUuid,
     currentNodeUuid,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const classes = useStyles();
 
     const { snackError } = useSnackMessage();
@@ -698,7 +697,6 @@ const GeneratorCreationDialog = ({
 };
 
 GeneratorCreationDialog.propTypes = {
-    editData: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
@@ -707,7 +705,9 @@ GeneratorCreationDialog.propTypes = {
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
+    studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
+    editData: PropTypes.object,
 };
 
 export default GeneratorCreationDialog;

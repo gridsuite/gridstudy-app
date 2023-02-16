@@ -87,9 +87,10 @@ function getValueOrNull(val) {
 
 /**
  * Dialog to create a generator in the network
+ * @param editData the data to edit
+ * @param studyUuid the study we are currently working on
  * @param currentNodeUuid the currently selected tree node
  * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
- * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const GeneratorModificationDialog = ({
@@ -971,6 +972,7 @@ const GeneratorModificationDialog = ({
 
 GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
+    studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
     voltageLevelsIdsAndTopologyPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,

@@ -39,14 +39,15 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
 /**
  * Dialog to modify a load in the network
- * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
+ * @param studyUuid the study we are currently working on
+ * @param currentNodeUuid the node we are currently working on
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LoadModificationDialog = ({
     editData,
-    currentNodeUuid,
     studyUuid,
+    currentNodeUuid,
     ...dialogProps
 }) => {
     const { snackError } = useSnackMessage();
@@ -251,6 +252,7 @@ const LoadModificationDialog = ({
 
 LoadModificationDialog.propTypes = {
     editData: PropTypes.object,
+    studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
 };
 

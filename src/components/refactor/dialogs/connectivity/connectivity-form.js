@@ -42,8 +42,11 @@ import {
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
  * @param id optional id that has to be defined if the component is used more than once in a form
  * @param direction direction of placement. Either 'row' or 'column', 'row' by default.
- * @param withPosition
  * @param withDirectionsInfos
+ * @param withPosition
+ * @param voltageLevelOptions list of network voltage levels
+ * @param studyUuid the study we are currently working on
+ * @param currentNodeUuid the currently selected tree node
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const ConnectivityForm = ({
