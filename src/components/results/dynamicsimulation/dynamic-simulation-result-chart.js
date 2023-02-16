@@ -31,7 +31,7 @@ import ResponsiveGridLayout from './common/gridlayout/responsive-grid-layout';
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const useStyles = makeStyles((theme) => ({
     graph: {
-        maxHeight: 'calc(100vh - 330px)',
+        height: 'calc(100vh - 330px)',
         paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
         overflowX: 'hidden',
