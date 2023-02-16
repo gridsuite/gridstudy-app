@@ -13,7 +13,7 @@ import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
 import IntegerInput from '../../../rhf-inputs/integer-input';
 import DndTable from '../../../../util/dnd-table';
-import AddRowsDialog from './add-rows-dialog';
+import DndTableAddRowsDialog from '../../../../util/dnd-table-add-rows-dialog';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -322,12 +322,12 @@ const TapChangerSteps = ({
             <DndTable
                 arrayFormName={`${tapChanger}.${STEPS}`}
                 useFieldArrayOutput={useFieldArrayOutput}
-                disabled={disabled}
                 columnsDefinition={completedColumnsDefinition}
                 handleAddButton={handleAddRowsButton}
                 handleDeleteButton={deleteSelectedRows}
                 handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
+                disabled={disabled}
             />
             <CreateRuleDialog
                 ruleType={ruleType}
@@ -343,7 +343,7 @@ const TapChangerSteps = ({
                 csvColumns={csvColumns}
                 handleImportTapRule={handleImportTapRule}
             />
-            <AddRowsDialog
+            <DndTableAddRowsDialog
                 open={openAddRowsDialog}
                 handleAddRowsButton={addNewRows}
                 onClose={handleCloseAddRowsDialog}

@@ -657,8 +657,8 @@
     "MoveUpRows": "Move up rows",
     "MoveDownRows": "Move down rows",
 
-    "AddTapRowsDialogTitle" : "How many rows do you want to add ?",
-    "AddTapRowsButton" : "Add",
+    "AddRowsDialogTitle": "How many rows do you want to add ?",
+    "AddRowsButton": "Add",
 
     "DragAndDrop": "Drag and Drop",
 

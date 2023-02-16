@@ -658,8 +658,8 @@
     "MoveUpRows": "Monter des lignes",
     "MoveDownRows": "Descendre des lignes",
 
-    "AddTapRowsDialogTitle" : "Combien de lignes voulez-vous ajouter ?",
-    "AddTapRowsButton" : "Ajouter",
+    "AddRowsDialogTitle": "Combien de lignes voulez-vous ajouter ?",
+    "AddRowsButton": "Ajouter",
 
     "DragAndDrop": "Glisser-déposer",
 

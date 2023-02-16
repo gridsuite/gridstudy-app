@@ -17,7 +17,7 @@ import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-function AddRowsDialog({ open, handleAddRowsButton, onClose }) {
+function DndTableAddRowsDialog({ open, handleAddRowsButton, onClose }) {
     const [rowNumber, setRowNumber] = useState(1);
 
     function handleOnClose() {
@@ -28,7 +28,7 @@ function AddRowsDialog({ open, handleAddRowsButton, onClose }) {
     return (
         <Dialog open={open} onClose={handleOnClose}>
             <DialogTitle>
-                <FormattedMessage id="AddTapRowsDialogTitle" />
+                <FormattedMessage id="AddRowsDialogTitle" />
             </DialogTitle>
             <DialogContent>
                 <TextField
@@ -50,17 +50,17 @@ function AddRowsDialog({ open, handleAddRowsButton, onClose }) {
                         handleOnClose();
                     }}
                 >
-                    <FormattedMessage id="AddTapRowsButton" />
+                    <FormattedMessage id="AddRowsButton" />
                 </Button>
             </DialogActions>
         </Dialog>
     );
 }
 
-AddRowsDialog.prototype = {
+DndTableAddRowsDialog.prototype = {
     open: PropTypes.bool.isRequired,
     handleAddRowsButton: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
 };
 
-export default AddRowsDialog;
+export default DndTableAddRowsDialog;
