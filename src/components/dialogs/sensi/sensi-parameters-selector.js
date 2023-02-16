@@ -91,7 +91,7 @@ export const EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES = [
 ];
 
 export const HVDC_EQUIPMENT_TYPES = [EquipmentType.HVDC_LINE];
-export const INJECTIONS_EQUIPMENT_TYPES = ['GENERATOR', 'LOAD'];
+export const INJECTIONS_EQUIPMENT_TYPES = [EquipmentType.GENERATOR, EquipmentType.LOAD];
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
