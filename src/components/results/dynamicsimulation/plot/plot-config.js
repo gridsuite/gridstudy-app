@@ -31,6 +31,8 @@ export const defaultLayout = {
         griddash: 'dot',
         ntick: 20,
         tick0: 0,
+        tickprefix: 'X: ',
+        ticksuffix: 's',
         automargin: true,
     },
     yaxis: {
