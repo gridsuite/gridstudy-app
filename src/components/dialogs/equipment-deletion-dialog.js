@@ -50,9 +50,18 @@ const EquipmentDeletionDialog = ({
 
     useEffect(() => {
         setEquipmentsFound([]);
+
+        const equipmentTypeFetchers = Object.values(equipmentType).filter(
+            (type) => {
+                return type.fetchers != null;
+            }
+        );
+
         Promise.all(
-            equipmentType.fetchers.map((fetchPromise) =>
-                fetchPromise(studyUuid, currentNodeUuid)
+            equipmentTypeFetchers.flatMap((type) =>
+                type.fetchers.map((fetchPromise) =>
+                    fetchPromise(studyUuid, currentNodeUuid)
+                )
             )
         )
             .then((vals) => {
@@ -64,7 +73,7 @@ const EquipmentDeletionDialog = ({
                     headerId: 'equipmentsLoadingError',
                 });
             });
-    }, [equipmentType, currentNodeUuid, studyUuid, snackError]);
+    }, [currentNodeUuid, equipmentType, snackError, studyUuid]);
 
     const [equipmentOrId, equipmentField, setEquipmentOrId] =
         useAutocompleteField({
@@ -164,15 +173,22 @@ const EquipmentDeletionDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            {Object.values(EQUIPMENT_TYPES).map((values) => {
-                                return (
-                                    <MenuItem key={values.label} value={values}>
-                                        {intl.formatMessage({
-                                            id: values.label,
-                                        })}
-                                    </MenuItem>
-                                );
-                            })}
+                            {Object.values(equipmentType)
+                                .filter((values) =>
+                                    values.hasOwnProperty('fetchers')
+                                )
+                                .map((values) => {
+                                    return (
+                                        <MenuItem
+                                            key={values.type}
+                                            value={values}
+                                        >
+                                            {intl.formatMessage({
+                                                id: values.type,
+                                            })}
+                                        </MenuItem>
+                                    );
+                                })}
                         </Select>
                     </FormControl>
                 </Grid>
