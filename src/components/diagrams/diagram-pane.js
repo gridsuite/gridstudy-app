@@ -578,8 +578,6 @@ export function DiagramPane({
         return getMaxHeightFromDisplayedDiagrams(diagramType);
     };
 
-    // TODO CHARLY unit testing
-
     /**
      * RENDER
      */
