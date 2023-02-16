@@ -88,7 +88,7 @@ function getValueOrNull(val) {
 /**
  * Dialog to create a generator in the network
  * @param currentNodeUuid the currently selected tree node
- * @param voltageLevelsIdsAndTopologyPromise Promise handling list of generator options
+ * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
