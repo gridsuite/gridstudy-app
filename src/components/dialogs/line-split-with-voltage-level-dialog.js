@@ -34,7 +34,7 @@ import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
 } from './line-split-or-attach-utils';
-import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
+import VoltageLevelCreationDialogOld from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
@@ -454,7 +454,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 {gridItem(newLine2NameField, 6)}
             </Grid>
             {voltageLevelDialogOpen && (
-                <VoltageLevelCreationDialog
+                <VoltageLevelCreationDialogOld
                     open={true}
                     onClose={onVoltageLevelDialogClose}
                     currentNodeUuid={currentNodeUuid}

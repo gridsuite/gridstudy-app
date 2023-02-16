@@ -41,7 +41,6 @@ import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-c
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
-import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
 import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import AddIcon from '@mui/icons-material/Add';
@@ -64,6 +63,9 @@ import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
+import VoltageLevelCreationForm from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-form';
+import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
+import VoltageLevelCreationDialogOld from 'components/dialogs/voltage-level-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -304,9 +306,14 @@ const NetworkModificationNodeEditor = () => {
         },
         VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
-            dialog: () => adapt(VoltageLevelCreationDialog, withSubstations),
+            dialog: () => adapt(VoltageLevelCreationDialogOld, withSubstations),
             icon: <AddIcon />,
         },
+        /*  VOLTAGE_LEVEL_CREATION: {
+            label: 'CreateVoltageLevel',
+            dialog: () => adapt(VoltageLevelCreationDialog),
+            icon: <AddIcon />,
+        }, */
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
             dialog: () =>

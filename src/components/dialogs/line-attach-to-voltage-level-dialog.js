@@ -35,7 +35,7 @@ import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
 } from './line-split-or-attach-utils';
-import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
+import VoltageLevelCreationDialogOld from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
@@ -570,7 +570,7 @@ const LineAttachToVoltageLevelDialog = ({
                     {gridItem(newLine2NameField, 6)}
                 </Grid>
                 {voltageLevelDialogOpen && (
-                    <VoltageLevelCreationDialog
+                    <VoltageLevelCreationDialogOld
                         open={true}
                         onClose={onVoltageLevelDialogClose}
                         currentNodeUuid={currentNodeUuid}

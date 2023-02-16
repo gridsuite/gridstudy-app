@@ -241,7 +241,7 @@ function validateConnection(values) {
  *     }
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
-const VoltageLevelCreationDialog = ({
+const VoltageLevelCreationDialogOld = ({
     editData,
     substationOptionsPromise,
     currentNodeUuid,
@@ -441,7 +441,7 @@ const VoltageLevelCreationDialog = ({
     );
 };
 
-VoltageLevelCreationDialog.propTypes = {
+VoltageLevelCreationDialogOld.propTypes = {
     editData: PropTypes.object,
     substationOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
@@ -451,4 +451,4 @@ VoltageLevelCreationDialog.propTypes = {
     onCreateVoltageLevel: PropTypes.func,
 };
 
-export default VoltageLevelCreationDialog;
+export default VoltageLevelCreationDialogOld;
