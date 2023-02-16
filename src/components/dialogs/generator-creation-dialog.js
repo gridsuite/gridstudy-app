@@ -9,7 +9,6 @@ import { FormattedMessage } from 'react-intl';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 import { createGenerator } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
@@ -70,20 +69,20 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Dialog to create a generator in the network
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param voltageLevelsEquipmentsOptionsPromise Promise handling list of voltage level equipment options
+ * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
+ * @param studyUuid the study we are currently working on
  * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const GeneratorCreationDialog = ({
     voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
+    voltageLevelsIdsAndTopologyPromise,
+    studyUuid,
     currentNodeUuid,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const classes = useStyles();
 
     const { snackError } = useSnackMessage();
@@ -339,6 +338,8 @@ const GeneratorCreationDialog = ({
 
     const [regulatingTerminal, regulatingTerminalField] =
         useRegulatingTerminalValue({
+            studyUuid,
+            currentNodeUuid,
             label: 'RegulatingTerminalGenerator',
             validation: {
                 isFieldRequired:
@@ -349,7 +350,6 @@ const GeneratorCreationDialog = ({
             disabled:
                 !voltageRegulation ||
                 !isDistantRegulation(voltageRegulationType),
-            voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
                 formValues?.regulatingTerminalVlId || null,
             equipmentSectionTypeDefaultValue:
@@ -360,6 +360,7 @@ const GeneratorCreationDialog = ({
                 formValues?.regulatingTerminalConnectableId ||
                 formValues?.regulatingTerminalId ||
                 null,
+            voltageLevelsIdsAndTopologyPromise,
         });
 
     const removeUnnecessaryFieldsValidation = useCallback(() => {
@@ -697,16 +698,17 @@ const GeneratorCreationDialog = ({
 };
 
 GeneratorCreationDialog.propTypes = {
-    editData: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
-    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
+    voltageLevelsIdsAndTopologyPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
+    studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
+    editData: PropTypes.object,
 };
 
 export default GeneratorCreationDialog;
