@@ -140,7 +140,7 @@ const LineCreationDialog = ({
                     getConnectivityFormData(
                         {
                             voltageLevelId: line.voltageLevelId1,
-                            busbarSectionId: null,
+                            busbarSectionId: line.busOrBusbarSectionId1,
                             connectionDirection: line?.[POSITION_1]?.direction,
                             connectionName: line?.[POSITION_1]?.label,
                             connectionPosition: line?.[POSITION_1]?.position,
@@ -151,7 +151,7 @@ const LineCreationDialog = ({
                     getConnectivityFormData(
                         {
                             voltageLevelId: line.voltageLevelId2,
-                            busbarSectionId: null,
+                            busbarSectionId: line.busOrBusbarSectionId2,
                             connectionDirection: line?.[POSITION_2]?.direction,
                             connectionName: line?.[POSITION_2]?.label,
                             connectionPosition: line?.[POSITION_2]?.order,
