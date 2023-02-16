@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
     PARAM_CENTER_LABEL,
@@ -13,7 +14,6 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
@@ -272,6 +272,7 @@ export function DiagramPane({
         (state) => state.networkAreaDiagramDepth
     );
     const notificationIdList = useSelector((state) => state.notificationIdList);
+    const [diagramContentSizes, setDiagramContentSizes] = useState(new Map()); // When a diagram content gets its size from the backend, it will update this map of sizes.
 
     useEffect(() => {
         syncDiagramStateWithSessionStorage(diagramStates, studyUuid);
@@ -314,14 +315,6 @@ export function DiagramPane({
                     diagramViews.push({
                         ...singleLineDiagramView,
                         align: 'left',
-                        defaultWidth:
-                            diagramState.svgType === SvgType.SUBSTATION
-                                ? DEFAULT_WIDTH_SUBSTATION
-                                : DEFAULT_WIDTH_VOLTAGE_LEVEL,
-                        defaultHeight:
-                            diagramState.svgType === SvgType.SUBSTATION
-                                ? DEFAULT_HEIGHT_SUBSTATION
-                                : DEFAULT_HEIGHT_VOLTAGE_LEVEL,
                     });
                 } else {
                     closeDiagramView(diagramState.id, diagramState.svgType);
@@ -343,8 +336,6 @@ export function DiagramPane({
                 diagramViews.push({
                     ...networkAreaDiagramView,
                     align: 'right',
-                    defaultWidth: DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM,
-                    defaultHeight: DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM,
                 });
             } else {
                 closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
@@ -480,6 +471,116 @@ export function DiagramPane({
     ]);
 
     /**
+     * DIAGRAM SIZE CALCULATION
+     */
+
+    const getRatioWidthByHeight = (width, height) => {
+        if (Number(height) > 0) return Number(width) / Number(height);
+        return 1.0;
+    };
+
+    // This function is called by the diagram's contents, when they get their sizes from the backend.
+    const setDiagramSize = (diagramId, diagramType, width, height) => {
+        // Let's update the stored values if they are new
+        const storedValues = diagramContentSizes?.get(diagramType + diagramId);
+        if (
+            !storedValues ||
+            storedValues.width !== width ||
+            storedValues.height !== height
+        ) {
+            let newDiagramContentSizes = new Map(diagramContentSizes);
+            newDiagramContentSizes.set(diagramType + diagramId, {
+                width: width,
+                height: height,
+                ratioWbyH: getRatioWidthByHeight(width, height),
+            });
+            setDiagramContentSizes(newDiagramContentSizes);
+        }
+    };
+
+    const getMaxHeightFromDisplayedDiagrams = useCallback(
+        (svgType) => {
+            // Set the default values
+            let maxHeight;
+            if (svgType === SvgType.SUBSTATION) {
+                maxHeight = DEFAULT_HEIGHT_SUBSTATION;
+            } else if (svgType === SvgType.VOLTAGE_LEVEL) {
+                maxHeight = DEFAULT_HEIGHT_VOLTAGE_LEVEL;
+            } else {
+                maxHeight = DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM;
+            }
+
+            // Let's find the stored heights of the diagrams that are currently displayed,
+            // and which have a compatible svgType (voltage levels and substations will share
+            // their heights, whereas a network area diagram will have its own height).
+
+            // First, we check which diagrams are displayed in the pane with a compatible svgType
+            // and for which we stored a height in diagramContentSizes.
+            const matchingDiagrams = displayedDiagrams
+                .filter(
+                    (diagram) =>
+                        svgType === diagram.svgType ||
+                        (svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
+                            diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM)
+                )
+                .filter((diagram) =>
+                    diagramContentSizes.has(diagram.svgType + diagram.id)
+                );
+
+            // Then, we find the maximum height from these diagrams
+            if (matchingDiagrams.length > 0) {
+                maxHeight = matchingDiagrams.reduce(
+                    (maxFoundHeight, currentDiagram) =>
+                        (maxFoundHeight || 1) >
+                        diagramContentSizes.get(
+                            currentDiagram.svgType + currentDiagram.id
+                        ).height
+                            ? maxFoundHeight
+                            : diagramContentSizes.get(
+                                  currentDiagram.svgType + currentDiagram.id
+                              ).height,
+                    1
+                );
+            }
+            return maxHeight;
+        },
+        [displayedDiagrams, diagramContentSizes]
+    );
+
+    const getWidthForPaneDisplay = (diagramType, diagramId) => {
+        // Let's get the diagram's ratio
+        let ratio;
+        if (diagramContentSizes.has(diagramType + diagramId)) {
+            ratio = diagramContentSizes.get(diagramType + diagramId).ratioWbyH;
+        } else {
+            // The ratio is not set yet, let's calculate it with the default values
+            if (diagramType === SvgType.SUBSTATION) {
+                ratio = getRatioWidthByHeight(
+                    DEFAULT_WIDTH_SUBSTATION,
+                    DEFAULT_HEIGHT_SUBSTATION
+                );
+            } else if (diagramType === SvgType.VOLTAGE_LEVEL) {
+                ratio = getRatioWidthByHeight(
+                    DEFAULT_WIDTH_VOLTAGE_LEVEL,
+                    DEFAULT_HEIGHT_VOLTAGE_LEVEL
+                );
+            } else {
+                ratio = getRatioWidthByHeight(
+                    DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM,
+                    DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM
+                );
+            }
+        }
+        return ratio * getMaxHeightFromDisplayedDiagrams(diagramType);
+    };
+
+    const getHeightForPaneDisplay = (diagramType) => {
+        return getMaxHeightFromDisplayedDiagrams(diagramType);
+    };
+
+    // TODO CHARLY unit testing
+
+    /**
      * RENDER
      */
 
@@ -520,8 +621,13 @@ export function DiagramPane({
                                 disabled={disabled}
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
-                                width={diagramView.defaultWidth}
-                                height={diagramView.defaultHeight}
+                                width={getWidthForPaneDisplay(
+                                    diagramView.svgType,
+                                    diagramView.id
+                                )}
+                                height={getHeightForPaneDisplay(
+                                    diagramView.svgType
+                                )}
                                 fullscreenWidth={width}
                                 fullscreenHeight={height}
                             >
@@ -538,7 +644,9 @@ export function DiagramPane({
                                         }
                                         showInSpreadsheet={showInSpreadsheet}
                                         studyUuid={studyUuid}
+                                        diagramId={diagramView.id}
                                         svgType={diagramView.svgType}
+                                        diagramSizeSetter={setDiagramSize}
                                     />
                                 )}
                                 {diagramView.svgType ===
@@ -547,6 +655,9 @@ export function DiagramPane({
                                         ref={diagramView.ref}
                                         loadFlowStatus={loadFlowStatus}
                                         svgUrl={diagramView.svgUrl}
+                                        diagramId={diagramView.id}
+                                        svgType={diagramView.svgType}
+                                        diagramSizeSetter={setDiagramSize}
                                     />
                                 )}
                             </Diagram>

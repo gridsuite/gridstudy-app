@@ -50,6 +50,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 const SingleLineDiagramContent = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
     const classes = useDiagramStyles();
+    const { diagramSizeSetter } = props;
     const theme = useTheme();
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
     const network = useSelector((state) => state.network);
@@ -168,9 +169,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                     currentNode={currentNode}
                     studyUuid={props.studyUuid}
                     modificationInProgress={modificationInProgress}
-                    setModificationInProgress={(value) =>
-                        setModificationInProgress(value)
-                    }
+                    setModificationInProgress={setModificationInProgress}
                 />
             )
         );
@@ -245,6 +244,14 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                 theme.palette.background.paper
             );
 
+            // Update the diagram-pane's list of sizes with the width and height from the backend
+            diagramSizeSetter(
+                props.diagramId,
+                props.svgType,
+                diagramViewer.getWidth(),
+                diagramViewer.getHeight()
+            );
+
             // Rotate clicked switch while waiting for updated sld data
             if (locallySwitchedBreaker?.id) {
                 const breakerToSwitchDom = document.getElementById(
@@ -281,6 +288,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
+        props.diagramId,
         props.svgType,
         theme,
         ref,
@@ -289,6 +297,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         locallySwitchedBreaker,
         handleBreakerClick,
         handleNextVoltageLevelClick,
+        diagramSizeSetter,
     ]);
 
     useEffect(() => {
@@ -403,6 +412,8 @@ SingleLineDiagramContent.propTypes = {
     studyUuid: PropTypes.string,
     svgType: PropTypes.string,
     svgUrl: PropTypes.string,
+    diagramSizeSetter: PropTypes.func,
+    diagramId: PropTypes.string,
 };
 
 export default SingleLineDiagramContent;

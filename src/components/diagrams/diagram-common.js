@@ -40,8 +40,7 @@ export const DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM = 400;
 
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
-export const MAP_BOTTOM_OFFSET = 80;
-export const BORDERS = 2; // we use content-size: border-box so this needs to be included..
+export const MAP_BOTTOM_OFFSET = 80; // TODO use this with a new maxHeight props for Diagram
 
 export const useDiagramStyles = makeStyles((theme) => ({
     divDiagram: {

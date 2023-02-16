@@ -35,6 +35,7 @@ import Box from '@mui/material/Box';
 const NetworkAreaDiagramContent = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
     const classes = useDiagramStyles();
+    const { diagramSizeSetter } = props;
     const network = useSelector((state) => state.network);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
@@ -82,6 +83,14 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM
             );
 
+            // Update the diagram-pane's list of sizes with the width and height from the backend
+            diagramSizeSetter(
+                props.diagramId,
+                props.svgType,
+                diagramViewer.getWidth(),
+                diagramViewer.getHeight()
+            );
+
             // If a previous diagram was loaded, we keep the user's zoom and scoll state for the current render
             if (diagramViewerRef.current) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
@@ -89,7 +98,17 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
 
             diagramViewerRef.current = diagramViewer;
         }
-    }, [network, props.svgUrl, svg, currentNode, ref, loadingState]);
+    }, [
+        network,
+        props.svgUrl,
+        props.diagramId,
+        props.svgType,
+        svg,
+        currentNode,
+        ref,
+        loadingState,
+        diagramSizeSetter,
+    ]);
 
     useEffect(() => {
         if (props.svgUrl) {
@@ -160,7 +179,10 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
 
 NetworkAreaDiagramContent.propTypes = {
     loadFlowStatus: PropTypes.any,
+    svgType: PropTypes.string,
     svgUrl: PropTypes.string,
+    diagramSizeSetter: PropTypes.func,
+    diagramId: PropTypes.string,
 };
 
 export default NetworkAreaDiagramContent;
