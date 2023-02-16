@@ -267,13 +267,13 @@ const DndTable = ({
             </Grid>
             <DndTableButtons
                 arrayFormName={arrayFormName}
-                disabled={disabled}
                 handleAddButton={handleAddButton}
                 handleDeleteButton={handleDeleteButton}
                 handleMoveUpButton={moveUpSelectedRows}
                 handleMoveDownButton={moveDownSelectedRows}
                 handleUploadButton={handleUploadButton}
                 uploadButtonMessageId={uploadButtonMessageId}
+                disabled={disabled}
             />
         </Grid>
     );
