@@ -148,7 +148,7 @@ const Diagram = (props) => {
                             onIncrementCounter={onIncrementDepthHandler}
                             onDecrementCounter={onDecrementDepthHandler}
                             showFullscreenControl
-                            fullScreenActive={fullScreenDiagram?.id}
+                            fullScreenActive={shouldBeFullscreen}
                             onStartFullScreen={onShowFullScreenHandler}
                             onStopFullScreen={onHideFullScreenHandler}
                         />

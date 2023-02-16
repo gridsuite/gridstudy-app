@@ -272,8 +272,15 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                 }
             }
 
-            // If a previous diagram was loaded, we keep the user's zoom and scoll state for the current render
-            if (diagramViewerRef.current) {
+            // If a previous diagram was loaded and the diagram's size remained the same, we keep
+            // the user's zoom and scoll state for the current render.
+            if (
+                diagramViewerRef.current &&
+                diagramViewer.getWidth() ===
+                    diagramViewerRef.current.getWidth() &&
+                diagramViewer.getHeight() ===
+                    diagramViewerRef.current.getHeight()
+            ) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
             }
 
