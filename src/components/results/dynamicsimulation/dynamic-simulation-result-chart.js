@@ -349,6 +349,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                         min: 1,
                                     },
                                 }}
+                                disabled={plotIdScale}
                             />
                         </Paper>
                     </Grid>
@@ -357,6 +358,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                             toolTip={'Add a graph'}
                             className={classes.addButton}
                             onClick={handleAddNewPlot}
+                            disabled={plotIdScale}
                         >
                             <AddIcon />
                         </TooltipIconButton>

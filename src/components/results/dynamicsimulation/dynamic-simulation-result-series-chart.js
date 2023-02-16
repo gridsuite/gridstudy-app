@@ -127,6 +127,7 @@ const DynamicSimulationResultSeriesChart = ({
                             toolTip={'Close graph'}
                             className={classes.CloseButton}
                             onClick={() => onClose(index)}
+                            disabled={plotScale}
                         >
                             <CloseIcon />
                         </TooltipIconButton>
