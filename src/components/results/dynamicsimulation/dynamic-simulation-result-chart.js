@@ -319,50 +319,52 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                     alignItems="center"
                     justify="center"
                 >
-                    <Grid item>
-                        <Paper
-                            elevation={2}
-                            className={classes.paperOptionsGroup}
-                        >
-                            <ToggleButton
-                                size={'small'}
-                                value="sync"
-                                selected={sync}
-                                onChange={handleSync}
+                    {!plotIdScale && (
+                        <Grid item>
+                            <Paper
+                                elevation={2}
+                                className={classes.paperOptionsGroup}
                             >
-                                {sync ? <SyncIcon /> : <SyncDisabledIcon />}
-                            </ToggleButton>
-                            <Typography className={classes.colsLabel}>
-                                {`${intl.formatMessage({
-                                    id: 'DynamicSimulationResultLayoutCols',
-                                })}`}
-                            </Typography>
-                            <TextField
-                                className={classes.colsInput}
-                                size={'small'}
-                                type="number"
-                                value={gridLayout.cols}
-                                onChange={handleChangeCols}
-                                InputProps={{
-                                    inputProps: {
-                                        max: 3,
-                                        min: 1,
-                                    },
-                                }}
-                                disabled={plotIdScale}
-                            />
-                        </Paper>
-                    </Grid>
-                    <Grid item ml={2}>
-                        <TooltipIconButton
-                            toolTip={'Add a graph'}
-                            className={classes.addButton}
-                            onClick={handleAddNewPlot}
-                            disabled={plotIdScale}
-                        >
-                            <AddIcon />
-                        </TooltipIconButton>
-                    </Grid>
+                                <ToggleButton
+                                    size={'small'}
+                                    value="sync"
+                                    selected={sync}
+                                    onChange={handleSync}
+                                >
+                                    {sync ? <SyncIcon /> : <SyncDisabledIcon />}
+                                </ToggleButton>
+                                <Typography className={classes.colsLabel}>
+                                    {`${intl.formatMessage({
+                                        id: 'DynamicSimulationResultLayoutCols',
+                                    })}`}
+                                </Typography>
+                                <TextField
+                                    className={classes.colsInput}
+                                    size={'small'}
+                                    type="number"
+                                    value={gridLayout.cols}
+                                    onChange={handleChangeCols}
+                                    InputProps={{
+                                        inputProps: {
+                                            max: 3,
+                                            min: 1,
+                                        },
+                                    }}
+                                />
+                            </Paper>
+                        </Grid>
+                    )}
+                    {!plotIdScale && (
+                        <Grid item ml={2}>
+                            <TooltipIconButton
+                                toolTip={'Add a graph'}
+                                className={classes.addButton}
+                                onClick={handleAddNewPlot}
+                            >
+                                <AddIcon />
+                            </TooltipIconButton>
+                        </Grid>
+                    )}
                     <Grid item xs />
                     <Grid item xs={'auto'}>
                         <Paper

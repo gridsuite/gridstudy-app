@@ -123,14 +123,15 @@ const DynamicSimulationResultSeriesChart = ({
                                 <FitScreenSharpIcon />
                             )}
                         </ToggleButton>
-                        <TooltipIconButton
-                            toolTip={'Close graph'}
-                            className={classes.CloseButton}
-                            onClick={() => onClose(index)}
-                            disabled={plotScale}
-                        >
-                            <CloseIcon />
-                        </TooltipIconButton>
+                        {!plotScale && (
+                            <TooltipIconButton
+                                toolTip={'Close graph'}
+                                className={classes.CloseButton}
+                                onClick={() => onClose(index)}
+                            >
+                                <CloseIcon />
+                            </TooltipIconButton>
+                        )}
                     </>
                 }
             />
