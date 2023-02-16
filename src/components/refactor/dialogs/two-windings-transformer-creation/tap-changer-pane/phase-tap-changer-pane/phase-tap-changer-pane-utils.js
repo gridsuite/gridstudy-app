@@ -47,7 +47,7 @@ import {
 import {
     REGULATION_MODES,
     REGULATION_TYPES,
-} from '../../../../network/constants';
+} from '../../../../../network/constants';
 
 const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({

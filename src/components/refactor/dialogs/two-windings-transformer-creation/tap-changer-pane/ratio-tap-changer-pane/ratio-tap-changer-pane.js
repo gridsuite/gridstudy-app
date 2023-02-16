@@ -24,8 +24,8 @@ import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
 import FloatInput from '../../../../rhf-inputs/float-input';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
-import { REGULATION_TYPES, SIDE } from '../../../../network/constants';
-import SelectInput from '../../../rhf-inputs/select-input';
+import { REGULATION_TYPES, SIDE } from '../../../../../network/constants';
+import SelectInput from '../../../../rhf-inputs/select-input';
 import { useCallback } from 'react';
 
 const RatioTapChangerPane = ({

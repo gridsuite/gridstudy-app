@@ -42,7 +42,7 @@ import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
 } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { REGULATION_TYPES } from '../../../../network/constants';
+import { REGULATION_TYPES } from '../../../../../network/constants';
 
 const ratioTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
