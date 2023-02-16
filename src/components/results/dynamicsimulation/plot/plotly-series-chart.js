@@ -59,7 +59,8 @@ const PlotlySeriesChart = ({
                 line: {
                     color: baseColors[s.index % baseColors.length]['500'],
                 },
-                ...s.data,
+                x: s.data.x ? s.data.x.map((value) => value / 1000) : [], // ms => s
+                y: s.data.y ? s.data.y : [],
                 ...opts,
             });
         }

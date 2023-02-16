@@ -34,15 +34,15 @@ import { lighten } from '@mui/material/styles';
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const useStyles = makeStyles((theme) => ({
     graph: {
-        paddingRight: theme.spacing(0.3),
+        paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
         overflowX: 'hidden',
     },
-    wideScreenButton: {
-        marginRight: theme.spacing(2),
-    },
     menuCloseButton: {
         transform: 'scaleX(-1)',
+    },
+    wideScreenButton: {
+        marginRight: theme.spacing(2),
     },
     addButton: {
         borderRadius: '50%',
@@ -401,7 +401,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                             <Box
                                 className={classes.graph}
                                 sx={{
-                                    maxHeight: `calc(100vh - ${
+                                    height: `calc(100vh - ${
                                         wideScreen ? '60px' : '330px'
                                     })`,
                                 }}
@@ -499,7 +499,7 @@ DynamicSimulationResultChart.propTypes = {
     groupId: PropTypes.string.isRequired,
     series: PropTypes.arrayOf(
         PropTypes.shape({
-            name: PropTypes.string.name,
+            name: PropTypes.string.isRequired,
         })
     ),
     selected: PropTypes.bool.isRequired,

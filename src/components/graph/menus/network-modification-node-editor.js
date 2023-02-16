@@ -11,12 +11,11 @@ import {
     deleteModifications,
     fetchNetworkModification,
     changeNetworkModificationOrder,
-    fetchEquipments,
     fetchSubstations,
     fetchLines,
     fetchVoltageLevels,
-    fetchVoltageLevelsEquipments,
     copyOrMoveModifications,
+    fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,7 +24,6 @@ import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
-import { equipments } from '../../network/network-equipments';
 import { ModificationListItem } from './modification-list-item';
 import {
     Checkbox,
@@ -202,7 +200,8 @@ const NetworkModificationNodeEditor = () => {
                 open={true}
                 onClose={handleCloseDialog}
                 onValidated={handleValidatedDialog}
-                currentNodeUuid={currentTreeNode.id}
+                currentNodeUuid={currentTreeNode?.id}
+                studyUuid={studyUuid}
                 editData={editData}
                 {...props}
             />
@@ -214,16 +213,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLsAndEquipments(p) {
-        const voltageLevelsEquipmentsOptionsPromise =
-            fetchVoltageLevelsEquipments(studyUuid, currentTreeNode?.id);
-        return {
-            ...p,
-            voltageLevelsEquipmentsOptionsPromise:
-                voltageLevelsEquipmentsOptionsPromise,
-        };
-    }
-
     function withVLs(p) {
         const voltageLevelOptionsPromise = fetchVoltageLevels(
             studyUuid,
@@ -232,6 +221,16 @@ const NetworkModificationNodeEditor = () => {
         return {
             ...p,
             voltageLevelOptionsPromise: voltageLevelOptionsPromise,
+        };
+    }
+
+    function withVLsIdsAndTopology(p) {
+        const voltageLevelsIdsAndTopologyPromise =
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentTreeNode?.id);
+        return {
+            ...p,
+            voltageLevelsIdsAndTopologyPromise:
+                voltageLevelsIdsAndTopologyPromise,
         };
     }
 
@@ -259,59 +258,27 @@ const NetworkModificationNodeEditor = () => {
         };
     }
 
-    function withEquipmentModificationOptions(resourceType, resource) {
-        const equipmentOptionsPromise = fetchEquipments(
-            studyUuid,
-            currentTreeNode?.id,
-            [],
-            resourceType,
-            resource,
-            true
-        );
-
-        function withFetchedOptions(p) {
-            return {
-                ...p,
-                equipmentOptionsPromise: equipmentOptionsPromise,
-            };
-        }
-
-        return withFetchedOptions;
-    }
-
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
-            dialog: () => adapt(LoadCreationDialog, withVLs),
+            dialog: () => adapt(LoadCreationDialog),
             icon: <AddIcon />,
         },
         LOAD_MODIFICATION: {
             label: 'ModifyLoad',
-            dialog: () =>
-                adapt(
-                    LoadModificationDialog,
-                    withEquipmentModificationOptions('Loads', equipments.loads)
-                ),
+            dialog: () => adapt(LoadModificationDialog),
             icon: <AddIcon />,
         },
         GENERATOR_CREATION: {
             label: 'CreateGenerator',
             dialog: () =>
-                adapt(GeneratorCreationDialog, withVLs, withVLsAndEquipments),
+                adapt(GeneratorCreationDialog, withVLs, withVLsIdsAndTopology),
             icon: <AddIcon />,
         },
         GENERATOR_MODIFICATION: {
             label: 'ModifyGenerator',
             dialog: () =>
-                adapt(
-                    GeneratorModificationDialog,
-                    withEquipmentModificationOptions(
-                        'Generators',
-                        equipments.generators
-                    ),
-                    withVLs,
-                    withVLsAndEquipments
-                ),
+                adapt(GeneratorModificationDialog, withVLsIdsAndTopology),
             icon: <AddIcon />,
         },
         SHUNT_COMPENSATOR_CREATION: {
@@ -327,12 +294,7 @@ const NetworkModificationNodeEditor = () => {
         TWO_WINDINGS_TRANSFORMER_CREATION: {
             onlyDeveloperMode: true,
             label: 'CreateTwoWindingsTransformer',
-            dialog: () =>
-                adapt(
-                    TwoWindingsTransformerCreationDialog,
-                    withVLs,
-                    withVLsAndEquipments
-                ),
+            dialog: () => adapt(TwoWindingsTransformerCreationDialog),
             icon: <AddIcon />,
         },
         SUBSTATION_CREATION: {

@@ -46,7 +46,6 @@
         "react-resizable": "^3.0.4",
         "react-router-dom": "^6.0.0",
         "react-scripts": "^5.0.0",
-        "react-sizeme": "^3.0.2",
         "react-virtualized": "^9.21.2",
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
