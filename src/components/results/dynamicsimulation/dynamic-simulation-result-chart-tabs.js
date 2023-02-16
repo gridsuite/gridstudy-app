@@ -115,7 +115,7 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                             return (
                                 <DraggableTab
                                     key={index}
-                                    id={`${index}`}
+                                    id={`tab-${tab.id}`}
                                     index={index}
                                     value={index}
                                     label={
