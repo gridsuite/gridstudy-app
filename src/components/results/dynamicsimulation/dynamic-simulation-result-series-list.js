@@ -13,7 +13,7 @@ import makeStyles from '@mui/styles/makeStyles';
 const useStyle = makeStyles((theme) => ({
     root: ({ fullView }) => ({
         width: '100%',
-        maxHeight: `calc(100vh - ${fullView ? '60px' : '330px'})`,
+        maxHeight: `calc(100vh - ${fullView ? '60px' : '330px'})`, // TODO avoid compute height
         overflow: 'auto',
     }),
     headerItem: {

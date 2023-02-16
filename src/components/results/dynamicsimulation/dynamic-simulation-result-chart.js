@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
         overflowX: 'hidden',
-        height: `calc(100vh - ${fullView ? '60px' : '330px'})`,
+        height: `calc(100vh - ${fullView ? '60px' : '330px'})`, // TODO avoid compute height
     }),
     menuCloseButton: {
         transform: 'scaleX(-1)',
@@ -424,7 +424,7 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                     lg: gridLayout.items,
                                 }}
                                 isBounded={true}
-                                rowHeight={fullView ? 80 : 55}
+                                computeRowHeight={(height) => height / 12}
                                 onBreakpointChange={handleBreakpointChange}
                                 onLayoutChange={handleLayoutChange}
                             >
