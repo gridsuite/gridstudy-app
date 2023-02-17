@@ -50,12 +50,9 @@ export const TableNumericalInput = ({
         <TextField
             value={transformedValue}
             onChange={handleInputChange}
-            {...props}
             error={!!error?.message}
             type="Number"
             size={'small'}
-            margin={'none'}
-            style={{ ...style, padding: 0 }}
             inputRef={ref}
             inputProps={{
                 style: {
@@ -67,6 +64,7 @@ export const TableNumericalInput = ({
                 lang: 'en-US', // to have . as decimal separator
                 ...inputProps,
             }}
+            {...props}
         />
     );
 
