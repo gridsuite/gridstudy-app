@@ -239,7 +239,7 @@ const Diagram = forwardRef((props, ref) => {
             });
             closeEquipmentMenu();
         },
-        [props.studyUuid, currentNode?.id]
+        [props.studyUuid, currentNode?.id, closeEquipmentMenu, snackError]
     );
 
     // using many useState() calls with literal values only to

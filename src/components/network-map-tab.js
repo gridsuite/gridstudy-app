@@ -40,8 +40,6 @@ import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
-import { getFeederTypeFromEquipmentType } from './diagrams/diagram-common';
-import { useSnackbar } from 'notistack';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -240,7 +238,7 @@ export const NetworkMapTab = ({
             });
             closeEquipmentMenu();
         },
-        [studyUuid, currentNode?.id]
+        [studyUuid, currentNode?.id, snackError]
     );
 
     function closeChoiceVoltageLevelMenu() {
