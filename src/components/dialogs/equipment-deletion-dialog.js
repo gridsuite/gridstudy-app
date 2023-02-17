@@ -94,16 +94,13 @@ const defaultEquipmentType = equipmentTypes.LINE;
 
 /**
  * Dialog to delete an equipment in the network
- * @param currentNodeUuid : the currently selected tree node
+ * @param currentNode : the currently selected tree node
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
-const EquipmentDeletionDialog = ({
-    currentNodeUuid,
-    editData,
-    ...dialogProps
-}) => {
+const EquipmentDeletionDialog = ({ currentNode, editData, ...dialogProps }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
@@ -255,7 +252,7 @@ const EquipmentDeletionDialog = ({
 };
 
 EquipmentDeletionDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     editData: PropTypes.object,
 };
 

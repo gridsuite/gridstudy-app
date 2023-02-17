@@ -225,7 +225,7 @@ function validateConnection(values) {
 /**
  * Dialog to create a voltage level in the network
  * @param substationOptionsPromise Promise handling list of network substations
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
  * @param editData the data to edit
  * @param onCreateVoltageLevel callback when OK is triggered,
  *   defaults to create creation hypothesis on server side.
@@ -244,10 +244,11 @@ function validateConnection(values) {
 const VoltageLevelCreationDialog = ({
     editData,
     substationOptionsPromise,
-    currentNodeUuid,
+    currentNode,
     onCreateVoltageLevel = createVoltageLevel,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { snackError } = useSnackMessage();
@@ -447,7 +448,7 @@ VoltageLevelCreationDialog.propTypes = {
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
-    currentNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.object,
     onCreateVoltageLevel: PropTypes.func,
 };
 

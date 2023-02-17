@@ -28,17 +28,18 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
  * Dialog to attach a line to a (possibly new) voltage level.
  * @param lineOptionsPromise Promise handling list of network lines
  * @param voltageLevelOptionsPromise Promise handling list of network voltage levels
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
  * @param editData the possible line split with voltage level creation record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LinesAttachToSplitLinesDialog = ({
     lineOptionsPromise,
     voltageLevelOptionsPromise,
-    currentNodeUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const bobbsCb = useMemo(
@@ -347,7 +348,7 @@ const LinesAttachToSplitLinesDialog = ({
 };
 
 LinesAttachToSplitLinesDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,

@@ -28,13 +28,13 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param lineOptionsPromise Promise handling list of network lines
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
  * @param editData record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const DeleteVoltageLevelOnLineDialog = ({
     lineOptionsPromise,
-    currentNodeUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
@@ -126,7 +126,7 @@ const DeleteVoltageLevelOnLineDialog = ({
         if (inputForm.validate()) {
             deleteVoltageLevelOnLine(
                 studyUuid,
-                currentNodeUuid,
+                currentNode?.id,
                 editData ? editData.uuid : undefined,
                 lineToAttachTo1.id || lineToAttachTo1,
                 lineToAttachTo2.id || lineToAttachTo2,
@@ -183,7 +183,7 @@ DeleteVoltageLevelOnLineDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,

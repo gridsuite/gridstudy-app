@@ -46,7 +46,7 @@ import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-c
  * Dialog to attach a line to a (possibly new) voltage level.
  * @param lineOptionsPromise Promise handling list of network lines
  * @param voltageLevelOptionsPromise Promise handling list of network voltage levels
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
  * @param substationOptionsPromise Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -54,11 +54,12 @@ import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-c
 const LineAttachToVoltageLevelDialog = ({
     lineOptionsPromise,
     voltageLevelOptionsPromise,
-    currentNodeUuid,
+    currentNode,
     substationOptionsPromise,
     editData,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const bobbsCb = useMemo(
@@ -597,7 +598,7 @@ const LineAttachToVoltageLevelDialog = ({
 };
 
 LineAttachToVoltageLevelDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,

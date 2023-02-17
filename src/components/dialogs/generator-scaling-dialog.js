@@ -144,12 +144,9 @@ const GeneratorScalingVariation = ({
     );
 };
 
-const GeneratorScalingDialog = ({
-    currentNodeUuid,
-    editData,
-    ...dialogProps
-}) => {
+const GeneratorScalingDialog = ({ currentNode, editData, ...dialogProps }) => {
     const classes = useStyles();
+    const currentNodeUuid = currentNode?.id;
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { snackError } = useSnackMessage();
@@ -276,7 +273,7 @@ const GeneratorScalingDialog = ({
 
 GeneratorScalingDialog.prototype = {
     editData: PropTypes.object,
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default GeneratorScalingDialog;

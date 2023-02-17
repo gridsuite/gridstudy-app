@@ -30,7 +30,6 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
 import { createLine } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
@@ -47,7 +46,8 @@ import LineCreationForm from './line-creation-form';
 
 /**
  * Dialog to create a load in the network
- * @param currentNodeUuid The node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentNode The node we are currently working on
  * @param editData the data to edit
  * @param onCreateLine callback to customize line creation process
  * @param displayConnectivity to display connectivity section or not
@@ -72,7 +72,8 @@ const emptyFormData = {
 
 const LineCreationDialog = ({
     editData,
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     onCreateLine = createLine,
     displayConnectivity = true,
     voltageLevelOptionsPromise,
@@ -104,8 +105,8 @@ const LineCreationDialog = ({
             }),
         })
         .required();
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
+    const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
     const equipmentPath = 'lines';
@@ -274,7 +275,8 @@ const LineCreationDialog = ({
             >
                 <LineCreationForm
                     displayConnectivity={displayConnectivity}
-                    voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
                 />
 
                 <EquipmentSearchDialog
@@ -291,7 +293,8 @@ const LineCreationDialog = ({
 
 LineCreationDialog.propTypes = {
     editData: PropTypes.object,
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.string,
 };
 
 export default LineCreationDialog;
