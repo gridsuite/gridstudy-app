@@ -164,7 +164,7 @@ const EquipmentDeletionDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            {Object.values(equipmentType).map((values) => {
+                            {Object.values(EQUIPMENT_TYPES).map((values) => {
                                 return (
                                     <MenuItem key={values.type} value={values}>
                                         {intl.formatMessage({

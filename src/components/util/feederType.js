@@ -1,43 +1,14 @@
+import { EQUIPMENT_TYPES } from './equipment-types';
+
+const equipmentTypesWithTypeOnly = Object.fromEntries(
+    Object.entries(EQUIPMENT_TYPES).map(([key, value]) => [
+        key,
+        { type: value.type },
+    ])
+);
+
 export const FEEDER_TYPES = {
-    SUBSTATION: {
-        type: 'SUBSTATION',
-    },
-    VOLTAGE_LEVEL: {
-        type: 'VOLTAGE_LEVEL',
-    },
-    LINE: {
-        type: 'LINE',
-    },
-    TWO_WINDINGS_TRANSFORMER: {
-        type: 'TWO_WINDINGS_TRANSFORMER',
-    },
-    THREE_WINDINGS_TRANSFORMER: {
-        type: 'THREE_WINDINGS_TRANSFORMER',
-    },
-    HVDC_LINE: {
-        type: 'HVDC_LINE',
-    },
-    GENERATOR: {
-        type: 'GENERATOR',
-    },
-    BATTERY: {
-        type: 'BATTERY',
-    },
-    LOAD: {
-        type: 'LOAD',
-    },
-    SHUNT_COMPENSATOR: {
-        type: 'SHUNT_COMPENSATOR',
-    },
-    DANGLING_LINE: {
-        type: 'DANGLING_LINE',
-    },
-    STATIC_VAR_COMPENSATOR: {
-        type: 'STATIC_VAR_COMPENSATOR',
-    },
-    HVDC_CONVERTER_STATION: {
-        type: 'HVDC_CONVERTER_STATION',
-    },
+    ...equipmentTypesWithTypeOnly,
     /**
      * these are ComponentTypeNames from powsybl-single-line-diagram but we put them here because some ComponentTypeNames are also EquipmentsNames
      */
@@ -70,5 +41,8 @@ export const FEEDER_TYPES = {
     },
     THREE_WINDINGS_TRANSFORMER_LEG: {
         type: 'THREE_WINDINGS_TRANSFORMER_LEG',
+    },
+    TWO_WINDINGS_TRANSFORMER: {
+        type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
     },
 };
