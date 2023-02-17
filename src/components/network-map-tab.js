@@ -235,13 +235,12 @@ export const NetworkMapTab = ({
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'NodeCreateError',
+                    headerId: 'UnableToDeleteEquipment',
                 });
             });
             closeEquipmentMenu();
         },
-        studyUuid,
-        currentNode?.id
+        [studyUuid, currentNode?.id]
     );
 
     function closeChoiceVoltageLevelMenu() {

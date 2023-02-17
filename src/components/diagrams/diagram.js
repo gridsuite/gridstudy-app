@@ -21,7 +21,11 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
-import { fetchSvg, updateSwitchState } from '../../utils/rest-api';
+import {
+    deleteEquipment,
+    fetchSvg,
+    updateSwitchState,
+} from '../../utils/rest-api';
 import {
     decrementNetworkAreaDiagramDepth,
     incrementNetworkAreaDiagramDepth,
@@ -218,6 +222,25 @@ const Diagram = forwardRef((props, ref) => {
         props.showInSpreadsheet(equipmentMenu);
         closeEquipmentMenu();
     };
+
+    const handleDeleteEquipment = useCallback(
+        (equipmentType, equipmentId) => {
+            deleteEquipment(
+                props.studyUuid,
+                currentNode?.id,
+                equipmentType,
+                equipmentId,
+                undefined
+            ).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'UnableToDeleteEquipment',
+                });
+            });
+            closeEquipmentMenu();
+        },
+        [props.studyUuid, currentNode?.id]
+    );
 
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
@@ -612,6 +635,7 @@ const Diagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    handleDeleteEquipment={handleDeleteEquipment}
                     currentNode={currentNode}
                     studyUuid={props.studyUuid}
                     modificationInProgress={modificationInProgress}
@@ -637,6 +661,7 @@ const Diagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    handleDeleteEquipment={handleDeleteEquipment}
                 />
             )
         );

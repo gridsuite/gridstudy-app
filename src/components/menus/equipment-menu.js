@@ -19,7 +19,13 @@ const useStyles = makeStyles((theme) => ({
 
 const withEquipmentMenu =
     (BaseMenu, menuId, equipmentType) =>
-    ({ id, position, handleClose, handleViewInSpreadsheet }) => {
+    ({
+        id,
+        position,
+        handleClose,
+        handleViewInSpreadsheet,
+        handleDeleteEquipment,
+    }) => {
         const classes = useStyles();
 
         return (
@@ -38,6 +44,7 @@ const withEquipmentMenu =
                     equipmentId={id}
                     equipmentType={equipmentType}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    handleDeleteEquipment={handleDeleteEquipment}
                 />
             </Menu>
         );
