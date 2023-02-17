@@ -154,10 +154,17 @@ const GeneratorModificationDialog = ({
         });
     }, [studyUuid, currentNodeUuid]);
 
+    useEffect(() => {
+        console.log('useeffect editdata', editData);
+        if (editData && typeof editData === 'object') {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const formValueEquipmentId = useMemo(() => {
         return formValues?.equipmentId
             ? { id: formValues?.equipmentId }
-            : editData
+            : editData && typeof editData === 'string'
             ? { id: editData }
             : { id: '' };
     }, [editData, formValues?.equipmentId]);
@@ -193,12 +200,20 @@ const GeneratorModificationDialog = ({
     }, [generatorId, formValueEquipmentId]);
 
     useEffect(() => {
-        if (id || editData) {
+        console.log('editData', editData, id);
+        if (id || (editData && typeof editData === 'string')) {
+            let key =
+                id !== ''
+                    ? id
+                    : editData && typeof editData === 'object'
+                    ? editData.equipmentId
+                    : editData;
+            console.log('enter if', key);
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
                 'generators',
-                editData ?? id,
+                key,
                 true
             ).then((value) => {
                 if (value) {
@@ -967,7 +982,7 @@ const GeneratorModificationDialog = ({
 };
 
 GeneratorModificationDialog.propTypes = {
-    editData: PropTypes.any,
+    editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
     voltageLevelsIdsAndTopologyPromise: PropTypes.shape({

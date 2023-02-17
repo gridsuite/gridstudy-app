@@ -16,7 +16,6 @@ import {
     fetchVoltageLevels,
     copyOrMoveModifications,
     fetchVoltageLevelsIdAndTopology,
-    fetchEquipments,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -146,35 +145,7 @@ export const CopyType = {
     COPY: 'COPY',
     MOVE: 'MOVE',
 };
-
-export function withEqptModificationOptions(
-    studyUuid,
-    currentTreeNodeId,
-    resourceType,
-    resource
-) {
-    const equipmentOptionsPromise = fetchEquipments(
-        studyUuid,
-        currentTreeNodeId,
-        [],
-        resourceType,
-        resource,
-        true
-    );
-
-    return equipmentOptionsPromise;
-}
-
-export function withVoltageLevels(studyUuid, currentTreeNodeId, p) {
-    const voltageLevelOptionsPromise = fetchVoltageLevels(
-        studyUuid,
-        currentTreeNodeId
-    );
-
-    return voltageLevelOptionsPromise;
-}
-
-export function withVLsIdsAndTopology(studyUuid, currentTreeNodeId, p) {
+export function withVLsIdsAndTopology(studyUuid, currentTreeNodeId) {
     const voltageLevelsIdsAndTopologyPromise = fetchVoltageLevelsIdAndTopology(
         studyUuid,
         currentTreeNodeId
