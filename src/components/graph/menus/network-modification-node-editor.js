@@ -63,7 +63,6 @@ import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
-import VoltageLevelCreationForm from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-form';
 import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
 import VoltageLevelCreationDialogOld from 'components/dialogs/voltage-level-creation-dialog';
 
@@ -304,16 +303,16 @@ const NetworkModificationNodeEditor = () => {
             dialog: () => adapt(SubstationCreationDialog),
             icon: <AddIcon />,
         },
-        VOLTAGE_LEVEL_CREATION: {
+        /*    VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
             dialog: () => adapt(VoltageLevelCreationDialogOld, withSubstations),
             icon: <AddIcon />,
-        },
-        /*  VOLTAGE_LEVEL_CREATION: {
+        }, */
+        VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
             dialog: () => adapt(VoltageLevelCreationDialog),
             icon: <AddIcon />,
-        }, */
+        },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
             dialog: () =>

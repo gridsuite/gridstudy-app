@@ -24,7 +24,7 @@ const SelectInput = ({ options, ...props }) => {
         <AutocompleteInput
             options={options}
             getOptionLabel={(option) => {
-                return intl.formatMessage({ id: option.label });
+                return intl.formatMessage({ id: option?.id });
             }}
             inputTransform={inputTransform}
             outputTransform={outputTransform}

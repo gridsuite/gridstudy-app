@@ -39,7 +39,14 @@ const VoltageLevelCreationForm = ({ currentNodeUuid, studyUuid }) => {
                 'SUBSTATION',
                 true
             ).then((values) => {
-                setSubstations(values.sort((a, b) => a.id.localeCompare(b.id)));
+                setSubstations(
+                    values
+                        .map((value) => {
+                            return { id: value };
+                        })
+                        .sort((a, b) => a.id.localeCompare(b.id))
+                );
+                //setSubstations(values);
             });
     }, [studyUuid, currentNodeUuid]);
 
@@ -64,6 +71,7 @@ const VoltageLevelCreationForm = ({ currentNodeUuid, studyUuid }) => {
             name={NOMINAL_VOLTAGE}
             label={'NominalVoltage'}
             adornment={VoltageAdornment}
+            formProps={filledTextField}
         />
     );
 
