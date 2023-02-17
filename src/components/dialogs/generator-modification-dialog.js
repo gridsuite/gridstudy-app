@@ -157,10 +157,10 @@ const GeneratorModificationDialog = ({
     const formValueEquipmentId = useMemo(() => {
         return formValues?.equipmentId
             ? { id: formValues?.equipmentId }
-            : editData && editData?.id
-            ? { id: editData.id }
+            : editData
+            ? { id: editData }
             : { id: '' };
-    }, [editData, formValues]);
+    }, [editData, formValues?.equipmentId]);
 
     const [generatorId, generatorIdField] = useAutocompleteField({
         label: 'ID',
@@ -193,12 +193,12 @@ const GeneratorModificationDialog = ({
     }, [generatorId, formValueEquipmentId]);
 
     useEffect(() => {
-        if (id) {
+        if (id || editData) {
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
                 'generators',
-                id,
+                editData ?? id,
                 true
             ).then((value) => {
                 if (value) {
@@ -208,7 +208,7 @@ const GeneratorModificationDialog = ({
         } else {
             setGeneratorInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, id]);
+    }, [studyUuid, currentNodeUuid, id, editData]);
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
@@ -967,7 +967,7 @@ const GeneratorModificationDialog = ({
 };
 
 GeneratorModificationDialog.propTypes = {
-    editData: PropTypes.object,
+    editData: PropTypes.any,
     studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
     voltageLevelsIdsAndTopologyPromise: PropTypes.shape({

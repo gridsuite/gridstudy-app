@@ -17,7 +17,6 @@ import {
     copyOrMoveModifications,
     fetchVoltageLevelsIdAndTopology,
     fetchEquipments,
-    fetchVoltageLevelsEquipments,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
@@ -175,16 +174,12 @@ export function withVoltageLevels(studyUuid, currentTreeNodeId, p) {
     return voltageLevelOptionsPromise;
 }
 
-export function withVoltageLevelsAndEquipments(
-    studyUuid,
-    currentTreeNodeId,
-    p
-) {
-    const voltageLevelsEquipmentsOptionsPromise = fetchVoltageLevelsEquipments(
+export function withVLsIdsAndTopology(studyUuid, currentTreeNodeId, p) {
+    const voltageLevelsIdsAndTopologyPromise = fetchVoltageLevelsIdAndTopology(
         studyUuid,
         currentTreeNodeId
     );
-    return voltageLevelsEquipmentsOptionsPromise;
+    return voltageLevelsIdsAndTopologyPromise;
 }
 
 const NetworkModificationNodeEditor = () => {
