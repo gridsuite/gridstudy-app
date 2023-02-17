@@ -34,6 +34,8 @@ import {
     DEFAULT_HEIGHT_VOLTAGE_LEVEL,
     DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM,
     DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM,
+    MAP_BOTTOM_OFFSET,
+    DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
 } from './diagram-common';
 import {
     isNodeBuilt,
@@ -474,11 +476,6 @@ export function DiagramPane({
      * DIAGRAM SIZE CALCULATION
      */
 
-    const getRatioWidthByHeight = (width, height) => {
-        if (Number(height) > 0) return Number(width) / Number(height);
-        return 1.0;
-    };
-
     // This function is called by the diagram's contents, when they get their sizes from the backend.
     const setDiagramSize = (diagramId, diagramType, width, height) => {
         // Let's update the stored values if they are new
@@ -492,28 +489,71 @@ export function DiagramPane({
             newDiagramContentSizes.set(diagramType + diagramId, {
                 width: width,
                 height: height,
-                ratioWbyH: getRatioWidthByHeight(width, height),
             });
             setDiagramContentSizes(newDiagramContentSizes);
         }
     };
 
+    const getDefaultHeightByDiagramType = (diagramType) => {
+        switch (diagramType) {
+            case SvgType.SUBSTATION:
+                return DEFAULT_HEIGHT_SUBSTATION;
+            case SvgType.VOLTAGE_LEVEL:
+                return DEFAULT_HEIGHT_VOLTAGE_LEVEL;
+            case SvgType.NETWORK_AREA_DIAGRAM:
+                return DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM;
+            default:
+                console.warn('Unknown diagram type !');
+                return 1;
+        }
+    };
+
+    const getDefaultWidthByDiagramType = (diagramType) => {
+        switch (diagramType) {
+            case SvgType.SUBSTATION:
+                return DEFAULT_WIDTH_SUBSTATION;
+            case SvgType.VOLTAGE_LEVEL:
+                return DEFAULT_WIDTH_VOLTAGE_LEVEL;
+            case SvgType.NETWORK_AREA_DIAGRAM:
+                return DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM;
+            default:
+                console.warn('Unknown diagram type !');
+                return 1;
+        }
+    };
+
+    const getDiagramOrDefaultHeight = useCallback(
+        (diagramId, diagramType) => {
+            return (
+                diagramContentSizes.get(diagramType + diagramId)?.height ??
+                getDefaultHeightByDiagramType(diagramType)
+            );
+        },
+        [diagramContentSizes]
+    );
+
+    const getDiagramOrDefaultWidth = useCallback(
+        (diagramId, diagramType) => {
+            return (
+                diagramContentSizes.get(diagramType + diagramId)?.width ??
+                getDefaultWidthByDiagramType(diagramType)
+            );
+        },
+        [diagramContentSizes]
+    );
+
+    const getRatioWidthByHeight = (width, height) => {
+        if (Number(height) > 0) return Number(width) / Number(height);
+        return 1.0;
+    };
+
+    /*
+     * Finds the maximum height among the displayed diagrams for a specific svgType.
+     * Voltage levels and substations will share their heights, whereas a network area
+     * diagram will have its own height.
+     */
     const getMaxHeightFromDisplayedDiagrams = useCallback(
         (svgType) => {
-            // Set the default values
-            let maxHeight;
-            if (svgType === SvgType.SUBSTATION) {
-                maxHeight = DEFAULT_HEIGHT_SUBSTATION;
-            } else if (svgType === SvgType.VOLTAGE_LEVEL) {
-                maxHeight = DEFAULT_HEIGHT_VOLTAGE_LEVEL;
-            } else {
-                maxHeight = DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM;
-            }
-
-            // Let's find the stored heights of the diagrams that are currently displayed,
-            // and which have a compatible svgType (voltage levels and substations will share
-            // their heights, whereas a network area diagram will have its own height).
-
             // First, we check which diagrams are displayed in the pane with a compatible svgType
             // and for which we stored a height in diagramContentSizes.
             const matchingDiagrams = displayedDiagrams
@@ -529,7 +569,7 @@ export function DiagramPane({
 
             // Then, we find the maximum height from these diagrams
             if (matchingDiagrams.length > 0) {
-                maxHeight = matchingDiagrams.reduce(
+                return matchingDiagrams.reduce(
                     (maxFoundHeight, currentDiagram) =>
                         (maxFoundHeight || 1) >
                         diagramContentSizes.get(
@@ -542,41 +582,89 @@ export function DiagramPane({
                     1
                 );
             }
-            return maxHeight;
+            // If we found no matching diagram, we return the default value for this svgType.
+            return getDefaultHeightByDiagramType(svgType);
         },
         [displayedDiagrams, diagramContentSizes]
     );
 
-    const getWidthForPaneDisplay = (diagramType, diagramId) => {
-        // Let's get the diagram's ratio
-        let ratio;
-        if (diagramContentSizes.has(diagramType + diagramId)) {
-            ratio = diagramContentSizes.get(diagramType + diagramId).ratioWbyH;
-        } else {
-            // The ratio is not set yet, let's calculate it with the default values
-            if (diagramType === SvgType.SUBSTATION) {
-                ratio = getRatioWidthByHeight(
-                    DEFAULT_WIDTH_SUBSTATION,
-                    DEFAULT_HEIGHT_SUBSTATION
-                );
-            } else if (diagramType === SvgType.VOLTAGE_LEVEL) {
-                ratio = getRatioWidthByHeight(
-                    DEFAULT_WIDTH_VOLTAGE_LEVEL,
-                    DEFAULT_HEIGHT_VOLTAGE_LEVEL
-                );
-            } else {
-                ratio = getRatioWidthByHeight(
-                    DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM,
-                    DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM
-                );
-            }
-        }
-        return ratio * getMaxHeightFromDisplayedDiagrams(diagramType);
-    };
+    /*
+     * Calculate a diagram's ideal width, based on its original width/height ratio and the shared
+     * heights of other diagrams with corresponding svgType (voltage levels and substations will
+     * share their heights, whereas a network area diagram will have its own height).
+     */
+    const getWidthForPaneDisplay = useCallback(
+        (diagramId, diagramType) => {
+            const diagramWidth = getDiagramOrDefaultWidth(
+                diagramId,
+                diagramType
+            );
 
-    const getHeightForPaneDisplay = (diagramType) => {
-        return getMaxHeightFromDisplayedDiagrams(diagramType);
-    };
+            const diagramHeight = getDiagramOrDefaultHeight(
+                diagramId,
+                diagramType
+            );
+
+            return (
+                getRatioWidthByHeight(diagramWidth, diagramHeight) *
+                getMaxHeightFromDisplayedDiagrams(diagramType)
+            );
+        },
+        [
+            getMaxHeightFromDisplayedDiagrams,
+            getDiagramOrDefaultWidth,
+            getDiagramOrDefaultHeight,
+        ]
+    );
+
+    /*
+     * Calculate a diagram's ideal height, based on its natural height, the available space in
+     * the pane, and the other diagrams' sizes.
+     */
+    const getHeightForPaneDisplay = useCallback(
+        (diagramType, availableWidth, availableHeight) => {
+            let result;
+
+            const maxHeightFromDisplayedDiagrams =
+                getMaxHeightFromDisplayedDiagrams(diagramType);
+
+            // let's check if the total width of the displayed diagrams is greater than the
+            // available space in the pane.
+            // If it is, it means the diagram's content are compressed and their heights
+            // should be shortened.
+            const totalWidthOfDiagrams = displayedDiagrams.reduce(
+                (sum, currentDiagram) =>
+                    sum +
+                    (diagramContentSizes.get(
+                        currentDiagram.svgType + currentDiagram.id
+                    )?.width ?? getDefaultWidthByDiagramType(diagramType)),
+                1
+            );
+            if (totalWidthOfDiagrams > availableWidth) {
+                result =
+                    maxHeightFromDisplayedDiagrams *
+                    (availableWidth / totalWidthOfDiagrams);
+            } else {
+                result = maxHeightFromDisplayedDiagrams;
+            }
+
+            // The height should not be too small (could happen if a lot of diagrams are opened
+            // at the same time) and should not be so big that it overlaps the stacked minimized
+            // diagrams on the bottom of the pane.
+            if (result < availableHeight * DIAGRAM_MAP_RATIO_MIN_PERCENTAGE) {
+                return availableHeight * DIAGRAM_MAP_RATIO_MIN_PERCENTAGE;
+            }
+            if (result > availableHeight - MAP_BOTTOM_OFFSET) {
+                return availableHeight - MAP_BOTTOM_OFFSET;
+            }
+            return result;
+        },
+        [
+            displayedDiagrams,
+            diagramContentSizes,
+            getMaxHeightFromDisplayedDiagrams,
+        ]
+    );
 
     /**
      * RENDER
@@ -620,11 +708,13 @@ export function DiagramPane({
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
                                 width={getWidthForPaneDisplay(
-                                    diagramView.svgType,
-                                    diagramView.id
+                                    diagramView.id,
+                                    diagramView.svgType
                                 )}
                                 height={getHeightForPaneDisplay(
-                                    diagramView.svgType
+                                    diagramView.svgType,
+                                    width,
+                                    height
                                 )}
                                 fullscreenWidth={width}
                                 fullscreenHeight={height}
