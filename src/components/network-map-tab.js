@@ -9,6 +9,7 @@ import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
+    deleteEquipment,
     fetchLinePositions,
     fetchSubstationPositions,
 } from '../utils/rest-api';
@@ -28,7 +29,7 @@ import {
     PARAM_MAP_MANUAL_REFRESH,
 } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
-import { useIntlRef } from '@gridsuite/commons-ui';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
     isNodeReadOnly,
@@ -39,6 +40,8 @@ import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
+import { getFeederTypeFromEquipmentType } from './diagrams/diagram-common';
+import { useSnackbar } from 'notistack';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -110,6 +113,8 @@ export const NetworkMapTab = ({
     const [isInitialized, setInitialized] = useState(false);
     const [waitingLoadData, setWaitingLoadData] = useState(true);
 
+    const { snackError } = useSnackMessage();
+
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
 
@@ -176,6 +181,7 @@ export const NetworkMapTab = ({
                 position={equipmentMenu.position}
                 handleClose={closeEquipmentMenu}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
+                handleDeleteEquipment={handleDeleteEquipment}
                 {...props}
             />
         );
@@ -217,6 +223,26 @@ export const NetworkMapTab = ({
         });
         closeEquipmentMenu();
     }
+
+    const handleDeleteEquipment = useCallback(
+        (equipmentType, equipmentId) => {
+            deleteEquipment(
+                studyUuid,
+                currentNode?.id,
+                equipmentType,
+                equipmentId,
+                undefined
+            ).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'NodeCreateError',
+                });
+            });
+            closeEquipmentMenu();
+        },
+        studyUuid,
+        currentNode?.id
+    );
 
     function closeChoiceVoltageLevelMenu() {
         setChoiceVoltageLevelsSubstationId(null);

@@ -13,12 +13,15 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import TableChartIcon from '@mui/icons-material/TableChart';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { NestedMenuItem } from 'mui-nested-menu';
 
 import { useIntl } from 'react-intl';
 import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../util/equipmentInfosHandler';
+import { deleteEquipment } from 'utils/rest-api';
+import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -58,10 +61,42 @@ const ItemViewInSpreadsheet = ({
     );
 };
 
+const ItemDeleteEquipment = ({
+    equipmentType,
+    equipmentId,
+    itemText,
+    handleViewInSpreadsheet,
+}) => {
+    const classes = useStyles();
+
+    return (
+        <MenuItem
+            className={classes.menuItem}
+            onClick={() =>
+                handleViewInSpreadsheet(
+                    getFeederTypeFromEquipmentType(equipmentType),
+                    equipmentId
+                )
+            }
+            selected={false}
+        >
+            <ListItemIcon>
+                <DeleteIcon />
+            </ListItemIcon>
+
+            <ListItemText
+                className={classes.listItemText}
+                primary={<Typography noWrap>{itemText}</Typography>}
+            />
+        </MenuItem>
+    );
+};
+
 const BaseEquipmentMenu = ({
     equipmentId,
     equipmentType,
     handleViewInSpreadsheet,
+    handleDeleteEquipment,
 }) => {
     const intl = useIntl();
 
@@ -120,6 +155,26 @@ const BaseEquipmentMenu = ({
                                 handleViewInSpreadsheet={
                                     handleViewInSpreadsheet
                                 }
+                            />
+                        ))}
+                    </NestedMenuItem>
+                    <NestedMenuItem label="Delete" parentMenuOpen={true}>
+                        <ItemDeleteEquipment
+                            key={equipment.id}
+                            equipmentType={equipmentType}
+                            equipmentId={equipment.id}
+                            itemText={getNameOrId(equipment)}
+                            handleDeleteEquipment={handleDeleteEquipment}
+                        />
+
+                        {equipment.voltageLevels.map((voltageLevel) => (
+                            // menus for all voltage levels in the substation
+                            <ItemDeleteEquipment
+                                key={voltageLevel.id}
+                                equipmentType={equipments.voltageLevels}
+                                equipmentId={voltageLevel.id}
+                                itemText={getNameOrId(voltageLevel)}
+                                handleDeleteEquipment={handleDeleteEquipment}
                             />
                         ))}
                     </NestedMenuItem>
