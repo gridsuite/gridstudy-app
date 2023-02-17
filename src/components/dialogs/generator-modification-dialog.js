@@ -147,17 +147,13 @@ const GeneratorModificationDialog = ({
         });
     }, [equipmentOptionsPromise]);
 
-    useEffect(() => {
-        if (editData) {
-            setFormValues(editData);
-        }
-    }, [editData]);
-
     const formValueEquipmentId = useMemo(() => {
         return formValues?.equipmentId
             ? { id: formValues?.equipmentId }
+            : editData && editData?.id
+            ? { id: editData.id }
             : { id: '' };
-    }, [formValues]);
+    }, [editData, formValues]);
 
     const [generatorInfos, generatorIdField] = useAutocompleteField({
         label: 'ID',

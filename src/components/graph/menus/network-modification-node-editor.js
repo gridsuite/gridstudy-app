@@ -148,6 +148,45 @@ export const CopyType = {
     MOVE: 'MOVE',
 };
 
+export function withEqptModificationOptions(
+    studyUuid,
+    currentTreeNodeId,
+    resourceType,
+    resource
+) {
+    const equipmentOptionsPromise = fetchEquipments(
+        studyUuid,
+        currentTreeNodeId,
+        [],
+        resourceType,
+        resource,
+        true
+    );
+
+    return equipmentOptionsPromise;
+}
+
+export function withVoltageLevels(studyUuid, currentTreeNodeId, p) {
+    const voltageLevelOptionsPromise = fetchVoltageLevels(
+        studyUuid,
+        currentTreeNodeId
+    );
+
+    return voltageLevelOptionsPromise;
+}
+
+export function withVoltageLevelsAndEquipments(
+    studyUuid,
+    currentTreeNodeId,
+    p
+) {
+    const voltageLevelsEquipmentsOptionsPromise = fetchVoltageLevelsEquipments(
+        studyUuid,
+        currentTreeNodeId
+    );
+    return voltageLevelsEquipmentsOptionsPromise;
+}
+
 const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
@@ -214,14 +253,24 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLsAndEquipments(p) {
-        const voltageLevelsEquipmentsOptionsPromise =
-            fetchVoltageLevelsEquipments(studyUuid, currentTreeNode?.id);
-        return {
-            ...p,
-            voltageLevelsEquipmentsOptionsPromise:
-                voltageLevelsEquipmentsOptionsPromise,
-        };
+    function withEquipmentModificationOptions(resourceType, resource) {
+        const equipmentOptionsPromise = fetchEquipments(
+            studyUuid,
+            currentTreeNode?.id,
+            [],
+            resourceType,
+            resource,
+            true
+        );
+
+        function withFetchedOptions(p) {
+            return {
+                ...p,
+                equipmentOptionsPromise: equipmentOptionsPromise,
+            };
+        }
+
+        return withFetchedOptions;
     }
 
     function withVLs(p) {
@@ -232,6 +281,16 @@ const NetworkModificationNodeEditor = () => {
         return {
             ...p,
             voltageLevelOptionsPromise: voltageLevelOptionsPromise,
+        };
+    }
+
+    function withVLsAndEquipments(p) {
+        const voltageLevelsEquipmentsOptionsPromise =
+            fetchVoltageLevelsEquipments(studyUuid, currentTreeNode?.id);
+        return {
+            ...p,
+            voltageLevelsEquipmentsOptionsPromise:
+                voltageLevelsEquipmentsOptionsPromise,
         };
     }
 
@@ -257,26 +316,6 @@ const NetworkModificationNodeEditor = () => {
             ...p,
             substationOptionsPromise: substationOptionsPromise,
         };
-    }
-
-    function withEquipmentModificationOptions(resourceType, resource) {
-        const equipmentOptionsPromise = fetchEquipments(
-            studyUuid,
-            currentTreeNode?.id,
-            [],
-            resourceType,
-            resource,
-            true
-        );
-
-        function withFetchedOptions(p) {
-            return {
-                ...p,
-                equipmentOptionsPromise: equipmentOptionsPromise,
-            };
-        }
-
-        return withFetchedOptions;
     }
 
     const dialogs = {

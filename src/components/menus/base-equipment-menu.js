@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -21,6 +21,13 @@ import { useSelector } from 'react-redux';
 import { useNameOrId } from '../util/equipmentInfosHandler';
 import EditIcon from '@mui/icons-material/Edit';
 import GeneratorModificationDialog from '../dialogs/generator-modification-dialog';
+import {
+    withEqptModificationOptions,
+    withVoltageLevels,
+    withVoltageLevelsAndEquipments,
+} from 'components/graph/menus/network-modification-node-editor';
+import { useParams } from 'react-router-dom';
+import { fetchEquipmentInfos } from 'utils/rest-api';
 const useStyles = makeStyles((theme) => ({
     menuItem: {
         padding: '0px',
@@ -68,6 +75,9 @@ const BaseEquipmentMenu = ({
     const classes = useStyles();
     const network = useSelector((state) => state.network);
     const [openDialog, setOpenDialog] = useState(false);
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentTreeNode = useSelector((state) => state.currentTreeNode);
+    const [editData, setEditData] = useState(null);
     function getEquipment(equipmentType, equipmentId) {
         if (equipmentType === equipments.substations) {
             return network.getSubstation(equipmentId);
@@ -84,6 +94,27 @@ const BaseEquipmentMenu = ({
 
     const equipment = getEquipment(equipmentType, equipmentId);
     const { getNameOrId } = useNameOrId();
+    useEffect(() => {
+        if (openDialog) {
+            fetchEquipmentInfos(
+                studyUuid,
+                currentTreeNode?.id,
+                equipmentType,
+                equipmentId,
+                true
+            ).then((response) => {
+                setEditData(response);
+            });
+        }
+    }, [
+        currentTreeNode?.id,
+        equipment,
+        equipmentId,
+        equipmentType,
+        openDialog,
+        studyUuid,
+    ]);
+
     return (
         <>
             {/* menus for equipment other than substation and voltage level */}
@@ -182,11 +213,25 @@ const BaseEquipmentMenu = ({
                     </NestedMenuItem>
                 </>
             )}
-            {openDialog && (
+            {openDialog && editData && (
                 <GeneratorModificationDialog
                     open={openDialog}
                     onClose={() => setOpenDialog(false)}
-                    editData={equipment}
+                    editData={editData}
+                    equipmentOptionsPromise={withEqptModificationOptions(
+                        studyUuid,
+                        currentTreeNode?.id,
+                        'Generators',
+                        'generators'
+                    )}
+                    voltageLevelOptionsPromise={withVoltageLevels(
+                        studyUuid,
+                        currentTreeNode?.id
+                    )}
+                    voltageLevelsEquipmentsOptionsPromise={withVoltageLevelsAndEquipments(
+                        studyUuid,
+                        currentTreeNode?.id
+                    )}
                 ></GeneratorModificationDialog>
             )}
         </>
