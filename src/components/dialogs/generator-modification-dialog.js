@@ -15,7 +15,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import makeStyles from '@mui/styles/makeStyles';
 import {
@@ -28,7 +27,6 @@ import {
 } from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
-    compareById,
     filledTextField,
     getIdOrSelf,
     gridItem,
@@ -53,7 +51,11 @@ import {
     REGULATING_VOLTAGE_LEVEL,
 } from './regulating-terminal-edition';
 import { useNullableBooleanValue } from './inputs/boolean';
-import { modifyGenerator } from '../../utils/rest-api';
+import {
+    fetchEquipmentInfos,
+    fetchEquipmentsIds,
+    modifyGenerator,
+} from 'utils/rest-api';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { useReactiveCapabilityCurveTableValues } from './inputs/reactive-capability-curve-table';
 import {
@@ -85,21 +87,19 @@ function getValueOrNull(val) {
 
 /**
  * Dialog to create a generator in the network
- * @param currentNodeUuid the currently selected tree node
- * @param equipmentOptionsPromise Promise handling list of generator options
  * @param editData the data to edit
+ * @param studyUuid the study we are currently working on
+ * @param currentNodeUuid the currently selected tree node
+ * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const GeneratorModificationDialog = ({
     editData,
+    studyUuid,
     currentNodeUuid,
-    equipmentOptionsPromise,
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
+    voltageLevelsIdsAndTopologyPromise,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const intl = useIntl();
 
     const classes = useStyles();
@@ -124,6 +124,8 @@ const GeneratorModificationDialog = ({
         return regulationType === REGULATION_TYPES.DISTANT.id;
     };
 
+    const [generatorInfos, setGeneratorInfos] = useState();
+
     const defaultReactiveCapabilityCurveChoice = () => {
         const reactiveCapabilityChoice = getValueOrNull(
             formValues?.reactiveCapabilityCurve
@@ -140,12 +142,17 @@ const GeneratorModificationDialog = ({
         useState(true);
 
     useEffect(() => {
-        if (!equipmentOptionsPromise) return;
-        equipmentOptionsPromise.then((values) => {
+        fetchEquipmentsIds(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            'GENERATOR',
+            true
+        ).then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
         });
-    }, [equipmentOptionsPromise]);
+    }, [studyUuid, currentNodeUuid]);
 
     const formValueEquipmentId = useMemo(() => {
         return formValues?.equipmentId
@@ -155,19 +162,53 @@ const GeneratorModificationDialog = ({
             : { id: '' };
     }, [editData, formValues]);
 
-    const [generatorInfos, generatorIdField] = useAutocompleteField({
+    const [generatorId, generatorIdField] = useAutocompleteField({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        values: equipmentOptions?.sort(compareById),
+        values: equipmentOptions?.sort((a, b) => a.localeCompare(b)),
         allowNewValue: true,
         getLabel: getIdOrSelf,
         defaultValue:
-            equipmentOptions?.find((e) => e.id === formValueEquipmentId?.id) ||
+            equipmentOptions?.find((e) => e === formValueEquipmentId?.id) ||
             formValueEquipmentId,
         loading: loadingEquipmentOptions,
     });
+
+    // It's temporary, I added this method to avoid breaking the useAutocompleteField component in modification forms.
+    // It will be improved with the refactoring
+    const id = useMemo(() => {
+        let id;
+        if (typeof generatorId === 'object') {
+            if (generatorId?.id !== '') {
+                id = generatorId?.id;
+            }
+        } else {
+            if (generatorId !== '') {
+                id = generatorId;
+            }
+        }
+        return id ?? formValueEquipmentId?.id;
+    }, [generatorId, formValueEquipmentId]);
+
+    useEffect(() => {
+        if (id) {
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNodeUuid,
+                'generators',
+                id,
+                true
+            ).then((value) => {
+                if (value) {
+                    setGeneratorInfos(value);
+                }
+            });
+        } else {
+            setGeneratorInfos(null);
+        }
+    }, [studyUuid, currentNodeUuid, id]);
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
@@ -439,12 +480,10 @@ const GeneratorModificationDialog = ({
         previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
     } else if (
         generatorInfos?.activePowerControlOn === false ||
-        (generatorInfos?.id !== '' &&
-            generatorInfos?.activePowerControlOn === undefined)
+        (generatorInfos && generatorInfos.activePowerControlOn === undefined)
     ) {
         previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
     }
-
     const [frequencyRegulation, frequencyRegulationField] =
         useNullableBooleanValue({
             label: 'FrequencyRegulation',
@@ -479,6 +518,8 @@ const GeneratorModificationDialog = ({
 
     const [regulatingTerminal, regulatingTerminalField] =
         useRegulatingTerminalValue({
+            studyUuid,
+            currentNodeUuid,
             label: 'RegulatingTerminalGenerator',
             validation: {
                 isFieldRequired:
@@ -488,7 +529,6 @@ const GeneratorModificationDialog = ({
             },
             inputForm: inputForm,
             disabled: !isDistantRegulation,
-            voltageLevelOptionsPromise: voltageLevelsEquipmentsOptionsPromise,
             voltageLevelIdDefaultValue:
                 getValue(formValues?.regulatingTerminalVlId) || null,
             equipmentSectionTypeDefaultValue:
@@ -507,6 +547,7 @@ const GeneratorModificationDialog = ({
                       ' : ' +
                       generatorInfos?.regulatingTerminalConnectableId
                     : null,
+            voltageLevelsIdsAndTopologyPromise,
         });
 
     useEffect(() => {
@@ -747,7 +788,7 @@ const GeneratorModificationDialog = ({
         modifyGenerator(
             studyUuid,
             currentNodeUuid,
-            generatorInfos?.id,
+            id,
             sanitizeString(generatorName),
             energySource,
             minimumActivePower,
@@ -927,16 +968,9 @@ const GeneratorModificationDialog = ({
 
 GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
+    studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
-    equipmentOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
+    voltageLevelsIdsAndTopologyPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
