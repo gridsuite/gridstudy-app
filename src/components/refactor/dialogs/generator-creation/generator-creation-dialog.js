@@ -74,19 +74,17 @@ import {
 import {
     getReactiveCapabilityCurveEmptyFormData,
     getReactiveCapabilityCurveValidationSchema,
-} from './reactive-capability-curve/reactive-capability-utils';
+} from './reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import {REACTIVE_LIMITS_EMPTY_FORM_DATA, REACTIVE_LIMITS_SCHEMA} from "./reactive-limits/reactive-limits-form";
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    [VOLTAGE_REGULATION]: false,
-    [FREQUENCY_REGULATION]: false,
     [ENERGY_SOURCE]: 'OTHER',
     [VOLTAGE_REGULATION_TYPE]: REGULATION_TYPES.LOCAL.id,
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
     [RATED_NOMINAL_POWER]: null,
-    [ACTIVE_POWER_SET_POINT]: null,
     [TRANSIENT_REACTANCE]: null,
     [TRANSFORMER_REACTANCE]: null,
     [PLANNED_ACTIVE_POWER_SET_POINT]: null,
@@ -94,15 +92,10 @@ const emptyFormData = {
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
-    [MINIMUM_REACTIVE_POWER]: null,
-    [MAXIMUM_REACTIVE_POWER]: null,
-    [REACTIVE_POWER_SET_POINT]: null,
-    [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
     [VOLTAGE_SET_POINT]: null,
     [Q_PERCENT]: null,
-    [DROOP]: null,
+    ...REACTIVE_LIMITS_EMPTY_FORM_DATA,
     ...getRegulatingTerminalEmptyFormDataWithId(),
-    ...getReactiveCapabilityCurveEmptyFormData(),
     ...getConnectivityEmptyFormData(),
 };
 
@@ -110,7 +103,7 @@ const schema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string().nullable(),
+        [EQUIPMENT_NAME]: yup.string(),
         [ENERGY_SOURCE]: yup.string().required(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().required(),
         [MINIMUM_ACTIVE_POWER]: yup.number().required(),
@@ -131,9 +124,6 @@ const schema = yup
             .nullable()
             .min(0, 'RealPercentage')
             .max(1, 'RealPercentage'),
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
-        [MINIMUM_REACTIVE_POWER]: yup.number().nullable(),
-        [MAXIMUM_REACTIVE_POWER]: yup.number().nullable(),
         [REACTIVE_POWER_SET_POINT]: yup
             .number()
             .nullable()
@@ -141,7 +131,6 @@ const schema = yup
                 is: false,
                 then: (schema) => schema.required(),
             }),
-        [FREQUENCY_REGULATION]: yup.bool().required(),
         [VOLTAGE_REGULATION]: yup.bool().nullable().required(),
         [VOLTAGE_REGULATION_TYPE]: yup
             .string()
@@ -162,13 +151,6 @@ const schema = yup
             .nullable()
             .max(100, 'NormalizedPercentage')
             .min(0, 'NormalizedPercentage'),
-        [DROOP]: yup
-            .number()
-            .nullable()
-            .when([FREQUENCY_REGULATION], {
-                is: true,
-                then: (schema) => schema.required(),
-            }),
         [REGULATING_TERMINAL]: yup.object().shape({
             [VOLTAGE_LEVEL]: yup
                 .object()
@@ -201,7 +183,7 @@ const schema = yup
                     then: (schema) => schema.required(),
                 }),
         }),
-        ...getReactiveCapabilityCurveValidationSchema(),
+        ...REACTIVE_LIMITS_SCHEMA,
         ...getConnectivityFormValidationSchema(),
     })
     .required();
@@ -239,7 +221,7 @@ const GeneratorCreationDialog = ({
             [REACTIVE_POWER_SET_POINT]: generator.targetQ,
             ...getConnectivityFormData({
                 voltageLevelId: generator.voltageLevelId,
-                busbarSectionId: null,
+                busbarSectionId: generator.busbarSectionId,
                 connectionDirection: generator.connectionDirection,
                 connectionName: generator.connectionName,
                 connectionPosition: generator.connectionPosition,
@@ -364,23 +346,23 @@ const GeneratorCreationDialog = ({
                 generator[ENERGY_SOURCE],
                 generator[MINIMUM_ACTIVE_POWER],
                 generator[MAXIMUM_ACTIVE_POWER],
-                generator[RATED_NOMINAL_POWER] ?? null,
+                generator[RATED_NOMINAL_POWER],
                 generator[ACTIVE_POWER_SET_POINT],
-                generator[REACTIVE_POWER_SET_POINT] ?? null,
+                generator[REACTIVE_POWER_SET_POINT],
                 generator[VOLTAGE_REGULATION],
-                generator[VOLTAGE_SET_POINT] ?? null,
+                generator[VOLTAGE_SET_POINT],
                 generator[Q_PERCENT],
                 generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
                 generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 !!editData,
                 editData?.uuid ?? null,
-                generator[PLANNED_ACTIVE_POWER_SET_POINT] ?? null,
-                generator[STARTUP_COST] ?? null,
-                generator[MARGINAL_COST] ?? null,
-                generator[PLANNED_OUTAGE_RATE] ?? null,
-                generator[FORCED_OUTAGE_RATE] ?? null,
-                generator[TRANSIENT_REACTANCE] ?? null,
-                generator[TRANSFORMER_REACTANCE] ?? null,
+                generator[PLANNED_ACTIVE_POWER_SET_POINT],
+                generator[STARTUP_COST],
+                generator[MARGINAL_COST],
+                generator[PLANNED_OUTAGE_RATE],
+                generator[FORCED_OUTAGE_RATE],
+                generator[TRANSIENT_REACTANCE],
+                generator[TRANSFORMER_REACTANCE],
                 isDistantRegulation
                     ? generator[REGULATING_TERMINAL]?.[EQUIPMENT]?.id
                     : null,
@@ -404,8 +386,8 @@ const GeneratorCreationDialog = ({
                     : null,
                 generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                generator[CONNECTIVITY]?.[CONNECTION_NAME] ?? null,
-                generator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null
+                generator[CONNECTIVITY]?.[CONNECTION_NAME],
+                generator[CONNECTIVITY]?.[CONNECTION_POSITION]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

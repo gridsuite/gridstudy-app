@@ -5,22 +5,51 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import FloatInput from '../../../rhf-inputs/float-input';
+import FloatInput from '../../../../rhf-inputs/float-input';
 import {
     P,
     Q_MAX_P,
     Q_MIN_P,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-} from '../../../utils/field-constants';
+} from '../../../../utils/field-constants';
 import {
     ActivePowerAdornment,
     gridItem,
     ReactivePowerAdornment,
-} from '../../../../dialogs/dialogUtils';
+} from '../../../../../dialogs/dialogUtils';
 import React from 'react';
+import yup from "../../../../utils/yup-config";
 
-const ReactiveCapabilityCurveRowForm = ({ index, labelSuffix }) => {
-    const id = REACTIVE_CAPABILITY_CURVE_TABLE;
+export const ROW_SCHEMA = yup.object().shape({
+    [Q_MAX_P]: yup.number().nullable().required(),
+    [Q_MIN_P]: yup
+        .number()
+        .nullable()
+        .required()
+        .max(
+            yup.ref(Q_MAX_P),
+            'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
+        ),
+    [P]: yup
+        .number()
+        .nullable()
+        .required()
+        .min(
+            yup.ref(Q_MIN_P),
+            'ReactiveCapabilityCurveCreationErrorPOutOfRange'
+        )
+        .max(
+            yup.ref(Q_MAX_P),
+            'ReactiveCapabilityCurveCreationErrorPOutOfRange'
+        ),
+})
+
+export const ROW_EMPTY_FORM_DATA = {
+    [P]: null,
+    [Q_MAX_P]: null,
+    [Q_MIN_P]: null,
+};
+
+const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix }) => {
     const pField = (
         <FloatInput
             name={`${id}.${index}.${P}`}
@@ -44,7 +73,7 @@ const ReactiveCapabilityCurveRowForm = ({ index, labelSuffix }) => {
             name={`${id}.${index}.${Q_MAX_P}`}
             label={'QmaxP'}
             labelValues={{ labelSuffix: labelSuffix }}
-            adornment={ActivePowerAdornment}
+            adornment={ReactivePowerAdornment}
         />
     );
 

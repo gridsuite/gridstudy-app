@@ -11,11 +11,44 @@ import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
-import { useStyles } from '../../../../dialogs/dialogUtils';
+import { useStyles } from '../../../../../dialogs/dialogUtils';
 import { useFieldArray } from 'react-hook-form';
-import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
-import { REACTIVE_CAPABILITY_CURVE_TABLE } from '../../../utils/field-constants';
-import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
+import ReactiveCapabilityCurveRowForm, {
+    ROW_EMPTY_FORM_DATA,
+    ROW_SCHEMA,
+} from './reactive-capability-curve-row-form';
+import {
+    REACTIVE_CAPABILITY_CURVE_CHOICE,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
+} from '../../../../utils/field-constants';
+import FieldErrorAlert from '../../../../rhf-inputs/field-error-alert';
+import yup from '../../../../utils/yup-config';
+import { checkPUnique } from './reactive-capability-utils';
+
+export const REACTIVE_CAPABILITY_CURVE_EMPTY_FORM_DATA = {
+    [REACTIVE_CAPABILITY_CURVE_TABLE]: [
+        ROW_EMPTY_FORM_DATA,
+        ROW_EMPTY_FORM_DATA,
+    ],
+};
+
+export const REACTIVE_CAPABILITY_CURVE_VALIDATION_SCHEMA = {
+    [REACTIVE_CAPABILITY_CURVE_TABLE]: yup
+        .array()
+        .nullable()
+        .when([REACTIVE_CAPABILITY_CURVE_CHOICE], {
+            is: 'CURVE',
+            then: (schema) =>
+                schema
+                    .of(ROW_SCHEMA)
+                    .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
+                    .test(
+                        'checkPUnique',
+                        'ReactiveCapabilityCurveCreationErrorPInvalid',
+                        (values) => checkPUnique(values)
+                    ),
+        }),
+};
 
 export const ReactiveCapabilityCurveTable = ({
     tableHeadersIds,
@@ -45,6 +78,7 @@ export const ReactiveCapabilityCurveTable = ({
                 return (
                     <Grid key={value.id} container spacing={3} item>
                         <ReactiveCapabilityCurveRowForm
+                            id={REACTIVE_CAPABILITY_CURVE_TABLE}
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
