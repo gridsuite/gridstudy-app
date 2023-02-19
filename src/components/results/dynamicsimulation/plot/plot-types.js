@@ -4,6 +4,9 @@ export const SeriesType = PropTypes.arrayOf(
     PropTypes.shape({
         index: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
-        data: PropTypes.arrayOf(PropTypes.object),
+        data: PropTypes.shape({
+            x: PropTypes.arrayOf(PropTypes.number),
+            y: PropTypes.arrayOf(PropTypes.number),
+        }),
     })
 );
