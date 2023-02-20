@@ -7,7 +7,6 @@ import {
 } from './inputs/input-hooks';
 import { useEffect, useState } from 'react';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
-import { useParams } from 'react-router-dom';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import {
@@ -145,12 +144,13 @@ const GeneratorScalingVariation = ({
 };
 
 const GeneratorScalingDialog = ({
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
     const classes = useStyles();
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
@@ -275,8 +275,9 @@ const GeneratorScalingDialog = ({
 };
 
 GeneratorScalingDialog.prototype = {
+    studyUuid: PropTypes.string,
     editData: PropTypes.object,
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default GeneratorScalingDialog;
