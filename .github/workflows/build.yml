@@ -19,7 +19,7 @@ jobs:
             - name: setup NodeJS version
               uses: actions/setup-node@v3
               with:
-                node-version: lts/fermium
+                node-version: 16.19.0 # fix : version in runner-image ubuntu22/20230206.1
 
             - name: Install and Build
               run: |
