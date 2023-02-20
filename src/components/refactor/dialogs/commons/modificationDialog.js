@@ -74,10 +74,8 @@ const ModificationDialog = ({
         closeAndClear(data, 'validateButtonClick');
     };
 
-    const handleValidationError = (errors) => {
-        return onValidationError && onValidationError(errors);
-    };
-
+    const handleValidationError = (errors) =>
+        onValidationError && onValidationError(errors);
     return (
         <Dialog
             onClose={handleClose}
