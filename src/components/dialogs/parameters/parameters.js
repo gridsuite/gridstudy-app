@@ -443,12 +443,19 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         );
     }
 
+    //The current tab index is changed after developer mode switch only if the current tab is the advanced params tab
     useEffect(() => {
-        setTabIndex(
-            enableDeveloperMode
-                ? advancedParamsTabIndexInDeveloperModeOn
-                : advancedParamsTabIndexInDeveloperModeOff
-        );
+        setTabIndex((oldIndex) => {
+            if (
+                oldIndex === advancedParamsTabIndexInDeveloperModeOn ||
+                oldIndex === advancedParamsTabIndexInDeveloperModeOff
+            ) {
+                return enableDeveloperMode
+                    ? advancedParamsTabIndexInDeveloperModeOn
+                    : advancedParamsTabIndexInDeveloperModeOff;
+            }
+            return oldIndex;
+        });
     }, [enableDeveloperMode]);
 
     return (
