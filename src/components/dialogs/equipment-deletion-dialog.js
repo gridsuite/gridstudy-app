@@ -10,7 +10,6 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import { useParams } from 'react-router-dom';
 import {
     deleteEquipment,
     fetchBatteries,
@@ -94,12 +93,17 @@ const defaultEquipmentType = equipmentTypes.LINE;
 
 /**
  * Dialog to delete an equipment in the network
+ * @param studyUuid the study we are currently working on
  * @param currentNode : the currently selected tree node
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
-const EquipmentDeletionDialog = ({ currentNode, editData, ...dialogProps }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+const EquipmentDeletionDialog = ({
+    studyUuid,
+    currentNode,
+    editData,
+    ...dialogProps
+}) => {
     const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
@@ -252,6 +256,7 @@ const EquipmentDeletionDialog = ({ currentNode, editData, ...dialogProps }) => {
 };
 
 EquipmentDeletionDialog.propTypes = {
+    studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     editData: PropTypes.object,
 };

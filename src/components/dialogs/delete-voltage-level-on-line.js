@@ -7,7 +7,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
 import {
@@ -28,18 +27,18 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param lineOptionsPromise Promise handling list of network lines
+ * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
  * @param editData record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const DeleteVoltageLevelOnLineDialog = ({
     lineOptionsPromise,
+    studyUuid,
     currentNode,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
@@ -183,6 +182,7 @@ DeleteVoltageLevelOnLineDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
+    studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
