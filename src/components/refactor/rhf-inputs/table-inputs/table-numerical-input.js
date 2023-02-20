@@ -64,6 +64,9 @@ export const TableNumericalInput = ({
                 lang: 'en-US', // to have . as decimal separator
                 ...inputProps,
             }}
+            InputProps={{
+                disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
+            }}
             {...props}
         />
     );
