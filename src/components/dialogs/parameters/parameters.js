@@ -59,6 +59,7 @@ import {
 } from './short-circuit-parameters';
 import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
+import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -379,7 +380,8 @@ const lfParamsTabIndex = 2;
 const securityAnalysisParamsTabIndex = 3;
 const sensitivityAnalysisParamsTabIndex = 4;
 const shortCircuitParamsTabIndex = 5;
-const advancedParamsTabIndex = 6;
+const advancedParamsTabIndexInDeveloperModeOff = 4;
+const advancedParamsTabIndexInDeveloperModeOn = 6;
 
 const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const classes = useStyles();
@@ -387,6 +389,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const studyUuid = useSelector((state) => state.studyUuid);
+
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
@@ -439,6 +443,15 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         );
     }
 
+    //To be removed when ShortCircuit is not in developer mode only.
+    useEffect(() => {
+        setTabIndex(
+            enableDeveloperMode
+                ? advancedParamsTabIndexInDeveloperModeOn
+                : advancedParamsTabIndexInDeveloperModeOff
+        );
+    }, [enableDeveloperMode]);
+
     return (
         <Dialog
             open={isParametersOpen}
@@ -476,16 +489,20 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             disabled={!studyUuid}
                             label={<FormattedMessage id="SecurityAnalysis" />}
                         />
-                        <Tab
-                            disabled={!studyUuid}
-                            label={
-                                <FormattedMessage id="SensitivityAnalysis" />
-                            }
-                        />
-                        <Tab
-                            disabled={!studyUuid}
-                            label={<FormattedMessage id="ShortCircuit" />}
-                        />
+                        {enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={
+                                    <FormattedMessage id="SensitivityAnalysis" />
+                                }
+                            />
+                        )}
+                        {enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={<FormattedMessage id="ShortCircuit" />}
+                            />
+                        )}
                         <Tab label={<FormattedMessage id="Advanced" />} />
                     </Tabs>
 
@@ -523,33 +540,50 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                     </TabPanel>
+                    {
+                        //To be removed when Sensitivity Analysis is not in developer mode only.
+                        enableDeveloperMode && (
+                            <TabPanel
+                                value={tabIndex}
+                                index={sensitivityAnalysisParamsTabIndex}
+                            >
+                                {studyUuid && (
+                                    <SensitivityAnalysisParameters
+                                        hideParameters={hideParameters}
+                                        parametersBackend={
+                                            sensitivityAnalysisParametersBackend
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )
+                    }
+                    {
+                        //To be removed when ShortCircuit is not in developer mode only.
+                        enableDeveloperMode && (
+                            <TabPanel
+                                value={tabIndex}
+                                index={shortCircuitParamsTabIndex}
+                            >
+                                {studyUuid && (
+                                    <ShortCircuitParameters
+                                        hideParameters={hideParameters}
+                                        useShortCircuitParameters={
+                                            useShortCircuitParameters
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )
+                    }
                     <TabPanel
                         value={tabIndex}
-                        index={sensitivityAnalysisParamsTabIndex}
+                        index={
+                            enableDeveloperMode
+                                ? advancedParamsTabIndexInDeveloperModeOn
+                                : advancedParamsTabIndexInDeveloperModeOff
+                        }
                     >
-                        {studyUuid && (
-                            <SensitivityAnalysisParameters
-                                hideParameters={hideParameters}
-                                parametersBackend={
-                                    sensitivityAnalysisParametersBackend
-                                }
-                            />
-                        )}
-                    </TabPanel>
-                    <TabPanel
-                        value={tabIndex}
-                        index={shortCircuitParamsTabIndex}
-                    >
-                        {studyUuid && (
-                            <ShortCircuitParameters
-                                hideParameters={hideParameters}
-                                useShortCircuitParameters={
-                                    useShortCircuitParameters
-                                }
-                            />
-                        )}
-                    </TabPanel>
-                    <TabPanel value={tabIndex} index={advancedParamsTabIndex}>
                         <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
                 </Container>
