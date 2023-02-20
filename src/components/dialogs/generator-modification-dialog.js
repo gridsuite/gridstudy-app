@@ -95,6 +95,7 @@ function getValueOrNull(val) {
  */
 const GeneratorModificationDialog = ({
     editData,
+    genratorId,
     studyUuid,
     currentNodeUuid,
     voltageLevelsIdsAndTopologyPromise,
@@ -155,8 +156,7 @@ const GeneratorModificationDialog = ({
     }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
-        console.log('useeffect editdata', editData);
-        if (editData && typeof editData === 'object') {
+        if (editData) {
             setFormValues(editData);
         }
     }, [editData]);
@@ -164,10 +164,10 @@ const GeneratorModificationDialog = ({
     const formValueEquipmentId = useMemo(() => {
         return formValues?.equipmentId
             ? { id: formValues?.equipmentId }
-            : editData && typeof editData === 'string'
-            ? { id: editData }
+            : genratorId
+            ? { id: genratorId }
             : { id: '' };
-    }, [editData, formValues?.equipmentId]);
+    }, [formValues?.equipmentId, genratorId]);
 
     const [generatorId, generatorIdField] = useAutocompleteField({
         label: 'ID',
@@ -200,15 +200,8 @@ const GeneratorModificationDialog = ({
     }, [generatorId, formValueEquipmentId]);
 
     useEffect(() => {
-        console.log('editData', editData, id);
-        if (id || (editData && typeof editData === 'string')) {
-            let key =
-                id !== ''
-                    ? id
-                    : editData && typeof editData === 'object'
-                    ? editData.equipmentId
-                    : editData;
-            console.log('enter if', key);
+        if (id || genratorId) {
+            let key = id !== '' ? id : genratorId;
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -223,7 +216,7 @@ const GeneratorModificationDialog = ({
         } else {
             setGeneratorInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, id, editData]);
+    }, [studyUuid, currentNodeUuid, id, genratorId]);
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',

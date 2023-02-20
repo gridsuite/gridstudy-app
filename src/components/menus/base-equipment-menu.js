@@ -194,25 +194,11 @@ const BaseEquipmentMenu = ({
                     studyUuid={studyUuid}
                     currentNodeUuid={currentTreeNode?.id}
                     onClose={() => setOpenDialog(false)}
-                    editData={equipmentId}
+                    genId={equipmentId}
                     voltageLevelsIdsAndTopologyPromise={withVLsIdsAndTopology(
                         studyUuid,
                         currentTreeNode?.id
                     )}
-                    // equipmentOptionsPromise={withEqptModificationOptions(
-                    //     studyUuid,
-                    //     currentTreeNode?.id,
-                    //     'Generators',
-                    //     'generators'
-                    // )}
-                    // voltageLevelOptionsPromise={withVoltageLevels(
-                    //     studyUuid,
-                    //     currentTreeNode?.id
-                    // )}
-                    // voltageLevelsEquipmentsOptionsPromise={withVoltageLevelsAndEquipments(
-                    //     studyUuid,
-                    //     currentTreeNode?.id
-                    // )}
                 ></GeneratorModificationDialog>
             )}
         </>

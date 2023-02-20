@@ -145,6 +145,7 @@ export const CopyType = {
     COPY: 'COPY',
     MOVE: 'MOVE',
 };
+
 export function withVLsIdsAndTopology(studyUuid, currentTreeNodeId) {
     const voltageLevelsIdsAndTopologyPromise = fetchVoltageLevelsIdAndTopology(
         studyUuid,
