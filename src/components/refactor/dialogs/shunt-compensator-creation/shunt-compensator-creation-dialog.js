@@ -162,7 +162,8 @@ const ShuntCompensatorCreationDialog = ({
                 [SUSCEPTANCE_PER_SECTION]:
                     shuntCompensator.susceptancePerSection,
                 [Q_AT_NOMINAL_V]: shuntCompensator.qAtNominalV,
-                [SHUNT_COMPENSATOR_TYPE]: shuntCompensator.shuntCompensatorType,
+                [SHUNT_COMPENSATOR_TYPE]:
+                    shuntCompensator.shuntCompensatorType ?? '',
                 [CHARACTERISTICS_CHOICE]: shuntCompensator.qAtNominalV
                     ? CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
                     : CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
