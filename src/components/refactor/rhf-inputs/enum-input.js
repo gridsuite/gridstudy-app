@@ -43,7 +43,11 @@ const EnumInput = ({ options, name, label, size }) => {
                     </MenuItem>
                 ))}
             </Select>
-            {error?.message && <FormHelperText>{error.message}</FormHelperText>}
+            {error?.message && (
+                <FormHelperText>
+                    <FormattedMessage id={error.message} />
+                </FormHelperText>
+            )}
         </FormControl>
     );
 };

@@ -72,11 +72,11 @@ const schema = yup
                 CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
             then: (schema) =>
                 schema
-                    .required()
                     .oneOf([
                         SHUNT_COMPENSATOR_TYPES.CAPACITOR.id,
                         SHUNT_COMPENSATOR_TYPES.REACTOR.id,
-                    ]),
+                    ])
+                    .required(),
         }),
         [Q_AT_NOMINAL_V]: yup
             .number()
@@ -210,7 +210,10 @@ const ShuntCompensatorCreationDialog = ({
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
                     ? shuntCompensator[Q_AT_NOMINAL_V]
                     : null,
-                shuntCompensator[SHUNT_COMPENSATOR_TYPE],
+                shuntCompensator[CHARACTERISTICS_CHOICE] ===
+                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                    ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
+                    : null,
                 shuntCompensator[CONNECTIVITY],
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
