@@ -16,10 +16,12 @@ jobs:
               id: vars
               run: echo ::set-output name=tag::${GITHUB_REF_NAME#v}
 
-            - name: Install and Build
+            - name: setup NodeJS version
               uses: actions/setup-node@v3
               with:
                 node-version: lts/fermium
+
+            - name: Install and Build
               run: |
                   npm install
                   npm run-script build
