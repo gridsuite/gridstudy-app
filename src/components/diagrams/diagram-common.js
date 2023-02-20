@@ -38,9 +38,13 @@ export const DEFAULT_HEIGHT_SUBSTATION = 400;
 export const DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM = 400;
 export const DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM = 400;
 
-// To allow controls that are in the corners of the map to not be hidden in normal mode
-// (but they are still hidden in fullscreen mode)
+// Height (in pixels) reserved to allow elements that are in the bottom of the map
+// to not be hidden in normal mode (but they are still hidden in fullscreen mode)
 export const MAP_BOTTOM_OFFSET = 80;
+
+// Percentage of the diagram pane's total height that correspond to the minimum
+// height of opened diagrams : diagrams should not be smaller than 25% of the
+// diagram pane's height.
 export const DIAGRAM_MAP_RATIO_MIN_PERCENTAGE = 0.25;
 
 export const useDiagramStyles = makeStyles((theme) => ({

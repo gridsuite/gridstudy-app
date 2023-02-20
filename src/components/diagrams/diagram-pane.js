@@ -631,7 +631,7 @@ export function DiagramPane({
             // let's check if the total width of the displayed diagrams is greater than the
             // available space in the pane.
             // If it is, it means the diagram's content are compressed and their heights
-            // should be shortened.
+            // should be shortened to keep their ratio correct.
             const totalWidthOfDiagrams = displayedDiagrams.reduce(
                 (sum, currentDiagram) =>
                     sum +
@@ -648,12 +648,21 @@ export function DiagramPane({
                 result = maxHeightFromDisplayedDiagrams;
             }
 
-            // The height should not be too small (could happen if a lot of diagrams are opened
-            // at the same time) and should not be so big that it overlaps the stacked minimized
-            // diagrams on the bottom of the pane.
+            // Edge cases :
+
+            // When opening a lot of diagrams, the total width of the displayed diagrams grows
+            // with each new opened diagram and therefor their heights are shortened more and
+            // more.
+            // To prevent the diagrams from becoming too small, we stop shortening their height
+            // under a threshold : a percentage of the pane's total height.
             if (result < availableHeight * DIAGRAM_MAP_RATIO_MIN_PERCENTAGE) {
                 return availableHeight * DIAGRAM_MAP_RATIO_MIN_PERCENTAGE;
             }
+
+            // If a diagram is too big, it could overlap the minimized diagrams on the bottom
+            // of the pane and the map's other controls.
+            // To prevent this, we restrict the diagrams' height to the total height of the pane
+            // minus a fixed amount of pixels which are reserved for these controls and elements.
             if (result > availableHeight - MAP_BOTTOM_OFFSET) {
                 return availableHeight - MAP_BOTTOM_OFFSET;
             }
