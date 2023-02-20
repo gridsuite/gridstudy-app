@@ -10,7 +10,6 @@ import ModificationDialog from '../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../utils/yup-config';
@@ -124,10 +123,9 @@ const GeneratorCreationDialog = ({
     editData,
     currentNodeUuid,
     voltageLevelOptionsPromise,
+    studyUuid,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const { snackError } = useSnackMessage();
 
     const equipmentPath = 'generators';

@@ -45,9 +45,11 @@ const MidFormError = ({ name }) => {
     };
 
     return (
-        <div key={error?.message} className={classes.midFormErrorMessage}>
-            <FormattedMessage {...errorProps(error?.message)} />
-        </div>
+        error?.message && (
+            <div key={error?.message} className={classes.midFormErrorMessage}>
+                <FormattedMessage {...errorProps(error?.message)} />
+            </div>
+        )
     );
 };
 
