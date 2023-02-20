@@ -89,7 +89,8 @@ import {
 
 /**
  * Dialog to create a two windings transformer in the network
- * @param currentNodeUuid The node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentNode The node we are currently working on
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
@@ -122,9 +123,10 @@ export const MAX_TAP_CHANGER_STEPS_NUMBER = 100;
 const TwoWindingsTransformerCreationDialog = ({
     editData,
     studyUuid,
-    currentNodeUuid,
+    currentNode,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
     const equipmentPath = '2-windings-transformers';
@@ -642,7 +644,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 >
                     <TwoWindingsTransformerPane
                         studyUuid={studyUuid}
-                        currentNodeUuid={currentNodeUuid}
+                        currentNode={currentNode}
                         voltageLevelOptions={voltageLevelOptions}
                     />
                 </Box>
@@ -690,7 +692,7 @@ const TwoWindingsTransformerCreationDialog = ({
 TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default TwoWindingsTransformerCreationDialog;

@@ -31,6 +31,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DirectoryItemSelector = (props) => {
+    const { types, equipmentTypes, itemFilter } = props;
+
     const [data, setData] = useState([]);
     const [rootDirectories, setRootDirectories] = useState([]);
     const nodeMap = useRef({});
@@ -138,29 +140,26 @@ const DirectoryItemSelector = (props) => {
 
     const fetchDirectory = useCallback(
         (nodeId) => {
-            fetchDirectoryContent(nodeId, props.types)
+            fetchDirectoryContent(nodeId, types)
                 .then((children) => {
                     const childrenMatchedTypes = children.filter((item) =>
                         contentFilter().has(item.type)
                     );
-                    if (
-                        props.equipmentTypes &&
-                        props.equipmentTypes.length > 0
-                    ) {
+                    if (equipmentTypes && equipmentTypes.length > 0) {
                         // filtering also with equipment types
                         fetchElementsMetadata(
                             childrenMatchedTypes.map((e) => e.elementUuid),
-                            props.types,
-                            props.equipmentTypes
+                            types,
+                            equipmentTypes
                         ).then((childrenWithMetada) => {
-                            const children = props.itemFilter
+                            const children = itemFilter
                                 ? childrenWithMetada.filter((val) => {
                                       // Accept every directories
                                       if (val.type === elementType.DIRECTORY) {
                                           return true;
                                       }
                                       // otherwise filter with the custon itemFilter func
-                                      return props.itemFilter(val);
+                                      return itemFilter(val);
                                   })
                                 : childrenWithMetada;
                             // update directory content
@@ -177,7 +176,7 @@ const DirectoryItemSelector = (props) => {
                     );
                 });
         },
-        [props, contentFilter, addToDirectory]
+        [types, equipmentTypes, itemFilter, contentFilter, addToDirectory]
     );
 
     useEffect(() => {
@@ -188,9 +187,14 @@ const DirectoryItemSelector = (props) => {
                 )
             ) {
                 if (!studyUpdatedForce.eventData.headers['isRootDirectory']) {
-                    fetchDirectory(
-                        studyUpdatedForce.eventData.headers['directoryUuid']
-                    );
+                    const nodeID =
+                        studyUpdatedForce.eventData.headers['directoryUuid'];
+                    // We need to check if the node id sent by notification is in the nodes map,
+                    // otherwise the fetchDirectory call will build a new ghost node with this id and put it in the Map.
+                    // It will be called later when browsing the directory tree
+                    if (nodeMap.current[nodeID]) {
+                        fetchDirectory(nodeID);
+                    }
                 } else {
                     updateRootDirectories();
                 }

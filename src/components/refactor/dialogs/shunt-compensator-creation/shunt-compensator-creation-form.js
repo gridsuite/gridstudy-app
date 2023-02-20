@@ -17,7 +17,7 @@ import {
     MAXIMUM_NUMBER_OF_SECTIONS,
     SUSCEPTANCE_PER_SECTION,
 } from 'components/refactor/utils/field-constants';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     filledTextField,
     gridItem,
@@ -28,9 +28,22 @@ import {
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import FloatInput from 'components/refactor/rhf-inputs/float-input';
+import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 
-const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
+const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const disabledChecked = { disabled: true };
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    useEffect(() => {
+        if (studyUuid && currentNode?.id)
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                    );
+                }
+            );
+    }, [studyUuid, currentNode?.id]);
 
     const shuntCompensatorIdField = (
         <TextInput
@@ -83,7 +96,9 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
     const connectivityForm = (
         <ConnectivityForm
             withPosition={true}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+            voltageLevelOptions={voltageLevelOptions}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
         />
     );
 
