@@ -271,8 +271,7 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_CREATION: {
             label: 'CreateGenerator',
-            dialog: () =>
-                adapt(GeneratorCreationDialog, withVLs, withVLsIdsAndTopology),
+            dialog: () => adapt(GeneratorCreationDialog, withVLs),
             icon: <AddIcon />,
         },
         GENERATOR_MODIFICATION: {

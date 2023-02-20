@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -13,52 +13,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { useStyles } from '../../../../../dialogs/dialogUtils';
 import { useFieldArray } from 'react-hook-form';
-import ReactiveCapabilityCurveRowForm, {
-    ROW_EMPTY_FORM_DATA,
-    ROW_SCHEMA,
-} from './reactive-capability-curve-row-form';
-import {
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-} from '../../../../utils/field-constants';
-import FieldErrorAlert from '../../../../rhf-inputs/field-error-alert';
-import yup from '../../../../utils/yup-config';
-import { checkPUnique } from './reactive-capability-utils';
-
-export const REACTIVE_CAPABILITY_CURVE_EMPTY_FORM_DATA = {
-    [REACTIVE_CAPABILITY_CURVE_TABLE]: [
-        ROW_EMPTY_FORM_DATA,
-        ROW_EMPTY_FORM_DATA,
-    ],
-};
-
-export const REACTIVE_CAPABILITY_CURVE_VALIDATION_SCHEMA = {
-    [REACTIVE_CAPABILITY_CURVE_TABLE]: yup
-        .array()
-        .nullable()
-        .when([REACTIVE_CAPABILITY_CURVE_CHOICE], {
-            is: 'CURVE',
-            then: (schema) =>
-                schema
-                    .of(ROW_SCHEMA)
-                    .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
-                    .test(
-                        'checkPUnique',
-                        'ReactiveCapabilityCurveCreationErrorPInvalid',
-                        (values) => checkPUnique(values)
-                    ),
-        }),
-};
+import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
+import MidFormError from '../../../../rhf-inputs/mid-form-error';
 
 export const ReactiveCapabilityCurveTable = ({
+    id,
     tableHeadersIds,
     disabled = false,
 }) => {
-    const {
-        fields: rows,
-        insert,
-        remove,
-    } = useFieldArray({ name: `${REACTIVE_CAPABILITY_CURVE_TABLE}` });
+    const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();
 
     return (
@@ -69,6 +32,7 @@ export const ReactiveCapabilityCurveTable = ({
                 </Grid>
             ))}
 
+            <MidFormError name={id} />
             {rows.map((value, index, displayedValues) => {
                 let labelSuffix;
                 if (index === 0) labelSuffix = 'min';
@@ -78,7 +42,7 @@ export const ReactiveCapabilityCurveTable = ({
                 return (
                     <Grid key={value.id} container spacing={3} item>
                         <ReactiveCapabilityCurveRowForm
-                            id={REACTIVE_CAPABILITY_CURVE_TABLE}
+                            id={id}
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
@@ -113,7 +77,6 @@ export const ReactiveCapabilityCurveTable = ({
                     </Grid>
                 );
             })}
-            <FieldErrorAlert name={REACTIVE_CAPABILITY_CURVE_TABLE} />
         </Grid>
     );
 };

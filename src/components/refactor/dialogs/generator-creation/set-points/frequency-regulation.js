@@ -11,23 +11,6 @@ import { DROOP, FREQUENCY_REGULATION } from '../../../utils/field-constants';
 import BooleanInput from '../../../rhf-inputs/boolean-input';
 import React from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
-import yup from '../../../utils/yup-config';
-
-export const FREQUENCY_REGULATION_EMPTY_FORM_DATA = {
-    [FREQUENCY_REGULATION]: false,
-    [DROOP]: null,
-};
-
-export const FREQUENCY_REGULATION_SCHEMA = yup.object().shape({
-    [FREQUENCY_REGULATION]: yup.bool().required(),
-    [DROOP]: yup
-        .number()
-        .nullable()
-        .when([FREQUENCY_REGULATION], {
-            is: true,
-            then: (schema) => schema.required(),
-        }),
-});
 
 const FrequencyRegulation = () => {
     const isFrequencyRegulationOn = useWatch({

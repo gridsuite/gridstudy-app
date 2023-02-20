@@ -50,7 +50,6 @@ export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
 export const VOLTAGE_REGULATION_TYPE = 'voltageRegulationType';
 export const VOLTAGE_SET_POINT = 'voltageSetPoint';
 export const TRANSIENT_REACTANCE = 'transientReactance';
-export const REGULATING_TERMINAL = 'regulatingTerminal';
 export const Q_PERCENT = 'qPercent';
 export const FREQUENCY_REGULATION = 'frequencyRegulation';
 export const DROOP = 'droop';

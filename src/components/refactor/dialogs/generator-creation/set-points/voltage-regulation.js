@@ -1,24 +1,3 @@
-import SelectInput from '../../rhf-inputs/select-input';
-import { REGULATION_TYPES } from '../../../network/constants';
-import {
-    Q_PERCENT,
-    REGULATING_TERMINAL,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
-} from '../../utils/field-constants';
-import React from 'react';
-import FloatInput from '../../rhf-inputs/float-input';
-import {
-    gridItem,
-    percentageTextField,
-    VoltageAdornment,
-} from '../../../dialogs/dialogUtils';
-import RegulatingTerminalForm from '../regulating-terminal/regulating-terminal-form';
-import { Box } from '@mui/system';
-import Grid from '@mui/material/Grid';
-import { FormattedMessage } from 'react-intl';
-import { useWatch } from 'react-hook-form';
-
 /**
  * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -26,9 +5,30 @@ import { useWatch } from 'react-hook-form';
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const VoltageRegulationForm = ({
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
+import SelectInput from '../../../rhf-inputs/select-input';
+import { REGULATION_TYPES } from '../../../../network/constants';
+import {
+    Q_PERCENT,
+    VOLTAGE_REGULATION_TYPE,
+    VOLTAGE_SET_POINT,
+} from '../../../utils/field-constants';
+import React from 'react';
+import FloatInput from '../../../rhf-inputs/float-input';
+import {
+    gridItem,
+    percentageTextField,
+    VoltageAdornment,
+} from '../../../../dialogs/dialogUtils';
+import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
+import { Box } from '@mui/system';
+import Grid from '@mui/material/Grid';
+import { FormattedMessage } from 'react-intl';
+import { useWatch } from 'react-hook-form';
+
+const VoltageRegulation = ({
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelOptions,
 }) => {
     const voltageRegulationType = useWatch({
         name: VOLTAGE_REGULATION_TYPE,
@@ -56,12 +56,11 @@ const VoltageRegulationForm = ({
 
     const regulatingTerminalField = (
         <RegulatingTerminalForm
-            id={REGULATING_TERMINAL}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-            voltageLevelsEquipmentsOptionsPromise={
-                voltageLevelsEquipmentsOptionsPromise
-            }
+            id={''}
+            voltageLevelOptions={voltageLevelOptions}
             equipmentSectionTypeDefaultValue={''}
+            currentNodeUuid={currentNodeUuid}
+            studyUuid={studyUuid}
         />
     );
 
@@ -94,4 +93,4 @@ const VoltageRegulationForm = ({
     );
 };
 
-export default VoltageRegulationForm;
+export default VoltageRegulation;

@@ -32,16 +32,31 @@ import {
 import SelectInput from '../../rhf-inputs/select-input';
 import { ENERGY_SOURCES } from '../../../network/constants';
 import Grid from '@mui/material/Grid';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import FloatInput from '../../rhf-inputs/float-input';
 import ReactiveLimitsForm from './reactive-limits/reactive-limits-form';
 import SetPointsForm from './set-points/set-points-form';
+import { fetchVoltageLevelsIdAndTopology } from '../../../../utils/rest-api';
 
 const GeneratorCreationForm = ({
     voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
+    studyUuid,
+    currentNodeUuid,
 }) => {
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    useEffect(() => {
+        if (studyUuid && currentNodeUuid)
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a.id.localeCompare(b.id))
+                    );
+                }
+            );
+    }, [studyUuid, currentNodeUuid]);
+
     const generatorIdField = (
         <TextInput
             name={EQUIPMENT_ID}
@@ -71,8 +86,10 @@ const GeneratorCreationForm = ({
 
     const connectivityForm = (
         <ConnectivityForm
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+            studyUuid={studyUuid}
+            currentNodeUuid={currentNodeUuid}
         />
     );
 
@@ -167,10 +184,9 @@ const GeneratorCreationForm = ({
 
             {/* Set points part */}
             <SetPointsForm
-                voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-                voltageLevelsEquipmentsOptionsPromise={
-                    voltageLevelsEquipmentsOptionsPromise
-                }
+                studyUuid={studyUuid}
+                currentNodeUuid={currentNodeUuid}
+                voltageLevelOptions={voltageLevelOptions}
             />
 
             {/* Short Circuit of start part */}

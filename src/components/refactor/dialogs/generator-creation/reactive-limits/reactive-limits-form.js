@@ -10,6 +10,7 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../utils/field-constants';
 import { REACTIVE_LIMIT_TYPES } from '../../../../network/constants';
 import React from 'react';
@@ -19,28 +20,9 @@ import {
     GridSection,
     ReactivePowerAdornment,
 } from '../../../../dialogs/dialogUtils';
-import {
-    REACTIVE_CAPABILITY_CURVE_EMPTY_FORM_DATA,
-    REACTIVE_CAPABILITY_CURVE_VALIDATION_SCHEMA,
-    ReactiveCapabilityCurveTable
-} from './reactive-capability-curve/reactive-capability-curve-table';
+import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
-import yup from "../../../utils/yup-config";
-
-export const REACTIVE_LIMITS_EMPTY_FORM_DATA = {
-    [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
-    [MINIMUM_REACTIVE_POWER]: null,
-    [MAXIMUM_REACTIVE_POWER]: null,
-    ...REACTIVE_CAPABILITY_CURVE_EMPTY_FORM_DATA
-};
-
-export const REACTIVE_LIMITS_SCHEMA = yup.object().shape({
-    [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
-    [MINIMUM_REACTIVE_POWER]: yup.number().nullable(),
-    [MAXIMUM_REACTIVE_POWER]: yup.number().nullable(),
-    ...REACTIVE_CAPABILITY_CURVE_VALIDATION_SCHEMA,
-});
 
 const headerIds = [
     'ActivePowerText',
@@ -82,6 +64,7 @@ const ReactiveLimitsForm = () => {
 
     const reactiveCapabilityCurveTableField = (
         <ReactiveCapabilityCurveTable
+            id={REACTIVE_CAPABILITY_CURVE_TABLE}
             tableHeadersIds={headerIds}
             isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
         />

@@ -10,7 +10,6 @@ import {
     ID,
     NAME,
     NOMINAL_VOLTAGE,
-    REGULATING_TERMINAL,
     SUBSTATION_ID,
     TOPOLOGY_KIND,
     TYPE,
@@ -18,33 +17,29 @@ import {
 } from 'components/refactor/utils/field-constants';
 import yup from '../../utils/yup-config';
 
-const regulatingTerminalValidationSchema = (id) => ({
-    [id]: yup.object().shape({
-        [VOLTAGE_LEVEL]: yup
-            .object()
-            .nullable()
-            .required()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string(),
-                [SUBSTATION_ID]: yup.string(),
-                [NOMINAL_VOLTAGE]: yup.string(),
-                [TOPOLOGY_KIND]: yup.string().nullable(),
-            }),
-        [EQUIPMENT]: yup
-            .object()
-            .nullable()
-            .required()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string().nullable(),
-                [TYPE]: yup.string(),
-            }),
-    }),
+const regulatingTerminalValidationSchema = () => ({
+    [VOLTAGE_LEVEL]: yup
+        .object()
+        .nullable()
+        .shape({
+            [ID]: yup.string(),
+            [NAME]: yup.string(),
+            [SUBSTATION_ID]: yup.string(),
+            [NOMINAL_VOLTAGE]: yup.string(),
+            [TOPOLOGY_KIND]: yup.string().nullable(),
+        }),
+    [EQUIPMENT]: yup
+        .object()
+        .nullable()
+        .shape({
+            [ID]: yup.string(),
+            [NAME]: yup.string().nullable(),
+            [TYPE]: yup.string(),
+        }),
 });
 
 export const getRegulatingTerminalValidationSchema = () => {
-    return regulatingTerminalValidationSchema(REGULATING_TERMINAL);
+    return regulatingTerminalValidationSchema();
 };
 
 const regulatingTerminalEmptyFormData = () => ({
@@ -55,12 +50,6 @@ const regulatingTerminalEmptyFormData = () => ({
 export const getRegulatingTerminalEmptyFormData = () => {
     return regulatingTerminalEmptyFormData();
 };
-
-export const getRegulatingTerminalEmptyFormDataWithId = (
-    id = REGULATING_TERMINAL
-) => ({
-    [id]: regulatingTerminalEmptyFormData(),
-});
 
 export const getRegulatingTerminalVoltageLevelData = ({
     voltageLevelId,

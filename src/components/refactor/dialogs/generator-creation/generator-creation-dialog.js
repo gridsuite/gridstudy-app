@@ -34,8 +34,6 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
-    NAME,
-    NOMINAL_VOLTAGE,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q_PERCENT,
@@ -43,13 +41,9 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_POWER_SET_POINT,
-    REGULATING_TERMINAL,
     STARTUP_COST,
-    SUBSTATION_ID,
-    TOPOLOGY_KIND,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
-    TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
@@ -61,10 +55,7 @@ import {
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
-import {
-    getRegulatingTerminalEmptyFormDataWithId,
-    getRegulatingTerminalFormData,
-} from '../regulating-terminal/regulating-terminal-form-utils';
+import { getRegulatingTerminalFormData } from '../regulating-terminal/regulating-terminal-form-utils';
 import { createGenerator } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import {
@@ -72,16 +63,18 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../../../network/constants';
 import {
-    getReactiveCapabilityCurveEmptyFormData,
-    getReactiveCapabilityCurveValidationSchema,
-} from './reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import {REACTIVE_LIMITS_EMPTY_FORM_DATA, REACTIVE_LIMITS_SCHEMA} from "./reactive-limits/reactive-limits-form";
+    getSetPointsEmptyFormData,
+    getSetPointsSchema,
+} from './set-points/set-points-utils';
+import {
+    getReactiveLimitsEmptyFormData,
+    getReactiveLimitsSchema,
+} from './reactive-limits/reactive-limits-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [ENERGY_SOURCE]: 'OTHER',
-    [VOLTAGE_REGULATION_TYPE]: REGULATION_TYPES.LOCAL.id,
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
     [RATED_NOMINAL_POWER]: null,
@@ -92,10 +85,8 @@ const emptyFormData = {
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
-    [VOLTAGE_SET_POINT]: null,
-    [Q_PERCENT]: null,
-    ...REACTIVE_LIMITS_EMPTY_FORM_DATA,
-    ...getRegulatingTerminalEmptyFormDataWithId(),
+    ...getSetPointsEmptyFormData(),
+    ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityEmptyFormData(),
 };
 
@@ -108,7 +99,6 @@ const schema = yup
         [MAXIMUM_ACTIVE_POWER]: yup.number().required(),
         [MINIMUM_ACTIVE_POWER]: yup.number().required(),
         [RATED_NOMINAL_POWER]: yup.number().nullable(),
-        [ACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
         [TRANSIENT_REACTANCE]: yup.number().nullable(),
         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
@@ -124,66 +114,8 @@ const schema = yup
             .nullable()
             .min(0, 'RealPercentage')
             .max(1, 'RealPercentage'),
-        [REACTIVE_POWER_SET_POINT]: yup
-            .number()
-            .nullable()
-            .when([VOLTAGE_REGULATION], {
-                is: false,
-                then: (schema) => schema.required(),
-            }),
-        [VOLTAGE_REGULATION]: yup.bool().nullable().required(),
-        [VOLTAGE_REGULATION_TYPE]: yup
-            .string()
-            .nullable()
-            .when([VOLTAGE_REGULATION], {
-                is: true,
-                then: (schema) => schema.required(),
-            }),
-        [VOLTAGE_SET_POINT]: yup
-            .number()
-            .nullable()
-            .when([VOLTAGE_REGULATION], {
-                is: true,
-                then: (schema) => schema.required(),
-            }),
-        [Q_PERCENT]: yup
-            .number()
-            .nullable()
-            .max(100, 'NormalizedPercentage')
-            .min(0, 'NormalizedPercentage'),
-        [REGULATING_TERMINAL]: yup.object().shape({
-            [VOLTAGE_LEVEL]: yup
-                .object()
-                .nullable()
-                .shape({
-                    [ID]: yup.string(),
-                    [NAME]: yup.string(),
-                    [SUBSTATION_ID]: yup.string(),
-                    [NOMINAL_VOLTAGE]: yup.string(),
-                    [TOPOLOGY_KIND]: yup.string().nullable(),
-                })
-                .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
-                    is: (voltageRegulation, voltageRegulationType) =>
-                        voltageRegulation &&
-                        voltageRegulationType === REGULATION_TYPES.DISTANT.id,
-                    then: (schema) => schema.required(),
-                }),
-            [EQUIPMENT]: yup
-                .object()
-                .nullable()
-                .shape({
-                    [ID]: yup.string(),
-                    [NAME]: yup.string().nullable(),
-                    [TYPE]: yup.string(),
-                })
-                .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
-                    is: (voltageRegulation, voltageRegulationType) =>
-                        voltageRegulation &&
-                        voltageRegulationType === REGULATION_TYPES.DISTANT.id,
-                    then: (schema) => schema.required(),
-                }),
-        }),
-        ...REACTIVE_LIMITS_SCHEMA,
+        ...getSetPointsSchema(),
+        ...getReactiveLimitsSchema(),
         ...getConnectivityFormValidationSchema(),
     })
     .required();
@@ -192,7 +124,6 @@ const GeneratorCreationDialog = ({
     editData,
     currentNodeUuid,
     voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
     ...dialogProps
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -219,13 +150,6 @@ const GeneratorCreationDialog = ({
             [VOLTAGE_REGULATION]: generator.voltageRegulatorOn,
             [VOLTAGE_SET_POINT]: generator.targetV,
             [REACTIVE_POWER_SET_POINT]: generator.targetQ,
-            ...getConnectivityFormData({
-                voltageLevelId: generator.voltageLevelId,
-                busbarSectionId: generator.busbarSectionId,
-                connectionDirection: generator.connectionDirection,
-                connectionName: generator.connectionName,
-                connectionPosition: generator.connectionPosition,
-            }),
             [PLANNED_ACTIVE_POWER_SET_POINT]:
                 generator.plannedActivePowerSetPoint,
             [STARTUP_COST]: generator.startupCost,
@@ -253,12 +177,19 @@ const GeneratorCreationDialog = ({
                 : 'CURVE',
             [REACTIVE_CAPABILITY_CURVE_TABLE]:
                 generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
-            [REGULATING_TERMINAL]: getRegulatingTerminalFormData({
+            ...getRegulatingTerminalFormData({
                 equipmentId:
                     generator.regulatingTerminalConnectableId ||
                     generator.regulatingTerminalId,
                 equipmentType: generator.regulatingTerminalConnectableType,
                 voltageLevelId: generator.regulatingTerminalVlId,
+            }),
+            ...getConnectivityFormData({
+                voltageLevelId: generator.voltageLevelId,
+                busbarSectionId: generator.busbarSectionId,
+                connectionDirection: generator.connectionDirection,
+                connectionName: generator.connectionName,
+                connectionPosition: generator.connectionPosition,
             }),
         });
     };
@@ -284,13 +215,6 @@ const GeneratorCreationDialog = ({
                 [VOLTAGE_REGULATION]: editData.voltageRegulationOn,
                 [VOLTAGE_SET_POINT]: editData.voltageSetpoint,
                 [REACTIVE_POWER_SET_POINT]: editData.targetQ,
-                ...getConnectivityFormData({
-                    voltageLevelId: editData.voltageLevelId,
-                    busbarSectionId: editData.busOrBusbarSectionId,
-                    connectionDirection: editData.connectionDirection,
-                    connectionName: editData.connectionName,
-                    connectionPosition: editData.connectionPosition,
-                }),
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
                     editData.plannedActivePowerSetPoint,
                 [STARTUP_COST]: editData.startupCost,
@@ -316,10 +240,17 @@ const GeneratorCreationDialog = ({
                         : 'CURVE',
                 [REACTIVE_CAPABILITY_CURVE_TABLE]:
                     editData?.reactiveCapabilityCurvePoints ?? [{}, {}],
-                [REGULATING_TERMINAL]: getRegulatingTerminalFormData({
+                ...getRegulatingTerminalFormData({
                     equipmentId: editData.regulatingTerminalId,
                     equipmentType: editData.regulatingTerminalType,
                     voltageLevelId: editData.regulatingTerminalVlId,
+                }),
+                ...getConnectivityFormData({
+                    voltageLevelId: editData.voltageLevelId,
+                    busbarSectionId: editData.busOrBusbarSectionId,
+                    connectionDirection: editData.connectionDirection,
+                    connectionName: editData.connectionName,
+                    connectionPosition: editData.connectionPosition,
                 }),
             });
         }
@@ -363,15 +294,9 @@ const GeneratorCreationDialog = ({
                 generator[FORCED_OUTAGE_RATE],
                 generator[TRANSIENT_REACTANCE],
                 generator[TRANSFORMER_REACTANCE],
-                isDistantRegulation
-                    ? generator[REGULATING_TERMINAL]?.[EQUIPMENT]?.id
-                    : null,
-                isDistantRegulation
-                    ? generator[REGULATING_TERMINAL]?.[EQUIPMENT]?.type
-                    : null,
-                isDistantRegulation
-                    ? generator[REGULATING_TERMINAL]?.[VOLTAGE_LEVEL]?.id
-                    : null,
+                isDistantRegulation ? generator[EQUIPMENT]?.id : null,
+                isDistantRegulation ? generator[EQUIPMENT]?.type : null,
+                isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id : null,
                 isReactiveCapabilityCurveOn,
                 generator[FREQUENCY_REGULATION],
                 generator[DROOP] ?? null,
@@ -411,10 +336,9 @@ const GeneratorCreationDialog = ({
                 {...dialogProps}
             >
                 <GeneratorCreationForm
+                    studyUuid={studyUuid}
+                    currentNodeUuid={currentNodeUuid}
                     voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-                    voltageLevelsEquipmentsOptionsPromise={
-                        voltageLevelsEquipmentsOptionsPromise
-                    }
                 />
 
                 <EquipmentSearchDialog

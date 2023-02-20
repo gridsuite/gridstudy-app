@@ -9,7 +9,6 @@ import {
     ActivePowerAdornment,
     gridItem,
     GridSection,
-    percentageTextField,
     ReactivePowerAdornment,
 } from '../../../../dialogs/dialogUtils';
 import Grid from '@mui/material/Grid';
@@ -24,22 +23,9 @@ import {
 import BooleanInput from '../../../rhf-inputs/boolean-input';
 import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
-import VoltageRegulationForm from '../../voltage-regulation/voltage-regulation-form';
-import yup from "../../../utils/yup-config";
+import VoltageRegulation from './voltage-regulation';
 
-export const SET_POINTS_EMPTY_FORM_DATA = ({
-    [VOLTAGE_REGULATION]: false,
-    [ACTIVE_POWER_SET_POINT]: null,
-    [REACTIVE_POWER_SET_POINT]: null,
-});
-
-export const SET_POINTS_SCHEMA = yup.object().shape({
-
-})
-const SetPointsForm = ({
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
-}) => {
+const SetPointsForm = ({ studyUuid, currentNodeUuid, voltageLevelOptions }) => {
     const isVoltageRegulationOn = useWatch({
         name: VOLTAGE_REGULATION,
     });
@@ -68,11 +54,10 @@ const SetPointsForm = ({
     );
 
     const voltageRegulationFields = (
-        <VoltageRegulationForm
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-            voltageLevelsEquipmentsOptionsPromise={
-                voltageLevelsEquipmentsOptionsPromise
-            }
+        <VoltageRegulation
+            voltageLevelOptions={voltageLevelOptions}
+            currentNodeUuid={currentNodeUuid}
+            studyUuid={studyUuid}
         />
     );
 
