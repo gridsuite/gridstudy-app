@@ -9,9 +9,10 @@ import { useDirectoryElements } from '../inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { gridItem } from '../dialogUtils';
 import {
+    EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
+    MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES,
     SensiChecked,
     useStyles,
-    EquipmentType,
 } from './sensi-parameters-selector';
 
 export const SensiNodes = ({ index, onChange, defaultValue }) => {
@@ -29,7 +30,7 @@ export const SensiNodes = ({ index, onChange, defaultValue }) => {
                 ? defaultValue.monitoredVoltageLevels
                 : [],
             elementType: elementType.FILTER,
-            equipmentTypes: [EquipmentType.VOLTAGE_LEVEL],
+            equipmentTypes: MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES,
             titleId: 'FiltersListsSelection',
             elementClassName: classes.chipElement,
         });
@@ -41,13 +42,7 @@ export const SensiNodes = ({ index, onChange, defaultValue }) => {
                 ? defaultValue.equipmentsInVoltageRegulation
                 : [],
             elementType: elementType.FILTER,
-            equipmentTypes: [
-                EquipmentType.GENERATOR,
-                EquipmentType.TWO_WINDINGS_TRANSFORMER,
-                EquipmentType.VSC_CONVERTER_STATION,
-                EquipmentType.STATIC_VAR_COMPENSATOR,
-                EquipmentType.SHUNT_COMPENSATOR,
-            ],
+            equipmentTypes: EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
             titleId: 'FiltersListsSelection',
             elementClassName: classes.chipElement,
         });

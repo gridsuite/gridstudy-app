@@ -23,8 +23,9 @@ import {
     SHUNT_SUSCEPTANCE_1,
     SHUNT_SUSCEPTANCE_2,
 } from 'components/refactor/utils/field-constants';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import {
     AmpereAdornment,
     filledTextField,
@@ -41,11 +42,21 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: 1,
     },
 }));
-const LineCreationForm = ({
-    voltageLevelOptionsPromise,
-    displayConnectivity,
-}) => {
+const LineCreationForm = ({ displayConnectivity, studyUuid, currentNode }) => {
     const classes = useStyles();
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    useEffect(() => {
+        if (studyUuid && currentNode?.id)
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                    );
+                }
+            );
+    }, [studyUuid, currentNode?.id]);
+
     const lineIdField = (
         <TextInput
             name={EQUIPMENT_ID}
@@ -65,18 +76,22 @@ const LineCreationForm = ({
     const connectivity1Field = (
         <ConnectivityForm
             id={CONNECTIVITY_1}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             direction="column"
+            studyUuid={studyUuid}
+            currentNode={currentNode}
         />
     );
 
     const connectivity2Field = (
         <ConnectivityForm
             id={CONNECTIVITY_2}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             direction="column"
+            studyUuid={studyUuid}
+            currentNode={currentNode}
         />
     );
 

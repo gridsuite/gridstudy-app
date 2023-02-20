@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 const TwoWindingsTransformerPane = ({
     id = CHARACTERISTICS,
     studyUuid,
-    currentNodeUuid,
+    currentNode,
     voltageLevelOptions,
 }) => {
     const classes = useStyles();
@@ -146,7 +146,7 @@ const TwoWindingsTransformerPane = ({
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_1}`}
             studyUuid={studyUuid}
-            currentNodeUuid={currentNodeUuid}
+            currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             direction="column"
@@ -157,7 +157,7 @@ const TwoWindingsTransformerPane = ({
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_2}`}
             studyUuid={studyUuid}
-            currentNodeUuid={currentNodeUuid}
+            currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             direction="column"
