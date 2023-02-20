@@ -17,6 +17,9 @@ jobs:
               run: echo ::set-output name=tag::${GITHUB_REF_NAME#v}
 
             - name: Install and Build
+            - uses: actions/setup-node@v3
+              with:
+                node-version: lts/fermium
               run: |
                   npm install
                   npm run-script build
