@@ -513,6 +513,11 @@
     "SeriesReactanceText": "Series reactance",
     "ShuntConductanceText": "Shunt conductance",
     "ShuntSusceptanceText": "Shunt susceptance",
+    "Reactor": "Reactor",
+    "Capacitor": "Capacitor",
+    "QatNominalV": "Q at nominal voltage",
+    "QatNominalVLabel": "Q at nominal voltage (MVAr)",
+    "SusceptanceLabel": "Susceptance (S)",
 
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",

@@ -6,32 +6,34 @@
  */
 
 import Grid from '@mui/material/Grid';
-import { Box } from '@mui/material';
-import BooleanInput from 'components/refactor/rhf-inputs/boolean-input';
-import IntegerInput from 'components/refactor/rhf-inputs/integer-input';
 import {
-    CURRENT_NUMBER_OF_SECTIONS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    IDENTICAL_SECTIONS,
-    MAXIMUM_NUMBER_OF_SECTIONS,
     SUSCEPTANCE_PER_SECTION,
+    CHARACTERISTICS_CHOICES,
+    CHARACTERISTICS_CHOICE,
+    Q_AT_NOMINAL_V,
+    SHUNT_COMPENSATOR_TYPE,
+    SHUNT_COMPENSATOR_TYPES,
 } from 'components/refactor/utils/field-constants';
 import React from 'react';
+import { useWatch } from 'react-hook-form';
 import {
     filledTextField,
     gridItem,
     GridSection,
     SusceptanceAdornment,
+    ReactivePowerAdornment,
 } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import FloatInput from 'components/refactor/rhf-inputs/float-input';
+import RadioInput from 'components/refactor/rhf-inputs/radio-input';
+import EnumInput from 'components/refactor/rhf-inputs/enum-input';
+import { Box } from '@mui/material';
 
 const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
-    const disabledChecked = { disabled: true };
-
     const shuntCompensatorIdField = (
         <TextInput
             name={EQUIPMENT_ID}
@@ -48,27 +50,17 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
         />
     );
 
-    const maximumNumberOfSectionsField = (
-        <IntegerInput
-            name={MAXIMUM_NUMBER_OF_SECTIONS}
-            label={'ShuntMaximumNumberOfSections'}
-            isInputPositiveOnly={true}
+    const connectivityForm = (
+        <ConnectivityForm
+            withPosition={true}
+            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
         />
     );
 
-    const currentNumberOfSectionsField = (
-        <IntegerInput
-            name={CURRENT_NUMBER_OF_SECTIONS}
-            label={'ShuntCurrentNumberOfSections'}
-            isInputPositiveOnly={true}
-        />
-    );
-
-    const identicalSectionsField = (
-        <BooleanInput
-            name={IDENTICAL_SECTIONS}
-            label={'ShuntIdenticalSections'}
-            formProps={disabledChecked}
+    const reactivePowerControlField = (
+        <RadioInput
+            name={CHARACTERISTICS_CHOICE}
+            possibleValues={Object.values(CHARACTERISTICS_CHOICES)}
         />
     );
 
@@ -80,12 +72,26 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
         />
     );
 
-    const connectivityForm = (
-        <ConnectivityForm
-            withPosition={true}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+    const reactiveNominalPower = (
+        <FloatInput
+            name={Q_AT_NOMINAL_V}
+            label={'QatNominalV'}
+            adornment={ReactivePowerAdornment}
         />
     );
+
+    const reactiveNominalPowerType = (
+        <EnumInput
+            options={Object.values(SHUNT_COMPENSATOR_TYPES)}
+            name={SHUNT_COMPENSATOR_TYPE}
+            label={'Type'}
+            size={'small'}
+        />
+    );
+
+    const reactivePowerControlChoice = useWatch({
+        name: CHARACTERISTICS_CHOICE,
+    });
 
     return (
         <>
@@ -99,12 +105,17 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
             </Grid>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {gridItem(maximumNumberOfSectionsField, 4)}
-                {gridItem(currentNumberOfSectionsField, 4)}
+                {gridItem(reactivePowerControlField, 12)}
+                {reactivePowerControlChoice ===
+                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id &&
+                    gridItem(susceptancePerSectionField, 4)}
+                {reactivePowerControlChoice ===
+                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
+                    gridItem(reactiveNominalPowerType, 4)}
                 <Box sx={{ width: '100%' }} />
-                {gridItem(identicalSectionsField, 4)}
-                {gridItem(susceptancePerSectionField, 4)}
-                <Box sx={{ width: '100%' }} />
+                {reactivePowerControlChoice ===
+                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
+                    gridItem(reactiveNominalPower, 4)}
             </Grid>
         </>
     );

@@ -513,6 +513,11 @@
     "SeriesReactanceText": "Réactance série",
     "ShuntConductanceText": "Conductance parallèle",
     "ShuntSusceptanceText": "Susceptance parallèle",
+    "Reactor": "Réactance",
+    "Capacitor": "Condensateur",
+    "QatNominalV": "Q à tension nominale",
+    "QatNominalVLabel": "Q à Unom (MVAr)",
+    "SusceptanceLabel": "Susceptance (S)",
 
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Sections identiques",
@@ -522,6 +527,7 @@
     "ShuntCompensatorErrorMaximumLessThanOne": "Le nombre maximum de sections doit être supérieur à 0",
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
+    "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
 
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
