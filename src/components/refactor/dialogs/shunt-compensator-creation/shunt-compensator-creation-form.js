@@ -16,7 +16,7 @@ import {
     SHUNT_COMPENSATOR_TYPE,
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/refactor/utils/field-constants';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import {
     filledTextField,
@@ -32,8 +32,22 @@ import FloatInput from 'components/refactor/rhf-inputs/float-input';
 import RadioInput from 'components/refactor/rhf-inputs/radio-input';
 import EnumInput from 'components/refactor/rhf-inputs/enum-input';
 import { Box } from '@mui/material';
+import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 
-const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
+const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    useEffect(() => {
+        if (studyUuid && currentNode?.id)
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                    );
+                }
+            );
+    }, [studyUuid, currentNode?.id]);
+
     const shuntCompensatorIdField = (
         <TextInput
             name={EQUIPMENT_ID}
@@ -50,13 +64,6 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
         />
     );
 
-    const connectivityForm = (
-        <ConnectivityForm
-            withPosition={true}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-        />
-    );
-
     const reactivePowerControlField = (
         <RadioInput
             name={CHARACTERISTICS_CHOICE}
@@ -69,6 +76,15 @@ const ShuntCompensatorCreationForm = ({ voltageLevelOptionsPromise }) => {
             name={SUSCEPTANCE_PER_SECTION}
             label={'ShuntSusceptancePerSection'}
             adornment={SusceptanceAdornment}
+        />
+    );
+
+    const connectivityForm = (
+        <ConnectivityForm
+            withPosition={true}
+            voltageLevelOptions={voltageLevelOptions}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
         />
     );
 

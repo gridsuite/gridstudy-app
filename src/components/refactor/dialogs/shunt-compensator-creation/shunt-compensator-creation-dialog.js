@@ -26,7 +26,6 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
 import { createShuntCompensator } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
@@ -100,17 +99,18 @@ const schema = yup
 /**
  * Dialog to create a shunt compensator in the network
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid the node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentNode the node we are currently working on
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const ShuntCompensatorCreationDialog = ({
-    voltageLevelOptionsPromise,
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
@@ -248,7 +248,8 @@ const ShuntCompensatorCreationDialog = ({
                 {...dialogProps}
             >
                 <ShuntCompensatorCreationForm
-                    voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
@@ -268,7 +269,8 @@ ShuntCompensatorCreationDialog.propTypes = {
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default ShuntCompensatorCreationDialog;

@@ -8,7 +8,6 @@
 import React, { useEffect, useState } from 'react';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem, GridSection } from './dialogUtils';
 import { loadScaling } from '../../utils/rest-api';
@@ -175,13 +174,17 @@ const VariationSection = ({
 
 /**
  * Dialog to Load Scaling.
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
+ * @param studyUuid the study we are currently working on
  * @param editData the possible line split with voltage level creation record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
-const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
+const LoadScalingDialog = ({
+    studyUuid,
+    currentNode,
+    editData,
+    ...dialogProps
+}) => {
     const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
@@ -248,7 +251,7 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
     const handleSave = () => {
         loadScaling(
             studyUuid,
-            currentNodeUuid,
+            currentNode?.id,
             editData?.uuid ?? undefined,
             variationType,
             variations
@@ -289,11 +292,12 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
 };
 
 LoadScalingDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     lineOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
+    studyUuid: PropTypes.string,
     editData: PropTypes.object,
 };
 
