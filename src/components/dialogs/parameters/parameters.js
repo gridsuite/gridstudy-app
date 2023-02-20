@@ -443,7 +443,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         );
     }
 
-    //To be removed when ShortCircuit is not in developer mode only.
     useEffect(() => {
         setTabIndex(
             enableDeveloperMode
