@@ -7,25 +7,17 @@
 
 import { useNodeData } from './study-container';
 import { fetchSensitivityAnalysisResult } from '../utils/rest-api';
-import WaitingLoader from './util/waiting-loader';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { CHANGE_WAYS, KeyedColumnsRowIndexer } from '@gridsuite/commons-ui';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage } from 'react-intl/lib';
 import { TablePagination } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const sensitivityAnalysisResultInvalidations = ['sensitivityAnalysisResult'];
-
-const loaderTimeoutMillis = 800;
 
 export const FUNCTION_TYPES = Object.freeze([
     'BRANCH_ACTIVE_POWER_1',
@@ -122,8 +114,6 @@ const tellDiff = (what, was, now) => {
     return false;
 };
 
-const RETRY_LIMIT_COUNT = 2;
-
 function PagedSensitivityResult({
     nOrNkIndex,
     sensiKindIndex,
@@ -135,9 +125,6 @@ function PagedSensitivityResult({
     const [version, setVersion] = useState();
     const [overAllCount, setOverAllCount] = useState(null);
     const [filteredCount, setFilteredCount] = useState(null);
-    const [allowsShowingLoader, setAllowsShowingLoader] = useState(false);
-    const timerRef = useRef(null);
-    const [retryCount, setRetryCount] = useState(0);
 
     const synthRef = useRef();
     const [next, prev] = [{}, synthRef.current];
@@ -150,10 +137,6 @@ function PagedSensitivityResult({
     next.userRowsPerPage = prev?.userRowsPerPage;
     next.version = prev?.version;
 
-    useEffect(() => {
-        return () => clearTimeout(timerRef.current);
-    }, []);
-
     if (
         tellDiff('node', prev?.nodeUuid, nodeUuid) ||
         tellDiff('sensi kind ', prev?.sensiKindIndex, sensiKindIndex) ||
@@ -164,7 +147,6 @@ function PagedSensitivityResult({
         setOverAllCount(null);
         setFilteredCount(null);
         setVersion(0);
-        setRetryCount(0);
 
         const pars = [true, false, null, setVersion];
         const rowIndexer = new KeyedColumnsRowIndexer(...pars);
@@ -184,12 +166,8 @@ function PagedSensitivityResult({
         next.askedFilterVersion = prev.askedFilterVersion;
     } else if (!prev.fetched) {
         // probably fetch failed, worth retrying ?
-        if (retryCount >= RETRY_LIMIT_COUNT) {
-            // avoid recreating a fetcher
-            next.fetcher = prev.fetcher;
-        } else {
-            setRetryCount((prevCount) => prevCount + 1);
-        }
+        // to be handled at a lower level, so avoid recreating a fetcher
+        next.fetcher = prev.fetcher;
     } else if (prev.fetched.sensitivities.length === overAllCount) {
         if (
             userRowsPerPage <= 0 ||
@@ -261,11 +239,6 @@ function PagedSensitivityResult({
                 chunkSize: userRowsPerPage,
             };
             addIndexerParamsToSelector(next.indexer, selector);
-            setAllowsShowingLoader(false);
-            timerRef.current = setTimeout(
-                () => setAllowsShowingLoader(true),
-                loaderTimeoutMillis
-            );
 
             return fetchSensitivityAnalysisResult(
                 studyUuid,
@@ -297,9 +270,7 @@ function PagedSensitivityResult({
     if (!prev?.isFetchNeedy) {
         // OK, next
     } else if (fetched && prev.fetched !== fetched) {
-        clearTimeout(timerRef.current);
         next.isFetchNeedy = false;
-        setRetryCount(0);
         setOverAllCount(fetched.totalSensitivitiesCount);
         setFilteredCount(fetched.filteredSensitivitiesCount);
         next.indexer.setColFilterOuterParams('funcId', fetched.allFunctionIds);
@@ -307,28 +278,26 @@ function PagedSensitivityResult({
         const contingencyIds = fetched.allContingencyIds;
         next.indexer.setColFilterOuterParams('contingencyId', contingencyIds);
     } else if (!isLoading && prev?.isLoading && errorMessage) {
-        next.isFetchNeedy = false; // for next change to try and fetch
-        console.warn('sensi results fetch', errorMessage, retryCount);
+        next.isFetchNeedy = false; // for next change to try and fetch, possibly
+        console.warn('sensi results fetch', errorMessage);
     }
     next.fetched = fetched;
     next.isLoading = isLoading;
 
     synthRef.current = next;
 
-    const showsLoading = isLoading && allowsShowingLoader;
+    const result = (!next.isFetchNeedy && fetched?.sensitivities) || [];
 
     return (
         <>
-            <WaitingLoader message={'LoadingRemoteData'} loading={showsLoading}>
-                {fetched?.sensitivities && (
-                    <SensitivityAnalysisResult
-                        result={fetched?.sensitivities}
-                        nOrNkIndex={nOrNkIndex}
-                        sensiToIndex={sensiKindIndex}
-                        indexer={next.indexer}
-                    />
-                )}
-            </WaitingLoader>
+            {isLoading && <LinearProgress />}
+            <SensitivityAnalysisResult
+                result={result}
+                nOrNkIndex={nOrNkIndex}
+                sensiToIndex={sensiKindIndex}
+                indexer={next.indexer}
+                isLoading
+            />
             <TablePagination
                 component="div"
                 rowsPerPageOptions={PAGE_OPTIONS}
