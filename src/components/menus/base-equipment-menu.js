@@ -194,7 +194,7 @@ const BaseEquipmentMenu = ({
                     studyUuid={studyUuid}
                     currentNodeUuid={currentTreeNode?.id}
                     onClose={() => setOpenDialog(false)}
-                    genId={equipmentId}
+                    genratorId={equipmentId}
                     voltageLevelsIdsAndTopologyPromise={withVLsIdsAndTopology(
                         studyUuid,
                         currentTreeNode?.id
