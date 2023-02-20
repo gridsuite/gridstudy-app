@@ -5,9 +5,8 @@ import {
     useOptionalEnumValue,
     useRadioValue,
 } from './inputs/input-hooks';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
-import { useParams } from 'react-router-dom';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import {
@@ -59,6 +58,7 @@ const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 const VENTILATION = 'VENTILATION';
 const STACKING_UP = 'STACKING_UP';
 const PROPORTIONAL_TO_PMAX = 'PROPORTIONAL_TO_PMAX';
+const GENERATORS = [EquipmentType.GENERATOR];
 
 const GeneratorScalingVariation = ({
     index,
@@ -79,24 +79,27 @@ const GeneratorScalingVariation = ({
         errorMsg: errors?.variationModeError,
     });
 
-    function itemFilter(value) {
-        if (value?.type === elementType.FILTER) {
-            if (variationMode === STACKING_UP) {
-                return value?.specificMetadata?.type === IDENTIFIER_LIST;
+    const itemFilter = useCallback(
+        (value) => {
+            if (value?.type === elementType.FILTER) {
+                if (variationMode === STACKING_UP) {
+                    return value?.specificMetadata?.type === IDENTIFIER_LIST;
+                }
+
+                if (variationMode === VENTILATION) {
+                    return (
+                        value?.specificMetadata?.type === IDENTIFIER_LIST &&
+                        value?.specificMetadata?.filterEquipmentsAttributes?.every(
+                            (fil) => !!fil.distributionKey
+                        )
+                    );
+                }
             }
 
-            if (variationMode === VENTILATION) {
-                return (
-                    value?.specificMetadata?.type === IDENTIFIER_LIST &&
-                    value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                        (fil) => !!fil.distributionKey
-                    )
-                );
-            }
-        }
-
-        return true;
-    }
+            return true;
+        },
+        [variationMode]
+    );
 
     const [filters, filtersField] = useDirectoryElements({
         label: 'filter',
@@ -106,7 +109,7 @@ const GeneratorScalingVariation = ({
         },
         elementType: elementType.FILTER,
         titleId: 'FiltersListsSelection',
-        equipmentTypes: [EquipmentType.GENERATOR],
+        equipmentTypes: GENERATORS,
         itemFilter: itemFilter,
         elementClassName: classes.chipElement,
         required: true,
@@ -145,12 +148,13 @@ const GeneratorScalingVariation = ({
 };
 
 const GeneratorScalingDialog = ({
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
     const classes = useStyles();
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
@@ -275,8 +279,9 @@ const GeneratorScalingDialog = ({
 };
 
 GeneratorScalingDialog.prototype = {
+    studyUuid: PropTypes.string,
     editData: PropTypes.object,
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default GeneratorScalingDialog;

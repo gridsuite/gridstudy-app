@@ -40,6 +40,7 @@ function makeButton(onClick, message, disabled) {
     );
 }
 
+const CONTINGENCY_TYPES = [elementType.CONTINGENCY_LIST];
 const ContingencyListSelector = (props) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -254,7 +255,7 @@ const ContingencyListSelector = (props) => {
             <DirectoryItemSelector
                 open={favoriteSelectorOpen}
                 onClose={addFavorites}
-                types={[elementType.CONTINGENCY_LIST]}
+                types={CONTINGENCY_TYPES}
                 title={intl.formatMessage({ id: 'ContingencyListsSelection' })}
             />
         </>
