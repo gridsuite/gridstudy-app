@@ -448,7 +448,7 @@ VoltageLevelCreationDialog.propTypes = {
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
-    currentNodeUuid: PropTypes.object,
+    currentNode: PropTypes.object,
     onCreateVoltageLevel: PropTypes.func,
 };
 

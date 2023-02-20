@@ -140,7 +140,7 @@ const ShuntCompensatorCreationDialog = ({
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
-        currentNodeUuid: currentNode?.id,
+        currentNodeUuid,
         equipmentPath: 'shunt-compensators',
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
@@ -219,7 +219,7 @@ ShuntCompensatorCreationDialog.propTypes = {
         catch: PropTypes.func.isRequired,
     }),
     studyUuid: PropTypes.string,
-    currentNode: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default ShuntCompensatorCreationDialog;

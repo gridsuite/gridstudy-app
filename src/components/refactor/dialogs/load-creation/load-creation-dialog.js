@@ -237,7 +237,7 @@ const LoadCreationDialog = ({
 LoadCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
-    currentNode: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default LoadCreationDialog;

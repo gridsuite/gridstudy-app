@@ -294,7 +294,7 @@ const LineCreationDialog = ({
 LineCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
-    currentNode: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default LineCreationDialog;

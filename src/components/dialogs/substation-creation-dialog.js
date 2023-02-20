@@ -284,8 +284,8 @@ const SubstationCreationDialog = ({
 
 SubstationCreationDialog.propTypes = {
     editData: PropTypes.object,
-    studyUuid: PropTypes.object,
-    currentNode: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default SubstationCreationDialog;
