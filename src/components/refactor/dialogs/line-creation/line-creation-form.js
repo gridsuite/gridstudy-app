@@ -16,8 +16,8 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     PERMANENT_LIMIT,
-    SERIES_REACTANCE,
-    SERIES_RESISTANCE,
+    X,
+    R,
     SHUNT_CONDUCTANCE_1,
     SHUNT_CONDUCTANCE_2,
     SHUNT_SUSCEPTANCE_1,
@@ -95,20 +95,12 @@ const LineCreationForm = ({ displayConnectivity, studyUuid, currentNode }) => {
         />
     );
 
-    const seriesResistanceField = (
-        <FloatInput
-            name={SERIES_RESISTANCE}
-            label="SeriesResistanceText"
-            adornment={OhmAdornment}
-        />
+    const rField = (
+        <FloatInput name={R} label="rText" adornment={OhmAdornment} />
     );
 
-    const seriesReactanceField = (
-        <FloatInput
-            name={SERIES_REACTANCE}
-            label="SeriesReactanceText"
-            adornment={OhmAdornment}
-        />
+    const xField = (
+        <FloatInput name={X} label="xText" adornment={OhmAdornment} />
     );
 
     const shuntConductance1Field = (
@@ -209,8 +201,8 @@ const LineCreationForm = ({ displayConnectivity, studyUuid, currentNode }) => {
                 </Grid>
             </Grid>
             <Grid container spacing={2}>
-                {gridItem(seriesResistanceField)}
-                {gridItem(seriesReactanceField)}
+                {gridItem(rField)}
+                {gridItem(xField)}
             </Grid>
             <Grid container spacing={2}>
                 <Grid item xs={6}>
