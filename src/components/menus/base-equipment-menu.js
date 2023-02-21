@@ -59,14 +59,38 @@ const ItemViewInSpreadsheet = ({
     );
 };
 
+const ItemViewInForm = ({
+    equipmentType,
+    equipmentId,
+    itemText,
+    handleOpenModificationDialog,
+}) => {
+    const classes = useStyles();
+    return (
+        <MenuItem
+            className={classes.menuItem}
+            onClick={() =>
+                handleOpenModificationDialog(equipmentId, equipmentType)
+            }
+        >
+            <ListItemIcon>
+                <EditIcon></EditIcon>
+            </ListItemIcon>
+            <ListItemText
+                className={classes.listItemText}
+                primary={<Typography noWrap>{itemText}</Typography>}
+            ></ListItemText>
+        </MenuItem>
+    );
+};
+
 const BaseEquipmentMenu = ({
     equipmentId,
     equipmentType,
     handleViewInSpreadsheet,
-    openModificationDialog,
+    handleOpenModificationDialog,
 }) => {
     const intl = useIntl();
-    const classes = useStyles();
     const network = useSelector((state) => state.network);
 
     function getEquipment(equipmentType, equipmentId) {
@@ -96,29 +120,16 @@ const BaseEquipmentMenu = ({
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {equipmentType === equipments.generators && (
-                            <MenuItem
-                                className={classes.menuItem}
-                                onClick={() =>
-                                    openModificationDialog({
-                                        equipmentId,
-                                        equipmentType,
-                                    })
+                            <ItemViewInForm
+                                equipmentId={equipmentId}
+                                equipmentType={equipmentType}
+                                itemText={intl.formatMessage({
+                                    id: 'edit',
+                                })}
+                                handleOpenModificationDialog={
+                                    handleOpenModificationDialog
                                 }
-                            >
-                                <ListItemIcon>
-                                    <EditIcon></EditIcon>
-                                </ListItemIcon>
-                                <ListItemText
-                                    className={classes.listItemText}
-                                    primary={
-                                        <Typography noWrap>
-                                            {intl.formatMessage({
-                                                id: 'edit',
-                                            })}
-                                        </Typography>
-                                    }
-                                ></ListItemText>
-                            </MenuItem>
+                            ></ItemViewInForm>
                         )}
                     </>
                 )}

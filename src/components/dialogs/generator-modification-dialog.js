@@ -88,7 +88,7 @@ function getValueOrNull(val) {
 /**
  * Dialog to create a generator in the network
  * @param editData the data to edit
- * @param generatorId the id of generator to edit
+ * @param defaultIdValue the id of generator to edit selected from sld
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
  * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
@@ -103,6 +103,7 @@ const GeneratorModificationDialog = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
+
     const intl = useIntl();
 
     const classes = useStyles();

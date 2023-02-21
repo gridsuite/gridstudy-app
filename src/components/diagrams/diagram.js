@@ -140,18 +140,15 @@ const Diagram = forwardRef((props, ref) => {
 
     const [errorMessage, setErrorMessage] = useState('');
 
-    const [equipmentToModify, setEquipmentToModify] = useState({
-        equipmentId: null,
-        equipmentType: null,
-    });
+    const [equipmentToModify, setEquipmentToModify] = useState();
 
-    const openModificationDialog = (equipmentToModify) => {
+    const handleOpenModificationDialog = (equipmentId, equipmentType) => {
         closeEquipmentMenu();
-        setEquipmentToModify(equipmentToModify);
+        setEquipmentToModify({ equipmentId, equipmentType });
     };
 
     const closeModificationDialog = () => {
-        setEquipmentToModify({ equipmentId: null, equipmentType: null });
+        setEquipmentToModify();
     };
 
     const forceUpdate = useCallback(() => {
@@ -653,7 +650,7 @@ const Diagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    openModificationDialog={openModificationDialog}
+                    handleOpenModificationDialog={handleOpenModificationDialog}
                 />
             )
         );
@@ -729,9 +726,9 @@ const Diagram = forwardRef((props, ref) => {
             case equipments.generators:
                 return (
                     <GeneratorModificationDialog
-                        open={equipmentToModify.equipmentType !== null}
+                        open={true}
                         studyUuid={props.studyUuid}
-                        currentNodeUuid={currentNode?.id}
+                        currentNode={currentNode}
                         onClose={() => closeModificationDialog()}
                         defaultIdValue={equipmentToModify.equipmentId}
                         voltageLevelsIdsAndTopologyPromise={withVLsIdsAndTopology(
