@@ -14,6 +14,7 @@ import {
     buildNode,
     copyTreeNode,
     cutTreeNode,
+    connectUpdatedNodeNotificationsWebsocket,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -77,7 +78,11 @@ export const CopyType = {
     CUT: 'CUT',
 };
 
-const noSelectionForCopy = { nodeId: null, copyType: null };
+const noSelectionForCopy = {
+    sourceStudyId: null,
+    nodeId: null,
+    copyType: null,
+};
 
 export const NetworkModificationTreePane = ({
     studyUuid,
@@ -88,6 +93,37 @@ export const NetworkModificationTreePane = ({
     const { snackError, snackInfo } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
+    const broadcastChannel = new BroadcastChannel('nodeCopyChannel');
+    let ws = null;
+
+    useEffect(() => {
+        ws = connectUpdatedNodeNotificationsWebsocket();
+        ws.onmessage = function (event) {
+            //If the study we are on is the one that updated the node we don't need to handle it with this ws as it's already handled in a useEffect
+            if (event.data.sourceStudyId !== studyUuid) {
+                let eventData = JSON.parse(event.data);
+                if (
+                    eventData.headers &&
+                    eventData.headers.updateType === 'nodeUpdated'
+                ) {
+                    if (
+                        eventData.headers.nodes.some(
+                            (nodeId) =>
+                                nodeId === selectedNodeForCopyRef.current.nodeId
+                        )
+                    ) {
+                        dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+                        snackInfo({
+                            messageId: 'CopiedNodeInvalidationMessage',
+                        });
+                    }
+                }
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+    }, [studyUuid]);
 
     const [activeNode, setActiveNode] = useState(null);
 
@@ -219,9 +255,21 @@ export const NetworkModificationTreePane = ({
         [studyUuid, snackError]
     );
 
-    const dispatchSelectedNodeForCopy = (nodeId, copyType) => {
+    useEffect(() => {
+        //Initialise broadcast channel onMessage
+        broadcastChannel.onmessage = (event) => {
+            dispatchSelectedNodeForCopy(
+                event.data.sourceStudyId,
+                event.data.nodeId,
+                CopyType.COPY
+            );
+        };
+    }, [dispatch]);
+
+    const dispatchSelectedNodeForCopy = (sourceStudyId, nodeId, copyType) => {
         dispatch(
             setSelectedNodeForCopy({
+                sourceStudyId: sourceStudyId,
                 nodeId: nodeId,
                 copyType: copyType,
             })
@@ -229,7 +277,17 @@ export const NetworkModificationTreePane = ({
     };
 
     const handleCopyNode = (nodeId) => {
-        dispatchSelectedNodeForCopy(nodeId, CopyType.COPY);
+        console.info(
+            'node with id ' +
+                nodeId +
+                ' from study ' +
+                studyUuid +
+                ' selected for copy'
+        );
+        broadcastChannel.postMessage({
+            sourceStudyId: studyUuid,
+            nodeId: nodeId,
+        });
     };
 
     const handleCutNode = (nodeId) => {
@@ -256,6 +314,7 @@ export const NetworkModificationTreePane = ({
                 dispatch(setSelectedNodeForCopy(noSelectionForCopy));
             } else {
                 copyTreeNode(
+                    selectedNodeForCopyRef.current.sourceStudyId,
                     studyUuid,
                     selectedNodeForCopyRef.current.nodeId,
                     referenceNodeId,

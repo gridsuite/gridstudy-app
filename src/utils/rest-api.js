@@ -1270,19 +1270,22 @@ export function updateTreeNode(studyUuid, node) {
 }
 
 export function copyTreeNode(
-    studyUuid,
+    sourceStudyId,
+    targetStudyId,
     nodeToCopyUuid,
     referenceNodeUuid,
     insertMode
 ) {
     const nodeCopyUrl =
-        getStudyUrl(studyUuid) +
+        getStudyUrl(targetStudyId) +
         '/tree/nodes?insertMode=' +
         insertMode +
         '&nodeToCopyUuid=' +
         nodeToCopyUuid +
         '&referenceNodeUuid=' +
-        referenceNodeUuid;
+        referenceNodeUuid +
+        '&sourceStudyUuid=' +
+        sourceStudyId;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
@@ -1403,6 +1406,24 @@ export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
         PREFIX_DIRECTORY_NOTIFICATION_WS +
         '/notify?updateType=deleteStudy&elementUuid=' +
         studyUuid;
+
+    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
+    // don't log the token, it's private
+    rws.onopen = function (event) {
+        console.info('Connected Websocket ' + wsadress + ' ...');
+    };
+    return rws;
+}
+
+export function connectUpdatedNodeNotificationsWebsocket() {
+    // The websocket API doesn't allow relative urls
+    const wsbase = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const wsadress =
+        wsbase +
+        PREFIX_STUDY_NOTIFICATION_WS +
+        '/notify?updateType=nodeUpdated';
 
     const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
     // don't log the token, it's private
