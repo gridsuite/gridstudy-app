@@ -17,6 +17,8 @@ jobs:
               run: echo ::set-output name=tag::${GITHUB_REF_NAME#v}
 
             - name: Install and Build
+              env:
+                NODE_OPTIONS: "--max_old_space_size=4096"
               run: |
                   npm install
                   npm run-script build

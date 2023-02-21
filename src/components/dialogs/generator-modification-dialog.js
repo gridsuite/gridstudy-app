@@ -90,7 +90,7 @@ function getValueOrNull(val) {
  * @param editData the data to edit
  * @param generatorId the id of generator to edit
  * @param studyUuid the study we are currently working on
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
  * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
@@ -98,10 +98,11 @@ const GeneratorModificationDialog = ({
     editData,
     defaultIdValue,
     studyUuid,
-    currentNodeUuid,
+    currentNode,
     voltageLevelsIdsAndTopologyPromise,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
 
     const classes = useStyles();
@@ -978,7 +979,7 @@ const GeneratorModificationDialog = ({
 GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     voltageLevelsIdsAndTopologyPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
