@@ -15,7 +15,8 @@ import {
 import React from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
-    gridItem,
+    filledTextItalicFontField,
+    gridItem, italicFontTextField,
     percentageTextField,
     VoltageAdornment,
 } from '../../../../dialogs/dialogUtils';
@@ -44,6 +45,7 @@ const VoltageRegulation = ({
             label={'RegulationTypeText'}
             size={'small'}
             disableClearable={true}
+            formProps={italicFontTextField}
         />
     );
 

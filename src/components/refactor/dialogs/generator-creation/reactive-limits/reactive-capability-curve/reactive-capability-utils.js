@@ -44,7 +44,7 @@ export const getReactiveCapabilityCurveEmptyFormData = (
     [id]: [getRowEmptyFormData(), getRowEmptyFormData()],
 });
 
-function getValidActivePowerValues(values) {
+function getNotNullNumbersFromArray(values) {
     return values
         .map((element) =>
             // Note : convertion toNumber is necessary here to prevent corner cases like if
@@ -54,14 +54,14 @@ function getValidActivePowerValues(values) {
         .filter((p) => p !== null);
 }
 
-function checkPUnique(values) {
-    const validActivePowerValues = getValidActivePowerValues(values);
+function checkAllValuesAreUnique(values) {
+    const validActivePowerValues = getNotNullNumbersFromArray(values);
     const setOfPs = [...new Set(validActivePowerValues)];
     return setOfPs.length === validActivePowerValues.length;
 }
 
-function checkPInRange(values) {
-    const validActivePowerValues = getValidActivePowerValues(values);
+function checkAllValuesBetweenMinMax(values) {
+    const validActivePowerValues = getNotNullNumbersFromArray(values);
     const minP = validActivePowerValues[0];
     const maxP = validActivePowerValues[validActivePowerValues.length - 1];
 
@@ -81,14 +81,14 @@ export const getReactiveCapabilityCurveValidationSchema = (
                     .of(getRowSchema())
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
                     .test(
-                        'checkPUnique',
+                        'checkAllValuesAreUnique',
                         'ReactiveCapabilityCurveCreationErrorPInvalid',
-                        (values) => checkPUnique(values)
+                        (values) => checkAllValuesAreUnique(values)
                     )
                     .test(
-                        'checkPInRange',
+                        'checkAllValuesBetweenMinMax',
                         'ReactiveCapabilityCurveCreationErrorPOutOfRange',
-                        (values) => checkPInRange(values)
+                        (values) => checkAllValuesBetweenMinMax(values)
                     ),
         }),
 });

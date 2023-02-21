@@ -177,7 +177,6 @@ export const ConnectivityForm = ({
             options={CONNECTION_DIRECTIONS}
             fullWidth
             size={'small'}
-            In
         />
     );
 

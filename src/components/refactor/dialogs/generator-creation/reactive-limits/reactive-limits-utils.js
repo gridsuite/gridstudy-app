@@ -29,14 +29,14 @@ export const getReactiveLimitsSchema = () => ({
         .number()
         .nullable()
         .when([MAXIMUM_REACTIVE_POWER], {
-            is: (maximumReactivePower) => maximumReactivePower,
+            is: true,
             then: (schema) => schema.required(),
         }),
     [MAXIMUM_REACTIVE_POWER]: yup
         .number()
         .nullable()
         .when([MINIMUM_REACTIVE_POWER], {
-            is: (minimumReactivePower) => minimumReactivePower,
+            is: true,
             then: (schema) => schema.required(),
         }),
     ...getReactiveCapabilityCurveValidationSchema(),

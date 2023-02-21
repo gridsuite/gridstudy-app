@@ -23,9 +23,9 @@ import {
 } from '../../utils/field-constants';
 import {
     ActivePowerAdornment,
-    filledTextField,
+    filledTextField, filledTextItalicFontField,
     gridItem,
-    GridSection,
+    GridSection, italicFontTextField,
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../../dialogs/dialogUtils';
@@ -39,8 +39,9 @@ import ReactiveLimitsForm from './reactive-limits/reactive-limits-form';
 import SetPointsForm from './set-points/set-points-form';
 import { fetchVoltageLevelsIdAndTopology } from '../../../../utils/rest-api';
 
-const GeneratorCreationForm = ({ studyUuid, currentNodeUuid }) => {
+const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+    const currentNodeUuid = currentNode?.id;
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid)
@@ -77,7 +78,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNodeUuid }) => {
             fullWidth
             size={'small'}
             disableClearable={true}
-            formProps={filledTextField}
+            formProps={{...italicFontTextField, ...filledTextField}}
         />
     );
 
@@ -86,7 +87,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNodeUuid }) => {
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
-            currentNodeUuid={currentNodeUuid}
+            currentNode={currentNode}
         />
     );
 

@@ -106,6 +106,11 @@ export const VoltageAdornment = {
 export const filledTextField = {
     variant: 'filled',
 };
+
+export const italicFontTextField = {
+    style: {fontStyle: 'italic'}
+};
+
 export const percentageTextField = {
     position: 'end',
     text: '%',

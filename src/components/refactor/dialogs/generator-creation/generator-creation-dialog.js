@@ -187,7 +187,7 @@ const GeneratorCreationDialog = ({
             }),
             ...getConnectivityFormData({
                 voltageLevelId: generator.voltageLevelId,
-                busbarSectionId: generator.busbarSectionId,
+                busbarSectionId: generator.busOrBusbarSectionId,
                 connectionDirection: generator.connectionDirection,
                 connectionName: generator.connectionName,
                 connectionPosition: generator.connectionPosition,
@@ -338,7 +338,7 @@ const GeneratorCreationDialog = ({
             >
                 <GeneratorCreationForm
                     studyUuid={studyUuid}
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                 />
 
                 <EquipmentSearchDialog
