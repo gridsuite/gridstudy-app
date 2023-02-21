@@ -9,7 +9,6 @@ import React, { useEffect, useMemo, useState, useRef } from 'react';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/material';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
 import {
@@ -28,18 +27,20 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
  * Dialog to attach a line to a (possibly new) voltage level.
  * @param lineOptionsPromise Promise handling list of network lines
  * @param voltageLevelOptionsPromise Promise handling list of network voltage levels
- * @param currentNodeUuid the currently selected tree node
+ * @param studyUuid the study we are currently working on
+ * @param currentNode the currently selected tree node
  * @param editData the possible line split with voltage level creation record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LinesAttachToSplitLinesDialog = ({
     lineOptionsPromise,
     voltageLevelOptionsPromise,
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const bobbsCb = useMemo(
         () =>
@@ -347,7 +348,8 @@ const LinesAttachToSplitLinesDialog = ({
 };
 
 LinesAttachToSplitLinesDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.object,
+    currentNode: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,

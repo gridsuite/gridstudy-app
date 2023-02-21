@@ -46,7 +46,10 @@ import { getComputedLanguage } from '../../../utils/language';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
-import { isNodeExists } from '../../../utils/rest-api';
+import {
+    fetchVoltageLevelEquipments,
+    isNodeExists,
+} from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useParameterState } from '../parameters/parameters';
 import {
@@ -487,13 +490,15 @@ export const useRegulatingTerminalValue = ({
     },
     disabled = false,
     inputForm,
-    voltageLevelOptionsPromise,
     direction = 'row',
     voltageLevelIdDefaultValue,
     equipmentSectionTypeDefaultValue,
     equipmentSectionIdDefaultValue,
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelsIdsAndTopologyPromise,
 }) => {
     const [regulatingTerminal, setRegulatingTerminal] = useState({
         voltageLevel: voltageLevelIdDefaultValue,
@@ -503,7 +508,7 @@ export const useRegulatingTerminalValue = ({
         },
     });
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [voltageLevelsEquipments, setVoltageLevelsEquipments] = useState([]);
+    const [voltageLevelEquipments, setVoltageLevelEquipments] = useState([]);
 
     useEffect(() => {
         setRegulatingTerminal({
@@ -513,17 +518,29 @@ export const useRegulatingTerminalValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
-        if (!voltageLevelOptionsPromise) return;
+        if (studyUuid && currentNodeUuid)
+            voltageLevelsIdsAndTopologyPromise.then((values) => {
+                setVoltageLevelOptions(
+                    values.sort((a, b) => a.id.localeCompare(b.id))
+                );
+            });
+    }, [studyUuid, currentNodeUuid, voltageLevelsIdsAndTopologyPromise]);
 
-        voltageLevelOptionsPromise.then((values) => {
-            setVoltageLevelOptions(
-                Array.from(values, (val) => val.voltageLevel).sort((a, b) =>
-                    a.id.localeCompare(b.id)
-                )
-            );
-            setVoltageLevelsEquipments(values);
-        });
-    }, [voltageLevelOptionsPromise]);
+    useEffect(() => {
+        if (regulatingTerminal?.voltageLevel?.id) {
+            fetchVoltageLevelEquipments(
+                studyUuid,
+                currentNodeUuid,
+                undefined,
+                regulatingTerminal?.voltageLevel?.id,
+                true
+            ).then((values) => {
+                setVoltageLevelEquipments(values);
+            });
+        } else {
+            setVoltageLevelEquipments([]);
+        }
+    }, [regulatingTerminal, studyUuid, currentNodeUuid]);
 
     useEffect(() => {
         if (!voltageLevelOptions) return;
@@ -572,7 +589,7 @@ export const useRegulatingTerminalValue = ({
                 disabled={disabled}
                 voltageLevelOptions={voltageLevelOptions}
                 regulatingTerminalValue={regulatingTerminal}
-                voltageLevelsEquipments={voltageLevelsEquipments}
+                voltageLevelEquipments={voltageLevelEquipments}
                 onChangeVoltageLevel={(value) => setVoltageLevel(value)}
                 onChangeEquipmentSection={(equipmentSection) =>
                     setEquipmentSection(equipmentSection)
@@ -596,7 +613,7 @@ export const useRegulatingTerminalValue = ({
         disabled,
         voltageLevelOptions,
         regulatingTerminal,
-        voltageLevelsEquipments,
+        voltageLevelEquipments,
         direction,
         equipmentSectionTypeDefaultValue,
         previousRegulatingTerminalValue,
@@ -733,6 +750,7 @@ export const useDirectoryElements = ({
     const { snackError } = useSnackMessage();
     const refInitialValues = useRef();
     refInitialValues.current = initialValues;
+    const types = useMemo(() => [elementType], [elementType]);
 
     useEffect(() => {
         if (refInitialValues.current) {
@@ -840,7 +858,7 @@ export const useDirectoryElements = ({
                 <DirectoryItemSelector
                     open={directoryItemSelectorOpen}
                     onClose={addElements}
-                    types={[elementType]}
+                    types={types}
                     equipmentTypes={equipmentTypes}
                     title={intl.formatMessage({ id: titleId })}
                     itemFilter={itemFilter}
@@ -858,13 +876,13 @@ export const useDirectoryElements = ({
         label,
         directoryItemSelectorOpen,
         addElements,
-        elementType,
         equipmentTypes,
         intl,
         titleId,
         itemFilter,
         elementClassName,
         handleDelete,
+        types,
     ]);
     return [values, field];
 };

@@ -51,8 +51,10 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
-import { createTwoWindingsTransformer } from '../../../../utils/rest-api';
+import {
+    createTwoWindingsTransformer,
+    fetchVoltageLevelsIdAndTopology,
+} from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
@@ -87,7 +89,8 @@ import {
 
 /**
  * Dialog to create a two windings transformer in the network
- * @param currentNodeUuid The node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentNode The node we are currently working on
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
@@ -119,12 +122,11 @@ export const MAX_TAP_NUMBER = 100;
 
 const TwoWindingsTransformerCreationDialog = ({
     editData,
-    currentNodeUuid,
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
+    studyUuid,
+    currentNode,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
     const equipmentPath = '2-windings-transformers';
@@ -141,6 +143,7 @@ const TwoWindingsTransformerCreationDialog = ({
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dialogWidth, setDialogWidth] = useState('sm');
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const computeHighTapPosition = (steps) => {
         const values = steps?.map((step) => step[STEPS_TAP]);
@@ -301,6 +304,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     permanentLimit2: twt.permanentLimit2,
                     ...getConnectivityFormData(
                         {
+                            busbarSectionId: twt.busOrBusbarSectionId1,
                             connectionDirection: twt.connectionDirection1,
                             connectionName: twt.connectionName1,
                             connectionPosition: twt.connectionPosition1,
@@ -310,6 +314,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                     ...getConnectivityFormData(
                         {
+                            busbarSectionId: twt.busOrBusbarSectionId2,
                             connectionDirection: twt.connectionDirection2,
                             connectionName: twt.connectionName2,
                             connectionPosition: twt.connectionPosition2,
@@ -406,6 +411,17 @@ const TwoWindingsTransformerCreationDialog = ({
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
     });
+
+    useEffect(() => {
+        if (studyUuid && currentNodeUuid)
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a.id.localeCompare(b.id))
+                    );
+                }
+            );
+    }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
         if (editData) {
@@ -627,7 +643,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     p={1}
                 >
                     <TwoWindingsTransformerPane
-                        voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        voltageLevelOptions={voltageLevelOptions}
                     />
                 </Box>
 
@@ -639,10 +657,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     p={1}
                 >
                     <RatioTapChangerPane
-                        voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-                        voltageLevelsEquipmentsOptionsPromise={
-                            voltageLevelsEquipmentsOptionsPromise
-                        }
+                        studyUuid={studyUuid}
+                        currentNodeUuid={currentNodeUuid}
+                        voltageLevelOptions={voltageLevelOptions}
                     />
                 </Box>
 
@@ -654,10 +671,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     p={1}
                 >
                     <PhaseTapChangerPane
-                        voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-                        voltageLevelsEquipmentsOptionsPromise={
-                            voltageLevelsEquipmentsOptionsPromise
-                        }
+                        studyUuid={studyUuid}
+                        currentNodeUuid={currentNodeUuid}
+                        voltageLevelOptions={voltageLevelOptions}
                     />
                 </Box>
 
@@ -675,15 +691,8 @@ const TwoWindingsTransformerCreationDialog = ({
 
 TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
-    voltageLevelOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    voltageLevelsEquipmentsOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default TwoWindingsTransformerCreationDialog;

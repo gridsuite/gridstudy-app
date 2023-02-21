@@ -22,7 +22,6 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
 import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
@@ -43,21 +42,23 @@ import {
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
  * @param id optional id that has to be defined if the component is used more than once in a form
  * @param direction direction of placement. Either 'row' or 'column', 'row' by default.
- * @param withPosition
  * @param withDirectionsInfos
+ * @param withPosition
+ * @param voltageLevelOptions list of network voltage levels
+ * @param studyUuid the study we are currently working on
+ * @param currentNode the currently selected tree node
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
     direction = 'row',
-    voltageLevelOptionsPromise,
     withDirectionsInfos = true,
     withPosition = false,
+    voltageLevelOptions = [],
+    studyUuid,
+    currentNode,
 }) => {
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+    const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
         []
     );
@@ -76,20 +77,12 @@ export const ConnectivityForm = ({
     });
 
     useEffect(() => {
-        voltageLevelOptionsPromise.then((values) => {
-            setVoltageLevelOptions(
-                values.sort((a, b) => a.id.localeCompare(b.id))
-            );
-        });
-    }, [voltageLevelOptionsPromise]);
-
-    useEffect(() => {
         if (watchVoltageLevelId) {
             switch (watchVoltageLevelTopologyKind) {
                 case 'NODE_BREAKER':
                     fetchBusbarSectionsForVoltageLevel(
                         studyUuid,
-                        currentNode?.id,
+                        currentNodeUuid,
                         watchVoltageLevelId
                     ).then((busbarSections) => {
                         setBusOrBusbarSectionOptions(busbarSections);
@@ -99,7 +92,7 @@ export const ConnectivityForm = ({
                 case 'BUS_BREAKER':
                     fetchBusesForVoltageLevel(
                         studyUuid,
-                        currentNode?.id,
+                        currentNodeUuid,
                         watchVoltageLevelId
                     ).then((buses) => setBusOrBusbarSectionOptions(buses));
                     break;
@@ -115,7 +108,7 @@ export const ConnectivityForm = ({
         watchVoltageLevelId,
         watchVoltageLevelTopologyKind,
         studyUuid,
-        currentNode?.id,
+        currentNodeUuid,
     ]);
 
     const resetBusBarSection = useCallback(() => {
@@ -278,7 +271,7 @@ export const ConnectivityForm = ({
                 open={isDiagramPaneOpen}
                 onClose={handleCloseDiagramPane}
                 voltageLevelId={{ id: watchVoltageLevelId }}
-                currentNodeUuid={currentNode?.id}
+                currentNodeUuid={currentNodeUuid}
             />
         </>
     );

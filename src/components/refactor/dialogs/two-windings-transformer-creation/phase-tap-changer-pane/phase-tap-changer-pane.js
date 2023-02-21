@@ -39,8 +39,9 @@ import { useCallback } from 'react';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelOptions = [],
 }) => {
     const phaseTapChangerEnabledWatch = useWatch({
         name: `${id}.${ENABLED}`,
@@ -155,13 +156,12 @@ const PhaseTapChangerPane = ({
         <RegulatingTerminalForm
             id={id}
             disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-            voltageLevelsEquipmentsOptionsPromise={
-                voltageLevelsEquipmentsOptionsPromise
-            }
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
             }
+            studyUuid={studyUuid}
+            currentNodeUuid={currentNodeUuid}
+            voltageLevelOptions={voltageLevelOptions}
         />
     );
 
