@@ -68,4 +68,12 @@ export const EQUIPMENT_TYPES = {
         type: 'HVDC_CONVERTER_STATION',
         fetchers: [fetchLccConverterStations, fetchVscConverterStations],
     },
+    VSC_CONVERTER_STATION: {
+        type: 'VSC_CONVERTER_STATION',
+        fetchers: [fetchVscConverterStations],
+    },
+    LCC_CONVERTER_STATION: {
+        type: 'LCC_CONVERTER_STATION',
+        fetchers: [fetchLccConverterStations],
+    },
 };

@@ -14,7 +14,6 @@ import {
     SensiChecked,
     useStyles,
 } from './sensi-parameters-selector';
-import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 export const SensiInjections = ({ index, onChange, defaultValue }) => {
     const classes = useStyles();
