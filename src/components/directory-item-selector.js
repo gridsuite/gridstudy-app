@@ -180,7 +180,8 @@ const DirectoryItemSelector = (props) => {
     );
 
     useEffect(() => {
-        if (openRef.current && studyUpdatedForce.eventData.headers) {
+        // this use effect is executed even when dialogue is closed, and we receive a notification
+        if (studyUpdatedForce.eventData.headers) {
             if (
                 Object.values(notificationType).includes(
                     studyUpdatedForce.eventData.headers['notificationType']
