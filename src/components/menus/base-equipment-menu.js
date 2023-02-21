@@ -78,7 +78,6 @@ const BaseEquipmentMenu = ({
             return null;
         }
     }
-
     const equipment = getEquipment(equipmentType, equipmentId);
     const { getNameOrId } = useNameOrId();
     return (
