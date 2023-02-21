@@ -9,9 +9,12 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { modifyLoad } from '../../utils/rest-api';
+import {
+    fetchEquipmentInfos,
+    fetchEquipmentsIds,
+    modifyLoad,
+} from '../../utils/rest-api';
 import {
     LOAD_TYPES,
     UNDEFINED_LOAD_TYPE,
@@ -25,7 +28,6 @@ import {
 } from './inputs/input-hooks';
 import {
     ActivePowerAdornment,
-    compareById,
     filledTextField,
     getIdOrSelf,
     gridItem,
@@ -37,19 +39,18 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
 
 /**
  * Dialog to modify a load in the network
- * @param equipmentOptionsPromise Promise handling list of loads that can be modified
- * @param currentNodeUuid the node we are currently working on
  * @param editData the data to edit
+ * @param studyUuid the study we are currently working on
+ * @param currentNode the node we are currently working on
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LoadModificationDialog = ({
     editData,
-    currentNodeUuid,
-    equipmentOptionsPromise,
+    studyUuid,
+    currentNode,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
+    const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
@@ -62,14 +63,20 @@ const LoadModificationDialog = ({
 
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
+    const [loadInfos, setloadInfos] = useState();
 
     useEffect(() => {
-        if (!equipmentOptionsPromise) return;
-        equipmentOptionsPromise.then((values) => {
+        fetchEquipmentsIds(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            'LOAD',
+            true
+        ).then((values) => {
             setEquipmentOptions(values);
             setLoadingEquipmentOptions(false);
         });
-    }, [equipmentOptionsPromise]);
+    }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
         if (editData) {
@@ -83,12 +90,12 @@ const LoadModificationDialog = ({
             : { id: '' };
     }, [formValues]);
 
-    const [loadInfos, loadIdField] = useAutocompleteField({
+    const [loadId, loadIdField] = useAutocompleteField({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        values: equipmentOptions?.sort(compareById),
+        values: equipmentOptions?.sort((a, b) => a.localeCompare(b)),
         allowNewValue: true,
         getLabel: getIdOrSelf,
         defaultValue:
@@ -96,6 +103,38 @@ const LoadModificationDialog = ({
             formValueEquipmentId,
         loading: loadingEquipmentOptions,
     });
+
+    const id = useMemo(() => {
+        let id;
+        if (typeof loadId === 'object') {
+            if (loadId?.id !== '') {
+                id = loadId?.id;
+            }
+        } else {
+            if (loadId !== '') {
+                id = loadId;
+            }
+        }
+        return id ?? formValueEquipmentId?.id;
+    }, [loadId, formValueEquipmentId]);
+
+    useEffect(() => {
+        if (id) {
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNodeUuid,
+                'loads',
+                id,
+                false
+            ).then((value) => {
+                if (value) {
+                    setloadInfos(value);
+                }
+            });
+        } else {
+            setloadInfos(null);
+        }
+    }, [studyUuid, currentNodeUuid, id]);
 
     const [loadName, loadNameField] = useTextValue({
         label: 'Name',
@@ -214,11 +253,8 @@ const LoadModificationDialog = ({
 
 LoadModificationDialog.propTypes = {
     editData: PropTypes.object,
-    currentNodeUuid: PropTypes.string,
-    equipmentOptionsPromise: PropTypes.shape({
-        then: PropTypes.func.isRequired,
-        catch: PropTypes.func.isRequired,
-    }),
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default LoadModificationDialog;

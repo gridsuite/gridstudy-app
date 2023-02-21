@@ -9,10 +9,10 @@ import { Draggable } from 'react-beautiful-dnd';
 import Tab from '@mui/material/Tab';
 
 const DraggableTab = (props) => {
-    const { index, key, value, label, ...others } = props;
+    const { id, index, value, label, ...others } = props;
     return (
         <Draggable
-            draggableId={`${index}`}
+            draggableId={id}
             index={index}
             disableInteractiveElementBlocking
         >
@@ -22,7 +22,6 @@ const DraggableTab = (props) => {
                     {...draggableProvided.draggableProps}
                 >
                     <Tab
-                        key={key}
                         value={value}
                         label={label}
                         {...others}
@@ -35,8 +34,8 @@ const DraggableTab = (props) => {
 };
 
 DraggableTab.propTypes = {
+    id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    key: PropTypes.number.isRequired,
     value: PropTypes.number.isRequired,
     label: PropTypes.node,
 };
