@@ -1,7 +1,7 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Checkbox, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';

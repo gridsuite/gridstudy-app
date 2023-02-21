@@ -22,11 +22,11 @@ const useStyles = makeStyles((theme) => ({
         opacity: INVALID_LOADFLOW_OPACITY,
     },
     numericValue: {
-        marginLeft: 'inherit', // use 'auto' to align right (if display is flex)
+        marginLeft: 'inherit',
     },
 }));
 
-export const booleanCellRender = (rowData, key, style) => {
+export const BooleanCellRender = (rowData, key, style) => {
     const isChecked = rowData.value;
     return (
         <div key={key} style={style}>
@@ -43,7 +43,7 @@ export const booleanCellRender = (rowData, key, style) => {
     );
 };
 
-export const useDefaultCellRenderer = (props) => {
+export const DefaultCellRenderer = (props) => {
     const classes = useStyles();
     return (
         <OverflowableText
@@ -67,8 +67,6 @@ export const formatCell = (props) => {
     if (props.colDef.normed) {
         value = props.colDef.normed(props.fluxConvention, value);
     }
-    // Note: a data may be missing in the server response (ex: p1 from 2W-Transfo).
-    // In this case, its value is undefined and nothing is displayed in the cell.
     if (
         value !== undefined &&
         props.colDef.numeric &&
@@ -81,10 +79,8 @@ export const formatCell = (props) => {
     return { value: value, tooltip: tooltipValue };
 };
 
-export const useNumericDefaultCellRenderer = (props) => {
+export const NumericDefaultCellRenderer = (props) => {
     const classes = useStyles();
-
-    console.log(props);
     const cellValue = formatCell(props);
     return (
         <div key={props.rowIndex}>

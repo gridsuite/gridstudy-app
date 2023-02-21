@@ -14,13 +14,17 @@ import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
 import { IconButton, TextField, Grid, Alert } from '@mui/material';
-import { updateConfigParameter } from '../../utils/rest-api';
+import {
+    modifyGenerator,
+    modifyLoad,
+    requestNetworkChange,
+    updateConfigParameter,
+} from '../../utils/rest-api';
 import {
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
-    MIN_COLUMN_WIDTH,
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
@@ -31,10 +35,9 @@ import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
-import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import {
-    useDefaultCellRenderer,
-    useNumericDefaultCellRenderer,
+    DefaultCellRenderer,
+    NumericDefaultCellRenderer,
 } from './cell-renderers';
 import { ColumnsSettingsDialog } from './columns-settings-dialog';
 
@@ -51,14 +54,6 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         marginLeft: theme.spacing(1),
     },
-    checkboxSelectAll: {
-        padding: theme.spacing(0, 3, 2, 2),
-        fontWeight: 'bold',
-        cursor: 'pointer',
-    },
-    checkboxItem: {
-        cursor: 'pointer',
-    },
     selectColumns: {
         marginTop: theme.spacing(2),
         marginLeft: theme.spacing(6),
@@ -72,127 +67,6 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         right: 0,
     },
-    tableCell: {
-        fontSize: 'small',
-        cursor: 'initial',
-        display: 'flex',
-        '&:before': {
-            content: '""',
-            position: 'absolute',
-            left: theme.spacing(0.5),
-            right: theme.spacing(0.5),
-            bottom: 0,
-        },
-    },
-    inlineEditionCell: {
-        backgroundColor: theme.palette.action.hover,
-        '& div': {
-            height: '100%',
-        },
-    },
-    tableHeader: {
-        fontSize: 'small',
-        textTransform: 'uppercase',
-        margin: theme.spacing(0.5),
-        padding: theme.spacing(1.25, 3, 1.25, 1.25),
-        fontWeight: 'bold',
-        '&:before': {
-            content: '""',
-            position: 'absolute',
-            left: theme.spacing(0.5),
-            right: theme.spacing(0.5),
-            bottom: 0,
-            borderBottom: '1px solid ' + theme.palette.divider,
-        },
-    },
-    leftFade: {
-        background:
-            'linear-gradient(to right, ' +
-            theme.palette.primary.main +
-            ' 0%, ' +
-            theme.palette.primary.main +
-            ' 2%, rgba(0,0,0,0) 12%)',
-        borderBottomLeftRadius: theme.spacing(0.5),
-        borderTopLeftRadius: theme.spacing(0.5),
-    },
-    topEditRow: {
-        borderTop: '1px solid ' + theme.palette.primary.main,
-        borderBottom: '1px solid ' + theme.palette.primary.main,
-    },
-    referenceEditRow: {
-        '& button': {
-            color: theme.palette.primary.main,
-            cursor: 'initial',
-        },
-    },
-    editCell: {
-        fontSize: 'small',
-        cursor: 'initial',
-        '& button': {
-            margin: 0,
-            padding: 0,
-            position: 'absolute',
-            textAlign: 'center',
-            bottom: theme.spacing(0.5),
-        },
-        '& button:first-child': {
-            // Only applies to the first child
-            left: theme.spacing(1.25),
-        },
-        '& button:nth-child(2)': {
-            // Only applies to the second child
-            right: theme.spacing(0.5),
-        },
-        '& button:first-child:nth-last-child(1)': {
-            // If only ONE child, redefines its posiiton
-            left: theme.spacing(3),
-        },
-    },
-    columnConfigClosedLock: {
-        fontSize: '1.2em',
-        color: theme.palette.action.active,
-    },
-    columnConfigOpenLock: {
-        fontSize: '1.2em',
-        color: theme.palette.action.disabled,
-    },
-    tableLock: {
-        fontSize: 'medium',
-        marginRight: theme.spacing(0.75),
-        color: theme.palette.action.disabled,
-    },
-    clickable: {
-        cursor: 'pointer',
-    },
-    activeSortArrow: {
-        '& .arrow': {
-            fontSize: '1.1em',
-            display: 'block',
-            position: 'absolute',
-            top: theme.spacing(2),
-            right: 0,
-            color: theme.palette.action.active,
-        },
-    },
-    inactiveSortArrow: {
-        '& .arrow': {
-            fontSize: '1.1em',
-            display: 'block',
-            position: 'absolute',
-            top: theme.spacing(2),
-            right: 0,
-            opacity: 0,
-        },
-        '&:hover .arrow': {
-            fontSize: '1.1em',
-            display: 'block',
-            position: 'absolute',
-            top: theme.spacing(2),
-            right: 0,
-            color: theme.palette.action.disabled,
-            opacity: 1,
-        },
-    },
     blink: {
         animation: '$blink 2s infinite',
     },
@@ -203,16 +77,6 @@ const useStyles = makeStyles((theme) => ({
         '50%': {
             opacity: 0.1,
         },
-    },
-    valueInvalid: {
-        opacity: INVALID_LOADFLOW_OPACITY,
-    },
-    numericValue: {
-        marginLeft: 'inherit', // use 'auto' to align right (if display is flex)
-    },
-    checkbox: {
-        margin: '-10%',
-        cursor: 'initial',
     },
     disabledLabel: {
         color: theme.palette.text.disabled,
@@ -243,9 +107,7 @@ const NetworkTable = (props) => {
 
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
-    const [lineEdit, setLineEdit] = useState(undefined);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
-    const [rowFilter, setRowFilter] = useState(undefined);
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
@@ -259,6 +121,112 @@ const NetworkTable = (props) => {
     const searchTextInput = useRef(null);
 
     const intl = useIntl();
+
+    const generateTableColumns = useCallback(
+        (tabIndex) => {
+            const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(
+                tabIndex
+            )
+                .columns.filter((c) => {
+                    return selectedColumnsNames.has(c.id);
+                })
+                .map((column) => {
+                    column.headerName = intl.formatMessage({ id: column.id });
+
+                    if (!column.cellRenderer && column.numeric) {
+                        column.cellRenderer = NumericDefaultCellRenderer;
+                        column.cellRendererParams = {
+                            loadFlowStatus: props.loadFlowStatus,
+                            network: props.network,
+                        };
+
+                        if (column.normed) {
+                            column.cellRendererParams.fluxConvention =
+                                fluxConvention;
+                        }
+                    }
+
+                    if (lockedColumnsNames.has(column.id)) {
+                        column.pinned = 'left';
+                        column.lockPinned = true;
+                    } else {
+                        column.pinned = undefined;
+                        column.lockPinned = undefined;
+                    }
+                    return column;
+                });
+
+            if (generatedTableColumns.length) {
+                function sortByIndex(a, b) {
+                    if (reorderedTableDefinitionIndexes) {
+                        if (
+                            reorderedTableDefinitionIndexes.indexOf(a.id) <
+                            reorderedTableDefinitionIndexes.indexOf(b.id)
+                        ) {
+                            return -1;
+                        }
+                        if (
+                            reorderedTableDefinitionIndexes.indexOf(a.id) >
+                            reorderedTableDefinitionIndexes.indexOf(b.id)
+                        )
+                            return 1;
+                    }
+                    return 0;
+                }
+                generatedTableColumns.sort(sortByIndex);
+            }
+            return generatedTableColumns;
+        },
+        [
+            fluxConvention,
+            intl,
+            lockedColumnsNames,
+            props.loadFlowStatus,
+            props.network,
+            reorderedTableDefinitionIndexes,
+            selectedColumnsNames,
+        ]
+    );
+
+    useEffect(() => {
+        setColumnData(generateTableColumns(tabIndex));
+    }, [tabIndex, generateTableColumns]);
+
+    const getRows = useCallback(
+        (index) => {
+            if (props.disabled) {
+                return [];
+            }
+            const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
+            const datasourceRows = tableDefinition.getter
+                ? tableDefinition.getter(props.network)
+                : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
+
+            if (!datasourceRows) return [];
+
+            return datasourceRows;
+        },
+        [props.disabled, props.network]
+    );
+
+    const [rowData, setRowData] = useState(getRows(tabIndex));
+    const [columnData, setColumnData] = useState(
+        generateTableColumns(tabIndex)
+    );
+
+    const onTabChange = useCallback(() => {
+        // when we change Tab, we dont want to keep/apply the search criteria
+        if (
+            !searchTextInput.current.value ||
+            searchTextInput.current.value !== ''
+        ) {
+            searchTextInput.current.value = '';
+        }
+        gridRef?.current?.api.setFilterModel(null);
+        gridRef?.current?.columnApi.applyColumnState({
+            defaultState: { sort: null },
+        });
+    }, []);
 
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
@@ -292,51 +260,9 @@ const NetworkTable = (props) => {
         props.network.useEquipment(resource);
     }, [props.network, props.disabled, tabIndex]);
 
-    const isModifyingRow = useCallback(() => {
-        return lineEdit?.id !== undefined;
-    }, [lineEdit]);
-
-    const getRows = useCallback(
-        (index) => {
-            if (props.disabled) {
-                return [];
-            }
-            const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
-            const datasourceRows = tableDefinition.getter
-                ? tableDefinition.getter(props.network)
-                : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
-
-            if (!datasourceRows) return [];
-
-            let result = [];
-            for (let i = 0; i < datasourceRows.length; i++) {
-                const row = datasourceRows[i];
-                if (!rowFilter) {
-                    result.push(row);
-                }
-            }
-            return result;
-        },
-        [props.disabled, props.network, rowFilter]
-    );
-    const getRowsRef = useRef();
-    getRowsRef.current = getRows;
-
-    const [rowData, setRowData] = useState(getRows(tabIndex));
-
-    const onTabChange = useCallback(() => {
-        // when we change Tab, we dont want to keep/apply the search criteria
-        if (
-            !searchTextInput.current.value ||
-            searchTextInput.current.value !== ''
-        ) {
-            searchTextInput.current.value = '';
-        }
-        gridRef?.current?.api.setFilterModel(null);
-        gridRef?.current?.columnApi.applyColumnState({
-            defaultState: { sort: null },
-        });
-    }, []);
+    useEffect(() => {
+        setManualTabSwitch(false);
+    }, [props.equipmentChanged]);
 
     function getTabIndexFromEquipementType(equipmentType) {
         const definition = Object.values(TABLES_DEFINITIONS).find(
@@ -346,15 +272,10 @@ const NetworkTable = (props) => {
     }
 
     useEffect(() => {
-        setManualTabSwitch(false);
-    }, [props.equipmentChanged]);
-
-    useEffect(() => {
         if (
             props.equipmentId !== null && // TODO always equals to true. Maybe this function is broken ?
             props.equipmentType !== null &&
-            !manualTabSwitch &&
-            !isModifyingRow()
+            !manualTabSwitch
         ) {
             const newIndex = getTabIndexFromEquipementType(props.equipmentType);
             setTabIndex(newIndex); // select the right table type
@@ -372,127 +293,19 @@ const NetworkTable = (props) => {
         props.equipmentChanged,
         getRows,
         manualTabSwitch,
-        isModifyingRow,
     ]);
-
-    const downloadCSVData = useCallback((e) => {
-        gridRef?.current?.api?.exportDataAsCsv();
-    }, []);
-
-    const generateTableColumns = useCallback(
-        (tabIndex) => {
-            let generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex)
-                .columns.filter((c) => {
-                    return selectedColumnsNames.has(c.id);
-                })
-                .map((c) => {
-                    let column = {
-                        ...c,
-                        headerName: intl.formatMessage({ id: c.id }),
-                        width: c.columnWidth ? c.columnWidth : MIN_COLUMN_WIDTH,
-                    };
-                    if (!column.cellRenderer && column.numeric) {
-                        column.cellRenderer = useNumericDefaultCellRenderer;
-                        column.cellRendererParams = {
-                            loadFlowStatus: props.loadFlowStatus,
-                            network: props.network,
-                        };
-
-                        if (column.normed) {
-                            column.cellRendererParams = {
-                                ...column.cellRendererParams,
-                                fluxConvention: fluxConvention,
-                            };
-                        }
-                    } else if (!column.cellRenderer) {
-                        column.cellRenderer = useDefaultCellRenderer;
-                    }
-
-                    if (lockedColumnsNames.has(c.id)) {
-                        column = {
-                            ...column,
-                            pinned: 'left',
-                            lockPinned: true,
-                        };
-                    }
-
-                    return column;
-                });
-
-            if (generatedTableColumns.length > 0) {
-                function sortByIndex(a, b) {
-                    if (reorderedTableDefinitionIndexes) {
-                        if (
-                            reorderedTableDefinitionIndexes.indexOf(a.id) <
-                            reorderedTableDefinitionIndexes.indexOf(b.id)
-                        ) {
-                            return -1;
-                        }
-                        if (
-                            reorderedTableDefinitionIndexes.indexOf(a.id) >
-                            reorderedTableDefinitionIndexes.indexOf(b.id)
-                        )
-                            return 1;
-                    }
-                    return 0;
-                }
-                generatedTableColumns.sort(sortByIndex);
-            }
-            return generatedTableColumns;
-        },
-        [
-            intl,
-            lockedColumnsNames,
-            props.loadFlowStatus,
-            props.network,
-            reorderedTableDefinitionIndexes,
-            selectedColumnsNames,
-        ]
-    );
-    const [columnData, setColumnData] = useState(
-        generateTableColumns(tabIndex)
-    );
-
-    const generatedTableColumnsRef = useRef();
-    generatedTableColumnsRef.current = generateTableColumns;
-
-    useEffect(() => {
-        setColumnData(generatedTableColumnsRef.current(tabIndex));
-    }, [
-        tabIndex,
-        selectedColumnsNames,
-        lockedColumnsNames,
-        reorderedTableDefinitionIndexes,
-    ]);
-
-    function renderTable() {
-        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        return (
-            <EquipmentTable
-                gridRef={gridRef}
-                currentNode={props.currentNode}
-                rows={rowData}
-                columns={columnData}
-                fetched={props.network.isResourceFetched(resource)}
-                scrollTop={scrollToIndex}
-                visible={props.visible}
-                showEditRow={isModifyingRow()}
-                handleColumnDrag={handleColumnDrag}
-            />
-        );
-    }
 
     function setFilter(event) {
         gridRef.current.api.setQuickFilter(event.target.value); // Value from the user's input
     }
 
     useEffect(() => {
-        let tmpDataKeySet = new Set();
+        const tmpDataKeySet = new Set();
         TABLES_DEFINITION_INDEXES.get(tabIndex)
             .columns.filter((col) => selectedColumnsNames.has(col.id))
             .forEach((col) => tmpDataKeySet.add(col.dataKey));
-        setRowData(getRowsRef.current(tabIndex));
-    }, [tabIndex, selectedColumnsNames]);
+        setRowData(getRows(tabIndex));
+    }, [tabIndex, selectedColumnsNames, getRows]);
 
     useEffect(() => {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
@@ -571,156 +384,262 @@ const NetworkTable = (props) => {
             .substring(0, 27); // Best practice : limits the filename size to 31 characters (27+'.csv')
     }, [intl, tabIndex]);
 
-    function renderAll() {
-        return (
-            props.network && (
-                <>
-                    <Grid container justifyContent={'space-between'}>
-                        <Grid container justifyContent={'space-between'} item>
-                            <Tabs
-                                value={tabIndex}
-                                variant="scrollable"
-                                onChange={(event, newValue) => {
-                                    setTabIndex(newValue);
-                                    setManualTabSwitch(true);
-                                    onTabChange(newValue);
-                                }}
-                                aria-label="tables"
-                            >
-                                {Object.values(TABLES_DEFINITIONS).map(
-                                    (table) => (
-                                        <Tab
-                                            key={table.name}
-                                            label={intl.formatMessage({
-                                                id: table.name,
-                                            })}
-                                            disabled={
-                                                isModifyingRow() ||
-                                                props.disabled
-                                            }
-                                        />
-                                    )
-                                )}
-                            </Tabs>
-                        </Grid>
-                        <Grid container>
-                            <Grid item className={classes.containerInputSearch}>
-                                <TextField
-                                    disabled={
-                                        isModifyingRow() || props.disabled
-                                    }
-                                    className={classes.textField}
-                                    size="small"
-                                    placeholder={
-                                        intl.formatMessage({ id: 'filter' }) +
-                                        '...'
-                                    }
-                                    onChange={setFilter}
-                                    inputRef={searchTextInput}
-                                    fullWidth
-                                    InputProps={{
-                                        classes: {
-                                            input: classes.searchSection,
-                                        },
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon
-                                                    color={
-                                                        isModifyingRow() ||
-                                                        props.disabled
-                                                            ? 'disabled'
-                                                            : 'inherit'
-                                                    }
-                                                />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item className={classes.selectColumns}>
-                                <span
-                                    className={clsx({
-                                        [classes.disabledLabel]:
-                                            isModifyingRow() || props.disabled,
-                                    })}
-                                >
-                                    <FormattedMessage id="LabelSelectList" />
-                                </span>
-                                <IconButton
-                                    disabled={
-                                        isModifyingRow() || props.disabled
-                                    }
-                                    className={
-                                        selectedColumnsNames.size === 0
-                                            ? classes.blink
-                                            : ''
-                                    }
-                                    aria-label="dialog"
-                                    onClick={handleOpenPopupSelectColumnNames}
-                                >
-                                    <ViewColumnIcon />
-                                </IconButton>
-                            </Grid>
-                            {props.disabled && (
-                                <Alert
-                                    className={classes.invalidNode}
-                                    severity="warning"
-                                >
-                                    <FormattedMessage id="InvalidNode" />
-                                </Alert>
-                            )}
-                            <Grid item className={classes.exportCsv}>
-                                <span
-                                    className={clsx({
-                                        [classes.disabledLabel]:
-                                            isModifyingRow() ||
-                                            props.disabled ||
-                                            rowData.length === 0,
-                                    })}
-                                >
-                                    <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-                                </span>
-                                <span>
-                                    <IconButton
-                                        disabled={
-                                            isModifyingRow() ||
-                                            props.disabled ||
-                                            rowData.length === 0
-                                        }
-                                        aria-label="exportCSVButton"
-                                        onClick={downloadCSVData}
-                                    >
-                                        <GetAppIcon />
-                                    </IconButton>
-                                </span>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <div className={classes.table} style={{ flexGrow: 1 }}>
-                        {/*This render is fast, rerender full dom everytime */}
-                        {renderTable()}
-                    </div>
+    const downloadCSVData = useCallback(() => {
+        gridRef?.current?.api?.exportDataAsCsv({
+            suppressQuotes: true,
+            fileName: getCSVFilename(),
+        });
+    }, [getCSVFilename]);
 
-                    <ColumnsSettingsDialog
-                        popupSelectColumnNames={popupSelectColumnNames}
-                        tabIndex={tabIndex}
-                        handleClose={() => {
-                            setPopupSelectColumnNames(false);
-                        }}
-                        reorderedTableDefinitionIndexes={
-                            reorderedTableDefinitionIndexes
-                        }
-                        selectedColumnsNames={selectedColumnsNames}
-                        setSelectedColumnsNames={setSelectedColumnsNames}
-                        lockedColumnsNames={lockedColumnsNames}
-                        setLockedColumnsNames={setLockedColumnsNames}
-                    />
-                </>
-            )
-        );
+    const onCellEditRequest = useCallback((event) => {
+        const oldData = event.data;
+        const field = event.colDef.field;
+
+        const newValue = event.newValue;
+        const newData = { ...oldData };
+
+        if (event.colDef.valueSetter) {
+            event.colDef.valueSetter(event);
+        } else {
+            newData[field] = event.newValue;
+        }
+        console.log('onCellEditRequest, updating ' + field + ' to ' + newValue);
+        const tx = {
+            update: [newData],
+        };
+        event.api.applyTransaction(tx);
+    }, []);
+
+    function commitChanges(event) {
+        function capitaliseFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
+        // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
+        let groovyCr =
+            'equipment = network.get' +
+            capitaliseFirst(
+                TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType
+            ) +
+            "('" +
+            event.data.id.replace(/'/g, "\\'") +
+            "')\n";
+
+        const isTransformer =
+            event.data?.equipmentType ===
+                TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS
+                    .modifiableEquipmentType ||
+            event.data?.equipmentType ===
+                TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS
+                    .modifiableEquipmentType;
+
+        Object.values(event.data.data).forEach((cr) => {
+            //TODO this is when we change transformer, in case we want to change the tap position from spreadsheet, we set it inside
+            // tapChanger object. so we extract the value from the object before registering a change request.
+            // this part should be removed if we don't pass tapPosition inside another Object anymore
+
+            const val =
+                isTransformer && cr.value?.tapPosition
+                    ? cr.value?.tapPosition
+                    : cr.value;
+
+            groovyCr += cr.changeCmd.replace(/\{\}/g, val) + '\n';
+        });
+
+        Promise.resolve(
+            event.data.equipmentType === 'load'
+                ? modifyLoad(
+                      props.studyUuid,
+                      props.currentNode?.id,
+                      event.data.id,
+                      event.data.name?.value,
+                      event.data.type?.value,
+                      event.data.p0?.value,
+                      event.data.q0?.value,
+                      undefined,
+                      undefined,
+                      false,
+                      undefined
+                  )
+                : event.data.equipmentType === 'generator'
+                ? modifyGenerator(
+                      props.studyUuid,
+                      props.currentNode?.id,
+                      event.data.id,
+                      event.data.name?.value,
+                      event.data.energySource?.value,
+                      event.data.minP?.value,
+                      event.data.maxP?.value,
+                      undefined,
+                      event.data.targetP?.value,
+                      event.data.targetQ?.value,
+                      event.data.voltageRegulatorOn?.value,
+                      event.data.targetV?.value,
+                      undefined,
+                      undefined,
+                      undefined
+                  )
+                : requestNetworkChange(
+                      props.studyUuid,
+                      props.currentNode?.id,
+                      groovyCr
+                  )
+        )
+            .then(() => {})
+            .catch((promiseErrorMsg) => {
+                console.error(promiseErrorMsg);
+                let message = intl.formatMessage({
+                    id: 'paramsChangingDenied',
+                });
+                snackError({
+                    messageTxt: message,
+                    headerId: 'paramsChangingError',
+                });
+            });
     }
 
-    return renderAll();
+    return (
+        props.network && (
+            <>
+                <Grid container justifyContent={'space-between'}>
+                    <Grid container justifyContent={'space-between'} item>
+                        <Tabs
+                            value={tabIndex}
+                            variant="scrollable"
+                            onChange={(event, newValue) => {
+                                setTabIndex(newValue);
+                                setManualTabSwitch(true);
+                                onTabChange(newValue);
+                            }}
+                            aria-label="tables"
+                        >
+                            {Object.values(TABLES_DEFINITIONS).map((table) => (
+                                <Tab
+                                    key={table.name}
+                                    label={intl.formatMessage({
+                                        id: table.name,
+                                    })}
+                                    disabled={props.disabled}
+                                />
+                            ))}
+                        </Tabs>
+                    </Grid>
+                    <Grid container>
+                        <Grid item className={classes.containerInputSearch}>
+                            <TextField
+                                disabled={props.disabled}
+                                className={classes.textField}
+                                size="small"
+                                placeholder={
+                                    intl.formatMessage({ id: 'filter' }) + '...'
+                                }
+                                onChange={setFilter}
+                                inputRef={searchTextInput}
+                                fullWidth
+                                InputProps={{
+                                    classes: {
+                                        input: classes.searchSection,
+                                    },
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon
+                                                color={
+                                                    props.disabled
+                                                        ? 'disabled'
+                                                        : 'inherit'
+                                                }
+                                            />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Grid>
+                        <Grid item className={classes.selectColumns}>
+                            <span
+                                className={clsx({
+                                    [classes.disabledLabel]: props.disabled,
+                                })}
+                            >
+                                <FormattedMessage id="LabelSelectList" />
+                            </span>
+                            <IconButton
+                                disabled={props.disabled}
+                                className={
+                                    selectedColumnsNames.size === 0
+                                        ? classes.blink
+                                        : ''
+                                }
+                                aria-label="dialog"
+                                onClick={handleOpenPopupSelectColumnNames}
+                            >
+                                <ViewColumnIcon />
+                            </IconButton>
+                        </Grid>
+                        {props.disabled && (
+                            <Alert
+                                className={classes.invalidNode}
+                                severity="warning"
+                            >
+                                <FormattedMessage id="InvalidNode" />
+                            </Alert>
+                        )}
+                        <Grid item className={classes.exportCsv}>
+                            <span
+                                className={clsx({
+                                    [classes.disabledLabel]:
+                                        props.disabled || rowData.length === 0,
+                                })}
+                            >
+                                <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
+                            </span>
+                            <span>
+                                <IconButton
+                                    disabled={
+                                        props.disabled || rowData.length === 0
+                                    }
+                                    aria-label="exportCSVButton"
+                                    onClick={downloadCSVData}
+                                >
+                                    <GetAppIcon />
+                                </IconButton>
+                            </span>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <div className={classes.table} style={{ flexGrow: 1 }}>
+                    <EquipmentTable
+                        gridRef={gridRef}
+                        currentNode={props.currentNode}
+                        rows={rowData}
+                        columns={columnData}
+                        fetched={props.network.isResourceFetched(
+                            TABLES_DEFINITION_INDEXES.get(tabIndex).resource
+                        )}
+                        scrollTop={scrollToIndex}
+                        visible={props.visible}
+                        handleColumnDrag={handleColumnDrag}
+                        commitChanges={commitChanges}
+                        onCellEditRequest={onCellEditRequest}
+                    />
+                </div>
+
+                <ColumnsSettingsDialog
+                    popupSelectColumnNames={popupSelectColumnNames}
+                    tabIndex={tabIndex}
+                    handleClose={() => {
+                        setPopupSelectColumnNames(false);
+                    }}
+                    reorderedTableDefinitionIndexes={
+                        reorderedTableDefinitionIndexes
+                    }
+                    selectedColumnsNames={selectedColumnsNames}
+                    setSelectedColumnsNames={setSelectedColumnsNames}
+                    lockedColumnsNames={lockedColumnsNames}
+                    setLockedColumnsNames={setLockedColumnsNames}
+                />
+            </>
+        )
+    );
 };
 
 NetworkTable.defaultProps = {
