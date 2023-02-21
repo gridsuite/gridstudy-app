@@ -30,12 +30,12 @@ const RadioInput = ({ name, label, id, options, formProps }) => {
                 onChange={onChange}
                 {...formProps}
             >
-                {options.map((value) => (
+                {options.map((option) => (
                     <FormControlLabel
                         control={<Radio />}
-                        value={value.id}
-                        key={value.id}
-                        label={<FieldLabel label={value.label} />}
+                        value={option.id}
+                        key={option.id}
+                        label={<FieldLabel label={option.label} />}
                     />
                 ))}
             </RadioGroup>

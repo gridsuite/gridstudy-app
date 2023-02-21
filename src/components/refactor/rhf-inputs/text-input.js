@@ -22,7 +22,7 @@ import { isFieldRequired } from '../utils/utils';
 const TextInput = ({
     name,
     label,
-    labelValues,
+    labelValues, // this prop is used to add a value to label. this value is displayed without being translated
     id,
     adornment,
     outputTransform = func_identity, //transform materialUi input value before sending it to react hook form, mostly used to deal with number fields

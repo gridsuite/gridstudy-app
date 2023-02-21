@@ -95,9 +95,9 @@ const schema = yup
         {
             [EQUIPMENT_ID]: yup.string().required(),
             [EQUIPMENT_NAME]: yup.string(),
-            [ENERGY_SOURCE]: yup.string().required(),
-            [MAXIMUM_ACTIVE_POWER]: yup.number().required(),
-            [MINIMUM_ACTIVE_POWER]: yup.number().required(),
+            [ENERGY_SOURCE]: yup.string().nullable().required(),
+            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+            [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
             [RATED_NOMINAL_POWER]: yup.number().nullable(),
             [TRANSIENT_REACTANCE]: yup.number().nullable(),
             [TRANSFORMER_REACTANCE]: yup.number().nullable(),
@@ -125,7 +125,6 @@ const schema = yup
 const GeneratorCreationDialog = ({
     editData,
     currentNodeUuid,
-    voltageLevelOptionsPromise,
     studyUuid,
     ...dialogProps
 }) => {
@@ -339,7 +338,6 @@ const GeneratorCreationDialog = ({
                 <GeneratorCreationForm
                     studyUuid={studyUuid}
                     currentNodeUuid={currentNodeUuid}
-                    voltageLevelOptionsPromise={voltageLevelOptionsPromise}
                 />
 
                 <EquipmentSearchDialog
