@@ -16,12 +16,14 @@ jobs:
               id: vars
               run: echo ::set-output name=tag::${GITHUB_REF_NAME#v}
 
-            - name: setup NodeJS version
-              uses: actions/setup-node@v3
-              with:
-                node-version: 16.19.0 # fix : version in runner-image ubuntu22/20230206.1
+            # - name: setup NodeJS version
+            #   uses: actions/setup-node@v3
+            #   with:
+            #     node-version: 16.19.0 # fix : version in runner-image ubuntu22/20230206.1
 
             - name: Install and Build
+              env:
+                NODE_OPTIONS: "--max_old_space_size=4096"
               run: |
                   npm install
                   npm run-script build
