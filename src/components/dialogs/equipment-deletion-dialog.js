@@ -20,7 +20,7 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import ModificationDialog from './modificationDialog';
 import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
-const defaultEquipmentType = EQUIPMENT_TYPES.LINE.type;
+const defaultEquipmentType = EQUIPMENT_TYPES.LINE;
 
 /**
  * Dialog to delete an equipment in the network
@@ -164,7 +164,7 @@ const EquipmentDeletionDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            {Object.values(equipmentType).map((values) => {
+                            {Object.values(EQUIPMENT_TYPES).map((values) => {
                                 return (
                                     <MenuItem key={values.type} value={values}>
                                         {intl.formatMessage({

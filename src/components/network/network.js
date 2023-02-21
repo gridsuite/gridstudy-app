@@ -24,7 +24,6 @@ import {
     fetchVscConverterStations,
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
-import { EQUIPMENT_TYPES } from '../util/equipment-types';
 import { FEEDER_TYPES } from 'components/util/feederType';
 
 const elementIdIndexer = (map, element) => {
@@ -674,7 +673,7 @@ export default class Network {
                 //New reference on substations to trigger reload of NetworkExplorer and NetworkMap
                 this.substations = [...this.substations];
                 break;
-            case EQUIPMENT_TYPES.SUBSTATION.type:
+            case FEEDER_TYPES.SUBSTATION.type:
                 this.substations = this.substations.filter(
                     (l) => l.id !== equipmentId
                 );
@@ -683,7 +682,7 @@ export default class Network {
                     .get(equipmentId)
                     ?.voltageLevels.map((vl) =>
                         this.removeEquipment(
-                            EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                            FEEDER_TYPES.VOLTAGE_LEVEL.type,
                             vl.id
                         )
                     );
