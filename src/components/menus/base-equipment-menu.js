@@ -79,10 +79,6 @@ const BaseEquipmentMenu = ({
         }
     }
 
-    // const handleEditGenerator = () => {
-    //     setOpenDialog(true);
-    // };
-
     const equipment = getEquipment(equipmentType, equipmentId);
     const { getNameOrId } = useNameOrId();
     return (
@@ -188,19 +184,6 @@ const BaseEquipmentMenu = ({
                     </NestedMenuItem>
                 </>
             )}
-            {/* {openDialog && (
-                <GeneratorModificationDialog
-                    open={openDialog}
-                    studyUuid={studyUuid}
-                    currentNodeUuid={currentTreeNode?.id}
-                    onClose={() => setOpenDialog(false)}
-                    genratorId={equipmentId}
-                    voltageLevelsIdsAndTopologyPromise={withVLsIdsAndTopology(
-                        studyUuid,
-                        currentTreeNode?.id
-                    )}
-                ></GeneratorModificationDialog>
-            )} */}
         </>
     );
 };
