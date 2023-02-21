@@ -8,6 +8,7 @@
 import Grid from '@mui/material/Grid';
 import {
     ACTIVE_POWER,
+    BUS_BAR_SECTIONS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
@@ -20,12 +21,16 @@ import { fetchEquipmentsIds } from 'utils/rest-api';
 import {
     filledTextField,
     gridItem,
+    GridSection,
     VoltageAdornment,
 } from '../../../dialogs/dialogUtils';
 import FloatInput from '../../rhf-inputs/float-input';
 import SelectInput from '../../rhf-inputs/select-input';
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
+import { BusBar } from './bus-bar-section';
+import Form from './bus-bar-section';
+import { BusBarSection } from './bus-bar-section';
 
 const VoltageLevelCreationForm = ({ currentNodeUuid, studyUuid }) => {
     const [substations, setSubstations] = useState([]);
@@ -41,12 +46,11 @@ const VoltageLevelCreationForm = ({ currentNodeUuid, studyUuid }) => {
             ).then((values) => {
                 setSubstations(
                     values
+                        .sort((a, b) => a.localeCompare(b))
                         .map((value) => {
                             return { id: value };
                         })
-                        .sort((a, b) => a.id.localeCompare(b.id))
                 );
-                //setSubstations(values);
             });
     }, [studyUuid, currentNodeUuid]);
 
@@ -111,10 +115,15 @@ const VoltageLevelCreationForm = ({ currentNodeUuid, studyUuid }) => {
                 {gridItem(nominalVoltageLevelField, 3)}
                 {gridItem(substationField, 3)}
             </Grid>
+            <Grid container>
+                <GridSection title={'BusBarSections'} />
+                {<BusBarSection id={BUS_BAR_SECTIONS} />}
+            </Grid>
             {/*  <GridSection title="Connectivity" />
             <Grid container spacing={2}>
                 {gridItem(connectivityForm, 12)}
-            </Grid>
+            </Grid> */}
+            {/*
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
                 {gridItem(activePowerField, 4)}

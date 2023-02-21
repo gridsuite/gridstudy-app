@@ -9,12 +9,18 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER,
+    BUS_BAR_SECTIONS,
+    BUS_OR_BUSBAR_SECTION,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    HORIZONTAL_POSITION,
+    ID,
     LOAD_TYPE,
+    NAME,
     NOMINAL_VOLTAGE,
     REACTIVE_POWER,
     SUBSTATION_ID,
+    VERTICAL_POSITION,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
@@ -48,26 +54,51 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [NOMINAL_VOLTAGE]: '',
-    //[SUBSTATION_ID]: [],
+    [SUBSTATION_ID]: '',
+    [BUS_BAR_SECTIONS]: [
+        {
+            [ID]: '',
+            [NAME]: '',
+            [HORIZONTAL_POSITION]: 0,
+            [VERTICAL_POSITION]: 0,
+        },
+    ],
+    /* [BUS_BAR_CONNECTIONS]: [
+        { [FROM_BBS]: '', [TO_BBS]: '', [SWITCH_KIND]: '' },
+    ], */
 };
-// ...getConnectivityEmptyFormData(),
-const schema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [NOMINAL_VOLTAGE]: yup.string().nullable(),
-        [SUBSTATION_ID]: yup.number().nullable().required(),
-        // ...getConnectivityFormValidationSchema(),
-    })
-    .required();
+
+const schema = yup.object().shape({
+    //type: yup.string().required(),
+    [EQUIPMENT_ID]: yup.string().required(),
+    [EQUIPMENT_NAME]: yup.string().required(),
+    [NOMINAL_VOLTAGE]: yup.string().required(),
+    [SUBSTATION_ID]: yup.string().required(),
+    [BUS_BAR_SECTIONS]: yup.array().of(
+        yup.object().shape({
+            [ID]: yup.string().required(),
+            [NAME]: yup.string().required(),
+            [HORIZONTAL_POSITION]: yup.number().required(),
+            [VERTICAL_POSITION]: yup.number().required(),
+        })
+    ),
+
+    /*   busbarConnections: yup.array().of(
+        yup.object().shape({
+            fromBBS: yup.string().required(),
+            toBBS: yup.string().required(),
+            switchKind: yup.string().required(),
+        })
+    ), */
+});
 
 const VoltageLevelCreationDialog = ({
     editData,
-    currentNodeUuid,
+    currentNode,
     studyUuid,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const equipmentPath = 'voltage-levels';
 
