@@ -188,7 +188,7 @@ export function getFeederTypeFromEquipmentType(equipmentType) {
         case equipments.hvdcLines:
             return FEEDER_TYPES.HVDC_LINE.type;
         case equipments.shuntCompensators:
-            return FEEDER_TYPES.SHUNT_COMPENSATOR;
+            return FEEDER_TYPES.SHUNT_COMPENSATOR.type;
         case equipments.staticVarCompensators:
             return FEEDER_TYPES.STATIC_VAR_COMPENSATOR.type;
         case equipments.twoWindingsTransformers:
