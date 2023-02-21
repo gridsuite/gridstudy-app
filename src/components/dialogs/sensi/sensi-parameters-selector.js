@@ -71,6 +71,30 @@ export const EquipmentType = {
     VOLTAGE_LEVEL: 'VOLTAGE_LEVEL',
     SUBSTATION: 'SUBSTATION',
 };
+export const MONITORED_BRANCHES_EQUIPMENT_TYPES = [
+    EquipmentType.LINE,
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
+];
+
+export const PSTS_EQUIPMENT_TYPES = [EquipmentType.TWO_WINDINGS_TRANSFORMER];
+
+export const MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES = [
+    EquipmentType.VOLTAGE_LEVEL,
+];
+
+export const EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES = [
+    EquipmentType.GENERATOR,
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.VSC_CONVERTER_STATION,
+    EquipmentType.STATIC_VAR_COMPENSATOR,
+    EquipmentType.SHUNT_COMPENSATOR,
+];
+
+export const HVDC_EQUIPMENT_TYPES = [EquipmentType.HVDC_LINE];
+export const INJECTIONS_EQUIPMENT_TYPES = [
+    EquipmentType.GENERATOR,
+    EquipmentType.LOAD,
+];
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {

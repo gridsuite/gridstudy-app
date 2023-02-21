@@ -7,7 +7,6 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Grid';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
 import {
@@ -26,18 +25,18 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 /**
  * Dialog to delete attaching line.
  * @param lineOptionsPromise Promise handling list of network lines
- * @param currentNodeUuid the currently selected tree node
+ * @param studyUuid the study we are currently working on
+ * @param currentNode the currently selected tree node
  * @param editData record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const DeleteAttachingLineDialog = ({
     lineOptionsPromise,
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
@@ -145,7 +144,7 @@ const DeleteAttachingLineDialog = ({
         if (inputForm.validate()) {
             deleteAttachingLine(
                 studyUuid,
-                currentNodeUuid,
+                currentNode?.id,
                 editData ? editData.uuid : undefined,
                 lineToAttachTo1.id || lineToAttachTo1,
                 lineToAttachTo2.id || lineToAttachTo2,
@@ -204,7 +203,8 @@ const DeleteAttachingLineDialog = ({
 };
 
 DeleteAttachingLineDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     lineOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
