@@ -124,10 +124,11 @@ const schema = yup
 
 const GeneratorCreationDialog = ({
     editData,
-    currentNodeUuid,
+    currentNode,
     studyUuid,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
     const equipmentPath = 'generators';
