@@ -76,6 +76,7 @@ const ModificationDialog = ({
 
     const handleValidationError = (errors) =>
         onValidationError && onValidationError(errors);
+
     return (
         <Dialog
             onClose={handleClose}
