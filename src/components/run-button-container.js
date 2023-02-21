@@ -312,12 +312,16 @@ export function RunButtonContainer({
             />
             {!disabled && (
                 <div>
-                    <ContingencyListSelector
-                        open={showContingencyListSelector}
-                        onClose={() => setShowContingencyListSelector(false)}
-                        onStart={handleStartSecurityAnalysis}
-                        currentNodeUuid={currentNode?.id}
-                    />
+                    {showContingencyListSelector && (
+                        <ContingencyListSelector
+                            open={showContingencyListSelector}
+                            onClose={() =>
+                                setShowContingencyListSelector(false)
+                            }
+                            onStart={handleStartSecurityAnalysis}
+                            currentNodeUuid={currentNode?.id}
+                        />
+                    )}
                     {showSensiParametersSelector && (
                         <SensiParametersSelector
                             open={showSensiParametersSelector}
