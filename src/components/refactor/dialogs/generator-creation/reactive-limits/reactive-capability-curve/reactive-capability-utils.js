@@ -29,18 +29,7 @@ const getRowSchema = () =>
                 yup.ref(Q_MAX_P),
                 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
             ),
-        [P]: yup
-            .number()
-            .nullable()
-            .required()
-            .min(
-                yup.ref(Q_MIN_P),
-                'ReactiveCapabilityCurveCreationErrorPHigherPmin'
-            )
-            .max(
-                yup.ref(Q_MAX_P),
-                'ReactiveCapabilityCurveCreationErrorPLowerPmax'
-            ),
+        [P]: yup.number().nullable().required(),
     });
 
 const getRowEmptyFormData = () => ({
