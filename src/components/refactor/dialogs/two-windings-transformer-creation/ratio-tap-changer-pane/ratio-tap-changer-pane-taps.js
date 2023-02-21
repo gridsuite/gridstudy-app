@@ -31,10 +31,11 @@ import {
     RATIO_TAP,
 } from '../two-windings-transformer-creation-dialog';
 import VirtualizedTable from '../../../../util/virtualized-table';
-import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
+import FieldErrorAlert from '../../../rhf-inputs/error-inputs/field-error-alert';
 import IntegerInput from '../../../rhf-inputs/integer-input';
 import { TableNumericalInput } from '../../../rhf-inputs/table-inputs/table-numerical-input';
 import RatioTapChangerPaneButtons from './ratio-tap-changer-pane-buttons';
+import ErrorInput from '../../../rhf-inputs/error-inputs/error-input';
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -436,7 +437,10 @@ const RatioTapChangerPaneTaps = ({ disabled }) => {
                     setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                     setOpenImportRuleDialog={setOpenImportRuleDialog}
                 />
-                <FieldErrorAlert name={`${RATIO_TAP_CHANGER}.${STEPS}`} />
+                <ErrorInput
+                    name={`${RATIO_TAP_CHANGER}.${STEPS}`}
+                    InputField={FieldErrorAlert}
+                />
             </Grid>
             <CreateRuleDialog
                 ruleType={RATIO_TAP}

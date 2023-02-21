@@ -11,7 +11,7 @@ import { FormattedMessage } from 'react-intl';
 import { useController } from 'react-hook-form';
 import { FieldLabel } from '../../dialogs/inputs/hooks-helpers';
 
-const RadioInput = ({ name, label, id, options }) => {
+const RadioInput = ({ name, label, id, options, formProps }) => {
     const {
         field: { onChange, value },
     } = useController({ name });
@@ -28,6 +28,7 @@ const RadioInput = ({ name, label, id, options }) => {
                 aria-labelledby={id ? id : label}
                 value={value}
                 onChange={onChange}
+                {...formProps}
             >
                 {options.map((value) => (
                     <FormControlLabel

@@ -43,6 +43,7 @@ const VoltageRegulation = ({
             name={VOLTAGE_REGULATION_TYPE}
             label={'RegulationTypeText'}
             size={'small'}
+            disableClearable={true}
         />
     );
 

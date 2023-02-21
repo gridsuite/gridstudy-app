@@ -43,6 +43,7 @@ const ReactiveLimitsForm = () => {
             name={`${REACTIVE_CAPABILITY_CURVE_CHOICE}`}
             defaultValue={'CURVE'}
             options={REACTIVE_LIMIT_TYPES}
+            formProps={{ style: { marginBottom: '15px' } }}
         />
     );
 

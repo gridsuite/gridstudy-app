@@ -35,11 +35,11 @@ const getRowSchema = () =>
             .required()
             .min(
                 yup.ref(Q_MIN_P),
-                'ReactiveCapabilityCurveCreationErrorPOutOfRange'
+                'ReactiveCapabilityCurveCreationErrorPHigherPmin'
             )
             .max(
                 yup.ref(Q_MAX_P),
-                'ReactiveCapabilityCurveCreationErrorPOutOfRange'
+                'ReactiveCapabilityCurveCreationErrorPLowerPmax'
             ),
     });
 

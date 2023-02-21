@@ -14,7 +14,8 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { useStyles } from '../../../../../dialogs/dialogUtils';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
-import MidFormError from '../../../../rhf-inputs/mid-form-error';
+import MidFormError from '../../../../rhf-inputs/error-inputs/mid-form-error';
+import ErrorInput from '../../../../rhf-inputs/error-inputs/error-input';
 
 export const ReactiveCapabilityCurveTable = ({
     id,
@@ -26,13 +27,16 @@ export const ReactiveCapabilityCurveTable = ({
 
     return (
         <Grid item container spacing={2}>
+            <Grid item xs={12}>
+                <ErrorInput name={id} InputField={MidFormError} />
+            </Grid>
+
             {tableHeadersIds.map((header) => (
                 <Grid key={header} item xs={3}>
                     <FormattedMessage id={header} />
                 </Grid>
             ))}
 
-            <MidFormError name={id} />
             {rows.map((value, index, displayedValues) => {
                 let labelSuffix;
                 if (index === 0) labelSuffix = 'min';

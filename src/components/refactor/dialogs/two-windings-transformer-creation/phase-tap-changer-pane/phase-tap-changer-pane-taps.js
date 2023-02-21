@@ -11,6 +11,7 @@ import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
     PHASE_TAP_CHANGER,
+    RATIO_TAP_CHANGER,
     STEPS,
     STEPS_ALPHA,
     STEPS_CONDUCTANCE,
@@ -32,10 +33,11 @@ import {
     PHASE_TAP,
 } from '../two-windings-transformer-creation-dialog';
 import VirtualizedTable from '../../../../util/virtualized-table';
-import FieldErrorAlert from '../../../rhf-inputs/field-error-alert';
+import FieldErrorAlert from '../../../rhf-inputs/error-inputs/field-error-alert';
 import IntegerInput from '../../../rhf-inputs/integer-input';
 import { TableNumericalInput } from '../../../rhf-inputs/table-inputs/table-numerical-input';
 import PhaseTapChangerPaneButtons from './phase-tap-changer-pane-buttons';
+import ErrorInput from '../../../rhf-inputs/error-inputs/error-input';
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -455,7 +457,10 @@ const PhaseTapChangerPaneTaps = ({ disabled }) => {
                     setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                     setOpenImportRuleDialog={setOpenImportRuleDialog}
                 />
-                <FieldErrorAlert name={`${PHASE_TAP_CHANGER}.${STEPS}`} />
+                <ErrorInput
+                    name={`${RATIO_TAP_CHANGER}.${STEPS}`}
+                    InputField={FieldErrorAlert}
+                />
             </Grid>
             <CreateRuleDialog
                 ruleType={PHASE_TAP}

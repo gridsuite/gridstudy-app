@@ -39,11 +39,7 @@ import ReactiveLimitsForm from './reactive-limits/reactive-limits-form';
 import SetPointsForm from './set-points/set-points-form';
 import { fetchVoltageLevelsIdAndTopology } from '../../../../utils/rest-api';
 
-const GeneratorCreationForm = ({
-    voltageLevelOptionsPromise,
-    studyUuid,
-    currentNodeUuid,
-}) => {
+const GeneratorCreationForm = ({ studyUuid, currentNodeUuid }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
@@ -80,6 +76,7 @@ const GeneratorCreationForm = ({
             options={ENERGY_SOURCES}
             fullWidth
             size={'small'}
+            disableClearable={true}
             formProps={filledTextField}
         />
     );

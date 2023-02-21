@@ -91,32 +91,35 @@ const emptyFormData = {
 
 const schema = yup
     .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [ENERGY_SOURCE]: yup.string().required(),
-        [MAXIMUM_ACTIVE_POWER]: yup.number().required(),
-        [MINIMUM_ACTIVE_POWER]: yup.number().required(),
-        [RATED_NOMINAL_POWER]: yup.number().nullable(),
-        [TRANSIENT_REACTANCE]: yup.number().nullable(),
-        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-        [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        [STARTUP_COST]: yup.number().nullable(),
-        [MARGINAL_COST]: yup.number().nullable(),
-        [PLANNED_OUTAGE_RATE]: yup
-            .number()
-            .nullable()
-            .min(0, 'RealPercentage')
-            .max(1, 'RealPercentage'),
-        [FORCED_OUTAGE_RATE]: yup
-            .number()
-            .nullable()
-            .min(0, 'RealPercentage')
-            .max(1, 'RealPercentage'),
-        ...getSetPointsSchema(),
-        ...getReactiveLimitsSchema(),
-        ...getConnectivityFormValidationSchema(),
-    })
+    .shape(
+        {
+            [EQUIPMENT_ID]: yup.string().required(),
+            [EQUIPMENT_NAME]: yup.string(),
+            [ENERGY_SOURCE]: yup.string().required(),
+            [MAXIMUM_ACTIVE_POWER]: yup.number().required(),
+            [MINIMUM_ACTIVE_POWER]: yup.number().required(),
+            [RATED_NOMINAL_POWER]: yup.number().nullable(),
+            [TRANSIENT_REACTANCE]: yup.number().nullable(),
+            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            [STARTUP_COST]: yup.number().nullable(),
+            [MARGINAL_COST]: yup.number().nullable(),
+            [PLANNED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, 'RealPercentage')
+                .max(1, 'RealPercentage'),
+            [FORCED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, 'RealPercentage')
+                .max(1, 'RealPercentage'),
+            ...getSetPointsSchema(),
+            ...getReactiveLimitsSchema(),
+            ...getConnectivityFormValidationSchema(),
+        },
+        [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
+    )
     .required();
 
 const GeneratorCreationDialog = ({

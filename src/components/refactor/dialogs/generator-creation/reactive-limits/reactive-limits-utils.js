@@ -25,7 +25,19 @@ export const getReactiveLimitsEmptyFormData = () => ({
 
 export const getReactiveLimitsSchema = () => ({
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
-    [MINIMUM_REACTIVE_POWER]: yup.number().nullable(),
-    [MAXIMUM_REACTIVE_POWER]: yup.number().nullable(),
+    [MINIMUM_REACTIVE_POWER]: yup
+        .number()
+        .nullable()
+        .when([MAXIMUM_REACTIVE_POWER], {
+            is: (maximumReactivePower) => maximumReactivePower,
+            then: (schema) => schema.required(),
+        }),
+    [MAXIMUM_REACTIVE_POWER]: yup
+        .number()
+        .nullable()
+        .when([MINIMUM_REACTIVE_POWER], {
+            is: (minimumReactivePower) => minimumReactivePower,
+            then: (schema) => schema.required(),
+        }),
     ...getReactiveCapabilityCurveValidationSchema(),
 });
