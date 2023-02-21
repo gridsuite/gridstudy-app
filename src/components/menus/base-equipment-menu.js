@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -20,9 +20,6 @@ import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../util/equipmentInfosHandler';
 import EditIcon from '@mui/icons-material/Edit';
-import GeneratorModificationDialog from '../dialogs/generator-modification-dialog';
-import { withVLsIdsAndTopology } from 'components/graph/menus/network-modification-node-editor';
-import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -66,13 +63,11 @@ const BaseEquipmentMenu = ({
     equipmentId,
     equipmentType,
     handleViewInSpreadsheet,
+    openModificationDialog,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
     const network = useSelector((state) => state.network);
-    const [openDialog, setOpenDialog] = useState(false);
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const currentTreeNode = useSelector((state) => state.currentTreeNode);
 
     function getEquipment(equipmentType, equipmentId) {
         if (equipmentType === equipments.substations) {
@@ -84,9 +79,9 @@ const BaseEquipmentMenu = ({
         }
     }
 
-    const handleEditGenerator = () => {
-        setOpenDialog(true);
-    };
+    // const handleEditGenerator = () => {
+    //     setOpenDialog(true);
+    // };
 
     const equipment = getEquipment(equipmentType, equipmentId);
     const { getNameOrId } = useNameOrId();
@@ -108,7 +103,12 @@ const BaseEquipmentMenu = ({
                         {equipmentType === equipments.generators && (
                             <MenuItem
                                 className={classes.menuItem}
-                                onClick={() => handleEditGenerator()}
+                                onClick={() =>
+                                    openModificationDialog({
+                                        equipmentId,
+                                        equipmentType,
+                                    })
+                                }
                             >
                                 <ListItemIcon>
                                     <EditIcon></EditIcon>
@@ -188,7 +188,7 @@ const BaseEquipmentMenu = ({
                     </NestedMenuItem>
                 </>
             )}
-            {openDialog && (
+            {/* {openDialog && (
                 <GeneratorModificationDialog
                     open={openDialog}
                     studyUuid={studyUuid}
@@ -200,7 +200,7 @@ const BaseEquipmentMenu = ({
                         currentTreeNode?.id
                     )}
                 ></GeneratorModificationDialog>
-            )}
+            )} */}
         </>
     );
 };

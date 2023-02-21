@@ -72,6 +72,8 @@ import makeStyles from '@mui/styles/makeStyles';
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
+import { withVLsIdsAndTopology } from 'components/graph/menus/network-modification-node-editor';
+import GeneratorModificationDialog from 'components/dialogs/generator-modification-dialog';
 
 const customSldStyle = (theme) => {
     return {
@@ -137,6 +139,20 @@ const Diagram = forwardRef((props, ref) => {
     const errorWidth = MAX_WIDTH_VOLTAGE_LEVEL;
 
     const [errorMessage, setErrorMessage] = useState('');
+
+    const [equipmentToModify, setEquipmentToModify] = useState({
+        equipmentId: null,
+        equipmentType: null,
+    });
+
+    const openModificationDialog = (equipmentToModify) => {
+        closeEquipmentMenu();
+        setEquipmentToModify(equipmentToModify);
+    };
+
+    const closeModificationDialog = () => {
+        setEquipmentToModify({ equipmentId: null, equipmentType: null });
+    };
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
@@ -637,6 +653,7 @@ const Diagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    openModificationDialog={openModificationDialog}
                 />
             )
         );
@@ -706,6 +723,27 @@ const Diagram = forwardRef((props, ref) => {
     /**
      * RENDER
      */
+
+    const renderDialog = (equipmentType) => {
+        switch (equipmentType) {
+            case equipments.generators:
+                return (
+                    <GeneratorModificationDialog
+                        open={equipmentToModify.equipmentType !== null}
+                        studyUuid={props.studyUuid}
+                        currentNodeUuid={currentNode?.id}
+                        onClose={() => closeModificationDialog()}
+                        genratorId={equipmentToModify.equipmentId}
+                        voltageLevelsIdsAndTopologyPromise={withVLsIdsAndTopology(
+                            props.studyUuid,
+                            currentNode?.id
+                        )}
+                    />
+                );
+            default:
+                return <></>;
+        }
+    };
 
     const contentRender = () => {
         return (
@@ -842,6 +880,8 @@ const Diagram = forwardRef((props, ref) => {
                         )}
                     </Box>
                 )}
+                {equipmentToModify &&
+                    renderDialog(equipmentToModify.equipmentType)}
             </Paper>
         );
     };
