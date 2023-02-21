@@ -54,6 +54,7 @@ export const ResultViewTab = ({
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
+    notTheContent,
     disabled,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
@@ -125,6 +126,8 @@ export const ResultViewTab = ({
         }
     }, [enableDeveloperMode]);
 
+    const showsSubs = !notTheContent && !disabled;
+
     return (
         <Paper className={clsx('singlestretch-child', classes.table)}>
             <div className={classes.div}>
@@ -171,11 +174,11 @@ export const ResultViewTab = ({
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
-            {tabIndex === 0 && !disabled && renderLoadFlowResult()}
-            {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
-            {tabIndex === 2 && !disabled && renderShortCircuitAnalysisResult()}
-            {tabIndex === 3 && !disabled && renderSensitivityAnalysisResult()}
-            {tabIndex === 4 && !disabled && renderDynamicSimulationResult()}
+            {tabIndex === 0 && showsSubs && renderLoadFlowResult()}
+            {tabIndex === 1 && showsSubs && renderSecurityAnalysisResult()}
+            {tabIndex === 2 && showsSubs && renderShortCircuitAnalysisResult()}
+            {tabIndex === 3 && showsSubs && renderSensitivityAnalysisResult()}
+            {tabIndex === 4 && showsSubs && renderDynamicSimulationResult()}
         </Paper>
     );
 };
