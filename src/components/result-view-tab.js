@@ -59,6 +59,7 @@ export const ResultViewTab = ({
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
+    notTheContent,
     disabled,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
@@ -130,6 +131,8 @@ export const ResultViewTab = ({
         }
     }, [enableDeveloperMode]);
 
+    const showsSubs = !notTheContent && !disabled;
+
     return (
         <Paper className={clsx('singlestretch-child', classes.table)}>
             <div className={classes.div}>
@@ -179,31 +182,31 @@ export const ResultViewTab = ({
             {/* tab contents */}
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 0 && !disabled}
+                selected={tabIndex === 0 && showsSubs}
             >
                 {renderLoadFlowResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 1 && !disabled}
+                selected={tabIndex === 1 && showsSubs}
             >
                 {renderSecurityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 2 && !disabled}
+                selected={tabIndex === 2 && showsSubs}
             >
                 {renderShortCircuitAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 3 && !disabled}
+                selected={tabIndex === 3 && showsSubs}
             >
                 {renderSensitivityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 4 && !disabled}
+                selected={tabIndex === 4 && showsSubs}
             >
                 {renderDynamicSimulationResult()}
             </TabPanelLazy>
