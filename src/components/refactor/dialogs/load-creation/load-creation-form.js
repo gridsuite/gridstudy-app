@@ -13,7 +13,8 @@ import {
     LOAD_TYPE,
     REACTIVE_POWER,
 } from 'components/refactor/utils/field-constants';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -27,7 +28,21 @@ import SelectInput from '../../rhf-inputs/select-input';
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 
-const LoadCreationForm = ({ voltageLevelOptionsPromise }) => {
+const LoadCreationForm = ({ currentNode, studyUuid }) => {
+    const currentNodeUuid = currentNode?.id;
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    useEffect(() => {
+        if (studyUuid && currentNodeUuid)
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a.id.localeCompare(b.id))
+                    );
+                }
+            );
+    }, [studyUuid, currentNodeUuid]);
+
     const loadIdField = (
         <TextInput
             name={EQUIPMENT_ID}
@@ -73,8 +88,10 @@ const LoadCreationForm = ({ voltageLevelOptionsPromise }) => {
 
     const connectivityForm = (
         <ConnectivityForm
+            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
         />
     );
 

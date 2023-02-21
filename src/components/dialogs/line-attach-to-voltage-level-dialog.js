@@ -17,7 +17,6 @@ import ModificationDialog from './modificationDialog';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useInputForm, useTextValue } from './inputs/input-hooks';
 import {
@@ -31,7 +30,6 @@ import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
-import LineCreationDialog from './line-creation-dialog';
 import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
@@ -41,12 +39,14 @@ import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { MODIFICATION_TYPE } from '../network/constants';
+import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.
  * @param lineOptionsPromise Promise handling list of network lines
  * @param voltageLevelOptionsPromise Promise handling list of network voltage levels
- * @param currentNodeUuid the currently selected tree node
+ * @param studyUuid the study we are currently working on
+ * @param currentNode the currently selected tree node
  * @param substationOptionsPromise Promise handling list of network substations
  * @param editData the possible line split with voltage level creation record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -54,12 +54,13 @@ import { MODIFICATION_TYPE } from '../network/constants';
 const LineAttachToVoltageLevelDialog = ({
     lineOptionsPromise,
     voltageLevelOptionsPromise,
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     substationOptionsPromise,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const bobbsCb = useMemo(
         () =>
@@ -584,10 +585,11 @@ const LineAttachToVoltageLevelDialog = ({
                         open={true}
                         onClose={onLineDialogClose}
                         currentNodeUuid={currentNodeUuid}
-                        substationOptionsPromise={substationOptionsPromise}
+                        voltageLevelOptionsPromise={substationOptionsPromise}
                         displayConnectivity={false}
                         onCreateLine={onLineDo}
                         editData={lineToEdit}
+                        {...dialogProps}
                     />
                 )}
             </ModificationDialog>
@@ -596,7 +598,8 @@ const LineAttachToVoltageLevelDialog = ({
 };
 
 LineAttachToVoltageLevelDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     voltageLevelOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
