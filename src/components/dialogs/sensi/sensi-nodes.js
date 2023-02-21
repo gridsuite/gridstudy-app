@@ -8,8 +8,12 @@ import React, { useEffect, useState } from 'react';
 import { useDirectoryElements } from '../inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { gridItem } from '../dialogUtils';
-import { SensiChecked, useStyles } from './sensi-parameters-selector';
-import { EQUIPMENT_TYPES } from '../../util/equipment-types';
+import {
+    EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
+    MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES,
+    SensiChecked,
+    useStyles,
+} from './sensi-parameters-selector';
 
 export const SensiNodes = ({ index, onChange, defaultValue }) => {
     const classes = useStyles();
@@ -26,7 +30,7 @@ export const SensiNodes = ({ index, onChange, defaultValue }) => {
                 ? defaultValue.monitoredVoltageLevels
                 : [],
             elementType: elementType.FILTER,
-            equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL.type],
+            equipmentTypes: MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES,
             titleId: 'FiltersListsSelection',
             elementClassName: classes.chipElement,
         });
@@ -38,13 +42,7 @@ export const SensiNodes = ({ index, onChange, defaultValue }) => {
                 ? defaultValue.equipmentsInVoltageRegulation
                 : [],
             elementType: elementType.FILTER,
-            equipmentTypes: [
-                EQUIPMENT_TYPES.GENERATOR.type,
-                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
-                EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
-                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
-                EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
-            ],
+            equipmentTypes: EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
             titleId: 'FiltersListsSelection',
             elementClassName: classes.chipElement,
         });

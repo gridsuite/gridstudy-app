@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
  * @param studyUuid the study we are currently working on
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
@@ -79,10 +79,11 @@ const GeneratorCreationDialog = ({
     voltageLevelOptionsPromise,
     voltageLevelsIdsAndTopologyPromise,
     studyUuid,
-    currentNodeUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const classes = useStyles();
 
     const { snackError } = useSnackMessage();
@@ -155,7 +156,7 @@ const GeneratorCreationDialog = ({
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
-        currentNodeUuid,
+        currentNodeUuid: currentNode?.id,
         equipmentPath,
         toFormValues,
         setFormValues,
@@ -707,7 +708,7 @@ GeneratorCreationDialog.propTypes = {
         catch: PropTypes.func.isRequired,
     }),
     studyUuid: PropTypes.string,
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     editData: PropTypes.object,
 };
 

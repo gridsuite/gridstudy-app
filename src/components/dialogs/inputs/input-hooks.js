@@ -750,6 +750,7 @@ export const useDirectoryElements = ({
     const { snackError } = useSnackMessage();
     const refInitialValues = useRef();
     refInitialValues.current = initialValues;
+    const types = useMemo(() => [elementType], [elementType]);
 
     useEffect(() => {
         if (refInitialValues.current) {
@@ -857,7 +858,7 @@ export const useDirectoryElements = ({
                 <DirectoryItemSelector
                     open={directoryItemSelectorOpen}
                     onClose={addElements}
-                    types={[elementType]}
+                    types={types}
                     equipmentTypes={equipmentTypes}
                     title={intl.formatMessage({ id: titleId })}
                     itemFilter={itemFilter}
@@ -875,13 +876,13 @@ export const useDirectoryElements = ({
         label,
         directoryItemSelectorOpen,
         addElements,
-        elementType,
         equipmentTypes,
         intl,
         titleId,
         itemFilter,
         elementClassName,
         handleDelete,
+        types,
     ]);
     return [values, field];
 };

@@ -8,7 +8,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 import { createVoltageLevel } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
@@ -226,7 +225,8 @@ function validateConnection(values) {
 /**
  * Dialog to create a voltage level in the network
  * @param substationOptionsPromise Promise handling list of network substations
- * @param currentNodeUuid the currently selected tree node
+ * @param studyUuid the study we are currently working on
+ * @param currentNode the currently selected tree node
  * @param editData the data to edit
  * @param onCreateVoltageLevel callback when OK is triggered,
  *   defaults to create creation hypothesis on server side.
@@ -245,11 +245,12 @@ function validateConnection(values) {
 const VoltageLevelCreationDialog = ({
     editData,
     substationOptionsPromise,
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     onCreateVoltageLevel = createVoltageLevel,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
@@ -448,7 +449,8 @@ VoltageLevelCreationDialog.propTypes = {
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     onCreateVoltageLevel: PropTypes.func,
 };
 

@@ -46,7 +46,7 @@ import {
  * @param withPosition
  * @param voltageLevelOptions list of network voltage levels
  * @param studyUuid the study we are currently working on
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const ConnectivityForm = ({
@@ -56,8 +56,9 @@ export const ConnectivityForm = ({
     withPosition = false,
     voltageLevelOptions = [],
     studyUuid,
-    currentNodeUuid,
+    currentNode,
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
         []
     );
@@ -219,7 +220,7 @@ export const ConnectivityForm = ({
             name={`${id}.${CONNECTION_POSITION}`}
             label="ConnectionPosition"
             customAdornment={positionIconAdorment(
-                isNodeBuilt(currentNodeUuid),
+                isNodeBuilt(currentNode),
                 handleClickOpenDiagramPane
             )}
             clearable={true}

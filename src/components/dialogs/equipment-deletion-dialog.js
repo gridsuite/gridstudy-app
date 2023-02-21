@@ -10,7 +10,6 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import { useParams } from 'react-router-dom';
 import { deleteEquipment } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { validateField } from '../util/validation-functions';
@@ -24,16 +23,18 @@ const defaultEquipmentType = EQUIPMENT_TYPES.LINE;
 
 /**
  * Dialog to delete an equipment in the network
- * @param currentNodeUuid : the currently selected tree node
+ * @param studyUuid the study we are currently working on
+ * @param currentNode : the currently selected tree node
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const EquipmentDeletionDialog = ({
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
@@ -185,7 +186,8 @@ const EquipmentDeletionDialog = ({
 };
 
 EquipmentDeletionDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     editData: PropTypes.object,
 };
 
