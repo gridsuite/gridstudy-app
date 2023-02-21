@@ -508,8 +508,8 @@
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Chaque valeur de puissance active doit être un nombre unique et valide.",
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Chaque valeur de puissance active doit être comprise entre les valeurs P min et P max.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Chaque valeur de puissance réactive minimale doit être inférieur ou égale à la puissance réactive maximale correspondante.",
-    "ReactiveCapabilityCurveCreationErrorPHigherPmin": "La valeur de puissance active doit être inférieur ou égale à P min",
-    "ReactiveCapabilityCurveCreationErrorPLowerPmax": "La valeur de puissance active doit être supérieur ou égale à P max",
+    "ReactiveCapabilityCurveCreationErrorPHigherPmin": "La valeur de puissance active doit être inférieur ou égale à Q min",
+    "ReactiveCapabilityCurveCreationErrorPLowerPmax": "La valeur de puissance active doit être supérieur ou égale à Q max",
 
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
