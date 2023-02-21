@@ -733,7 +733,7 @@ const Diagram = forwardRef((props, ref) => {
                         studyUuid={props.studyUuid}
                         currentNodeUuid={currentNode?.id}
                         onClose={() => closeModificationDialog()}
-                        genratorId={equipmentToModify.equipmentId}
+                        defaultIdValue={equipmentToModify.equipmentId}
                         voltageLevelsIdsAndTopologyPromise={withVLsIdsAndTopology(
                             props.studyUuid,
                             currentNode?.id

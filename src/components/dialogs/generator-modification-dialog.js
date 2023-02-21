@@ -88,6 +88,7 @@ function getValueOrNull(val) {
 /**
  * Dialog to create a generator in the network
  * @param editData the data to edit
+ * @param generatorId the id of generator to edit
  * @param studyUuid the study we are currently working on
  * @param currentNodeUuid the currently selected tree node
  * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
@@ -95,7 +96,7 @@ function getValueOrNull(val) {
  */
 const GeneratorModificationDialog = ({
     editData,
-    genratorId,
+    defaultIdValue,
     studyUuid,
     currentNodeUuid,
     voltageLevelsIdsAndTopologyPromise,
@@ -164,10 +165,10 @@ const GeneratorModificationDialog = ({
     const formValueEquipmentId = useMemo(() => {
         return formValues?.equipmentId
             ? { id: formValues?.equipmentId }
-            : genratorId
-            ? { id: genratorId }
+            : defaultIdValue
+            ? { id: defaultIdValue }
             : { id: '' };
-    }, [formValues?.equipmentId, genratorId]);
+    }, [formValues, defaultIdValue]);
 
     const [generatorId, generatorIdField] = useAutocompleteField({
         label: 'ID',
@@ -200,8 +201,8 @@ const GeneratorModificationDialog = ({
     }, [generatorId, formValueEquipmentId]);
 
     useEffect(() => {
-        if (id || genratorId) {
-            let key = id !== '' ? id : genratorId;
+        if (id || defaultIdValue) {
+            let key = id !== '' ? id : defaultIdValue;
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -216,7 +217,7 @@ const GeneratorModificationDialog = ({
         } else {
             setGeneratorInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, id, genratorId]);
+    }, [studyUuid, currentNodeUuid, id, defaultIdValue]);
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
