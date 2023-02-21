@@ -28,7 +28,8 @@ import SelectInput from '../../rhf-inputs/select-input';
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 
-const LoadCreationForm = ({ currentNodeUuid, studyUuid }) => {
+const LoadCreationForm = ({ currentNode, studyUuid }) => {
+    const currentNodeUuid = currentNode?.id;
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
@@ -90,7 +91,7 @@ const LoadCreationForm = ({ currentNodeUuid, studyUuid }) => {
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
-            currentNodeUuid={currentNodeUuid}
+            currentNode={currentNode}
         />
     );
 
