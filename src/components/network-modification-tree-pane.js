@@ -93,11 +93,36 @@ export const NetworkModificationTreePane = ({
     const { snackError, snackInfo } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
-    const broadcastChannel = new BroadcastChannel('nodeCopyChannel');
-    let ws = null;
+
+    const dispatchSelectedNodeForCopy = useCallback(
+        (sourceStudyId, nodeId, copyType) => {
+            dispatch(
+                setSelectedNodeForCopy({
+                    sourceStudyId: sourceStudyId,
+                    nodeId: nodeId,
+                    copyType: copyType,
+                })
+            );
+        },
+        [dispatch]
+    );
+
+    const initBroadcastChannel = () => {
+        const broadcastChannel1 = new BroadcastChannel('nodeCopyChannel');
+        broadcastChannel1.onmessage = (event) => {
+            dispatchSelectedNodeForCopy(
+                event.data.sourceStudyId,
+                event.data.nodeId,
+                CopyType.COPY
+            );
+        };
+        return broadcastChannel1;
+    };
+
+    const broadcastChannel = initBroadcastChannel();
 
     useEffect(() => {
-        ws = connectUpdatedNodeNotificationsWebsocket();
+        const ws = connectUpdatedNodeNotificationsWebsocket();
         ws.onmessage = function (event) {
             //If the study we are on is the one that updated the node we don't need to handle it with this ws as it's already handled in a useEffect
             if (event.data.sourceStudyId !== studyUuid) {
@@ -123,7 +148,7 @@ export const NetworkModificationTreePane = ({
         ws.onerror = function (event) {
             console.error('Unexpected Notification WebSocket error', event);
         };
-    }, [studyUuid]);
+    }, [studyUuid, dispatch, snackInfo]);
 
     const [activeNode, setActiveNode] = useState(null);
 
@@ -254,27 +279,6 @@ export const NetworkModificationTreePane = ({
         },
         [studyUuid, snackError]
     );
-
-    useEffect(() => {
-        //Initialise broadcast channel onMessage
-        broadcastChannel.onmessage = (event) => {
-            dispatchSelectedNodeForCopy(
-                event.data.sourceStudyId,
-                event.data.nodeId,
-                CopyType.COPY
-            );
-        };
-    }, [dispatch]);
-
-    const dispatchSelectedNodeForCopy = (sourceStudyId, nodeId, copyType) => {
-        dispatch(
-            setSelectedNodeForCopy({
-                sourceStudyId: sourceStudyId,
-                nodeId: nodeId,
-                copyType: copyType,
-            })
-        );
-    };
 
     const handleCopyNode = (nodeId) => {
         console.info(
