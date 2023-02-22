@@ -6,19 +6,22 @@
  */
 
 import {
+    CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
     EQUIPMENT,
+    FLOW_SET_POINT_REGULATING_VALUE,
     HIGH_TAP_POSITION,
     ID,
-    LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
     NAME,
     NOMINAL_VOLTAGE,
-    RATIO_TAP_CHANGER,
+    PHASE_TAP_CHANGER,
     REGULATING,
+    REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
     STEPS,
+    STEPS_ALPHA,
     STEPS_CONDUCTANCE,
     STEPS_RATIO,
     STEPS_REACTANCE,
@@ -28,7 +31,6 @@ import {
     SUBSTATION_ID,
     TAP_POSITION,
     TARGET_DEADBAND,
-    TARGET_V,
     TOPOLOGY_KIND,
     TYPE,
     VOLTAGE_LEVEL,
@@ -36,42 +38,69 @@ import {
 import {
     areNumbersOrdered,
     areArrayElementsUnique,
-} from '../../../utils/utils';
-import yup from '../../../utils/yup-config';
+} from '../../../../utils/utils';
+import yup from '../../../../utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
-} from '../../regulating-terminal/regulating-terminal-form-utils';
-import { REGULATION_TYPES, SIDE } from '../../../../network/constants';
+} from '../../../regulating-terminal/regulating-terminal-form-utils';
+import {
+    REGULATION_MODES,
+    REGULATION_TYPES,
+    SIDE,
+} from '../../../../../network/constants';
 
-const ratioTapChangerValidationSchema = (id) => ({
+const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
-        [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
+        [REGULATION_MODE]: yup
+            .string()
+            .nullable()
+            .when([ENABLED], {
+                is: true,
+                then: (schema) => schema.required(),
+            }),
         [REGULATING]: yup.bool().required(),
         [REGULATION_TYPE]: yup
             .string()
             .nullable()
-            .when([ENABLED, REGULATING], {
-                is: (enabled, regulating) => enabled && regulating,
+            .when([ENABLED, REGULATING, REGULATION_MODE], {
+                is: (enabled, regulating, regulationMode) =>
+                    enabled &&
+                    regulating &&
+                    regulationMode !== REGULATION_MODES.FIXED_TAP.id,
                 then: (schema) => schema.required(),
             }),
         [REGULATION_SIDE]: yup
             .string()
             .nullable()
-            .when([ENABLED, REGULATING, REGULATION_TYPE], {
-                is: (enabled, regulating, regulationType) =>
+            .when([ENABLED, REGULATING, REGULATION_MODE, REGULATION_TYPE], {
+                is: (enabled, regulating, regulationMode, regulationType) =>
                     enabled &&
                     regulating &&
+                    regulationMode !== REGULATION_MODES.FIXED_TAP.id &&
                     regulationType === REGULATION_TYPES.LOCAL.id,
                 then: (schema) => schema.required(),
             }),
-        [TARGET_V]: yup
+        [CURRENT_LIMITER_REGULATING_VALUE]: yup
             .number()
             .nullable()
-            .positive('TargetVoltageGreaterThanZero')
-            .when(REGULATING, {
-                is: true,
+            .positive('CurrentLimiterGreaterThanZero')
+            .when([ENABLED, REGULATING, REGULATION_MODE], {
+                is: (enabled, regulating, regulationMode) =>
+                    enabled &&
+                    regulating &&
+                    regulationMode === REGULATION_MODES.CURRENT_LIMITER.id,
+                then: (schema) => schema.required(),
+            }),
+        [FLOW_SET_POINT_REGULATING_VALUE]: yup
+            .number()
+            .nullable()
+            .when([ENABLED, REGULATING, REGULATION_MODE], {
+                is: (enabled, regulating, regulationMode) =>
+                    enabled &&
+                    regulating &&
+                    regulationMode === REGULATION_MODES.ACTIVE_POWER_CONTROL.id,
                 then: (schema) => schema.required(),
             }),
         [TARGET_DEADBAND]: yup
@@ -81,42 +110,11 @@ const ratioTapChangerValidationSchema = (id) => ({
         [LOW_TAP_POSITION]: yup
             .number()
             .nullable()
-            .max(100)
             .when(ENABLED, {
                 is: true,
-                then: (schema) =>
-                    schema
-                        .required()
-                        .test(
-                            'incoherentLowTapPosition',
-                            'IncoherentLowTapPositionError',
-                            (lowTapPosition, context) =>
-                                isLowTapPositionCoherent(
-                                    lowTapPosition,
-                                    context
-                                )
-                        ),
+                then: (schema) => schema.required(),
             }),
-        [HIGH_TAP_POSITION]: yup
-            .number()
-            .nullable()
-            .min(yup.ref(LOW_TAP_POSITION), 'HighTapPositionError')
-            .max(100, 'HighTapPositionError')
-            .when(ENABLED, {
-                is: true,
-                then: (schema) =>
-                    schema
-                        .required()
-                        .test(
-                            'incoherentHighTapPosition',
-                            'IncoherentHighTapPositionError',
-                            (highTapPosition, context) =>
-                                isHighTapPositionCoherent(
-                                    highTapPosition,
-                                    context
-                                )
-                        ),
-            }),
+        [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup
             .number()
             .nullable()
@@ -144,17 +142,18 @@ const ratioTapChangerValidationSchema = (id) => ({
                     [STEPS_CONDUCTANCE]: yup.number(),
                     [STEPS_SUSCEPTANCE]: yup.number(),
                     [STEPS_RATIO]: yup.number(),
+                    [STEPS_ALPHA]: yup.number(),
                 })
             )
             .when(ENABLED, {
                 is: true,
-                then: (schema) => schema.min(1, 'GenerateRatioTapRowsError'),
+                then: (schema) => schema.min(1, 'GeneratePhaseTapRowsError'),
             })
-            .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
-                const ratioArray = array.map((step) => step[STEPS_RATIO]);
+            .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
+                const alphaArray = array.map((step) => step[STEPS_ALPHA]);
                 return (
-                    areNumbersOrdered(ratioArray) &&
-                    areArrayElementsUnique(ratioArray)
+                    areNumbersOrdered(alphaArray) &&
+                    areArrayElementsUnique(alphaArray)
                 );
             }),
         //regulating terminal fields
@@ -169,8 +168,9 @@ const ratioTapChangerValidationSchema = (id) => ({
                 [NOMINAL_VOLTAGE]: yup.string(),
                 [TOPOLOGY_KIND]: yup.string().nullable(),
             })
-            .when([REGULATING, REGULATION_TYPE], {
-                is: (regulating, regulationType) =>
+            .when([ENABLED, REGULATING, REGULATION_TYPE], {
+                is: (enabled, regulating, regulationType) =>
+                    enabled &&
                     regulating &&
                     regulationType === REGULATION_TYPES.DISTANT.id,
                 then: (schema) => schema.required(),
@@ -183,8 +183,9 @@ const ratioTapChangerValidationSchema = (id) => ({
                 [NAME]: yup.string().nullable(),
                 [TYPE]: yup.string(),
             })
-            .when([REGULATING, REGULATION_TYPE], {
-                is: (regulating, regulationType) =>
+            .when([ENABLED, REGULATING, REGULATION_TYPE], {
+                is: (enabled, regulating, regulationType) =>
+                    enabled &&
                     regulating &&
                     regulationType === REGULATION_TYPES.DISTANT.id,
                 then: (schema) => schema.required(),
@@ -192,28 +193,19 @@ const ratioTapChangerValidationSchema = (id) => ({
     }),
 });
 
-export const getRatioTapChangerValidationSchema = (id = RATIO_TAP_CHANGER) => {
-    return ratioTapChangerValidationSchema(id);
+export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
+    return phaseTapChangerValidationSchema(id);
 };
 
-const isLowTapPositionCoherent = (value, context) => {
-    const stepsTap = context.parent[STEPS]?.map((step) => step[STEPS_TAP]);
-    return stepsTap.length > 0 ? value === Math.min(...stepsTap) : true;
-};
-
-const isHighTapPositionCoherent = (value, context) => {
-    const stepsTap = context.parent[STEPS]?.map((step) => step[STEPS_TAP]);
-    return stepsTap.length > 0 ? value === Math.max(...stepsTap) : true;
-};
-
-const ratioTapChangerEmptyFormData = (id) => ({
+const phaseTapChangerEmptyFormData = (id) => ({
     [id]: {
         [ENABLED]: false,
-        [LOAD_TAP_CHANGING_CAPABILITIES]: false,
+        [REGULATION_MODE]: null,
         [REGULATING]: false,
         [REGULATION_TYPE]: null,
         [REGULATION_SIDE]: SIDE.SIDE1.id,
-        [TARGET_V]: null,
+        [CURRENT_LIMITER_REGULATING_VALUE]: null,
+        [FLOW_SET_POINT_REGULATING_VALUE]: null,
         [TARGET_DEADBAND]: null,
         [LOW_TAP_POSITION]: null,
         [HIGH_TAP_POSITION]: null,
@@ -223,18 +215,19 @@ const ratioTapChangerEmptyFormData = (id) => ({
     },
 });
 
-export const getRatioTapChangerEmptyFormData = (id = RATIO_TAP_CHANGER) => {
-    return ratioTapChangerEmptyFormData(id);
+export const getPhaseTapChangerEmptyFormData = (id = PHASE_TAP_CHANGER) => {
+    return phaseTapChangerEmptyFormData(id);
 };
 
-export const getRatioTapChangerFormData = (
+export const getPhaseTapChangerFormData = (
     {
         enabled = false,
+        regulationMode = null,
         regulating = false,
-        loadTapChangingCapabilities = false,
         regulationType = null,
         regulationSide = SIDE.SIDE1.id,
-        targetV = null,
+        currentLimiterRegulatingValue = null,
+        flowSetpointRegulatingValue = null,
         targetDeadband = null,
         lowTapPosition = null,
         highTapPosition = null,
@@ -244,15 +237,16 @@ export const getRatioTapChangerFormData = (
         equipmentId,
         equipmentType,
     },
-    id = RATIO_TAP_CHANGER
+    id = PHASE_TAP_CHANGER
 ) => ({
     [id]: {
         [ENABLED]: enabled,
+        [REGULATION_MODE]: regulationMode,
         [REGULATING]: regulating,
-        [LOAD_TAP_CHANGING_CAPABILITIES]: loadTapChangingCapabilities,
         [REGULATION_TYPE]: regulationType,
         [REGULATION_SIDE]: regulationSide,
-        [TARGET_V]: targetV,
+        [CURRENT_LIMITER_REGULATING_VALUE]: currentLimiterRegulatingValue,
+        [FLOW_SET_POINT_REGULATING_VALUE]: flowSetpointRegulatingValue,
         [TARGET_DEADBAND]: targetDeadband,
         [LOW_TAP_POSITION]: lowTapPosition,
         [HIGH_TAP_POSITION]: highTapPosition,
@@ -260,8 +254,8 @@ export const getRatioTapChangerFormData = (
         [STEPS]: steps,
         ...getRegulatingTerminalFormData({
             equipmentId,
-            voltageLevelId,
             equipmentType,
+            voltageLevelId,
         }),
     },
 });
