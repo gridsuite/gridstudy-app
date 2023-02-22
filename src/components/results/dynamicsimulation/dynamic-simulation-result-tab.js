@@ -46,10 +46,10 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
             if (selectedIndexesToLoad.length === 0) {
                 // do not need load, return direct selected series in cache
                 return Promise.resolve(
-                    selectedIndexes.map(
-                        (indexValue) =>
-                            dynamicSimulationResult.timeseries[indexValue]
-                    )
+                    selectedIndexes.map((indexValue) => ({
+                        ...dynamicSimulationResult.timeseries[indexValue],
+                        index: indexValue, // memorize index position in the series names list to generate a color later in plot
+                    }))
                 );
             } else {
                 // need load selected series not yet in cache
@@ -77,10 +77,10 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
                         }
 
                         // return selected series in newly updated cache
-                        return selectedIndexes.map(
-                            (indexValue) =>
-                                dynamicSimulationResult.timeseries[indexValue]
-                        );
+                        return selectedIndexes.map((indexValue) => ({
+                            ...dynamicSimulationResult.timeseries[indexValue],
+                            index: indexValue, // memorize index position in the series names list to generate a color later in plot
+                        }));
                     })
                     .catch((error) => {
                         snackError({

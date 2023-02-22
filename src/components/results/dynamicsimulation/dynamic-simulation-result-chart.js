@@ -121,23 +121,18 @@ const DynamicSimulationResultChart = ({
             return loadTimeSeries(selectedIndexes).then(
                 (selectedTimeSeries) => {
                     // transform to plotly's compatible data
-                    const selectedSeries = selectedTimeSeries.map(
-                        (elem, index) => {
-                            const metadata = elem?.metadata;
-                            const values =
-                                elem?.chunks && elem.chunks[0]?.values;
-                            return {
-                                index: index,
-                                name: metadata?.name,
-                                data: {
-                                    x: metadata?.irregularIndex,
-                                    y: values,
-                                },
-                            };
-                        }
-                    );
-
-                    return selectedSeries;
+                    return selectedTimeSeries.map((elem) => {
+                        const metadata = elem?.metadata;
+                        const values = elem?.chunks && elem.chunks[0]?.values;
+                        return {
+                            index: elem.index,
+                            name: metadata?.name,
+                            data: {
+                                x: metadata?.irregularIndex,
+                                y: values,
+                            },
+                        };
+                    });
                 }
             );
         },

@@ -12,14 +12,7 @@ import { eventCenter, PlotEvents } from './plot-events';
 import { SeriesType } from './plot-types';
 import { debounce } from '@mui/material';
 
-const PlotlySeriesChart = ({
-    id,
-    groupId,
-    index,
-    leftSeries,
-    rightSeries,
-    sync,
-}) => {
+const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
     // these states used for responsible
     const plotRef = useRef(null);
     const resizeObserverRef = useRef(
@@ -42,7 +35,12 @@ const PlotlySeriesChart = ({
         return (s) => ({
             color: 'rgba(255,255,255,0.5)',
             line: {
-                color: baseColors[s.index % baseColors.length]['500'],
+                color: baseColors[s.index % baseColors.length][
+                    `${
+                        300 +
+                        (Math.floor(s.index / baseColors.length) % 7) * 100
+                    }` // compute from 300 to 900 with step = 100
+                ],
                 width: 1,
             },
             ...opts,
@@ -57,7 +55,12 @@ const PlotlySeriesChart = ({
                 mode: 'lines+markers',
                 marker: getMarker(s),
                 line: {
-                    color: baseColors[s.index % baseColors.length]['500'],
+                    color: baseColors[s.index % baseColors.length][
+                        `${
+                            300 +
+                            (Math.floor(s.index / baseColors.length) % 7) * 100
+                        }` // compute from 300 to 900 with step = 100
+                    ],
                 },
                 x: s.data.x ? s.data.x.map((value) => value / 1000) : [], // ms => s
                 y: s.data.y ? s.data.y : [],
@@ -178,7 +181,6 @@ const PlotlySeriesChart = ({
 PlotlySeriesChart.propTypes = {
     id: PropTypes.string.isRequired,
     groupId: PropTypes.string.isRequired,
-    index: PropTypes.number,
     leftSeries: SeriesType,
     rightSerie: SeriesType,
     sync: PropTypes.bool,
