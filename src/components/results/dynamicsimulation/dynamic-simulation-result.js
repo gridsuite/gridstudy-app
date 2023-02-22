@@ -10,7 +10,7 @@ import { Grid } from '@mui/material';
 import DynamicSimulationResultTable from './dynamic-simulation-result-table';
 import DynamicSimulationResultChartTabs from './dynamic-simulation-result-chart-tabs';
 
-const DynamicSimulationResult = ({ result }) => {
+const DynamicSimulationResult = ({ result, loadTimeSeries }) => {
     const dynamicSimulationNotif = useSelector(
         (state) => state.dynamicSimulationNotif
     );
@@ -31,7 +31,10 @@ const DynamicSimulationResult = ({ result }) => {
             <Grid item xs={12}>
                 {result && dynamicSimulationNotif && (
                     <DynamicSimulationResultChartTabs
-                        result={{ timeseries: result.timeseries }}
+                        result={{
+                            seriesNames: result.seriesNames,
+                        }}
+                        loadTimeSeries={loadTimeSeries}
                     />
                 )}
             </Grid>
@@ -42,8 +45,9 @@ const DynamicSimulationResult = ({ result }) => {
 DynamicSimulationResult.propTypes = {
     result: PropTypes.shape({
         status: PropTypes.string,
-        timeseries: PropTypes.arrayOf(PropTypes.object),
+        seriesNames: PropTypes.arrayOf(PropTypes.string.isRequired),
     }),
+    loadTimeSeries: PropTypes.func,
 };
 
 export default DynamicSimulationResult;

@@ -74,7 +74,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
+const DynamicSimulationResultChart = ({
+    groupId,
+    seriesNames,
+    selected,
+    loadTimeSeries,
+}) => {
     const classes = useStyles();
     const intl = useIntl();
 
@@ -111,45 +116,66 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         setSelectedIndex(index);
     }, []);
 
-    const selectedSeries = useCallback(
-        (axisSelected) => {
-            return series.filter(
-                (s, index) => axisSelected.indexOf(index) !== -1
+    const selectSeries = useCallback(
+        (selectedIndexes) => {
+            return loadTimeSeries(selectedIndexes).then(
+                (selectedTimeSeries) => {
+                    // transform to plotly's compatible data
+                    const selectedSeries = selectedTimeSeries.map(
+                        (elem, index) => {
+                            const metadata = elem?.metadata;
+                            const values =
+                                elem?.chunks && elem.chunks[0]?.values;
+                            return {
+                                index: index,
+                                name: metadata?.name,
+                                data: {
+                                    x: metadata?.irregularIndex,
+                                    y: values,
+                                },
+                            };
+                        }
+                    );
+
+                    return selectedSeries;
+                }
             );
         },
-        [series]
+        [loadTimeSeries]
     );
 
     const handleLeftAxisSelected = useCallback(
-        (index, axisSelected) => {
-            setPlots((prev) => {
-                const newPlots = Array.from(prev);
-                newPlots[index].leftSelectedSeries =
-                    selectedSeries(axisSelected);
-                return newPlots;
+        (index, selectedIndexes) => {
+            selectSeries(selectedIndexes).then((selectedSeries) => {
+                setPlots((prev) => {
+                    const newPlots = Array.from(prev);
+                    newPlots[index].leftSelectedSeries = selectedSeries;
+                    return newPlots;
+                });
             });
         },
-        [selectedSeries]
+        [selectSeries]
     );
 
     const handleRightAxisSelected = useCallback(
-        (index, axisSelected) => {
-            setPlots((prev) => {
-                const newPlots = Array.from(prev);
-                newPlots[index].rightSelectedSeries =
-                    selectedSeries(axisSelected);
-                return newPlots;
+        (index, selectedIndexes) => {
+            selectSeries(selectedIndexes).then((selectedSeries) => {
+                setPlots((prev) => {
+                    const newPlots = Array.from(prev);
+                    newPlots[index].rightSelectedSeries = selectedSeries;
+                    return newPlots;
+                });
             });
         },
-        [selectedSeries]
+        [selectSeries]
     );
 
     const items = useMemo(() => {
-        return series.map((s, index) => ({
+        return seriesNames.map((name, index) => ({
             id: index,
-            label: s.name,
+            label: name,
         }));
-    }, [series]);
+    }, [seriesNames]);
 
     const handleShowSeriesList = useCallback(() => {
         setShowSeriesList((prev) => !prev);
@@ -379,12 +405,9 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
 
 DynamicSimulationResultChart.propTypes = {
     groupId: PropTypes.string.isRequired,
-    series: PropTypes.arrayOf(
-        PropTypes.shape({
-            name: PropTypes.string.isRequired,
-        })
-    ),
+    seriesNames: PropTypes.arrayOf(PropTypes.string.isRequired),
     selected: PropTypes.bool.isRequired,
+    loadTimeSeries: PropTypes.func,
 };
 
 export default memo(DynamicSimulationResultChart);

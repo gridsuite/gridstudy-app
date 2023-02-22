@@ -30,13 +30,13 @@ const DynamicSimulationResultSeriesList = ({
     onLeftAxisSelected,
     onRightAxisSelected,
 }) => {
-    const [leftAxisChecked, setLeftAxisChecked] = useState([]);
-    const [rightAxisChecked, setRightAxisChecked] = useState([]);
+    const [leftAxisCheckedIndexes, setLeftAxisCheckedIndexes] = useState([]);
+    const [rightAxisCheckedIndexes, setRightAxisCheckedIndexes] = useState([]);
 
     const classes = useStyle();
 
-    const handleToggle = useCallback((id, setAxisChecked) => {
-        setAxisChecked((prev) => {
+    const handleToggle = useCallback((id, setAxisCheckedIndexes) => {
+        setAxisCheckedIndexes((prev) => {
             const currIndex = prev.indexOf(id);
             const newChecked = [...prev];
             if (currIndex === -1) {
@@ -50,14 +50,14 @@ const DynamicSimulationResultSeriesList = ({
 
     const handleToggleLeftAxis = useCallback(
         (id) => {
-            handleToggle(id, setLeftAxisChecked);
+            handleToggle(id, setLeftAxisCheckedIndexes);
         },
         [handleToggle]
     );
 
     const handleToggleRightAxis = useCallback(
         (id) => {
-            handleToggle(id, setRightAxisChecked);
+            handleToggle(id, setRightAxisCheckedIndexes);
         },
         [handleToggle]
     );
@@ -73,13 +73,13 @@ const DynamicSimulationResultSeriesList = ({
 
     useEffect(() => {
         // propagate changes
-        delayedOnLeftAxisSelected(index, leftAxisChecked);
-    }, [leftAxisChecked, index, delayedOnLeftAxisSelected]);
+        delayedOnLeftAxisSelected(index, leftAxisCheckedIndexes);
+    }, [leftAxisCheckedIndexes, index, delayedOnLeftAxisSelected]);
 
     useEffect(() => {
         // propagate changes
-        delayedOnRightAxisSelected(index, rightAxisChecked);
-    }, [rightAxisChecked, index, delayedOnRightAxisSelected]);
+        delayedOnRightAxisSelected(index, rightAxisCheckedIndexes);
+    }, [rightAxisCheckedIndexes, index, delayedOnRightAxisSelected]);
 
     const renderHeaders = () => {
         return (

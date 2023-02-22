@@ -9,7 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton, Stack } from '@mui/material';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
@@ -28,8 +28,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DynamicSimulationResultChartTabs = ({ result }) => {
-    const { timeseries } = result;
+const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
+    const { seriesNames } = result;
     const classes = useStyles();
 
     // tab id is auto increase and reset to zero when there is any tab
@@ -38,22 +38,6 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const [tabs, setTabs] = useState([{ id: tabIncId }]);
-
-    const series = useMemo(() => {
-        if (!timeseries) return [];
-        return timeseries.map((elem, index) => {
-            const metadata = elem.metadata;
-            const values = elem.chunks[0].values;
-            return {
-                index: index,
-                name: metadata.name,
-                data: {
-                    x: metadata.irregularIndex,
-                    y: values,
-                },
-            };
-        });
-    }, [timeseries]);
 
     const intl = useIntl();
 
@@ -159,8 +143,9 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                 >
                     <DynamicSimulationResultChart
                         groupId={`${tab.id}`}
-                        series={series}
+                        seriesNames={seriesNames}
                         selected={selectedIndex === index}
+                        loadTimeSeries={loadTimeSeries}
                     />
                 </Visibility>
             ))}
@@ -170,17 +155,9 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
 
 DynamicSimulationResultChartTabs.propTypes = {
     result: PropTypes.shape({
-        timeseries: PropTypes.arrayOf(
-            PropTypes.shape({
-                metadata: PropTypes.object,
-                chunks: PropTypes.arrayOf(
-                    PropTypes.shape({
-                        values: PropTypes.array,
-                    })
-                ),
-            })
-        ),
+        seriesNames: PropTypes.arrayOf(PropTypes.string.isRequired),
     }),
+    loadTimeSeries: PropTypes.func,
 };
 
 export default DynamicSimulationResultChartTabs;
