@@ -599,6 +599,8 @@
     "ConfigurePhaseTapChanger": "Configure phase tap changer",
     "RegulationType": "Regulation type",
     "RegulatedSide": "Regulated side",
+    "RegulatedSide1": "Side 1",
+    "RegulatedSide2": "Side 2",
 
     "OnLoad": "On-load",
     "VoltageRegulation": "Voltage regulation",

@@ -106,6 +106,7 @@ const PhaseTapChangerPane = ({
             options={Object.values(REGULATION_TYPES)}
             disabled={!isVoltageRegulationOn()}
             size={'small'}
+            disableClearable
         />
     );
 
@@ -116,6 +117,7 @@ const PhaseTapChangerPane = ({
             options={Object.values(SIDE)}
             disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
             size={'small'}
+            disableClearable
         />
     );
 
