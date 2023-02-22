@@ -593,6 +593,8 @@
     "ConfigurePhaseTapChanger": "Créer déphaseur",
     "RegulationType": "Type de régulation",
     "RegulatedSide": "Côté réglé",
+    "RegulatedSide1": "Origine",
+    "RegulatedSide2": "Extrémité",
 
     "OnLoad": "En charge",
     "VoltageRegulation": "Réglage de tension",
