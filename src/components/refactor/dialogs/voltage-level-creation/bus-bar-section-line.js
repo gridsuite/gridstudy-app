@@ -1,28 +1,39 @@
-import { Grid, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import {
-    filledTextField,
-    gridItem,
-    useStyles,
-} from 'components/dialogs/dialogUtils';
-import IntegerInput from 'components/refactor/rhf-inputs/integer-input';
+import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
+import IntegerInput, {
+    numericalWithButton,
+} from 'components/refactor/rhf-inputs/integer-input';
 import TextInput from 'components/refactor/rhf-inputs/text-input';
 import {
     BUS_BAR_SECTIONS,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     HORIZONTAL_POSITION,
     ID,
     NAME,
     VERTICAL_POSITION,
 } from 'components/refactor/utils/field-constants';
 
+export const getBusBarSectionLineFormData = (
+    {
+        busBarSectionId,
+        busBarSectionName,
+        horizontalPosition,
+        verticalPosition,
+    },
+    id = BUS_BAR_SECTIONS
+) => ({
+    [id]: {
+        [ID]: busBarSectionId,
+        [NAME]: busBarSectionName,
+        [HORIZONTAL_POSITION]: horizontalPosition,
+        [VERTICAL_POSITION]: verticalPosition,
+    },
+});
+
 export const BusBarSectionLine = ({ id, index }) => {
     const equipmentIdField = (
         <TextInput
             name={`${id}.${index}.${ID}`}
-            label={'Name'}
-            formProps={filledTextField}
+            label={'BusBarSectionID'}
+            //formProps={filledTextField}
             // inputTransform={(e) => handleChange(e, EQUIPMENT_NAME)}
         />
     );
@@ -30,7 +41,8 @@ export const BusBarSectionLine = ({ id, index }) => {
         <TextInput
             name={`${id}.${index}.${NAME}`}
             label={'Name'}
-            formProps={filledTextField}
+            withButton={true}
+            // formProps={filledTextField}
             // inputTransform={(e) => handleChange(e, EQUIPMENT_NAME)}
         />
     );
@@ -39,11 +51,10 @@ export const BusBarSectionLine = ({ id, index }) => {
         <IntegerInput
             name={`${id}.${index}.${HORIZONTAL_POSITION}`}
             label="BusBarHorizPos"
-            formProps={
-                {
-                    // disabled: disabled,
-                }
-            }
+            formProps={{
+                // disabled: disabled,
+                ...numericalWithButton,
+            }}
             //inputTransform={(e) => handleChange(e, HORIZONTAL_POSITION)}
         />
     );
@@ -52,11 +63,10 @@ export const BusBarSectionLine = ({ id, index }) => {
         <IntegerInput
             name={`${id}.${index}.${VERTICAL_POSITION}`}
             label="BusBarVertPos"
-            formProps={
-                {
-                    // disabled: disabled,
-                }
-            }
+            formProps={{
+                // disabled: disabled,
+                ...numericalWithButton,
+            }}
             //inputTransform={(e) => handleChange(e, HORIZONTAL_POSITION)}
         />
     );

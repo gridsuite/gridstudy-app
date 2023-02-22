@@ -8,6 +8,7 @@
 import Grid from '@mui/material/Grid';
 import {
     ACTIVE_POWER,
+    BUS_BAR_CONNECTIONS,
     BUS_BAR_SECTIONS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -31,8 +32,10 @@ import { ConnectivityForm } from '../connectivity/connectivity-form';
 import { BusBar } from './bus-bar-section';
 import Form from './bus-bar-section';
 import { BusBarSection } from './bus-bar-section';
+import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
 
-const VoltageLevelCreationForm = ({ currentNodeUuid, studyUuid }) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
+    const currentNodeUuid = currentNode?.id;
     const [substations, setSubstations] = useState([]);
 
     useEffect(() => {
@@ -117,7 +120,19 @@ const VoltageLevelCreationForm = ({ currentNodeUuid, studyUuid }) => {
             </Grid>
             <Grid container>
                 <GridSection title={'BusBarSections'} />
-                {<BusBarSection id={BUS_BAR_SECTIONS} />}
+                {
+                    <BusBarSection
+                        id={BUS_BAR_SECTIONS}
+                        type={VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_LINE}
+                    />
+                }
+                <GridSection title={'Connectivity'} />
+                {
+                    <BusBarSection
+                        id={BUS_BAR_CONNECTIONS}
+                        type={VOLTAGE_LEVEL_COMPONENTS.CONNECTIVITY}
+                    />
+                }
             </Grid>
             {/*  <GridSection title="Connectivity" />
             <Grid container spacing={2}>

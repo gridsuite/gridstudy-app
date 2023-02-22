@@ -9,10 +9,12 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ACTIVE_POWER,
+    BUS_BAR_CONNECTIONS,
     BUS_BAR_SECTIONS,
     BUS_OR_BUSBAR_SECTION,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    FROM_BBS,
     HORIZONTAL_POSITION,
     ID,
     LOAD_TYPE,
@@ -20,6 +22,8 @@ import {
     NOMINAL_VOLTAGE,
     REACTIVE_POWER,
     SUBSTATION_ID,
+    SWITCH_KIND,
+    TO_BBS,
     VERTICAL_POSITION,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
@@ -40,6 +44,7 @@ import {
     getConnectivityFormData,
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
+import { getBusBarSectionLineFormData } from './bus-bar-section-line';
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import VoltageLevelForm from './voltage-level-creation-form';
 
@@ -56,16 +61,16 @@ const emptyFormData = {
     [NOMINAL_VOLTAGE]: '',
     [SUBSTATION_ID]: '',
     [BUS_BAR_SECTIONS]: [
-        {
+        /*  {
             [ID]: '',
             [NAME]: '',
-            [HORIZONTAL_POSITION]: 0,
-            [VERTICAL_POSITION]: 0,
-        },
+            [HORIZONTAL_POSITION]: null,
+            [VERTICAL_POSITION]: null,
+        }, */
     ],
-    /* [BUS_BAR_CONNECTIONS]: [
-        { [FROM_BBS]: '', [TO_BBS]: '', [SWITCH_KIND]: '' },
-    ], */
+    [BUS_BAR_CONNECTIONS]: [
+        //{ [FROM_BBS]: '', [TO_BBS]: '', [SWITCH_KIND]: null },
+    ],
 };
 
 const schema = yup.object().shape({
@@ -83,13 +88,13 @@ const schema = yup.object().shape({
         })
     ),
 
-    /*   busbarConnections: yup.array().of(
+    [BUS_BAR_CONNECTIONS]: yup.array().of(
         yup.object().shape({
-            fromBBS: yup.string().required(),
-            toBBS: yup.string().required(),
-            switchKind: yup.string().required(),
+            [FROM_BBS]: yup.string().required(),
+            [TO_BBS]: yup.string().required(),
+            [SWITCH_KIND]: yup.string().required(),
         })
-    ), */
+    ),
 });
 
 const VoltageLevelCreationDialog = ({
@@ -120,10 +125,13 @@ const VoltageLevelCreationDialog = ({
             reset({
                 [EQUIPMENT_ID]: voltageLevel.id + '(1)',
                 [EQUIPMENT_NAME]: voltageLevel.name ?? '',
-                [LOAD_TYPE]: voltageLevel.type,
-                [ACTIVE_POWER]: voltageLevel.p0,
-                [REACTIVE_POWER]: voltageLevel.q0,
-                ...getConnectivityFormData({
+                [NOMINAL_VOLTAGE]: voltageLevel.nominalVoltage,
+                [SUBSTATION_ID]: voltageLevel.substationId,
+                ...getBusBarSectionLineFormData({
+                    busBarSectionId,
+                    busBarSectionName,
+                    horizontalPosition,
+                    verticalPosition,
                     voltageLevelId: voltageLevel.voltageLevelId,
                     busbarSectionId: voltageLevel.busOrBusbarSectionId,
                     voltageLevelTopologyKind: vlResult.topologyKind,
@@ -137,6 +145,14 @@ const VoltageLevelCreationDialog = ({
             });
         });
     };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        currentNodeUuid,
+        equipmentPath,
+        toFormValues: (data) => data,
+        setFormValues: fromSearchCopyToFormValues,
+    });
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
@@ -250,13 +266,13 @@ const VoltageLevelCreationDialog = ({
                     studyUuid={studyUuid}
                 />
 
-                {/*   <EquipmentSearchDialog
+                <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     equipmentType={'LOAD'}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
-                /> */}
+                />
             </ModificationDialog>
         </FormProvider>
     );
