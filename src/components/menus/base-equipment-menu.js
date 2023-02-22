@@ -112,6 +112,14 @@ const BaseEquipmentMenu = ({
     }
     const equipment = getEquipment(equipmentType, equipmentId);
     const { getNameOrId } = useNameOrId();
+    const equipmentsWithBranch = [
+        equipments.lines,
+        equipments.twoWindingsTransformers,
+    ];
+    const equipmentsNotDeletable = [
+        equipments.lccConverterStations,
+        equipments.vscConverterStations,
+    ];
     return (
         <>
             {/* menus for equipment other than substation and voltage level */}
@@ -127,15 +135,26 @@ const BaseEquipmentMenu = ({
                             })}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
-                        <ItemDeleteEquipment
-                            key="DeleteFromMenu"
-                            equipmentType={equipmentType}
-                            equipmentId={equipmentId}
-                            itemText={intl.formatMessage({
-                                id: 'DeleteFromMenu',
-                            })}
-                            handleDeleteEquipment={handleDeleteEquipment}
-                        />
+                        {
+                            // Delete button is already in MenuBranch for equipmentsWithBranch
+                            // equipmentsNotDeletable deletion is not implemented yet
+                            !(
+                                equipmentsWithBranch.includes(equipmentType) ||
+                                equipmentsNotDeletable.includes(equipmentType)
+                            ) && (
+                                <ItemDeleteEquipment
+                                    key="DeleteFromMenu"
+                                    equipmentType={equipmentType}
+                                    equipmentId={equipmentId}
+                                    itemText={intl.formatMessage({
+                                        id: 'DeleteFromMenu',
+                                    })}
+                                    handleDeleteEquipment={
+                                        handleDeleteEquipment
+                                    }
+                                />
+                            )
+                        }
                     </>
                 )}
 
