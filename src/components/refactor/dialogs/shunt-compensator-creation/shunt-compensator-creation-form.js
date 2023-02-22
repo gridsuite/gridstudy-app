@@ -7,7 +7,7 @@
 
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/material';
-import BooleanInput from 'components/refactor/rhf-inputs/boolean-input';
+import SwitchInput from '../../rhf-inputs/booleans/switch-input';
 import IntegerInput from 'components/refactor/rhf-inputs/integer-input';
 import {
     CURRENT_NUMBER_OF_SECTIONS,
@@ -78,7 +78,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     );
 
     const identicalSectionsField = (
-        <BooleanInput
+        <SwitchInput
             name={IDENTICAL_SECTIONS}
             label={'ShuntIdenticalSections'}
             formProps={disabledChecked}
