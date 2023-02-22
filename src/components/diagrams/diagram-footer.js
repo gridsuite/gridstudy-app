@@ -90,19 +90,21 @@ const DiagramFooter = (props) => {
                         </Typography>
                     )}
                     <IconButton
+                        onClick={handleIncrementCounter}
                         disabled={
                             nbVoltageLevels >
                             NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
                         }
                         className={classes.incrementCounterIcon}
                     >
-                        <AddCircleIcon onClick={handleIncrementCounter} />
+                        <AddCircleIcon />
                     </IconButton>
                     <IconButton
+                        onClick={handleDecrementCounter}
                         disabled={networkAreaDiagramDepth === 0}
                         className={classes.decrementCounterIcon}
                     >
-                        <RemoveCircleIcon onClick={handleDecrementCounter} />
+                        <RemoveCircleIcon />
                     </IconButton>
                 </>
             )}
