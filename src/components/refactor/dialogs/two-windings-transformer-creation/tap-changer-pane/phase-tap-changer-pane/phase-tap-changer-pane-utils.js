@@ -47,6 +47,7 @@ import {
 import {
     REGULATION_MODES,
     REGULATION_TYPES,
+    SIDE,
 } from '../../../../../network/constants';
 
 const phaseTapChangerValidationSchema = (id) => ({
@@ -202,7 +203,7 @@ const phaseTapChangerEmptyFormData = (id) => ({
         [REGULATION_MODE]: null,
         [REGULATING]: false,
         [REGULATION_TYPE]: null,
-        [REGULATION_SIDE]: null,
+        [REGULATION_SIDE]: SIDE.SIDE1.id,
         [CURRENT_LIMITER_REGULATING_VALUE]: null,
         [FLOW_SET_POINT_REGULATING_VALUE]: null,
         [TARGET_DEADBAND]: null,
@@ -224,7 +225,7 @@ export const getPhaseTapChangerFormData = (
         regulationMode = null,
         regulating = false,
         regulationType = null,
-        regulationSide = null,
+        regulationSide = SIDE.SIDE1.id,
         currentLimiterRegulatingValue = null,
         flowSetpointRegulatingValue = null,
         targetDeadband = null,
