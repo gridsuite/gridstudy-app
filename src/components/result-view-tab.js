@@ -144,12 +144,14 @@ export const ResultViewTab = ({
                         })}
                         disabled={disabled}
                     />
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'ShortCircuitAnalysisResults',
-                        })}
-                        disabled={disabled}
-                    />
+                    {enableDeveloperMode && (
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'ShortCircuitAnalysisResults',
+                            })}
+                            disabled={disabled}
+                        />
+                    )}
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
