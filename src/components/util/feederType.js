@@ -18,9 +18,6 @@ export const FEEDER_TYPES = {
     BUS: {
         type: 'BUS',
     },
-    SWITCH: {
-        type: 'SWITCH',
-    },
     CAPACITOR: {
         type: 'CAPACITOR',
     },

@@ -76,4 +76,8 @@ export const EQUIPMENT_TYPES = {
         type: 'LCC_CONVERTER_STATION',
         fetchers: [fetchLccConverterStations],
     },
+    SWITCH: {
+        type: 'SWITCH',
+        fetchers: [],
+    },
 };
