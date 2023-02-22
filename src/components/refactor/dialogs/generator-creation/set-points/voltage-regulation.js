@@ -15,8 +15,8 @@ import {
 import React from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
-    filledTextItalicFontField,
-    gridItem, italicFontTextField,
+    gridItem,
+    italicFontTextField,
     percentageTextField,
     VoltageAdornment,
 } from '../../../../dialogs/dialogUtils';

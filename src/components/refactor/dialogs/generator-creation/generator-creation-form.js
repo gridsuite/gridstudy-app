@@ -23,9 +23,10 @@ import {
 } from '../../utils/field-constants';
 import {
     ActivePowerAdornment,
-    filledTextField, filledTextItalicFontField,
+    filledTextField,
     gridItem,
-    GridSection, italicFontTextField,
+    GridSection,
+    italicFontTextField,
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../../dialogs/dialogUtils';
@@ -78,7 +79,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             fullWidth
             size={'small'}
             disableClearable={true}
-            formProps={{...italicFontTextField, ...filledTextField}}
+            formProps={{ ...italicFontTextField, ...filledTextField }}
         />
     );
 

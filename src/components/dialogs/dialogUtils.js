@@ -108,7 +108,7 @@ export const filledTextField = {
 };
 
 export const italicFontTextField = {
-    style: {fontStyle: 'italic'}
+    style: { fontStyle: 'italic' },
 };
 
 export const percentageTextField = {
