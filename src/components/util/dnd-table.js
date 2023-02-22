@@ -254,7 +254,7 @@ const DndTable = ({
                             <TableContainer
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
-                                sx={{ minHeight: 200, maxHeight: 450 }}
+                                sx={{ minHeight: 200, maxHeight: 390 }}
                             >
                                 <Table stickyHeader size="small" padding="none">
                                     {renderTableHead()}
