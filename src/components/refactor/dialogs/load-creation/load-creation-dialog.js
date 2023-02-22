@@ -36,7 +36,8 @@ import LoadCreationForm from './load-creation-form';
 
 /**
  * Dialog to create a load in the network
- * @param currentNodeUuid The node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentNode The node we are currently working on
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
@@ -64,10 +65,11 @@ const schema = yup
 
 const LoadCreationDialog = ({
     editData,
-    currentNodeUuid,
+    currentNode,
     studyUuid,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
     const equipmentPath = 'loads';
@@ -216,7 +218,7 @@ const LoadCreationDialog = ({
                 {...dialogProps}
             >
                 <LoadCreationForm
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                     studyUuid={studyUuid}
                 />
 
@@ -234,7 +236,8 @@ const LoadCreationDialog = ({
 
 LoadCreationDialog.propTypes = {
     editData: PropTypes.object,
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default LoadCreationDialog;
