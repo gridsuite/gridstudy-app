@@ -47,6 +47,11 @@ export const REGULATION_MODES = {
     },
 };
 
+export const SIDE = {
+    SIDE1: { id: 'SIDE1', label: 'Side1' },
+    SIDE2: { id: 'SIDE2', label: 'Side2' },
+};
+
 // Relevant ConnectablePosition.Direction Powsybl enum values
 export const CONNECTION_DIRECTIONS = [
     { id: 'TOP', label: 'Top' },

@@ -7,7 +7,6 @@
 
 import { useNodeData } from './study-container';
 import { fetchSensitivityAnalysisResult } from '../utils/rest-api';
-import WaitingLoader from './util/waiting-loader';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { CHANGE_WAYS, KeyedColumnsRowIndexer } from '@gridsuite/commons-ui';
@@ -16,6 +15,7 @@ import Tab from '@mui/material/Tab';
 import { FormattedMessage } from 'react-intl/lib';
 import { TablePagination } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const sensitivityAnalysisResultInvalidations = ['sensitivityAnalysisResult'];
 
@@ -165,7 +165,9 @@ function PagedSensitivityResult({
         next.isFetchNeedy = prev.isFetchNeedy;
         next.askedFilterVersion = prev.askedFilterVersion;
     } else if (!prev.fetched) {
-        // probably fetch failed, worth retrying
+        // probably fetch failed, worth retrying ?
+        // to be handled at a lower level, so avoid recreating a fetcher
+        next.fetcher = prev.fetcher;
     } else if (prev.fetched.sensitivities.length === overAllCount) {
         if (
             userRowsPerPage <= 0 ||
@@ -276,25 +278,26 @@ function PagedSensitivityResult({
         const contingencyIds = fetched.allContingencyIds;
         next.indexer.setColFilterOuterParams('contingencyId', contingencyIds);
     } else if (!isLoading && prev?.isLoading && errorMessage) {
-        next.isFetchNeedy = false; // for next change to try and fetch
+        next.isFetchNeedy = false; // for next change to try and fetch, possibly
+        console.warn('sensi results fetch', errorMessage);
     }
     next.fetched = fetched;
     next.isLoading = isLoading;
 
     synthRef.current = next;
 
+    const result = (!next.isFetchNeedy && fetched?.sensitivities) || [];
+
     return (
         <>
-            <WaitingLoader message={'LoadingRemoteData'} loading={isLoading}>
-                {fetched?.sensitivities && (
-                    <SensitivityAnalysisResult
-                        result={fetched?.sensitivities}
-                        nOrNkIndex={nOrNkIndex}
-                        sensiToIndex={sensiKindIndex}
-                        indexer={next.indexer}
-                    />
-                )}
-            </WaitingLoader>
+            {isLoading && <LinearProgress />}
+            <SensitivityAnalysisResult
+                result={result}
+                nOrNkIndex={nOrNkIndex}
+                sensiToIndex={sensiKindIndex}
+                indexer={next.indexer}
+                isLoading
+            />
             <TablePagination
                 component="div"
                 rowsPerPageOptions={PAGE_OPTIONS}

@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem, GridSection } from './dialogUtils';
 import { loadScaling } from '../../utils/rest-api';
@@ -63,6 +62,7 @@ const ACTIVE_VAR_MODE_DEFAULT_VALUE = 'PROPORTIONAL';
 const REACTIVE_VAR_MODE_DEFAULT_VALUE = 'CONSTANT_Q';
 const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 const VENTILATION = 'VENTILATION';
+const LOADS = [EquipmentType.LOAD];
 
 const VariationSection = ({
     index,
@@ -75,21 +75,36 @@ const VariationSection = ({
     const classes = useStyles();
     const id = defaultValue?.id;
 
-    function itemFilter(value) {
-        if (
-            value?.type === elementType.FILTER &&
-            variationMode === VENTILATION
-        ) {
-            return (
-                value?.specificMetadata?.type === IDENTIFIER_LIST &&
-                value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                    (filter) => !!filter.distributionKey
-                )
-            );
-        }
+    const [variationMode, variationModeField] = useOptionalEnumValue({
+        label: 'ActiveVariationMode',
+        inputForm: inputForm,
+        enumObjects: ACTIVE_VARIATION_MODE,
+        validation: {
+            isFieldRequired: true,
+        },
+        defaultValue:
+            defaultValue?.variationMode ?? ACTIVE_VAR_MODE_DEFAULT_VALUE,
+        errorMsg: errors?.variationModeError,
+    });
 
-        return true;
-    }
+    const itemFilter = useCallback(
+        (value) => {
+            if (
+                value?.type === elementType.FILTER &&
+                variationMode === VENTILATION
+            ) {
+                return (
+                    value?.specificMetadata?.type === IDENTIFIER_LIST &&
+                    value?.specificMetadata?.filterEquipmentsAttributes?.every(
+                        (filter) => !!filter.distributionKey
+                    )
+                );
+            }
+
+            return true;
+        },
+        [variationMode]
+    );
 
     const [filters, filtersField] = useDirectoryElements({
         label: 'filter',
@@ -98,7 +113,7 @@ const VariationSection = ({
             isFieldRequired: true,
         },
         elementType: elementType.FILTER,
-        equipmentTypes: [EquipmentType.LOAD],
+        equipmentTypes: LOADS,
         itemFilter: itemFilter,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
@@ -116,18 +131,6 @@ const VariationSection = ({
         inputForm: inputForm,
         adornment: ActivePowerAdornment,
         errorMsg: errors?.variationValueError,
-    });
-
-    const [variationMode, variationModeField] = useOptionalEnumValue({
-        label: 'ActiveVariationMode',
-        inputForm: inputForm,
-        enumObjects: ACTIVE_VARIATION_MODE,
-        validation: {
-            isFieldRequired: true,
-        },
-        defaultValue:
-            defaultValue?.variationMode ?? ACTIVE_VAR_MODE_DEFAULT_VALUE,
-        errorMsg: errors?.variationModeError,
     });
 
     const [reactiveVariationMode, reactiveVariationModeField] =
@@ -175,13 +178,17 @@ const VariationSection = ({
 
 /**
  * Dialog to Load Scaling.
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
+ * @param studyUuid the study we are currently working on
  * @param editData the possible line split with voltage level creation record to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
-const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
+const LoadScalingDialog = ({
+    studyUuid,
+    currentNode,
+    editData,
+    ...dialogProps
+}) => {
     const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
@@ -248,7 +255,7 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
     const handleSave = () => {
         loadScaling(
             studyUuid,
-            currentNodeUuid,
+            currentNode?.id,
             editData?.uuid ?? undefined,
             variationType,
             variations
@@ -289,11 +296,12 @@ const LoadScalingDialog = ({ currentNodeUuid, editData, ...dialogProps }) => {
 };
 
 LoadScalingDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     lineOptionsPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
+    studyUuid: PropTypes.string,
     editData: PropTypes.object,
 };
 

@@ -278,12 +278,10 @@ export function RunButtonContainer({
     };
 
     const RUNNABLES = useMemo(() => {
-        let runnables = [
-            runnable.LOADFLOW,
-            runnable.SECURITY_ANALYSIS,
-            runnable.SHORT_CIRCUIT_ANALYSIS,
-        ];
+        let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
         if (enableDeveloperMode) {
+            // SHORTCIRCUIT is currently a dev feature
+            runnables.push(runnable.SHORT_CIRCUIT_ANALYSIS);
             // SENSI is currently a dev feature
             runnables.push(runnable.SENSITIVITY_ANALYSIS);
             // DYNAMICSIMULATION is currently a dev feature
@@ -350,7 +348,7 @@ export function RunButtonContainer({
 }
 
 RunButtonContainer.propTypes = {
-    runnable: PropTypes.arrayOf(PropTypes.string),
+    runnable: PropTypes.object,
     actionOnRunnable: PropTypes.shape({
         action: PropTypes.func,
         text: PropTypes.string,

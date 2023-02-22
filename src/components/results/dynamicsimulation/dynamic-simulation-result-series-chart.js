@@ -23,15 +23,23 @@ const useStyles = makeStyles((theme) => ({
         border: 'solid',
         borderColor: lighten(theme.palette.primary.main, 0.2),
     },
-    card: {},
+    card: {
+        height: '100%',
+    },
     cardHeaderRoot: {
         backgroundColor: lighten(theme.palette.background.paper, 0.2),
+        '&:hover': {
+            background: lighten(theme.palette.background.paper, 0.3),
+            cursor: 'move',
+        },
+        padding: theme.spacing(0.5),
     },
-    cardHeaderAction: {
-        margin: 'auto',
-    },
+    cardHeaderAction: {},
     cardHeaderAvatar: {
         color: theme.palette.primary.main,
+    },
+    cardContent: {
+        height: '100%',
     },
 }));
 
@@ -65,7 +73,7 @@ const DynamicSimulationResultSeriesChart = ({
                     avatar: classes.cardHeaderAvatar,
                 }}
                 avatar={
-                    <Typography variant={'h6'}>
+                    <Typography variant={'subtitle1'}>
                         {`${intl.formatMessage({
                             id: 'DynamicSimulationResultChart',
                         })} ${id}`}
@@ -82,6 +90,7 @@ const DynamicSimulationResultSeriesChart = ({
                 }
             />
             <CardContent
+                className={classes.cardContent}
                 // to avoid the wrapper is dragged when zooming the plot
                 onMouseDown={(event) => {
                     event.stopPropagation();

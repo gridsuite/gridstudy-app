@@ -18,6 +18,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { fetchVoltageLevelEquipments } from 'utils/rest-api';
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 
 // Factory used to create a filter method that is used to change the default
@@ -74,13 +75,13 @@ const RegulatingTerminalForm = ({
     id, // id that has to be defined to determine it's parent object within the form
     direction,
     disabled = false,
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelOptions = [],
     equipmentSectionTypeDefaultValue,
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
     previousRegulatingTerminalValue,
     previousEquipmentSectionTypeValue,
 }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
     const { setValue } = useFormContext();
 
@@ -89,33 +90,20 @@ const RegulatingTerminalForm = ({
     });
 
     useEffect(() => {
-        voltageLevelOptionsPromise.then((values) => {
-            setVoltageLevelOptions(
-                values.sort((a, b) => a.id.localeCompare(b.id))
-            );
-        });
-    }, [voltageLevelOptionsPromise]);
-
-    useEffect(() => {
         if (watchVoltageLevelId) {
-            voltageLevelsEquipmentsOptionsPromise.then((values) => {
-                setEquipmentsOptions(
-                    values.find(
-                        (vlEquipment) =>
-                            vlEquipment?.voltageLevel?.id ===
-                            watchVoltageLevelId
-                    ).equipments
-                );
+            fetchVoltageLevelEquipments(
+                studyUuid,
+                currentNodeUuid,
+                undefined,
+                watchVoltageLevelId,
+                true
+            ).then((values) => {
+                setEquipmentsOptions(values);
             });
         } else {
             setEquipmentsOptions([]);
         }
-    }, [
-        watchVoltageLevelId,
-        id,
-        setValue,
-        voltageLevelsEquipmentsOptionsPromise,
-    ]);
+    }, [watchVoltageLevelId, id, studyUuid, currentNodeUuid]);
 
     const resetEquipment = useCallback(() => {
         setValue(`${id}.${EQUIPMENT}`, null);

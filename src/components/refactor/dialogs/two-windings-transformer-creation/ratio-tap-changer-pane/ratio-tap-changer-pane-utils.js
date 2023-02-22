@@ -16,6 +16,8 @@ import {
     NOMINAL_VOLTAGE,
     RATIO_TAP_CHANGER,
     REGULATING,
+    REGULATION_SIDE,
+    REGULATION_TYPE,
     STEPS,
     STEPS_CONDUCTANCE,
     STEPS_RATIO,
@@ -32,7 +34,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
 import {
-    areArrayElementsOrdered,
+    areNumbersOrdered,
     areArrayElementsUnique,
 } from '../../../utils/utils';
 import yup from '../../../utils/yup-config';
@@ -40,12 +42,30 @@ import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
 } from '../../regulating-terminal/regulating-terminal-form-utils';
+import { REGULATION_TYPES } from '../../../../network/constants';
 
 const ratioTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
         [REGULATING]: yup.bool().required(),
+        [REGULATION_TYPE]: yup
+            .string()
+            .nullable()
+            .when([ENABLED, REGULATING], {
+                is: (enabled, regulating) => enabled && regulating,
+                then: (schema) => schema.required(),
+            }),
+        [REGULATION_SIDE]: yup
+            .string()
+            .nullable()
+            .when([ENABLED, REGULATING, REGULATION_TYPE], {
+                is: (enabled, regulating, regulationType) =>
+                    enabled &&
+                    regulating &&
+                    regulationType === REGULATION_TYPES.LOCAL.id,
+                then: (schema) => schema.required(),
+            }),
         [TARGET_V]: yup
             .number()
             .nullable()
@@ -133,7 +153,7 @@ const ratioTapChangerValidationSchema = (id) => ({
             .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
                 const ratioArray = array.map((step) => step[STEPS_RATIO]);
                 return (
-                    areArrayElementsOrdered(ratioArray) &&
+                    areNumbersOrdered(ratioArray) &&
                     areArrayElementsUnique(ratioArray)
                 );
             }),
@@ -149,8 +169,10 @@ const ratioTapChangerValidationSchema = (id) => ({
                 [NOMINAL_VOLTAGE]: yup.string(),
                 [TOPOLOGY_KIND]: yup.string().nullable(),
             })
-            .when(REGULATING, {
-                is: true,
+            .when([REGULATING, REGULATION_TYPE], {
+                is: (regulating, regulationType) =>
+                    regulating &&
+                    regulationType === REGULATION_TYPES.DISTANT.id,
                 then: (schema) => schema.required(),
             }),
         [EQUIPMENT]: yup
@@ -161,8 +183,10 @@ const ratioTapChangerValidationSchema = (id) => ({
                 [NAME]: yup.string().nullable(),
                 [TYPE]: yup.string(),
             })
-            .when(REGULATING, {
-                is: true,
+            .when([REGULATING, REGULATION_TYPE], {
+                is: (regulating, regulationType) =>
+                    regulating &&
+                    regulationType === REGULATION_TYPES.DISTANT.id,
                 then: (schema) => schema.required(),
             }),
     }),
@@ -187,6 +211,8 @@ const ratioTapChangerEmptyFormData = (id) => ({
         [ENABLED]: false,
         [LOAD_TAP_CHANGING_CAPABILITIES]: false,
         [REGULATING]: false,
+        [REGULATION_TYPE]: null,
+        [REGULATION_SIDE]: null,
         [TARGET_V]: null,
         [TARGET_DEADBAND]: null,
         [LOW_TAP_POSITION]: null,
@@ -206,6 +232,8 @@ export const getRatioTapChangerFormData = (
         enabled = false,
         regulating = false,
         loadTapChangingCapabilities = false,
+        regulationType = null,
+        regulationSide = null,
         targetV = null,
         targetDeadband = null,
         lowTapPosition = null,
@@ -222,6 +250,8 @@ export const getRatioTapChangerFormData = (
         [ENABLED]: enabled,
         [REGULATING]: regulating,
         [LOAD_TAP_CHANGING_CAPABILITIES]: loadTapChangingCapabilities,
+        [REGULATION_TYPE]: regulationType,
+        [REGULATION_SIDE]: regulationSide,
         [TARGET_V]: targetV,
         [TARGET_DEADBAND]: targetDeadband,
         [LOW_TAP_POSITION]: lowTapPosition,
