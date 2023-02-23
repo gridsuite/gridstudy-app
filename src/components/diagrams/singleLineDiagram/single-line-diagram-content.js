@@ -46,6 +46,8 @@ import { useTheme } from '@mui/material/styles';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
+import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
+import { withVLsIdsAndTopology } from '../../graph/menus/network-modification-node-editor';
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
@@ -67,6 +69,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
     const [errorMessage, setErrorMessage] = useState('');
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const { openDiagramView } = useDiagram();
+    const [equipmentToModify, setEquipmentToModify] = useState();
 
     /**
      * MANUAL UPDATE SYSTEM
@@ -88,6 +91,15 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
     /**
      * DIAGRAM INTERACTIVITY
      */
+
+    const handleOpenModificationDialog = (equipmentId, equipmentType) => {
+        closeEquipmentMenu();
+        setEquipmentToModify({ equipmentId, equipmentType });
+    };
+
+    const closeModificationDialog = () => {
+        setEquipmentToModify();
+    };
 
     const handleBreakerClick = useCallback(
         (breakerId, newSwitchState, switchElement) => {
@@ -189,9 +201,31 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    handleOpenModificationDialog={handleOpenModificationDialog}
                 />
             )
         );
+    };
+
+    const displayModificationDialog = (equipmentType) => {
+        switch (equipmentType) {
+            case equipments.generators:
+                return (
+                    <GeneratorModificationDialog
+                        open={true}
+                        studyUuid={props.studyUuid}
+                        currentNode={currentNode}
+                        onClose={() => closeModificationDialog()}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        voltageLevelsIdsAndTopologyPromise={withVLsIdsAndTopology(
+                            props.studyUuid,
+                            currentNode?.id
+                        )}
+                    />
+                );
+            default:
+                return <></>;
+        }
     };
 
     /**
@@ -408,6 +442,8 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                 equipments.vscConverterStations,
                 'vsc-converter-station-menus'
             )}
+            {equipmentToModify &&
+                displayModificationDialog(equipmentToModify.equipmentType)}
         </>
     );
 });
