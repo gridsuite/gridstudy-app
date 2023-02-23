@@ -23,7 +23,7 @@ import {
 import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
 import VoltageRegulation from './voltage-regulation';
-import BooleanInput from '../../../rhf-inputs/booleans/boolean-input';
+import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
 
 const SetPointsForm = ({ studyUuid, currentNodeUuid, voltageLevelOptions }) => {
     const isVoltageRegulationOn = useWatch({
@@ -39,7 +39,7 @@ const SetPointsForm = ({ studyUuid, currentNodeUuid, voltageLevelOptions }) => {
     );
 
     const voltageRegulationField = (
-        <BooleanInput
+        <SwitchInput
             name={VOLTAGE_REGULATION}
             label={'VoltageRegulationText'}
         />
