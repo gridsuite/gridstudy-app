@@ -68,6 +68,7 @@ import {
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     NoSvg,
     LOADING_WIDTH,
+    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
 } from './diagram-common';
 import makeStyles from '@mui/styles/makeStyles';
 import DiagramHeader from './diagram-header';
@@ -123,6 +124,10 @@ const Diagram = forwardRef((props, ref) => {
 
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
+    );
+
+    const nbVoltageLevels = useSelector(
+        (state) => state.networkAreaDiagramNbVoltageLevels
     );
 
     const [loadingState, updateLoadingState] = useState(false);
@@ -847,6 +852,13 @@ const Diagram = forwardRef((props, ref) => {
                                 fullScreenActive={fullScreenDiagram?.id}
                                 onStartFullScreen={onShowFullScreenHandler}
                                 onStopFullScreen={onHideFullScreenHandler}
+                                incrementCounterDisabled={
+                                    nbVoltageLevels >
+                                    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
+                                }
+                                decrementCounterDisabled={
+                                    networkAreaDiagramDepth === 0
+                                }
                             />
                         )}
                     </Box>

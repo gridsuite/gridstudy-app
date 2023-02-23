@@ -13,8 +13,6 @@ import IconButton from '@mui/material/IconButton';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     counterText: {
@@ -73,12 +71,6 @@ const DiagramFooter = (props) => {
         () => onDecrementCounter && onDecrementCounter(),
         [onDecrementCounter]
     );
-    const nbVoltageLevels = useSelector(
-        (state) => state.networkAreaDiagramNbVoltageLevels
-    );
-    const networkAreaDiagramDepth = useSelector(
-        (state) => state.networkAreaDiagramDepth
-    );
 
     return (
         <div style={{ display: 'flex' }}>
@@ -91,17 +83,14 @@ const DiagramFooter = (props) => {
                     )}
                     <IconButton
                         onClick={handleIncrementCounter}
-                        disabled={
-                            nbVoltageLevels >
-                            NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
-                        }
+                        disabled={props.incrementCounterDisabled}
                         className={classes.incrementCounterIcon}
                     >
                         <AddCircleIcon />
                     </IconButton>
                     <IconButton
                         onClick={handleDecrementCounter}
-                        disabled={networkAreaDiagramDepth === 0}
+                        disabled={props.decrementCounterDisabled}
                         className={classes.decrementCounterIcon}
                     >
                         <RemoveCircleIcon />

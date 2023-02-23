@@ -90,6 +90,9 @@ const CustomSuffixRenderer = ({ props, element }) => {
     const networkAreaDiagramNbVoltageLevels = useSelector(
         (state) => state.networkAreaDiagramNbVoltageLevels
     );
+    const networkAreaDiagramDepth = useSelector(
+        (state) => state.networkAreaDiagramDepth
+    );
 
     const enterOnSubstationCB = useCallback(
         (e, element) => {
@@ -123,7 +126,8 @@ const CustomSuffixRenderer = ({ props, element }) => {
                     <IconButton
                         disabled={
                             networkAreaDiagramNbVoltageLevels >
-                            NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
+                                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS &&
+                            networkAreaDiagramDepth !== 0
                         }
                         onClick={(e) => openNetworkAreaDiagramCB(e, element)}
                         size={'small'}

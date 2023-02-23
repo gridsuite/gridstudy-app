@@ -809,7 +809,6 @@ export const reducer = createReducer(initialState, {
     },
     [RESET_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
         state.networkAreaDiagramDepth = 0;
-        state.networkAreaDiagramNbVoltageLevels = 0;
     },
     [INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
         state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
