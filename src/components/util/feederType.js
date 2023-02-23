@@ -12,12 +12,6 @@ export const FEEDER_TYPES = {
     /**
      * these are ComponentTypeNames from powsybl-single-line-diagram but we put them here because some ComponentTypeNames are also EquipmentsNames
      */
-    BUSBAR_SECTION: {
-        type: 'BUSBAR_SECTION',
-    },
-    BUS: {
-        type: 'BUS',
-    },
     CAPACITOR: {
         type: 'CAPACITOR',
     },

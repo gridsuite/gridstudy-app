@@ -138,6 +138,17 @@ const EquipmentDeletionDialog = ({
         setErrors(new Map());
     };
 
+    const getEquipmentTypes = () => {
+        const equipmentTypesToExclude = new Set([
+            EQUIPMENT_TYPES.SWITCH.type,
+            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
+            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+        ]);
+        return Object.values(EQUIPMENT_TYPES).filter(
+            (equipmentType) => !equipmentTypesToExclude.has(equipmentType.type)
+        );
+    };
+
     return (
         <ModificationDialog
             onClear={handleClear}
@@ -165,11 +176,14 @@ const EquipmentDeletionDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            {Object.values(EQUIPMENT_TYPES).map((values) => {
+                            {getEquipmentTypes().map((equipmentType) => {
                                 return (
-                                    <MenuItem key={values.type} value={values}>
+                                    <MenuItem
+                                        key={equipmentType.type}
+                                        value={equipmentType}
+                                    >
                                         {intl.formatMessage({
-                                            id: values.type,
+                                            id: equipmentType.type,
                                         })}
                                     </MenuItem>
                                 );

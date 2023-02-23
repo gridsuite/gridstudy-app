@@ -24,7 +24,7 @@ import {
     fetchVscConverterStations,
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
-import { FEEDER_TYPES } from 'components/util/feederType';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
@@ -542,71 +542,71 @@ export default class Network {
         }
     }
 
-    removeEquipment(feederType, equipmentId) {
-        switch (feederType) {
-            case FEEDER_TYPES.LINE.type:
+    removeEquipment(equipmentType, equipmentId) {
+        switch (equipmentType) {
+            case EQUIPMENT_TYPES.LINE.type:
                 this.lines = this.lines.filter((l) => l.id !== equipmentId);
                 this.completeLinesInfos();
                 break;
-            case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER.type:
+            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
                 this.twoWindingsTransformers =
                     this.twoWindingsTransformers.filter(
                         (l) => l.id !== equipmentId
                     );
                 this.completeTwoWindingsTransformersInfos();
                 break;
-            case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER.type:
+            case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type:
                 this.threeWindingsTransformers =
                     this.threeWindingsTransformers.filter(
                         (l) => l.id !== equipmentId
                     );
                 this.completeThreeWindingsTransformersInfos();
                 break;
-            case FEEDER_TYPES.GENERATOR.type:
+            case EQUIPMENT_TYPES.GENERATOR.type:
                 this.generators = this.generators.filter(
                     (l) => l.id !== equipmentId
                 );
                 this.completeGeneratorsInfos();
                 break;
-            case FEEDER_TYPES.LOAD.type:
+            case EQUIPMENT_TYPES.LOAD.type:
                 this.loads = this.loads.filter((l) => l.id !== equipmentId);
                 break;
-            case FEEDER_TYPES.BATTERY.type:
+            case EQUIPMENT_TYPES.BATTERY.type:
                 this.batteries = this.batteries.filter(
                     (l) => l.id !== equipmentId
                 );
                 break;
-            case FEEDER_TYPES.DANGLING_LINE.type:
+            case EQUIPMENT_TYPES.DANGLING_LINE.type:
                 this.danglingLines = this.danglingLines.filter(
                     (l) => l.id !== equipmentId
                 );
                 break;
-            case FEEDER_TYPES.HVDC_LINE.type:
+            case EQUIPMENT_TYPES.HVDC_LINE.type:
                 this.hvdcLines = this.hvdcLines.filter(
                     (l) => l.id !== equipmentId
                 );
                 break;
-            case FEEDER_TYPES.LCC_CONVERTER_STATION.type:
+            case EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type:
                 this.lccConverterStations = this.lccConverterStations.filter(
                     (l) => l.id !== equipmentId
                 );
                 break;
-            case FEEDER_TYPES.VSC_CONVERTER_STATION.type:
+            case EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type:
                 this.vscConverterStations = this.vscConverterStations.filter(
                     (l) => l.id !== equipmentId
                 );
                 break;
-            case FEEDER_TYPES.SHUNT_COMPENSATOR.type:
+            case EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type:
                 this.shuntCompensators = this.shuntCompensators.filter(
                     (l) => l.id !== equipmentId
                 );
                 break;
-            case FEEDER_TYPES.STATIC_VAR_COMPENSATOR.type:
+            case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type:
                 this.staticVarCompensators = this.staticVarCompensators.filter(
                     (l) => l.id !== equipmentId
                 );
                 break;
-            case FEEDER_TYPES.VOLTAGE_LEVEL.type:
+            case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
                 const substationId =
                     this.voltageLevelsById.get(equipmentId)?.substationId;
                 const substation = this.substationsById.get(substationId);
@@ -673,7 +673,7 @@ export default class Network {
                 //New reference on substations to trigger reload of NetworkExplorer and NetworkMap
                 this.substations = [...this.substations];
                 break;
-            case FEEDER_TYPES.SUBSTATION.type:
+            case EQUIPMENT_TYPES.SUBSTATION.type:
                 this.substations = this.substations.filter(
                     (l) => l.id !== equipmentId
                 );
@@ -682,7 +682,7 @@ export default class Network {
                     .get(equipmentId)
                     ?.voltageLevels.map((vl) =>
                         this.removeEquipment(
-                            FEEDER_TYPES.VOLTAGE_LEVEL.type,
+                            EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
                             vl.id
                         )
                     );
