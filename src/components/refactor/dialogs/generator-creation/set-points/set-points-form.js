@@ -20,10 +20,10 @@ import {
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_REGULATION,
 } from '../../../utils/field-constants';
-import BooleanInput from '../../../rhf-inputs/boolean-input';
 import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
 import VoltageRegulation from './voltage-regulation';
+import BooleanInput from '../../../rhf-inputs/booleans/boolean-input';
 
 const SetPointsForm = ({ studyUuid, currentNodeUuid, voltageLevelOptions }) => {
     const isVoltageRegulationOn = useWatch({
