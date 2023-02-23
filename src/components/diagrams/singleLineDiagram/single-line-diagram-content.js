@@ -46,8 +46,8 @@ import { useTheme } from '@mui/material/styles';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import GeneratorModificationDialog from "../../dialogs/generator-modification-dialog";
-import { withVLsIdsAndTopology } from "../../graph/menus/network-modification-node-editor";
+import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
+import { withVLsIdsAndTopology } from '../../graph/menus/network-modification-node-editor';
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
