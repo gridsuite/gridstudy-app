@@ -165,6 +165,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
             ref={plotRef}
             data={data}
             layout={layout}
+            config={{ displaylogo: false }}
             useResizeHandler={true}
             style={{
                 width: '100%',
