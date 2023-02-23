@@ -109,31 +109,27 @@ const BaseEquipmentMenu = ({
             {/* menus for equipment other than substation and voltage level */}
             {equipmentType !== equipments.substations &&
                 equipmentType !== equipments.voltageLevels && (
-                    <>
-                        <ItemViewInSpreadsheet
-                            key="ViewOnSpreadsheet"
-                            equipmentType={equipmentType}
-                            equipmentId={equipmentId}
-                            itemText={intl.formatMessage({
-                                id: 'ViewOnSpreadsheet',
-                            })}
-                            handleViewInSpreadsheet={handleViewInSpreadsheet}
-                        />
-                        {equipmentType === equipments.generators && (
-                            <ItemViewInForm
-                                equipmentId={equipmentId}
-                                equipmentType={equipmentType}
-                                itemText={intl.formatMessage({
-                                    id: 'edit',
-                                })}
-                                handleOpenModificationDialog={
-                                    handleOpenModificationDialog
-                                }
-                            ></ItemViewInForm>
-                        )}
-                    </>
+                    <ItemViewInSpreadsheet
+                        key="ViewOnSpreadsheet"
+                        equipmentType={equipmentType}
+                        equipmentId={equipmentId}
+                        itemText={intl.formatMessage({
+                            id: 'ViewOnSpreadsheet',
+                        })}
+                        handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    />
                 )}
-
+            {/* menus for equipment generator */}
+            {equipmentType === equipments.generators && (
+                <ItemViewInForm
+                    equipmentId={equipmentId}
+                    equipmentType={equipmentType}
+                    itemText={intl.formatMessage({
+                        id: 'edit',
+                    })}
+                    handleOpenModificationDialog={handleOpenModificationDialog}
+                ></ItemViewInForm>
+            )}
             {/* menus for equipment substation */}
             {equipmentType === equipments.substations && equipment && (
                 <>

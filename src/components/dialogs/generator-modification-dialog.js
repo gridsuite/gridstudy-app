@@ -204,7 +204,7 @@ const GeneratorModificationDialog = ({
 
     useEffect(() => {
         if (id || defaultIdValue) {
-            let key = id !== '' ? id : defaultIdValue;
+            let key = id ? id : defaultIdValue;
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
