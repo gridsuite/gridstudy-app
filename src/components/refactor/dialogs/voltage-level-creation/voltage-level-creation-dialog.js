@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -7,54 +7,37 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { sanitizeString } from 'components/dialogs/dialogUtils';
+import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
+import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import {
-    ACTIVE_POWER,
     BUS_BAR_CONNECTIONS,
     BUS_BAR_SECTIONS,
-    BUS_OR_BUSBAR_SECTION,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FROM_BBS,
     HORIZONTAL_POSITION,
     ID,
-    LOAD_TYPE,
     NAME,
     NOMINAL_VOLTAGE,
-    REACTIVE_POWER,
     SUBSTATION_ID,
     SWITCH_KIND,
     TO_BBS,
     VERTICAL_POSITION,
 } from 'components/refactor/utils/field-constants';
+import yup from 'components/refactor/utils/yup-config';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    createLoad,
-    createVoltageLevel,
-    fetchEquipmentInfos,
-} from '../../../../utils/rest-api';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
-import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
-import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import {
-    UNDEFINED_CONNECTION_DIRECTION,
-    UNDEFINED_LOAD_TYPE,
-} from '../../../network/constants';
-import yup from '../../utils/yup-config';
-import ModificationDialog from '../commons/modificationDialog';
-import {
-    getConnectivityEmptyFormData,
-    getConnectivityFormData,
-    getConnectivityFormValidationSchema,
-} from '../connectivity/connectivity-form-utils';
-import { getBusBarSectionLineFormData } from './bus-bar-section-line';
+import { createVoltageLevel } from 'utils/rest-api';
+import ModificationDialog from 'components/refactor/dialogs/commons/modificationDialog';
+
 import VoltageLevelCreationForm from './voltage-level-creation-form';
-import VoltageLevelForm from './voltage-level-creation-form';
 
 /**
  * Dialog to create a load in the network
- * @param currentNodeUuid The node we are currently working on
+ * @param currentNode The node we are currently working on
+ * @param studyUuid the study we are currently working on
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
@@ -64,29 +47,19 @@ const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [NOMINAL_VOLTAGE]: '',
     [SUBSTATION_ID]: '',
-    [BUS_BAR_SECTIONS]: [
-        /*  {
-            [ID]: '',
-            [NAME]: '',
-            [HORIZONTAL_POSITION]: null,
-            [VERTICAL_POSITION]: null,
-        }, */
-    ],
-    [BUS_BAR_CONNECTIONS]: [
-        //{ [FROM_BBS]: '', [TO_BBS]: '', [SWITCH_KIND]: null },
-    ],
+    [BUS_BAR_SECTIONS]: [],
+    [BUS_BAR_CONNECTIONS]: [],
 };
 
 const schema = yup.object().shape({
-    //type: yup.string().required(),
     [EQUIPMENT_ID]: yup.string().required(),
-    [EQUIPMENT_NAME]: yup.string().required(),
+    [EQUIPMENT_NAME]: yup.string(),
     [NOMINAL_VOLTAGE]: yup.string().required(),
     [SUBSTATION_ID]: yup.string().required(),
     [BUS_BAR_SECTIONS]: yup.array().of(
         yup.object().shape({
             [ID]: yup.string().required(),
-            [NAME]: yup.string().required(),
+            [NAME]: yup.string(),
             [HORIZONTAL_POSITION]: yup.number().required(),
             [VERTICAL_POSITION]: yup.number().required(),
         })
@@ -118,44 +91,18 @@ const VoltageLevelCreationDialog = ({
 
     const { reset } = methods;
 
-    /* const fromSearchCopyToFormValues = (voltageLevel) => {
-        fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            'voltage-levels',
-            voltageLevel.voltageLevelId,
-            true
-        ).then((vlResult) => {
+    const fromExternalDataToFormValues = useCallback(
+        (voltageLevel, fromCopy = true) => {
             reset({
-                [EQUIPMENT_ID]: vlResult.id,
-                [EQUIPMENT_NAME]: vlResult.name ?? '',
-                [NOMINAL_VOLTAGE]: vlResult.nominalVoltage,
-                [SUBSTATION_ID]: vlResult.substationId,
-                [BUS_BAR_SECTIONS]: vlResult?.busbarSections ?? [{}, {}],
-                ...getBusBarSectionLineFormData({
-                    busBarSectionId: vlResult?.busbarSections?.id,
-                    busBarSectionName: vlResult?.busbarSections?.name,
-                    horizontalPosition: vlResult?.busbarSections?.horizPos,
-                    verticalPosition: vlResult?.busbarSections?.vertPos,
-                }),
-            });
-        });
-    }; */
-
-    const fromSearchCopyToFormValues = useCallback(
-        (voltageLevel) => {
-            reset({
-                [EQUIPMENT_ID]: voltageLevel.id,
-                [EQUIPMENT_NAME]: voltageLevel.name ?? '',
+                [EQUIPMENT_ID]:
+                    (voltageLevel?.equipmentId ?? voltageLevel?.id) +
+                    (fromCopy ? '(1)' : ''),
+                [EQUIPMENT_NAME]:
+                    voltageLevel?.equipmentName ?? voltageLevel?.name,
                 [NOMINAL_VOLTAGE]: voltageLevel.nominalVoltage,
                 [SUBSTATION_ID]: voltageLevel.substationId,
-                [BUS_BAR_SECTIONS]: voltageLevel?.busbarSections ?? [{}, {}],
-                ...getBusBarSectionLineFormData({
-                    busBarSectionId: voltageLevel?.busbarSections?.id,
-                    busBarSectionName: voltageLevel?.busbarSections?.name,
-                    horizontalPosition: voltageLevel?.busbarSections?.horizPos,
-                    verticalPosition: voltageLevel?.busbarSections?.vertPos,
-                }),
+                [BUS_BAR_SECTIONS]: voltageLevel?.busbarSections ?? [],
+                [BUS_BAR_CONNECTIONS]: voltageLevel?.busbarConnections ?? [],
             });
         },
         [reset]
@@ -166,71 +113,14 @@ const VoltageLevelCreationDialog = ({
         currentNodeUuid,
         equipmentPath,
         toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
+        setFormValues: fromExternalDataToFormValues,
     });
 
-    const fromEditDataToFormValues = useCallback(
-        (load) => {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'voltage-levels',
-                load.voltageLevelId,
-                true
-            )
-                .then((vlResult) => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            voltageLevelTopologyKind: vlResult.topologyKind,
-                            voltageLevelName: vlResult.name,
-                            voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                            voltageLevelSubstationId: vlResult.substationId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                }) // if voltage level can't be found, we fill the form with minimal infos
-                .catch(() => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                });
-        },
-        [studyUuid, currentNodeUuid, reset]
-    );
-
-    /*  const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        equipmentPath,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-    }); */
-
-    /*  useEffect(() => {
+    useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            fromExternalDataToFormValues(editData, false);
         }
-    }, [fromEditDataToFormValues, editData]); */
+    }, [fromExternalDataToFormValues, editData]);
 
     const onSubmit = useCallback(
         (voltageLevel) => {
@@ -241,8 +131,10 @@ const VoltageLevelCreationDialog = ({
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
                 nominalVoltage: voltageLevel[NOMINAL_VOLTAGE],
                 substationId: voltageLevel[SUBSTATION_ID],
-                /*   busbarSections,
-                busbarConnections, */
+                busbarSections: voltageLevel?.busbarSections,
+                busbarConnections: voltageLevel?.busbarConnections,
+                isUpdate: editData ? true : false,
+                modificationUuid: editData?.uuid,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -250,7 +142,7 @@ const VoltageLevelCreationDialog = ({
                 });
             });
         },
-        [/* editData, */ studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError]
     );
 
     const clear = useCallback(() => {
@@ -288,7 +180,7 @@ const VoltageLevelCreationDialog = ({
 VoltageLevelCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default VoltageLevelCreationDialog;

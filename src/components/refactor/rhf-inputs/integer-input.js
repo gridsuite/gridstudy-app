@@ -10,10 +10,6 @@ import TextInput from './text-input';
 import PropTypes from 'prop-types';
 import { toPositiveIntValue } from 'components/dialogs/dialogUtils';
 
-export const numericalWithButton = {
-    type: 'number',
-    inputProps: { min: 0, style: { textAlign: 'right' } },
-};
 const IntegerInput = ({
     isInputPositiveOnly = false,
     withButton = false,

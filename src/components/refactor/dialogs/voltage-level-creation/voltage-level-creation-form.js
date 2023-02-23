@@ -7,14 +7,11 @@
 
 import Grid from '@mui/material/Grid';
 import {
-    ACTIVE_POWER,
     BUS_BAR_CONNECTIONS,
     BUS_BAR_SECTIONS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    LOAD_TYPE,
     NOMINAL_VOLTAGE,
-    REACTIVE_POWER,
     SUBSTATION_ID,
 } from 'components/refactor/utils/field-constants';
 import React, { useEffect, useState } from 'react';
@@ -24,15 +21,12 @@ import {
     gridItem,
     GridSection,
     VoltageAdornment,
-} from '../../../dialogs/dialogUtils';
-import FloatInput from '../../rhf-inputs/float-input';
-import SelectInput from '../../rhf-inputs/select-input';
-import TextInput from '../../rhf-inputs/text-input';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
-import { BusBar } from './bus-bar-section';
-import Form from './bus-bar-section';
-import { BusBarSection } from './bus-bar-section';
+} from 'components/dialogs/dialogUtils';
+import FloatInput from 'components/refactor/rhf-inputs/float-input';
+import SelectInput from 'components/refactor/rhf-inputs/select-input';
+import TextInput from 'components/refactor/rhf-inputs/text-input';
 import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
+import { BusBarSection } from './bus-bar-section/bus-bar-section';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -93,23 +87,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         />
     );
 
-    /*  const reactivePowerField = (
-        <FloatInput
-            name={REACTIVE_POWER}
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-        />
-    );
-
-    const connectivityForm = (
-        <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
-            withPosition={true}
-            studyUuid={studyUuid}
-            currentNodeUuid={currentNodeUuid}
-        />
-    );
- */
     return (
         <>
             <Grid container spacing={2}>
@@ -134,16 +111,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                     />
                 }
             </Grid>
-            {/*  <GridSection title="Connectivity" />
-            <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
-            </Grid> */}
-            {/*
-            <GridSection title="Setpoints" />
-            <Grid container spacing={2}>
-                {gridItem(activePowerField, 4)}
-                {gridItem(reactivePowerField, 4)}
-            </Grid> */}
         </>
     );
 };

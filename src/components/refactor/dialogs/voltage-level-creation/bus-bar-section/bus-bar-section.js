@@ -1,8 +1,7 @@
 import { Button, Grid, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
-import { GridSection, useStyles } from 'components/dialogs/dialogUtils';
-
+import { useStyles } from 'components/dialogs/dialogUtils';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useFieldArray } from 'react-hook-form';
@@ -10,7 +9,7 @@ import { BusBarSectionLine } from './bus-bar-section-line';
 import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
 import { Connectivity } from './connectivity';
 
-export const BusBarSection = ({ id, values, onChange, type }) => {
+export const BusBarSection = ({ id, type }) => {
     const classes = useStyles();
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
 
@@ -41,10 +40,16 @@ export const BusBarSection = ({ id, values, onChange, type }) => {
                     className={classes.button}
                     startIcon={<AddIcon />}
                     onClick={() => insert(rows.length, {})}
-                    //disabled={disabled}
                     style={{ top: '-1em' }}
                 >
-                    <FormattedMessage id={'CreateBusBarSection'} />
+                    <FormattedMessage
+                        id={
+                            type ===
+                            VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_LINE
+                                ? 'CreateBusBarSection'
+                                : 'CreateLink'
+                        }
+                    />
                 </Button>
             </Grid>
         </Grid>
