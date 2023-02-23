@@ -481,7 +481,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         variant="scrollable"
                         onChange={(event, newValue) => setTabValue(newValue)}
                         aria-label="parameters"
-                        style={{ position: 'absolute' }}
                     >
                         <Tab
                             label={<FormattedMessage id="SingleLineDiagram" />}
