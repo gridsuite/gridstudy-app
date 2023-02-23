@@ -29,7 +29,11 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
+import {
+    createLoad,
+    createVoltageLevel,
+    fetchEquipmentInfos,
+} from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
@@ -114,7 +118,7 @@ const VoltageLevelCreationDialog = ({
 
     const { reset } = methods;
 
-    const fromSearchCopyToFormValues = (voltageLevel) => {
+    /* const fromSearchCopyToFormValues = (voltageLevel) => {
         fetchEquipmentInfos(
             studyUuid,
             currentNodeUuid,
@@ -123,28 +127,39 @@ const VoltageLevelCreationDialog = ({
             true
         ).then((vlResult) => {
             reset({
-                [EQUIPMENT_ID]: voltageLevel.id + '(1)',
-                [EQUIPMENT_NAME]: voltageLevel.name ?? '',
-                [NOMINAL_VOLTAGE]: voltageLevel.nominalVoltage,
-                [SUBSTATION_ID]: voltageLevel.substationId,
+                [EQUIPMENT_ID]: vlResult.id,
+                [EQUIPMENT_NAME]: vlResult.name ?? '',
+                [NOMINAL_VOLTAGE]: vlResult.nominalVoltage,
+                [SUBSTATION_ID]: vlResult.substationId,
+                [BUS_BAR_SECTIONS]: vlResult?.busbarSections ?? [{}, {}],
                 ...getBusBarSectionLineFormData({
-                    busBarSectionId,
-                    busBarSectionName,
-                    horizontalPosition,
-                    verticalPosition,
-                    voltageLevelId: voltageLevel.voltageLevelId,
-                    busbarSectionId: voltageLevel.busOrBusbarSectionId,
-                    voltageLevelTopologyKind: vlResult.topologyKind,
-                    voltageLevelName: vlResult.name,
-                    voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                    voltageLevelSubstationId: vlResult.substationId,
-                    connectionDirection: voltageLevel.connectionDirection,
-                    connectionName: voltageLevel.connectionName,
-                    connectionPosition: voltageLevel.connectionPosition,
+                    busBarSectionId: vlResult?.busbarSections?.id,
+                    busBarSectionName: vlResult?.busbarSections?.name,
+                    horizontalPosition: vlResult?.busbarSections?.horizPos,
+                    verticalPosition: vlResult?.busbarSections?.vertPos,
                 }),
             });
         });
-    };
+    }; */
+
+    const fromSearchCopyToFormValues = useCallback(
+        (voltageLevel) => {
+            reset({
+                [EQUIPMENT_ID]: voltageLevel.id,
+                [EQUIPMENT_NAME]: voltageLevel.name ?? '',
+                [NOMINAL_VOLTAGE]: voltageLevel.nominalVoltage,
+                [SUBSTATION_ID]: voltageLevel.substationId,
+                [BUS_BAR_SECTIONS]: voltageLevel?.busbarSections ?? [{}, {}],
+                ...getBusBarSectionLineFormData({
+                    busBarSectionId: voltageLevel?.busbarSections?.id,
+                    busBarSectionName: voltageLevel?.busbarSections?.name,
+                    horizontalPosition: voltageLevel?.busbarSections?.horizPos,
+                    verticalPosition: voltageLevel?.busbarSections?.vertPos,
+                }),
+            });
+        },
+        [reset]
+    );
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
@@ -218,31 +233,24 @@ const VoltageLevelCreationDialog = ({
     }, [fromEditDataToFormValues, editData]); */
 
     const onSubmit = useCallback(
-        (load) => {
-            createLoad(
+        (voltageLevel) => {
+            createVoltageLevel({
                 studyUuid,
                 currentNodeUuid,
-                load[EQUIPMENT_ID],
-                sanitizeString(load[EQUIPMENT_NAME]),
-                !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
-                load[ACTIVE_POWER],
-                load[REACTIVE_POWER],
-                load.connectivity.voltageLevel.id,
-                load.connectivity.busOrBusbarSection.id,
-                editData ? true : false,
-                editData ? editData.uuid : undefined,
-                load.connectivity?.connectionDirection ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                load.connectivity?.connectionName ?? null,
-                load.connectivity?.connectionPosition ?? null
-            ).catch((error) => {
+                voltageLevelId: voltageLevel[EQUIPMENT_ID],
+                voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
+                nominalVoltage: voltageLevel[NOMINAL_VOLTAGE],
+                substationId: voltageLevel[SUBSTATION_ID],
+                /*   busbarSections,
+                busbarConnections, */
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'LoadCreationError',
+                    headerId: 'VoltageLevelCreationError',
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [/* editData, */ studyUuid, currentNodeUuid, snackError]
     );
 
     const clear = useCallback(() => {
@@ -258,18 +266,17 @@ const VoltageLevelCreationDialog = ({
                 aria-labelledby="dialog-create-voltage-level"
                 maxWidth={'md'}
                 titleId="CreateVoltageLevel"
-                //searchCopy={searchCopy}
+                searchCopy={searchCopy}
                 {...dialogProps}
             >
                 <VoltageLevelCreationForm
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                     studyUuid={studyUuid}
                 />
-
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={'LOAD'}
+                    equipmentType={'VOLTAGE_LEVEL'}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
