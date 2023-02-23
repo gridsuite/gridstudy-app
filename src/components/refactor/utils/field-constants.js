@@ -40,6 +40,33 @@ export const PERMANENT_LIMIT = 'permanentLimit';
 export const CONNECTIVITY_1 = 'connectivity1';
 export const CONNECTIVITY_2 = 'connectivity2';
 
+export const ENERGY_SOURCE = 'energySource';
+export const MAXIMUM_ACTIVE_POWER = 'maximumActivePower';
+export const MINIMUM_ACTIVE_POWER = 'minimumActivePower';
+export const RATED_NOMINAL_POWER = 'ratedNominalPower';
+export const ACTIVE_POWER_SET_POINT = 'activePowerSetpoint';
+export const VOLTAGE_REGULATION = 'voltageRegulation';
+export const REACTIVE_POWER_SET_POINT = 'reactivePowerSetpoint';
+export const VOLTAGE_REGULATION_TYPE = 'voltageRegulationType';
+export const VOLTAGE_SET_POINT = 'voltageSetPoint';
+export const TRANSIENT_REACTANCE = 'transientReactance';
+export const Q_PERCENT = 'qPercent';
+export const FREQUENCY_REGULATION = 'frequencyRegulation';
+export const DROOP = 'droop';
+export const TRANSFORMER_REACTANCE = 'transformerReactance';
+export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
+export const STARTUP_COST = 'startupCost';
+export const MARGINAL_COST = 'marginalCost';
+export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
+export const FORCED_OUTAGE_RATE = 'forcedOutageRate';
+export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
+export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
+export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
+export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
+export const Q_MAX_P = 'qmaxP';
+export const Q_MIN_P = 'qminP';
+export const P = 'p';
+
 export const ENABLED = 'enabled';
 export const REGULATING = 'regulating';
 export const REGULATION_TYPE = 'regulationType';
@@ -81,3 +108,6 @@ export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
 export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
 export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
 export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
+
+// dnd table
+export const SELECTED = 'selected';

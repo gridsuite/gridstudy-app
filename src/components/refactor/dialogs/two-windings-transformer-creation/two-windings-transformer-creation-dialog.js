@@ -67,18 +67,18 @@ import {
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
-import PhaseTapChangerPane from './phase-tap-changer-pane/phase-tap-changer-pane';
+import PhaseTapChangerPane from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerValidationSchema,
-} from './phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import RatioTapChangerPane from './ratio-tap-changer-pane/ratio-tap-changer-pane';
+} from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+import RatioTapChangerPane from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerValidationSchema,
-} from './ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+} from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import TwoWindingsTransformerCreationDialogTabs from './two-windings-transformer-creation-dialog-tabs';
 import TwoWindingsTransformerPane from './two-windings-transformer-pane/two-windings-transformer-pane';
 import {
@@ -89,7 +89,8 @@ import {
 
 /**
  * Dialog to create a two windings transformer in the network
- * @param currentNodeUuid The node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentNode The node we are currently working on
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
@@ -117,14 +118,15 @@ export const TwoWindingsTransformerCreationDialogTab = {
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
-export const MAX_TAP_NUMBER = 100;
+export const MAX_TAP_CHANGER_STEPS_NUMBER = 100;
 
 const TwoWindingsTransformerCreationDialog = ({
     editData,
     studyUuid,
-    currentNodeUuid,
+    currentNode,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
     const equipmentPath = '2-windings-transformers';
@@ -642,7 +644,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 >
                     <TwoWindingsTransformerPane
                         studyUuid={studyUuid}
-                        currentNodeUuid={currentNodeUuid}
+                        currentNode={currentNode}
                         voltageLevelOptions={voltageLevelOptions}
                     />
                 </Box>
@@ -690,7 +692,7 @@ const TwoWindingsTransformerCreationDialog = ({
 TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default TwoWindingsTransformerCreationDialog;

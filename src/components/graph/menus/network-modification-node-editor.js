@@ -36,7 +36,6 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
-import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
@@ -64,6 +63,7 @@ import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
+import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -152,7 +152,7 @@ const NetworkModificationNodeEditor = () => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
-    const currentTreeNode = useSelector((state) => state.currentTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     const currentNodeIdRef = useRef(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -200,7 +200,7 @@ const NetworkModificationNodeEditor = () => {
                 open={true}
                 onClose={handleCloseDialog}
                 onValidated={handleValidatedDialog}
-                currentNodeUuid={currentTreeNode?.id}
+                currentNode={currentNode}
                 studyUuid={studyUuid}
                 editData={editData}
                 {...props}
@@ -216,7 +216,7 @@ const NetworkModificationNodeEditor = () => {
     function withVLs(p) {
         const voltageLevelOptionsPromise = fetchVoltageLevels(
             studyUuid,
-            currentTreeNode?.id
+            currentNode?.id
         );
         return {
             ...p,
@@ -226,7 +226,7 @@ const NetworkModificationNodeEditor = () => {
 
     function withVLsIdsAndTopology(p) {
         const voltageLevelsIdsAndTopologyPromise =
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentTreeNode?.id);
+            fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id);
         return {
             ...p,
             voltageLevelsIdsAndTopologyPromise:
@@ -235,11 +235,7 @@ const NetworkModificationNodeEditor = () => {
     }
 
     function withLines(p) {
-        const lineOptionsPromise = fetchLines(
-            studyUuid,
-            currentTreeNode?.id,
-            []
-        );
+        const lineOptionsPromise = fetchLines(studyUuid, currentNode?.id, []);
         return {
             ...p,
             lineOptionsPromise: lineOptionsPromise,
@@ -249,7 +245,7 @@ const NetworkModificationNodeEditor = () => {
     function withSubstations(p) {
         const substationOptionsPromise = fetchSubstations(
             studyUuid,
-            currentTreeNode?.id,
+            currentNode?.id,
             []
         );
         return {
@@ -271,8 +267,7 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_CREATION: {
             label: 'CreateGenerator',
-            dialog: () =>
-                adapt(GeneratorCreationDialog, withVLs, withVLsIdsAndTopology),
+            dialog: () => adapt(GeneratorCreationDialog),
             icon: <AddIcon />,
         },
         GENERATOR_MODIFICATION: {
@@ -283,12 +278,12 @@ const NetworkModificationNodeEditor = () => {
         },
         SHUNT_COMPENSATOR_CREATION: {
             label: 'CreateShuntCompensator',
-            dialog: () => adapt(ShuntCompensatorCreationDialog, withVLs),
+            dialog: () => adapt(ShuntCompensatorCreationDialog),
             icon: <AddIcon />,
         },
         LINE_CREATION: {
             label: 'CreateLine',
-            dialog: () => adapt(LineCreationDialog, withVLs),
+            dialog: () => adapt(LineCreationDialog),
             icon: <AddIcon />,
         },
         TWO_WINDINGS_TRANSFORMER_CREATION: {
@@ -405,13 +400,13 @@ const NetworkModificationNodeEditor = () => {
 
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentTreeNode?.type !== 'NETWORK_MODIFICATION') return;
+        if (currentNode?.type !== 'NETWORK_MODIFICATION') return;
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentTreeNode?.id)
+        fetchNetworkModifications(studyUuid, currentNode?.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
-                if (currentTreeNode.id === currentNodeIdRef.current) {
+                if (currentNode.id === currentNodeIdRef.current) {
                     setModifications(res);
                 }
             })
@@ -425,13 +420,7 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [
-        studyUuid,
-        currentTreeNode.id,
-        currentTreeNode.type,
-        snackError,
-        dispatch,
-    ]);
+    }, [studyUuid, currentNode.id, currentNode.type, snackError, dispatch]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -442,14 +431,14 @@ const NetworkModificationNodeEditor = () => {
         // OR next time if currentNodeId changed then fetch modifications
         if (
             !currentNodeIdRef.current ||
-            currentNodeIdRef.current !== currentTreeNode.id
+            currentNodeIdRef.current !== currentNode.id
         ) {
-            currentNodeIdRef.current = currentTreeNode.id;
+            currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setModifications([]);
             dofetchNetworkModifications();
         }
-    }, [currentTreeNode, dofetchNetworkModifications]);
+    }, [currentNode, dofetchNetworkModifications]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -512,7 +501,7 @@ const NetworkModificationNodeEditor = () => {
     const doDeleteModification = useCallback(() => {
         deleteModifications(
             studyUuid,
-            currentTreeNode?.id,
+            currentNode?.id,
             [...selectedItems.values()].map((item) => item.uuid)
         )
             .then()
@@ -522,7 +511,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'errDeleteModificationMsg',
                 });
             });
-    }, [currentTreeNode?.id, selectedItems, snackError, studyUuid]);
+    }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
     const doCutModification = useCallback(() => {
         // just memorize the list of selected modifications
@@ -531,9 +520,9 @@ const NetworkModificationNodeEditor = () => {
         );
         setCopyInfos({
             copyType: CopyType.MOVE,
-            originNodeUuid: currentTreeNode.id,
+            originNodeUuid: currentNode.id,
         });
-    }, [currentTreeNode.id, selectedItems]);
+    }, [currentNode.id, selectedItems]);
 
     const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
@@ -547,7 +536,7 @@ const NetworkModificationNodeEditor = () => {
         if (copyInfos.copyType === CopyType.MOVE) {
             copyOrMoveModifications(
                 studyUuid,
-                currentTreeNode.id,
+                currentNode.id,
                 copiedModifications,
                 copyInfos
             )
@@ -575,7 +564,7 @@ const NetworkModificationNodeEditor = () => {
         } else {
             copyOrMoveModifications(
                 studyUuid,
-                currentTreeNode.id,
+                currentNode.id,
                 copiedModifications,
                 copyInfos
             )
@@ -601,7 +590,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [
         copiedModifications,
-        currentTreeNode.id,
+        currentNode.id,
         copyInfos,
         snackError,
         snackWarning,
@@ -670,7 +659,7 @@ const NetworkModificationNodeEditor = () => {
             setModifications(res);
             changeNetworkModificationOrder(
                 studyUuid,
-                currentTreeNode?.id,
+                currentNode?.id,
                 item.uuid,
                 before
             ).catch((error) => {
@@ -681,13 +670,13 @@ const NetworkModificationNodeEditor = () => {
                 setModifications(modifications); // rollback
             });
         },
-        [modifications, studyUuid, currentTreeNode?.id, snackError]
+        [modifications, studyUuid, currentNode?.id, snackError]
     );
 
     const isLoading = () => {
         return (
             notificationIdList.filter(
-                (notification) => notification === currentTreeNode?.id
+                (notification) => notification === currentNode?.id
             ).length > 0
         );
     };
@@ -882,7 +871,7 @@ const NetworkModificationNodeEditor = () => {
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
                 network={network}
-                currentNodeUuid={currentTreeNode?.id}
+                currentNodeUuid={currentNode?.id}
                 onOpenDialog={setEditDialogOpen}
                 dialogs={dialogs}
             />
