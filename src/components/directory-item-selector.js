@@ -180,12 +180,14 @@ const DirectoryItemSelector = (props) => {
     );
 
     useEffect(() => {
-        if (openRef.current && studyUpdatedForce.eventData.headers) {
+        console.log('test here 1 useEffect: ', studyUpdatedForce)
+        if (studyUpdatedForce.eventData.headers) {
             if (
                 Object.values(notificationType).includes(
                     studyUpdatedForce.eventData.headers['notificationType']
                 )
             ) {
+                console.log('test here 1 useEffect: ')
                 if (!studyUpdatedForce.eventData.headers['isRootDirectory']) {
                     const nodeID =
                         studyUpdatedForce.eventData.headers['directoryUuid'];
@@ -193,15 +195,20 @@ const DirectoryItemSelector = (props) => {
                     // otherwise the fetchDirectory call will build a new ghost node with this id and put it in the Map.
                     // It will be called later when browsing the directory tree
                     if (nodeMap.current[nodeID]) {
+                        console.log('test here 1 fetching: ', nodeID);
                         fetchDirectory(nodeID);
                     }
                 } else {
+                    console.log('test here 1 fetching root :');
                     updateRootDirectories();
                 }
             }
         }
     }, [studyUpdatedForce, fetchDirectory, updateRootDirectories]);
 
+    useEffect(() => {
+        console.log('test here map : ', nodeMap.current);
+    }, [nodeMap.current])
     function sortHandlingDirectories(a, b) {
         //If children property is set it means it's a directory, they are handled differently in order to keep them at the top of the list
         if (a.children && !b.children) {

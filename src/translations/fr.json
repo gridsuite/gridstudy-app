@@ -665,7 +665,15 @@
     "HighTapRatio": "Rapport (prise max)",
     "ImportRegulationRule": "Importer une loi de régleur",
 
-    "GenerateTapRows": "Générer les prises",
+    "AddRows": "Ajouter des lignes",
+    "DeleteRows": "Supprimer des lignes",
+    "MoveUpRows": "Monter des lignes",
+    "MoveDownRows": "Descendre des lignes",
+
+    "AddRowsDialogTitle": "Combien de lignes voulez-vous ajouter ?",
+    "AddRowsButton": "Ajouter",
+
+    "DragAndDrop": "Glisser-déposer",
 
     "CreateDephasingRule": "Créer une loi de déphasage",
     "LowTapAlpha": "Déphasage (prise min)",

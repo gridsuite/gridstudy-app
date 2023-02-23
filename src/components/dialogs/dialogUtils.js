@@ -133,6 +133,11 @@ export function toIntOrEmptyValue(val) {
     return parseInt(val) || '';
 }
 
+export function parseIntData(val, defaultValue) {
+    const intValue = parseInt(val);
+    return isNaN(intValue) ? defaultValue : intValue;
+}
+
 export function sanitizeString(val) {
     return val.trim() === '' ? null : val.trim();
 }
