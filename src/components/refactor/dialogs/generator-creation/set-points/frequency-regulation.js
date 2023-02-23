@@ -8,9 +8,9 @@
 import { gridItem, percentageTextField } from '../../../../dialogs/dialogUtils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from '../../../utils/field-constants';
-import BooleanInput from '../../../rhf-inputs/boolean-input';
 import React from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
+import BooleanInput from '../../../rhf-inputs/booleans/boolean-input';
 
 const FrequencyRegulation = () => {
     const isFrequencyRegulationOn = useWatch({
