@@ -34,6 +34,7 @@ const TapChangerSteps = ({
     columnsDefinition,
     csvColumns,
     createRuleMessageId,
+    createRuleAllowNegativeValues,
     importRuleMessageId,
     handleImportRow,
     disabled,
@@ -335,7 +336,7 @@ const TapChangerSteps = ({
                 openCreateRuleDialog={openCreateRuleDialog}
                 setOpenCreateRuleDialog={setOpenCreateRuleDialog}
                 handleCreateTapRule={handleCreateTapRule}
-                allowNegativeValues={false}
+                allowNegativeValues={createRuleAllowNegativeValues}
             />
             <ImportRuleDialog
                 ruleType={ruleType}
@@ -360,6 +361,7 @@ TapChangerSteps.prototype = {
     columnsDefinition: PropTypes.object.isRequired,
     csvColumns: PropTypes.object.isRequired,
     createRuleMessageId: PropTypes.string.isRequired,
+    createRuleAllowNegativeValues: PropTypes.bool.isRequired,
     importRuleMessageId: PropTypes.string.isRequired,
     handleImportRow: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
