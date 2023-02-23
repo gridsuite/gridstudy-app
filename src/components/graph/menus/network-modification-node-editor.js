@@ -36,7 +36,6 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
-import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
@@ -64,6 +63,7 @@ import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
+import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -267,8 +267,7 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_CREATION: {
             label: 'CreateGenerator',
-            dialog: () =>
-                adapt(GeneratorCreationDialog, withVLs, withVLsIdsAndTopology),
+            dialog: () => adapt(GeneratorCreationDialog),
             icon: <AddIcon />,
         },
         GENERATOR_MODIFICATION: {
