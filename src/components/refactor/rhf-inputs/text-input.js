@@ -22,6 +22,7 @@ import { isFieldRequired } from '../utils/utils';
 const TextInput = ({
     name,
     label,
+    labelValues, // this prop is used to add a value to label. this value is displayed without being translated
     id,
     adornment,
     outputTransform = func_identity, //transform materialUi input value before sending it to react hook form, mostly used to deal with number fields
@@ -61,6 +62,7 @@ const TextInput = ({
             id={id ? id : label}
             label={FieldLabel({
                 label,
+                values: labelValues,
                 optional:
                     !isFieldRequired(name, validationSchema, getValues()) &&
                     !formProps?.disabled,
@@ -102,6 +104,7 @@ const TextInput = ({
 
 TextInput.propTypes = {
     label: PropTypes.string.isRequired,
+    labelValues: PropTypes.object,
     errorMessage: PropTypes.string,
     value: PropTypes.any,
     onChange: PropTypes.func,
