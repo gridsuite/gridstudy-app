@@ -562,7 +562,7 @@ export function decrementNetworkAreaDiagramDepth() {
 export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS =
     'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
 
-export function networkAreaDiagramNbVoltageLevels(nbVoltageLevels) {
+export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels) {
     return {
         type: NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
         nbVoltageLevels: nbVoltageLevels,

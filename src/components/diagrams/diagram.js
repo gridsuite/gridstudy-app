@@ -27,7 +27,7 @@ import {
     incrementNetworkAreaDiagramDepth,
     resetNetworkAreaDiagramDepth,
     setFullScreenDiagram,
-    networkAreaDiagramNbVoltageLevels,
+    setNetworkAreaDiagramNbVoltageLevels,
 } from '../../redux/actions';
 
 import { AutoSizer } from 'react-virtualized';
@@ -336,7 +336,7 @@ const Diagram = forwardRef((props, ref) => {
                                 props.svgType === SvgType.NETWORK_AREA_DIAGRAM
                             ) {
                                 dispatch(
-                                    networkAreaDiagramNbVoltageLevels(
+                                    setNetworkAreaDiagramNbVoltageLevels(
                                         data?.metadata?.nbVoltageLevels
                                     )
                                 );

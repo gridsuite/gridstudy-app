@@ -21,22 +21,18 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
     },
     incrementCounterIcon: {
-        bottom: theme.spacing(0),
-        left: theme.spacing(3.5),
+        padding: 0,
+        bottom: theme.spacing(1),
+        left: theme.spacing(5.5),
         position: 'absolute',
         cursor: 'pointer',
-        '&:hover': {
-            backgroundColor: 'transparent',
-        },
     },
     decrementCounterIcon: {
-        bottom: theme.spacing(0),
-        left: theme.spacing(0),
+        padding: 0,
+        bottom: theme.spacing(1),
+        left: theme.spacing(2),
         position: 'absolute',
         cursor: 'pointer',
-        '&:hover': {
-            backgroundColor: 'transparent',
-        },
     },
     fullScreenIcon: {
         bottom: theme.spacing(1),
@@ -124,6 +120,8 @@ DiagramFooter.defaultProps = {
     counterText: '',
     counterValue: 0,
     fullscreenActive: false,
+    decrementCounterDisabled: true,
+    incrementCounterDisabled: false,
 };
 
 DiagramFooter.propTypes = {
@@ -137,6 +135,8 @@ DiagramFooter.propTypes = {
     fullScreenActive: PropTypes.any,
     onStopFullScreen: PropTypes.func,
     onStartFullScreen: PropTypes.func,
+    decrementCounterDisabled: PropTypes.bool,
+    incrementCounterDisabled: PropTypes.bool,
 };
 
 export default DiagramFooter;
