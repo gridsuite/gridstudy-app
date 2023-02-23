@@ -24,23 +24,24 @@ import {
     ActivePowerAdornment,
     AmpereAdornment,
     gridItem,
-} from '../../../../dialogs/dialogUtils';
+} from '../../../../../dialogs/dialogUtils';
 import {
     REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
-} from '../../../../network/constants';
-import BooleanInput from '../../../rhf-inputs/boolean-input';
-import FloatInput from '../../../rhf-inputs/float-input';
-import SelectInput from '../../../rhf-inputs/select-input';
-import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
-import PhaseTapChangerPaneTaps from './phase-tap-changer-pane-taps';
+} from '../../../../../network/constants';
+import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
+import FloatInput from '../../../../rhf-inputs/float-input';
+import SelectInput from '../../../../rhf-inputs/select-input';
+import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
+import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { useCallback } from 'react';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelOptions = [],
 }) => {
     const phaseTapChangerEnabledWatch = useWatch({
         name: `${id}.${ENABLED}`,
@@ -59,7 +60,7 @@ const PhaseTapChangerPane = ({
     });
 
     const phaseTapChangerEnabledField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${ENABLED}`}
             label="ConfigurePhaseTapChanger"
         />
@@ -75,7 +76,7 @@ const PhaseTapChangerPane = ({
     );
 
     const regulatingField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${REGULATING}`}
             label="Regulating"
             formProps={{
@@ -105,6 +106,7 @@ const PhaseTapChangerPane = ({
             options={Object.values(REGULATION_TYPES)}
             disabled={!isVoltageRegulationOn()}
             size={'small'}
+            disableClearable
         />
     );
 
@@ -115,6 +117,7 @@ const PhaseTapChangerPane = ({
             options={Object.values(SIDE)}
             disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
             size={'small'}
+            disableClearable
         />
     );
 
@@ -155,13 +158,12 @@ const PhaseTapChangerPane = ({
         <RegulatingTerminalForm
             id={id}
             disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-            voltageLevelsEquipmentsOptionsPromise={
-                voltageLevelsEquipmentsOptionsPromise
-            }
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
             }
+            studyUuid={studyUuid}
+            currentNodeUuid={currentNodeUuid}
+            voltageLevelOptions={voltageLevelOptions}
         />
     );
 
@@ -245,7 +247,7 @@ const PhaseTapChangerPane = ({
                         </Grid>
                     )}
 
-                <PhaseTapChangerPaneTaps
+                <PhaseTapChangerPaneSteps
                     disabled={!phaseTapChangerEnabledWatch}
                 />
             </Grid>

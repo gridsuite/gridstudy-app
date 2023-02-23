@@ -18,48 +18,24 @@ import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
-    commonSldStyle,
+    useDiagramStyles,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
     NoSvg,
-    LOADING_WIDTH,
+    MIN_WIDTH,
 } from '../diagram-common';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
-
-const customSldStyle = (theme) => {
-    return {
-        '& .sld-in .sld-label': {
-            display: 'none',
-        },
-        '& .sld-out .sld-label': {
-            display: 'none',
-        },
-        '& .sld-arrow-in': {
-            display: 'none',
-        },
-        '& .sld-arrow-out': {
-            display: 'none',
-        },
-        '& .arrow': {
-            fill: theme.palette.text.primary,
-            pointerEvents: 'none',
-        },
-    };
-};
-
-const useStyles = makeStyles((theme) => ({
-    divSld: { ...commonSldStyle(theme, customSldStyle(theme)) },
-}));
+import clsx from 'clsx';
 
 const PositionDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
+    const classes = useDiagramStyles();
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const { snackError } = useSnackMessage();
@@ -177,8 +153,6 @@ const PositionDiagram = forwardRef((props, ref) => {
         serverHeight,
     ]);
 
-    const classes = useStyles();
-
     const onCloseHandler = () => {
         if (props.onClose !== null) {
             setSvg(NoSvg);
@@ -195,7 +169,7 @@ const PositionDiagram = forwardRef((props, ref) => {
             style={{
                 pointerEvents: 'auto',
                 width: serverWidth,
-                minWidth: LOADING_WIDTH,
+                minWidth: MIN_WIDTH,
                 height: serverHeight,
                 position: 'relative',
                 overflow: 'hidden',
@@ -212,8 +186,11 @@ const PositionDiagram = forwardRef((props, ref) => {
             <Box position="relative">
                 <div
                     ref={svgRef}
-                    className={classes.divSld}
-                    dangerouslySetInnerHTML={{ __html: svg.svg }}
+                    className={clsx(
+                        classes.divDiagram,
+                        classes.divSingleLineDiagram,
+                        classes.divDiagramReadOnly
+                    )}
                 />
             </Box>
         </Paper>

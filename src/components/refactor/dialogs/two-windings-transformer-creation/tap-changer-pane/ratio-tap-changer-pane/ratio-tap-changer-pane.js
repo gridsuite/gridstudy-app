@@ -19,19 +19,20 @@ import {
 } from 'components/refactor/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { gridItem, VoltageAdornment } from '../../../../dialogs/dialogUtils';
-import BooleanInput from '../../../rhf-inputs/boolean-input';
-import FloatInput from '../../../rhf-inputs/float-input';
-import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
-import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
-import { REGULATION_TYPES, SIDE } from '../../../../network/constants';
-import SelectInput from '../../../rhf-inputs/select-input';
+import { gridItem, VoltageAdornment } from '../../../../../dialogs/dialogUtils';
+import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
+import FloatInput from '../../../../rhf-inputs/float-input';
+import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
+import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
+import { REGULATION_TYPES, SIDE } from '../../../../../network/constants';
+import SelectInput from '../../../../rhf-inputs/select-input';
 import { useCallback } from 'react';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
-    voltageLevelOptionsPromise,
-    voltageLevelsEquipmentsOptionsPromise,
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelOptions = [],
 }) => {
     const ratioTapChangerEnabledWatcher = useWatch({
         name: `${id}.${ENABLED}`,
@@ -50,14 +51,14 @@ const RatioTapChangerPane = ({
     });
 
     const ratioTapChangerEnabledField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${ENABLED}`}
             label="ConfigureRatioTapChanger"
         />
     );
 
     const ratioTapLoadTapChangingCapabilitiesField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${LOAD_TAP_CHANGING_CAPABILITIES}`}
             label="OnLoad"
             formProps={{
@@ -67,7 +68,7 @@ const RatioTapChangerPane = ({
     );
 
     const regulatingField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${REGULATING}`}
             label="VoltageRegulation"
             formProps={{
@@ -97,6 +98,7 @@ const RatioTapChangerPane = ({
             options={Object.values(REGULATION_TYPES)}
             disabled={!isVoltageRegulationOn()}
             size={'small'}
+            disableClearable
         />
     );
 
@@ -107,6 +109,7 @@ const RatioTapChangerPane = ({
             options={Object.values(SIDE)}
             disabled={!regulatingWatch || !ratioTapChangerEnabledWatcher}
             size={'small'}
+            disableClearable
         />
     );
 
@@ -136,13 +139,12 @@ const RatioTapChangerPane = ({
         <RegulatingTerminalForm
             id={id}
             disabled={!ratioTapChangerEnabledWatcher || !regulatingWatch}
-            voltageLevelOptionsPromise={voltageLevelOptionsPromise}
-            voltageLevelsEquipmentsOptionsPromise={
-                voltageLevelsEquipmentsOptionsPromise
-            }
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
             }
+            studyUuid={studyUuid}
+            currentNodeUuid={currentNodeUuid}
+            voltageLevelOptions={voltageLevelOptions}
         />
     );
 
@@ -232,7 +234,7 @@ const RatioTapChangerPane = ({
                         </Grid>
                     )}
 
-                <RatioTapChangerPaneTaps
+                <RatioTapChangerPaneSteps
                     disabled={!ratioTapChangerEnabledWatcher}
                 />
             </Grid>

@@ -9,10 +9,11 @@ import { useDirectoryElements, useEnumValue } from '../inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from '../dialogUtils';
 import {
+    MONITORED_BRANCHES_EQUIPMENT_TYPES,
+    PSTS_EQUIPMENT_TYPES,
     SensiChecked,
     SENSITIVITY_TYPES,
     useStyles,
-    EquipmentType,
 } from './sensi-parameters-selector';
 
 export const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
@@ -29,10 +30,7 @@ export const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
             ? defaultValue.monitoredBranches
             : [],
         elementType: elementType.FILTER,
-        equipmentTypes: [
-            EquipmentType.LINE,
-            EquipmentType.TWO_WINDINGS_TRANSFORMER,
-        ],
+        equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -41,7 +39,7 @@ export const SensiPSTs = ({ index, onChange, defaultValue, inputForm }) => {
         label: 'PSTS',
         initialValues: defaultValue.psts ? defaultValue.psts : [],
         elementType: elementType.FILTER,
-        equipmentTypes: [EquipmentType.TWO_WINDINGS_TRANSFORMER],
+        equipmentTypes: PSTS_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
