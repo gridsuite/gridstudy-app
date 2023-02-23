@@ -180,7 +180,7 @@ const DirectoryItemSelector = (props) => {
     );
 
     useEffect(() => {
-        if (openRef.current && studyUpdatedForce.eventData.headers) {
+        if (studyUpdatedForce.eventData.headers) {
             if (
                 Object.values(notificationType).includes(
                     studyUpdatedForce.eventData.headers['notificationType']
