@@ -24,17 +24,17 @@ import {
     ActivePowerAdornment,
     AmpereAdornment,
     gridItem,
-} from '../../../../dialogs/dialogUtils';
+} from '../../../../../dialogs/dialogUtils';
 import {
     REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
-} from '../../../../network/constants';
-import BooleanInput from '../../../rhf-inputs/boolean-input';
-import FloatInput from '../../../rhf-inputs/float-input';
-import SelectInput from '../../../rhf-inputs/select-input';
-import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
-import PhaseTapChangerPaneTaps from './phase-tap-changer-pane-taps';
+} from '../../../../../network/constants';
+import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
+import FloatInput from '../../../../rhf-inputs/float-input';
+import SelectInput from '../../../../rhf-inputs/select-input';
+import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
+import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { useCallback } from 'react';
 
 const PhaseTapChangerPane = ({
@@ -60,7 +60,7 @@ const PhaseTapChangerPane = ({
     });
 
     const phaseTapChangerEnabledField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${ENABLED}`}
             label="ConfigurePhaseTapChanger"
         />
@@ -76,7 +76,7 @@ const PhaseTapChangerPane = ({
     );
 
     const regulatingField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${REGULATING}`}
             label="Regulating"
             formProps={{
@@ -247,7 +247,7 @@ const PhaseTapChangerPane = ({
                         </Grid>
                     )}
 
-                <PhaseTapChangerPaneTaps
+                <PhaseTapChangerPaneSteps
                     disabled={!phaseTapChangerEnabledWatch}
                 />
             </Grid>
