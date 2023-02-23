@@ -19,9 +19,12 @@ import {
     NAD_INVALID_LOADFLOW_OPACITY,
 } from '../../utils/colors';
 import { equipments } from '../network/network-equipments';
+import makeStyles from '@mui/styles/makeStyles';
 
-export const LOADING_WIDTH = 150;
-export const LOADING_HEIGHT = 150;
+export const LOADING_WIDTH = 300;
+export const LOADING_HEIGHT = 300;
+export const MIN_WIDTH = 150;
+export const MIN_HEIGHT = 150;
 export const MAX_WIDTH_VOLTAGE_LEVEL = 800;
 export const MAX_HEIGHT_VOLTAGE_LEVEL = 700;
 export const MAX_WIDTH_SUBSTATION = 1200;
@@ -32,11 +35,24 @@ export const NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS = 200;
 
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
-export const MAP_BOTTOM_OFFSET = 80;
-export const BORDERS = 2; // we use content-size: border-box so this needs to be included..
+export const DEFAULT_WIDTH_VOLTAGE_LEVEL = 400;
+export const DEFAULT_HEIGHT_VOLTAGE_LEVEL = 400;
+export const DEFAULT_WIDTH_SUBSTATION = 700;
+export const DEFAULT_HEIGHT_SUBSTATION = 400;
+export const DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM = 400;
+export const DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM = 400;
 
-export const commonSldStyle = (theme, customStyle) => {
-    return {
+// Height (in pixels) reserved to allow elements that are in the bottom of the map
+// to not be hidden in normal mode (but they are still hidden in fullscreen mode)
+export const MAP_BOTTOM_OFFSET = 80;
+
+// Percentage of the diagram pane's total height that correspond to the minimum
+// height of opened diagrams : diagrams should not be smaller than 25% of the
+// diagram pane's height.
+export const DIAGRAM_MAP_RATIO_MIN_PERCENTAGE = 0.25;
+
+export const useDiagramStyles = makeStyles((theme) => ({
+    divDiagram: {
         '& svg': {
             // necessary because the default (inline-block) adds vertical space
             // to our otherwise pixel accurate computations (this makes a
@@ -45,6 +61,18 @@ export const commonSldStyle = (theme, customStyle) => {
             width: '100%',
             height: '100%',
         },
+        overflow: 'hidden',
+    },
+    divNetworkAreaDiagram: {
+        '& .nad-label-box': {
+            color: theme.palette.text.primary,
+            'font-family': theme.typography.fontFamily,
+        },
+        '& .nad-text-edges': {
+            stroke: theme.palette.text.primary,
+        },
+    },
+    divSingleLineDiagram: {
         '& polyline': {
             pointerEvents: 'none',
         },
@@ -56,58 +84,45 @@ export const commonSldStyle = (theme, customStyle) => {
             {
                 stroke: theme.palette.text.primary,
             },
-
         '& .sld-flash, .sld-lock': {
             stroke: 'none',
             fill: theme.palette.text.primary,
         },
-        overflow: 'hidden',
-        ...customStyle,
-    };
-};
-
-export const commonNadStyle = (theme, customStyle) => {
-    return {
-        '& svg': {
-            // necessary because the default (inline-block) adds vertical space
-            // to our otherwise pixel accurate computations (this makes a
-            // scrollbar appear in fullscreen mode)
-            display: 'block',
-            width: '100%',
-            height: '100%',
+        '& .arrow': {
+            fill: theme.palette.text.primary,
         },
-        '& .nad-label-box': {
-            color: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
+    },
+    divDiagramReadOnly: {
+        '& .sld-in .sld-label': {
+            display: 'none',
         },
-        '& .nad-text-edges': {
-            stroke: theme.palette.text.primary,
+        '& .sld-out .sld-label': {
+            display: 'none',
         },
-        overflow: 'hidden',
-        ...customStyle,
-    };
-};
-
-export const commonDiagramStyle = (theme, customStyle) => {
-    return {
-        divInvalid: {
-            '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle':
-                {
-                    opacity: INVALID_LOADFLOW_OPACITY,
-                },
-            '& .nad-edge-infos': {
-                opacity: NAD_INVALID_LOADFLOW_OPACITY,
-            },
+        '& .sld-arrow-in': {
+            display: 'none',
         },
-        paperBorders: {
-            borderLeft: '1px solid ' + theme.palette.action.disabled,
-            borderBottom:
-                '1px solid ' + theme.palette.action.disabledBackground,
-            borderRight: '1px solid ' + theme.palette.action.hover,
+        '& .sld-arrow-out': {
+            display: 'none',
         },
-        ...customStyle,
-    };
-};
+        '& .arrow': {
+            pointerEvents: 'none',
+        },
+    },
+    divDiagramInvalid: {
+        '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle': {
+            opacity: INVALID_LOADFLOW_OPACITY,
+        },
+        '& .nad-edge-infos': {
+            opacity: NAD_INVALID_LOADFLOW_OPACITY,
+        },
+    },
+    paperBorders: {
+        borderLeft: '1px solid ' + theme.palette.action.disabled,
+        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
+        borderRight: '1px solid ' + theme.palette.action.hover,
+    },
+}));
 
 export const ViewState = {
     PINNED: 'pinned',
@@ -214,55 +229,3 @@ export const useDiagram = () => {
 };
 
 export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
-
-// Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
-export const computePaperAndSvgSizesIfReady = (
-    isFullScreenActive,
-    svgType,
-    totalWidth,
-    totalHeight,
-    svgPreferredWidth,
-    svgPreferredHeight,
-    headerPreferredHeight
-) => {
-    if (svgPreferredWidth != null && headerPreferredHeight != null) {
-        let paperWidth, paperHeight, svgWidth, svgHeight;
-        if (isFullScreenActive) {
-            paperWidth = totalWidth;
-            paperHeight = totalHeight;
-            svgWidth = totalWidth - BORDERS;
-            svgHeight = totalHeight - headerPreferredHeight - BORDERS;
-        } else {
-            let tempMaxWidth, tempMaxHeight;
-            switch (svgType) {
-                case SvgType.VOLTAGE_LEVEL:
-                    tempMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
-                    tempMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
-                    break;
-                case SvgType.SUBSTATION:
-                    tempMaxWidth = MAX_WIDTH_SUBSTATION;
-                    tempMaxHeight = MAX_HEIGHT_SUBSTATION;
-                    break;
-                case SvgType.NETWORK_AREA_DIAGRAM:
-                    tempMaxWidth = MAX_WIDTH_NETWORK_AREA_DIAGRAM;
-                    tempMaxHeight = MAX_HEIGHT_NETWORK_AREA_DIAGRAM;
-                    break;
-                default:
-                    console.warn(
-                        'Unknown type in computePaperAndSvgSizesIfReady'
-                    );
-                    tempMaxWidth = LOADING_WIDTH;
-                    tempMaxHeight = LOADING_HEIGHT;
-            }
-            svgWidth = Math.min(svgPreferredWidth, totalWidth, tempMaxWidth);
-            svgHeight = Math.min(
-                svgPreferredHeight,
-                totalHeight - MAP_BOTTOM_OFFSET - headerPreferredHeight,
-                tempMaxHeight
-            );
-            paperWidth = svgWidth + BORDERS;
-            paperHeight = svgHeight + headerPreferredHeight + BORDERS;
-        }
-        return { paperWidth, paperHeight, svgWidth, svgHeight };
-    }
-};

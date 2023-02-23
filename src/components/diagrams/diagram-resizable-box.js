@@ -11,7 +11,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import ResizeHandleIcon from '@mui/icons-material/ChevronRight';
-import { LOADING_HEIGHT, LOADING_WIDTH } from './diagram-common';
+import {
+    MIN_HEIGHT,
+    MIN_WIDTH,
+    LOADING_HEIGHT,
+    LOADING_WIDTH,
+} from './diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     resizable: {
@@ -59,7 +64,7 @@ const DiagramResizableBox = (props) => {
             style={{ display: props.hide ? 'none' : undefined }}
             width={props.width}
             height={props.height}
-            minConstraints={[LOADING_WIDTH, LOADING_HEIGHT]}
+            minConstraints={[MIN_WIDTH, MIN_HEIGHT]}
             axis={props.disableResize ? 'none' : undefined}
             resizeHandles={props?.align === 'right' ? ['sw'] : undefined}
             className={clsx(classes.resizable, {
