@@ -28,8 +28,8 @@ import { TableReadOnlyInput } from '../refactor/rhf-inputs/table-inputs/table-re
 import CheckboxInput from '../refactor/rhf-inputs/booleans/checkbox-input';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../refactor/utils/field-constants';
-import ErrorInput from "../refactor/rhf-inputs/error-inputs/error-input";
-import FieldErrorAlert from "../refactor/rhf-inputs/error-inputs/field-error-alert";
+import ErrorInput from '../refactor/rhf-inputs/error-inputs/error-input';
+import FieldErrorAlert from '../refactor/rhf-inputs/error-inputs/field-error-alert';
 
 function MultiCheckbox({
     arrayFormName,
@@ -265,7 +265,7 @@ const DndTable = ({
                         )}
                     </Droppable>
                 </DragDropContext>
-                <ErrorInput name={arrayFormName} InputField={FieldErrorAlert}/>
+                <ErrorInput name={arrayFormName} InputField={FieldErrorAlert} />
             </Grid>
             <DndTableButtons
                 arrayFormName={arrayFormName}
