@@ -33,13 +33,13 @@ import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
 } from './line-split-or-attach-utils';
-import VoltageLevelCreationDialogOld from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { MODIFICATION_TYPE } from '../network/constants';
+import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
 
 /**
  * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.
@@ -455,7 +455,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 {gridItem(newLine2NameField, 6)}
             </Grid>
             {voltageLevelDialogOpen && (
-                <VoltageLevelCreationDialogOld
+                <VoltageLevelCreationDialog
                     open={true}
                     onClose={onVoltageLevelDialogClose}
                     currentNodeUuid={currentNodeUuid}

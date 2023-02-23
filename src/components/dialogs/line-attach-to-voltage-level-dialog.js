@@ -34,12 +34,12 @@ import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
 } from './line-split-or-attach-utils';
-import VoltageLevelCreationDialogOld from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import { MODIFICATION_TYPE } from '../network/constants';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
+import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.
@@ -571,7 +571,7 @@ const LineAttachToVoltageLevelDialog = ({
                     {gridItem(newLine2NameField, 6)}
                 </Grid>
                 {voltageLevelDialogOpen && (
-                    <VoltageLevelCreationDialogOld
+                    <VoltageLevelCreationDialog
                         open={true}
                         onClose={onVoltageLevelDialogClose}
                         currentNodeUuid={currentNodeUuid}

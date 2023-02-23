@@ -22,7 +22,9 @@ export const Connectivity = ({ id, index }) => {
     useEffect(() => {
         if (watchBusBarSections) {
             setbusBarSections(
-                watchBusBarSections?.map((busBarSection) => busBarSection[ID])
+                watchBusBarSections?.map(
+                    (busBarSection) => busBarSection[ID]
+                ) ?? []
             );
         }
     }, [watchBusBarSections, setbusBarSections]);
