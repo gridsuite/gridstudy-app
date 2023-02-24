@@ -60,6 +60,7 @@ import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { isNodeReadOnly } from '../graph/util/model-functions';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -659,10 +660,6 @@ const NetworkTable = (props) => {
             setLineEdit({});
         }
         function commitChanges(rowData) {
-            function capitaliseFirst(str) {
-                return str.charAt(0).toUpperCase() + str.slice(1);
-            }
-
             if (Object.values(lineEdit.newValues).length === 0) {
                 // nothing to commit => abort
                 resetChanges();
@@ -671,11 +668,8 @@ const NetworkTable = (props) => {
             // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
             // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
             let groovyCr =
-                'equipment = network.get' +
-                capitaliseFirst(
-                    TABLES_DEFINITION_INDEXES.get(tabIndex)
-                        .modifiableEquipmentType
-                ) +
+                'equipment = network.' +
+                TABLES_DEFINITION_INDEXES.get(tabIndex).groovyEquipmentGetter +
                 "('" +
                 lineEdit.id.replace(/'/g, "\\'") +
                 "')\n";
@@ -702,7 +696,7 @@ const NetworkTable = (props) => {
             });
 
             Promise.resolve(
-                lineEdit.equipmentType === 'load'
+                lineEdit.equipmentType === EQUIPMENT_TYPES.LOAD.type
                     ? modifyLoad(
                           props.studyUuid,
                           props.currentNode?.id,
@@ -716,7 +710,7 @@ const NetworkTable = (props) => {
                           false,
                           undefined
                       )
-                    : lineEdit.equipmentType === 'generator'
+                    : lineEdit.equipmentType === EQUIPMENT_TYPES.GENERATOR.type
                     ? modifyGenerator(
                           props.studyUuid,
                           props.currentNode?.id,

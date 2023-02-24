@@ -27,6 +27,7 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useExpandableValues } from './inputs/use-expandable-values';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 const validateStringPair = (values) => {
     const res = new Map();
@@ -274,7 +275,7 @@ const SubstationCreationDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'SUBSTATION'}
+                equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />

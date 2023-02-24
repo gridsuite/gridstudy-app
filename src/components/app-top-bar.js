@@ -6,7 +6,6 @@
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    EQUIPMENT_TYPE,
     equipmentStyles,
     LIGHT_THEME,
     logout,
@@ -56,11 +55,12 @@ import {
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import { SvgType, useDiagram } from './diagrams/diagram-common';
+import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './util/search-matching-equipments';
+import { EQUIPMENT_TYPES } from './util/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -90,7 +90,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
     const enterOnSubstationCB = useCallback(
         (e, element) => {
             const substationId =
-                element.type === EQUIPMENT_TYPE.SUBSTATION.name
+                element.type === EQUIPMENT_TYPES.SUBSTATION.type
                     ? element.id
                     : network.getVoltageLevel(element.id).substationId;
             dispatch(centerOnSubstation(substationId));
@@ -102,7 +102,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const openNetworkAreaDiagramCB = useCallback(
         (e, element) => {
-            dispatch(openDiagram(element.id, SvgType.NETWORK_AREA_DIAGRAM));
+            dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
             props.onClose && props.onClose();
             e.stopPropagation();
         },
@@ -110,13 +110,13 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 
     if (
-        element.type === EQUIPMENT_TYPE.SUBSTATION.name ||
-        element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
+        element.type === EQUIPMENT_TYPES.SUBSTATION.type ||
+        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
     )
         return (
             network && (
                 <>
-                    {element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name && (
+                    {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type && (
                         <IconButton
                             onClick={(e) =>
                                 openNetworkAreaDiagramCB(e, element)
@@ -245,12 +245,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
-            if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
-                openDiagramView(optionInfos.id, SvgType.SUBSTATION);
+            if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION.type) {
+                openDiagramView(optionInfos.id, DiagramType.SUBSTATION);
             } else {
                 openDiagramView(
                     optionInfos.voltageLevelId,
-                    SvgType.VOLTAGE_LEVEL
+                    DiagramType.VOLTAGE_LEVEL
                 );
             }
         },
