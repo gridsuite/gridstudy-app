@@ -82,6 +82,7 @@ import {
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    STOP_DIAGRAM_BLINK,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -677,6 +678,7 @@ export const reducer = createReducer(initialState, {
                             diagramStates[diagramToOpenIndex].svgType +
                             ')'
                     );
+                    diagramStates[diagramToOpenIndex].needsToBlink = true;
                 }
             } else {
                 // We minimize all the other OPENED SLD.
@@ -809,6 +811,15 @@ export const reducer = createReducer(initialState, {
         state.diagramStates = state.diagramStates.filter(
             (diagram) => !idsToClose.has(diagram.id)
         );
+    },
+    [STOP_DIAGRAM_BLINK]: (state) => {
+        let diagramStates = state.diagramStates;
+        diagramStates.forEach((diagram) => {
+            if (diagram.needsToBlink) {
+                diagram.needsToBlink = undefined;
+            }
+        });
+        state.diagramStates = diagramStates;
     },
     [RESET_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
         state.networkAreaDiagramDepth = 0;

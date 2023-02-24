@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
@@ -14,6 +14,7 @@ import {
     incrementNetworkAreaDiagramDepth,
     resetNetworkAreaDiagramDepth,
     setFullScreenDiagram,
+    stopDiagramBlink,
 } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import AlertInvalidNode from '../util/alert-invalid-node';
@@ -52,6 +53,28 @@ const Diagram = (props) => {
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
+
+    /**
+     * BLINKING HEADER MONITORING
+     */
+
+    const diagramStates = useSelector((state) => state.diagramStates);
+    const headerRef = useRef();
+
+    useEffect(() => {
+        if (diagramStates) {
+            const thisDiagramState = diagramStates.find(
+                (diagram) =>
+                    diagram.svgType === props.svgType &&
+                    diagram.id === props.diagramId
+            );
+
+            if (thisDiagramState?.needsToBlink) {
+                dispatch(stopDiagramBlink());
+                headerRef.current.makeBlink();
+            }
+        }
+    }, [diagramStates, dispatch, props.svgType, props.diagramId]);
 
     /**
      * DIAGRAM CONTROL HANDLERS
@@ -118,6 +141,7 @@ const Diagram = (props) => {
                 }}
             >
                 <DiagramHeader
+                    ref={headerRef}
                     diagramTitle={props.diagramTitle}
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}

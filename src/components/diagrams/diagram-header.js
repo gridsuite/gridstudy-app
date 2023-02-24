@@ -4,7 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback } from 'react';
+import React, {
+    useCallback,
+    useState,
+    forwardRef,
+    useImperativeHandle,
+} from 'react';
 import Box from '@mui/material/Box';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import IconButton from '@mui/material/IconButton';
@@ -14,6 +19,9 @@ import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
+import clsx from 'clsx';
+
+const BLINK_LENGTH_MS = 3000;
 
 const useStyles = makeStyles((theme) => ({
     header: {
@@ -22,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         wordBreak: 'break-all',
         backgroundColor: theme.palette.background.default,
+        borderBottom: 'solid 1px',
+        borderBottomColor:
+            theme.palette.mode === 'light'
+                ? theme.palette.action.selected
+                : 'rgba(0,0,0,0)',
     },
     actionIcon: {
         padding: 0,
@@ -36,9 +49,23 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
     },
+    blink: {
+        animation: '$blink ' + BLINK_LENGTH_MS + 'ms',
+    },
+    '@keyframes blink': {
+        '0%, 10%': {
+            backgroundColor:
+                theme.palette.mode === 'light'
+                    ? theme.palette.action.disabled
+                    : theme.palette.action.selected,
+        },
+        '100%': {
+            backgroundColor: theme.palette.background.default,
+        },
+    },
 }));
 
-const DiagramHeader = (props) => {
+const DiagramHeader = forwardRef((props, ref) => {
     const classes = useStyles();
 
     const { onMinimize, onTogglePin, onClose } = props;
@@ -52,8 +79,40 @@ const DiagramHeader = (props) => {
     );
     const handleClose = useCallback(() => onClose && onClose(), [onClose]);
 
+    /**
+     * MANUAL BLINKING SYSTEM
+     */
+
+    const [blinking, setBlinking] = useState(false);
+
+    const triggerBlink = useCallback(() => {
+        if (!blinking) {
+            setBlinking(true);
+            setTimeout(() => {
+                setBlinking(false);
+            }, BLINK_LENGTH_MS);
+        }
+    }, [blinking]);
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            makeBlink: triggerBlink,
+        }),
+        // Note: triggerBlink doesn't change
+        [triggerBlink]
+    );
+
+    /**
+     * RENDER
+     */
+
     return (
-        <Box className={classes.header}>
+        <Box
+            className={clsx(classes.header, {
+                [classes.blink]: blinking,
+            })}
+        >
             <OverflowableText
                 style={{ flexGrow: '1' }}
                 text={props.diagramTitle}
@@ -101,7 +160,7 @@ const DiagramHeader = (props) => {
             </Box>
         </Box>
     );
-};
+});
 
 DiagramHeader.defaultProps = {
     showMinimizeControl: false,
