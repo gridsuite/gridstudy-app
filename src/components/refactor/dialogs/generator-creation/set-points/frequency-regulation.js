@@ -10,7 +10,7 @@ import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from '../../../utils/field-constants';
 import React from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
-import BooleanInput from '../../../rhf-inputs/booleans/boolean-input';
+import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
 
 const FrequencyRegulation = () => {
     const isFrequencyRegulationOn = useWatch({
@@ -18,7 +18,7 @@ const FrequencyRegulation = () => {
     });
 
     const frequencyRegulationField = (
-        <BooleanInput
+        <SwitchInput
             name={FREQUENCY_REGULATION}
             label={'FrequencyRegulation'}
         />
