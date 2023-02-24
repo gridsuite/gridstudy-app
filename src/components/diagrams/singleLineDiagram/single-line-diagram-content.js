@@ -27,7 +27,7 @@ import {
     MAX_WIDTH_SUBSTATION,
     MAX_WIDTH_VOLTAGE_LEVEL,
     NoSvg,
-    SvgType,
+    DiagramType,
     useDiagram,
     useDiagramStyles,
 } from '../diagram-common';
@@ -129,7 +129,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
             if (!network) {
                 return;
             }
-            openDiagramView(id, SvgType.VOLTAGE_LEVEL);
+            openDiagramView(id, DiagramType.VOLTAGE_LEVEL);
         },
         [network, openDiagramView]
     );
@@ -254,12 +254,12 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                 MIN_HEIGHT, // minHeight
 
                 // maxWidth
-                props.svgType === SvgType.VOLTAGE_LEVEL
+                props.svgType === DiagramType.VOLTAGE_LEVEL
                     ? MAX_WIDTH_VOLTAGE_LEVEL
                     : MAX_WIDTH_SUBSTATION,
 
                 // maxHeight
-                props.svgType === SvgType.VOLTAGE_LEVEL
+                props.svgType === DiagramType.VOLTAGE_LEVEL
                     ? MAX_HEIGHT_VOLTAGE_LEVEL
                     : MAX_HEIGHT_SUBSTATION,
 
