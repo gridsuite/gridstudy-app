@@ -628,6 +628,11 @@ const TwoWindingsTransformerCreationDialog = ({
                 titleId="CreateTwoWindingsTransformer"
                 subtitle={tabs}
                 searchCopy={searchCopy}
+                PaperProps={{
+                    sx: {
+                        height: '95vh',
+                    },
+                }}
                 {...dialogProps}
             >
                 <Box
