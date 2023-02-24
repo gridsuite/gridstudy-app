@@ -18,7 +18,7 @@ import {
 import { useIntl } from 'react-intl';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import {
-    SvgType,
+    DiagramType,
     useDiagram,
     useDiagramStyles,
     MIN_WIDTH,
@@ -74,7 +74,7 @@ const Diagram = (props) => {
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagram(null));
         closeDiagramView(props.diagramId, props.svgType);
-        if (props.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+        if (props.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             dispatch(resetNetworkAreaDiagramDepth());
         }
     };
@@ -127,7 +127,7 @@ const Diagram = (props) => {
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}
                     showTogglePinControl={
-                        props.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                        props.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
                     }
                     onTogglePin={onTogglePinHandler}
                     pinned={props.pinned}
@@ -144,7 +144,8 @@ const Diagram = (props) => {
                         {props.children}
                         <DiagramFooter
                             showCounterControls={
-                                props.svgType === SvgType.NETWORK_AREA_DIAGRAM
+                                props.svgType ===
+                                DiagramType.NETWORK_AREA_DIAGRAM
                             }
                             counterText={intl.formatMessage({
                                 id: 'depth',

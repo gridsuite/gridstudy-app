@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import {
     CURRENT_LIMITER_REGULATING_VALUE,
@@ -36,6 +35,7 @@ import SelectInput from '../../../../rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { useCallback } from 'react';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -159,7 +159,7 @@ const PhaseTapChangerPane = ({
             id={id}
             disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
             equipmentSectionTypeDefaultValue={
-                EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
             }
             studyUuid={studyUuid}
             currentNodeUuid={currentNodeUuid}

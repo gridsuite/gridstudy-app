@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import {
     ENABLED,
@@ -27,6 +26,7 @@ import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import { REGULATION_TYPES, SIDE } from '../../../../../network/constants';
 import SelectInput from '../../../../rhf-inputs/select-input';
 import { useCallback } from 'react';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
@@ -140,7 +140,7 @@ const RatioTapChangerPane = ({
             id={id}
             disabled={!ratioTapChangerEnabledWatcher || !regulatingWatch}
             equipmentSectionTypeDefaultValue={
-                EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
             }
             studyUuid={studyUuid}
             currentNodeUuid={currentNodeUuid}

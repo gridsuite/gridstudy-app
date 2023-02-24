@@ -38,8 +38,8 @@ import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import { MODIFICATION_TYPE } from '../network/constants';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
+import { MODIFICATION_TYPES } from '../util/modification-type';
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.
@@ -385,7 +385,7 @@ const LineAttachToVoltageLevelDialog = ({
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
-                    type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
+                    type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
@@ -443,7 +443,7 @@ const LineAttachToVoltageLevelDialog = ({
         ) => {
             return new Promise(() => {
                 const preparedLine = {
-                    type: MODIFICATION_TYPE.LINE_CREATION,
+                    type: MODIFICATION_TYPES.LINE_CREATION.type,
                     equipmentId: lineId,
                     equipmentName: lineName,
                     seriesResistance: seriesResistance,
