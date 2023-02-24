@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
-    const { seriesNames } = result;
+    const { timeseriesMetadatas } = result;
     const classes = useStyles();
 
     // tab id is auto increase and reset to zero when there is any tab
@@ -143,7 +143,7 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
                 >
                     <DynamicSimulationResultChart
                         groupId={`${tab.id}`}
-                        seriesNames={seriesNames}
+                        timeseriesMetadatas={timeseriesMetadatas}
                         selected={selectedIndex === index}
                         loadTimeSeries={loadTimeSeries}
                     />
@@ -155,7 +155,11 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
 
 DynamicSimulationResultChartTabs.propTypes = {
     result: PropTypes.shape({
-        seriesNames: PropTypes.arrayOf(PropTypes.string.isRequired),
+        timeseriesMetadatas: PropTypes.arrayOf(
+            PropTypes.shape({
+                name: PropTypes.string.isRequired,
+            })
+        ),
     }),
     loadTimeSeries: PropTypes.func,
 };

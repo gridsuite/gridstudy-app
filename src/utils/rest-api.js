@@ -1285,8 +1285,8 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
         currentNodeUuid
     );
     return Promise.all([timeseriesMetadataPromise, statusPromise]).then(
-        ([timeseriesMetadata, status]) => ({
-            timeseriesMetadata,
+        ([timeseriesMetadatas, status]) => ({
+            timeseriesMetadatas,
             status,
         })
     );

@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 const DynamicSimulationResultChart = ({
     groupId,
-    seriesNames,
+    timeseriesMetadatas,
     selected,
     loadTimeSeries,
 }) => {
@@ -166,11 +166,11 @@ const DynamicSimulationResultChart = ({
     );
 
     const items = useMemo(() => {
-        return seriesNames.map((name, index) => ({
+        return timeseriesMetadatas.map((elem, index) => ({
             id: index,
-            label: name,
+            label: elem.name,
         }));
-    }, [seriesNames]);
+    }, [timeseriesMetadatas]);
 
     const handleShowSeriesList = useCallback(() => {
         setShowSeriesList((prev) => !prev);
@@ -400,7 +400,11 @@ const DynamicSimulationResultChart = ({
 
 DynamicSimulationResultChart.propTypes = {
     groupId: PropTypes.string.isRequired,
-    seriesNames: PropTypes.arrayOf(PropTypes.string.isRequired),
+    timeseriesMetadatas: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string.isRequired,
+        })
+    ),
     selected: PropTypes.bool.isRequired,
     loadTimeSeries: PropTypes.func,
 };

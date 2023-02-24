@@ -32,7 +32,7 @@ const DynamicSimulationResult = ({ result, loadTimeSeries }) => {
                 {result && dynamicSimulationNotif && (
                     <DynamicSimulationResultChartTabs
                         result={{
-                            seriesNames: result.seriesNames,
+                            timeseriesMetadatas: result.timeseriesMetadatas,
                         }}
                         loadTimeSeries={loadTimeSeries}
                     />
@@ -45,7 +45,9 @@ const DynamicSimulationResult = ({ result, loadTimeSeries }) => {
 DynamicSimulationResult.propTypes = {
     result: PropTypes.shape({
         status: PropTypes.string,
-        seriesNames: PropTypes.arrayOf(PropTypes.string.isRequired),
+        timeseriesMetadatas: PropTypes.arrayOf(
+            PropTypes.shape({ name: PropTypes.string.isRequired })
+        ),
     }),
     loadTimeSeries: PropTypes.func,
 };

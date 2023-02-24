@@ -26,10 +26,8 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
         null,
         (res) => ({
             status: res.status,
-            timeseries: Array(res.timeseriesMetadata.metadatas.length),
-            seriesNames: res.timeseriesMetadata.metadatas.map(
-                (elem) => elem.name
-            ),
+            timeseries: Array(res.timeseriesMetadatas.length),
+            timeseriesMetadatas: res.timeseriesMetadatas,
         })
     );
 
@@ -56,7 +54,8 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
 
                 const timeSeriesNamesToLoad = selectedIndexesToLoad.map(
                     (indexValue) =>
-                        dynamicSimulationResult.seriesNames[indexValue]
+                        dynamicSimulationResult.timeseriesMetadatas[indexValue]
+                            .name
                 );
 
                 return fetchDynamicSimulationResultTimeSeries(
@@ -68,8 +67,9 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
                         // insert one by one newly loaded timeserie into the cache
                         for (const newSeries of newlyLoadedTimeSeries) {
                             dynamicSimulationResult.timeseries.splice(
-                                dynamicSimulationResult.seriesNames.indexOf(
-                                    newSeries.metadata.name
+                                dynamicSimulationResult.timeseriesMetadatas.findIndex(
+                                    (elem) =>
+                                        elem.name === newSeries.metadata.name
                                 ),
                                 1,
                                 newSeries
