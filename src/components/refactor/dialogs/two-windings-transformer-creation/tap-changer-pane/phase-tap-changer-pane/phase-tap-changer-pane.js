@@ -102,7 +102,7 @@ const PhaseTapChangerPane = ({
     const regulationTypeField = (
         <SelectInput
             name={`${id}.${REGULATION_TYPE}`}
-            label={'RegulationType'}
+            label={'RegulationTypeText'}
             options={Object.values(REGULATION_TYPES)}
             disabled={!isVoltageRegulationOn()}
             size={'small'}

@@ -458,15 +458,12 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const computeRegulatingTerminalType = (
-        tapChangerValue,
-        currentEquipmentId
-    ) => {
+    const computeRegulatingTerminalType = (tapChangerValue) => {
         if (tapChangerValue?.[EQUIPMENT]?.type) {
             return tapChangerValue?.[EQUIPMENT]?.type;
         }
 
-        if (currentEquipmentId === tapChangerValue?.[EQUIPMENT]?.id) {
+        if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
             return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
         }
 
@@ -522,8 +519,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         characteristics[EQUIPMENT_ID]
                     ),
                     regulatingTerminalType: computeRegulatingTerminalType(
-                        ratioTapChangerFormValues,
-                        characteristics[EQUIPMENT_ID]
+                        ratioTapChangerFormValues
                     ),
                     regulatingTerminalVlId: computeTapTerminalVlId(
                         ratioTapChangerFormValues,
@@ -546,8 +542,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         characteristics[EQUIPMENT_ID]
                     ),
                     regulatingTerminalType: computeRegulatingTerminalType(
-                        phaseTapChangerFormValues,
-                        characteristics[EQUIPMENT_ID]
+                        phaseTapChangerFormValues
                     ),
                     regulatingTerminalVlId: computeTapTerminalVlId(
                         phaseTapChangerFormValues,
@@ -557,7 +552,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...twt[PHASE_TAP_CHANGER],
                 };
             }
-
             createTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,
