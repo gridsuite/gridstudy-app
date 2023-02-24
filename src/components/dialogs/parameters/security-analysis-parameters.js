@@ -26,35 +26,35 @@ export const SecurityAnalysisParameters = ({
     ]);
 
     return (
-        <Grid container className={classes.grid}>
-            <Grid container key="secuAnalysisProvider">
+        <Grid container style={{flexGrow: 1}}>
+            <Grid container key="secuAnalysisProvider" classes={classes.grid}>
                 <DropDown
                     value={provider}
                     label="Provider"
                     values={providers}
                     callback={updateProviderCallback}
+                    style={{flexGrow: 1}}
                 />
 
-                <Grid container paddingTop={1}>
+                <Grid container paddingTop={1} style={{flexGrow: 1}}>
                     <LineSeparator />
                 </Grid>
-
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetProvider}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
+            </Grid>
+            <Grid
+                container
+                className={
+                    classes.controlItem + ' ' + classes.marginTopButton
+                }
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetProvider}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
             </Grid>
         </Grid>
     );

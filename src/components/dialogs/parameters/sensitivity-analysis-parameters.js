@@ -26,8 +26,8 @@ export const SensitivityAnalysisParameters = ({
     ]);
 
     return (
-        <Grid container className={classes.grid}>
-            <Grid container key="sensiAnalysisProvider">
+        <Grid container style={{flexGrow: 1}}>
+            <Grid container key="sensiAnalysisProvider" classes={classes.grid}>
                 <DropDown
                     value={provider}
                     label="Provider"
@@ -35,26 +35,25 @@ export const SensitivityAnalysisParameters = ({
                     callback={updateProviderCallback}
                 />
 
-                <Grid container paddingTop={1}>
+                <Grid container paddingTop={1} style={{flexGrow: 1}}>
                     <LineSeparator />
                 </Grid>
-
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetProvider}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
+            </Grid>
+            <Grid
+                container
+                className={
+                    classes.controlItem + ' ' + classes.marginTopButton
+                }
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetProvider}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
             </Grid>
         </Grid>
     );
