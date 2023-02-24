@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box } from '@mui/material';
 import {
@@ -48,6 +48,7 @@ import {
     TARGET_V,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -463,7 +464,7 @@ const TwoWindingsTransformerCreationDialog = ({
         }
 
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
-            return EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name;
+            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
         }
 
         return undefined;
@@ -674,7 +675,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name}
+                    equipmentType={
+                        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
+                    }
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

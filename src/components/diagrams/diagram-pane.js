@@ -27,7 +27,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import {
     useDiagram,
     ViewState,
-    SvgType,
+    DiagramType,
     DEFAULT_WIDTH_SUBSTATION,
     DEFAULT_WIDTH_VOLTAGE_LEVEL,
     DEFAULT_HEIGHT_SUBSTATION,
@@ -148,7 +148,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state: state,
                     name: label,
                     svgUrl: svgUrl,
-                    svgType: SvgType.SUBSTATION,
+                    svgType: DiagramType.SUBSTATION,
                 };
             }
 
@@ -171,7 +171,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state: state,
                     name: label,
                     svgUrl: svgUrl,
-                    svgType: SvgType.VOLTAGE_LEVEL,
+                    svgType: DiagramType.VOLTAGE_LEVEL,
                     substationId: substation?.id,
                 };
             }
@@ -202,22 +202,24 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     state: state,
                     name: nadTitle,
                     svgUrl: svgUrl,
-                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 };
             }
 
             if (!network) return;
-            if (diagramState.svgType === SvgType.VOLTAGE_LEVEL) {
+            if (diagramState.svgType === DiagramType.VOLTAGE_LEVEL) {
                 return createVoltageLevelDiagramView(
                     diagramState.id,
                     diagramState.state
                 );
-            } else if (diagramState.svgType === SvgType.SUBSTATION) {
+            } else if (diagramState.svgType === DiagramType.SUBSTATION) {
                 return createSubstationDiagramView(
                     diagramState.id,
                     diagramState.state
                 );
-            } else if (diagramState.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            } else if (
+                diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+            ) {
                 return createNetworkAreaDiagramView(
                     diagramState.ids,
                     diagramState.state,
@@ -306,7 +308,7 @@ export function DiagramPane({
         let networkAreaViewState = ViewState.OPENED;
 
         diagramStates.forEach((diagramState) => {
-            if (diagramState.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 networkAreaIds.push(diagramState.id);
                 networkAreaViewState = diagramState.state; // They should all be the same value
             } else {
@@ -328,7 +330,7 @@ export function DiagramPane({
             let networkAreaDiagramView = createView({
                 ids: networkAreaIds,
                 state: networkAreaViewState,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 depth: networkAreaDiagramDepth,
             });
 
@@ -340,7 +342,7 @@ export function DiagramPane({
                     align: 'right',
                 });
             } else {
-                closeDiagramView(null, SvgType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
+                closeDiagramView(null, DiagramType.NETWORK_AREA_DIAGRAM); // In this case, the ID is irrelevant
             }
         }
         setViews(diagramViews);
@@ -398,7 +400,7 @@ export function DiagramPane({
                 .find(
                     (diagramView) =>
                         diagramView.id === id &&
-                        diagramView.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                        diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
                 )
                 ?.ref?.current?.reloadSvg();
         } else {
@@ -496,11 +498,11 @@ export function DiagramPane({
 
     const getDefaultHeightByDiagramType = (diagramType) => {
         switch (diagramType) {
-            case SvgType.SUBSTATION:
+            case DiagramType.SUBSTATION:
                 return DEFAULT_HEIGHT_SUBSTATION;
-            case SvgType.VOLTAGE_LEVEL:
+            case DiagramType.VOLTAGE_LEVEL:
                 return DEFAULT_HEIGHT_VOLTAGE_LEVEL;
-            case SvgType.NETWORK_AREA_DIAGRAM:
+            case DiagramType.NETWORK_AREA_DIAGRAM:
                 return DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM;
             default:
                 console.warn('Unknown diagram type !');
@@ -510,11 +512,11 @@ export function DiagramPane({
 
     const getDefaultWidthByDiagramType = (diagramType) => {
         switch (diagramType) {
-            case SvgType.SUBSTATION:
+            case DiagramType.SUBSTATION:
                 return DEFAULT_WIDTH_SUBSTATION;
-            case SvgType.VOLTAGE_LEVEL:
+            case DiagramType.VOLTAGE_LEVEL:
                 return DEFAULT_WIDTH_VOLTAGE_LEVEL;
-            case SvgType.NETWORK_AREA_DIAGRAM:
+            case DiagramType.NETWORK_AREA_DIAGRAM:
                 return DEFAULT_WIDTH_NETWORK_AREA_DIAGRAM;
             default:
                 console.warn('Unknown diagram type !');
@@ -560,8 +562,9 @@ export function DiagramPane({
                 .filter(
                     (diagram) =>
                         svgType === diagram.svgType ||
-                        (svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
-                            diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM)
+                        (svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
+                            diagram.svgType !==
+                                DiagramType.NETWORK_AREA_DIAGRAM)
                 )
                 .filter((diagram) =>
                     diagramContentSizes.has(diagram.svgType + diagram.id)
@@ -729,9 +732,9 @@ export function DiagramPane({
                                 fullscreenHeight={height}
                             >
                                 {(diagramView.svgType ===
-                                    SvgType.VOLTAGE_LEVEL ||
+                                    DiagramType.VOLTAGE_LEVEL ||
                                     diagramView.svgType ===
-                                        SvgType.SUBSTATION) && (
+                                        DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
                                         ref={diagramView.ref}
                                         loadFlowStatus={loadFlowStatus}
@@ -747,7 +750,7 @@ export function DiagramPane({
                                     />
                                 )}
                                 {diagramView.svgType ===
-                                    SvgType.NETWORK_AREA_DIAGRAM && (
+                                    DiagramType.NETWORK_AREA_DIAGRAM && (
                                     <NetworkAreaDiagramContent
                                         ref={diagramView.ref}
                                         loadFlowStatus={loadFlowStatus}
@@ -773,7 +776,7 @@ export function DiagramPane({
                                 key={diagramView.svgType + diagramView.id}
                                 icon={
                                     diagramView.svgType ===
-                                    SvgType.NETWORK_AREA_DIAGRAM ? (
+                                    DiagramType.NETWORK_AREA_DIAGRAM ? (
                                         <>
                                             <ArrowUpwardIcon />
                                             <TimelineIcon />
