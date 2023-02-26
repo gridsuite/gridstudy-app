@@ -9,30 +9,19 @@ import Grid from '@mui/material/Grid';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    SUSCEPTANCE_PER_SECTION,
-    CHARACTERISTICS_CHOICES,
-    CHARACTERISTICS_CHOICE,
-    Q_AT_NOMINAL_V,
-    SHUNT_COMPENSATOR_TYPE,
-    SHUNT_COMPENSATOR_TYPES,
 } from 'components/refactor/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import { useWatch } from 'react-hook-form';
+
 import {
     filledTextField,
     gridItem,
     GridSection,
-    SusceptanceAdornment,
-    ReactivePowerAdornment,
 } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
-import FloatInput from 'components/refactor/rhf-inputs/float-input';
-import RadioInput from 'components/refactor/rhf-inputs/radio-input';
-import EnumInput from 'components/refactor/rhf-inputs/enum-input';
-import { Box } from '@mui/material';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
+import { CharacteristicsForm } from './characteristics-pane/characteristics-form';
 
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
@@ -64,21 +53,6 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
         />
     );
 
-    const reactivePowerControlField = (
-        <RadioInput
-            name={CHARACTERISTICS_CHOICE}
-            possibleValues={Object.values(CHARACTERISTICS_CHOICES)}
-        />
-    );
-
-    const susceptancePerSectionField = (
-        <FloatInput
-            name={SUSCEPTANCE_PER_SECTION}
-            label={'ShuntSusceptancePerSection'}
-            adornment={SusceptanceAdornment}
-        />
-    );
-
     const connectivityForm = (
         <ConnectivityForm
             withPosition={true}
@@ -88,26 +62,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
         />
     );
 
-    const reactiveNominalPower = (
-        <FloatInput
-            name={Q_AT_NOMINAL_V}
-            label={'QatNominalV'}
-            adornment={ReactivePowerAdornment}
-        />
-    );
-
-    const reactiveNominalPowerType = (
-        <EnumInput
-            options={Object.values(SHUNT_COMPENSATOR_TYPES)}
-            name={SHUNT_COMPENSATOR_TYPE}
-            label={'Type'}
-            size={'small'}
-        />
-    );
-
-    const reactivePowerControlChoice = useWatch({
-        name: CHARACTERISTICS_CHOICE,
-    });
+    const characteristicsForm = <CharacteristicsForm />;
 
     return (
         <>
@@ -121,17 +76,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
             </Grid>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {gridItem(reactivePowerControlField, 12)}
-                {reactivePowerControlChoice ===
-                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id &&
-                    gridItem(susceptancePerSectionField, 4)}
-                {reactivePowerControlChoice ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
-                    gridItem(reactiveNominalPowerType, 4)}
-                <Box sx={{ width: '100%' }} />
-                {reactivePowerControlChoice ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
-                    gridItem(reactiveNominalPower, 4)}
+                {gridItem(characteristicsForm, 12)}
             </Grid>
         </>
     );
