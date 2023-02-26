@@ -59,6 +59,7 @@ import {
 } from './short-circuit-parameters';
 import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
+import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -373,20 +374,24 @@ export function useParameterState(paramName) {
     return [paramLocalState, handleChangeParamLocalState];
 }
 
-const sldParamsTabIndex = 0;
-const mapParamsTabIndex = 1;
-const lfParamsTabIndex = 2;
-const securityAnalysisParamsTabIndex = 3;
-const sensitivityAnalysisParamsTabIndex = 4;
-const shortCircuitParamsTabIndex = 5;
-const advancedParamsTabIndex = 6;
+const TAB_VALUES = {
+    sldParamsTabValue: 'SingleLineDiagram',
+    mapParamsTabValue: 'Map',
+    lfParamsTabValue: 'LoadFlow',
+    securityAnalysisParamsTabValue: 'SecurityAnalysis',
+    sensitivityAnalysisParamsTabValue: 'SensitivityAnalysis',
+    shortCircuitParamsTabValue: 'ShortCircuit',
+    advancedParamsTabValue: 'Advanced',
+};
 
 const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const classes = useStyles();
 
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabValue, setTabValue] = useState(TAB_VALUES.sldParamsTabValue);
 
     const studyUuid = useSelector((state) => state.studyUuid);
+
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
@@ -439,6 +444,19 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         );
     }
 
+    useEffect(() => {
+        setTabValue((oldValue) => {
+            if (
+                !enableDeveloperMode &&
+                (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
+                    oldValue === TAB_VALUES.shortCircuitParamsTabValue)
+            ) {
+                return TAB_VALUES.securityAnalysisParamsTabValue;
+            }
+            return oldValue;
+        });
+    }, [enableDeveloperMode]);
+
     return (
         <Dialog
             open={isParametersOpen}
@@ -459,46 +477,72 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             <DialogContent>
                 <Container maxWidth="md">
                     <Tabs
-                        value={tabIndex}
+                        value={tabValue}
                         variant="scrollable"
-                        onChange={(event, newValue) => setTabIndex(newValue)}
+                        onChange={(event, newValue) => setTabValue(newValue)}
                         aria-label="parameters"
                     >
                         <Tab
                             label={<FormattedMessage id="SingleLineDiagram" />}
+                            value={TAB_VALUES.sldParamsTabValue}
                         />
-                        <Tab label={<FormattedMessage id="Map" />} />
+                        <Tab
+                            label={<FormattedMessage id="Map" />}
+                            value={TAB_VALUES.mapParamsTabValue}
+                        />
                         <Tab
                             disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
+                            value={TAB_VALUES.lfParamsTabValue}
                         />
                         <Tab
                             disabled={!studyUuid}
                             label={<FormattedMessage id="SecurityAnalysis" />}
+                            value={TAB_VALUES.securityAnalysisParamsTabValue}
                         />
+                        {enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={
+                                    <FormattedMessage id="SensitivityAnalysis" />
+                                }
+                                value={
+                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
+                                }
+                            />
+                        )}
+                        {enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={<FormattedMessage id="ShortCircuit" />}
+                                value={TAB_VALUES.shortCircuitParamsTabValue}
+                            />
+                        )}
                         <Tab
-                            disabled={!studyUuid}
-                            label={
-                                <FormattedMessage id="SensitivityAnalysis" />
-                            }
+                            label={<FormattedMessage id="Advanced" />}
+                            value={TAB_VALUES.advancedParamsTabValue}
                         />
-                        <Tab
-                            disabled={!studyUuid}
-                            label={<FormattedMessage id="ShortCircuit" />}
-                        />
-                        <Tab label={<FormattedMessage id="Advanced" />} />
                     </Tabs>
 
-                    <TabPanel value={tabIndex} index={sldParamsTabIndex}>
+                    <TabPanel
+                        value={tabValue}
+                        index={TAB_VALUES.sldParamsTabValue}
+                    >
                         <SingleLineDiagramParameters
                             hideParameters={hideParameters}
                             componentLibraries={componentLibraries}
                         />
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={mapParamsTabIndex}>
+                    <TabPanel
+                        value={tabValue}
+                        index={TAB_VALUES.mapParamsTabValue}
+                    >
                         <MapParameters hideParameters={hideParameters} />
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={lfParamsTabIndex}>
+                    <TabPanel
+                        value={tabValue}
+                        index={TAB_VALUES.lfParamsTabValue}
+                    >
                         {studyUuid && (
                             <LoadFlowParameters
                                 hideParameters={hideParameters}
@@ -511,8 +555,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         )}
                     </TabPanel>
                     <TabPanel
-                        value={tabIndex}
-                        index={securityAnalysisParamsTabIndex}
+                        value={tabValue}
+                        index={TAB_VALUES.securityAnalysisParamsTabValue}
                     >
                         {studyUuid && (
                             <SecurityAnalysisParameters
@@ -523,33 +567,48 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                     </TabPanel>
-                    <TabPanel
-                        value={tabIndex}
-                        index={sensitivityAnalysisParamsTabIndex}
-                    >
-                        {studyUuid && (
-                            <SensitivityAnalysisParameters
-                                hideParameters={hideParameters}
-                                parametersBackend={
-                                    sensitivityAnalysisParametersBackend
+                    {
+                        //To be removed when Sensitivity Analysis is not in developer mode only.
+                        enableDeveloperMode && (
+                            <TabPanel
+                                value={tabValue}
+                                index={
+                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
                                 }
-                            />
-                        )}
-                    </TabPanel>
+                            >
+                                {studyUuid && (
+                                    <SensitivityAnalysisParameters
+                                        hideParameters={hideParameters}
+                                        parametersBackend={
+                                            sensitivityAnalysisParametersBackend
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )
+                    }
+                    {
+                        //To be removed when ShortCircuit is not in developer mode only.
+                        enableDeveloperMode && (
+                            <TabPanel
+                                value={tabValue}
+                                index={TAB_VALUES.shortCircuitParamsTabValue}
+                            >
+                                {studyUuid && (
+                                    <ShortCircuitParameters
+                                        hideParameters={hideParameters}
+                                        useShortCircuitParameters={
+                                            useShortCircuitParameters
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )
+                    }
                     <TabPanel
-                        value={tabIndex}
-                        index={shortCircuitParamsTabIndex}
+                        value={tabValue}
+                        index={TAB_VALUES.advancedParamsTabValue}
                     >
-                        {studyUuid && (
-                            <ShortCircuitParameters
-                                hideParameters={hideParameters}
-                                useShortCircuitParameters={
-                                    useShortCircuitParameters
-                                }
-                            />
-                        )}
-                    </TabPanel>
-                    <TabPanel value={tabIndex} index={advancedParamsTabIndex}>
                         <NetworkParameters hideParameters={hideParameters} />
                     </TabPanel>
                 </Container>

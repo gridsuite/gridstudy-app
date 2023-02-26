@@ -5,41 +5,50 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPE } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import {
+    CURRENT_LIMITER_REGULATING_VALUE,
     ENABLED,
-    LOAD_TAP_CHANGING_CAPABILITIES,
-    RATIO_TAP_CHANGER,
+    FLOW_SET_POINT_REGULATING_VALUE,
+    PHASE_TAP_CHANGER,
     REGULATING,
+    REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
     TARGET_DEADBAND,
-    TARGET_V,
 } from 'components/refactor/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { gridItem, VoltageAdornment } from '../../../../dialogs/dialogUtils';
-import BooleanInput from '../../../rhf-inputs/boolean-input';
-import FloatInput from '../../../rhf-inputs/float-input';
-import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
-import RatioTapChangerPaneTaps from './ratio-tap-changer-pane-taps';
-import { REGULATION_TYPES, SIDE } from '../../../../network/constants';
-import SelectInput from '../../../rhf-inputs/select-input';
+import {
+    ActivePowerAdornment,
+    AmpereAdornment,
+    gridItem,
+} from '../../../../../dialogs/dialogUtils';
+import {
+    REGULATION_MODES,
+    REGULATION_TYPES,
+    SIDE,
+} from '../../../../../network/constants';
+import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
+import FloatInput from '../../../../rhf-inputs/float-input';
+import SelectInput from '../../../../rhf-inputs/select-input';
+import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
+import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { useCallback } from 'react';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
-const RatioTapChangerPane = ({
-    id = RATIO_TAP_CHANGER,
+const PhaseTapChangerPane = ({
+    id = PHASE_TAP_CHANGER,
     studyUuid,
     currentNodeUuid,
     voltageLevelOptions = [],
 }) => {
-    const ratioTapChangerEnabledWatcher = useWatch({
+    const phaseTapChangerEnabledWatch = useWatch({
         name: `${id}.${ENABLED}`,
     });
 
-    const ratioTapLoadTapChangingCapabilitiesWatcher = useWatch({
-        name: `${id}.${LOAD_TAP_CHANGING_CAPABILITIES}`,
+    const regulationModeWatch = useWatch({
+        name: `${id}.${REGULATION_MODE}`,
     });
 
     const regulatingWatch = useWatch({
@@ -50,31 +59,34 @@ const RatioTapChangerPane = ({
         name: `${id}.${REGULATION_TYPE}`,
     });
 
-    const ratioTapChangerEnabledField = (
-        <BooleanInput
+    const phaseTapChangerEnabledField = (
+        <SwitchInput
             name={`${id}.${ENABLED}`}
-            label="ConfigureRatioTapChanger"
+            label="ConfigurePhaseTapChanger"
         />
     );
 
-    const ratioTapLoadTapChangingCapabilitiesField = (
-        <BooleanInput
-            name={`${id}.${LOAD_TAP_CHANGING_CAPABILITIES}`}
-            label="OnLoad"
-            formProps={{
-                disabled: !ratioTapChangerEnabledWatcher,
-            }}
+    const regulationModeField = (
+        <SelectInput
+            name={`${id}.${REGULATION_MODE}`}
+            label={'RegulationMode'}
+            options={Object.values(REGULATION_MODES)}
+            disabled={!phaseTapChangerEnabledWatch}
         />
     );
 
     const regulatingField = (
-        <BooleanInput
+        <SwitchInput
             name={`${id}.${REGULATING}`}
-            label="VoltageRegulation"
+            label="Regulating"
             formProps={{
                 disabled:
-                    !ratioTapChangerEnabledWatcher ||
-                    !ratioTapLoadTapChangingCapabilitiesWatcher,
+                    !(
+                        regulationModeWatch ===
+                            REGULATION_MODES.CURRENT_LIMITER.id ||
+                        regulationModeWatch ===
+                            REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+                    ) || !phaseTapChangerEnabledWatch,
             }}
         />
     );
@@ -82,22 +94,19 @@ const RatioTapChangerPane = ({
     const isVoltageRegulationOn = useCallback(() => {
         return (
             regulatingWatch &&
-            ratioTapLoadTapChangingCapabilitiesWatcher &&
-            ratioTapChangerEnabledWatcher
+            regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id &&
+            phaseTapChangerEnabledWatch
         );
-    }, [
-        regulatingWatch,
-        ratioTapLoadTapChangingCapabilitiesWatcher,
-        ratioTapChangerEnabledWatcher,
-    ]);
+    }, [regulatingWatch, regulationModeWatch, phaseTapChangerEnabledWatch]);
 
     const regulationTypeField = (
         <SelectInput
             name={`${id}.${REGULATION_TYPE}`}
-            label={'RegulationType'}
+            label={'RegulationTypeText'}
             options={Object.values(REGULATION_TYPES)}
             disabled={!isVoltageRegulationOn()}
             size={'small'}
+            disableClearable
         />
     );
 
@@ -106,18 +115,30 @@ const RatioTapChangerPane = ({
             name={`${id}.${REGULATION_SIDE}`}
             label={'RegulatedSide'}
             options={Object.values(SIDE)}
-            disabled={!regulatingWatch || !ratioTapChangerEnabledWatcher}
+            disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
             size={'small'}
+            disableClearable
         />
     );
 
-    const targetVoltage1Field = (
+    const currentLimiterRegulatingValueField = (
         <FloatInput
-            name={`${id}.${TARGET_V}`}
-            label="TargetVoltage"
-            adornment={VoltageAdornment}
+            name={`${id}.${CURRENT_LIMITER_REGULATING_VALUE}`}
+            label="RegulatingValueCurrentLimiter"
             formProps={{
-                disabled: !regulatingWatch || !ratioTapChangerEnabledWatcher,
+                disabled: !regulatingWatch || !phaseTapChangerEnabledWatch,
+            }}
+            adornment={AmpereAdornment}
+        />
+    );
+
+    const flowSetPointRegulatingValueField = (
+        <FloatInput
+            name={`${id}.${FLOW_SET_POINT_REGULATING_VALUE}`}
+            label="RegulatingValueActivePowerControl"
+            adornment={ActivePowerAdornment}
+            formProps={{
+                disabled: !regulatingWatch || !phaseTapChangerEnabledWatch,
             }}
         />
     );
@@ -126,9 +147,9 @@ const RatioTapChangerPane = ({
         <FloatInput
             name={`${id}.${TARGET_DEADBAND}`}
             label="Deadband"
-            adornment={VoltageAdornment}
+            adornment={ActivePowerAdornment}
             formProps={{
-                disabled: !regulatingWatch || !ratioTapChangerEnabledWatcher,
+                disabled: !regulatingWatch || !phaseTapChangerEnabledWatch,
             }}
         />
     );
@@ -136,9 +157,9 @@ const RatioTapChangerPane = ({
     const regulatingTerminalField = (
         <RegulatingTerminalForm
             id={id}
-            disabled={!ratioTapChangerEnabledWatcher || !regulatingWatch}
+            disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
             equipmentSectionTypeDefaultValue={
-                EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
             }
             studyUuid={studyUuid}
             currentNodeUuid={currentNodeUuid}
@@ -151,13 +172,11 @@ const RatioTapChangerPane = ({
             <Grid container spacing={2}>
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
-                        {ratioTapChangerEnabledField}
+                        {phaseTapChangerEnabledField}
                     </Grid>
                 </Grid>
-                <Grid item container spacing={2}>
-                    <Grid item xs={4}>
-                        {ratioTapLoadTapChangingCapabilitiesField}
-                    </Grid>
+                <Grid item xs={4}>
+                    {gridItem(regulationModeField, 12)}
                 </Grid>
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
@@ -177,18 +196,23 @@ const RatioTapChangerPane = ({
                         alignItems: 'center',
                     }}
                 >
-                    {ratioTapLoadTapChangingCapabilitiesWatcher && (
+                    {regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id && (
                         <Grid item xs={4}>
-                            {targetVoltage1Field}
+                            {regulationModeWatch !==
+                                REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
+                                currentLimiterRegulatingValueField}
+                            {regulationModeWatch ===
+                                REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
+                                flowSetPointRegulatingValueField}
                         </Grid>
                     )}
-                    {ratioTapLoadTapChangingCapabilitiesWatcher && (
+                    {regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id && (
                         <Grid item xs={4}>
                             {targetDeadbandField}
                         </Grid>
                     )}
                 </Grid>
-                {ratioTapLoadTapChangingCapabilitiesWatcher &&
+                {regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id &&
                     regulationTypeWatch === REGULATION_TYPES.DISTANT.id && (
                         <Grid item container spacing={2}>
                             <Grid
@@ -200,17 +224,12 @@ const RatioTapChangerPane = ({
                                     alignItems: 'center',
                                 }}
                             >
-                                <FormattedMessage
-                                    id="DistantRegulatedTerminal"
-                                    disabled={true}
-                                />
+                                <FormattedMessage id="DistantRegulatedTerminal" />
                             </Grid>
-
                             {gridItem(regulatingTerminalField, 8)}
                         </Grid>
                     )}
-
-                {ratioTapLoadTapChangingCapabilitiesWatcher &&
+                {regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id &&
                     regulationTypeWatch === REGULATION_TYPES.LOCAL.id && (
                         <Grid item container spacing={2}>
                             <Grid
@@ -222,22 +241,18 @@ const RatioTapChangerPane = ({
                                     alignItems: 'center',
                                 }}
                             >
-                                <FormattedMessage
-                                    id="RegulatedTerminal"
-                                    disabled={true}
-                                />
+                                <FormattedMessage id="RegulatedTerminal" />
                             </Grid>
-
                             {gridItem(sideField, 4)}
                         </Grid>
                     )}
 
-                <RatioTapChangerPaneTaps
-                    disabled={!ratioTapChangerEnabledWatcher}
+                <PhaseTapChangerPaneSteps
+                    disabled={!phaseTapChangerEnabledWatch}
                 />
             </Grid>
         </>
     );
 };
 
-export default RatioTapChangerPane;
+export default PhaseTapChangerPane;

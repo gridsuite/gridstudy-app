@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     EQUIPMENT_ID,
@@ -22,6 +22,7 @@ import {
     Q_AT_NOMINAL_V,
     SHUNT_COMPENSATOR_TYPE,
 } from 'components/refactor/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -207,7 +208,7 @@ const ShuntCompensatorCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPE.SHUNT_COMPENSATOR.name}
+                    equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
