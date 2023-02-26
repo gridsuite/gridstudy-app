@@ -33,12 +33,26 @@ import { lighten } from '@mui/material/styles';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const useStyles = makeStyles((theme) => ({
-    gridLayout: ({ fullView }) => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+    },
+    modal: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        opacity: 0.99,
+        zIndex: 1,
+        background: lighten(theme.palette.background.paper, 0.05),
+    },
+    gridLayout: {
         paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
         overflowX: 'hidden',
-        height: `calc(100vh - ${fullView ? '60px' : '330px'})`, // TODO avoid compute height
-    }),
+        height: '100%',
+    },
     menuCloseButton: {
         transform: 'scaleX(-1)',
     },
@@ -78,16 +92,6 @@ const useStyles = makeStyles((theme) => ({
     },
     colsInput: {
         marginLeft: theme.spacing(1),
-    },
-    fullView: {
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        background: lighten(theme.palette.background.paper, 0.05),
-        opacity: 0.99,
-        zIndex: 199,
-        position: 'fixed',
     },
 }));
 
@@ -308,16 +312,17 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         }));
     };
 
-    const classes = useStyles({ fullView, plotIdScale });
+    const classes = useStyles();
 
     return (
-        <Grid
-            className={fullView ? classes.fullView : ''}
-            container
-            direction={'column'}
-            alignItems={'stretch'}
+        <Box
+            className={
+                fullView
+                    ? `${classes.root} ${classes.modal}`
+                    : `${classes.root}`
+            }
         >
-            <Grid item>
+            <Box>
                 <Grid
                     container
                     className={classes.toolBar}
@@ -406,10 +411,21 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                         </Paper>
                     </Grid>
                 </Grid>
-            </Grid>
-            <Grid item>
-                <Grid container>
-                    <Grid item xs>
+            </Box>
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    overflowY: 'hidden',
+                }}
+            >
+                <Grid container sx={{ height: '100%' }}>
+                    <Grid
+                        item
+                        xs
+                        sx={{
+                            height: '100%',
+                        }}
+                    >
                         <Box className={classes.gridLayout}>
                             <ResponsiveGridLayout
                                 className={`layout`}
@@ -459,10 +475,16 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                             </ResponsiveGridLayout>
                         </Box>
                     </Grid>
-                    <Grid item xs={'auto'}>
+                    <Grid
+                        item
+                        xs={'auto'}
+                        sx={{
+                            height: '100%',
+                        }}
+                    >
                         <Box
                             sx={{
-                                width: 'auto',
+                                height: '100%',
                                 display: showSeriesList ? 'block' : 'none',
                             }}
                         >
@@ -483,15 +505,14 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
                                         onRightAxisSelected={
                                             handleRightAxisSelected
                                         }
-                                        fullView={fullView}
                                     />
                                 </Visibility>
                             ))}
                         </Box>
                     </Grid>
                 </Grid>
-            </Grid>
-        </Grid>
+            </Box>
+        </Box>
     );
 };
 

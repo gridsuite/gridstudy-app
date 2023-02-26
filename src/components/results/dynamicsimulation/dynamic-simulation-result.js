@@ -6,9 +6,9 @@
  */
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { Grid } from '@mui/material';
 import DynamicSimulationResultTable from './dynamic-simulation-result-table';
 import DynamicSimulationResultChartTabs from './dynamic-simulation-result-chart-tabs';
+import { Box } from '@mui/material';
 
 const DynamicSimulationResult = ({ result }) => {
     const dynamicSimulationNotif = useSelector(
@@ -16,8 +16,12 @@ const DynamicSimulationResult = ({ result }) => {
     );
 
     return (
-        <Grid container justifyContent={'column'} alignItems={'flex-end'}>
-            <Grid item xs={12}>
+        <Box
+            sx={{
+                height: '100%',
+            }}
+        >
+            <Box>
                 {result && dynamicSimulationNotif && (
                     <DynamicSimulationResultTable
                         result={[
@@ -27,15 +31,20 @@ const DynamicSimulationResult = ({ result }) => {
                         ]}
                     />
                 )}
-            </Grid>
-            <Grid item xs={12}>
+            </Box>
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    overflowY: 'hidden',
+                }}
+            >
                 {result && dynamicSimulationNotif && (
                     <DynamicSimulationResultChartTabs
                         result={{ timeseries: result.timeseries }}
                     />
                 )}
-            </Grid>
-        </Grid>
+            </Box>
+        </Box>
     );
 };
 

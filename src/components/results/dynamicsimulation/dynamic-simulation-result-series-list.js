@@ -11,11 +11,11 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyle = makeStyles((theme) => ({
-    root: ({ fullView }) => ({
+    root: {
         width: '100%',
-        maxHeight: `calc(100vh - ${fullView ? '60px' : '330px'})`, // TODO avoid compute height
+        height: '100%',
         overflow: 'auto',
-    }),
+    },
     headerItem: {
         textAlign: 'center',
         background: theme.palette.background.paper,
@@ -29,12 +29,11 @@ const DynamicSimulationResultSeriesList = ({
     headers,
     onLeftAxisSelected,
     onRightAxisSelected,
-    fullView = false,
 }) => {
     const [leftAxisChecked, setLeftAxisChecked] = useState([]);
     const [rightAxisChecked, setRightAxisChecked] = useState([]);
 
-    const classes = useStyle({ fullView });
+    const classes = useStyle();
 
     const handleToggle = useCallback((id, setAxisChecked) => {
         setAxisChecked((prev) => {
@@ -120,7 +119,6 @@ DynamicSimulationResultSeriesList.propTypes = {
     headers: PropTypes.arrayOf(PropTypes.string).isRequired,
     onLeftAxisSelected: PropTypes.func.isRequired,
     onRightAxisSelected: PropTypes.func.isRequired,
-    fullView: PropTypes.bool,
 };
 
 export default memo(DynamicSimulationResultSeriesList);
