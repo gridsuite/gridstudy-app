@@ -60,11 +60,11 @@ const schema = yup.object().shape({
         yup.object().shape({
             [ID]: yup.string().required(),
             [NAME]: yup.string(),
-            [HORIZONTAL_POSITION]: yup.number().required(),
-            [VERTICAL_POSITION]: yup.number().required(),
+            [HORIZONTAL_POSITION]: yup.number().required().default(1),
+            [VERTICAL_POSITION]: yup.number().required().default(1),
         })
+        // .unique('duplicate id', (a) => a.id)
     ),
-
     [BUS_BAR_CONNECTIONS]: yup.array().of(
         yup.object().shape({
             [FROM_BBS]: yup.string().required(),

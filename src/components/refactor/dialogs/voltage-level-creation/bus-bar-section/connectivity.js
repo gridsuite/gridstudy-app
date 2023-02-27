@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { gridItem } from 'components/dialogs/dialogUtils';
 import {
     BUS_BAR_SECTIONS,
@@ -34,7 +41,7 @@ export const Connectivity = ({ id, index }) => {
             allowNewValue
             forcePopupIcon
             name={`${id}.${index}.${FROM_BBS}`}
-            label="BusBarSections"
+            label="BusBarSection"
             options={busBarSections}
             size={'small'}
         />
@@ -45,7 +52,7 @@ export const Connectivity = ({ id, index }) => {
             allowNewValue
             forcePopupIcon
             name={`${id}.${index}.${TO_BBS}`}
-            label="BusBarSections"
+            label="BusBarSection"
             options={busBarSections}
             size={'small'}
         />

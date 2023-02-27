@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { gridItem } from 'components/dialogs/dialogUtils';
 import IntegerInput from 'components/refactor/rhf-inputs/integer-input';
 import TextInput from 'components/refactor/rhf-inputs/text-input';
@@ -11,6 +18,7 @@ import {
 export const numericalWithButton = {
     type: 'number',
     inputProps: { min: 0, style: { textAlign: 'right' } },
+    defaultValue: 1,
 };
 
 export const BusBarSectionLine = ({ id, index }) => {
@@ -18,11 +26,7 @@ export const BusBarSectionLine = ({ id, index }) => {
         <TextInput name={`${id}.${index}.${ID}`} label={'BusBarSectionID'} />
     );
     const equipmentNameField = (
-        <TextInput
-            name={`${id}.${index}.${NAME}`}
-            label={'Name'}
-            withButton={true}
-        />
+        <TextInput name={`${id}.${index}.${NAME}`} label={'Name'} />
     );
 
     const horizontalPositionField = (
@@ -32,6 +36,7 @@ export const BusBarSectionLine = ({ id, index }) => {
             formProps={{
                 ...numericalWithButton,
             }}
+            isInputPositiveOnly={true}
         />
     );
 
@@ -42,6 +47,7 @@ export const BusBarSectionLine = ({ id, index }) => {
             formProps={{
                 ...numericalWithButton,
             }}
+            isInputPositiveOnly={true}
         />
     );
 

@@ -48,11 +48,13 @@ const TextInput = ({
 
     const handleValueChanged = (e) => {
         if (acceptValue(e.target.value)) {
-            onChange(outputTransform(e.target.value));
+            onChange(
+                outputTransform(e.target.value ?? formProps?.defaultValue)
+            );
         }
     };
 
-    const transformedValue = inputTransform(value);
+    const transformedValue = inputTransform(value ?? formProps?.defaultValue);
 
     return (
         <Field
