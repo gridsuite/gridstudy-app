@@ -459,7 +459,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 <VoltageLevelCreationDialog
                     open={true}
                     onClose={onVoltageLevelDialogClose}
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                     substationOptionsPromise={substationOptionsPromise}
                     onCreateVoltageLevel={onVoltageLevelDo}
                     editData={voltageLevelToEdit}
