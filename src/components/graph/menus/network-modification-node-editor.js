@@ -146,6 +146,14 @@ export const CopyType = {
     MOVE: 'MOVE',
 };
 
+export function withVLsIdsAndTopology(studyUuid, currentTreeNodeId) {
+    const voltageLevelsIdsAndTopologyPromise = fetchVoltageLevelsIdAndTopology(
+        studyUuid,
+        currentTreeNodeId
+    );
+    return voltageLevelsIdsAndTopologyPromise;
+}
+
 const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);

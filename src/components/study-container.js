@@ -42,7 +42,6 @@ import {
     setUpdatedSubstationsIds,
 } from '../redux/actions';
 import Network from './network/network';
-import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
@@ -62,6 +61,7 @@ import {
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
+import { equipments } from './network/network-equipments';
 
 function isWorthUpdate(
     studyUpdatedForce,

@@ -19,6 +19,7 @@ import { useIntl } from 'react-intl';
 import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../util/equipmentInfosHandler';
+import EditIcon from '@mui/icons-material/Edit';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -58,13 +59,38 @@ const ItemViewInSpreadsheet = ({
     );
 };
 
+const ItemViewInForm = ({
+    equipmentType,
+    equipmentId,
+    itemText,
+    handleOpenModificationDialog,
+}) => {
+    const classes = useStyles();
+    return (
+        <MenuItem
+            className={classes.menuItem}
+            onClick={() =>
+                handleOpenModificationDialog(equipmentId, equipmentType)
+            }
+        >
+            <ListItemIcon>
+                <EditIcon></EditIcon>
+            </ListItemIcon>
+            <ListItemText
+                className={classes.listItemText}
+                primary={<Typography noWrap>{itemText}</Typography>}
+            ></ListItemText>
+        </MenuItem>
+    );
+};
+
 const BaseEquipmentMenu = ({
     equipmentId,
     equipmentType,
     handleViewInSpreadsheet,
+    handleOpenModificationDialog,
 }) => {
     const intl = useIntl();
-
     const network = useSelector((state) => state.network);
 
     function getEquipment(equipmentType, equipmentId) {
@@ -93,7 +119,18 @@ const BaseEquipmentMenu = ({
                         handleViewInSpreadsheet={handleViewInSpreadsheet}
                     />
                 )}
-
+            {/* menus for equipment generator and load */}
+            {(equipmentType === equipments.generators ||
+                equipmentType === equipments.loads) && (
+                <ItemViewInForm
+                    equipmentId={equipmentId}
+                    equipmentType={equipmentType}
+                    itemText={intl.formatMessage({
+                        id: 'edit',
+                    })}
+                    handleOpenModificationDialog={handleOpenModificationDialog}
+                ></ItemViewInForm>
+            )}
             {/* menus for equipment substation */}
             {equipmentType === equipments.substations && equipment && (
                 <>

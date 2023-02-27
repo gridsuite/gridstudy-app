@@ -28,7 +28,7 @@ import {
     useRadioValue,
 } from './inputs/input-hooks';
 import { makeStyles } from '@mui/styles';
-import { EquipmentType } from './sensi/sensi-parameters-selector';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
@@ -62,7 +62,7 @@ const ACTIVE_VAR_MODE_DEFAULT_VALUE = 'PROPORTIONAL';
 const REACTIVE_VAR_MODE_DEFAULT_VALUE = 'CONSTANT_Q';
 const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 const VENTILATION = 'VENTILATION';
-const LOADS = [EquipmentType.LOAD];
+const LOADS = [EQUIPMENT_TYPES.LOAD.type];
 
 const VariationSection = ({
     index,

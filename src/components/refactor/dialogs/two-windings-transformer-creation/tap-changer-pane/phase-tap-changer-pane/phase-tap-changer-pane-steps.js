@@ -150,6 +150,7 @@ const PhaseTapChangerPaneSteps = ({ disabled }) => {
             columnsDefinition={COLUMNS_DEFINITIONS}
             csvColumns={csvColumns}
             createRuleMessageId="CreateDephasingRule"
+            createRuleAllowNegativeValues={true}
             importRuleMessageId="ImportDephasingRule"
             handleImportRow={handleImportRow}
             disabled={disabled}

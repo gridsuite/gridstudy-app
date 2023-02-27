@@ -10,86 +10,16 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import {
-    deleteEquipment,
-    fetchBatteries,
-    fetchDanglingLines,
-    fetchGenerators,
-    fetchHvdcLines,
-    fetchLccConverterStations,
-    fetchLines,
-    fetchLoads,
-    fetchShuntCompensators,
-    fetchStaticVarCompensators,
-    fetchSubstations,
-    fetchThreeWindingsTransformers,
-    fetchTwoWindingsTransformers,
-    fetchVoltageLevels,
-    fetchVscConverterStations,
-} from '../../utils/rest-api';
+import { deleteEquipment } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { validateField } from '../util/validation-functions';
 import { useInputForm } from './inputs/input-hooks';
 import { compareById, filledTextField, getIdOrSelf } from './dialogUtils';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
 import ModificationDialog from './modificationDialog';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
-const equipmentTypes = {
-    LINE: {
-        label: 'LINE',
-        fetchers: [fetchLines],
-    },
-    TWO_WINDINGS_TRANSFORMER: {
-        label: 'TWO_WINDINGS_TRANSFORMER',
-        fetchers: [fetchTwoWindingsTransformers],
-    },
-    THREE_WINDINGS_TRANSFORMER: {
-        label: 'THREE_WINDINGS_TRANSFORMER',
-        fetchers: [fetchThreeWindingsTransformers],
-    },
-    GENERATOR: {
-        label: 'GENERATOR',
-        fetchers: [fetchGenerators],
-    },
-    LOAD: {
-        label: 'LOAD',
-        fetchers: [fetchLoads],
-    },
-    BATTERY: {
-        label: 'BATTERY',
-        fetchers: [fetchBatteries],
-    },
-    DANGLING_LINE: {
-        label: 'DANGLING_LINE',
-        fetchers: [fetchDanglingLines],
-    },
-    HVDC_LINE: {
-        label: 'HVDC_LINE',
-        fetchers: [fetchHvdcLines],
-    },
-    HVDC_CONVERTER_STATION: {
-        label: 'HVDC_CONVERTER_STATION',
-        fetchers: [fetchLccConverterStations, fetchVscConverterStations],
-    },
-    SHUNT_COMPENSATOR: {
-        label: 'SHUNT_COMPENSATOR',
-        fetchers: [fetchShuntCompensators],
-    },
-    STATIC_VAR_COMPENSATOR: {
-        label: 'STATIC_VAR_COMPENSATOR',
-        fetchers: [fetchStaticVarCompensators],
-    },
-    SUBSTATION: {
-        label: 'SUBSTATION',
-        fetchers: [fetchSubstations],
-    },
-    VOLTAGE_LEVEL: {
-        label: 'VOLTAGE_LEVEL',
-        fetchers: [fetchVoltageLevels],
-    },
-};
-
-const defaultEquipmentType = equipmentTypes.LINE;
+const defaultEquipmentType = EQUIPMENT_TYPES.LINE;
 
 /**
  * Dialog to delete an equipment in the network
@@ -112,7 +42,7 @@ const EquipmentDeletionDialog = ({
     const inputForm = useInputForm();
 
     const [equipmentType, setEquipmentType] = useState(
-        equipmentTypes[editData?.equipmentType] ?? defaultEquipmentType
+        EQUIPMENT_TYPES[editData?.equipmentType] ?? defaultEquipmentType
     );
 
     const [equipmentsFound, setEquipmentsFound] = useState([]);
@@ -190,9 +120,9 @@ const EquipmentDeletionDialog = ({
         deleteEquipment(
             studyUuid,
             currentNodeUuid,
-            equipmentType.label.endsWith('CONVERTER_STATION')
-                ? 'HVDC_CONVERTER_STATION'
-                : equipmentType.label,
+            equipmentType.type.endsWith('CONVERTER_STATION')
+                ? EQUIPMENT_TYPES.HVDC_CONVERTER_STATION.type
+                : equipmentType.type,
             equipmentOrId?.id || equipmentOrId,
             editData?.uuid
         ).catch((error) => {
@@ -206,6 +136,17 @@ const EquipmentDeletionDialog = ({
     const handleClear = () => {
         setEquipmentType(defaultEquipmentType);
         setErrors(new Map());
+    };
+
+    const getEquipmentTypes = () => {
+        const equipmentTypesToExclude = new Set([
+            EQUIPMENT_TYPES.SWITCH.type,
+            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
+            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+        ]);
+        return Object.values(EQUIPMENT_TYPES).filter(
+            (equipmentType) => !equipmentTypesToExclude.has(equipmentType.type)
+        );
     };
 
     return (
@@ -235,11 +176,14 @@ const EquipmentDeletionDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            {Object.values(equipmentTypes).map((values) => {
+                            {getEquipmentTypes().map((equipmentType) => {
                                 return (
-                                    <MenuItem key={values.label} value={values}>
+                                    <MenuItem
+                                        key={equipmentType.type}
+                                        value={equipmentType}
+                                    >
                                         {intl.formatMessage({
-                                            id: values.label,
+                                            id: equipmentType.type,
                                         })}
                                     </MenuItem>
                                 );
