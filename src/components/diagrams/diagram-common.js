@@ -32,6 +32,9 @@ export const MAX_WIDTH_SUBSTATION = 1200;
 export const MAX_HEIGHT_SUBSTATION = 700;
 export const MAX_WIDTH_NETWORK_AREA_DIAGRAM = 1200;
 export const MAX_HEIGHT_NETWORK_AREA_DIAGRAM = 650;
+// To prevent increasing the network area diagram depth when the number of voltage levels in the diagram exceeds this value
+export const NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS = 200;
+
 export const DEFAULT_WIDTH_VOLTAGE_LEVEL = 400;
 export const DEFAULT_HEIGHT_VOLTAGE_LEVEL = 400;
 export const DEFAULT_WIDTH_SUBSTATION = 700;
