@@ -41,6 +41,7 @@ import {
     selectFluxConvention,
     selectMapManualRefresh,
     selectEnableDeveloperMode,
+    setParamsLoaded,
 } from '../redux/actions';
 
 import {
@@ -336,17 +337,12 @@ const App = () => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchConfigParameters(COMMON_APP_NAME)
-                .then((params) => updateParams(params))
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    })
-                );
+            const fetchCommonConfigPromise = fetchConfigParameters(
+                COMMON_APP_NAME
+            ).then((params) => updateParams(params));
 
-            fetchConfigParameters(APP_NAME)
-                .then((params) => {
+            const fetchAppConfigPromise = fetchConfigParameters(APP_NAME).then(
+                (params) => {
                     fetchDefaultParametersValues()
                         .then((defaultValues) => {
                             // Browsing defaultParametersValues entries
@@ -374,6 +370,12 @@ const App = () => {
                                 headerId: 'paramsRetrievingError',
                             });
                         });
+                }
+            );
+
+            Promise.all([fetchCommonConfigPromise, fetchAppConfigPromise])
+                .then(() => {
+                    dispatch(setParamsLoaded());
                 })
                 .catch((error) =>
                     snackError({

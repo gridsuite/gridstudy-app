@@ -16,6 +16,7 @@ import React, {
 import * as PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { PARAMS_LOADED } from "../utils/config-params";
 import {
     connectNotificationsWebsocket,
     fetchLoadFlowInfos,
@@ -238,7 +239,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const network = useSelector((state) => state.network);
     const userName = useSelector((state) => state.user.profile.sub);
-
+    const paramsLoaded = useSelector((state) => state[PARAMS_LOADED]);
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
 
@@ -765,7 +766,7 @@ export function StudyContainer({ view, onChangeTab }) {
             errMessage={
                 studyErrorMessage || networkLoadingFailMessage || errorMessage
             }
-            loading={studyPending}
+            loading={studyPending || !paramsLoaded}
             message={'LoadingRemoteData'}
         >
             <StudyPane
