@@ -13,9 +13,10 @@ import { isFloatNumber } from '../../dialogs/inputs/input-hooks';
 const FloatInput = (props) => {
     const inputTransform = (value) => {
         const sanitizedValue = value?.toString().replace(',', '.');
-
         if (['-', '.'].includes(sanitizedValue)) return sanitizedValue;
-        return !sanitizedValue || isNaN(sanitizedValue) ? '' : sanitizedValue;
+        return sanitizedValue === null || isNaN(sanitizedValue)
+            ? ''
+            : sanitizedValue;
     };
 
     const outputTransform = (value) => {
