@@ -40,12 +40,14 @@ import { useAutocompleteField } from './inputs/use-autocomplete-field';
 /**
  * Dialog to modify a load in the network
  * @param editData the data to edit
+ * @param defaultIdValue the id of load to edit selected from sld
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LoadModificationDialog = ({
     editData,
+    defaultIdValue,
     studyUuid,
     currentNode,
     ...dialogProps
@@ -87,8 +89,10 @@ const LoadModificationDialog = ({
     const formValueEquipmentId = useMemo(() => {
         return formValues?.equipmentId
             ? { id: formValues?.equipmentId }
+            : defaultIdValue
+            ? { id: defaultIdValue }
             : { id: '' };
-    }, [formValues]);
+    }, [formValues, defaultIdValue]);
 
     const [loadId, loadIdField] = useAutocompleteField({
         label: 'ID',
@@ -119,12 +123,13 @@ const LoadModificationDialog = ({
     }, [loadId, formValueEquipmentId]);
 
     useEffect(() => {
-        if (id) {
+        if (id || defaultIdValue) {
+            let key = id ? id : defaultIdValue;
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
                 'loads',
-                id,
+                key,
                 false
             ).then((value) => {
                 if (value) {
@@ -134,7 +139,7 @@ const LoadModificationDialog = ({
         } else {
             setloadInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, id]);
+    }, [studyUuid, currentNodeUuid, id, defaultIdValue]);
 
     const [loadName, loadNameField] = useTextValue({
         label: 'Name',
