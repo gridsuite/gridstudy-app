@@ -4,12 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, {
-    useCallback,
-    useState,
-    forwardRef,
-    useImperativeHandle,
-} from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import IconButton from '@mui/material/IconButton';
@@ -20,6 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
+import { stopDiagramBlink } from '../../redux/actions';
 
 const BLINK_LENGTH_MS = 3000;
 
@@ -65,8 +62,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DiagramHeader = forwardRef((props, ref) => {
+const DiagramHeader = (props) => {
     const classes = useStyles();
+    const dispatch = useDispatch();
 
     const { onMinimize, onTogglePin, onClose } = props;
     const handleMinimize = useCallback(
@@ -80,28 +78,30 @@ const DiagramHeader = forwardRef((props, ref) => {
     const handleClose = useCallback(() => onClose && onClose(), [onClose]);
 
     /**
-     * MANUAL BLINKING SYSTEM
+     * BLINKING SYSTEM
      */
 
     const [blinking, setBlinking] = useState(false);
-
-    const triggerBlink = useCallback(() => {
-        if (!blinking) {
-            setBlinking(true);
-            setTimeout(() => {
-                setBlinking(false);
-            }, BLINK_LENGTH_MS);
-        }
-    }, [blinking]);
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            makeBlink: triggerBlink,
-        }),
-        // Note: triggerBlink doesn't change
-        [triggerBlink]
+    const needsToBlink = useSelector(
+        (state) =>
+            state.diagramStates.find(
+                (diagram) =>
+                    diagram.svgType === props.svgType &&
+                    diagram.id === props.diagramId
+            )?.needsToBlink
     );
+
+    useEffect(() => {
+        if (needsToBlink) {
+            dispatch(stopDiagramBlink());
+            if (!blinking) {
+                setBlinking(true);
+                setTimeout(() => {
+                    setBlinking(false);
+                }, BLINK_LENGTH_MS);
+            }
+        }
+    }, [needsToBlink, dispatch, props.svgType, props.diagramId, blinking]);
 
     /**
      * RENDER
@@ -160,7 +160,7 @@ const DiagramHeader = forwardRef((props, ref) => {
             </Box>
         </Box>
     );
-});
+};
 
 DiagramHeader.defaultProps = {
     showMinimizeControl: false,
@@ -177,6 +177,8 @@ DiagramHeader.propTypes = {
     pinned: PropTypes.bool,
     showCloseControl: PropTypes.bool,
     onClose: PropTypes.func,
+    diagramId: PropTypes.string.isRequired,
+    svgType: PropTypes.string.isRequired,
 };
 
 export default DiagramHeader;
