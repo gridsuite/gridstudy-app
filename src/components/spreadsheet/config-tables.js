@@ -47,21 +47,18 @@ export const TABLES_DEFINITIONS = {
             {
                 field: 'id',
                 id: 'ID',
-                dataKey: 'id',
                 filter: true,
                 editable: true,
             },
             {
                 field: 'name',
                 id: 'Name',
-                dataKey: 'name',
                 filter: true,
                 editable: true,
             },
             {
                 field: 'countryName',
                 id: 'Country',
-                dataKey: 'countryName',
                 filter: true,
                 editable: true,
             },
@@ -77,22 +74,18 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
-                dataKey: 'id',
             },
             {
                 id: 'Name',
                 field: 'name',
-                dataKey: 'name',
             },
             {
                 id: 'SubstationId',
                 field: 'substationId',
-                dataKey: 'substationId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                dataKey: 'nominalVoltage',
                 numeric: true,
                 fractionDigits: 0,
                 editable: true,
@@ -108,8 +101,86 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    TWO_WINDINGS_TRANSFORMERS: {
+    LINES: {
         index: 2,
+        name: 'Lines',
+        resource: equipments.lines,
+        columns: [
+            {
+                id: 'ID',
+                field: 'id',
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+            },
+            {
+                id: 'Name',
+                field: 'name',
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+            },
+            {
+                id: 'VoltageLevelIdSide1',
+                field: 'voltageLevelId1',
+            },
+            {
+                id: 'VoltageLevelIdSide2',
+                field: 'voltageLevelId2',
+            },
+            {
+                id: 'NominalVoltageSide1',
+                field: 'nominalVoltage1',
+                valueGetter: (cellData, network) => {
+                    cellData.data.nominalVoltage1 = network
+                        ? nominalVoltage(network, cellData.data.voltageLevelId1)
+                        : undefined;
+                    return cellData.data.nominalVoltage1;
+                },
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
+                id: 'NominalVoltageSide2',
+                field: 'nominalVoltage2',
+                valueGetter: (cellData, network) => {
+                    cellData.data.nominalVoltage2 = network
+                        ? nominalVoltage(network, cellData.data.voltageLevelId2)
+                        : undefined;
+                    return cellData.data.nominalVoltage2;
+                },
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
+                id: 'ActivePowerSide1',
+                field: 'p1',
+                numeric: true,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+            },
+            {
+                id: 'ActivePowerSide2',
+                field: 'p2',
+                numeric: true,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+            },
+            {
+                id: 'ReactivePowerSide1',
+                field: 'q1',
+                numeric: true,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+            },
+            {
+                id: 'ReactivePowerSide2',
+                field: 'q2',
+                numeric: true,
+                fractionDigits: 1,
+                canBeInvalidated: true,
+            },
+        ],
+    },
+
+    TWO_WINDINGS_TRANSFORMERS: {
+        index: 3,
         name: 'TwoWindingsTransformers',
         resource: equipments.twoWindingsTransformers,
         modifiableEquipmentType: 'twoWindingsTransformer',
