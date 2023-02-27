@@ -63,7 +63,7 @@ import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
-        <Button onClick={hideParameters} className={classeStyleName} >
+        <Button onClick={hideParameters} className={classeStyleName}>
             <FormattedMessage id="close" />
         </Button>
     );
@@ -127,21 +127,19 @@ export const useStyles = makeStyles((theme) => ({
     },
     grid: {
         paddingTop: theme.spacing(2),
-        padding: theme.spacing(0),
+        padding: theme.spacing(2),
         flexGrow: 1,
-
     },
     minWidthMedium: {
         minWidth: theme.spacing(20),
     },
     controlItem: {
         justifyContent: 'flex-end',
+        flexGrow: 1,
     },
     button: {
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(1),
-        position: 'sticky',
-        bottom: 0
     },
     advancedParameterButton: {
         marginTop: theme.spacing(3),
@@ -149,6 +147,16 @@ export const useStyles = makeStyles((theme) => ({
     },
     marginTopButton: {
         marginTop: 10,
+        position: 'sticky',
+        bottom: 0,
+    },
+    scrollableGrid: {
+        overflow: 'auto',
+        maxHeight: '60vh',
+        paddingRight: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(1),
+        flexGrow: 1,
     },
 }));
 
@@ -440,6 +448,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                 hidden={value !== index}
                 id={`simple-tabpanel-${index}`}
                 aria-labelledby={`simple-tab-${index}`}
+                style={{ flexGrow: 1 }}
                 {...other}
             >
                 {value === index && <Box p={1}>{children}</Box>}
@@ -477,14 +486,14 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                     <FormattedMessage id="parameters" />
                 </Typography>
             </DialogTitle>
-            <DialogContent style={{overflowY: "hidden"}}>
+            <DialogContent style={{ overflowY: 'hidden' }}>
                 <Container maxWidth="md">
                     <Tabs
                         value={tabValue}
                         variant="scrollable"
                         onChange={(event, newValue) => setTabValue(newValue)}
                         aria-label="parameters"
-                        style={{position: 'sticky', top: 0}}
+                        style={{ position: 'sticky', top: 0 }}
                     >
                         <Tab
                             label={<FormattedMessage id="SingleLineDiagram" />}
@@ -528,7 +537,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         />
                     </Tabs>
 
-                    <Grid container style={{flexGrow: 1}}>
+                    <Grid container>
                         <TabPanel
                             value={tabValue}
                             index={TAB_VALUES.sldParamsTabValue}
@@ -551,7 +560,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             {studyUuid && (
                                 <LoadFlowParameters
                                     hideParameters={hideParameters}
-                                    parametersBackend={loadFlowParametersBackend}
+                                    parametersBackend={
+                                        loadFlowParametersBackend
+                                    }
                                     showAdvancedLfParams={showAdvancedLfParams}
                                     setShowAdvancedLfParams={
                                         setShowAdvancedLfParams
@@ -597,7 +608,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             enableDeveloperMode && (
                                 <TabPanel
                                     value={tabValue}
-                                    index={TAB_VALUES.shortCircuitParamsTabValue}
+                                    index={
+                                        TAB_VALUES.shortCircuitParamsTabValue
+                                    }
                                 >
                                     {studyUuid && (
                                         <ShortCircuitParameters
@@ -614,7 +627,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             value={tabValue}
                             index={TAB_VALUES.advancedParamsTabValue}
                         >
-                            <NetworkParameters hideParameters={hideParameters} />
+                            <NetworkParameters
+                                hideParameters={hideParameters}
+                            />
                         </TabPanel>
                     </Grid>
                 </Container>

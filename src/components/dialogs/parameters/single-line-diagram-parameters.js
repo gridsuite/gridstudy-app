@@ -98,7 +98,9 @@ export const SingleLineDiagramParameters = ({
                         >
                             <FormattedMessage id="SmartWithHorizontalCompactionSubstationLayout" />
                         </MenuItem>
-                        <MenuItem value={SubstationLayout.SMARTVERTICALCOMPACTION}>
+                        <MenuItem
+                            value={SubstationLayout.SMARTVERTICALCOMPACTION}
+                        >
                             <FormattedMessage id="SmartWithVerticalCompactionSubstationLayout" />
                         </MenuItem>
                     </Select>
@@ -136,9 +138,7 @@ export const SingleLineDiagramParameters = ({
             </Grid>
             <Grid
                 container
-                className={
-                    classes.controlItem + ' ' + classes.marginTopButton
-                }
+                className={classes.controlItem + ' ' + classes.marginTopButton}
                 maxWidth="md"
                 position={'sticky'}
                 top={0}

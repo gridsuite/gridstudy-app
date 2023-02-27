@@ -209,8 +209,8 @@ export const ShortCircuitParameters = ({
     }, [studyUuid, snackError, setShortCircuitParams]);
 
     return (
-        <Grid container>
-            <Grid container key="params" className={classes.grid}>
+        <>
+            <Grid container key="params" className={classes.scrollableGrid}>
                 <BasicShortCircuitParameters
                     shortCircuitParams={shortCircuitParams || {}}
                     commitShortCircuitParams={commitShortCircuitParameter}
@@ -218,9 +218,7 @@ export const ShortCircuitParameters = ({
             </Grid>
             <Grid
                 container
-                className={
-                    classes.controlItem + ' ' + classes.marginTopButton
-                }
+                className={classes.controlItem + ' ' + classes.marginTopButton}
                 maxWidth="md"
             >
                 <LabelledButton
@@ -232,6 +230,6 @@ export const ShortCircuitParameters = ({
                     className={classes.button}
                 />
             </Grid>
-        </Grid>
+        </>
     );
 };

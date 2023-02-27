@@ -52,69 +52,65 @@ export const NetworkParameters = ({ hideParameters }) => {
     };
 
     return (
-        <Grid container spacing={1}>
-            <Grid item container spacing={1}>
-                <Grid spacing={1} classes={classes.grid}>
-                    <Grid item xs={8}>
-                        <Typography component="span" variant="body1">
-                            <Box fontWeight="fontWeightBold" m={1}>
-                                <FormattedMessage id="FluxConvention" />
-                            </Box>
-                        </Typography>
-                    </Grid>
-                    <Grid item container xs={4} className={classes.controlItem}>
-                        <Select
-                            size="small"
-                            labelId="flux-convention-select-label"
-                            value={fluxConventionLocal}
-                            onChange={(event) => {
-                                handleChangeFluxConvention(event.target.value);
-                            }}
-                        >
-                            <MenuItem value={FluxConventions.IIDM}>
-                                <FormattedMessage id="FluxConvention.iidm" />
-                            </MenuItem>
-                            <MenuItem value={FluxConventions.TARGET}>
-                                <FormattedMessage id="FluxConvention.target" />
-                            </MenuItem>
-                        </Select>
-                    </Grid>
-                    <LineSeparator />
-                    <Grid item container xs={12}>
-                        <SwitchWithLabel
-                            label="EnableDeveloperMode"
-                            value={enableDeveloperMode}
-                            callback={() => {
-                                handleChangeEnableDeveloperMode(
-                                    !enableDeveloperMode
-                                );
-                            }}
-                        />
-                        {enableDeveloperMode && (
-                            <Alert severity={'warning'}>
-                                <FormattedMessage id="DeveloperModeWarningMsg" />
-                            </Alert>
-                        )}
-                    </Grid>
-                    <LineSeparator />
+        <>
+            <Grid container spacing={1}>
+                <Grid item xs={8}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id="FluxConvention" />
+                        </Box>
+                    </Typography>
                 </Grid>
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetNetworkParameters}
-                        label="resetToDefault"
+                <Grid item container xs={4} className={classes.controlItem}>
+                    <Select
+                        size="small"
+                        labelId="flux-convention-select-label"
+                        value={fluxConventionLocal}
+                        onChange={(event) => {
+                            handleChangeFluxConvention(event.target.value);
+                        }}
+                    >
+                        <MenuItem value={FluxConventions.IIDM}>
+                            <FormattedMessage id="FluxConvention.iidm" />
+                        </MenuItem>
+                        <MenuItem value={FluxConventions.TARGET}>
+                            <FormattedMessage id="FluxConvention.target" />
+                        </MenuItem>
+                    </Select>
+                </Grid>
+                <LineSeparator />
+                <Grid item container xs={12}>
+                    <SwitchWithLabel
+                        label="EnableDeveloperMode"
+                        value={enableDeveloperMode}
+                        callback={() => {
+                            handleChangeEnableDeveloperMode(
+                                !enableDeveloperMode
+                            );
+                        }}
                     />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
+                    {enableDeveloperMode && (
+                        <Alert severity={'warning'}>
+                            <FormattedMessage id="DeveloperModeWarningMsg" />
+                        </Alert>
+                    )}
                 </Grid>
             </Grid>
-        </Grid>
+            <LineSeparator />
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetNetworkParameters}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
+        </>
     );
 };

@@ -72,8 +72,8 @@ export const MapParameters = ({ hideParameters }) => {
     }, [lineFlowColorModeLocal, displayOverloadTableLocal]);
 
     return (
-        <Grid container spacing={1}>
-            <Grid container spacing={1} classes={classes.grid}>
+        <>
+            <Grid container spacing={1} classes={classes.scrollableGrid}>
                 <SwitchWithLabel
                     value={lineFullPathLocal}
                     label="lineFullPath"
@@ -181,6 +181,6 @@ export const MapParameters = ({ hideParameters }) => {
                     classeStyleName={classes.button}
                 />
             </Grid>
-        </Grid>
+        </>
     );
 };

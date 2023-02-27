@@ -26,25 +26,24 @@ export const SecurityAnalysisParameters = ({
     ]);
 
     return (
-        <Grid container style={{flexGrow: 1}}>
-            <Grid container key="secuAnalysisProvider" classes={classes.grid}>
+        <>
+            <Grid
+                container
+                key="secuAnalysisProvider"
+                className={classes.scrollableGrid}
+                spacing={1}
+            >
                 <DropDown
                     value={provider}
                     label="Provider"
                     values={providers}
                     callback={updateProviderCallback}
-                    style={{flexGrow: 1}}
                 />
-
-                <Grid container paddingTop={1} style={{flexGrow: 1}}>
-                    <LineSeparator />
-                </Grid>
             </Grid>
+            <LineSeparator />
             <Grid
                 container
-                className={
-                    classes.controlItem + ' ' + classes.marginTopButton
-                }
+                className={classes.controlItem + ' ' + classes.marginTopButton}
                 maxWidth="md"
             >
                 <LabelledButton
@@ -56,6 +55,6 @@ export const SecurityAnalysisParameters = ({
                     className={classes.button}
                 />
             </Grid>
-        </Grid>
+        </>
     );
 };
