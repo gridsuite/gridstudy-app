@@ -13,7 +13,8 @@ import React, {
     useRef,
     useEffect,
 } from 'react';
-import { useSelector } from 'react-redux';
+import { setNetworkAreaDiagramNbVoltageLevels } from '../../../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
@@ -45,6 +46,7 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [loadingState, setLoadingState] = useState(false);
     const notificationIdList = useSelector((state) => state.notificationIdList);
+    const dispatch = useDispatch();
 
     /**
      * MANUAL UPDATE SYSTEM
@@ -126,10 +128,15 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
                         if (data !== null) {
                             setSvg({
                                 svg: data.svg,
-                                metadata: null,
+                                metadata: data.metadata,
                                 error: null,
                                 svgUrl: props.svgUrl,
                             });
+                            dispatch(
+                                setNetworkAreaDiagramNbVoltageLevels(
+                                    data?.metadata?.nbVoltageLevels
+                                )
+                            );
                         } else {
                             setSvg(NoSvg);
                         }
@@ -159,7 +166,14 @@ const NetworkAreaDiagramContent = forwardRef((props, ref) => {
         } else {
             setSvg(NoSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef, isNodeinNotifs]);
+    }, [
+        props.svgUrl,
+        forceState,
+        snackError,
+        intlRef,
+        isNodeinNotifs,
+        dispatch,
+    ]);
 
     /**
      * RENDER
