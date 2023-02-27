@@ -47,6 +47,7 @@ import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
+import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import { withVLsIdsAndTopology } from '../../graph/menus/network-modification-node-editor';
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
@@ -221,6 +222,16 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                             props.studyUuid,
                             currentNode?.id
                         )}
+                    />
+                );
+            case equipments.loads:
+                return (
+                    <LoadModificationDialog
+                        open={true}
+                        studyUuid={props.studyUuid}
+                        currentNode={currentNode}
+                        onClose={() => closeModificationDialog()}
+                        defaultIdValue={equipmentToModify.equipmentId}
                     />
                 );
             default:
