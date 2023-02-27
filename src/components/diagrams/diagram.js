@@ -18,11 +18,12 @@ import {
 import { useIntl } from 'react-intl';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import {
-    SvgType,
+    DiagramType,
     useDiagram,
     useDiagramStyles,
     MIN_WIDTH,
     LOADING_WIDTH,
+    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
     LOADING_HEIGHT,
 } from './diagram-common';
 import DiagramHeader from './diagram-header';
@@ -53,6 +54,10 @@ const Diagram = (props) => {
         (state) => state.networkAreaDiagramDepth
     );
 
+    const nbVoltageLevels = useSelector(
+        (state) => state.networkAreaDiagramNbVoltageLevels
+    );
+
     /**
      * DIAGRAM CONTROL HANDLERS
      */
@@ -69,7 +74,7 @@ const Diagram = (props) => {
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagram(null));
         closeDiagramView(props.diagramId, props.svgType);
-        if (props.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+        if (props.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             dispatch(resetNetworkAreaDiagramDepth());
         }
     };
@@ -122,7 +127,7 @@ const Diagram = (props) => {
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}
                     showTogglePinControl={
-                        props.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                        props.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
                     }
                     onTogglePin={onTogglePinHandler}
                     pinned={props.pinned}
@@ -139,7 +144,8 @@ const Diagram = (props) => {
                         {props.children}
                         <DiagramFooter
                             showCounterControls={
-                                props.svgType === SvgType.NETWORK_AREA_DIAGRAM
+                                props.svgType ===
+                                DiagramType.NETWORK_AREA_DIAGRAM
                             }
                             counterText={intl.formatMessage({
                                 id: 'depth',
@@ -151,6 +157,13 @@ const Diagram = (props) => {
                             fullScreenActive={shouldBeFullscreen}
                             onStartFullScreen={onShowFullScreenHandler}
                             onStopFullScreen={onHideFullScreenHandler}
+                            incrementCounterDisabled={
+                                nbVoltageLevels >
+                                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
+                            }
+                            decrementCounterDisabled={
+                                networkAreaDiagramDepth === 0
+                            }
                         />
                     </Box>
                 )}
