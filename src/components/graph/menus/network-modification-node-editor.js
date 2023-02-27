@@ -21,7 +21,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
-import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
+import GeneratorModificationDialog from 'components/refactor/dialogs/generator-modification/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
@@ -280,8 +280,7 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_MODIFICATION: {
             label: 'ModifyGenerator',
-            dialog: () =>
-                adapt(GeneratorModificationDialog, withVLsIdsAndTopology),
+            dialog: () => adapt(GeneratorModificationDialog),
             icon: <AddIcon />,
         },
         SHUNT_COMPENSATOR_CREATION: {

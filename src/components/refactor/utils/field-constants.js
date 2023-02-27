@@ -111,3 +111,6 @@ export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 
 // dnd table
 export const SELECTED = 'selected';
+
+//generator
+export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';

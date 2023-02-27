@@ -8,6 +8,7 @@
 import {
     ActivePowerAdornment,
     gridItem,
+    gridItemWithTooltip,
     GridSection,
     ReactivePowerAdornment,
 } from '../../../../dialogs/dialogUtils';
@@ -24,8 +25,15 @@ import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
 import VoltageRegulation from './voltage-regulation';
 import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
+import CheckboxInput from 'components/refactor/rhf-inputs/booleans/checkbox-input';
+import { FormattedMessage } from 'react-intl';
 
-const SetPointsForm = ({ studyUuid, currentNodeUuid, voltageLevelOptions }) => {
+const SetPointsForm = ({
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelOptions,
+    isGeneratorModification,
+}) => {
     const isVoltageRegulationOn = useWatch({
         name: VOLTAGE_REGULATION,
     });
@@ -38,7 +46,12 @@ const SetPointsForm = ({ studyUuid, currentNodeUuid, voltageLevelOptions }) => {
         />
     );
 
-    const voltageRegulationField = (
+    const voltageRegulationField = isGeneratorModification ? (
+        <CheckboxInput
+            name={VOLTAGE_REGULATION}
+            label={'VoltageRegulationText'}
+        />
+    ) : (
         <SwitchInput
             name={VOLTAGE_REGULATION}
             label={'VoltageRegulationText'}
@@ -67,7 +80,12 @@ const SetPointsForm = ({ studyUuid, currentNodeUuid, voltageLevelOptions }) => {
             <Grid container spacing={2}>
                 {gridItem(activePowerSetPointField, 4)}
                 <Box sx={{ width: '100%' }} />
-                {gridItem(voltageRegulationField, 4)}
+                {isGeneratorModification
+                    ? gridItemWithTooltip(
+                          voltageRegulationField,
+                          <FormattedMessage id={'NoModification'} />
+                      )
+                    : gridItem(voltageRegulationField, 4)}
                 {!isVoltageRegulationOn &&
                     gridItem(reactivePowerSetPointField, 4)}
                 {isVoltageRegulationOn && voltageRegulationFields}

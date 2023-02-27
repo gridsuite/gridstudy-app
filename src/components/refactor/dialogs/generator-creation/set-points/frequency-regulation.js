@@ -11,13 +11,19 @@ import { DROOP, FREQUENCY_REGULATION } from '../../../utils/field-constants';
 import React from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
+import CheckboxInput from 'components/refactor/rhf-inputs/booleans/checkbox-input';
 
-const FrequencyRegulation = () => {
+const FrequencyRegulation = (isGeneratorModification) => {
     const isFrequencyRegulationOn = useWatch({
         name: FREQUENCY_REGULATION,
     });
 
-    const frequencyRegulationField = (
+    const frequencyRegulationField = isGeneratorModification ? (
+        <CheckboxInput
+            name={FREQUENCY_REGULATION}
+            label={'FrequencyRegulation'}
+        />
+    ) : (
         <SwitchInput
             name={FREQUENCY_REGULATION}
             label={'FrequencyRegulation'}
