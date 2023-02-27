@@ -82,6 +82,7 @@ import {
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     STOP_DIAGRAM_BLINK,
 } from './actions';
 import {
@@ -171,6 +172,7 @@ const initialState = {
     updatedSubstationsIds: [],
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
+    networkAreaDiagramNbVoltageLevels: 0,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -831,6 +833,9 @@ export const reducer = createReducer(initialState, {
         if (state.networkAreaDiagramDepth > 0) {
             state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
         }
+    },
+    [NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS]: (state, action) => {
+        state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
     },
 });
 

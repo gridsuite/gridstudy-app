@@ -24,6 +24,7 @@ import {
     useDiagramStyles,
     MIN_WIDTH,
     LOADING_WIDTH,
+    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
     LOADING_HEIGHT,
 } from './diagram-common';
 import DiagramHeader from './diagram-header';
@@ -52,6 +53,10 @@ const Diagram = (props) => {
 
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
+    );
+
+    const nbVoltageLevels = useSelector(
+        (state) => state.networkAreaDiagramNbVoltageLevels
     );
 
     /**
@@ -176,6 +181,13 @@ const Diagram = (props) => {
                             fullScreenActive={shouldBeFullscreen}
                             onStartFullScreen={onShowFullScreenHandler}
                             onStopFullScreen={onHideFullScreenHandler}
+                            incrementCounterDisabled={
+                                nbVoltageLevels >
+                                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
+                            }
+                            decrementCounterDisabled={
+                                networkAreaDiagramDepth === 0
+                            }
                         />
                     </Box>
                 )}
