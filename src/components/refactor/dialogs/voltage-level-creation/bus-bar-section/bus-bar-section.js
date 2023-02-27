@@ -26,7 +26,11 @@ export const BusBarSection = ({ id, type, errors }) => {
             {rows.map((value, index) => (
                 <Grid key={value.id} container spacing={3} item>
                     {type === VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_LINE ? (
-                        <BusBarSectionLine id={id} index={index} />
+                        <BusBarSectionLine
+                            id={id}
+                            index={index}
+                            errors={errors}
+                        />
                     ) : (
                         <Connectivity id={id} index={index} />
                     )}

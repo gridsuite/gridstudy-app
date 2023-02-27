@@ -14,6 +14,7 @@ import {
     NAME,
     VERTICAL_POSITION,
 } from 'components/refactor/utils/field-constants';
+import { FormattedMessage } from 'react-intl';
 
 export const numericalWithButton = {
     type: 'number',
@@ -21,7 +22,17 @@ export const numericalWithButton = {
     defaultValue: 1,
 };
 
-export const BusBarSectionLine = ({ id, index }) => {
+export const BusBarSectionLine = ({ id, index, errors }) => {
+    const genHelperError = (...errors) => {
+        const inError = errors.find((e) => e.type === 'unique-positions');
+        if (inError)
+            return {
+                error: true,
+                helperText: <FormattedMessage id={inError[0]} />,
+            };
+        return {};
+    };
+
     const equipmentIdField = (
         <TextInput name={`${id}.${index}.${ID}`} label={'BusBarSectionID'} />
     );
@@ -37,6 +48,7 @@ export const BusBarSectionLine = ({ id, index }) => {
                 ...numericalWithButton,
             }}
             isInputPositiveOnly={true}
+            // {...genHelperError(errors)}
         />
     );
 
