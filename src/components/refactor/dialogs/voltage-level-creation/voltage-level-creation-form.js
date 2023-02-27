@@ -28,7 +28,7 @@ import TextInput from 'components/refactor/rhf-inputs/text-input';
 import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
 import { BusBarSection } from './bus-bar-section/bus-bar-section';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid, errors }) => {
     const currentNodeUuid = currentNode?.id;
     const [substations, setSubstations] = useState([]);
 
@@ -101,6 +101,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                     <BusBarSection
                         id={BUS_BAR_SECTIONS}
                         type={VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_LINE}
+                        errors={errors}
                     />
                 }
                 <GridSection title={'Connectivity'} />

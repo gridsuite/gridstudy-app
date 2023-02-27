@@ -48,9 +48,7 @@ const TextInput = ({
 
     const handleValueChanged = (e) => {
         if (acceptValue(e.target.value)) {
-            onChange(
-                outputTransform(e.target.value ?? formProps?.defaultValue)
-            );
+            onChange(outputTransform(e.target.value));
         }
     };
 

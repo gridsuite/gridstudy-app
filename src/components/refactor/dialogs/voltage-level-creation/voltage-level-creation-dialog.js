@@ -33,6 +33,7 @@ import { createVoltageLevel } from 'utils/rest-api';
 import ModificationDialog from 'components/refactor/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
+import { FormattedMessage } from 'react-intl';
 
 /**
  * Dialog to create a load in the network
@@ -56,15 +57,17 @@ const schema = yup.object().shape({
     [EQUIPMENT_NAME]: yup.string(),
     [NOMINAL_VOLTAGE]: yup.string().required(),
     [SUBSTATION_ID]: yup.string().required(),
-    [BUS_BAR_SECTIONS]: yup.array().of(
-        yup.object().shape({
-            [ID]: yup.string().required(),
-            [NAME]: yup.string(),
-            [HORIZONTAL_POSITION]: yup.number().required().default(1),
-            [VERTICAL_POSITION]: yup.number().required().default(1),
-        })
-        // .unique('duplicate id', (a) => a.id)
-    ),
+    [BUS_BAR_SECTIONS]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [ID]: yup.string().required(),
+                [NAME]: yup.string(),
+                [HORIZONTAL_POSITION]: yup.number().required().default(1),
+                [VERTICAL_POSITION]: yup.number().required().default(1),
+            })
+        )
+        .min(1, <FormattedMessage id={'EmptyList/bbs'} />),
     [BUS_BAR_CONNECTIONS]: yup.array().of(
         yup.object().shape({
             [FROM_BBS]: yup.string().required(),
@@ -89,7 +92,10 @@ const VoltageLevelCreationDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const { reset } = methods;
+    const {
+        reset,
+        formState: { errors },
+    } = methods;
 
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
@@ -164,6 +170,7 @@ const VoltageLevelCreationDialog = ({
                 <VoltageLevelCreationForm
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    errors={errors}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
