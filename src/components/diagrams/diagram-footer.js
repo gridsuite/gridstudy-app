@@ -9,6 +9,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import IconButton from '@mui/material/IconButton';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import PropTypes from 'prop-types';
@@ -20,12 +21,14 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
     },
     incrementCounterIcon: {
+        padding: 0,
         bottom: theme.spacing(1),
         left: theme.spacing(5.5),
         position: 'absolute',
         cursor: 'pointer',
     },
     decrementCounterIcon: {
+        padding: 0,
         bottom: theme.spacing(1),
         left: theme.spacing(2),
         position: 'absolute',
@@ -74,14 +77,20 @@ const DiagramFooter = (props) => {
                             {props.counterText + props.counterValue}
                         </Typography>
                     )}
-                    <AddCircleIcon
+                    <IconButton
                         onClick={handleIncrementCounter}
+                        disabled={props.incrementCounterDisabled}
                         className={classes.incrementCounterIcon}
-                    />
-                    <RemoveCircleIcon
+                    >
+                        <AddCircleIcon />
+                    </IconButton>
+                    <IconButton
                         onClick={handleDecrementCounter}
+                        disabled={props.decrementCounterDisabled}
                         className={classes.decrementCounterIcon}
-                    />
+                    >
+                        <RemoveCircleIcon />
+                    </IconButton>
                 </>
             )}
             {props.showFullscreenControl && (
@@ -111,6 +120,8 @@ DiagramFooter.defaultProps = {
     counterText: '',
     counterValue: 0,
     fullscreenActive: false,
+    decrementCounterDisabled: true,
+    incrementCounterDisabled: false,
 };
 
 DiagramFooter.propTypes = {
@@ -124,6 +135,8 @@ DiagramFooter.propTypes = {
     fullScreenActive: PropTypes.any,
     onStopFullScreen: PropTypes.func,
     onStartFullScreen: PropTypes.func,
+    decrementCounterDisabled: PropTypes.bool,
+    incrementCounterDisabled: PropTypes.bool,
 };
 
 export default DiagramFooter;
