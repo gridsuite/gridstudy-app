@@ -27,7 +27,9 @@ import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 
 test('reducer.RESET_NETWORK_AREA_DIAGRAM_DEPTH', () => {
     const initialState = { networkAreaDiagramDepth: 12 };
-    const expectedState = { networkAreaDiagramDepth: 0 };
+    const expectedState = {
+        networkAreaDiagramDepth: 0,
+    };
 
     expect(reducer(initialState, resetNetworkAreaDiagramDepth())).toEqual(
         expectedState
