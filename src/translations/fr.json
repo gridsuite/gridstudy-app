@@ -158,6 +158,9 @@
     "DynamicSimulationTimeLineLabel": "Time Line",
     "DynamicSimulationResultTypeLabel": "Type de resultat",
     "DynamicSimulationResultLayoutCols": "Colonnes",
+    "DynamicSimulationTimeDelay": "Temporisation",
+    "DynamicSimulationSolver": "Solveur",
+    "DynamicSimulationMapping": "Mappage",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",

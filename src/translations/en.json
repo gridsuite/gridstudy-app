@@ -158,6 +158,9 @@
     "DynamicSimulationTimeLineLabel": "Time Line",
     "DynamicSimulationResultTypeLabel": "Result type",
     "DynamicSimulationResultLayoutCols": "Columns",
+    "DynamicSimulationTimeDelay": "Time delay",
+    "DynamicSimulationSolver": "Solver",
+    "DynamicSimulationMapping": "Mapping",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",

@@ -19,9 +19,11 @@ import {
     PARAM_LINE_PARALLEL_PATH,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../utils/config-params';
-import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
-import { useStyles } from './parameters';
+import { useParameterState } from './parameters';
 import { LabelledSilder, LineSeparator } from '../dialogUtils';
+import { CloseButton } from './common/close-button';
+import { SwitchWithLabel } from './common/switch-with-label';
+import { useStyles } from './parameters-styles';
 
 export const MapParameters = ({ hideParameters }) => {
     const classes = useStyles();

@@ -9,18 +9,16 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 import {
-    CloseButton,
-    LabelledButton,
-    SwitchWithLabel,
-    useStyles,
-} from './parameters';
-import {
     getShortCircuitParameters,
     setShortCircuitParameters,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LabelledSilder, LineSeparator } from '../dialogUtils';
+import { CloseButton } from './common/close-button';
+import { SwitchWithLabel } from './common/switch-with-label';
+import { LabelledButton } from './common/labelled-button';
+import { useStyles } from './parameters-styles';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);

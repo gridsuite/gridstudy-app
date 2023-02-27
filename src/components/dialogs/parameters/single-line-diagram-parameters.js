@@ -15,10 +15,12 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../../utils/config-params';
-import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
-import { useStyles } from './parameters';
+import { useParameterState } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { getAvailableComponentLibraries } from '../../../utils/rest-api';
+import { CloseButton } from './common/close-button';
+import { SwitchWithLabel } from './common/switch-with-label';
+import { useStyles } from './parameters-styles';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);

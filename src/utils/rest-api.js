@@ -1265,6 +1265,52 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
     );
 }
 
+// -- Parameters API - BEGIN
+export function fetchDynamicSimulationProviders() {
+    return Promise.resolve(['DynaWaltz']);
+}
+export function fetchDynamicSimulationProvider() {
+    return Promise.resolve(['DynaWaltz']);
+}
+export function fetchDefaultDynamicSimulationProvider() {
+    return Promise.resolve(['DynaWaltz']);
+}
+export function updateDynamicSimulationProvider() {
+    return Promise.resolve(['DynaWaltz']);
+}
+export function fetchDynamicSimulationParameters() {
+    return Promise.resolve({
+        timeDelay: { startTime: 0, stopTime: 500 },
+        solver: {
+            values: [
+                { type: 'IDA', name: 'Order 1', id: '1' },
+                { type: 'IDA', name: 'Order 2', id: '2' },
+                {
+                    type: 'Simplified',
+                    name: 'Without step recalculation',
+                    id: '3',
+                },
+                {
+                    type: 'Simplified',
+                    name: 'With step recalculation',
+                    id: '4',
+                },
+                {
+                    type: 'Simplified',
+                    name: 'With higher accuracy requirements',
+                    id: '5',
+                },
+            ],
+            id: '2',
+        },
+        mapping: {
+            values: ['gautier2', 'thang2', 'demo', 'demo2'],
+            value: 'gautier2',
+        },
+    });
+}
+export function updateDynamicSimulationParameters() {}
+// -- Parameters API - END
 // --- Dynamic simulation API - END
 
 export function fetchContingencyAndFiltersLists(listIds) {

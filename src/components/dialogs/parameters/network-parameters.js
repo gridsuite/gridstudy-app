@@ -11,16 +11,14 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_FLUX_CONVENTION,
 } from '../../../utils/config-params';
-import {
-    CloseButton,
-    LabelledButton,
-    SwitchWithLabel,
-    useParameterState,
-    useStyles,
-} from './parameters';
+import { useParameterState } from './parameters';
 import { fetchDefaultParametersValues } from '../../../utils/rest-api';
 import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
+import { CloseButton } from './common/close-button';
+import { SwitchWithLabel } from './common/switch-with-label';
+import { LabelledButton } from './common/labelled-button';
+import { useStyles } from './parameters-styles';
 
 export const FluxConventions = {
     IIDM: 'iidm',

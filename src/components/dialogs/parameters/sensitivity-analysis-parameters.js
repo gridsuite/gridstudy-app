@@ -7,8 +7,11 @@
 
 import React, { useCallback } from 'react';
 import { Grid } from '@mui/material';
-import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
+import { CloseButton } from './common/close-button';
+import { DropDown } from './common/drop-down';
+import { LabelledButton } from './common/labelled-button';
+import { useStyles } from './parameters-styles';
 
 export const SensitivityAnalysisParameters = ({
     hideParameters,

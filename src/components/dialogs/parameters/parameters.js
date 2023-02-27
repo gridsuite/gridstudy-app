@@ -8,11 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import makeStyles from '@mui/styles/makeStyles';
 import {
-    Grid,
-    Box,
-    Button,
     Container,
     Dialog,
     DialogContent,
@@ -20,27 +16,30 @@ import {
     Tab,
     Tabs,
     Typography,
-    Switch,
-    Select,
-    MenuItem,
 } from '@mui/material';
 
 import {
+    fetchDefaultDynamicSimulationProvider,
     fetchDefaultSecurityAnalysisProvider,
     fetchDefaultSensitivityAnalysisProvider,
+    fetchDynamicSimulationParameters,
+    fetchDynamicSimulationProvider,
+    fetchDynamicSimulationProviders,
     fetchSecurityAnalysisProvider,
-    fetchSensitivityAnalysisProvider,
     fetchSecurityAnalysisProviders,
+    fetchSensitivityAnalysisProvider,
     fetchSensitivityAnalysisProviders,
+    getDefaultLoadFlowProvider,
+    getLoadFlowParameters,
+    getLoadFlowProvider,
+    getLoadFlowProviders,
+    setLoadFlowParameters,
+    setLoadFlowProvider,
     updateConfigParameter,
+    updateDynamicSimulationParameters,
+    updateDynamicSimulationProvider,
     updateSecurityAnalysisProvider,
     updateSensitivityAnalysisProvider,
-    getLoadFlowParameters,
-    getLoadFlowProviders,
-    getLoadFlowProvider,
-    getDefaultLoadFlowProvider,
-    setLoadFlowProvider,
-    setLoadFlowParameters,
 } from '../../../utils/rest-api';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -59,107 +58,14 @@ import {
 } from './short-circuit-parameters';
 import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
+import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
-
-export const CloseButton = ({ hideParameters, classeStyleName }) => {
-    return (
-        <Button onClick={hideParameters} className={classeStyleName}>
-            <FormattedMessage id="close" />
-        </Button>
-    );
-};
-
-export const SwitchWithLabel = ({ value, label, callback }) => {
-    const classes = useStyles();
-    return (
-        <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
-            </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
-                <Switch
-                    checked={value}
-                    onChange={callback}
-                    value={value}
-                    inputProps={{ 'aria-label': 'primary checkbox' }}
-                />
-            </Grid>
-        </>
-    );
-};
-
-export const DropDown = ({ value, label, values, callback }) => {
-    const classes = useStyles();
-    return (
-        <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
-            </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
-                <Select
-                    labelId={label}
-                    value={value}
-                    onChange={callback}
-                    size="small"
-                >
-                    {Object.entries(values).map(([key, value]) => (
-                        <MenuItem key={key} value={key}>
-                            <FormattedMessage id={value} />
-                        </MenuItem>
-                    ))}
-                </Select>
-            </Grid>
-        </>
-    );
-};
-
-export const useStyles = makeStyles((theme) => ({
-    title: {
-        padding: theme.spacing(2),
-    },
-    grid: {
-        paddingTop: theme.spacing(2),
-        padding: theme.spacing(0),
-        flexGrow: 1,
-    },
-    minWidthMedium: {
-        minWidth: theme.spacing(20),
-    },
-    controlItem: {
-        justifyContent: 'flex-end',
-    },
-    button: {
-        marginBottom: theme.spacing(2),
-        marginLeft: theme.spacing(1),
-    },
-    advancedParameterButton: {
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(1),
-    },
-    marginTopButton: {
-        marginTop: 10,
-    },
-}));
+import TabPanel from './common/tab-panel';
+import { useStyles } from './parameters-styles';
 
 export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',
-};
-
-export const LabelledButton = ({ callback, label, name }) => {
-    return (
-        <Button onClick={callback} className={name}>
-            <FormattedMessage id={label} />
-        </Button>
-    );
 };
 
 const INITIAL_PROVIDERS = {};
@@ -381,6 +287,7 @@ const TAB_VALUES = {
     securityAnalysisParamsTabValue: 'SecurityAnalysis',
     sensitivityAnalysisParamsTabValue: 'SensitivityAnalysis',
     shortCircuitParamsTabValue: 'ShortCircuit',
+    dynamicSimulationParamsTabValue: 'DynamicSimulation',
     advancedParamsTabValue: 'Advanced',
 };
 
@@ -424,32 +331,28 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
+    const dynamicSimulationParametersBackend = useParametersBackend(
+        user,
+        'DynamicSimulation',
+        fetchDynamicSimulationProviders,
+        fetchDynamicSimulationProvider,
+        fetchDefaultDynamicSimulationProvider,
+        updateDynamicSimulationProvider,
+        fetchDynamicSimulationParameters,
+        updateDynamicSimulationParameters
+    );
+
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
-
-    function TabPanel(props) {
-        const { children, value, index, ...other } = props;
-        return (
-            <Typography
-                component="div"
-                role="tabpanel"
-                hidden={value !== index}
-                id={`simple-tabpanel-${index}`}
-                aria-labelledby={`simple-tab-${index}`}
-                {...other}
-            >
-                {value === index && <Box p={1}>{children}</Box>}
-            </Typography>
-        );
-    }
 
     useEffect(() => {
         setTabValue((oldValue) => {
             if (
                 !enableDeveloperMode &&
                 (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
-                    oldValue === TAB_VALUES.shortCircuitParamsTabValue)
+                    oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
+                    oldValue === TAB_VALUES.dynamicSimulationParamsTabValue)
             ) {
                 return TAB_VALUES.securityAnalysisParamsTabValue;
             }
@@ -516,6 +419,17 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 disabled={!studyUuid}
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
+                            />
+                        )}
+                        {enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={
+                                    <FormattedMessage id="DynamicSimulation" />
+                                }
+                                value={
+                                    TAB_VALUES.dynamicSimulationParamsTabValue
+                                }
                             />
                         )}
                         <Tab
@@ -597,8 +511,28 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 {studyUuid && (
                                     <ShortCircuitParameters
                                         hideParameters={hideParameters}
-                                        useShortCircuitParameters={
+                                        parametersBackend={
                                             useShortCircuitParameters
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )
+                    }
+                    {
+                        //To be removed when DynamicSimulation is not in developer mode only.
+                        enableDeveloperMode && (
+                            <TabPanel
+                                value={tabValue}
+                                index={
+                                    TAB_VALUES.dynamicSimulationParamsTabValue
+                                }
+                            >
+                                {studyUuid && (
+                                    <DynamicSimulationParameters
+                                        hideParameters={hideParameters}
+                                        parametersBackend={
+                                            dynamicSimulationParametersBackend
                                         }
                                     />
                                 )}
