@@ -8,12 +8,12 @@
 import { Container, Grid, Typography } from '@mui/material';
 import { useStyles } from '../parameters-styles';
 
-const MappingParameters = ({}) => {
+const MappingParameters = ({ mapping, onUpdateMapping }) => {
     const classes = useStyles();
     return (
         <Grid container className={classes.grid}>
             <Container maxWidth="md">
-                <Typography>Mapping</Typography>
+                <Typography>Mapping: ${JSON.stringify(mapping)}</Typography>
             </Container>
         </Grid>
     );

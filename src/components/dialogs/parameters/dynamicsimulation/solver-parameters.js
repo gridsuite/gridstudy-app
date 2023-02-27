@@ -8,12 +8,12 @@
 import { Container, Grid, Typography } from '@mui/material';
 import { useStyles } from '../parameters-styles';
 
-const SolverParameters = ({}) => {
+const SolverParameters = ({ solver, onUpdateSolver }) => {
     const classes = useStyles();
     return (
         <Grid container className={classes.grid}>
             <Container maxWidth="md">
-                <Typography>Solver</Typography>
+                <Typography>Solver : ${JSON.stringify(solver)}</Typography>
             </Container>
         </Grid>
     );

@@ -33,7 +33,7 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
         provider,
         updateProvider,
         resetProvider,
-        params,
+        parameters,
         updateParameters,
         resetParameters,
     ] = parametersBackend;
@@ -99,19 +99,28 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                         value={tabValue}
                         index={TAB_VALUES.timeDelayParamsTabValue}
                     >
-                        <TimeDelayParameters />
+                        <TimeDelayParameters
+                            timeDelay={parameters.timeDelay}
+                            onUpdateTimeDelay={updateParameters}
+                        />
                     </TabPanel>
                     <TabPanel
                         value={tabValue}
                         index={TAB_VALUES.solverParamsTabValue}
                     >
-                        <SolverParameters />
+                        <SolverParameters
+                            solver={parameters.solver}
+                            onUpdateSolver={updateParameters}
+                        />
                     </TabPanel>
                     <TabPanel
                         value={tabValue}
                         index={TAB_VALUES.mappingParamsTabValue}
                     >
-                        <MappingParameters />
+                        <MappingParameters
+                            mapping={parameters.mapping}
+                            onUpdateMapping={updateParameters}
+                        />
                     </TabPanel>
                 </Grid>
 

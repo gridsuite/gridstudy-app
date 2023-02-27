@@ -8,12 +8,14 @@
 import { Container, Grid, Typography } from '@mui/material';
 import { useStyles } from '../parameters-styles';
 
-const TimeDelayParameters = ({}) => {
+const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
     const classes = useStyles();
     return (
         <Grid container className={classes.grid}>
             <Container maxWidth="md">
-                <Typography>Time delay</Typography>
+                <Typography>
+                    Time delay : ${JSON.stringify(timeDelay)}
+                </Typography>
             </Container>
         </Grid>
     );
