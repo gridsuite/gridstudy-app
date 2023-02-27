@@ -119,8 +119,9 @@ const BaseEquipmentMenu = ({
                         handleViewInSpreadsheet={handleViewInSpreadsheet}
                     />
                 )}
-            {/* menus for equipment generator */}
-            {equipmentType === equipments.generators && (
+            {/* menus for equipment generator and load */}
+            {(equipmentType === equipments.generators ||
+                equipmentType === equipments.loads) && (
                 <ItemViewInForm
                     equipmentId={equipmentId}
                     equipmentType={equipmentType}
