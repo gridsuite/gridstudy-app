@@ -181,6 +181,42 @@ export function getEquipmentTypeFromFeederType(feederType) {
     }
 }
 
+export function getFeederTypeFromEquipmentType(equipmentType) {
+    switch (equipmentType) {
+        case equipments.substations:
+            return FEEDER_TYPES.SUBSTATION.type;
+        case equipments.voltageLevels:
+            return FEEDER_TYPES.VOLTAGE_LEVEL.type;
+        case equipments.lines:
+            return FEEDER_TYPES.LINE.type;
+        case equipments.loads:
+            return FEEDER_TYPES.LOAD.type;
+        case equipments.batteries:
+            return FEEDER_TYPES.BATTERY.type;
+        case equipments.danglingLines:
+            return FEEDER_TYPES.DANGLING_LINE.type;
+        case equipments.generators:
+            return FEEDER_TYPES.GENERATOR.type;
+        case equipments.vscConverterStations:
+        case equipments.lccConverterStations:
+            return FEEDER_TYPES.HVDC_CONVERTER_STATION.type;
+        case equipments.hvdcLines:
+            return FEEDER_TYPES.HVDC_LINE.type;
+        case equipments.shuntCompensators:
+            return FEEDER_TYPES.SHUNT_COMPENSATOR.type;
+        case equipments.staticVarCompensators:
+            return FEEDER_TYPES.STATIC_VAR_COMPENSATOR.type;
+        case equipments.twoWindingsTransformers:
+            return FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER.type;
+        case equipments.threeWindingsTransformers:
+            return FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER.type;
+        default: {
+            console.log('bad equipment type ', equipmentType);
+            return null;
+        }
+    }
+}
+
 export const useDiagram = () => {
     const dispatch = useDispatch();
 
