@@ -24,7 +24,7 @@ const FloatInput = (props) => {
         if (value === '') return null;
 
         const tmp = value?.replace(',', '.') || '';
-        if (tmp.endsWith('.') || tmp.endsWith('0')) return value;
+        if (tmp.endsWith('.') || tmp.endsWith('0')) return tmp;
         return parseFloat(tmp) || null;
     };
 
