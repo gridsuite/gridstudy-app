@@ -320,6 +320,7 @@
     "CheckAll": "Select all / none",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
+    "DeleteFromMenu": "Delete",
 
     "LockoutLine": "Lock out the line",
     "TripLine": "Trip the line",
@@ -519,6 +520,11 @@
     "SeriesReactanceText": "Series reactance",
     "ShuntConductanceText": "Shunt conductance",
     "ShuntSusceptanceText": "Shunt susceptance",
+    "Reactor": "Reactor",
+    "Capacitor": "Capacitor",
+    "QatNominalV": "Q at nominal voltage",
+    "QatNominalVLabel": "Q at nominal voltage (MVAr)",
+    "SusceptanceLabel": "Susceptance (S)",
 
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",
@@ -528,6 +534,7 @@
     "ShuntCompensatorErrorMaximumLessThanOne": "Maximum number of sections should be greater than 0",
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
+    "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
