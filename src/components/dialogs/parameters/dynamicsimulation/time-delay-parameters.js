@@ -5,18 +5,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Container, Grid, Typography } from '@mui/material';
-import { useStyles } from '../parameters-styles';
+import { Grid, Typography } from '@mui/material';
+import { makeComponentsFor, TYPES } from '../util/make-component-utils';
+import { useCallback } from 'react';
 
 const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
-    const classes = useStyles();
+    const handleUpdateTimeDelay = useCallback(
+        (newTimeDelay) => {
+            onUpdateTimeDelay({ timeDelay: newTimeDelay });
+        },
+        [onUpdateTimeDelay]
+    );
+
+    const defParams = {
+        startTime: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationStartTime',
+        },
+        stopTime: {
+            type: TYPES.integer,
+            description: 'DynamicSimulationStartTime',
+        },
+    };
     return (
-        <Grid container className={classes.grid}>
-            <Container maxWidth="md">
-                <Typography>
-                    Time delay : ${JSON.stringify(timeDelay)}
-                </Typography>
-            </Container>
+        <Grid container>
+            <Typography>
+                {`Time delay : ${JSON.stringify(timeDelay)}`}
+            </Typography>
+            {makeComponentsFor(defParams, timeDelay, handleUpdateTimeDelay)}
         </Grid>
     );
 };

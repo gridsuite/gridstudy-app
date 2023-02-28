@@ -1309,7 +1309,9 @@ export function fetchDynamicSimulationParameters() {
         },
     });
 }
-export function updateDynamicSimulationParameters() {}
+export function updateDynamicSimulationParameters() {
+    return Promise.resolve('Update success');
+}
 // -- Parameters API - END
 // --- Dynamic simulation API - END
 

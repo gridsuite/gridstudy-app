@@ -124,10 +124,6 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                     </TabPanel>
                 </Grid>
 
-                <Grid container paddingTop={1}>
-                    <LineSeparator />
-                </Grid>
-
                 <Grid
                     container
                     className={

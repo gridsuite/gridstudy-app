@@ -10,6 +10,8 @@ import { LabelledSilder, LineSeparator } from '../../dialogUtils';
 import { SwitchWithLabel } from '../common/switch-with-label';
 import { DropDown } from '../common/drop-down';
 import { CountrySelector } from '../common/country-selector';
+import IntegerInput from '../common/integer-input';
+import DoubleInput from '../common/double-input';
 
 // --- define render makers --- //
 export const makeRenderSwitchWithLabel =
@@ -63,6 +65,26 @@ export const makeRenderCountrySelector =
             />
         );
     };
+export const makeRenderIntegerField =
+    () => (defParam, key, params, setter, value) => {
+        return (
+            <IntegerInput
+                value={value}
+                label={defParam.description}
+                callback={(ev) => setter({ ...params, [key]: ev.target.value })}
+            />
+        );
+    };
+export const makeRenderDoubleField =
+    () => (defParam, key, params, setter, value) => {
+        return (
+            <DoubleInput
+                value={value}
+                label={defParam.description}
+                callback={(ev) => setter({ ...params, [key]: ev.target.value })}
+            />
+        );
+    };
 
 // --- define data types --- //
 export const TYPES = {
@@ -70,6 +92,8 @@ export const TYPES = {
     bool: 'Bool',
     slider: 'Slider',
     countries: 'Countries',
+    integer: 'Integer',
+    double: 'Double',
 };
 
 // --- define default render for each data types
@@ -78,6 +102,8 @@ const DEFAULT_RENDER = {
     [TYPES.enum]: makeRenderDropDown(),
     [TYPES.slider]: makeRenderLabelledSlider(),
     [TYPES.countries]: makeRenderCountrySelector(),
+    [TYPES.integer]: makeRenderIntegerField(),
+    [TYPES.double]: makeRenderDoubleField(),
 };
 
 export const makeComponentsFor = (defParams, params, setter) => {
