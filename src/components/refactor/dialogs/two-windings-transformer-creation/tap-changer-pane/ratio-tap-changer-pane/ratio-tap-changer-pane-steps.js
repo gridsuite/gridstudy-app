@@ -125,6 +125,7 @@ const RatioTapChangerPaneSteps = ({ disabled }) => {
             columnsDefinition={COLUMNS_DEFINITIONS}
             csvColumns={csvColumns}
             createRuleMessageId="CreateRegulationRule"
+            createRuleAllowNegativeValues={false}
             importRuleMessageId="ImportRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
