@@ -67,13 +67,8 @@ const schema = yup.object().shape({
                 [VERTICAL_POSITION]: yup.number().required().default(1),
             })
         )
-        /*  .test('unique-ids', 'Ids must be unique', function (values) {
-            const ids = values.map((value) => value[ID]);
-            const uniqueIds = new Set(ids);
-            return ids.length === uniqueIds.size;
-        }) */
         .min(1, <FormattedMessage id={'EmptyList/bbs'} />)
-        .unique(ID, 'IDs must be unique')
+        .unique(ID, <FormattedMessage id={'DuplicateId'} />)
         .uniqueHorizontalVertical(),
     [BUS_BAR_CONNECTIONS]: yup.array().of(
         yup.object().shape({

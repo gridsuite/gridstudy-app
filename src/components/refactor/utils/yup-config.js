@@ -5,108 +5,117 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { FormattedMessage } from 'react-intl';
 import * as yup from 'yup';
-import { HORIZONTAL_POSITION, ID, VERTICAL_POSITION } from './field-constants';
+import {
+    BUS_BAR_SECTIONS,
+    HORIZONTAL_POSITION,
+    VERTICAL_POSITION,
+} from './field-constants';
 
-/* yup.addMethod(yup.array, 'unique', function (message, mapper = (a) => a) {
-    return this.test('unique-ids', 'Ids must be unique', function (values) {
-        const ids = values.map((value) => value[ID]);
-        const uniqueIds = new Set(ids);
-        return ids.length === uniqueIds.size;
-    });
-}); */
+const SameHorizAndVertPosMessage = (
+    <FormattedMessage id={'SameHorizAndVertPos'} />
+);
 
 yup.addMethod(
     yup.array,
     'unique',
     function (fieldName, message, mapper = (a) => a) {
         return this.test('unique-fields', message, function (values) {
-            const fields = values.map((value) => value[fieldName]);
-            const uniqueFields = new Set(fields);
-            return fields.length === uniqueFields.size;
+            const counts = new Map();
+            values.forEach((element, index) => {
+                const id = element[fieldName];
+                counts.set(id, (counts.get(id) || []).concat(index));
+            });
+            const result = [...counts.values()]
+                .filter((indexes) => indexes.length > 1)
+                .flat();
+            return result?.length === 0
+                ? true
+                : {
+                      name: 'ValidationError',
+                      path: `${BUS_BAR_SECTIONS}`,
+                      errors: [],
+                      inner: result.map(
+                          (index) =>
+                              new yup.ValidationError(
+                                  message?.props?.id,
+                                  null,
+                                  `${BUS_BAR_SECTIONS}[${index}].${fieldName}`
+                              )
+                      ),
+                  };
         });
     }
 );
-
-/* yup.addMethod(
-    yup.array,
-    'uniqueHorizontalVertical',
-    function (message, mapper = (a) => a) {
-        return this.test(
-            'unique-horizontal-vertical',
-            message,
-            function (values) {
-                const fields = values.filter(
-                    (value, index) => values.indexOf(value) === index
-                );
-                return fields.length === values.size;
-            }
-        );
-    }
-); */
 
 yup.addMethod(
     yup.array,
     'uniqueHorizontalVertical',
     function (message, mapper = (a) => a) {
+        // Return a yup test function that validates the array
         return this.test(
+            // Set the name of the validation rule
             'unique-positions',
+            // Set the error message to display if the validation fails
             'Horizontal and Vertical positions must be unique',
-            function (value) {
-                const horizontalPositions = value.map(
-                    (v) => v[HORIZONTAL_POSITION]
-                );
-                const verticalPositions = value.map(
-                    (v) => v[VERTICAL_POSITION]
-                );
-                const uniqueHorizontalPositions = new Set(horizontalPositions);
-                const uniqueVerticalPositions = new Set(verticalPositions);
-                if (
-                    horizontalPositions.length ===
-                        uniqueHorizontalPositions.size &&
-                    verticalPositions.length === uniqueVerticalPositions.size
-                ) {
-                    return true;
-                } else {
-                    return false;
-                    /*  return this.createError({
-                        message:
-                            'Horizontal and Vertical positions must be unique for each object',
-                        path: `${this.path}[${value.findIndex(
-                            (v) =>
-                                v[HORIZONTAL_POSITION] ===
-                                    v[HORIZONTAL_POSITION] &&
-                                v[VERTICAL_POSITION] === v[VERTICAL_POSITION]
-                        )}]`,
-                    }); */
+            function (values) {
+                // Initialize the errors and indexes arrays
+                let errors = [];
+                let indexs = [];
+
+                // Loop through each item in the array
+                for (let i = 0; i < values.length; i++) {
+                    // Loop through each item in the array after the current item
+                    for (let j = i + 1; j < values.length; j++) {
+                        // Check if the horizontal and vertical positions are the same
+                        if (
+                            !indexs.includes(j) &&
+                            values[j]?.[HORIZONTAL_POSITION] ===
+                                values[i]?.[HORIZONTAL_POSITION] &&
+                            values[j]?.[VERTICAL_POSITION] ===
+                                values[i]?.[VERTICAL_POSITION]
+                        ) {
+                            // If they are the same, add validation errors for both items
+                            errors.push(
+                                new yup.ValidationError(
+                                    SameHorizAndVertPosMessage?.props?.id,
+                                    null,
+                                    `${BUS_BAR_SECTIONS}[${i}].${HORIZONTAL_POSITION}`
+                                ),
+                                new yup.ValidationError(
+                                    SameHorizAndVertPosMessage?.props?.id,
+                                    null,
+                                    `${BUS_BAR_SECTIONS}[${i}].${VERTICAL_POSITION}`
+                                ),
+                                new yup.ValidationError(
+                                    SameHorizAndVertPosMessage?.props?.id,
+                                    null,
+                                    `${BUS_BAR_SECTIONS}[${j}].${HORIZONTAL_POSITION}`
+                                ),
+                                new yup.ValidationError(
+                                    SameHorizAndVertPosMessage?.props?.id,
+                                    null,
+                                    `${BUS_BAR_SECTIONS}[${j}].${VERTICAL_POSITION}`
+                                )
+                            );
+                        }
+                    }
                 }
+
+                return errors?.length === 0
+                    ? true
+                    : // Return a validation error object if there are any errors
+                      {
+                          name: 'ValidationError',
+                          path: `${BUS_BAR_SECTIONS}`,
+                          errors: [],
+                          inner: errors,
+                      };
             }
         );
     }
 );
-
-const uniqueHorizontalVertical = () => {
-    const set = new Set();
-    return yup
-        .mixed()
-        .test(
-            'uniqueHorizontalVertical',
-            '${path} contains a duplicate HORIZONTAL_POSITION or VERTICAL_POSITION',
-            function (value) {
-                const { HORIZONTAL_POSITION, VERTICAL_POSITION } =
-                    this.options.context;
-                const key = `${value[HORIZONTAL_POSITION]},${value[VERTICAL_POSITION]}`;
-                if (set.has(key)) {
-                    return false;
-                }
-                set.add(key);
-                return true;
-            }
-        );
-};
-
-yup.addMethod(yup.number, 'uniqueHorizontalVertical', uniqueHorizontalVertical);
-yup.addMethod(yup.object, 'uniqueHorizontalVertical', uniqueHorizontalVertical);
 
 yup.setLocale({
     mixed: {
