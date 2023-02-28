@@ -18,6 +18,7 @@ import PlayIcon from '@mui/icons-material/PlayArrow';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../util/equipmentInfosHandler';
 import {
@@ -33,6 +34,7 @@ import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
+import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -54,6 +56,7 @@ const withBranchMenu =
         position,
         handleClose,
         handleViewInSpreadsheet,
+        handleDeleteEquipment,
         currentNode,
         studyUuid,
         modificationInProgress,
@@ -172,6 +175,7 @@ const withBranchMenu =
                     equipmentId={id}
                     equipmentType={equipmentType}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    handleDeleteEquipment={handleDeleteEquipment}
                 />
                 {equipmentType === equipments.lines && (
                     <MenuItem
@@ -319,6 +323,31 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() =>
+                        handleDeleteEquipment(
+                            getFeederTypeFromEquipmentType(equipmentType),
+                            id
+                        )
+                    }
+                    disabled={!isNodeEditable}
+                >
+                    <ListItemIcon>
+                        <DeleteIcon />
+                    </ListItemIcon>
+
+                    <ListItemText
+                        className={classes.listItemText}
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({
+                                    id: 'DeleteFromMenu',
+                                })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
             </Menu>
         );
     };
@@ -329,6 +358,7 @@ withBranchMenu.propTypes = {
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
+    handleDeleteEquipment: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
     modificationInProgress: PropTypes.func,

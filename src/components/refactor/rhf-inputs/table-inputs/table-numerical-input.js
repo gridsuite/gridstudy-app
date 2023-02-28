@@ -53,6 +53,7 @@ export const TableNumericalInput = ({
             error={!!error?.message}
             type="Number"
             size={'small'}
+            fullWidth
             inputRef={ref}
             inputProps={{
                 style: {
