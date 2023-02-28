@@ -30,7 +30,7 @@ const TextInput = ({ value, label, callback, validator }) => {
                 callback(event);
             }
         },
-        [callback]
+        [callback, validator]
     );
 
     // used to reset the initial value from an outside button
@@ -38,7 +38,7 @@ const TextInput = ({ value, label, callback, validator }) => {
         if (value === initialValue) {
             setControlledValue(initialValue);
         }
-    }, [value]);
+    }, [value, initialValue]);
 
     return (
         <>
