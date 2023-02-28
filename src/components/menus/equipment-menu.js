@@ -24,6 +24,7 @@ const withEquipmentMenu =
         position,
         handleClose,
         handleViewInSpreadsheet,
+        handleDeleteEquipment,
         handleOpenModificationDialog,
     }) => {
         const classes = useStyles();
@@ -44,6 +45,7 @@ const withEquipmentMenu =
                     equipmentId={id}
                     equipmentType={equipmentType}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                 />
             </Menu>
