@@ -102,7 +102,17 @@ export const MAXIMUM_NUMBER_OF_SECTIONS = 'maximumNumberOfSections';
 export const CURRENT_NUMBER_OF_SECTIONS = 'currentNumberOfSections';
 export const IDENTICAL_SECTIONS = 'identicalSections';
 export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
-
+export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
+export const Q_AT_NOMINAL_V = 'qatNominalV';
+export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
+export const CHARACTERISTICS_CHOICES = {
+    Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
+    SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
+};
+export const SHUNT_COMPENSATOR_TYPES = {
+    REACTOR: { id: 'REACTOR', label: 'Reactor' },
+    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
+};
 //line
 export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
 export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
