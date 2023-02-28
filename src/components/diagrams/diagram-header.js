@@ -86,8 +86,8 @@ const DiagramHeader = (props) => {
         (state) =>
             state.diagramStates.find(
                 (diagram) =>
-                    diagram.svgType === props.svgType &&
-                    diagram.id === props.diagramId
+                    diagram.svgType === props?.svgType &&
+                    diagram.id === props?.diagramId
             )?.needsToBlink
     );
 
@@ -101,7 +101,7 @@ const DiagramHeader = (props) => {
                 }, BLINK_LENGTH_MS);
             }
         }
-    }, [needsToBlink, dispatch, props.svgType, props.diagramId, blinking]);
+    }, [needsToBlink, dispatch, blinking]);
 
     /**
      * RENDER
