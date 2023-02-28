@@ -15,7 +15,7 @@ import {
     gridItemWithErrorMsg,
     GridSection,
 } from './dialogUtils';
-import { VARIATION_MODE, VARIATION_TYPE } from '../network/constants';
+import { VARIATION_MODES, VARIATION_TYPES } from '../network/constants';
 import { useExpandableValues } from './inputs/use-expandable-values';
 import makeStyles from '@mui/styles/makeStyles';
 import { generatorScaling } from '../../utils/rest-api';
@@ -75,7 +75,7 @@ const GeneratorScalingVariation = ({
         label: 'VariationMode',
         defaultValue: defaultValue?.variationMode ?? PROPORTIONAL_TO_PMAX,
         inputForm: inputForm,
-        enumObjects: VARIATION_MODE,
+        enumObjects: VARIATION_MODES,
         errorMsg: errors?.variationModeError,
     });
 
@@ -130,6 +130,7 @@ const GeneratorScalingVariation = ({
     });
 
     useEffect(() => {
+        console.log('filters : ', filters);
         onChange(index, { id, filters, variationValue, variationMode });
     }, [onChange, filters, variationValue, variationMode, index, id]);
 
@@ -217,7 +218,7 @@ const GeneratorScalingDialog = ({
     const [variationType, variationTypeField] = useRadioValue({
         inputForm: inputForm,
         defaultValue: formValues?.variationType ?? 'DELTA_P',
-        possibleValues: VARIATION_TYPE,
+        possibleValues: VARIATION_TYPES,
     });
 
     const [variations, variationsField] = useExpandableValues({

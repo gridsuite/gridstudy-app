@@ -103,12 +103,12 @@ export const BRANCH_STATUS_ACTION = {
     SWITCH_ON: 'SWITCH_ON',
 };
 
-export const VARIATION_TYPE = [
+export const VARIATION_TYPES = [
     { id: 'DELTA_P', label: 'DeltaP' },
     { id: 'TARGET_P', label: 'TargetPText' },
 ];
 
-export const VARIATION_MODE = [
+export const VARIATION_MODES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
     {
         id: 'PROPORTIONAL_TO_PMAX',

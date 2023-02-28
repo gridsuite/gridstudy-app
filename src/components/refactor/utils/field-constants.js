@@ -111,3 +111,10 @@ export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 
 // dnd table
 export const SELECTED = 'selected';
+
+// generator scaling
+export const VARIATION = 'variation';
+export const VARIATION_MODE = 'variationMode';
+export const FILTERS = 'filters';
+export const VARIATION_TYPE = 'variationType';
+export const VARIATION_VALUE = 'variationValue'

@@ -64,6 +64,7 @@ import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
 import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
+import GeneratorScalingDialogRefactor from "../../refactor/dialogs/generator-scaling/generator-scaling-dialog-refactor";
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -346,6 +347,11 @@ const NetworkModificationNodeEditor = () => {
         GENERATOR_SCALING: {
             label: 'GeneratorScaling',
             dialog: () => adapt(GeneratorScalingDialog),
+            icon: <AddIcon />,
+        },
+        GENERATOR_SCALING_Refactor: {
+            label: 'GeneratorScaling',
+            dialog: () => adapt(GeneratorScalingDialogRefactor),
             icon: <AddIcon />,
         },
         LOAD_SCALING: {
