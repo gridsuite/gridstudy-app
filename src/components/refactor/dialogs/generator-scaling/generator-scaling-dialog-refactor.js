@@ -1,4 +1,3 @@
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import {FormProvider, useForm} from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import yup from '../../utils/yup-config';
@@ -7,7 +6,7 @@ import EquipmentSearchDialog from "../../../dialogs/equipment-search-dialog";
 import GeneratorScalingForm from "./generator-scaling-form";
 import {useCallback} from "react";
 import {useFormSearchCopy} from "../../../dialogs/form-search-copy-hook";
-
+import { useSnackMessage } from '@gridsuite/commons-ui';
 const emptyFormData = {};
 
 const schema = yup.object().shape({}).required();

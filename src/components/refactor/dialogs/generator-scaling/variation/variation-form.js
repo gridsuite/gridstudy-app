@@ -13,7 +13,7 @@ import SelectInput from '../../../rhf-inputs/select-input';
 import { VARIATION_MODES } from '../../../../network/constants';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {ActivePowerAdornment, gridItem, gridItemWithErrorMsg} from '../../../../dialogs/dialogUtils';
-import {elementType} from '@gridsuite/commons-ui/src';
+import {elementType} from '@gridsuite/commons-ui';
 
 const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 const VENTILATION = 'VENTILATION';
