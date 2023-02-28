@@ -660,10 +660,6 @@ const NetworkTable = (props) => {
             setLineEdit({});
         }
         function commitChanges(rowData) {
-            function capitaliseFirst(str) {
-                return str.charAt(0).toUpperCase() + str.slice(1);
-            }
-
             if (Object.values(lineEdit.newValues).length === 0) {
                 // nothing to commit => abort
                 resetChanges();
@@ -672,11 +668,8 @@ const NetworkTable = (props) => {
             // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
             // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
             let groovyCr =
-                'equipment = network.get' +
-                capitaliseFirst(
-                    TABLES_DEFINITION_INDEXES.get(tabIndex)
-                        .modifiableEquipmentType
-                ) +
+                'equipment = network.' +
+                TABLES_DEFINITION_INDEXES.get(tabIndex).groovyEquipmentGetter +
                 "('" +
                 lineEdit.id.replace(/'/g, "\\'") +
                 "')\n";

@@ -159,6 +159,7 @@ export const TABLES_DEFINITIONS = {
         name: 'TwoWindingsTransformers',
         resource: equipments.twoWindingsTransformers,
         modifiableEquipmentType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        groovyEquipmentGetter: 'getTwoWindingsTransformer',
         columns: [
             {
                 id: 'ID',
@@ -313,6 +314,7 @@ export const TABLES_DEFINITIONS = {
         resource: equipments.threeWindingsTransformers,
         modifiableEquipmentType:
             EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
+        groovyEquipmentGetter: 'getThreeWindingsTransformer',
         columns: [
             {
                 id: 'ID',

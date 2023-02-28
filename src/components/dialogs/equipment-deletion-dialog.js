@@ -10,7 +10,6 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
-import { useParams } from 'react-router-dom';
 import { deleteEquipment } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { validateField } from '../util/validation-functions';
@@ -24,16 +23,18 @@ const defaultEquipmentType = EQUIPMENT_TYPES.LINE;
 
 /**
  * Dialog to delete an equipment in the network
- * @param currentNodeUuid : the currently selected tree node
+ * @param studyUuid the study we are currently working on
+ * @param currentNode : the currently selected tree node
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const EquipmentDeletionDialog = ({
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
@@ -137,6 +138,17 @@ const EquipmentDeletionDialog = ({
         setErrors(new Map());
     };
 
+    const getEquipmentTypes = () => {
+        const equipmentTypesToExclude = new Set([
+            EQUIPMENT_TYPES.SWITCH.type,
+            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
+            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+        ]);
+        return Object.values(EQUIPMENT_TYPES).filter(
+            (equipmentType) => !equipmentTypesToExclude.has(equipmentType.type)
+        );
+    };
+
     return (
         <ModificationDialog
             onClear={handleClear}
@@ -164,11 +176,14 @@ const EquipmentDeletionDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            {Object.values(EQUIPMENT_TYPES).map((values) => {
+                            {getEquipmentTypes().map((equipmentType) => {
                                 return (
-                                    <MenuItem key={values.type} value={values}>
+                                    <MenuItem
+                                        key={equipmentType.type}
+                                        value={equipmentType}
+                                    >
                                         {intl.formatMessage({
-                                            id: values.type,
+                                            id: equipmentType.type,
                                         })}
                                     </MenuItem>
                                 );
@@ -185,7 +200,8 @@ const EquipmentDeletionDialog = ({
 };
 
 EquipmentDeletionDialog.propTypes = {
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     editData: PropTypes.object,
 };
 

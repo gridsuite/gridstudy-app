@@ -32,6 +32,7 @@ import { SensiInjections } from './sensi-injections';
 import { SensiHVDCs } from './sensi-hvdcs';
 import { SensiPSTs } from './sensi-psts';
 import { SensiNodes } from './sensi-nodes';
+import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 export const INJECTION_DISTRIBUTION_TYPES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
@@ -53,6 +54,33 @@ const PARAMETER_SENSI_INJECTIONS = 'sensiInjections';
 const PARAMETER_SENSI_HVDCS = 'sensiHVDCs';
 const PARAMETER_SENSI_PSTS = 'sensiPSTs';
 const PARAMETER_SENSI_NODES = 'sensiNodes';
+
+export const MONITORED_BRANCHES_EQUIPMENT_TYPES = [
+    EQUIPMENT_TYPES.LINE.type,
+    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+];
+
+export const PSTS_EQUIPMENT_TYPES = [
+    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+];
+
+export const MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES = [
+    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+];
+
+export const EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES = [
+    EQUIPMENT_TYPES.GENERATOR.type,
+    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+    EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+    EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
+    EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+];
+
+export const HVDC_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.HVDC_LINE.type];
+export const INJECTIONS_EQUIPMENT_TYPES = [
+    EQUIPMENT_TYPES.GENERATOR.type,
+    EQUIPMENT_TYPES.LOAD.type,
+];
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {

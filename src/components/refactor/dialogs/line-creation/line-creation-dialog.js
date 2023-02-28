@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -27,10 +27,10 @@ import {
     SHUNT_SUSCEPTANCE_2,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
 import { createLine } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
@@ -47,7 +47,8 @@ import LineCreationForm from './line-creation-form';
 
 /**
  * Dialog to create a load in the network
- * @param currentNodeUuid The node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentNode The node we are currently working on
  * @param editData the data to edit
  * @param onCreateLine callback to customize line creation process
  * @param displayConnectivity to display connectivity section or not
@@ -72,7 +73,8 @@ const emptyFormData = {
 
 const LineCreationDialog = ({
     editData,
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     onCreateLine = createLine,
     displayConnectivity = true,
     voltageLevelOptionsPromise,
@@ -104,8 +106,8 @@ const LineCreationDialog = ({
             }),
         })
         .required();
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
+    const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
     const equipmentPath = 'lines';
@@ -138,7 +140,7 @@ const LineCreationDialog = ({
                     getConnectivityFormData(
                         {
                             voltageLevelId: line.voltageLevelId1,
-                            busbarSectionId: null,
+                            busbarSectionId: line.busOrBusbarSectionId1,
                             connectionDirection: line.connectionDirection1,
                             connectionName: line.connectionName1,
                             connectionPosition: line.connectionPosition1,
@@ -149,7 +151,7 @@ const LineCreationDialog = ({
                     getConnectivityFormData(
                         {
                             voltageLevelId: line.voltageLevelId2,
-                            busbarSectionId: null,
+                            busbarSectionId: line.busOrBusbarSectionId2,
                             connectionDirection: line.connectionDirection2,
                             connectionName: line.connectionName2,
                             connectionPosition: line.connectionPosition2,
@@ -274,13 +276,14 @@ const LineCreationDialog = ({
             >
                 <LineCreationForm
                     displayConnectivity={displayConnectivity}
-                    voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
                 />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPE.LINE.name}
+                    equipmentType={EQUIPMENT_TYPES.LINE.type}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
@@ -291,7 +294,8 @@ const LineCreationDialog = ({
 
 LineCreationDialog.propTypes = {
     editData: PropTypes.object,
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default LineCreationDialog;

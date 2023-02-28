@@ -8,7 +8,6 @@ import ModificationDialog from './modificationDialog';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { createSubstation, fetchAppsAndUrls } from '../../utils/rest-api';
 import {
@@ -121,16 +120,18 @@ const fetchPredefinedProperties = () => {
 
 /**
  * Dialog to create a substation in the network
- * @param currentNodeUuid : the currently selected tree node
+ * @param studyUuid the study we are currently working on
+ * @param currentNode : the currently selected tree node
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const SubstationCreationDialog = ({
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
@@ -284,7 +285,8 @@ const SubstationCreationDialog = ({
 
 SubstationCreationDialog.propTypes = {
     editData: PropTypes.object,
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default SubstationCreationDialog;

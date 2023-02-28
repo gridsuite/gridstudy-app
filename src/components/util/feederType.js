@@ -12,21 +12,6 @@ export const FEEDER_TYPES = {
     /**
      * these are ComponentTypeNames from powsybl-single-line-diagram but we put them here because some ComponentTypeNames are also EquipmentsNames
      */
-    VSC_CONVERTER_STATION: {
-        type: 'VSC_CONVERTER_STATION',
-    },
-    LCC_CONVERTER_STATION: {
-        type: 'LCC_CONVERTER_STATION',
-    },
-    BUSBAR_SECTION: {
-        type: 'BUSBAR_SECTION',
-    },
-    BUS: {
-        type: 'BUS',
-    },
-    SWITCH: {
-        type: 'SWITCH',
-    },
     CAPACITOR: {
         type: 'CAPACITOR',
     },

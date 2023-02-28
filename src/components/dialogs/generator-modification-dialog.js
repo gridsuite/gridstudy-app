@@ -88,18 +88,22 @@ function getValueOrNull(val) {
 /**
  * Dialog to create a generator in the network
  * @param editData the data to edit
+ * @param defaultIdValue the id of generator to edit selected from sld
  * @param studyUuid the study we are currently working on
- * @param currentNodeUuid the currently selected tree node
+ * @param currentNode the currently selected tree node
  * @param voltageLevelsIdsAndTopologyPromise Promise handling list of voltage levels ids and topology options
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const GeneratorModificationDialog = ({
     editData,
+    defaultIdValue,
     studyUuid,
-    currentNodeUuid,
+    currentNode,
     voltageLevelsIdsAndTopologyPromise,
     ...dialogProps
 }) => {
+    const currentNodeUuid = currentNode?.id;
+
     const intl = useIntl();
 
     const classes = useStyles();
@@ -163,8 +167,10 @@ const GeneratorModificationDialog = ({
     const formValueEquipmentId = useMemo(() => {
         return formValues?.equipmentId
             ? { id: formValues?.equipmentId }
+            : defaultIdValue
+            ? { id: defaultIdValue }
             : { id: '' };
-    }, [formValues]);
+    }, [formValues, defaultIdValue]);
 
     const [generatorId, generatorIdField] = useAutocompleteField({
         label: 'ID',
@@ -197,12 +203,13 @@ const GeneratorModificationDialog = ({
     }, [generatorId, formValueEquipmentId]);
 
     useEffect(() => {
-        if (id) {
+        if (id || defaultIdValue) {
+            let key = id ? id : defaultIdValue;
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
                 'generators',
-                id,
+                key,
                 true
             ).then((value) => {
                 if (value) {
@@ -212,7 +219,7 @@ const GeneratorModificationDialog = ({
         } else {
             setGeneratorInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, id]);
+    }, [studyUuid, currentNodeUuid, id, defaultIdValue]);
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
@@ -973,7 +980,7 @@ const GeneratorModificationDialog = ({
 GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
-    currentNodeUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     voltageLevelsIdsAndTopologyPromise: PropTypes.shape({
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,

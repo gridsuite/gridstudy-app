@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,6 +12,8 @@ import {
     INJECTION_DISTRIBUTION_TYPES,
     useStyles,
     SensiChecked,
+    INJECTIONS_EQUIPMENT_TYPES,
+    MONITORED_BRANCHES_EQUIPMENT_TYPES,
 } from './sensi-parameters-selector';
 import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
@@ -34,10 +36,7 @@ export const SensiInjectionsSet = ({
             ? defaultValue.monitoredBranches
             : [],
         elementType: elementType.FILTER,
-        equipmentTypes: [
-            EQUIPMENT_TYPES.LINE.type,
-            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
-        ],
+        equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -46,10 +45,7 @@ export const SensiInjectionsSet = ({
         label: 'Injections',
         initialValues: defaultValue.injections ? defaultValue.injections : [],
         elementType: elementType.FILTER,
-        equipmentTypes: [
-            EQUIPMENT_TYPES.GENERATOR.type,
-            EQUIPMENT_TYPES.LOAD.type,
-        ],
+        equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     EQUIPMENT_ID,
@@ -18,10 +18,10 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
 } from 'components/refactor/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
 import { createShuntCompensator } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
@@ -72,17 +72,18 @@ const schema = yup
 /**
  * Dialog to create a shunt compensator in the network
  * @param voltageLevelOptionsPromise Promise handling list of voltage level options
- * @param currentNodeUuid the node we are currently working on
+ * @param studyUuid the study we are currently working on
+ * @param currentNode the node we are currently working on
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const ShuntCompensatorCreationDialog = ({
-    voltageLevelOptionsPromise,
-    currentNodeUuid,
+    studyUuid,
+    currentNode,
     editData,
     ...dialogProps
 }) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNodeUuid = currentNode?.id;
 
     const { snackError } = useSnackMessage();
 
@@ -197,12 +198,13 @@ const ShuntCompensatorCreationDialog = ({
                 {...dialogProps}
             >
                 <ShuntCompensatorCreationForm
-                    voltageLevelOptionsPromise={voltageLevelOptionsPromise}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPE.SHUNT_COMPENSATOR.name}
+                    equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
@@ -217,7 +219,8 @@ ShuntCompensatorCreationDialog.propTypes = {
         then: PropTypes.func.isRequired,
         catch: PropTypes.func.isRequired,
     }),
-    currentNodeUuid: PropTypes.string,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
 };
 
 export default ShuntCompensatorCreationDialog;

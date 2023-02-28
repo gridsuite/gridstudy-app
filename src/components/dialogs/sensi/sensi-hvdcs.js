@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,6 +9,8 @@ import { useDirectoryElements, useEnumValue } from '../inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from '../dialogUtils';
 import {
+    HVDC_EQUIPMENT_TYPES,
+    MONITORED_BRANCHES_EQUIPMENT_TYPES,
     SensiChecked,
     SENSITIVITY_TYPES,
     useStyles,
@@ -29,10 +31,7 @@ export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
             ? defaultValue.monitoredBranches
             : [],
         elementType: elementType.FILTER,
-        equipmentTypes: [
-            EQUIPMENT_TYPES.LINE.type,
-            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
-        ],
+        equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
@@ -41,7 +40,7 @@ export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
         label: 'HvdcLines',
         initialValues: defaultValue.hvdcs ? defaultValue.hvdcs : [],
         elementType: elementType.FILTER,
-        equipmentTypes: [EQUIPMENT_TYPES.HVDC_LINE.type],
+        equipmentTypes: HVDC_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
         elementClassName: classes.chipElement,
     });
