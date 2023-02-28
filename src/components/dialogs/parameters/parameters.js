@@ -511,7 +511,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 {studyUuid && (
                                     <ShortCircuitParameters
                                         hideParameters={hideParameters}
-                                        parametersBackend={
+                                        useShortCircuitParameters={
                                             useShortCircuitParameters
                                         }
                                     />
