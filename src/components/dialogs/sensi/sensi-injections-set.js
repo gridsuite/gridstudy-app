@@ -15,7 +15,6 @@ import {
     INJECTIONS_EQUIPMENT_TYPES,
     MONITORED_BRANCHES_EQUIPMENT_TYPES,
 } from './sensi-parameters-selector';
-import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 
 export const SensiInjectionsSet = ({
     index,

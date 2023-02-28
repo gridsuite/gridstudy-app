@@ -24,7 +24,6 @@ import {
     fetchVscConverterStations,
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
-import { FEEDER_TYPES } from 'components/util/feederType';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 const elementIdIndexer = (map, element) => {

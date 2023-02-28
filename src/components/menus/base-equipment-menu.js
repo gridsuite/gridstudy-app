@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ItemViewInSpreadsheet = ({
+const ViewInSpreadsheetItem = ({
     equipmentType,
     equipmentId,
     itemText,
@@ -61,7 +61,7 @@ const ItemViewInSpreadsheet = ({
     );
 };
 
-const ItemDeleteEquipment = ({
+const DeleteEquipmentItem = ({
     equipmentType,
     equipmentId,
     itemText,
@@ -152,7 +152,7 @@ const BaseEquipmentMenu = ({
             {equipmentType !== equipments.substations &&
                 equipmentType !== equipments.voltageLevels && (
                     <>
-                        <ItemViewInSpreadsheet
+                        <ViewInSpreadsheetItem
                             key="ViewOnSpreadsheet"
                             equipmentType={equipmentType}
                             equipmentId={equipmentId}
@@ -168,7 +168,7 @@ const BaseEquipmentMenu = ({
                                 equipmentsWithBranch.includes(equipmentType) ||
                                 equipmentsNotDeletable.includes(equipmentType)
                             ) && (
-                                <ItemDeleteEquipment
+                                <DeleteEquipmentItem
                                     key="DeleteFromMenu"
                                     equipmentType={equipmentType}
                                     equipmentId={equipmentId}
@@ -203,7 +203,7 @@ const BaseEquipmentMenu = ({
                         label={intl.formatMessage({ id: 'ViewOnSpreadsheet' })}
                         parentMenuOpen={true}
                     >
-                        <ItemViewInSpreadsheet
+                        <ViewInSpreadsheetItem
                             key={equipment.id}
                             equipmentType={equipmentType}
                             equipmentId={equipment.id}
@@ -213,7 +213,7 @@ const BaseEquipmentMenu = ({
 
                         {equipment.voltageLevels.map((voltageLevel) => (
                             // menus for all voltage levels in the substation
-                            <ItemViewInSpreadsheet
+                            <ViewInSpreadsheetItem
                                 key={voltageLevel.id}
                                 equipmentType={equipments.voltageLevels}
                                 equipmentId={voltageLevel.id}
@@ -228,7 +228,7 @@ const BaseEquipmentMenu = ({
                         label={intl.formatMessage({ id: 'DeleteFromMenu' })}
                         parentMenuOpen={true}
                     >
-                        <ItemDeleteEquipment
+                        <DeleteEquipmentItem
                             key={equipment.id}
                             equipmentType={equipmentType}
                             equipmentId={equipment.id}
@@ -238,7 +238,7 @@ const BaseEquipmentMenu = ({
 
                         {equipment.voltageLevels.map((voltageLevel) => (
                             // menus for all voltage levels in the substation
-                            <ItemDeleteEquipment
+                            <DeleteEquipmentItem
                                 key={voltageLevel.id}
                                 equipmentType={equipments.voltageLevels}
                                 equipmentId={voltageLevel.id}
@@ -258,7 +258,7 @@ const BaseEquipmentMenu = ({
                         parentMenuOpen={true}
                     >
                         {/* menus for the substation */}
-                        <ItemViewInSpreadsheet
+                        <ViewInSpreadsheetItem
                             key={equipment.substationId}
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
@@ -268,7 +268,7 @@ const BaseEquipmentMenu = ({
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {/* menus for the voltage level */}
-                        <ItemViewInSpreadsheet
+                        <ViewInSpreadsheetItem
                             key={equipment.id}
                             equipmentType={equipments.voltageLevels}
                             equipmentId={equipment.id}
@@ -281,7 +281,7 @@ const BaseEquipmentMenu = ({
                         parentMenuOpen={true}
                     >
                         {/* menus for the substation */}
-                        <ItemDeleteEquipment
+                        <DeleteEquipmentItem
                             key={equipment.substationId}
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
@@ -291,7 +291,7 @@ const BaseEquipmentMenu = ({
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
                         {/* menus for the voltage level */}
-                        <ItemDeleteEquipment
+                        <DeleteEquipmentItem
                             key={equipment.id}
                             equipmentType={equipments.voltageLevels}
                             equipmentId={equipment.id}
