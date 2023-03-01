@@ -17,6 +17,10 @@ import {
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
+    CHARACTERISTICS_CHOICE,
+    CHARACTERISTICS_CHOICES,
+    Q_AT_NOMINAL_V,
+    SHUNT_COMPENSATOR_TYPE,
 } from 'components/refactor/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
@@ -34,16 +38,19 @@ import {
     getConnectivityFormData,
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
+import {
+    getCharacteristicsEmptyFormData,
+    getCharacteristicsFormData,
+    getCharacteristicsFormDataFromSearchCopy,
+    getCharacteristicsFormValidationSchema,
+} from './characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    [MAXIMUM_NUMBER_OF_SECTIONS]: 1,
-    [CURRENT_NUMBER_OF_SECTIONS]: 0,
-    [IDENTICAL_SECTIONS]: true,
-    [SUSCEPTANCE_PER_SECTION]: null,
     ...getConnectivityEmptyFormData(),
+    ...getCharacteristicsEmptyFormData(),
 };
 
 const schema = yup
@@ -51,21 +58,8 @@ const schema = yup
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
-        [MAXIMUM_NUMBER_OF_SECTIONS]: yup
-            .number()
-            .min(1, 'ShuntCompensatorErrorMaximumLessThanOne')
-            .required(),
-        [CURRENT_NUMBER_OF_SECTIONS]: yup
-            .number()
-            .min(0, 'ShuntCompensatorErrorCurrentLessThanZero')
-            .max(
-                yup.ref(MAXIMUM_NUMBER_OF_SECTIONS),
-                'ShuntCompensatorErrorCurrentLessThanMaximum'
-            )
-            .required(),
-        [IDENTICAL_SECTIONS]: yup.bool().required(),
-        [SUSCEPTANCE_PER_SECTION]: yup.number().nullable().required(),
         ...getConnectivityFormValidationSchema(),
+        ...getCharacteristicsFormValidationSchema(),
     })
     .required();
 
@@ -99,16 +93,16 @@ const ShuntCompensatorCreationDialog = ({
             reset({
                 [EQUIPMENT_ID]: shuntCompensator.id + '(1)',
                 [EQUIPMENT_NAME]: shuntCompensator.name ?? '',
-                [MAXIMUM_NUMBER_OF_SECTIONS]:
-                    shuntCompensator.maximumSectionCount,
-                [CURRENT_NUMBER_OF_SECTIONS]: shuntCompensator.sectionCount,
-                [SUSCEPTANCE_PER_SECTION]: shuntCompensator.bperSection,
                 ...getConnectivityFormData({
                     busbarSectionId: shuntCompensator.busOrBusbarSectionId,
                     connectionDirection: shuntCompensator.connectionDirection,
                     connectionName: shuntCompensator.connectionName,
                     connectionPosition: shuntCompensator.connectionPosition,
                     voltageLevelId: shuntCompensator.voltageLevelId,
+                }),
+                ...getCharacteristicsFormDataFromSearchCopy({
+                    bperSection: shuntCompensator.bperSection,
+                    qatNominalV: shuntCompensator.qatNominalV,
                 }),
             });
         },
@@ -120,19 +114,18 @@ const ShuntCompensatorCreationDialog = ({
             reset({
                 [EQUIPMENT_ID]: shuntCompensator.equipmentId,
                 [EQUIPMENT_NAME]: shuntCompensator.equipmentName ?? '',
-                [MAXIMUM_NUMBER_OF_SECTIONS]:
-                    shuntCompensator.maximumNumberOfSections,
-                [CURRENT_NUMBER_OF_SECTIONS]:
-                    shuntCompensator.currentNumberOfSections,
-                [IDENTICAL_SECTIONS]: shuntCompensator.isIdenticalSection,
-                [SUSCEPTANCE_PER_SECTION]:
-                    shuntCompensator.susceptancePerSection,
                 ...getConnectivityFormData({
                     busbarSectionId: shuntCompensator.busOrBusbarSectionId,
                     connectionDirection: shuntCompensator.connectionDirection,
                     connectionName: shuntCompensator.connectionName,
                     connectionPosition: shuntCompensator.connectionPosition,
                     voltageLevelId: shuntCompensator.voltageLevelId,
+                }),
+                ...getCharacteristicsFormData({
+                    susceptancePerSection:
+                        shuntCompensator.susceptancePerSection,
+                    qAtNominalV: shuntCompensator.qAtNominalV,
+                    shuntCompensatorType: shuntCompensator.shuntCompensatorType,
                 }),
             });
         },
@@ -160,10 +153,21 @@ const ShuntCompensatorCreationDialog = ({
                 currentNodeUuid,
                 shuntCompensator[EQUIPMENT_ID],
                 sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
-                shuntCompensator[MAXIMUM_NUMBER_OF_SECTIONS],
-                shuntCompensator[CURRENT_NUMBER_OF_SECTIONS],
-                shuntCompensator[IDENTICAL_SECTIONS],
-                shuntCompensator[SUSCEPTANCE_PER_SECTION],
+                shuntCompensator[MAXIMUM_NUMBER_OF_SECTIONS] ?? 1,
+                shuntCompensator[CURRENT_NUMBER_OF_SECTIONS] ?? 1,
+                shuntCompensator[IDENTICAL_SECTIONS] ?? true,
+                shuntCompensator[CHARACTERISTICS_CHOICE] ===
+                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+                    ? shuntCompensator[SUSCEPTANCE_PER_SECTION]
+                    : null,
+                shuntCompensator[CHARACTERISTICS_CHOICE] ===
+                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                    ? shuntCompensator[Q_AT_NOMINAL_V]
+                    : null,
+                shuntCompensator[CHARACTERISTICS_CHOICE] ===
+                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                    ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
+                    : null,
                 shuntCompensator[CONNECTIVITY],
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
