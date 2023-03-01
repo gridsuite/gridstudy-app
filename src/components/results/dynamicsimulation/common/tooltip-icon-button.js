@@ -7,7 +7,13 @@
 import PropTypes from 'prop-types';
 import { IconButton, Tooltip } from '@mui/material';
 
-const TooltipIconButton = ({ className, toolTip, onClick, children }) => {
+const TooltipIconButton = ({
+    className,
+    toolTip,
+    onClick,
+    children,
+    disabled,
+}) => {
     return (
         <Tooltip title={toolTip}>
             <IconButton
@@ -15,6 +21,7 @@ const TooltipIconButton = ({ className, toolTip, onClick, children }) => {
                 className={className}
                 onClick={onClick}
                 children={children}
+                disabled={disabled}
             />
         </Tooltip>
     );
@@ -25,6 +32,7 @@ TooltipIconButton.propTypes = {
     toolTip: PropTypes.string,
     onClick: PropTypes.func,
     children: PropTypes.node,
+    disabled: PropTypes.bool,
 };
 
 export default TooltipIconButton;

@@ -7,7 +7,7 @@
 import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { IconButton, Stack } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -19,7 +19,7 @@ import TooltipIconButton from './common/tooltip-icon-button';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        flexGrow: 1,
+        height: '100%',
     },
     addButton: {
         borderRadius: '50%',
@@ -87,8 +87,8 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
     };
 
     return (
-        <div className={classes.root}>
-            <Stack direction="row" maxWidth={'100vw'}>
+        <Box className={classes.root}>
+            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                 {/* tab headers */}
                 <DroppableTabs
                     id={'1'}
@@ -133,23 +133,29 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
                 >
                     <AddIcon />
                 </TooltipIconButton>
-            </Stack>
+            </Box>
             {/* tab contents */}
-            {tabs.map((tab, index) => (
-                <Visibility
-                    key={`tab-${tab.id}`}
-                    value={selectedIndex}
-                    index={index}
-                >
-                    <DynamicSimulationResultChart
-                        groupId={`${tab.id}`}
-                        timeseriesMetadatas={timeseriesMetadatas}
-                        selected={selectedIndex === index}
-                        loadTimeSeries={loadTimeSeries}
-                    />
-                </Visibility>
-            ))}
-        </div>
+            <Box
+                sx={{
+                    height: 'calc(100vh - 270px)', // TODO fix layout to use flexGrow : 1
+                }}
+            >
+                {tabs.map((tab, index) => (
+                    <Visibility
+                        key={`tab-${tab.id}`}
+                        value={selectedIndex}
+                        index={index}
+                    >
+                        <DynamicSimulationResultChart
+                            groupId={`${tab.id}`}
+                            timeseriesMetadatas={timeseriesMetadatas}
+                            selected={selectedIndex === index}
+                            loadTimeSeries={loadTimeSeries}
+                        />
+                    </Visibility>
+                ))}
+            </Box>
+        </Box>
     );
 };
 
