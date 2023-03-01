@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import { useController, useFormContext } from 'react-hook-form';
 import { func_identity } from '../../dialogs/dialogUtils';
 import { isFieldRequired } from '../utils/utils';
+import { SWITCH_TYPE } from 'components/network/constants';
 
 /**
  * Autocomplete input

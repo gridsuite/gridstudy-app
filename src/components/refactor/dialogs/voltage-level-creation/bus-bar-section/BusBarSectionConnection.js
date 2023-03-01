@@ -16,40 +16,48 @@ import {
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 import { SWITCH_TYPE } from 'components/network/constants';
 import SelectInput from 'components/refactor/rhf-inputs/select-input';
-import { useWatch } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useWatch, useFormContext } from 'react-hook-form';
+import { useCallback, useMemo } from 'react';
 
-export const Connectivity = ({ id, index }) => {
-    const [busBarSections, setbusBarSections] = useState([]);
-
+export const BusBarSectionConnection = ({ id, index }) => {
+    const { setValue } = useFormContext();
     const watchBusBarSections = useWatch({
         name: `${BUS_BAR_SECTIONS}`,
     });
 
-    useEffect(() => {
+    const updateBusBarSections = (watchBusBarSections) => {
         if (watchBusBarSections) {
-            setbusBarSections(
-                watchBusBarSections?.map(
-                    (busBarSection) => busBarSection[ID]
-                ) ?? []
+            const filteredBusBarSections = watchBusBarSections.filter(
+                (busBarSection) => busBarSection[ID] !== undefined
+            );
+            return filteredBusBarSections.map(
+                (busBarSection) => busBarSection[ID]
             );
         }
-    }, [watchBusBarSections, setbusBarSections]);
+        return null;
+    };
+
+    const busBarSections = useMemo(() => {
+        return updateBusBarSections(watchBusBarSections);
+    }, [watchBusBarSections]);
+
+    const resetBusBarSectionConnection = useCallback(() => {
+        setValue(`${id}.${index}.${FROM_BBS}`, null);
+    }, [id, index, setValue]);
 
     const fromBBSField = (
         <AutocompleteInput
-            allowNewValue
             forcePopupIcon
             name={`${id}.${index}.${FROM_BBS}`}
             label="BusBarSection"
             options={busBarSections}
             size={'small'}
+            onChangeCallback={resetBusBarSectionConnection}
         />
     );
 
     const toBBSField = (
         <AutocompleteInput
-            allowNewValue
             forcePopupIcon
             name={`${id}.${index}.${TO_BBS}`}
             label="BusBarSection"
@@ -63,9 +71,11 @@ export const Connectivity = ({ id, index }) => {
             name={`${id}.${index}.${SWITCH_KIND}`}
             label={'Type'}
             options={Object.values(SWITCH_TYPE)}
+            //formProps={{ defaultValue: SWITCH_TYPE[0].label }}
             fullWidth
-            disableClearable={true}
+            //disableClearable={true}
             size={'small'}
+            //defaultValue={SWITCH_TYPE[0]}
         />
     );
 

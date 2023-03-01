@@ -72,9 +72,9 @@ const schema = yup.object().shape({
         .uniqueHorizontalVertical(),
     [BUS_BAR_CONNECTIONS]: yup.array().of(
         yup.object().shape({
-            [FROM_BBS]: yup.string().required(),
-            [TO_BBS]: yup.string().required(),
-            [SWITCH_KIND]: yup.string().required(),
+            [FROM_BBS]: yup.string().nullable().required(),
+            [TO_BBS]: yup.string().nullable().required(),
+            [SWITCH_KIND]: yup.string().nullable().required(),
         })
     ),
 });
@@ -139,8 +139,8 @@ const VoltageLevelCreationDialog = ({
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
                 nominalVoltage: voltageLevel[NOMINAL_VOLTAGE],
                 substationId: voltageLevel[SUBSTATION_ID],
-                busbarSections: voltageLevel?.busbarSections,
-                busbarConnections: voltageLevel?.busbarConnections,
+                busbarSections: voltageLevel[BUS_BAR_SECTIONS],
+                busbarConnections: voltageLevel[BUS_BAR_CONNECTIONS],
                 isUpdate: editData ? true : false,
                 modificationUuid: editData?.uuid,
             }).catch((error) => {

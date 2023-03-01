@@ -18,10 +18,9 @@ import {
 export const numericalWithButton = {
     type: 'number',
     inputProps: { min: 0, style: { textAlign: 'right' } },
-    defaultValue: 1,
 };
 
-export const BusBarSectionLine = ({ id, index, errors }) => {
+export const BusBarSectionCreation = ({ id, index, errors }) => {
     const equipmentIdField = (
         <TextInput name={`${id}.${index}.${ID}`} label={'BusBarSectionID'} />
     );
@@ -37,6 +36,7 @@ export const BusBarSectionLine = ({ id, index, errors }) => {
                 ...numericalWithButton,
             }}
             isInputPositiveOnly={true}
+            defaultValue={1}
         />
     );
 
@@ -48,6 +48,7 @@ export const BusBarSectionLine = ({ id, index, errors }) => {
                 ...numericalWithButton,
             }}
             isInputPositiveOnly={true}
+            defaultValue={1}
         />
     );
 

@@ -25,8 +25,8 @@ const SelectInput = ({ options, ...props }) => {
             options={options}
             getOptionLabel={(option) => {
                 return option?.label
-                    ? intl.formatMessage({ id: option?.label })
-                    : option?.id;
+                    ? intl.formatMessage({ id: option?.label }) // If the option has a label property, display the label using internationalization
+                    : option?.id; // If the option doesn't have a label property, display the ID instead
             }}
             inputTransform={inputTransform}
             outputTransform={outputTransform}

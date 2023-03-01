@@ -9,12 +9,12 @@ import { Button, Grid, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { useStyles } from 'components/dialogs/dialogUtils';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useFieldArray } from 'react-hook-form';
-import { BusBarSectionLine } from './bus-bar-section-line';
+import { BusBarSectionCreation } from './bus-bar-section-creation';
 import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
-import { Connectivity } from './connectivity';
+import { BusBarSectionConnection } from './BusBarSectionConnection';
 import { BUS_BAR_SECTIONS } from 'components/refactor/utils/field-constants';
 
 export const BusBarSection = ({ id, type, errors }) => {
@@ -26,18 +26,17 @@ export const BusBarSection = ({ id, type, errors }) => {
             {rows.map((value, index) => (
                 <Grid key={value.id} container spacing={3} item>
                     {type === VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_LINE ? (
-                        <BusBarSectionLine
+                        <BusBarSectionCreation
                             id={id}
                             index={index}
                             errors={errors}
                         />
                     ) : (
-                        <Connectivity id={id} index={index} />
+                        <BusBarSectionConnection id={id} index={index} />
                     )}
 
                     <Grid item xs={1}>
                         <IconButton
-                            key={value.id}
                             className={classes.icon}
                             onClick={() => remove(index)}
                         >
@@ -47,7 +46,7 @@ export const BusBarSection = ({ id, type, errors }) => {
                 </Grid>
             ))}
 
-            <Grid item xs={3}>
+            <Grid item xs={3} style={{ paddingLeft: 'inherit' }}>
                 <span>
                     <Button
                         fullWidth
