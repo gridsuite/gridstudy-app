@@ -23,11 +23,13 @@ import {
     closeDiagram,
     closeDiagrams,
 } from './actions';
-import { SvgType, ViewState } from '../components/diagrams/diagram-common';
+import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 
 test('reducer.RESET_NETWORK_AREA_DIAGRAM_DEPTH', () => {
     const initialState = { networkAreaDiagramDepth: 12 };
-    const expectedState = { networkAreaDiagramDepth: 0 };
+    const expectedState = {
+        networkAreaDiagramDepth: 0,
+    };
 
     expect(reducer(initialState, resetNetworkAreaDiagramDepth())).toEqual(
         expectedState
@@ -63,28 +65,34 @@ test('reducer.SET_FULLSCREEN_DIAGRAM', () => {
     // From initial values
     const initialState = { fullScreenDiagram: null };
     const expectedState = {
-        fullScreenDiagram: { id: 3, svgType: SvgType.VOLTAGE_LEVEL },
+        fullScreenDiagram: { id: 3, svgType: DiagramType.VOLTAGE_LEVEL },
     };
 
     expect(
-        reducer(initialState, setFullScreenDiagram(3, SvgType.VOLTAGE_LEVEL))
+        reducer(
+            initialState,
+            setFullScreenDiagram(3, DiagramType.VOLTAGE_LEVEL)
+        )
     ).toEqual(expectedState);
 
     // Changing the fullscreen diagram
     const initialState2 = {
-        fullScreenDiagram: { id: 6, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+        fullScreenDiagram: { id: 6, svgType: DiagramType.NETWORK_AREA_DIAGRAM },
     };
     const expectedState2 = {
-        fullScreenDiagram: { id: 12, svgType: SvgType.SUBSTATION },
+        fullScreenDiagram: { id: 12, svgType: DiagramType.SUBSTATION },
     };
 
     expect(
-        reducer(initialState2, setFullScreenDiagram(12, SvgType.SUBSTATION))
+        reducer(initialState2, setFullScreenDiagram(12, DiagramType.SUBSTATION))
     ).toEqual(expectedState2);
 
     // Removing the fullscreen
     const initialState3 = {
-        fullScreenDiagram: { id: 18, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+        fullScreenDiagram: {
+            id: 18,
+            svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+        },
     };
     const expectedState3 = { fullScreenDiagram: { id: null } };
 
@@ -98,66 +106,98 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const initialState = { diagramStates: [] };
     const expectedState = {
         diagramStates: [
-            { id: 65, svgType: SvgType.SUBSTATION, state: ViewState.OPENED },
-        ],
-    };
-
-    expect(reducer(initialState, openDiagram(65, SvgType.SUBSTATION))).toEqual(
-        expectedState
-    );
-
-    // Open a SLD that is already opened
-    const initialState2 = {
-        diagramStates: [
-            { id: 74, svgType: SvgType.VOLTAGE_LEVEL, state: ViewState.OPENED },
-        ],
-    };
-    const expectedState2 = {
-        diagramStates: [
-            { id: 74, svgType: SvgType.VOLTAGE_LEVEL, state: ViewState.OPENED },
+            {
+                id: 65,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
         ],
     };
 
     expect(
-        reducer(initialState2, openDiagram(74, SvgType.VOLTAGE_LEVEL))
+        reducer(initialState, openDiagram(65, DiagramType.SUBSTATION))
+    ).toEqual(expectedState);
+
+    // Open a SLD that is already opened
+    const initialState2 = {
+        diagramStates: [
+            {
+                id: 74,
+                svgType: DiagramType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+    const expectedState2 = {
+        diagramStates: [
+            {
+                id: 74,
+                svgType: DiagramType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(
+        reducer(initialState2, openDiagram(74, DiagramType.VOLTAGE_LEVEL))
     ).toEqual(expectedState2);
 
     // Open a SLD that is already minimized
     const initialState3 = {
         diagramStates: [
-            { id: 34, svgType: SvgType.SUBSTATION, state: ViewState.MINIMIZED },
-            { id: 35, svgType: SvgType.VOLTAGE_LEVEL, state: ViewState.OPENED },
+            {
+                id: 34,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 35,
+                svgType: DiagramType.VOLTAGE_LEVEL,
+                state: ViewState.OPENED,
+            },
         ],
     };
     const expectedState3 = {
         diagramStates: [
-            { id: 34, svgType: SvgType.SUBSTATION, state: ViewState.OPENED },
+            {
+                id: 34,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
             {
                 id: 35,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
         ],
     };
 
-    expect(reducer(initialState3, openDiagram(34, SvgType.SUBSTATION))).toEqual(
-        expectedState3
-    );
+    expect(
+        reducer(initialState3, openDiagram(34, DiagramType.SUBSTATION))
+    ).toEqual(expectedState3);
 
     // Open a SLD that is already pinned
     const initialState4 = {
         diagramStates: [
-            { id: 99, svgType: SvgType.VOLTAGE_LEVEL, state: ViewState.PINNED },
+            {
+                id: 99,
+                svgType: DiagramType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
         ],
     };
     const expectedState4 = {
         diagramStates: [
-            { id: 99, svgType: SvgType.VOLTAGE_LEVEL, state: ViewState.PINNED },
+            {
+                id: 99,
+                svgType: DiagramType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
         ],
     };
 
     expect(
-        reducer(initialState4, openDiagram(99, SvgType.VOLTAGE_LEVEL))
+        reducer(initialState4, openDiagram(99, DiagramType.VOLTAGE_LEVEL))
     ).toEqual(expectedState4);
 
     // Open a SLD when a NAD with the same ID is already opened
@@ -165,7 +205,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 50,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -174,44 +214,52 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 50,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
-            { id: 50, svgType: SvgType.SUBSTATION, state: ViewState.OPENED },
+            {
+                id: 50,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
         ],
     };
 
-    expect(reducer(initialState5, openDiagram(50, SvgType.SUBSTATION))).toEqual(
-        expectedState5
-    );
+    expect(
+        reducer(initialState5, openDiagram(50, DiagramType.SUBSTATION))
+    ).toEqual(expectedState5);
 
     // Open a SLD when there are other opened and pinned SLD
     const initialState6 = {
         diagramStates: [
             {
                 id: 101,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
-            { id: 102, svgType: SvgType.SUBSTATION, state: ViewState.PINNED },
+            {
+                id: 102,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
             {
                 id: 103,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 104,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             }, // Should be minimized
             {
                 id: 105,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 106,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -220,36 +268,44 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 101,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
-            { id: 102, svgType: SvgType.SUBSTATION, state: ViewState.PINNED },
+            {
+                id: 102,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
             {
                 id: 103,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 104,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 105,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 106,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
-            { id: 107, svgType: SvgType.SUBSTATION, state: ViewState.OPENED }, // The new SLD is the only opened SLD
+            {
+                id: 107,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.OPENED,
+            }, // The new SLD is the only opened SLD
         ],
     };
 
     expect(
-        reducer(initialState6, openDiagram(107, SvgType.SUBSTATION))
+        reducer(initialState6, openDiagram(107, DiagramType.SUBSTATION))
     ).toEqual(expectedState6);
 
     // Open a SLD in fullscreen instead of another diagram
@@ -257,40 +313,40 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 82,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 83,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
         ],
-        fullScreenDiagram: { id: 82, svgType: SvgType.SUBSTATION },
+        fullScreenDiagram: { id: 82, svgType: DiagramType.SUBSTATION },
     };
     const expectedState7 = {
         diagramStates: [
             {
                 id: 82,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 83,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 503,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
         ],
-        fullScreenDiagram: { id: 503, svgType: SvgType.VOLTAGE_LEVEL },
+        fullScreenDiagram: { id: 503, svgType: DiagramType.VOLTAGE_LEVEL },
     };
 
     expect(
-        reducer(initialState7, openDiagram(503, SvgType.VOLTAGE_LEVEL))
+        reducer(initialState7, openDiagram(503, DiagramType.VOLTAGE_LEVEL))
     ).toEqual(expectedState7);
 });
 
@@ -301,14 +357,14 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 37,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
     };
 
     expect(
-        reducer(initialState, openDiagram(37, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(initialState, openDiagram(37, DiagramType.NETWORK_AREA_DIAGRAM))
     ).toEqual(expectedState);
 
     // Open a NAD that is already opened
@@ -316,7 +372,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 18,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -325,14 +381,17 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 18,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
     };
 
     expect(
-        reducer(initialState2, openDiagram(18, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState2,
+            openDiagram(18, DiagramType.NETWORK_AREA_DIAGRAM)
+        )
     ).toEqual(expectedState2);
 
     // Open a NAD that is already minimized
@@ -340,7 +399,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 51,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
         ],
@@ -349,14 +408,17 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 51,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
     };
 
     expect(
-        reducer(initialState3, openDiagram(51, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState3,
+            openDiagram(51, DiagramType.NETWORK_AREA_DIAGRAM)
+        )
     ).toEqual(expectedState3);
 
     // Open a NAD when another NAD is already open
@@ -364,7 +426,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 74,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -373,19 +435,22 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 74,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
                 id: 22,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
     };
 
     expect(
-        reducer(initialState4, openDiagram(22, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState4,
+            openDiagram(22, DiagramType.NETWORK_AREA_DIAGRAM)
+        )
     ).toEqual(expectedState4);
 
     // Open a NAD when another NAD is already minimized
@@ -393,7 +458,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 33,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
         ],
@@ -402,19 +467,22 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 33,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
                 id: 44,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
     };
 
     expect(
-        reducer(initialState5, openDiagram(44, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState5,
+            openDiagram(44, DiagramType.NETWORK_AREA_DIAGRAM)
+        )
     ).toEqual(expectedState5);
 
     // Open a NAD when there is no other NAD and an SLD is in fullscreen
@@ -422,30 +490,36 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 38,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
         ],
-        fullScreenDiagram: { id: 38, svgType: SvgType.VOLTAGE_LEVEL },
+        fullScreenDiagram: { id: 38, svgType: DiagramType.VOLTAGE_LEVEL },
     };
     const expectedState6 = {
         diagramStates: [
             {
                 id: 38,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 28,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
-        fullScreenDiagram: { id: 28, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+        fullScreenDiagram: {
+            id: 28,
+            svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+        },
     };
 
     expect(
-        reducer(initialState6, openDiagram(28, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState6,
+            openDiagram(28, DiagramType.NETWORK_AREA_DIAGRAM)
+        )
     ).toEqual(expectedState6);
 
     // Open a NAD when there is another opened NAD and an SLD is in fullscreen
@@ -453,40 +527,46 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 14,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
                 id: 14,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
         ],
-        fullScreenDiagram: { id: 14, svgType: SvgType.VOLTAGE_LEVEL },
+        fullScreenDiagram: { id: 14, svgType: DiagramType.VOLTAGE_LEVEL },
     };
     const expectedState7 = {
         diagramStates: [
             {
                 id: 14,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
                 id: 14,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
                 id: 39,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
-        fullScreenDiagram: { id: 14, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+        fullScreenDiagram: {
+            id: 14,
+            svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+        },
     };
 
     expect(
-        reducer(initialState7, openDiagram(39, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState7,
+            openDiagram(39, DiagramType.NETWORK_AREA_DIAGRAM)
+        )
     ).toEqual(expectedState7);
 
     // Open a NAD when there is another NAD in fullscreen
@@ -494,30 +574,39 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 85,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
-        fullScreenDiagram: { id: 85, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+        fullScreenDiagram: {
+            id: 85,
+            svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+        },
     };
     const expectedState8 = {
         diagramStates: [
             {
                 id: 85,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
                 id: 79,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
-        fullScreenDiagram: { id: 85, svgType: SvgType.NETWORK_AREA_DIAGRAM },
+        fullScreenDiagram: {
+            id: 85,
+            svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+        },
     };
 
     expect(
-        reducer(initialState8, openDiagram(79, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState8,
+            openDiagram(79, DiagramType.NETWORK_AREA_DIAGRAM)
+        )
     ).toEqual(expectedState8);
 });
 
@@ -527,7 +616,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const expectedState = { diagramStates: [] };
 
     expect(
-        reducer(initialState, minimizeDiagram(1, SvgType.VOLTAGE_LEVEL))
+        reducer(initialState, minimizeDiagram(1, DiagramType.VOLTAGE_LEVEL))
     ).toEqual(expectedState);
 
     // Try to minimize a nonexistant SLD (bis)
@@ -535,7 +624,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 12,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
         ],
@@ -544,14 +633,14 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 12,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
         ],
     };
 
     expect(
-        reducer(initialState2, minimizeDiagram(33, SvgType.VOLTAGE_LEVEL))
+        reducer(initialState2, minimizeDiagram(33, DiagramType.VOLTAGE_LEVEL))
     ).toEqual(expectedState2);
 
     // Minimize an open SLD
@@ -559,7 +648,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 7,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
         ],
@@ -568,14 +657,14 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 7,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
         ],
     };
 
     expect(
-        reducer(initialState3, minimizeDiagram(7, SvgType.SUBSTATION))
+        reducer(initialState3, minimizeDiagram(7, DiagramType.SUBSTATION))
     ).toEqual(expectedState3);
 
     // Minimize a pinned SLD
@@ -583,17 +672,17 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 63,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 47,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 25,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -602,24 +691,24 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 63,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 47,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 25,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
     };
 
     expect(
-        reducer(initialState4, minimizeDiagram(47, SvgType.SUBSTATION))
+        reducer(initialState4, minimizeDiagram(47, DiagramType.SUBSTATION))
     ).toEqual(expectedState4);
 
     // Minimize an already minimized SLD
@@ -627,17 +716,17 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 1,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 22,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
         ],
@@ -646,24 +735,24 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 1,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 22,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
         ],
     };
 
     expect(
-        reducer(initialState5, minimizeDiagram(1, SvgType.VOLTAGE_LEVEL))
+        reducer(initialState5, minimizeDiagram(1, DiagramType.VOLTAGE_LEVEL))
     ).toEqual(expectedState5);
 });
 
@@ -673,32 +762,32 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 10,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 200,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 10,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
                 id: 200,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
                 id: 3,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 4,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -707,32 +796,32 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 10,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 200,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 10,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 200,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 3,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 4,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
         ],
@@ -741,7 +830,7 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState,
-            minimizeDiagram(200, SvgType.NETWORK_AREA_DIAGRAM)
+            minimizeDiagram(200, DiagramType.NETWORK_AREA_DIAGRAM)
         )
     ).toEqual(expectedState);
 });
@@ -752,12 +841,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
                 id: 2,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
@@ -766,19 +855,19 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
                 id: 2,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
     };
 
     expect(
-        reducer(initialState, togglePinDiagram(1, SvgType.SUBSTATION))
+        reducer(initialState, togglePinDiagram(1, DiagramType.SUBSTATION))
     ).toEqual(expectedState);
 
     // Pin a SLD
@@ -786,12 +875,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 2,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
         ],
@@ -800,19 +889,19 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 2,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
         ],
     };
 
     expect(
-        reducer(initialState2, togglePinDiagram(2, SvgType.SUBSTATION))
+        reducer(initialState2, togglePinDiagram(2, DiagramType.SUBSTATION))
     ).toEqual(expectedState2);
 
     // Unpin a SLD when no other SLD is already open
@@ -820,17 +909,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 31,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 32,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 33,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
         ],
@@ -839,24 +928,24 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 31,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 32,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 33,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
         ],
     };
 
     expect(
-        reducer(initialState3, togglePinDiagram(32, SvgType.SUBSTATION))
+        reducer(initialState3, togglePinDiagram(32, DiagramType.SUBSTATION))
     ).toEqual(expectedState3);
 
     // Unpin a SLD when there is already another opened SLD
@@ -864,27 +953,27 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 10,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 20,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 30,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 40,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 50,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -893,34 +982,34 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 10,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 20,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 30,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 40,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 50,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
     };
 
     expect(
-        reducer(initialState4, togglePinDiagram(40, SvgType.VOLTAGE_LEVEL))
+        reducer(initialState4, togglePinDiagram(40, DiagramType.VOLTAGE_LEVEL))
     ).toEqual(expectedState4);
 });
 
@@ -930,12 +1019,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
                 id: 2,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
@@ -944,19 +1033,22 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
                 id: 2,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
     };
 
     expect(
-        reducer(initialState, togglePinDiagram(1, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState,
+            togglePinDiagram(1, DiagramType.NETWORK_AREA_DIAGRAM)
+        )
     ).toEqual(expectedState);
 
     // Unpin a NAD
@@ -964,17 +1056,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 2,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
                 id: 3,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
@@ -983,17 +1075,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 2,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
                 id: 3,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -1002,7 +1094,7 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState2,
-            togglePinDiagram(3, SvgType.NETWORK_AREA_DIAGRAM)
+            togglePinDiagram(3, DiagramType.NETWORK_AREA_DIAGRAM)
         )
     ).toEqual(expectedState2);
 
@@ -1011,17 +1103,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 3,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
                 id: 4,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 5,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -1030,17 +1122,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
         diagramStates: [
             {
                 id: 3,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
                 id: 4,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 5,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
@@ -1049,7 +1141,7 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     expect(
         reducer(
             initialState3,
-            togglePinDiagram(3, SvgType.NETWORK_AREA_DIAGRAM)
+            togglePinDiagram(3, DiagramType.NETWORK_AREA_DIAGRAM)
         )
     ).toEqual(expectedState3);
 });
@@ -1060,7 +1152,7 @@ test('reducer.CLOSE_DIAGRAM', () => {
         diagramStates: [
             {
                 id: 6,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
         ],
@@ -1069,27 +1161,27 @@ test('reducer.CLOSE_DIAGRAM', () => {
         diagramStates: [
             {
                 id: 6,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
         ],
     };
 
-    expect(reducer(initialState, closeDiagram(6, SvgType.SUBSTATION))).toEqual(
-        expectedState
-    );
+    expect(
+        reducer(initialState, closeDiagram(6, DiagramType.SUBSTATION))
+    ).toEqual(expectedState);
 
     // Close a SLD
     const initialState2 = {
         diagramStates: [
             {
                 id: 3,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 54,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
         ],
@@ -1098,14 +1190,14 @@ test('reducer.CLOSE_DIAGRAM', () => {
         diagramStates: [
             {
                 id: 3,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
         ],
     };
 
     expect(
-        reducer(initialState2, closeDiagram(54, SvgType.SUBSTATION))
+        reducer(initialState2, closeDiagram(54, DiagramType.SUBSTATION))
     ).toEqual(expectedState2);
 
     // Close a NAD
@@ -1113,22 +1205,22 @@ test('reducer.CLOSE_DIAGRAM', () => {
         diagramStates: [
             {
                 id: 32,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
                 id: 64,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
                 id: 64,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 82,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
@@ -1137,14 +1229,17 @@ test('reducer.CLOSE_DIAGRAM', () => {
         diagramStates: [
             {
                 id: 64,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
         ],
     };
 
     expect(
-        reducer(initialState3, closeDiagram(64, SvgType.NETWORK_AREA_DIAGRAM))
+        reducer(
+            initialState3,
+            closeDiagram(64, DiagramType.NETWORK_AREA_DIAGRAM)
+        )
     ).toEqual(expectedState3);
 });
 
@@ -1154,32 +1249,32 @@ test('reducer.CLOSE_DIAGRAMS', () => {
         diagramStates: [
             {
                 id: 10,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 20,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 30,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
                 id: 5,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
                 id: 10,
-                svgType: SvgType.VOLTAGE_LEVEL,
+                svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 10,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
@@ -1188,12 +1283,12 @@ test('reducer.CLOSE_DIAGRAMS', () => {
         diagramStates: [
             {
                 id: 20,
-                svgType: SvgType.SUBSTATION,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
                 id: 5,
-                svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
