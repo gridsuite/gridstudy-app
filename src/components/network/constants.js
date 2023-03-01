@@ -146,8 +146,8 @@ export const VARIATION_MODE = [
 ];
 
 export const VOLTAGE_LEVEL_COMPONENTS = {
-    BUS_BAR_SECTION_LINE: 'BusBarSectionLine',
-    CONNECTIVITY: 'Connectivity',
+    BUS_BAR_SECTION_CREATION: 'BusBarSectionCreation',
+    BUS_BAR_SECTION_CONNECTION: 'Connectivity',
 };
 
 export const SWITCH_TYPE = [

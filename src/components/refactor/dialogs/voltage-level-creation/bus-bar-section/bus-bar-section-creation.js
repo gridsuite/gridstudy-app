@@ -35,8 +35,6 @@ export const BusBarSectionCreation = ({ id, index, errors }) => {
             formProps={{
                 ...numericalWithButton,
             }}
-            isInputPositiveOnly={true}
-            defaultValue={1}
         />
     );
 
@@ -47,8 +45,6 @@ export const BusBarSectionCreation = ({ id, index, errors }) => {
             formProps={{
                 ...numericalWithButton,
             }}
-            isInputPositiveOnly={true}
-            defaultValue={1}
         />
     );
 

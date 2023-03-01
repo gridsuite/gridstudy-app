@@ -28,7 +28,8 @@ export const BusBarSectionConnection = ({ id, index }) => {
     const updateBusBarSections = (watchBusBarSections) => {
         if (watchBusBarSections) {
             const filteredBusBarSections = watchBusBarSections.filter(
-                (busBarSection) => busBarSection[ID] !== undefined
+                (busBarSection) =>
+                    busBarSection[ID] !== undefined && busBarSection[ID] !== ''
             );
             return filteredBusBarSections.map(
                 (busBarSection) => busBarSection[ID]
@@ -71,11 +72,8 @@ export const BusBarSectionConnection = ({ id, index }) => {
             name={`${id}.${index}.${SWITCH_KIND}`}
             label={'Type'}
             options={Object.values(SWITCH_TYPE)}
-            //formProps={{ defaultValue: SWITCH_TYPE[0].label }}
             fullWidth
-            //disableClearable={true}
             size={'small'}
-            //defaultValue={SWITCH_TYPE[0]}
         />
     );
 

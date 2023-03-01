@@ -32,7 +32,6 @@ const TextInput = ({
     previousValue,
     clearable,
     customAdornment,
-    defaultValue,
 }) => {
     const classes = useStyles();
     const { validationSchema, getValues } = useFormContext();
@@ -53,7 +52,7 @@ const TextInput = ({
         }
     };
 
-    const transformedValue = inputTransform(value ?? defaultValue);
+    const transformedValue = inputTransform(value ?? formProps?.defaultValue);
 
     return (
         <Field

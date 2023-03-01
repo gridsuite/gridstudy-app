@@ -15,17 +15,39 @@ import { useFieldArray } from 'react-hook-form';
 import { BusBarSectionCreation } from './bus-bar-section-creation';
 import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
 import { BusBarSectionConnection } from './BusBarSectionConnection';
-import { BUS_BAR_SECTIONS } from 'components/refactor/utils/field-constants';
+import {
+    BUS_BAR_SECTIONS,
+    FROM_BBS,
+    HORIZONTAL_POSITION,
+    ID,
+    NAME,
+    SWITCH_KIND,
+    TO_BBS,
+    VERTICAL_POSITION,
+} from 'components/refactor/utils/field-constants';
 
 export const BusBarSection = ({ id, type, errors }) => {
     const classes = useStyles();
-    const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
+    const { fields: rows, append, remove } = useFieldArray({ name: `${id}` });
+
+    const busBarSectionConnection = {
+        [FROM_BBS]: '',
+        [TO_BBS]: '',
+        [SWITCH_KIND]: SWITCH_KIND[0],
+    };
+    const busBarSectionCreation = {
+        [ID]: '',
+        [NAME]: '',
+        [HORIZONTAL_POSITION]: 1,
+        [VERTICAL_POSITION]: 1,
+    };
 
     return (
         <Grid container spacing={2}>
             {rows.map((value, index) => (
                 <Grid key={value.id} container spacing={3} item>
-                    {type === VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_LINE ? (
+                    {type ===
+                    VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION ? (
                         <BusBarSectionCreation
                             id={id}
                             index={index}
@@ -52,13 +74,20 @@ export const BusBarSection = ({ id, type, errors }) => {
                         fullWidth
                         className={classes.button}
                         startIcon={<AddIcon />}
-                        onClick={() => insert(rows.length, {})}
+                        onClick={() =>
+                            append(
+                                type ===
+                                    VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION
+                                    ? busBarSectionCreation
+                                    : busBarSectionConnection
+                            )
+                        }
                         style={{ top: '-1em' }}
                     >
                         <FormattedMessage
                             id={
                                 type ===
-                                VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_LINE
+                                VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION
                                     ? 'CreateBusBarSection'
                                     : 'CreateLink'
                             }

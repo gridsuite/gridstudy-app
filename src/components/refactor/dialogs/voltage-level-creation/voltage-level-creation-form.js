@@ -99,13 +99,13 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, errors }) => {
                 <GridSection title={'BusBarSections'} />
                 <BusBarSection
                     id={BUS_BAR_SECTIONS}
-                    type={VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_LINE}
+                    type={VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION}
                     errors={errors}
                 />
                 <GridSection title={'Connectivity'} />
                 <BusBarSection
                     id={BUS_BAR_CONNECTIONS}
-                    type={VOLTAGE_LEVEL_COMPONENTS.CONNECTIVITY}
+                    type={VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CONNECTION}
                 />
             </Grid>
         </>
