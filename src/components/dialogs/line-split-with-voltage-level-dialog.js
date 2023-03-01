@@ -38,8 +38,9 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import { MODIFICATION_TYPE } from '../network/constants';
 import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
+import { MODIFICATION_TYPES } from '../util/modification-type';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 /**
  * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.
@@ -353,7 +354,7 @@ const LineSplitWithVoltageLevelDialog = ({
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
-                    type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
+                    type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
@@ -458,7 +459,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 <VoltageLevelCreationDialog
                     open={true}
                     onClose={onVoltageLevelDialogClose}
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                     substationOptionsPromise={substationOptionsPromise}
                     onCreateVoltageLevel={onVoltageLevelDo}
                     editData={voltageLevelToEdit}
@@ -467,7 +468,7 @@ const LineSplitWithVoltageLevelDialog = ({
             <EquipmentSearchDialog
                 open={searchCopy.isDialogSearchOpen}
                 onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'VOLTAGE_LEVEL'}
+                equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
                 onSelectionChange={searchCopy.handleSelectionChange}
                 currentNodeUuid={currentNodeUuid}
             />

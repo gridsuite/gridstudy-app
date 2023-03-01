@@ -6,32 +6,24 @@
  */
 
 import Grid from '@mui/material/Grid';
-import { Box } from '@mui/material';
-import SwitchInput from '../../rhf-inputs/booleans/switch-input';
-import IntegerInput from 'components/refactor/rhf-inputs/integer-input';
 import {
-    CURRENT_NUMBER_OF_SECTIONS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    IDENTICAL_SECTIONS,
-    MAXIMUM_NUMBER_OF_SECTIONS,
-    SUSCEPTANCE_PER_SECTION,
 } from 'components/refactor/utils/field-constants';
 import React, { useEffect, useState } from 'react';
+
 import {
     filledTextField,
     gridItem,
     GridSection,
-    SusceptanceAdornment,
 } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
-import FloatInput from 'components/refactor/rhf-inputs/float-input';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
+import { CharacteristicsForm } from './characteristics-pane/characteristics-form';
 
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
-    const disabledChecked = { disabled: true };
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
@@ -61,38 +53,6 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
         />
     );
 
-    const maximumNumberOfSectionsField = (
-        <IntegerInput
-            name={MAXIMUM_NUMBER_OF_SECTIONS}
-            label={'ShuntMaximumNumberOfSections'}
-            isInputPositiveOnly={true}
-        />
-    );
-
-    const currentNumberOfSectionsField = (
-        <IntegerInput
-            name={CURRENT_NUMBER_OF_SECTIONS}
-            label={'ShuntCurrentNumberOfSections'}
-            isInputPositiveOnly={true}
-        />
-    );
-
-    const identicalSectionsField = (
-        <SwitchInput
-            name={IDENTICAL_SECTIONS}
-            label={'ShuntIdenticalSections'}
-            formProps={disabledChecked}
-        />
-    );
-
-    const susceptancePerSectionField = (
-        <FloatInput
-            name={SUSCEPTANCE_PER_SECTION}
-            label={'ShuntSusceptancePerSection'}
-            adornment={SusceptanceAdornment}
-        />
-    );
-
     const connectivityForm = (
         <ConnectivityForm
             withPosition={true}
@@ -101,6 +61,8 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
             currentNode={currentNode}
         />
     );
+
+    const characteristicsForm = <CharacteristicsForm />;
 
     return (
         <>
@@ -114,12 +76,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
             </Grid>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {gridItem(maximumNumberOfSectionsField, 4)}
-                {gridItem(currentNumberOfSectionsField, 4)}
-                <Box sx={{ width: '100%' }} />
-                {gridItem(identicalSectionsField, 4)}
-                {gridItem(susceptancePerSectionField, 4)}
-                <Box sx={{ width: '100%' }} />
+                {gridItem(characteristicsForm, 12)}
             </Grid>
         </>
     );

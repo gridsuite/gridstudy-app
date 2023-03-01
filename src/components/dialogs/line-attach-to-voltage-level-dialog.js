@@ -37,9 +37,9 @@ import {
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import { Box } from '@mui/system';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
-import { MODIFICATION_TYPE } from '../network/constants';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
+import { MODIFICATION_TYPES } from '../util/modification-type';
 
 /**
  * Dialog to attach a line to a (possibly new) voltage level.
@@ -385,7 +385,7 @@ const LineAttachToVoltageLevelDialog = ({
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
-                    type: MODIFICATION_TYPE.VOLTAGE_LEVEL_CREATION,
+                    type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
@@ -443,7 +443,7 @@ const LineAttachToVoltageLevelDialog = ({
         ) => {
             return new Promise(() => {
                 const preparedLine = {
-                    type: MODIFICATION_TYPE.LINE_CREATION,
+                    type: MODIFICATION_TYPES.LINE_CREATION.type,
                     equipmentId: lineId,
                     equipmentName: lineName,
                     seriesResistance: seriesResistance,
@@ -574,7 +574,7 @@ const LineAttachToVoltageLevelDialog = ({
                     <VoltageLevelCreationDialog
                         open={true}
                         onClose={onVoltageLevelDialogClose}
-                        currentNodeUuid={currentNodeUuid}
+                        currentNode={currentNode}
                         substationOptionsPromise={substationOptionsPromise}
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
@@ -584,7 +584,7 @@ const LineAttachToVoltageLevelDialog = ({
                     <LineCreationDialog
                         open={true}
                         onClose={onLineDialogClose}
-                        currentNodeUuid={currentNodeUuid}
+                        currentNode={currentNode}
                         voltageLevelOptionsPromise={substationOptionsPromise}
                         displayConnectivity={false}
                         onCreateLine={onLineDo}

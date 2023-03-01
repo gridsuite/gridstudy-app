@@ -15,12 +15,12 @@ import {
     gridItemWithErrorMsg,
     GridSection,
 } from './dialogUtils';
-import { EquipmentType } from './sensi/sensi-parameters-selector';
 import { VARIATION_MODE, VARIATION_TYPE } from '../network/constants';
 import { useExpandableValues } from './inputs/use-expandable-values';
 import makeStyles from '@mui/styles/makeStyles';
 import { generatorScaling } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
+import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
 export const useStyles = makeStyles((theme) => ({
     checkedButton: {
@@ -58,7 +58,7 @@ const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 const VENTILATION = 'VENTILATION';
 const STACKING_UP = 'STACKING_UP';
 const PROPORTIONAL_TO_PMAX = 'PROPORTIONAL_TO_PMAX';
-const GENERATORS = [EquipmentType.GENERATOR];
+const GENERATORS = [EQUIPMENT_TYPES.GENERATOR.type];
 
 const GeneratorScalingVariation = ({
     index,

@@ -10,6 +10,7 @@ import { FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useController } from 'react-hook-form';
 import { FieldLabel } from '../../dialogs/inputs/hooks-helpers';
+import PropTypes from 'prop-types';
 
 const RadioInput = ({ name, label, id, options, formProps }) => {
     const {
@@ -19,13 +20,13 @@ const RadioInput = ({ name, label, id, options, formProps }) => {
     return (
         <FormControl>
             {label && (
-                <FormLabel id={id ? id : label}>
+                <FormLabel id={id ?? label}>
                     <FormattedMessage id={label} />
                 </FormLabel>
             )}
             <RadioGroup
                 row
-                aria-labelledby={id ? id : label}
+                aria-labelledby={id ?? label}
                 value={value}
                 onChange={onChange}
                 {...formProps}
@@ -41,6 +42,14 @@ const RadioInput = ({ name, label, id, options, formProps }) => {
             </RadioGroup>
         </FormControl>
     );
+};
+
+RadioInput.propTypes = {
+    name: PropTypes.string.isRequired,
+    label: PropTypes.string,
+    id: PropTypes.string,
+    options: PropTypes.array.isRequired,
+    formProps: PropTypes.object,
 };
 
 export default RadioInput;
