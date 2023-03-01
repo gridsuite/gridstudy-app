@@ -27,7 +27,6 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../utils/config-params';
-import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
@@ -132,6 +131,7 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
+    const isRootNode = currentNode?.type === 'ROOT';
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
@@ -746,19 +746,6 @@ export const NetworkMapTab = ({
         );
     }
 
-    const linesNearOverload = useCallback(() => {
-        if (mapEquipments) {
-            return mapEquipments.lines.some((l) => {
-                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
-                return (
-                    zone === LineLoadingZone.WARNING ||
-                    zone === LineLoadingZone.OVERLOAD
-                );
-            });
-        }
-        return false;
-    }, [mapEquipments, lineFlowAlertThreshold]);
-
     const isLoadFlowValid = () => {
         return loadFlowStatus === RunningStatus.SUCCEED;
     };
@@ -816,7 +803,7 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {displayOverloadTable && isLoadFlowValid() && linesNearOverload() && (
+            {!isRootNode && displayOverloadTable && isLoadFlowValid() && (
                 <div className={classes.divOverloadedLineView}>
                     <OverloadedLinesView
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
