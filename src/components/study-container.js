@@ -16,7 +16,7 @@ import React, {
 import * as PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAMS_LOADED } from "../utils/config-params";
+import { PARAMS_LOADED } from '../utils/config-params';
 import {
     connectNotificationsWebsocket,
     fetchLoadFlowInfos,
