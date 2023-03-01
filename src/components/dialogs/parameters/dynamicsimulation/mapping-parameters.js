@@ -5,16 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Container, Grid, Typography } from '@mui/material';
-import { useStyles } from '../parameters-styles';
+import { Grid, Typography } from '@mui/material';
+import { makeComponentsFor, TYPES } from '../util/make-component-utils';
+import { useCallback } from 'react';
 
 const MappingParameters = ({ mapping, onUpdateMapping }) => {
-    const classes = useStyles();
+    const { values } = mapping;
+
+    const handleUpdateMapping = useCallback(
+        (newMapping) => {
+            onUpdateMapping(newMapping);
+        },
+        [onUpdateMapping]
+    );
+
+    const defParams = {
+        value: {
+            type: TYPES.enum,
+            description: 'DynamicSimulationMapping',
+            values: values.reduce((obj, curr) => {
+                obj[curr] = curr;
+                return obj;
+            }, {}),
+        },
+    };
+
     return (
-        <Grid container className={classes.grid}>
-            <Container maxWidth="md">
-                <Typography>Mapping: ${JSON.stringify(mapping)}</Typography>
-            </Container>
+        <Grid container>
+            <Typography>{`Mapping: ${JSON.stringify(mapping)}`}</Typography>
+            {makeComponentsFor(defParams, mapping, handleUpdateMapping)}
         </Grid>
     );
 };

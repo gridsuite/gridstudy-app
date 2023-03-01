@@ -5,16 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography } from '@mui/material';
+import { debounce, Grid, Typography } from '@mui/material';
 import { makeComponentsFor, TYPES } from '../util/make-component-utils';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
     const handleUpdateTimeDelay = useCallback(
         (newTimeDelay) => {
-            onUpdateTimeDelay({ timeDelay: newTimeDelay });
+            onUpdateTimeDelay(newTimeDelay);
         },
         [onUpdateTimeDelay]
+    );
+
+    const delayedHandleUpdateTimeDelay = useMemo(
+        () => debounce(handleUpdateTimeDelay, 500),
+        [handleUpdateTimeDelay]
     );
 
     const defParams = {
@@ -32,7 +37,11 @@ const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
             <Typography>
                 {`Time delay : ${JSON.stringify(timeDelay)}`}
             </Typography>
-            {makeComponentsFor(defParams, timeDelay, handleUpdateTimeDelay)}
+            {makeComponentsFor(
+                defParams,
+                timeDelay,
+                delayedHandleUpdateTimeDelay
+            )}
         </Grid>
     );
 };

@@ -54,13 +54,40 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
         resetProvider();
     }, [resetParameters, resetProvider]);
 
+    const handleUpdateTimeDelay = useCallback(
+        (newTimeDelay) => {
+            updateParameters({ ...parameters, timeDelay: newTimeDelay });
+        },
+        [updateParameters, parameters]
+    );
+
+    const handleUpdateSolver = useCallback(
+        (newSolver) => {
+            updateParameters({ ...parameters, solver: newSolver });
+        },
+        [updateParameters, parameters]
+    );
+
+    const handleUpdateMapping = useCallback(
+        (newMapping) => {
+            updateParameters({ ...parameters, mapping: newMapping });
+        },
+        [updateParameters, parameters]
+    );
+
     return (
         <Grid container direction={'column'} className={classes.grid}>
             <Grid container key="provider">
                 <DropDown
                     value={provider}
                     label="Provider"
-                    values={providers}
+                    values={Object.entries(providers).reduce(
+                        (obj, [key, value]) => {
+                            obj[key] = `DynamicSimulationProvider${value}`;
+                            return obj;
+                        },
+                        {}
+                    )}
                     callback={handleUpdateProvider}
                 />
 
@@ -101,7 +128,7 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                     >
                         <TimeDelayParameters
                             timeDelay={parameters.timeDelay}
-                            onUpdateTimeDelay={updateParameters}
+                            onUpdateTimeDelay={handleUpdateTimeDelay}
                         />
                     </TabPanel>
                     <TabPanel
@@ -110,7 +137,7 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                     >
                         <SolverParameters
                             solver={parameters.solver}
-                            onUpdateSolver={updateParameters}
+                            onUpdateSolver={handleUpdateSolver}
                         />
                     </TabPanel>
                     <TabPanel
@@ -119,7 +146,7 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                     >
                         <MappingParameters
                             mapping={parameters.mapping}
-                            onUpdateMapping={updateParameters}
+                            onUpdateMapping={handleUpdateMapping}
                         />
                     </TabPanel>
                 </Grid>

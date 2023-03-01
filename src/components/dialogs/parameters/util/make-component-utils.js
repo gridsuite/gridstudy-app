@@ -12,6 +12,7 @@ import { DropDown } from '../common/drop-down';
 import { CountrySelector } from '../common/country-selector';
 import IntegerInput from '../common/integer-input';
 import DoubleInput from '../common/double-input';
+import StringInput from '../common/string-input';
 
 // --- define render makers --- //
 export const makeRenderSwitchWithLabel =
@@ -71,7 +72,9 @@ export const makeRenderIntegerField =
             <IntegerInput
                 value={value}
                 label={defParam.description}
-                callback={(ev) => setter({ ...params, [key]: ev.target.value })}
+                callback={(ev) =>
+                    setter({ ...params, [key]: +ev.target.value })
+                }
             />
         );
     };
@@ -79,6 +82,19 @@ export const makeRenderDoubleField =
     () => (defParam, key, params, setter, value) => {
         return (
             <DoubleInput
+                value={value}
+                label={defParam.description}
+                callback={(ev) =>
+                    setter({ ...params, [key]: +ev.target.value })
+                }
+            />
+        );
+    };
+
+export const makeRenderStringField =
+    () => (defParam, key, params, setter, value) => {
+        return (
+            <StringInput
                 value={value}
                 label={defParam.description}
                 callback={(ev) => setter({ ...params, [key]: ev.target.value })}
@@ -94,6 +110,7 @@ export const TYPES = {
     countries: 'Countries',
     integer: 'Integer',
     double: 'Double',
+    string: 'String',
 };
 
 // --- define default render for each data types
@@ -104,6 +121,7 @@ const DEFAULT_RENDER = {
     [TYPES.countries]: makeRenderCountrySelector(),
     [TYPES.integer]: makeRenderIntegerField(),
     [TYPES.double]: makeRenderDoubleField(),
+    [TYPES.string]: makeRenderStringField(),
 };
 
 export const makeComponentsFor = (defParams, params, setter) => {
