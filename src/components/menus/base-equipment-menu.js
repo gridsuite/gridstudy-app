@@ -265,7 +265,7 @@ const BaseEquipmentMenu = ({
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
                             itemText={getNameOrId(
-                                network?.getSubstation(equipment.substationId)
+                                network.getSubstation(equipment.substationId)
                             )}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
