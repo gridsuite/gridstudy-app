@@ -95,7 +95,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
+const DynamicSimulationResultChart = ({
+    groupId,
+    timeseriesMetadatas,
+    selected,
+    loadTimeSeries,
+}) => {
+    const classes = useStyles();
     const intl = useIntl();
 
     // store the previous layout when scaling in order to restore later
@@ -138,45 +144,61 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
         setSelectedIndex(index);
     }, []);
 
-    const selectedSeries = useCallback(
-        (axisSelected) => {
-            return series.filter(
-                (s, index) => axisSelected.indexOf(index) !== -1
+    const selectSeries = useCallback(
+        (selectedIndexes) => {
+            return loadTimeSeries(selectedIndexes).then(
+                (selectedTimeSeries) => {
+                    // transform to plotly's compatible data
+                    return selectedTimeSeries.map((elem) => {
+                        const metadata = elem?.metadata;
+                        const values = elem?.chunks && elem.chunks[0]?.values;
+                        return {
+                            index: elem.index,
+                            name: metadata?.name,
+                            data: {
+                                x: metadata?.irregularIndex,
+                                y: values,
+                            },
+                        };
+                    });
+                }
             );
         },
-        [series]
+        [loadTimeSeries]
     );
 
     const handleLeftAxisSelected = useCallback(
-        (index, axisSelected) => {
-            setPlots((prev) => {
-                const newPlots = Array.from(prev);
-                newPlots[index].leftSelectedSeries =
-                    selectedSeries(axisSelected);
-                return newPlots;
+        (index, selectedIndexes) => {
+            selectSeries(selectedIndexes).then((selectedSeries) => {
+                setPlots((prev) => {
+                    const newPlots = Array.from(prev);
+                    newPlots[index].leftSelectedSeries = selectedSeries;
+                    return newPlots;
+                });
             });
         },
-        [selectedSeries]
+        [selectSeries]
     );
 
     const handleRightAxisSelected = useCallback(
-        (index, axisSelected) => {
-            setPlots((prev) => {
-                const newPlots = Array.from(prev);
-                newPlots[index].rightSelectedSeries =
-                    selectedSeries(axisSelected);
-                return newPlots;
+        (index, selectedIndexes) => {
+            selectSeries(selectedIndexes).then((selectedSeries) => {
+                setPlots((prev) => {
+                    const newPlots = Array.from(prev);
+                    newPlots[index].rightSelectedSeries = selectedSeries;
+                    return newPlots;
+                });
             });
         },
-        [selectedSeries]
+        [selectSeries]
     );
 
     const items = useMemo(() => {
-        return series.map((s, index) => ({
+        return timeseriesMetadatas.map((elem, index) => ({
             id: index,
-            label: s.name,
+            label: elem.name,
         }));
-    }, [series]);
+    }, [timeseriesMetadatas]);
 
     const handleFullView = useCallback(() => {
         setFullView((prev) => !prev);
@@ -311,8 +333,6 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
             items: allLayouts.lg.map((item) => ({ ...item })),
         }));
     };
-
-    const classes = useStyles();
 
     return (
         <Box
@@ -518,12 +538,13 @@ const DynamicSimulationResultChart = ({ groupId, series, selected }) => {
 
 DynamicSimulationResultChart.propTypes = {
     groupId: PropTypes.string.isRequired,
-    series: PropTypes.arrayOf(
+    timeseriesMetadatas: PropTypes.arrayOf(
         PropTypes.shape({
             name: PropTypes.string.isRequired,
         })
     ),
     selected: PropTypes.bool.isRequired,
+    loadTimeSeries: PropTypes.func,
 };
 
 export default memo(DynamicSimulationResultChart);

@@ -1222,16 +1222,40 @@ export function fetchDynamicSimulationStatus(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationResultTimeSeries(
+export function fetchDynamicSimulationTimeSeriesMetadata(
     studyUuid,
     currentNodeUuid
 ) {
     console.info(
-        `Fetching dynamic simulation time series result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
+
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/result/timeseries/metadata';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchDynamicSimulationResultTimeSeries(
+    studyUuid,
+    currentNodeUuid,
+    timeSeriesNames
+) {
+    console.info(
+        `Fetching dynamic simulation time series result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    let url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/dynamic-simulation/result/timeseries';
+
+    const paramsList =
+        timeSeriesNames &&
+        timeSeriesNames.length > 0 &&
+        '?' + getQueryParamsList(timeSeriesNames, 'timeSeriesNames');
+
+    url += paramsList && '';
+
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -1252,7 +1276,7 @@ export function fetchDynamicSimulationResultTimeLine(
 
 export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
     // fetch parallel different results
-    const timeseriesPromise = fetchDynamicSimulationResultTimeSeries(
+    const timeseriesMetadataPromise = fetchDynamicSimulationTimeSeriesMetadata(
         studyUuid,
         currentNodeUuid
     );
@@ -1260,8 +1284,11 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
         studyUuid,
         currentNodeUuid
     );
-    return Promise.all([timeseriesPromise, statusPromise]).then(
-        ([timeseries, status]) => ({ timeseries, status })
+    return Promise.all([timeseriesMetadataPromise, statusPromise]).then(
+        ([timeseriesMetadatas, status]) => ({
+            timeseriesMetadatas,
+            status,
+        })
     );
 }
 
