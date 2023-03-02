@@ -173,7 +173,9 @@ const ShuntCompensatorCreationDialog = ({
                 editData ? editData.uuid : undefined,
                 shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(
+                    shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]
+                ),
                 shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null
             ).catch((error) => {
                 snackError({

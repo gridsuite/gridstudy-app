@@ -190,7 +190,7 @@ const LoadCreationDialog = ({
                 editData ? editData.uuid : undefined,
                 load.connectivity?.connectionDirection ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                load.connectivity?.connectionName ?? null,
+                sanitizeString(load.connectivity?.connectionName),
                 load.connectivity?.connectionPosition ?? null
             ).catch((error) => {
                 snackError({
