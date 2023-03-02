@@ -141,6 +141,7 @@
     "DynamicSimulation": "Simulation dynamique",
     "DynamicSimulationGetMappingError": "Mappings dynamiques",
     "DynamicSimulationParameters": "Paramètres de la simulation dynamique",
+    "DynamicSimulationParametersChangeError": "Une erreur est survenue lors de changement des paramètres de la simulation dynamique",
     "DynamicSimulationResults": "Résultats de la simulation dynamique",
     "DynamicSimulationRunError": "Une erreur est survenue lors de l'exécution de la simulation dynamique",
     "DynamicSimulationParametersSelection": "Selection des parametres de la simulation dynamique",

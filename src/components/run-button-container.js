@@ -39,7 +39,9 @@ import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
-import DynamicSimulationParametersSelector from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+import DynamicSimulationParametersSelector, {
+    checkDynamicSimulationParameters,
+} from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -230,8 +232,31 @@ export function RunButtonContainer({
                     });
                 });
         } else if (action === runnable.DYNAMIC_SIMULATION) {
-            setShowDynamicSimulationParametersSelector(true);
-            setRanDynamicSimulation(true);
+            checkDynamicSimulationParameters()
+                .then((isValid) => {
+                    if (!isValid) {
+                        // open parameters selector to configure mandatory params
+                        setShowDynamicSimulationParametersSelector(true);
+                        setRanDynamicSimulation(true);
+                    } else {
+                        // start server side dynamic simulation directly
+                        startDynamicSimulation(
+                            studyUuid,
+                            currentNode?.id
+                        ).catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'DynamicSimulationRunError',
+                            });
+                        });
+                    }
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'DynamicSimulationRunError',
+                    });
+                });
         }
     };
 

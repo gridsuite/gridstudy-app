@@ -1156,6 +1156,57 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
 }
 
 // --- Dynamic simulation API - BEGIN
+// fake config storage for dynamic simulation
+const DS_PARAMS_KEY = 'dsParams';
+const DS_PROVIDER_KEY = 'dsProvider';
+const dsConfigStorage = (() => {
+    sessionStorage.setItem(
+        DS_PROVIDER_KEY,
+        JSON.stringify({
+            values: ['DynaWaltz'],
+            value: 'DynaWaltz',
+        })
+    );
+    sessionStorage.setItem(
+        DS_PARAMS_KEY,
+        JSON.stringify({
+            timeDelay: { startTime: 0, stopTime: 500 },
+            solver: {
+                values: [
+                    {
+                        id: '1',
+                        name: 'IDA',
+                        order: 1,
+                        initStep: 0.000001,
+                        minStep: 0.000001,
+                        maxStep: 10,
+                        absAccuracy: 0.0001,
+                        relAccuracy: 0.0001,
+                    },
+                    {
+                        id: '2',
+                        name: 'Simplified',
+                        hMin: 0.000001,
+                        hMax: 1,
+                        kReduceStep: 0.5,
+                        nEff: 10,
+                        nDeadband: 2,
+                        maxRootRestart: 3,
+                        maxNewtonTry: 10,
+                        linearSolverName: 'KLU',
+                        recalculateStep: false,
+                    },
+                ],
+                value: '1',
+            },
+            mapping: {
+                values: ['gautier2', 'thang2', 'demo', 'demo2'],
+                value: 'gautier2',
+            },
+        })
+    );
+    return sessionStorage;
+})();
 export function getDynamicMappings(studyUuid, currentNodeUuid) {
     console.info(
         `Fetching dynamic mappings on '${studyUuid}' and node '${currentNodeUuid}' ...`
@@ -1180,6 +1231,20 @@ export function startDynamicSimulation(
     let startDynamicSimulationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/dynamic-simulation/run?';
+
+    // fake load configuration if not provided
+    // mapping name
+    if (!mappingName) {
+        mappingName = JSON.parse(dsConfigStorage.getItem(DS_PARAMS_KEY)).mapping
+            ?.value;
+    }
+    // dynamicSimulationConfiguration
+    if (!dynamicSimulationConfiguration) {
+        const timeDelay = JSON.parse(
+            dsConfigStorage.getItem(DS_PARAMS_KEY)
+        ).timeDelay;
+        dynamicSimulationConfiguration = { ...timeDelay };
+    }
 
     // add request params
     if (mappingName) {
@@ -1293,58 +1358,6 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
 }
 
 // -- Parameters API - BEGIN
-// fake config storage for dynamic simulation
-const DS_PARAMS_KEY = 'dsConfig';
-const DS_PROVIDER_KEY = 'dsProvider';
-const dsConfigStorage = (() => {
-    sessionStorage.setItem(
-        DS_PROVIDER_KEY,
-        JSON.stringify({
-            values: ['DynaWaltz'],
-            value: 'DynaWaltz',
-        })
-    );
-    sessionStorage.setItem(
-        DS_PARAMS_KEY,
-        JSON.stringify({
-            timeDelay: { startTime: 0, stopTime: 500 },
-            solver: {
-                values: [
-                    {
-                        id: '1',
-                        name: 'IDA',
-                        order: 1,
-                        initStep: 0.000001,
-                        minStep: 0.000001,
-                        maxStep: 10,
-                        absAccuracy: 0.0001,
-                        relAccuracy: 0.0001,
-                    },
-                    {
-                        id: '2',
-                        name: 'Simplified',
-                        hMin: 0.000001,
-                        hMax: 1,
-                        kReduceStep: 0.5,
-                        nEff: 10,
-                        nDeadband: 2,
-                        maxRootRestart: 3,
-                        maxNewtonTry: 10,
-                        linearSolverName: 'KLU',
-                        recalculateStep: false,
-                    },
-                ],
-                value: '1',
-            },
-            mapping: {
-                values: ['gautier2', 'thang2', 'demo', 'demo2'],
-                value: 'gautier2',
-            },
-        })
-    );
-    return sessionStorage;
-})();
-
 export function fetchDynamicSimulationProviders() {
     // fake API
     return Promise.resolve(
