@@ -11,11 +11,17 @@ import './react-grid-layout.custom.css';
 import { Responsive as RGLResponsive } from 'react-grid-layout';
 import { AutoSizer } from 'react-virtualized';
 
-const ResponsiveGridLayout = (props) => {
+const ResponsiveGridLayout = ({ computeRowHeight, ...rest }) => {
     // use AutoSizer to make react-grid-layout Responsive component aware of width
     return (
         <AutoSizer>
-            {({ width }) => <RGLResponsive width={width} {...props} />}
+            {({ width, height }) => (
+                <RGLResponsive
+                    width={width}
+                    rowHeight={computeRowHeight(height)}
+                    {...rest}
+                />
+            )}
         </AutoSizer>
     );
 };
