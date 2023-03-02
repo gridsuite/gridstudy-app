@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import RadioInput from '../../rhf-inputs/radio-input';
 import { VARIATION_TYPES } from '../../../network/constants';
 import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';

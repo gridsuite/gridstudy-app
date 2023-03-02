@@ -1,20 +1,27 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import FormControl from '@mui/material/FormControl';
 import clsx from 'clsx';
 import { Grid } from '@mui/material';
-import { FieldLabel } from '../../../dialogs/inputs/hooks-helpers';
+import { FieldLabel } from '../../dialogs/inputs/hooks-helpers';
 import Chip from '@mui/material/Chip';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
-import DirectoryItemSelector from '../../../directory-item-selector';
+import DirectoryItemSelector from '../../directory-item-selector';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useStyles } from '../../../dialogs/dialogUtils';
+import { useStyles } from '../../dialogs/dialogUtils';
 import { useController, useFieldArray } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import ErrorInput from '../error-inputs/error-input';
-import MidFormError from '../error-inputs/mid-form-error';
+import ErrorInput from './error-inputs/error-input';
+import MidFormError from './error-inputs/mid-form-error';
 
-const ElementsInput = ({
+const DirectoryItemsInput = ({
     label,
     name,
     elementType,
@@ -120,4 +127,4 @@ const ElementsInput = ({
     );
 };
 
-export default ElementsInput;
+export default DirectoryItemsInput;
