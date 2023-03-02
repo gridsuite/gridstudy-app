@@ -121,3 +121,13 @@ export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 
 // dnd table
 export const SELECTED = 'selected';
+
+export const LINE_TO_ATTACH_TO_ID_1 = 'lineToAttachTo1Id';
+export const LINE_TO_ATTACH_TO_ID_2 = 'lineToAttachTo2Id';
+export const ATTACHED_LINE_ID = 'attachedLineId';
+export const VOLTAGE_LEVEL_ID = 'voltageLevelId';
+export const BUS_BAR_SECTION_ID = 'bbsBusId';
+export const REMPLACING_LINE_ID_1 = 'replacingLine1Id';
+export const REMPLACING_LINE_ID_2 = 'replacingLine1Id';
+export const REMPLACING_LINE_NAME_1 = 'replacingLine1Name';
+export const REMPLACING_LINE_NAME_2 = 'replacingLine1Name';
