@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -7,7 +7,10 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { sanitizeString } from 'components/dialogs/dialogUtils';
+import PropTypes from 'prop-types';
 import {
+    ATTACHED_LINE_ID,
     BUS_BAR_SECTION_ID,
     LINE_TO_ATTACH_TO_ID_1,
     LINE_TO_ATTACH_TO_ID_2,
@@ -15,26 +18,14 @@ import {
     REMPLACING_LINE_ID_2,
     REMPLACING_LINE_NAME_1,
     REMPLACING_LINE_NAME_2,
-    TYPE,
     VOLTAGE_LEVEL_ID,
 } from 'components/refactor/utils/field-constants';
-import React, { useCallback } from 'react';
+import yup from 'components/refactor/utils/yup-config';
+import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad } from '../../../../utils/rest-api';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
-import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
-import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import {
-    UNDEFINED_CONNECTION_DIRECTION,
-    UNDEFINED_LOAD_TYPE,
-} from '../../../network/constants';
-import yup from '../../utils/yup-config';
-import ModificationDialog from '../commons/modificationDialog';
-import {
-    getConnectivityEmptyFormData,
-    getConnectivityFormData,
-    getConnectivityFormValidationSchema,
-} from '../connectivity/connectivity-form-utils';
+import { linesAttachToSplitLines } from 'utils/rest-api';
+import ModificationDialog from 'components/refactor/dialogs/commons/modificationDialog';
+
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 
 /**
@@ -48,13 +39,13 @@ import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_ID_1]: '',
     [LINE_TO_ATTACH_TO_ID_2]: '',
-    [TYPE]: null,
-    [VOLTAGE_LEVEL_ID]: null,
-    [BUS_BAR_SECTION_ID]: null,
-    [REMPLACING_LINE_ID_1]: null,
-    [REMPLACING_LINE_NAME_1]: null,
-    [REMPLACING_LINE_ID_2]: null,
-    [REMPLACING_LINE_NAME_2]: null,
+    [ATTACHED_LINE_ID]: '',
+    [VOLTAGE_LEVEL_ID]: '',
+    [BUS_BAR_SECTION_ID]: '',
+    [REMPLACING_LINE_ID_1]: '',
+    [REMPLACING_LINE_NAME_1]: '',
+    [REMPLACING_LINE_ID_2]: '',
+    [REMPLACING_LINE_NAME_2]: '',
 };
 
 const schema = yup
@@ -62,7 +53,7 @@ const schema = yup
     .shape({
         [LINE_TO_ATTACH_TO_ID_1]: yup.string().required(),
         [LINE_TO_ATTACH_TO_ID_2]: yup.string().required(),
-        [TYPE]: yup.string(),
+        [ATTACHED_LINE_ID]: yup.string().required(),
         [VOLTAGE_LEVEL_ID]: yup.string().required(),
         [BUS_BAR_SECTION_ID]: yup.string().required(),
         [REMPLACING_LINE_ID_1]: yup.string().required(),
@@ -81,8 +72,6 @@ const LinesAttachToSplitLinesDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'loads';
-
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
@@ -90,125 +79,47 @@ const LinesAttachToSplitLinesDialog = ({
 
     const { reset } = methods;
 
-    /*  const fromSearchCopyToFormValues = (load) => {
-        fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            'voltage-levels',
-            load.voltageLevelId,
-            true
-        ).then((vlResult) => {
-            reset({
-                [EQUIPMENT_ID]: load.id + '(1)',
-                [EQUIPMENT_NAME]: load.name ?? '',
-                [LOAD_TYPE]: load.type,
-                [ACTIVE_POWER]: load.p0,
-                [REACTIVE_POWER]: load.q0,
-                ...getConnectivityFormData({
-                    voltageLevelId: load.voltageLevelId,
-                    busbarSectionId: load.busOrBusbarSectionId,
-                    voltageLevelTopologyKind: vlResult.topologyKind,
-                    voltageLevelName: vlResult.name,
-                    voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                    voltageLevelSubstationId: vlResult.substationId,
-                    connectionDirection: load.connectionDirection,
-                    connectionName: load.connectionName,
-                    connectionPosition: load.connectionPosition,
-                }),
-            });
-        });
-    };
-
-    const fromEditDataToFormValues = useCallback(
-        (load) => {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'voltage-levels',
-                load.voltageLevelId,
-                true
-            )
-                .then((vlResult) => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            voltageLevelTopologyKind: vlResult.topologyKind,
-                            voltageLevelName: vlResult.name,
-                            voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                            voltageLevelSubstationId: vlResult.substationId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                }) // if voltage level can't be found, we fill the form with minimal infos
-                .catch(() => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                });
-        },
-        [studyUuid, currentNodeUuid, reset]
-    ); */
-
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        equipmentPath,
-        toFormValues: (data) => data,
-        // setFormValues: fromSearchCopyToFormValues,
-    });
-
-    /*   useEffect(() => {
+    useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            reset({
+                [LINE_TO_ATTACH_TO_ID_1]: editData[LINE_TO_ATTACH_TO_ID_1],
+                [LINE_TO_ATTACH_TO_ID_2]:
+                    editData[LINE_TO_ATTACH_TO_ID_2] ?? '',
+                [ATTACHED_LINE_ID]: editData[ATTACHED_LINE_ID],
+                [VOLTAGE_LEVEL_ID]: editData[VOLTAGE_LEVEL_ID],
+                [BUS_BAR_SECTION_ID]: editData[BUS_BAR_SECTION_ID],
+                [REMPLACING_LINE_ID_1]: editData[REMPLACING_LINE_ID_1],
+                [REMPLACING_LINE_NAME_1]: editData[REMPLACING_LINE_NAME_1],
+                [REMPLACING_LINE_ID_2]: editData[REMPLACING_LINE_ID_2],
+                [REMPLACING_LINE_NAME_2]: editData[REMPLACING_LINE_NAME_2],
+            });
         }
-    }, [fromEditDataToFormValues, editData]); */
+    }, [editData, reset]);
 
-    /*  const onSubmit = useCallback(
-        (load) => {
-            createLoad(
+    const onSubmit = useCallback(
+        (linesAttachToSplitLine) => {
+            linesAttachToSplitLines(
                 studyUuid,
                 currentNodeUuid,
-                load[EQUIPMENT_ID],
-                sanitizeString(load[EQUIPMENT_NAME]),
-                !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
-                load[ACTIVE_POWER],
-                load[REACTIVE_POWER],
-                load.connectivity.voltageLevel.id,
-                load.connectivity.busOrBusbarSection.id,
-                editData ? true : false,
                 editData ? editData.uuid : undefined,
-                load.connectivity?.connectionDirection ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                load.connectivity?.connectionName ?? null,
-                load.connectivity?.connectionPosition ?? null
+                linesAttachToSplitLine[LINE_TO_ATTACH_TO_ID_1],
+                linesAttachToSplitLine[LINE_TO_ATTACH_TO_ID_2],
+                linesAttachToSplitLine[ATTACHED_LINE_ID],
+                linesAttachToSplitLine[VOLTAGE_LEVEL_ID],
+                linesAttachToSplitLine[BUS_BAR_SECTION_ID],
+                linesAttachToSplitLine[REMPLACING_LINE_ID_1],
+                sanitizeString(linesAttachToSplitLine[REMPLACING_LINE_NAME_1]),
+                linesAttachToSplitLine[REMPLACING_LINE_ID_2],
+                sanitizeString(linesAttachToSplitLine[REMPLACING_LINE_NAME_2])
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'LoadCreationError',
+                    headerId: 'LineAttachmentError',
                 });
             });
         },
         [editData, studyUuid, currentNodeUuid, snackError]
-    ); */
+    );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -219,15 +130,14 @@ const LinesAttachToSplitLinesDialog = ({
             <ModificationDialog
                 fullWidth
                 onClear={clear}
-                //onSave={onSubmit}
-                aria-labelledby="dialog-create-load"
+                onSave={onSubmit}
                 maxWidth={'md'}
-                titleId="CreateLoad"
-                //searchCopy={searchCopy}
+                titleId="LinesAttachToSplitLines"
+                aria-labelledby="dialog-attach-lines-to-split-lines"
                 {...dialogProps}
             >
                 <LinesAttachToSplitLinesForm
-                    currentNode={currentNode}
+                    currentNodeUuid={currentNodeUuid}
                     studyUuid={studyUuid}
                 />
             </ModificationDialog>
@@ -235,10 +145,10 @@ const LinesAttachToSplitLinesDialog = ({
     );
 };
 
-/* LinesAttachToSplitLinesDialog.propTypes = {
+LinesAttachToSplitLinesDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
 };
- */
+
 export default LinesAttachToSplitLinesDialog;

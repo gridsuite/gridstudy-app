@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,38 +9,52 @@ import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 import {
-    ACTIVE_POWER,
+    ATTACHED_LINE_ID,
     BUS_BAR_SECTION_ID,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
+    ID,
     LINE_TO_ATTACH_TO_ID_1,
     LINE_TO_ATTACH_TO_ID_2,
-    LOAD_TYPE,
-    REACTIVE_POWER,
     REMPLACING_LINE_ID_1,
     REMPLACING_LINE_ID_2,
     REMPLACING_LINE_NAME_1,
     REMPLACING_LINE_NAME_2,
+    TOPOLOGY_KIND,
     VOLTAGE_LEVEL_ID,
 } from 'components/refactor/utils/field-constants';
-import React, { useEffect, useState } from 'react';
-import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import {
-    ActivePowerAdornment,
-    filledTextField,
-    gridItem,
-    GridSection,
-    ReactivePowerAdornment,
-} from '../../../dialogs/dialogUtils';
-import { LOAD_TYPES } from '../../../network/constants';
-import FloatInput from '../../rhf-inputs/float-input';
-import SelectInput from '../../rhf-inputs/select-input';
-import TextInput from '../../rhf-inputs/text-input';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
+    fetchBusbarSectionsForVoltageLevel,
+    fetchBusesForVoltageLevel,
+    fetchEquipmentsIds,
+    fetchVoltageLevelsIdAndTopology,
+} from 'utils/rest-api';
+import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
+import TextInput from 'components/refactor/rhf-inputs/text-input';
 
-const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
-    const currentNodeUuid = currentNode?.id;
+const LinesAttachToSplitLinesForm = ({ currentNodeUuid, studyUuid }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+    const [linesIds, setLinesIds] = useState([]);
+    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
+        []
+    );
+    const { setValue } = useFormContext();
+
+    const watchVoltageLevelId = useWatch({
+        name: `${VOLTAGE_LEVEL_ID}`,
+    });
+
+    const getObjectId = useCallback((object) => {
+        if (typeof object === 'string') {
+            return object;
+        }
+
+        return object?.id;
+    }, []);
+
+    const resetBusBarSection = useCallback(() => {
+        setValue(`${BUS_BAR_SECTION_ID}`, null);
+    }, [setValue]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid)
@@ -53,79 +67,102 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
             );
     }, [studyUuid, currentNodeUuid]);
 
+    useEffect(() => {
+        fetchEquipmentsIds(
+            studyUuid,
+            currentNodeUuid,
+            undefined,
+            'LINE',
+            true
+        ).then((values) => {
+            setLinesIds(values);
+        });
+    }, [studyUuid, currentNodeUuid]);
+
+    useEffect(() => {
+        if (watchVoltageLevelId) {
+            const voltageLevel = voltageLevelOptions.find(
+                (voltageLevel) => voltageLevel[ID] === watchVoltageLevelId
+            );
+            const topologyKind = voltageLevel?.[TOPOLOGY_KIND];
+
+            switch (topologyKind) {
+                case 'NODE_BREAKER':
+                    fetchBusbarSectionsForVoltageLevel(
+                        studyUuid,
+                        currentNodeUuid,
+                        watchVoltageLevelId
+                    ).then((busbarSections) => {
+                        const busbarSectionsIds = busbarSections?.map(
+                            (busbarSection) => busbarSection[ID]
+                        );
+                        setBusOrBusbarSectionOptions(busbarSectionsIds);
+                    });
+                    break;
+
+                case 'BUS_BREAKER':
+                    fetchBusesForVoltageLevel(
+                        studyUuid,
+                        currentNodeUuid,
+                        watchVoltageLevelId
+                    ).then((buses) => {
+                        const busesIds = buses?.map((buse) => buse[ID]);
+                        setBusOrBusbarSectionOptions(busesIds);
+                    });
+                    break;
+
+                default:
+                    setBusOrBusbarSectionOptions([]);
+                    break;
+            }
+        } else {
+            setBusOrBusbarSectionOptions([]);
+        }
+    }, [watchVoltageLevelId, studyUuid, currentNodeUuid, voltageLevelOptions]);
+
     const lineToAttachTo1Field = (
         <AutocompleteInput
-            //isOptionEqualToValue={areIdsEqual}
-            /* outputTransform={(value) =>
-                typeof value === 'string'
-                    ? getConnectivityVoltageLevelData({ voltageLevelId: value })
-                    : value
-            } */
-            //onChangeCallback={resetBusBarSection}
+            outputTransform={(value) => (value === '' ? null : value)}
             allowNewValue
             forcePopupIcon
             name={LINE_TO_ATTACH_TO_ID_1}
-            label="VoltageLevel"
-            options={voltageLevelOptions}
-            //getOptionLabel={getObjectId}
+            label="Line1"
+            options={linesIds?.sort((a, b) => a.localeCompare(b))}
             size={'small'}
         />
     );
 
     const lineToAttachTo2Field = (
         <AutocompleteInput
-            //isOptionEqualToValue={areIdsEqual}
-            /* outputTransform={(value) =>
-                typeof value === 'string'
-                    ? getConnectivityVoltageLevelData({ voltageLevelId: value })
-                    : value
-            } */
-            //onChangeCallback={resetBusBarSection}
             allowNewValue
             forcePopupIcon
             name={LINE_TO_ATTACH_TO_ID_2}
-            label="VoltageLevel"
-            options={voltageLevelOptions}
-            //getOptionLabel={getObjectId}
+            label="Line2"
+            options={linesIds?.sort((a, b) => a.localeCompare(b))}
             size={'small'}
         />
     );
 
     const attachedLineField = (
         <AutocompleteInput
-            //isOptionEqualToValue={areIdsEqual}
-            /* outputTransform={(value) =>
-                typeof value === 'string'
-                    ? getConnectivityVoltageLevelData({ voltageLevelId: value })
-                    : value
-            } */
-            //onChangeCallback={resetBusBarSection}
             allowNewValue
             forcePopupIcon
-            name={LINE_TO_ATTACH_TO_ID_2}
-            label="VoltageLevel"
-            options={voltageLevelOptions}
-            //getOptionLabel={getObjectId}
+            name={ATTACHED_LINE_ID}
+            label="LineAttached"
+            options={linesIds?.sort((a, b) => a.localeCompare(b))}
             size={'small'}
         />
     );
 
     const voltageLevelIdField = (
         <AutocompleteInput
-            //isOptionEqualToValue={areIdsEqual}
-            outputTransform={
-                (value) => value
-                /*  typeof value === 'string'
-                    ? getConnectivityVoltageLevelData({ voltageLevelId: value })
-                    : value */
-            }
-            // onChangeCallback={resetBusBarSection}
+            outputTransform={getObjectId}
             allowNewValue
             forcePopupIcon
             name={VOLTAGE_LEVEL_ID}
-            label="VoltageLevel"
-            options={voltageLevelOptions}
-            //getOptionLabel={getObjectId}
+            label="AttachedVoltageLevelId"
+            options={voltageLevelOptions.map((voltageLevel) => voltageLevel.id)}
+            onChangeCallback={resetBusBarSection}
             size={'small'}
         />
     );
@@ -134,55 +171,28 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
-            //hack to work with freesolo autocomplete
-            //setting null programatically when freesolo is enable wont empty the field
             name={BUS_BAR_SECTION_ID}
             label="BusBarBus"
-            //options={busOrBusbarSectionOptions}
-            //getOptionLabel={getObjectId}
-            //isOptionEqualToValue={areIdsEqual}
+            options={busOrBusbarSectionOptions}
             inputTransform={(value) => (value === null ? '' : value)}
-            /* outputTransform={(value) =>
-                typeof value === 'string'
-                    ? getConnectivityBusBarSectionData({
-                          busbarSectionId: value,
-                      })
-                    : value
-            } */
             size={'small'}
         />
     );
 
     const newLine1IdField = (
-        <TextInput
-            name={REMPLACING_LINE_ID_1}
-            label={'Line1ID'}
-            //formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={REMPLACING_LINE_ID_1} label={'Line1ID'} />
     );
 
     const newLine1NameField = (
-        <TextInput
-            name={REMPLACING_LINE_NAME_1}
-            label={'Line1Name'}
-            //formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={REMPLACING_LINE_NAME_1} label={'Line1Name'} />
     );
 
     const newLine2IdField = (
-        <TextInput
-            name={REMPLACING_LINE_ID_2}
-            label={'Line1ID'}
-            //formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={REMPLACING_LINE_ID_2} label={'Line2ID'} />
     );
 
     const newLine2NameField = (
-        <TextInput
-            name={REMPLACING_LINE_NAME_2}
-            label={'Line1Name'}
-            //formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={REMPLACING_LINE_NAME_2} label={'Line2Name'} />
     );
 
     return (

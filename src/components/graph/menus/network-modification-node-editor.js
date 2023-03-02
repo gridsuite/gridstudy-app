@@ -58,12 +58,12 @@ import {
     setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
-import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
 import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
 import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
+import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -334,13 +334,7 @@ const NetworkModificationNodeEditor = () => {
         },
         LINES_ATTACH_TO_SPLIT_LINES: {
             label: 'LinesAttachToSplitLines',
-            dialog: () =>
-                adapt(
-                    LinesAttachToSplitLinesDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LinesAttachToSplitLinesDialog),
             icon: <AddIcon />,
         },
         GENERATOR_SCALING: {
