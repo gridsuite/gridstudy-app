@@ -218,12 +218,10 @@ const StudyPane = ({
                                         : '100%',
                             }}
                         >
-                            {network && (
-                                <NetworkModificationTreePane
-                                    studyUuid={studyUuid}
-                                    studyMapTreeDisplay={studyDisplayMode}
-                                />
-                            )}
+                            <NetworkModificationTreePane
+                                studyUuid={studyUuid}
+                                studyMapTreeDisplay={studyDisplayMode}
+                            />
                         </div>
                         <div
                             className={clsx(

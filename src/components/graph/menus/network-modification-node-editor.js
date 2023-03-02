@@ -428,7 +428,7 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentNode.id, currentNode.type, snackError, dispatch]);
+    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -438,8 +438,9 @@ const NetworkModificationNodeEditor = () => {
         // first time then fetch modifications
         // OR next time if currentNodeId changed then fetch modifications
         if (
-            !currentNodeIdRef.current ||
-            currentNodeIdRef.current !== currentNode.id
+            currentNode &&
+            (!currentNodeIdRef.current ||
+                currentNodeIdRef.current !== currentNode.id)
         ) {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
@@ -507,9 +508,10 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const doDeleteModification = useCallback(() => {
+        if (!currentNode) return;
         deleteModifications(
             studyUuid,
-            currentNode?.id,
+            currentNode.id,
             [...selectedItems.values()].map((item) => item.uuid)
         )
             .then()
@@ -522,6 +524,7 @@ const NetworkModificationNodeEditor = () => {
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
     const doCutModification = useCallback(() => {
+        if (!currentNode) return;
         // just memorize the list of selected modifications
         setCopiedModifications(
             Array.from(selectedItems).map((item) => item.uuid)
@@ -530,7 +533,7 @@ const NetworkModificationNodeEditor = () => {
             copyType: CopyType.MOVE,
             originNodeUuid: currentNode.id,
         });
-    }, [currentNode.id, selectedItems]);
+    }, [currentNode?.id, selectedItems]);
 
     const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
@@ -541,6 +544,7 @@ const NetworkModificationNodeEditor = () => {
     }, [selectedItems]);
 
     const doPasteModification = useCallback(() => {
+        if (!currentNode) return;
         if (copyInfos.copyType === CopyType.MOVE) {
             copyOrMoveModifications(
                 studyUuid,
@@ -598,7 +602,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [
         copiedModifications,
-        currentNode.id,
+        currentNode?.id,
         copyInfos,
         snackError,
         snackWarning,
