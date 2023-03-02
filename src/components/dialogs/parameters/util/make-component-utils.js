@@ -35,6 +35,7 @@ export const makeRenderDropDown =
                 label={defParam.description}
                 values={defParam.values}
                 callback={(ev) => setter({ ...params, [key]: ev.target.value })}
+                renderValue={defParam.renderValue}
             />
         );
     };

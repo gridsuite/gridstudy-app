@@ -27,6 +27,7 @@ const MappingParameters = ({ mapping, onUpdateMapping }) => {
                 obj[curr] = curr;
                 return obj;
             }, {}),
+            renderValue: (value) => value,
         },
     };
 
