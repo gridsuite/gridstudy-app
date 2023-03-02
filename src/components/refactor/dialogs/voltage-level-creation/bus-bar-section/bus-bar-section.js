@@ -13,7 +13,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useFieldArray } from 'react-hook-form';
 import { BusBarSectionCreation } from './bus-bar-section-creation';
-import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
+import {
+    SWITCH_TYPE,
+    VOLTAGE_LEVEL_COMPONENTS,
+} from 'components/network/constants';
 import { BusBarSectionConnection } from './BusBarSectionConnection';
 import {
     BUS_BAR_SECTIONS,
@@ -25,6 +28,7 @@ import {
     TO_BBS,
     VERTICAL_POSITION,
 } from 'components/refactor/utils/field-constants';
+import ErrorInput from 'components/refactor/rhf-inputs/error-inputs/error-input';
 
 export const BusBarSection = ({ id, type, errors }) => {
     const classes = useStyles();
@@ -33,7 +37,7 @@ export const BusBarSection = ({ id, type, errors }) => {
     const busBarSectionConnection = {
         [FROM_BBS]: '',
         [TO_BBS]: '',
-        [SWITCH_KIND]: SWITCH_KIND[0],
+        [SWITCH_KIND]: SWITCH_TYPE[0].id,
     };
     const busBarSectionCreation = {
         [ID]: '',
@@ -48,11 +52,7 @@ export const BusBarSection = ({ id, type, errors }) => {
                 <Grid key={value.id} container spacing={3} item>
                     {type ===
                     VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION ? (
-                        <BusBarSectionCreation
-                            id={id}
-                            index={index}
-                            errors={errors}
-                        />
+                        <BusBarSectionCreation id={id} index={index} />
                     ) : (
                         <BusBarSectionConnection id={id} index={index} />
                     )}
@@ -93,10 +93,8 @@ export const BusBarSection = ({ id, type, errors }) => {
                             }
                         />
                     </Button>
-                    {errors && errors?.[BUS_BAR_SECTIONS] && (
-                        <div className={classes.emptyListError}>
-                            {errors?.[BUS_BAR_SECTIONS].message}
-                        </div>
+                    {errors?.[BUS_BAR_SECTIONS] && (
+                        <ErrorInput name={BUS_BAR_SECTIONS} />
                     )}
                 </span>
             </Grid>

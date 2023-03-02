@@ -20,7 +20,7 @@ export const numericalWithButton = {
     inputProps: { min: 0, style: { textAlign: 'right' } },
 };
 
-export const BusBarSectionCreation = ({ id, index, errors }) => {
+export const BusBarSectionCreation = ({ id, index }) => {
     const equipmentIdField = (
         <TextInput name={`${id}.${index}.${ID}`} label={'BusBarSectionID'} />
     );

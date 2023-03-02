@@ -14,7 +14,6 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { useStyles } from '../../../../../dialogs/dialogUtils';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
-import MidFormError from '../../../../rhf-inputs/error-inputs/mid-form-error';
 import ErrorInput from '../../../../rhf-inputs/error-inputs/error-input';
 
 export const ReactiveCapabilityCurveTable = ({
@@ -28,7 +27,7 @@ export const ReactiveCapabilityCurveTable = ({
     return (
         <Grid item container spacing={2}>
             <Grid item xs={12}>
-                <ErrorInput name={id} InputField={MidFormError} />
+                <ErrorInput name={id} />
             </Grid>
 
             {tableHeadersIds.map((header) => (

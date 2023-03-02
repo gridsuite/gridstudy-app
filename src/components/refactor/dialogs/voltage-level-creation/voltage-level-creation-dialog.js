@@ -33,7 +33,7 @@ import { createVoltageLevel } from 'utils/rest-api';
 import ModificationDialog from 'components/refactor/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
-import { FormattedMessage } from 'react-intl';
+import { findIndexesOfDuplicateFieldValues } from 'components/refactor/utils/utils';
 
 /**
  * Dialog to create a load in the network
@@ -52,6 +52,88 @@ const emptyFormData = {
     [BUS_BAR_CONNECTIONS]: [],
 };
 
+const controleUniqueId = (values, message) => {
+    const indexes = findIndexesOfDuplicateFieldValues(values, ID);
+    return indexes?.length === 0
+        ? true
+        : {
+              name: 'ValidationError',
+              path: `${BUS_BAR_SECTIONS}`,
+              errors: [],
+              inner: indexes.map(
+                  (index) =>
+                      new yup.ValidationError(
+                          message,
+                          null,
+                          `${BUS_BAR_SECTIONS}[${index}].${ID}`
+                      )
+              ),
+          };
+};
+
+const controleUniqueHorizontalVertical = (values, message) => {
+    const errors = [];
+
+    if (!values || !Array.isArray(values)) {
+        // Return a validation error object if the busBarSections array is null or undefined
+        return {
+            name: 'ValidationError',
+            path: `${BUS_BAR_SECTIONS}`,
+            errors: [],
+            inner: [],
+        };
+    }
+
+    // Loop through each item in the array
+    values.forEach((section, i) => {
+        // Loop through each item in the array after the current item
+        values.slice(i + 1).forEach((otherSection, j) => {
+            const horizontalPosition = section?.[HORIZONTAL_POSITION];
+            const verticalPosition = section?.[VERTICAL_POSITION];
+
+            if (
+                horizontalPosition === otherSection?.[HORIZONTAL_POSITION] &&
+                verticalPosition === otherSection?.[VERTICAL_POSITION]
+            ) {
+                // If they are the same, add validation errors for both items
+                errors.push(
+                    new yup.ValidationError(
+                        message,
+                        null,
+                        `${BUS_BAR_SECTIONS}[${i}].${HORIZONTAL_POSITION}`
+                    ),
+                    new yup.ValidationError(
+                        message,
+                        null,
+                        `${BUS_BAR_SECTIONS}[${i}].${VERTICAL_POSITION}`
+                    ),
+                    new yup.ValidationError(
+                        message,
+                        null,
+                        `${BUS_BAR_SECTIONS}[${
+                            j + i + 1
+                        }].${HORIZONTAL_POSITION}`
+                    ),
+                    new yup.ValidationError(
+                        message,
+                        null,
+                        `${BUS_BAR_SECTIONS}[${j + i + 1}].${VERTICAL_POSITION}`
+                    )
+                );
+            }
+        });
+    });
+
+    return errors.length === 0
+        ? true
+        : {
+              name: 'ValidationError',
+              path: `${BUS_BAR_SECTIONS}`,
+              errors: [],
+              inner: errors,
+          };
+};
+
 const schema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
     [EQUIPMENT_NAME]: yup.string(),
@@ -63,13 +145,17 @@ const schema = yup.object().shape({
             yup.object().shape({
                 [ID]: yup.string().required(),
                 [NAME]: yup.string(),
-                [HORIZONTAL_POSITION]: yup.number().required().default(1),
-                [VERTICAL_POSITION]: yup.number().required().default(1),
+                [HORIZONTAL_POSITION]: yup.number().min(0).required(),
+                [VERTICAL_POSITION]: yup.number().min(0).required(),
             })
         )
-        .min(1, <FormattedMessage id={'EmptyList/bbs'} />)
-        .unique(ID, <FormattedMessage id={'DuplicateId'} />)
-        .uniqueHorizontalVertical(),
+        .min(1, 'EmptyList/bbs')
+        .test('unique-positions', (values) =>
+            controleUniqueHorizontalVertical(values, 'SameHorizAndVertPos')
+        )
+        .test('unique-ids', (values) =>
+            controleUniqueId(values, 'DuplicateId')
+        ),
     [BUS_BAR_CONNECTIONS]: yup.array().of(
         yup.object().shape({
             [FROM_BBS]: yup.string().nullable().required(),
