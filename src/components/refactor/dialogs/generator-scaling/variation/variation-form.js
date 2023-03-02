@@ -47,9 +47,7 @@ const VariationForm = ({ name, index }) => {
     });
 
     const fieldName = `${name}.${index}.${FILTERS}`;
-    const { setValue } = useFormContext({
-        name: fieldName,
-    });
+    const { setValue } = useFormContext();
 
     const updateMetadata = useCallback(
         (filtersWithoutMetadata) => {
@@ -76,10 +74,12 @@ const VariationForm = ({ name, index }) => {
     );
 
     useEffect(() => {
+        // when variation mode is STACKING_UP or VENTILATION, all filters types must be 'explicit naming'
         if (
             (variationMode === STACKING_UP || variationMode === VENTILATION) &&
             filters.length > 0
         ) {
+            // collect all filters without metadata
             const filtersWithoutMetadata = filters.filter((filter) => {
                 return !filter?.specificMetadata;
             });
