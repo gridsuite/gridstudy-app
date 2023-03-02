@@ -6,18 +6,22 @@
  */
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { Grid } from '@mui/material';
 import DynamicSimulationResultTable from './dynamic-simulation-result-table';
 import DynamicSimulationResultChartTabs from './dynamic-simulation-result-chart-tabs';
+import { Box } from '@mui/material';
 
-const DynamicSimulationResult = ({ result }) => {
+const DynamicSimulationResult = ({ result, loadTimeSeries }) => {
     const dynamicSimulationNotif = useSelector(
         (state) => state.dynamicSimulationNotif
     );
 
     return (
-        <Grid container justifyContent={'column'} alignItems={'flex-end'}>
-            <Grid item xs={12}>
+        <Box
+            sx={{
+                height: '100%',
+            }}
+        >
+            <Box>
                 {result && dynamicSimulationNotif && (
                     <DynamicSimulationResultTable
                         result={[
@@ -27,23 +31,34 @@ const DynamicSimulationResult = ({ result }) => {
                         ]}
                     />
                 )}
-            </Grid>
-            <Grid item xs={12}>
+            </Box>
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    overflowY: 'hidden',
+                }}
+            >
                 {result && dynamicSimulationNotif && (
                     <DynamicSimulationResultChartTabs
-                        result={{ timeseries: result.timeseries }}
+                        result={{
+                            timeseriesMetadatas: result.timeseriesMetadatas,
+                        }}
+                        loadTimeSeries={loadTimeSeries}
                     />
                 )}
-            </Grid>
-        </Grid>
+            </Box>
+        </Box>
     );
 };
 
 DynamicSimulationResult.propTypes = {
     result: PropTypes.shape({
         status: PropTypes.string,
-        timeseries: PropTypes.arrayOf(PropTypes.object),
+        timeseriesMetadatas: PropTypes.arrayOf(
+            PropTypes.shape({ name: PropTypes.string.isRequired })
+        ),
     }),
+    loadTimeSeries: PropTypes.func,
 };
 
 export default DynamicSimulationResult;
