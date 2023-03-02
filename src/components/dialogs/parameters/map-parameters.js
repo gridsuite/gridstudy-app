@@ -178,7 +178,7 @@ export const MapParameters = ({ hideParameters }) => {
             >
                 <CloseButton
                     hideParameters={hideParameters}
-                    classeStyleName={classes.button}
+                    className={classes.button}
                 />
             </Grid>
         </>
