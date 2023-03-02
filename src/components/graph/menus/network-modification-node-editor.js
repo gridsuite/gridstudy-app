@@ -521,7 +521,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'errDeleteModificationMsg',
                 });
             });
-    }, [currentNode, currentNode?.id, selectedItems, snackError, studyUuid]);
+    }, [currentNode, selectedItems, snackError, studyUuid]);
 
     const doCutModification = useCallback(() => {
         if (!currentNode) return;
@@ -533,7 +533,7 @@ const NetworkModificationNodeEditor = () => {
             copyType: CopyType.MOVE,
             originNodeUuid: currentNode.id,
         });
-    }, [currentNode, currentNode?.id, selectedItems]);
+    }, [currentNode, selectedItems]);
 
     const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
@@ -603,7 +603,6 @@ const NetworkModificationNodeEditor = () => {
     }, [
         copiedModifications,
         currentNode,
-        currentNode?.id,
         copyInfos,
         snackError,
         snackWarning,
