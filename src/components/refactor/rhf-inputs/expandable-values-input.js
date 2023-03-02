@@ -7,8 +7,15 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
 import { useStyles } from '../../dialogs/dialogUtils';
+import ErrorInput from './error-inputs/error-input';
+import MidFormError from './error-inputs/mid-form-error';
 
-const ExpandableValuesInput = ({ name, Field, labelAddValue }) => {
+const ExpandableValuesInput = ({
+    name,
+    Field,
+    addButtonLabel,
+    defaultValue,
+}) => {
     const classes = useStyles();
     const {
         fields: values,
@@ -20,14 +27,17 @@ const ExpandableValuesInput = ({ name, Field, labelAddValue }) => {
 
     return (
         <Grid item container spacing={2}>
+            <Grid item xs={12}>
+                <ErrorInput name={name} InputField={MidFormError} />
+            </Grid>
             {values.map((value, idx) => (
                 <Grid key={value.id} container spacing={2} item>
-                    <Field id={name} index={idx}/>
+                    <Field name={name} index={idx} />
                     <Grid item xs={1}>
                         <IconButton
                             className={classes.icon}
                             key={value.id}
-                            onClick={remove}
+                            onClick={() => remove(idx)}
                         >
                             <DeleteIcon />
                         </IconButton>
@@ -39,9 +49,9 @@ const ExpandableValuesInput = ({ name, Field, labelAddValue }) => {
                     fullWidth
                     className={classes.button}
                     startIcon={<AddIcon />}
-                    onClick={append}
+                    onClick={() => append(defaultValue)}
                 >
-                    <FormattedMessage id={labelAddValue} />
+                    <FormattedMessage id={addButtonLabel} />
                 </Button>
             </span>
         </Grid>

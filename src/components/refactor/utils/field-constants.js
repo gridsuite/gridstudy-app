@@ -113,8 +113,13 @@ export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 export const SELECTED = 'selected';
 
 // generator scaling
-export const VARIATION = 'variation';
+export const VARIATIONS = 'variations';
 export const VARIATION_MODE = 'variationMode';
 export const FILTERS = 'filters';
 export const VARIATION_TYPE = 'variationType';
-export const VARIATION_VALUE = 'variationValue'
+export const VARIATION_VALUE = 'variationValue';
+
+// elements and directories
+export const CHILDREN_COUNT = 'childrenCount';
+export const SPECIFIC_METADATA = 'specificMetadata';
+export const EQUIPMENT_TYPE = 'equipmentType';

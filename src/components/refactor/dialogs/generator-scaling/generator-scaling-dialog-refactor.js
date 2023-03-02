@@ -1,15 +1,26 @@
-import {FormProvider, useForm} from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import yup from '../../utils/yup-config';
-import ModificationDialog from "../commons/modificationDialog";
-import EquipmentSearchDialog from "../../../dialogs/equipment-search-dialog";
-import GeneratorScalingForm from "./generator-scaling-form";
-import {useCallback} from "react";
-import {useFormSearchCopy} from "../../../dialogs/form-search-copy-hook";
+import ModificationDialog from '../commons/modificationDialog';
+import GeneratorScalingForm from './generator-scaling-form';
+import { useCallback, useEffect } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-const emptyFormData = {};
+import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
+import { getVariationsSchema } from './variation/variation-utils';
+import { generatorScaling } from '../../../../utils/rest-api';
 
-const schema = yup.object().shape({}).required();
+const emptyFormData = {
+    [VARIATION_TYPE]: 'DELTA_P',
+    [VARIATIONS]: [],
+};
+
+const schema = yup
+    .object()
+    .shape({
+        [VARIATION_TYPE]: yup.string().nullable().required(),
+        ...getVariationsSchema(VARIATIONS),
+    })
+    .required();
 
 const GeneratorScalingDialogRefactor = ({
     editData,
@@ -20,8 +31,6 @@ const GeneratorScalingDialogRefactor = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'generators';
-
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
@@ -29,23 +38,37 @@ const GeneratorScalingDialogRefactor = ({
 
     const { reset } = methods;
 
-    const fromSearchCopyToFormValues = (generatorScaling) => {};
-
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        equipmentPath,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-    });
+    useEffect(() => {
+        if (editData) {
+            reset({
+                [VARIATION_TYPE]: editData.variationType,
+                [VARIATIONS]: editData.variations,
+            });
+        }
+    }, [editData, reset]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
 
-    const onSubmit = useCallback((generatorScaling) => {
-        console.log('generator scaling : ', generatorScaling);
-    }, []);
+    const onSubmit = useCallback(
+        (generatorScalingInfos) => {
+            console.log('generator scaling : ', generatorScalingInfos);
+            generatorScaling(
+                studyUuid,
+                currentNodeUuid,
+                editData?.uuid ?? undefined,
+                generatorScalingInfos[VARIATION_TYPE],
+                generatorScalingInfos[VARIATIONS]
+            ).catch((errorMessage) => {
+                snackError({
+                    messageTxt: errorMessage,
+                    headerId: 'GeneratorScalingError',
+                });
+            });
+        },
+        [currentNodeUuid, editData, snackError, studyUuid]
+    );
 
     return (
         <FormProvider validationSchema={schema} {...methods}>
@@ -56,21 +79,12 @@ const GeneratorScalingDialogRefactor = ({
                 aria-labelledby="dialog-create-generator"
                 maxWidth={'md'}
                 titleId="CreateGenerator"
-                searchCopy={searchCopy}
                 {...dialogProps}
             >
                 <GeneratorScalingForm />
-
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={'GENERATOR'}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                />
             </ModificationDialog>
         </FormProvider>
-    )
+    );
 };
 
 export default GeneratorScalingDialogRefactor;

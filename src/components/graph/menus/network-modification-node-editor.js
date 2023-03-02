@@ -7,14 +7,14 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    fetchNetworkModifications,
-    deleteModifications,
-    fetchNetworkModification,
     changeNetworkModificationOrder,
-    fetchSubstations,
-    fetchLines,
-    fetchVoltageLevels,
     copyOrMoveModifications,
+    deleteModifications,
+    fetchLines,
+    fetchNetworkModification,
+    fetchNetworkModifications,
+    fetchSubstations,
+    fetchVoltageLevels,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -59,12 +59,11 @@ import {
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
-import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
 import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
-import GeneratorScalingDialogRefactor from "../../refactor/dialogs/generator-scaling/generator-scaling-dialog-refactor";
+import GeneratorScalingDialogRefactor from '../../refactor/dialogs/generator-scaling/generator-scaling-dialog-refactor';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -345,11 +344,6 @@ const NetworkModificationNodeEditor = () => {
             icon: <AddIcon />,
         },
         GENERATOR_SCALING: {
-            label: 'GeneratorScaling',
-            dialog: () => adapt(GeneratorScalingDialog),
-            icon: <AddIcon />,
-        },
-        GENERATOR_SCALING_Refactor: {
             label: 'GeneratorScaling',
             dialog: () => adapt(GeneratorScalingDialogRefactor),
             icon: <AddIcon />,
