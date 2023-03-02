@@ -120,6 +120,4 @@ export const VARIATION_TYPE = 'variationType';
 export const VARIATION_VALUE = 'variationValue';
 
 // elements and directories
-export const CHILDREN_COUNT = 'childrenCount';
 export const SPECIFIC_METADATA = 'specificMetadata';
-export const EQUIPMENT_TYPE = 'equipmentType';
