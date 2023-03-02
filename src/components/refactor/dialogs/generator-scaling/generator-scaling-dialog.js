@@ -29,7 +29,7 @@ const schema = yup
     })
     .required();
 
-const GeneratorScalingDialogRefactor = ({
+const GeneratorScalingDialog = ({
     editData,
     currentNode,
     studyUuid,
@@ -94,4 +94,4 @@ const GeneratorScalingDialogRefactor = ({
     );
 };
 
-export default GeneratorScalingDialogRefactor;
+export default GeneratorScalingDialog;
