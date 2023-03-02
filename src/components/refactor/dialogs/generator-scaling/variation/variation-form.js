@@ -74,7 +74,8 @@ const VariationForm = ({ name, index }) => {
     );
 
     useEffect(() => {
-        // when variation mode is STACKING_UP or VENTILATION, all filters types must be 'explicit naming'
+        // When editing the modification, filters does not have specific metadata which contain filter type
+        // If variation mode is STACKING_UP or VENTILATION, all filters types must be 'explicit naming'
         if (
             (variationMode === STACKING_UP || variationMode === VENTILATION) &&
             filters.length > 0
