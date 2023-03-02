@@ -32,7 +32,7 @@ const GeneratorScalingForm = () => {
             name={VARIATIONS}
             Field={VariationForm}
             addButtonLabel={'CreateVariation'}
-            defaultValue={getVariationEmptyForm('PROPORTIONAL_TO_PMAX')}
+            initialValue={getVariationEmptyForm('PROPORTIONAL_TO_PMAX')}
         />
     );
 

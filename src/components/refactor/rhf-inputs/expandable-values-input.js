@@ -14,7 +14,7 @@ const ExpandableValuesInput = ({
     name,
     Field,
     addButtonLabel,
-    defaultValue,
+    initialValue,
 }) => {
     const classes = useStyles();
     const {
@@ -49,7 +49,7 @@ const ExpandableValuesInput = ({
                     fullWidth
                     className={classes.button}
                     startIcon={<AddIcon />}
-                    onClick={() => append(defaultValue)}
+                    onClick={() => append(initialValue)}
                 >
                     <FormattedMessage id={addButtonLabel} />
                 </Button>
