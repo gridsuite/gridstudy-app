@@ -312,7 +312,7 @@ const GeneratorCreationDialog = ({
                     : null,
                 generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                generator[CONNECTIVITY]?.[CONNECTION_NAME],
+                sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
                 generator[CONNECTIVITY]?.[CONNECTION_POSITION]
             ).catch((error) => {
                 snackError({
