@@ -60,7 +60,6 @@ const GeneratorScalingDialog = ({
 
     const onSubmit = useCallback(
         (generatorScalingInfos) => {
-            console.log('generator scaling : ', generatorScalingInfos);
             generatorScaling(
                 studyUuid,
                 currentNodeUuid,
