@@ -1293,59 +1293,96 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
 }
 
 // -- Parameters API - BEGIN
+// fake config storage for dynamic simulation
+const DS_PARAMS_KEY = 'dsConfig';
+const DS_PROVIDER_KEY = 'dsProvider';
+const dsConfigStorage = (() => {
+    sessionStorage.setItem(
+        DS_PROVIDER_KEY,
+        JSON.stringify({
+            values: ['DynaWaltz'],
+            value: 'DynaWaltz',
+        })
+    );
+    sessionStorage.setItem(
+        DS_PARAMS_KEY,
+        JSON.stringify({
+            timeDelay: { startTime: 0, stopTime: 500 },
+            solver: {
+                values: [
+                    {
+                        id: '1',
+                        name: 'IDA',
+                        order: 1,
+                        initStep: 0.000001,
+                        minStep: 0.000001,
+                        maxStep: 10,
+                        absAccuracy: 0.0001,
+                        relAccuracy: 0.0001,
+                    },
+                    {
+                        id: '2',
+                        name: 'Simplified',
+                        hMin: 0.000001,
+                        hMax: 1,
+                        kReduceStep: 0.5,
+                        nEff: 10,
+                        nDeadband: 2,
+                        maxRootRestart: 3,
+                        maxNewtonTry: 10,
+                        linearSolverName: 'KLU',
+                        recalculateStep: false,
+                    },
+                ],
+                value: '1',
+            },
+            mapping: {
+                values: ['gautier2', 'thang2', 'demo', 'demo2'],
+                value: 'gautier2',
+            },
+        })
+    );
+    return sessionStorage;
+})();
+
 export function fetchDynamicSimulationProviders() {
-    return Promise.resolve(['DynaWaltz']);
+    // fake API
+    return Promise.resolve(
+        JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY)).values
+    );
 }
 export function fetchDynamicSimulationProvider() {
-    return Promise.resolve('DynaWaltz');
+    // fake API
+    return Promise.resolve(
+        JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY)).value
+    );
 }
 export function fetchDefaultDynamicSimulationProvider() {
-    return Promise.resolve('DynaWaltz');
+    // fake API
+    return Promise.resolve(
+        JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY)).values[0]
+    );
 }
-export function updateDynamicSimulationProvider(data) {
-    console.log('updateDynamicSimulationProvider', data);
-    return Promise.resolve(data);
+export function updateDynamicSimulationProvider(studyUuid, newProvider) {
+    // fake API
+    console.log('updateDynamicSimulationProvider', [studyUuid, newProvider]);
+    const dsProviderItem = JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY));
+    dsConfigStorage.setItem(
+        DS_PROVIDER_KEY,
+        JSON.stringify({ ...dsProviderItem, value: newProvider })
+    );
+    return Promise.resolve(studyUuid);
 }
+
 export function fetchDynamicSimulationParameters() {
-    return Promise.resolve({
-        timeDelay: { startTime: 0, stopTime: 500 },
-        solver: {
-            values: [
-                {
-                    id: '1',
-                    name: 'IDA',
-                    order: 1,
-                    initStep: 0.000001,
-                    minStep: 0.000001,
-                    maxStep: 10,
-                    absAccuracy: 0.0001,
-                    relAccuracy: 0.0001,
-                },
-                {
-                    id: '2',
-                    name: 'Simplified',
-                    hMin: 0.000001,
-                    hMax: 1,
-                    kReduceStep: 0.5,
-                    nEff: 10,
-                    nDeadband: 2,
-                    maxRootRestart: 3,
-                    maxNewtonTry: 10,
-                    linearSolverName: 'KLU',
-                    recalculateStep: false,
-                },
-            ],
-            value: '1',
-        },
-        mapping: {
-            values: ['gautier2', 'thang2', 'demo', 'demo2'],
-            value: 'gautier2',
-        },
-    });
+    // fake API
+    return Promise.resolve(JSON.parse(dsConfigStorage.getItem(DS_PARAMS_KEY)));
 }
-export function updateDynamicSimulationParameters(data) {
-    console.log('updateDynamicSimulationParameters', data);
-    return Promise.resolve(data);
+export function updateDynamicSimulationParameters(studyUuid, newParams) {
+    // fake API
+    console.log('updateDynamicSimulationParameters', [studyUuid, newParams]);
+    dsConfigStorage.setItem(DS_PARAMS_KEY, JSON.stringify(newParams));
+    return Promise.resolve(studyUuid);
 }
 // -- Parameters API - END
 // --- Dynamic simulation API - END
