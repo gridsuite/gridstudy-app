@@ -62,7 +62,7 @@ import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-l
 import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
-import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
+import DeleteAttachingLineDialog from '../../refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
 import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -360,7 +360,7 @@ const NetworkModificationNodeEditor = () => {
         },
         DELETE_ATTACHING_LINE: {
             label: 'DeleteAttachingLine',
-            dialog: () => adapt(DeleteAttachingLineDialog, withLines),
+            dialog: () => adapt(DeleteAttachingLineDialog),
             icon: <AddIcon />,
         },
         EQUIPMENT_DELETION: {
