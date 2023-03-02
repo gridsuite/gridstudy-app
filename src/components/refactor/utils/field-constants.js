@@ -121,3 +121,15 @@ export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 
 // dnd table
 export const SELECTED = 'selected';
+
+//line-split-with-voltage-level
+export const LINE_TO_DIVIDE = 'lineToDivide';
+export const LINE1_NAME = 'Line1Name';
+export const LINE2_NAME = 'Line2Name';
+export const LINE1_ID = 'Line1Id';
+export const LINE2_ID = 'Line2Id';
+//percentage-area
+export const PERCENTAGE_AREA = 'percentageArea';
+export const LEFT_SIDE_PERCENTAGE = 'leftSidePercentage';
+export const RIGHT_SIDE_PERCENTAGE = 'rightSidePercentage';
+export const SLIDER_PERCENTAGE = 'sliderPercentage';
