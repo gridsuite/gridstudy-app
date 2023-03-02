@@ -410,7 +410,7 @@ const NetworkModificationNodeEditor = () => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') return;
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode?.id)
+        fetchNetworkModifications(studyUuid, currentNode.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -428,7 +428,7 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
+    }, [studyUuid, currentNode, snackError, dispatch]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -656,7 +656,11 @@ const NetworkModificationNodeEditor = () => {
     const commit = useCallback(
         ({ source, destination }) => {
             setIsDragging(false);
-            if (destination === null || source.index === destination.index)
+            if (
+                !currentNode ||
+                destination === null ||
+                source.index === destination.index
+            )
                 return;
             const res = [...modifications];
             const [item] = res.splice(source.index, 1);
@@ -671,7 +675,7 @@ const NetworkModificationNodeEditor = () => {
             setModifications(res);
             changeNetworkModificationOrder(
                 studyUuid,
-                currentNode?.id,
+                currentNode.id,
                 item.uuid,
                 before
             ).catch((error) => {
@@ -682,7 +686,7 @@ const NetworkModificationNodeEditor = () => {
                 setModifications(modifications); // rollback
             });
         },
-        [modifications, studyUuid, currentNode?.id, snackError]
+        [modifications, studyUuid, currentNode, snackError]
     );
 
     const isLoading = () => {
