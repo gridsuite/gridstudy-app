@@ -76,7 +76,7 @@ export const MapParameters = ({ hideParameters }) => {
             <Grid
                 container
                 spacing={1}
-                classes={classes.scrollableGrid}
+                className={classes.scrollableGrid}
                 key={'mapParameters'}
             >
                 <SwitchWithLabel

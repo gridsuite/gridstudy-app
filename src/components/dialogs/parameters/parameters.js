@@ -146,7 +146,8 @@ export const useStyles = makeStyles((theme) => ({
         bottom: 0,
     },
     scrollableGrid: {
-        overflow: 'auto',
+        overflowY: 'auto',
+        overflowX: 'hidden',
         maxHeight: '60vh',
         paddingRight: theme.spacing(2),
         paddingTop: theme.spacing(2),
