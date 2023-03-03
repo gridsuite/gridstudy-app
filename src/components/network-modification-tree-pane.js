@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     createTreeNode,
     deleteTreeNode,
@@ -115,7 +109,7 @@ export const NetworkModificationTreePane = ({
         [dispatch]
     );
 
-    const broadcastChannel = useMemo(() => {
+    const [broadcastChannel] = useState(() => {
         const broadcast = new BroadcastChannel('nodeCopyChannel');
         broadcast.onmessage = (event) => {
             console.info('message received from broadcast channel');
@@ -128,7 +122,7 @@ export const NetworkModificationTreePane = ({
             );
         };
         return broadcast;
-    }, [dispatchSelectedNodeForCopy]);
+    });
 
     useEffect(() => {
         //The first time we initialise the websocket
