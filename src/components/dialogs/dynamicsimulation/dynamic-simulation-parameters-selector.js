@@ -39,7 +39,7 @@ export const checkDynamicSimulationParameters = () => {
 const MAPPING_SELECTION_LABEL = 'DynamicSimulationMappingSelection';
 
 const DynamicSimulationParametersSelector = (props) => {
-    const { open, onClose, onStart, studyUuid, currentNodeUuid } = props;
+    const { open, onClose, onStart, studyUuid } = props;
 
     const [defaultMappingName, setDefaultMappingName] = useState(null);
     const [mappingNames, setMappingNames] = useState([]);

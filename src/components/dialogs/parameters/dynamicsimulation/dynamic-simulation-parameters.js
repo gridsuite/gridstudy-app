@@ -75,6 +75,10 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
         [updateParameters, parameters]
     );
 
+    const handleTabChange = useCallback((event, newValue) => {
+        setTabValue(newValue);
+    }, []);
+
     return (
         <Grid container direction={'column'} className={classes.grid}>
             <Grid container key="provider">
@@ -99,7 +103,7 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                     <Tabs
                         value={tabValue}
                         variant="scrollable"
-                        onChange={(event, newValue) => setTabValue(newValue)}
+                        onChange={handleTabChange}
                         aria-label="parameters"
                     >
                         <Tab
