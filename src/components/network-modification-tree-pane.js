@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     createTreeNode,
     deleteTreeNode,
@@ -95,7 +95,7 @@ export const NetworkModificationTreePane = ({
     const DownloadIframe = 'downloadIframe';
     const [notifListenedStudyId, setNotifListenedStudyId] = useState(null);
     const [ws, setWs] = useState(null);
-    const broadcastChannel = useSelector((state) => state.broadcastChannel);
+
     const dispatchSelectedNodeForCopy = useCallback(
         (sourceStudyId, nodeId, copyType) => {
             dispatch(
@@ -109,67 +109,45 @@ export const NetworkModificationTreePane = ({
         [dispatch]
     );
 
-    useEffect(() => {
-        //initialise channel onmessage
-        if (typeof broadcastChannel.onmessage !== 'function') {
-            broadcastChannel.onmessage = (event) => {
-                console.info('message received from broadcast channel');
-                console.info(event.data);
-                setNotifListenedStudyId(event.data.sourceStudyId);
-                dispatchSelectedNodeForCopy(
-                    event.data.sourceStudyId,
-                    event.data.nodeId,
-                    CopyType.COPY
-                );
-            };
-        }
-    });
+    const broadcastChannel = useMemo(() => {
+        const broadcast = new BroadcastChannel('nodeCopyChannel');
+        broadcast.onmessage = (event) => {
+            console.info('message received from broadcast channel');
+            console.info(event.data);
+            setNotifListenedStudyId(event.data.sourceStudyId);
+            dispatchSelectedNodeForCopy(
+                event.data.sourceStudyId,
+                event.data.nodeId,
+                CopyType.COPY
+            );
+        };
+        return broadcast;
+    }, [dispatchSelectedNodeForCopy]);
 
     useEffect(() => {
         //The first time we initialise the websocket
         if (ws === null && notifListenedStudyId !== null) {
             const initWs = connectNotificationsWebsocket(notifListenedStudyId);
             initWs.onmessage = function (event) {
-                //If the study we are on is the one that updated the node we don't need to handle it with this ws as it's already handled in a useEffect
-                if (event.data.sourceStudyId !== studyUuid) {
-                    let eventData = JSON.parse(event.data);
+                let eventData = JSON.parse(event.data);
+                if (
+                    eventData.headers &&
+                    eventData.headers.updateType === 'nodeUpdated' ||
+                    eventData.headers.updateType === 'nodeDeleted'
+                ) {
                     if (
-                        eventData.headers &&
-                        eventData.headers.updateType === 'nodeUpdated'
+                        eventData.headers.nodes.some(
+                            (nodeId) =>
+                                nodeId ===
+                                selectedNodeForCopyRef.current.nodeId
+                        )
                     ) {
-                        if (
-                            eventData.headers.nodes.some(
-                                (nodeId) =>
-                                    nodeId ===
-                                    selectedNodeForCopyRef.current.nodeId
-                            )
-                        ) {
-                            dispatch(
-                                setSelectedNodeForCopy(noSelectionForCopy)
-                            );
-                            snackInfo({
-                                messageId: 'CopiedNodeInvalidationMessage',
-                            });
-                        }
-                    }
-                    if (
-                        eventData.headers &&
-                        eventData.headers.updateType === 'nodeDeleted'
-                    ) {
-                        if (
-                            eventData.headers.nodes.some(
-                                (nodeId) =>
-                                    nodeId ===
-                                    selectedNodeForCopyRef.current.nodeId
-                            )
-                        ) {
-                            dispatch(
-                                setSelectedNodeForCopy(noSelectionForCopy)
-                            );
-                            snackInfo({
-                                messageId: 'CopiedNodeInvalidationMessage',
-                            });
-                        }
+                        dispatch(
+                            setSelectedNodeForCopy(noSelectionForCopy)
+                        );
+                        snackInfo({
+                            messageId: 'CopiedNodeInvalidationMessage',
+                        });
                     }
                 }
             };
@@ -279,17 +257,6 @@ export const NetworkModificationTreePane = ({
                         removeNotificationByNode([currentNodeRef.current?.id])
                     );
                 }
-                if (
-                    studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) =>
-                            nodeId === selectedNodeForCopyRef.current.nodeId
-                    )
-                ) {
-                    dispatch(setSelectedNodeForCopy(noSelectionForCopy));
-                    snackInfo({
-                        messageId: 'CopiedNodeInvalidationMessage',
-                    });
-                }
             }
         }
     }, [studyUuid, studyUpdatedForce, updateNodes, dispatch, snackInfo]);
@@ -328,6 +295,7 @@ export const NetworkModificationTreePane = ({
                 ' selected for copy'
         );
         dispatchSelectedNodeForCopy(studyUuid, nodeId, CopyType.COPY);
+        setNotifListenedStudyId(studyUuid);
         broadcastChannel.postMessage({
             sourceStudyId: studyUuid,
             nodeId: nodeId,

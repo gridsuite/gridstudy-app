@@ -171,7 +171,6 @@ const initialState = {
     updatedSubstationsIds: [],
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
-    broadcastChannel: new BroadcastChannel('nodeCopyChannel'),
     networkAreaDiagramNbVoltageLevels: 0,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
