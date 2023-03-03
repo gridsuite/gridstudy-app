@@ -121,3 +121,10 @@ export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 
 // dnd table
 export const SELECTED = 'selected';
+
+// voltage-level-on-line, attach line to another line, etc
+export const ATTACHED_LINE_ID = 'attachedLineId';
+export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
+export const LINE_TO_ATTACH_TO_2_ID = 'lineToAttachTo2Id';
+export const REPLACING_LINE_ID = 'replacingLine1Id';
+export const REPLACING_LINE_NAME = 'replacingLine1Name';
