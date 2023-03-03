@@ -38,7 +38,7 @@ import {
 } from './percentage-area/percentage-area-utils';
 
 const emptyFormData = {
-    [LINE_TO_DIVIDE]: '',
+    [LINE_TO_DIVIDE]: null,
     [LINE1_ID]: '',
     [LINE1_NAME]: '',
     [LINE2_ID]: '',
@@ -50,7 +50,7 @@ const emptyFormData = {
 const schema = yup
     .object()
     .shape({
-        [LINE_TO_DIVIDE]: yup.string().required(),
+        [LINE_TO_DIVIDE]: yup.object().nullable().required(),
         [LINE1_ID]: yup.string().required(),
         [LINE1_NAME]: yup.string(),
         [LINE2_ID]: yup.string().required(),
@@ -118,7 +118,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 editData ? editData.uuid : undefined,
-                lineSplit[LINE_TO_DIVIDE],
+                lineSplit[LINE_TO_DIVIDE]?.[ID],
                 parseFloat(lineSplit[SLIDER_PERCENTAGE]),
                 null,
                 lineSplit[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
@@ -130,7 +130,7 @@ const LineSplitWithVoltageLevelDialog = ({
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'ShuntCompensatorCreationError',
+                    headerId: 'LineDivisionError',
                 });
             });
         },
