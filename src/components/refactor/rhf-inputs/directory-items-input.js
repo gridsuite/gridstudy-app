@@ -16,18 +16,21 @@ import FolderIcon from '@mui/icons-material/Folder';
 import DirectoryItemSelector from '../../directory-item-selector';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useStyles } from '../../dialogs/dialogUtils';
-import { useController, useFieldArray } from 'react-hook-form';
+import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
+import { ReadOnlyInput } from './read-only-input';
+import { NAME } from '../utils/field-constants';
 
 const DirectoryItemsInput = ({
     label,
     name,
-    elementType,
-    equipmentTypes,
-    itemFilter,
-    titleId,
+    elementType, // Used to specify type of element (Filter, Contingency list, ...)
+    equipmentTypes, // Mostly used for filters, it allows the user to get elements of specific equipment only
+    itemFilter, // Used to further filter the results displayed according to specific requirement
+    titleId, // title of directory item selector dialogue
+    optional,
 }) => {
     const classes = useStyles();
     const { snackError } = useSnackMessage();
@@ -43,6 +46,7 @@ const DirectoryItemsInput = ({
         name,
     });
 
+    const { getValues } = useFormContext();
     const {
         fieldState: { error },
     } = useController({
@@ -55,7 +59,7 @@ const DirectoryItemsInput = ({
                 const { icon, children, ...otherElementAttributes } = value;
                 // check if element is already present
                 if (
-                    elements.find(
+                    getValues(name).find(
                         (v) =>
                             v?.specificMetadata?.id ===
                             otherElementAttributes.id
@@ -71,7 +75,7 @@ const DirectoryItemsInput = ({
             });
             setDirectoryItemSelectorOpen(false);
         },
-        [append, elements, snackError]
+        [append, getValues, snackError, name]
     );
 
     return (
@@ -83,7 +87,7 @@ const DirectoryItemsInput = ({
                 error={!!error?.message}
             >
                 {elements?.length === 0 && (
-                    <FieldLabel label={label} optional={false} />
+                    <FieldLabel label={label} optional={optional} />
                 )}
                 {elements?.length > 0 && (
                     <FormControl className={classes.formDirectoryElements2}>
@@ -94,7 +98,11 @@ const DirectoryItemsInput = ({
                                 onDelete={() => remove(index)}
                                 label={
                                     <OverflowableText
-                                        text={item?.name}
+                                        text={
+                                            <ReadOnlyInput
+                                                name={`${name}.${index}.${NAME}`}
+                                            />
+                                        }
                                         style={{ width: '100%' }}
                                     />
                                 }

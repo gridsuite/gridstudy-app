@@ -24,7 +24,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useIntl } from 'react-intl';
 import DndTableButtons from './dnd-table-buttons';
 import { TableNumericalInput } from '../refactor/rhf-inputs/table-inputs/table-numerical-input';
-import { TableReadOnlyInput } from '../refactor/rhf-inputs/table-inputs/table-read-only-input';
+import { ReadOnlyInput } from '../refactor/rhf-inputs/read-only-input';
 import CheckboxInput from '../refactor/rhf-inputs/booleans/checkbox-input';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../refactor/utils/field-constants';
@@ -59,7 +59,7 @@ function MultiCheckbox({
 function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 1 }}>
-            <TableReadOnlyInput
+            <ReadOnlyInput
                 name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                 {...props}
             />

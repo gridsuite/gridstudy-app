@@ -10,11 +10,12 @@ import { useStyles } from '../../dialogs/dialogUtils';
 import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
 
-const ExpandableValuesInput = ({
+// This component is used to display Array of objects
+const ExpandableInput = ({
     name,
-    Field,
+    Field, // Used to display each object of an array
     addButtonLabel,
-    initialValue,
+    initialValue, // Initial value to display when adding a new entry to array
 }) => {
     const classes = useStyles();
     const {
@@ -58,4 +59,4 @@ const ExpandableValuesInput = ({
     );
 };
 
-export default ExpandableValuesInput;
+export default ExpandableInput;

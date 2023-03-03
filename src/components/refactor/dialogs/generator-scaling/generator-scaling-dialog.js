@@ -15,7 +15,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import { generatorScaling } from '../../../../utils/rest-api';
-import {VARIATION_TYPES} from "../../../network/constants";
+import { VARIATION_TYPES } from '../../../network/constants';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
@@ -25,7 +25,7 @@ const emptyFormData = {
 const schema = yup
     .object()
     .shape({
-        [VARIATION_TYPE]: yup.string().nullable().required(),
+        [VARIATION_TYPE]: yup.string().required(),
         ...getVariationsSchema(VARIATIONS),
     })
     .required();
@@ -83,9 +83,9 @@ const GeneratorScalingDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-create-generator"
+                aria-labelledby="dialog-generator-scaling"
                 maxWidth={'md'}
-                titleId="CreateGenerator"
+                titleId="GeneratorScaling"
                 {...dialogProps}
             >
                 <GeneratorScalingForm />

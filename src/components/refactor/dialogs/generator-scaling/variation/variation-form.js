@@ -31,12 +31,16 @@ import {
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchElementsMetadata } from '../../../../../utils/rest-api';
 import { IDENTIFIER_LIST } from './variation-utils';
+import { useMemo } from 'react';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR.type];
 
 const VariationForm = ({ name, index }) => {
     const { snackError } = useSnackMessage();
-    const filterFieldName = `${name}.${index}.${FILTERS}`;
+    const filterFieldName = useMemo(
+        () => `${name}.${index}.${FILTERS}`,
+        [name, index]
+    );
 
     const variationMode = useWatch({
         name: `${name}.${index}.${VARIATION_MODE}`,
@@ -132,6 +136,7 @@ const VariationForm = ({ name, index }) => {
             label={'filter'}
             titleId={'FiltersListsSelection'}
             itemFilter={itemFilter}
+            optional={false}
         />
     );
 

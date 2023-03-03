@@ -106,7 +106,7 @@ export const BRANCH_STATUS_ACTION = {
 export const VARIATION_TYPES = {
     DELTA_P: { id: 'DELTA_P', label: 'DeltaP' },
     TARGET_P: { id: 'TARGET_P', label: 'TargetPText' },
-}
+};
 
 export const VARIATION_MODES = {
     PROPORTIONAL: { id: 'PROPORTIONAL', label: 'Proportional' },

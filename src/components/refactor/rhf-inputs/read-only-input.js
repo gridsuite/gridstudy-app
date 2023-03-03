@@ -7,7 +7,7 @@
 
 import { useController } from 'react-hook-form';
 
-export function TableReadOnlyInput({ name }) {
+export function ReadOnlyInput({ name }) {
     const {
         field: { value },
     } = useController({ name });

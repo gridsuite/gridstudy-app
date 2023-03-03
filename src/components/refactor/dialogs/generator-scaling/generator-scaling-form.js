@@ -9,7 +9,7 @@ import RadioInput from '../../rhf-inputs/radio-input';
 import { VARIATION_MODES, VARIATION_TYPES } from '../../../network/constants';
 import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
 import VariationForm from './variation/variation-form';
-import ExpandableValuesInput from '../../rhf-inputs/expandable-values-input';
+import ExpandableInput from '../../rhf-inputs/expandable-input';
 import Grid from '@mui/material/Grid';
 import { gridItem, GridSection } from '../../../dialogs/dialogUtils';
 import makeStyles from '@mui/styles/makeStyles';
@@ -17,7 +17,7 @@ import { getVariationEmptyForm } from './variation/variation-utils';
 
 export const useStyles = makeStyles((theme) => ({
     padding: {
-        paddingLeft: '15px',
+        paddingLeft: theme.spacing(2),
     },
 }));
 
@@ -32,7 +32,7 @@ const GeneratorScalingForm = () => {
     );
 
     const variationsField = (
-        <ExpandableValuesInput
+        <ExpandableInput
             name={VARIATIONS}
             Field={VariationForm}
             addButtonLabel={'CreateVariation'}
