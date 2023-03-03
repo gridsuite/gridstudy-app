@@ -25,7 +25,7 @@ import {
     ActivePowerAdornment,
     gridItem,
 } from '../../../../dialogs/dialogUtils';
-import { elementType } from '@gridsuite/commons-ui';
+import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchElementsMetadata } from '../../../../../utils/rest-api';
 
 const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
@@ -34,6 +34,8 @@ const STACKING_UP = 'STACKING_UP';
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR.type];
 
 const VariationForm = ({ name, index }) => {
+    const { snackError } = useSnackMessage();
+
     const variationMode = useWatch({
         name: `${name}.${index}.${VARIATION_MODE}`,
     });
@@ -52,25 +54,32 @@ const VariationForm = ({ name, index }) => {
     const updateMetadata = useCallback(
         (filtersWithoutMetadata) => {
             const ids = filtersWithoutMetadata.map((f) => f.id);
-            fetchElementsMetadata(ids, [], []).then((results) => {
-                const newFilters = filters.map((filter) => {
-                    const filterWithMetadata = results.find(
-                        (f) => f.elementUuid === filter.id
-                    );
-                    if (filterWithMetadata) {
-                        return {
-                            [ID]: filterWithMetadata.elementUuid,
-                            [NAME]: filterWithMetadata.elementName,
-                            [SPECIFIC_METADATA]:
-                                filterWithMetadata.specificMetadata,
-                        };
-                    }
-                    return filter;
+            fetchElementsMetadata(ids, [], [])
+                .then((results) => {
+                    const newFilters = filters.map((filter) => {
+                        const filterWithMetadata = results.find(
+                            (f) => f.elementUuid === filter.id
+                        );
+                        if (filterWithMetadata) {
+                            return {
+                                [ID]: filterWithMetadata.elementUuid,
+                                [NAME]: filterWithMetadata.elementName,
+                                [SPECIFIC_METADATA]:
+                                    filterWithMetadata.specificMetadata,
+                            };
+                        }
+                        return filter;
+                    });
+                    setValue(fieldName, newFilters);
+                })
+                .catch((errorMessage) => {
+                    snackError({
+                        messageTxt: errorMessage,
+                        headerId: 'GeneratorScalingError',
+                    });
                 });
-                setValue(fieldName, newFilters);
-            });
         },
-        [fieldName, filters, setValue]
+        [fieldName, filters, setValue, snackError]
     );
 
     useEffect(() => {
