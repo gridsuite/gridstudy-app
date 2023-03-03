@@ -31,7 +31,7 @@ import {
     filledTextField,
     gridItem,
     OhmAdornment,
-    SusceptanceAdornment,
+    MicroSusceptanceAdornment,
 } from '../../../dialogs/dialogUtils';
 import FloatInput from '../../rhf-inputs/float-input';
 import TextInput from '../../rhf-inputs/text-input';
@@ -115,7 +115,7 @@ const LineCreationForm = ({ displayConnectivity, studyUuid, currentNode }) => {
         <FloatInput
             name={SHUNT_CONDUCTANCE_1}
             label="ShuntConductanceText"
-            adornment={SusceptanceAdornment}
+            adornment={MicroSusceptanceAdornment}
         />
     );
 
@@ -123,7 +123,7 @@ const LineCreationForm = ({ displayConnectivity, studyUuid, currentNode }) => {
         <FloatInput
             name={SHUNT_SUSCEPTANCE_1}
             label="ShuntSusceptanceText"
-            adornment={SusceptanceAdornment}
+            adornment={MicroSusceptanceAdornment}
         />
     );
 
@@ -131,7 +131,7 @@ const LineCreationForm = ({ displayConnectivity, studyUuid, currentNode }) => {
         <FloatInput
             name={SHUNT_CONDUCTANCE_2}
             label="ShuntConductanceText"
-            adornment={SusceptanceAdornment}
+            adornment={MicroSusceptanceAdornment}
         />
     );
 
@@ -139,7 +139,7 @@ const LineCreationForm = ({ displayConnectivity, studyUuid, currentNode }) => {
         <FloatInput
             name={SHUNT_SUSCEPTANCE_2}
             label="ShuntSusceptanceText"
-            adornment={SusceptanceAdornment}
+            adornment={MicroSusceptanceAdornment}
         />
     );
 

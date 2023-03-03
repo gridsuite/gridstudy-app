@@ -117,6 +117,9 @@ export const percentageTextField = {
 };
 export const func_identity = (e) => e;
 
+export const unitToMicroUnit = (e) => e * Math.pow(10, 6);
+export const microUnitToUnit = (e) => e / Math.pow(10, 6);
+
 export function toIntValue(val) {
     if (val === '-') return val;
     return parseInt(val) || 0;

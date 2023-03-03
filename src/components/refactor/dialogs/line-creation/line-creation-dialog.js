@@ -32,7 +32,11 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { createLine } from '../../../../utils/rest-api';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
+import {
+    microUnitToUnit,
+    sanitizeString,
+    unitToMicroUnit,
+} from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
@@ -124,10 +128,10 @@ const LineCreationDialog = ({
             {
                 [EQUIPMENT_ID]: line.id + '(1)',
                 [EQUIPMENT_NAME]: line.name ?? '',
-                [SHUNT_CONDUCTANCE_1]: line.g1,
-                [SHUNT_SUSCEPTANCE_1]: line.b1,
-                [SHUNT_CONDUCTANCE_2]: line.g2,
-                [SHUNT_SUSCEPTANCE_2]: line.b2,
+                [SHUNT_CONDUCTANCE_1]: unitToMicroUnit(line.g1), // this form uses and displays microSiemens
+                [SHUNT_SUSCEPTANCE_1]: unitToMicroUnit(line.b1),
+                [SHUNT_CONDUCTANCE_2]: unitToMicroUnit(line.g2),
+                [SHUNT_SUSCEPTANCE_2]: unitToMicroUnit(line.b2),
                 [SERIES_RESISTANCE]: line.r,
                 [SERIES_REACTANCE]: line.x,
                 [CURRENT_LIMITS_1]: {
@@ -168,10 +172,10 @@ const LineCreationDialog = ({
             reset({
                 [EQUIPMENT_ID]: line.equipmentId,
                 [EQUIPMENT_NAME]: line.equipmentName ?? '',
-                [SHUNT_CONDUCTANCE_1]: line.shuntConductance1,
-                [SHUNT_SUSCEPTANCE_1]: line.shuntSusceptance1,
-                [SHUNT_CONDUCTANCE_2]: line.shuntConductance2,
-                [SHUNT_SUSCEPTANCE_2]: line.shuntSusceptance2,
+                [SHUNT_CONDUCTANCE_1]: unitToMicroUnit(line.shuntConductance1),
+                [SHUNT_SUSCEPTANCE_1]: unitToMicroUnit(line.shuntSusceptance1),
+                [SHUNT_CONDUCTANCE_2]: unitToMicroUnit(line.shuntConductance2),
+                [SHUNT_SUSCEPTANCE_2]: unitToMicroUnit(line.shuntSusceptance2),
                 [SERIES_RESISTANCE]: line.seriesResistance,
                 [SERIES_REACTANCE]: line.seriesReactance,
                 [CURRENT_LIMITS_1]: {
@@ -228,10 +232,10 @@ const LineCreationDialog = ({
                 sanitizeString(line[EQUIPMENT_NAME]),
                 line[SERIES_RESISTANCE],
                 line[SERIES_REACTANCE],
-                line[SHUNT_CONDUCTANCE_1],
-                line[SHUNT_SUSCEPTANCE_1],
-                line[SHUNT_CONDUCTANCE_2],
-                line[SHUNT_SUSCEPTANCE_2],
+                microUnitToUnit(line[SHUNT_CONDUCTANCE_1]),
+                microUnitToUnit(line[SHUNT_SUSCEPTANCE_1]),
+                microUnitToUnit(line[SHUNT_CONDUCTANCE_2]),
+                microUnitToUnit(line[SHUNT_SUSCEPTANCE_2]),
                 line[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id,
                 line[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 line[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
