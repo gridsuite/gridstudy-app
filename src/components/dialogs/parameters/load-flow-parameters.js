@@ -225,9 +225,9 @@ const AdvancedLoadFlowParameters = ({
                 DC_VALUES: 'descLfDcValues',
             },
         },
-        noGeneratorReactiveLimits: {
+        useReactiveLimits: {
             type: TYPES.bool,
-            description: 'descLfNoGeneratorReactiveLimits',
+            description: 'descLfUseReactiveLimits',
         },
         twtSplitShuntAdmittance: {
             type: TYPES.bool,
