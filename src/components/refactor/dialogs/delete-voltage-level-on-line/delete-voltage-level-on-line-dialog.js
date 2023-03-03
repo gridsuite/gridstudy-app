@@ -22,8 +22,8 @@ import ModificationDialog from '../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 
 const emptyFormData = {
-    [LINE_TO_ATTACH_TO_1_ID]: '',
-    [LINE_TO_ATTACH_TO_2_ID]: '',
+    [LINE_TO_ATTACH_TO_1_ID]: null,
+    [LINE_TO_ATTACH_TO_2_ID]: null,
     [REPLACING_LINE_ID]: '',
     [REPLACING_LINE_NAME]: '',
 };
@@ -31,8 +31,8 @@ const emptyFormData = {
 const schema = yup
     .object()
     .shape({
-        [LINE_TO_ATTACH_TO_1_ID]: yup.string().required(),
-        [LINE_TO_ATTACH_TO_2_ID]: yup.string().required(),
+        [LINE_TO_ATTACH_TO_1_ID]: yup.string().nullable().required(),
+        [LINE_TO_ATTACH_TO_2_ID]: yup.string().nullable().required(),
         [REPLACING_LINE_ID]: yup.string().required(),
         [REPLACING_LINE_NAME]: yup.string(),
     })
