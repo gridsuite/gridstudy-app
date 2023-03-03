@@ -14,10 +14,10 @@ import {
     ID,
     LINE_TO_ATTACH_TO_ID_1,
     LINE_TO_ATTACH_TO_ID_2,
-    REMPLACING_LINE_ID_1,
-    REMPLACING_LINE_ID_2,
-    REMPLACING_LINE_NAME_1,
-    REMPLACING_LINE_NAME_2,
+    REPLACING_LINE_ID_1,
+    REPLACING_LINE_ID_2,
+    REPLACING_LINE_NAME_1,
+    REPLACING_LINE_NAME_2,
     TOPOLOGY_KIND,
     VOLTAGE_LEVEL_ID,
 } from 'components/refactor/utils/field-constants';
@@ -75,7 +75,7 @@ const LinesAttachToSplitLinesForm = ({ currentNodeUuid, studyUuid }) => {
             'LINE',
             true
         ).then((values) => {
-            setLinesIds(values);
+            setLinesIds(values?.sort((a, b) => a.localeCompare(b)));
         });
     }, [studyUuid, currentNodeUuid]);
 
@@ -122,12 +122,11 @@ const LinesAttachToSplitLinesForm = ({ currentNodeUuid, studyUuid }) => {
 
     const lineToAttachTo1Field = (
         <AutocompleteInput
-            outputTransform={(value) => (value === '' ? null : value)}
             allowNewValue
             forcePopupIcon
             name={LINE_TO_ATTACH_TO_ID_1}
             label="Line1"
-            options={linesIds?.sort((a, b) => a.localeCompare(b))}
+            options={linesIds}
             size={'small'}
         />
     );
@@ -138,7 +137,7 @@ const LinesAttachToSplitLinesForm = ({ currentNodeUuid, studyUuid }) => {
             forcePopupIcon
             name={LINE_TO_ATTACH_TO_ID_2}
             label="Line2"
-            options={linesIds?.sort((a, b) => a.localeCompare(b))}
+            options={linesIds}
             size={'small'}
         />
     );
@@ -149,7 +148,7 @@ const LinesAttachToSplitLinesForm = ({ currentNodeUuid, studyUuid }) => {
             forcePopupIcon
             name={ATTACHED_LINE_ID}
             label="LineAttached"
-            options={linesIds?.sort((a, b) => a.localeCompare(b))}
+            options={linesIds}
             size={'small'}
         />
     );
@@ -180,19 +179,19 @@ const LinesAttachToSplitLinesForm = ({ currentNodeUuid, studyUuid }) => {
     );
 
     const newLine1IdField = (
-        <TextInput name={REMPLACING_LINE_ID_1} label={'Line1ID'} />
+        <TextInput name={REPLACING_LINE_ID_1} label={'Line1ID'} />
     );
 
     const newLine1NameField = (
-        <TextInput name={REMPLACING_LINE_NAME_1} label={'Line1Name'} />
+        <TextInput name={REPLACING_LINE_NAME_1} label={'Line1Name'} />
     );
 
     const newLine2IdField = (
-        <TextInput name={REMPLACING_LINE_ID_2} label={'Line2ID'} />
+        <TextInput name={REPLACING_LINE_ID_2} label={'Line2ID'} />
     );
 
     const newLine2NameField = (
-        <TextInput name={REMPLACING_LINE_NAME_2} label={'Line2Name'} />
+        <TextInput name={REPLACING_LINE_NAME_2} label={'Line2Name'} />
     );
 
     return (

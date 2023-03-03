@@ -14,10 +14,10 @@ import {
     BUS_BAR_SECTION_ID,
     LINE_TO_ATTACH_TO_ID_1,
     LINE_TO_ATTACH_TO_ID_2,
-    REMPLACING_LINE_ID_1,
-    REMPLACING_LINE_ID_2,
-    REMPLACING_LINE_NAME_1,
-    REMPLACING_LINE_NAME_2,
+    REPLACING_LINE_ID_1,
+    REPLACING_LINE_ID_2,
+    REPLACING_LINE_NAME_1,
+    REPLACING_LINE_NAME_2,
     VOLTAGE_LEVEL_ID,
 } from 'components/refactor/utils/field-constants';
 import yup from 'components/refactor/utils/yup-config';
@@ -28,24 +28,16 @@ import ModificationDialog from 'components/refactor/dialogs/commons/modification
 
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 
-/**
- * Dialog to create a load in the network
- * @param studyUuid the study we are currently working on
- * @param currentNode The node we are currently working on
- * @param editData the data to edit
- * @param dialogProps props that are forwarded to the generic ModificationDialog component
- */
-
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_ID_1]: '',
     [LINE_TO_ATTACH_TO_ID_2]: '',
     [ATTACHED_LINE_ID]: '',
     [VOLTAGE_LEVEL_ID]: '',
     [BUS_BAR_SECTION_ID]: '',
-    [REMPLACING_LINE_ID_1]: '',
-    [REMPLACING_LINE_NAME_1]: '',
-    [REMPLACING_LINE_ID_2]: '',
-    [REMPLACING_LINE_NAME_2]: '',
+    [REPLACING_LINE_ID_1]: '',
+    [REPLACING_LINE_NAME_1]: '',
+    [REPLACING_LINE_ID_2]: '',
+    [REPLACING_LINE_NAME_2]: '',
 };
 
 const schema = yup
@@ -56,13 +48,20 @@ const schema = yup
         [ATTACHED_LINE_ID]: yup.string().required(),
         [VOLTAGE_LEVEL_ID]: yup.string().required(),
         [BUS_BAR_SECTION_ID]: yup.string().required(),
-        [REMPLACING_LINE_ID_1]: yup.string().required(),
-        [REMPLACING_LINE_NAME_1]: yup.string(),
-        [REMPLACING_LINE_ID_2]: yup.string().required(),
-        [REMPLACING_LINE_NAME_2]: yup.string(),
+        [REPLACING_LINE_ID_1]: yup.string().required(),
+        [REPLACING_LINE_NAME_1]: yup.string(),
+        [REPLACING_LINE_ID_2]: yup.string().required(),
+        [REPLACING_LINE_NAME_2]: yup.string(),
     })
     .required();
 
+/**
+ * Dialog to attach a line to a (possibly new) voltage level.
+ * @param studyUuid the study we are currently working on
+ * @param currentNode The node we are currently working on
+ * @param editData the data to edit
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ */
 const LinesAttachToSplitLinesDialog = ({
     editData,
     currentNode,
@@ -83,15 +82,14 @@ const LinesAttachToSplitLinesDialog = ({
         if (editData) {
             reset({
                 [LINE_TO_ATTACH_TO_ID_1]: editData[LINE_TO_ATTACH_TO_ID_1],
-                [LINE_TO_ATTACH_TO_ID_2]:
-                    editData[LINE_TO_ATTACH_TO_ID_2] ?? '',
+                [LINE_TO_ATTACH_TO_ID_2]: editData[LINE_TO_ATTACH_TO_ID_2],
                 [ATTACHED_LINE_ID]: editData[ATTACHED_LINE_ID],
                 [VOLTAGE_LEVEL_ID]: editData[VOLTAGE_LEVEL_ID],
                 [BUS_BAR_SECTION_ID]: editData[BUS_BAR_SECTION_ID],
-                [REMPLACING_LINE_ID_1]: editData[REMPLACING_LINE_ID_1],
-                [REMPLACING_LINE_NAME_1]: editData[REMPLACING_LINE_NAME_1],
-                [REMPLACING_LINE_ID_2]: editData[REMPLACING_LINE_ID_2],
-                [REMPLACING_LINE_NAME_2]: editData[REMPLACING_LINE_NAME_2],
+                [REPLACING_LINE_ID_1]: editData[REPLACING_LINE_ID_1],
+                [REPLACING_LINE_NAME_1]: editData[REPLACING_LINE_NAME_1],
+                [REPLACING_LINE_ID_2]: editData[REPLACING_LINE_ID_2],
+                [REPLACING_LINE_NAME_2]: editData[REPLACING_LINE_NAME_2],
             });
         }
     }, [editData, reset]);
@@ -107,10 +105,10 @@ const LinesAttachToSplitLinesDialog = ({
                 linesAttachToSplitLine[ATTACHED_LINE_ID],
                 linesAttachToSplitLine[VOLTAGE_LEVEL_ID],
                 linesAttachToSplitLine[BUS_BAR_SECTION_ID],
-                linesAttachToSplitLine[REMPLACING_LINE_ID_1],
-                sanitizeString(linesAttachToSplitLine[REMPLACING_LINE_NAME_1]),
-                linesAttachToSplitLine[REMPLACING_LINE_ID_2],
-                sanitizeString(linesAttachToSplitLine[REMPLACING_LINE_NAME_2])
+                linesAttachToSplitLine[REPLACING_LINE_ID_1],
+                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_NAME_1]),
+                linesAttachToSplitLine[REPLACING_LINE_ID_2],
+                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_NAME_2])
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
