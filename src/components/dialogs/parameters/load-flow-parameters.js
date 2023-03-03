@@ -300,7 +300,11 @@ export const LoadFlowParameters = ({
 
     return (
         <>
-            <Grid container className={classes.scrollableGrid} key="provider">
+            <Grid
+                container
+                className={classes.scrollableGrid}
+                key="lfParameters"
+            >
                 <DropDown
                     value={provider}
                     label="Provider"

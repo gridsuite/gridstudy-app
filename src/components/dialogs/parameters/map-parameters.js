@@ -73,7 +73,12 @@ export const MapParameters = ({ hideParameters }) => {
 
     return (
         <>
-            <Grid container spacing={1} classes={classes.scrollableGrid}>
+            <Grid
+                container
+                spacing={1}
+                classes={classes.scrollableGrid}
+                key={'mapParameters'}
+            >
                 <SwitchWithLabel
                     value={lineFullPathLocal}
                     label="lineFullPath"

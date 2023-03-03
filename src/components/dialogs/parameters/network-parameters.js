@@ -53,7 +53,12 @@ export const NetworkParameters = ({ hideParameters }) => {
 
     return (
         <>
-            <Grid container spacing={1}>
+            <Grid
+                container
+                spacing={1}
+                key={'networkParameters'}
+                className={classes.scrollableGrid}
+            >
                 <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>

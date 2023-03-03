@@ -51,7 +51,12 @@ export const SingleLineDiagramParameters = ({
 
     return (
         <>
-            <Grid container spacing={1} className={classes.grid}>
+            <Grid
+                container
+                spacing={1}
+                className={classes.scrollableGrid}
+                key={'sldParameters'}
+            >
                 <SwitchWithLabel
                     value={diagonalLabelLocal}
                     label="diagonalLabel"

@@ -210,7 +210,11 @@ export const ShortCircuitParameters = ({
 
     return (
         <>
-            <Grid container key="params" className={classes.scrollableGrid}>
+            <Grid
+                container
+                key="shortCircuitParameters"
+                className={classes.scrollableGrid}
+            >
                 <BasicShortCircuitParameters
                     shortCircuitParams={shortCircuitParams || {}}
                     commitShortCircuitParams={commitShortCircuitParameter}
