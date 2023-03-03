@@ -23,9 +23,9 @@ import ModificationDialog from '../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
 
 const emptyFormData = {
-    [ATTACHED_LINE_ID]: '',
-    [LINE_TO_ATTACH_TO_1_ID]: '',
-    [LINE_TO_ATTACH_TO_2_ID]: '',
+    [ATTACHED_LINE_ID]: null,
+    [LINE_TO_ATTACH_TO_1_ID]: null,
+    [LINE_TO_ATTACH_TO_2_ID]: null,
     [REPLACING_LINE_ID]: '',
     [REPLACING_LINE_NAME]: '',
 };
@@ -33,9 +33,9 @@ const emptyFormData = {
 const schema = yup
     .object()
     .shape({
-        [ATTACHED_LINE_ID]: yup.string().required(),
-        [LINE_TO_ATTACH_TO_1_ID]: yup.string().required(),
-        [LINE_TO_ATTACH_TO_2_ID]: yup.string().required(),
+        [ATTACHED_LINE_ID]: yup.string().nullable().required(),
+        [LINE_TO_ATTACH_TO_1_ID]: yup.string().nullable().required(),
+        [LINE_TO_ATTACH_TO_2_ID]: yup.string().nullable().required(),
         [REPLACING_LINE_ID]: yup.string().required(),
         [REPLACING_LINE_NAME]: yup.string(),
     })
