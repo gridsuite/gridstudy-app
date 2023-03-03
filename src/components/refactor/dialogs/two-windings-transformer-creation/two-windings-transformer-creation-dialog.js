@@ -193,8 +193,10 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.equipmentName,
                     seriesResistance: twt.seriesResistance,
                     seriesReactance: twt.seriesReactance,
-                    magnetizingConductance: twt.magnetizingConductance,
-                    magnetizingSusceptance: twt.magnetizingSusceptance,
+                    magnetizingConductance:
+                        twt.magnetizingConductance / 10 ** -6,
+                    magnetizingSusceptance:
+                        twt.magnetizingSusceptance / 10 ** -6,
                     ratedVoltage1: twt.ratedVoltage1,
                     ratedVoltage2: twt.ratedVoltage2,
                     ratedS: twt.ratedS,
@@ -296,8 +298,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.name ?? '',
                     seriesResistance: twt.r,
                     seriesReactance: twt.x,
-                    magnetizingConductance: twt.g,
-                    magnetizingSusceptance: twt.b,
+                    magnetizingConductance: twt.g / 10 ** -6,
+                    magnetizingSusceptance: twt.b / 10 ** -6,
                     ratedVoltage1: twt.ratedU1,
                     ratedVoltage2: twt.ratedU2,
                     ratedS: twt.ratedS,
@@ -509,6 +511,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 permanentLimit:
                     characteristics[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
             };
+
+            characteristics[MAGNETIZING_CONDUCTANCE] *= 10 ** -6;
+            characteristics[MAGNETIZING_SUSCEPTANCE] *= 10 ** -6;
 
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
