@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import {
     createTreeNode,
     deleteTreeNode,
@@ -131,20 +137,17 @@ export const NetworkModificationTreePane = ({
             initWs.onmessage = function (event) {
                 let eventData = JSON.parse(event.data);
                 if (
-                    eventData.headers &&
-                    eventData.headers.updateType === 'nodeUpdated' ||
+                    (eventData.headers &&
+                        eventData.headers.updateType === 'nodeUpdated') ||
                     eventData.headers.updateType === 'nodeDeleted'
                 ) {
                     if (
                         eventData.headers.nodes.some(
                             (nodeId) =>
-                                nodeId ===
-                                selectedNodeForCopyRef.current.nodeId
+                                nodeId === selectedNodeForCopyRef.current.nodeId
                         )
                     ) {
-                        dispatch(
-                            setSelectedNodeForCopy(noSelectionForCopy)
-                        );
+                        dispatch(setSelectedNodeForCopy(noSelectionForCopy));
                         snackInfo({
                             messageId: 'CopiedNodeInvalidationMessage',
                         });
