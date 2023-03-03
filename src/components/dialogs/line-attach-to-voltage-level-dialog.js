@@ -578,6 +578,7 @@ const LineAttachToVoltageLevelDialog = ({
                         substationOptionsPromise={substationOptionsPromise}
                         onCreateVoltageLevel={onVoltageLevelDo}
                         editData={voltageLevelToEdit}
+                        studyUuid={studyUuid}
                     />
                 )}
                 {lineDialogOpen && (

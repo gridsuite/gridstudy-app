@@ -463,6 +463,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     substationOptionsPromise={substationOptionsPromise}
                     onCreateVoltageLevel={onVoltageLevelDo}
                     editData={voltageLevelToEdit}
+                    studyUuid={studyUuid}
                 />
             )}
             <EquipmentSearchDialog
