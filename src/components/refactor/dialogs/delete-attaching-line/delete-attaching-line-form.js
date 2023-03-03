@@ -73,7 +73,7 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
         />
     );
 
-    const attachingLineField = (
+    const attachedLineField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
             allowNewValue
@@ -106,7 +106,7 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
             </Grid>
             <GridSection title="LineAttached" />
             <Grid container spacing={2} alignItems="center">
-                {gridItem(attachingLineField, 5)}
+                {gridItem(attachedLineField, 5)}
             </Grid>
             <GridSection title="ReplacingLine" />
             <Grid container spacing={2}>

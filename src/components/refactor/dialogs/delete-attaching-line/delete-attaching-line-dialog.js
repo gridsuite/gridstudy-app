@@ -116,7 +116,7 @@ const DeleteAttachingLineDialog = ({
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-delete-voltage-level-on-line"
+                aria-labelledby="dialog-delete-attaching-line"
                 titleId="DeleteAttachingLine"
                 {...dialogProps}
             >
