@@ -35,20 +35,20 @@ const GENERATORS = [EQUIPMENT_TYPES.GENERATOR.type];
 
 const VariationForm = ({ name, index }) => {
     const { snackError } = useSnackMessage();
+    const filterFieldName = `${name}.${index}.${FILTERS}`;
 
     const variationMode = useWatch({
         name: `${name}.${index}.${VARIATION_MODE}`,
     });
 
     const filters = useWatch({
-        name: `${name}.${index}.${FILTERS}`,
+        name: filterFieldName,
     });
 
     const variationType = useWatch({
         name: VARIATION_TYPE,
     });
 
-    const fieldName = `${name}.${index}.${FILTERS}`;
     const { setValue } = useFormContext();
 
     const updateMetadata = useCallback(
@@ -70,7 +70,7 @@ const VariationForm = ({ name, index }) => {
                         }
                         return filter;
                     });
-                    setValue(fieldName, newFilters);
+                    setValue(filterFieldName, newFilters);
                 })
                 .catch((errorMessage) => {
                     snackError({
@@ -79,7 +79,7 @@ const VariationForm = ({ name, index }) => {
                     });
                 });
         },
-        [fieldName, filters, setValue, snackError]
+        [filterFieldName, filters, setValue, snackError]
     );
 
     useEffect(() => {
