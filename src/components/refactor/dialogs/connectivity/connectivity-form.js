@@ -51,6 +51,7 @@ import {
  */
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
+    label,
     direction = 'row',
     withDirectionsInfos = true,
     withPosition = false,
@@ -136,7 +137,7 @@ export const ConnectivityForm = ({
             allowNewValue
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
-            label="VoltageLevel"
+            label={label ?? 'VoltageLevel'}
             options={voltageLevelOptions}
             getOptionLabel={getObjectId}
             size={'small'}

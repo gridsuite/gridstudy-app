@@ -60,13 +60,20 @@ const TextInput = ({
             size="small"
             fullWidth
             id={id ? id : label}
-            label={FieldLabel({
-                label,
-                values: labelValues,
-                optional:
-                    !isFieldRequired(name, validationSchema, getValues()) &&
-                    !formProps?.disabled,
-            })}
+            label={
+                label
+                    ? FieldLabel({
+                          label,
+                          values: labelValues,
+                          optional:
+                              !isFieldRequired(
+                                  name,
+                                  validationSchema,
+                                  getValues()
+                              ) && !formProps?.disabled,
+                      })
+                    : null
+            }
             {...(adornment && {
                 adornmentPosition: adornment.position,
                 adornmentText: adornment?.text,
@@ -103,7 +110,7 @@ const TextInput = ({
 };
 
 TextInput.propTypes = {
-    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     labelValues: PropTypes.object,
     errorMessage: PropTypes.string,
     value: PropTypes.any,
