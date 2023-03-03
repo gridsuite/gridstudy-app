@@ -15,7 +15,9 @@ import {
     VARIATION_MODE,
     VARIATION_VALUE,
 } from '../../../utils/field-constants';
+import { VARIATION_MODES } from '../../../../network/constants';
 
+export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 export const getVariationSchema = () =>
     yup
         .object()
@@ -36,7 +38,9 @@ export const getVariationSchema = () =>
                 )
                 .min(1, 'FieldIsRequired')
                 .when([VARIATION_MODE], {
-                    is: 'STACKING_UP' || 'VENTILATION',
+                    is:
+                        VARIATION_MODES.STACKING_UP.id ||
+                        VARIATION_MODES.VENTILATION.id,
                     then: (schema) =>
                         schema.test(
                             'AllFiltersAreExplicitNaming',
@@ -45,7 +49,7 @@ export const getVariationSchema = () =>
                                 values.every(
                                     (f) =>
                                         f?.specificMetadata?.type ===
-                                        'IDENTIFIER_LIST'
+                                        IDENTIFIER_LIST
                                 )
                         ),
                 }),

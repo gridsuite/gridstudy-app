@@ -19,7 +19,10 @@ import { EQUIPMENT_TYPES } from '../../../../util/equipment-types';
 import { useCallback, useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import SelectInput from '../../../rhf-inputs/select-input';
-import { VARIATION_MODES } from '../../../../network/constants';
+import {
+    VARIATION_MODES,
+    VARIATION_TYPES,
+} from '../../../../network/constants';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     ActivePowerAdornment,
@@ -27,10 +30,8 @@ import {
 } from '../../../../dialogs/dialogUtils';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchElementsMetadata } from '../../../../../utils/rest-api';
+import { IDENTIFIER_LIST } from './variation-utils';
 
-const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
-const VENTILATION = 'VENTILATION';
-const STACKING_UP = 'STACKING_UP';
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR.type];
 
 const VariationForm = ({ name, index }) => {
@@ -86,7 +87,8 @@ const VariationForm = ({ name, index }) => {
         // When editing the modification, filters does not have specific metadata which contain filter type
         // If variation mode is STACKING_UP or VENTILATION, all filters types must be 'explicit naming'
         if (
-            (variationMode === STACKING_UP || variationMode === VENTILATION) &&
+            (variationMode === VARIATION_MODES.STACKING_UP.id ||
+                variationMode === VARIATION_MODES.VENTILATION.id) &&
             filters.length > 0
         ) {
             // collect all filters without metadata
@@ -103,11 +105,11 @@ const VariationForm = ({ name, index }) => {
     const itemFilter = useCallback(
         (value) => {
             if (value?.type === elementType.FILTER) {
-                if (variationMode === STACKING_UP) {
+                if (variationMode === VARIATION_MODES.STACKING_UP.id) {
                     return value?.specificMetadata?.type === IDENTIFIER_LIST;
                 }
 
-                if (variationMode === VENTILATION) {
+                if (variationMode === VARIATION_MODES.VENTILATION.id) {
                     return (
                         value?.specificMetadata?.type === IDENTIFIER_LIST &&
                         value?.specificMetadata?.filterEquipmentsAttributes?.every(
@@ -137,7 +139,7 @@ const VariationForm = ({ name, index }) => {
         <SelectInput
             name={`${name}.${index}.${VARIATION_MODE}`}
             label={'VariationMode'}
-            options={VARIATION_MODES}
+            options={Object.values(VARIATION_MODES)}
             size={'small'}
             disableClearable
         />
@@ -146,7 +148,7 @@ const VariationForm = ({ name, index }) => {
     const variationValueField = (
         <FloatInput
             name={`${name}.${index}.${VARIATION_VALUE}`}
-            label={variationType === 'DELTA_P' ? 'DeltaP' : 'TargetPText'}
+            label={VARIATION_TYPES[variationType].label}
             adornment={ActivePowerAdornment}
         />
     );

@@ -6,7 +6,7 @@
  */
 
 import RadioInput from '../../rhf-inputs/radio-input';
-import { VARIATION_TYPES } from '../../../network/constants';
+import { VARIATION_MODES, VARIATION_TYPES } from '../../../network/constants';
 import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
 import VariationForm from './variation/variation-form';
 import ExpandableValuesInput from '../../rhf-inputs/expandable-values-input';
@@ -23,8 +23,12 @@ export const useStyles = makeStyles((theme) => ({
 
 const GeneratorScalingForm = () => {
     const classes = useStyles();
+
     const variationTypeField = (
-        <RadioInput name={VARIATION_TYPE} options={VARIATION_TYPES} />
+        <RadioInput
+            name={VARIATION_TYPE}
+            options={Object.values(VARIATION_TYPES)}
+        />
     );
 
     const variationsField = (
@@ -32,7 +36,9 @@ const GeneratorScalingForm = () => {
             name={VARIATIONS}
             Field={VariationForm}
             addButtonLabel={'CreateVariation'}
-            initialValue={getVariationEmptyForm('PROPORTIONAL_TO_PMAX')}
+            initialValue={getVariationEmptyForm(
+                VARIATION_MODES.PROPORTIONAL_TO_PMAX.id
+            )}
         />
     );
 

@@ -15,9 +15,10 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import { generatorScaling } from '../../../../utils/rest-api';
+import {VARIATION_TYPES} from "../../../network/constants";
 
 const emptyFormData = {
-    [VARIATION_TYPE]: 'DELTA_P',
+    [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
     [VARIATIONS]: [],
 };
 

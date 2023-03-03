@@ -234,7 +234,7 @@ const LoadScalingDialog = ({
     const [variationType, variationTypeRadioButton] = useRadioValue({
         inputForm: inputForm,
         defaultValue: formValues?.variationType ?? 'DELTA_P',
-        possibleValues: VARIATION_TYPES,
+        possibleValues: Object.values(VARIATION_TYPES),
     });
 
     const [variations, variationsField] = useExpandableValues({
