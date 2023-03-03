@@ -125,11 +125,6 @@ export const useStyles = makeStyles((theme) => ({
     title: {
         padding: theme.spacing(2),
     },
-    grid: {
-        paddingTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        flexGrow: 1,
-    },
     minWidthMedium: {
         minWidth: theme.spacing(20),
     },
