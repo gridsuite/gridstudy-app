@@ -164,15 +164,14 @@ const DndTable = ({
         move(result.source.index, result.destination.index);
     }
 
-    //TODO fix alignment of column names when no rows ?
     function renderTableHead() {
         return (
             <TableHead>
                 <TableRow>
-                    <TableCell>
+                    <TableCell sx={{ width: '3%' }}>
                         {/* empty cell for the drag and drop column */}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ width: '5%', textAlign: 'center' }}>
                         <MultiCheckbox
                             arrayFormName={arrayFormName}
                             handleClickIfChecked={selectAllRows}
@@ -221,6 +220,7 @@ const DndTable = ({
                                     placement="right"
                                 >
                                     <TableCell
+                                        sx={{ textAlign: 'center' }}
                                         {...(disabled
                                             ? {}
                                             : { ...provided.dragHandleProps })}
@@ -228,7 +228,7 @@ const DndTable = ({
                                         <DragIndicatorIcon />
                                     </TableCell>
                                 </Tooltip>
-                                <TableCell>
+                                <TableCell sx={{ textAlign: 'center' }}>
                                     <CheckboxInput
                                         name={`${arrayFormName}[${index}].${SELECTED}`}
                                         formProps={{ disabled }}

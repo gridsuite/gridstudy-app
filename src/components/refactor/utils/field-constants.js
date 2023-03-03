@@ -102,7 +102,17 @@ export const MAXIMUM_NUMBER_OF_SECTIONS = 'maximumNumberOfSections';
 export const CURRENT_NUMBER_OF_SECTIONS = 'currentNumberOfSections';
 export const IDENTICAL_SECTIONS = 'identicalSections';
 export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
-
+export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
+export const Q_AT_NOMINAL_V = 'qatNominalV';
+export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
+export const CHARACTERISTICS_CHOICES = {
+    Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
+    SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
+};
+export const SHUNT_COMPENSATOR_TYPES = {
+    REACTOR: { id: 'REACTOR', label: 'Reactor' },
+    CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
+};
 //line
 export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
 export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
@@ -111,6 +121,13 @@ export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 
 // dnd table
 export const SELECTED = 'selected';
+
+// voltage-level-on-line, attach line to another line, etc
+export const ATTACHED_LINE_ID = 'attachedLineId';
+export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
+export const LINE_TO_ATTACH_TO_2_ID = 'lineToAttachTo2Id';
+export const REPLACING_LINE_ID = 'replacingLine1Id';
+export const REPLACING_LINE_NAME = 'replacingLine1Name';
 
 // generator scaling
 export const VARIATIONS = 'variations';
