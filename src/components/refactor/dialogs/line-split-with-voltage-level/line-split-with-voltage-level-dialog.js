@@ -35,7 +35,7 @@ import {
     getPercentageAreaData,
     getPercentageAreaEmptyFormData,
     getPercentageAreaValidationSchema,
-} from './percentage-area/percentage-area-utils';
+} from '../percentage-area/percentage-area-utils';
 
 const emptyFormData = {
     [LINE_TO_DIVIDE]: null,

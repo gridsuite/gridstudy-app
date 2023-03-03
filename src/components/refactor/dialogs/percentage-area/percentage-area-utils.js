@@ -10,7 +10,7 @@ import {
     RIGHT_SIDE_PERCENTAGE,
     SLIDER_PERCENTAGE,
 } from 'components/refactor/utils/field-constants';
-import yup from '../../../utils/yup-config';
+import yup from '../../utils/yup-config';
 
 const percentageAreaValidationSchema = () => ({
     [SLIDER_PERCENTAGE]: yup.string(),

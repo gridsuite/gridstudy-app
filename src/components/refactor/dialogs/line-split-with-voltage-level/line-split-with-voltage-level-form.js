@@ -23,7 +23,7 @@ import {
     fetchVoltageLevelsIdAndTopology,
 } from 'utils/rest-api';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
-import { PercentageArea } from './percentage-area/percentage-area';
+import { PercentageArea } from '../percentage-area/percentage-area';
 import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 

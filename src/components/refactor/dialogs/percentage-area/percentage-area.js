@@ -7,11 +7,11 @@
 
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import TextInput from '../../../rhf-inputs/text-input';
+import TextInput from '../../rhf-inputs/text-input';
 import {
     percentageTextField,
     standardTextField,
-} from '../../../../dialogs/dialogUtils';
+} from '../../../dialogs/dialogUtils';
 import SliderInput from 'components/refactor/rhf-inputs/slider-input';
 import {
     LEFT_SIDE_PERCENTAGE,
