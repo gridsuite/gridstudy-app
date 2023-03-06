@@ -36,6 +36,7 @@ export const getVariationSchema = () =>
                         }),
                     })
                 )
+                .required()
                 .min(1, 'FieldIsRequired')
                 .when([VARIATION_MODE], {
                     is:

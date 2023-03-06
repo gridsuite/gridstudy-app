@@ -22,6 +22,7 @@ import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
 import { ReadOnlyInput } from './read-only-input';
 import { NAME } from '../utils/field-constants';
+import { isFieldRequired } from '../utils/utils';
 
 const DirectoryItemsInput = ({
     label,
@@ -30,7 +31,6 @@ const DirectoryItemsInput = ({
     equipmentTypes, // Mostly used for filters, it allows the user to get elements of specific equipment only
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
-    optional,
 }) => {
     const classes = useStyles();
     const { snackError } = useSnackMessage();
@@ -46,7 +46,7 @@ const DirectoryItemsInput = ({
         name,
     });
 
-    const { getValues } = useFormContext();
+    const { validationSchema, getValues } = useFormContext();
     const {
         fieldState: { error },
     } = useController({
@@ -87,7 +87,16 @@ const DirectoryItemsInput = ({
                 error={!!error?.message}
             >
                 {elements?.length === 0 && (
-                    <FieldLabel label={label} optional={optional} />
+                    <FieldLabel
+                        label={label}
+                        optional={
+                            !isFieldRequired(
+                                name,
+                                validationSchema,
+                                getValues()
+                            )
+                        }
+                    />
                 )}
                 {elements?.length > 0 && (
                     <FormControl className={classes.formDirectoryElements2}>

@@ -136,7 +136,6 @@ const VariationForm = ({ name, index }) => {
             label={'filter'}
             titleId={'FiltersListsSelection'}
             itemFilter={itemFilter}
-            optional={false}
         />
     );
 
