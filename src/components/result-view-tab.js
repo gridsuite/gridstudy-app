@@ -103,6 +103,7 @@ export const ResultViewTab = ({
                 <ShortCircuitAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
+                    visible={notTheContent}
                 />
             </Paper>
         );
@@ -129,6 +130,7 @@ export const ResultViewTab = ({
     const showsSubs = !notTheContent && !disabled;
 
     return (
+        showsSubs &&
         <Paper className={clsx('singlestretch-child', classes.table)}>
             <div className={classes.div}>
                 <Tabs
@@ -174,11 +176,11 @@ export const ResultViewTab = ({
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
-            {tabIndex === 0 && showsSubs && renderLoadFlowResult()}
-            {tabIndex === 1 && showsSubs && renderSecurityAnalysisResult()}
-            {tabIndex === 2 && showsSubs && renderShortCircuitAnalysisResult()}
-            {tabIndex === 3 && showsSubs && renderSensitivityAnalysisResult()}
-            {tabIndex === 4 && showsSubs && renderDynamicSimulationResult()}
+            {tabIndex === 0 && renderLoadFlowResult()}
+            {tabIndex === 1 && renderSecurityAnalysisResult()}
+            {tabIndex === 2 && renderShortCircuitAnalysisResult(notTheContent)}
+            {tabIndex === 3 && renderSensitivityAnalysisResult()}
+            {tabIndex === 4 && renderDynamicSimulationResult()}
         </Paper>
     );
 };

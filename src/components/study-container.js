@@ -109,7 +109,8 @@ export function useNodeData(
     fetcher,
     invalidations,
     defaultValue,
-    resultConversion
+    resultConversion,
+    visible = true
 ) {
     const [result, setResult] = useState(defaultValue);
     const [isPending, setIsPending] = useState(false);
@@ -146,7 +147,7 @@ export function useNodeData(
             invalidations
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
-        if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
+        if (visible && nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
             update();
         }
     }, [
