@@ -136,7 +136,8 @@ const GeneratorModificationDialog = ({
                 [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value,
                 [RATED_NOMINAL_POWER]: editData?.ratedNominalPower?.value,
                 [ACTIVE_POWER_SET_POINT]: editData?.activePowerSetpoint?.value,
-                [VOLTAGE_REGULATION]: editData?.voltageRegulationOn?.value,
+                [VOLTAGE_REGULATION]:
+                    editData?.voltageRegulationOn?.value ?? null,
                 [VOLTAGE_SET_POINT]: editData?.voltageSetpoint?.value,
                 [REACTIVE_POWER_SET_POINT]:
                     editData?.reactivePowerSetpoint?.value,
@@ -146,7 +147,7 @@ const GeneratorModificationDialog = ({
                 [MARGINAL_COST]: editData?.marginalCost?.value,
                 [PLANNED_OUTAGE_RATE]: editData?.plannedOutageRate?.value,
                 [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value,
-                [FREQUENCY_REGULATION]: editData?.participate?.value,
+                [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value,
                 [TRANSIENT_REACTANCE]: editData?.transientReactance?.value,
                 [TRANSFORMER_REACTANCE]:
@@ -319,6 +320,7 @@ const GeneratorModificationDialog = ({
                     currentNode={currentNode}
                     defaultIdValue={defaultIdValue}
                     clearOnlyId={clearOnlyId}
+                    editData={editData}
                 />
             </ModificationDialog>
         </FormProvider>

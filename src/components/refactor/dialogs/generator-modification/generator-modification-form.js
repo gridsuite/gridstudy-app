@@ -55,13 +55,16 @@ const GeneratorModificationForm = ({
     currentNode,
     defaultIdValue,
     clearOnlyId,
+    editData,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [generatorInfos, setGeneratorInfos] = useState();
+    const [keepPreviousValueForTable, setkeepPreviousValueForTable] =
+        useState(false);
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const { setValue } = useFormContext();
+    const { setValue, getValues } = useFormContext();
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -101,25 +104,49 @@ const GeneratorModificationForm = ({
                 true
             ).then((value) => {
                 if (value) {
-                    setValue(
-                        REACTIVE_CAPABILITY_CURVE_TABLE,
-                        new Array(
-                            value?.reactiveCapabilityCurvePoints?.length
-                        ).fill({})
-                    );
                     setGeneratorInfos(value);
+                    if (editData === undefined) {
+                        setValue(
+                            REACTIVE_CAPABILITY_CURVE_TABLE,
+                            new Array(
+                                value?.reactiveCapabilityCurvePoints?.length
+                            ).fill({})
+                        );
+                    }
                 }
             });
         } else {
-            if (!clearOnlyId) setGeneratorInfos(null);
+            if (!clearOnlyId) {
+                setGeneratorInfos(null);
+            }
         }
     }, [
         studyUuid,
         currentNodeUuid,
         watchEquipmentId,
         defaultIdValue,
-        setValue,
         clearOnlyId,
+        editData,
+        setValue,
+        keepPreviousValueForTable,
+    ]);
+
+    useEffect(() => {
+        if (
+            keepPreviousValueForTable &&
+            generatorInfos?.reactiveCapabilityCurvePoints
+        ) {
+            setValue(
+                REACTIVE_CAPABILITY_CURVE_TABLE,
+                new Array(
+                    generatorInfos?.reactiveCapabilityCurvePoints?.length
+                ).fill({})
+            );
+        }
+    }, [
+        generatorInfos?.reactiveCapabilityCurvePoints,
+        keepPreviousValueForTable,
+        setValue,
     ]);
 
     const energySourceLabelId = getEnergySourceLabel(
@@ -133,7 +160,11 @@ const GeneratorModificationForm = ({
     const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
     const resetEquipmentId = useCallback(() => {
         if (clearOnlyId) setValue(EQUIPMENT_ID, null);
-    }, [clearOnlyId, setValue]);
+        const v = getValues(EQUIPMENT_ID);
+        if (editData === undefined && v) {
+            setkeepPreviousValueForTable(true);
+        }
+    }, [clearOnlyId, editData, getValues, setValue]);
     const generatorIdField = (
         <AutocompleteInput
             name={EQUIPMENT_ID}

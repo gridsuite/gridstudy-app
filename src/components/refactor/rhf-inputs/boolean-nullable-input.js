@@ -9,7 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import { Checkbox, FormControlLabel, FormHelperText } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useController } from 'react-hook-form';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 const CheckboxNullableInput = ({
     name,
@@ -24,10 +24,6 @@ const CheckboxNullableInput = ({
 
     const intl = useIntl();
 
-    // const [value, setValue] = useState(
-    //     defaultValue === undefined ? null : defaultValue
-    // );
-    //useEffect(() => setValue(defaultValue), [defaultValue]);
     const handleChangeValue = useCallback(
         (event) => {
             if (value) {
@@ -48,7 +44,7 @@ const CheckboxNullableInput = ({
                         checked={value === true}
                         indeterminate={value === null}
                         onChange={(e) => handleChangeValue(e)}
-                        
+                        value="checked"
                         inputProps={{
                             'aria-label': 'primary checkbox',
                         }}

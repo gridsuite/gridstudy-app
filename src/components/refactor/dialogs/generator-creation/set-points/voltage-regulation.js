@@ -12,7 +12,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import React from 'react';
+import React, { useEffect } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     gridItem,
@@ -24,7 +24,7 @@ import RegulatingTerminalForm from '../../regulating-terminal/regulating-termina
 import { Box } from '@mui/system';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 const VoltageRegulation = ({
     studyUuid,
@@ -33,6 +33,7 @@ const VoltageRegulation = ({
     generatorInfos,
 }) => {
     const intl = useIntl();
+    const { setValue } = useFormContext();
     function getPreviousRegulationType(generatorInfos) {
         if (generatorInfos?.voltageRegulatorOn) {
             return generatorInfos?.regulatingTerminalVlId ||
@@ -55,8 +56,17 @@ const VoltageRegulation = ({
         name: VOLTAGE_REGULATION_TYPE,
     });
 
+    useEffect(() => {
+        if (
+            generatorInfos?.regulatingTerminalVlId ||
+            generatorInfos?.regulatingTerminalConnectableId
+        ) {
+            setValue(VOLTAGE_REGULATION_TYPE, REGULATION_TYPES.DISTANT);
+        }
+    }, [generatorInfos, setValue]);
+
     const isDistantRegulation =
-        voltageRegulationType === REGULATION_TYPES.DISTANT.id;
+        voltageRegulationType?.id === REGULATION_TYPES.DISTANT.id;
 
     const voltageRegulationTypeField = (
         <SelectInput
