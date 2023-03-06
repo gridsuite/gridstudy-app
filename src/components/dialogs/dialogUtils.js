@@ -142,7 +142,7 @@ export function parseIntData(val, defaultValue) {
 }
 
 export function sanitizeString(val) {
-    return val.trim() === '' ? null : val.trim();
+    return val?.trim() === '' ? null : val?.trim();
 }
 
 export const toFloatValue = (val) => {

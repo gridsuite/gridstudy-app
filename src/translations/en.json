@@ -525,6 +525,9 @@
     "QatNominalV": "Q at nominal voltage",
     "QatNominalVLabel": "Q at nominal voltage (MVAr)",
     "SusceptanceLabel": "Susceptance (S)",
+    "LineLimitsTab": "Limits",
+    "LineCharacteristicsTab": "Characteristics",
+    "TemporaryCurrentLimitText": "Temporary current limits",
 
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",
