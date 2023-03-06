@@ -221,7 +221,7 @@ const LineCreationDialog = ({
 
     const onSubmit = useCallback(
         (line) => {
-            createLine(
+            onCreateLine(
                 studyUuid,
                 currentNodeUuid,
                 line[EQUIPMENT_ID],
