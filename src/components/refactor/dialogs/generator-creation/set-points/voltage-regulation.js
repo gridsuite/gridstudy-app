@@ -23,14 +23,34 @@ import {
 import RegulatingTerminalForm from '../../regulating-terminal/regulating-terminal-form';
 import { Box } from '@mui/system';
 import Grid from '@mui/material/Grid';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useWatch } from 'react-hook-form';
 
 const VoltageRegulation = ({
     studyUuid,
     currentNodeUuid,
     voltageLevelOptions,
+    generatorInfos,
 }) => {
+    const intl = useIntl();
+    function getPreviousRegulationType(generatorInfos) {
+        if (generatorInfos?.voltageRegulatorOn) {
+            return generatorInfos?.regulatingTerminalVlId ||
+                generatorInfos?.regulatingTerminalConnectableId
+                ? REGULATION_TYPES.DISTANT
+                : REGULATION_TYPES.LOCAL;
+        } else {
+            return null;
+        }
+    }
+    const previousRegulationTypeLabel = getPreviousRegulationType(
+        generatorInfos
+    )?.label
+        ? intl.formatMessage({
+              id: getPreviousRegulationType(generatorInfos)?.label,
+          })
+        : undefined;
+
     const voltageRegulationType = useWatch({
         name: VOLTAGE_REGULATION_TYPE,
     });
@@ -46,6 +66,7 @@ const VoltageRegulation = ({
             size={'small'}
             disableClearable={true}
             formProps={italicFontTextField}
+            previousValue={previousRegulationTypeLabel}
         />
     );
 
@@ -54,6 +75,8 @@ const VoltageRegulation = ({
             name={VOLTAGE_SET_POINT}
             label={'VoltageText'}
             adornment={VoltageAdornment}
+            previousValue={generatorInfos?.targetV}
+            clearable={true}
         />
     );
 
@@ -64,6 +87,16 @@ const VoltageRegulation = ({
             equipmentSectionTypeDefaultValue={''}
             currentNodeUuid={currentNodeUuid}
             studyUuid={studyUuid}
+            previousRegulatingTerminalValue={
+                generatorInfos?.regulatingTerminalVlId
+            }
+            previousEquipmentSectionTypeValue={
+                generatorInfos?.regulatingTerminalConnectableType
+                    ? generatorInfos?.regulatingTerminalConnectableType +
+                      ' : ' +
+                      generatorInfos?.regulatingTerminalConnectableId
+                    : null
+            }
         />
     );
 
@@ -72,6 +105,7 @@ const VoltageRegulation = ({
             name={Q_PERCENT}
             label={'QPercentText'}
             adornment={percentageTextField}
+            previousValue={generatorInfos?.qPercent}
         />
     );
 

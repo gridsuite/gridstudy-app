@@ -27,13 +27,13 @@ import yup from '../../../utils/yup-config';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 
-const getFrequencyRegulationEmptyFormData = () => ({
-    [FREQUENCY_REGULATION]: false,
+const getFrequencyRegulationEmptyFormData = (isGeneratorModification) => ({
+    [FREQUENCY_REGULATION]: isGeneratorModification ? null : false,
     [DROOP]: null,
 });
 
 const getFrequencyRegulationSchema = () => ({
-    [FREQUENCY_REGULATION]: yup.bool().required(),
+    [FREQUENCY_REGULATION]: yup.bool().nullable().required(),
     [DROOP]: yup
         .number()
         .nullable()
@@ -43,10 +43,10 @@ const getFrequencyRegulationSchema = () => ({
         }),
 });
 
-const getVoltageRegulationEmptyFormData = () => ({
+const getVoltageRegulationEmptyFormData = (voltageRegulationType) => ({
     [VOLTAGE_SET_POINT]: null,
     [Q_PERCENT]: null,
-    [VOLTAGE_REGULATION_TYPE]: REGULATION_TYPES.LOCAL.id,
+    [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
     [VOLTAGE_LEVEL]: null,
     [EQUIPMENT]: null,
     ...getRegulatingTerminalEmptyFormData(),
@@ -104,24 +104,40 @@ const getVoltageRegulationSchema = () => ({
         }),
 });
 
-export const getSetPointsEmptyFormData = () => ({
-    [VOLTAGE_REGULATION]: false,
+export const getSetPointsEmptyFormData = (isGeneratorModification) => ({
+    [VOLTAGE_REGULATION]: isGeneratorModification ? null : false,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
-    ...getVoltageRegulationEmptyFormData(),
-    ...getFrequencyRegulationEmptyFormData(),
+    ...getVoltageRegulationEmptyFormData(
+        isGeneratorModification ? null : REGULATION_TYPES.LOCAL.id
+    ),
+    ...getFrequencyRegulationEmptyFormData(isGeneratorModification),
 });
 
-export const getSetPointsSchema = () => ({
+export const getSetPointsSchema = (isGeneratorModification) => ({
     [VOLTAGE_REGULATION]: yup.bool().nullable().required(),
-    [ACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
+    ...getActivePowerSetPointSchema(isGeneratorModification),
+    ...getReactivePowerSetPointSchema(isGeneratorModification),
+    ...getVoltageRegulationSchema(),
+    ...getFrequencyRegulationSchema(),
+});
+
+const getReactivePowerSetPointSchema = (isGeneratorModification) => ({
     [REACTIVE_POWER_SET_POINT]: yup
         .number()
         .nullable()
         .when([VOLTAGE_REGULATION], {
-            is: false,
+            is: (value) => !value && !isGeneratorModification,
             then: (schema) => schema.required(),
         }),
-    ...getVoltageRegulationSchema(),
-    ...getFrequencyRegulationSchema(),
+});
+
+const getActivePowerSetPointSchema = (isGeneratorModification) => ({
+    [ACTIVE_POWER_SET_POINT]: yup
+        .number()
+        .nullable()
+        .when([], {
+            is: () => !isGeneratorModification,
+            then: (schema) => schema.required(),
+        }),
 });

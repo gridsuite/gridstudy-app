@@ -42,7 +42,7 @@ FloatInput.propTypes = {
     adornment: PropTypes.object,
     acceptValue: PropTypes.func,
     formProps: PropTypes.object,
-    previousValue: PropTypes.object,
+    previousValue: PropTypes.any,
     clearable: PropTypes.bool,
 };
 

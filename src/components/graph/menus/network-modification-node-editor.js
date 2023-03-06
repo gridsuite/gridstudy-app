@@ -64,6 +64,7 @@ import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
 import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
 import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
+//import GeneratorModificationDialog from 'components/dialogs/generator-modification-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {

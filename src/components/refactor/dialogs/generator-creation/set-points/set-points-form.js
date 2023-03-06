@@ -25,31 +25,47 @@ import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
 import VoltageRegulation from './voltage-regulation';
 import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
-import CheckboxInput from 'components/refactor/rhf-inputs/booleans/checkbox-input';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
+import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
 
 const SetPointsForm = ({
     studyUuid,
     currentNodeUuid,
     voltageLevelOptions,
     isGeneratorModification,
+    generatorInfos,
 }) => {
-    const isVoltageRegulationOn = useWatch({
+    const intl = useIntl();
+    const voltageRegulation = useWatch({
         name: VOLTAGE_REGULATION,
     });
+
+    const isVoltageRegulationOn =
+        voltageRegulation ||
+        (voltageRegulation === null &&
+            generatorInfos?.voltageRegulatorOn === true);
+
+    let previousRegulation = '';
+    if (generatorInfos?.voltageRegulatorOn)
+        previousRegulation = intl.formatMessage({ id: 'On' });
+    else if (generatorInfos?.voltageRegulatorOn === false)
+        previousRegulation = intl.formatMessage({ id: 'Off' });
 
     const activePowerSetPointField = (
         <FloatInput
             name={ACTIVE_POWER_SET_POINT}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
+            previousValue={generatorInfos?.targetP}
+            clearable={true}
         />
     );
 
     const voltageRegulationField = isGeneratorModification ? (
-        <CheckboxInput
+        <CheckboxNullableInput
             name={VOLTAGE_REGULATION}
             label={'VoltageRegulationText'}
+            previousValue={previousRegulation}
         />
     ) : (
         <SwitchInput
@@ -63,6 +79,8 @@ const SetPointsForm = ({
             name={REACTIVE_POWER_SET_POINT}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
+            previousValue={generatorInfos?.targetQ}
+            clearable={true}
         />
     );
 
@@ -71,6 +89,7 @@ const SetPointsForm = ({
             voltageLevelOptions={voltageLevelOptions}
             currentNodeUuid={currentNodeUuid}
             studyUuid={studyUuid}
+            generatorInfos={generatorInfos}
         />
     );
 
@@ -80,17 +99,25 @@ const SetPointsForm = ({
             <Grid container spacing={2}>
                 {gridItem(activePowerSetPointField, 4)}
                 <Box sx={{ width: '100%' }} />
-                {isGeneratorModification
-                    ? gridItemWithTooltip(
-                          voltageRegulationField,
-                          <FormattedMessage id={'NoModification'} />
-                      )
-                    : gridItem(voltageRegulationField, 4)}
-                {!isVoltageRegulationOn &&
-                    gridItem(reactivePowerSetPointField, 4)}
-                {isVoltageRegulationOn && voltageRegulationFields}
+                {gridItemWithTooltip(
+                    voltageRegulationField,
+                    voltageRegulation !== null ? (
+                        ''
+                    ) : (
+                        <FormattedMessage id={'NoModification'} />
+                    ),
+                    4
+                )}
+
+                {isVoltageRegulationOn
+                    ? voltageRegulationFields
+                    : gridItem(reactivePowerSetPointField, 4)}
+
                 <Box sx={{ width: '100%' }} />
-                <FrequencyRegulation />
+                <FrequencyRegulation
+                    isGeneratorModification={isGeneratorModification}
+                    generatorInfos={generatorInfos}
+                />
             </Grid>
         </>
     );

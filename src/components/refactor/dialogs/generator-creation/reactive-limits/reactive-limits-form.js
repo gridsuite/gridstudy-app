@@ -30,7 +30,7 @@ const headerIds = [
     'MaximumReactivePower',
 ];
 
-const ReactiveLimitsForm = () => {
+const ReactiveLimitsForm = ({ generatorInfos }) => {
     const reactiveCapabilityCurveChoice = useWatch({
         name: REACTIVE_CAPABILITY_CURVE_CHOICE,
     });
@@ -68,6 +68,9 @@ const ReactiveLimitsForm = () => {
             id={REACTIVE_CAPABILITY_CURVE_TABLE}
             tableHeadersIds={headerIds}
             isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
+            reactiveCapabilityCurvePoints={
+                generatorInfos?.reactiveCapabilityCurvePoints
+            }
         />
     );
 

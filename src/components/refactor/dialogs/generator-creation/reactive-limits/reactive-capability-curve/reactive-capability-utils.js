@@ -18,18 +18,24 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../../utils/field-constants';
 
-const getRowSchema = () =>
+const getRowSchema = (isNeedToValidate) =>
     yup.object().shape({
-        [Q_MAX_P]: yup.number().nullable().required(),
+        [Q_MAX_P]: yup
+            .number()
+            .nullable()
+            .when({ is: isNeedToValidate, then: (schema) => schema.required }),
         [Q_MIN_P]: yup
             .number()
             .nullable()
-            .required()
+            .when({ is: isNeedToValidate, then: (schema) => schema.required() })
             .max(
                 yup.ref(Q_MAX_P),
                 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
             ),
-        [P]: yup.number().nullable().required(),
+        [P]: yup
+            .number()
+            .nullable()
+            .when({ is: isNeedToValidate, then: (schema) => schema.required }),
     });
 
 const getRowEmptyFormData = () => ({
@@ -69,6 +75,7 @@ function checkAllValuesBetweenMinMax(values) {
 }
 
 export const getReactiveCapabilityCurveValidationSchema = (
+    isNeedToValidate,
     id = REACTIVE_CAPABILITY_CURVE_TABLE
 ) => ({
     [id]: yup
@@ -78,7 +85,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
             is: 'CURVE',
             then: (schema) =>
                 schema
-                    .of(getRowSchema())
+                    .of(getRowSchema(isNeedToValidate))
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
                     .test(
                         'checkAllValuesAreUnique',

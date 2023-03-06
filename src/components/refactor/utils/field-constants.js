@@ -114,3 +114,6 @@ export const SELECTED = 'selected';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
+export const REGULATING_TERMINAL = 'regulatingTerminal';
+export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
+export const GENERATOR = 'generator';

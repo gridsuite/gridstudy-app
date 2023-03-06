@@ -16,11 +16,11 @@ import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import MidFormError from '../../../../rhf-inputs/error-inputs/mid-form-error';
 import ErrorInput from '../../../../rhf-inputs/error-inputs/error-input';
-
 export const ReactiveCapabilityCurveTable = ({
     id,
     tableHeadersIds,
     disabled = false,
+    reactiveCapabilityCurvePoints,
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();
@@ -50,6 +50,10 @@ export const ReactiveCapabilityCurveTable = ({
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
+                            rowReactiveCapabilityCurvePoint={
+                                reactiveCapabilityCurvePoints &&
+                                reactiveCapabilityCurvePoints[index]
+                            }
                         />
                         <Grid item xs={1}>
                             <IconButton

@@ -186,6 +186,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
                 studyUuid={studyUuid}
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}
+                isGeneratorModification={false}
             />
 
             {/* Short Circuit of start part */}
