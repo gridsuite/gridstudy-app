@@ -46,7 +46,7 @@ import {
 import LineCreationForm from './line-creation-form';
 
 /**
- * Dialog to create a load in the network
+ * Dialog to create a line in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
@@ -221,7 +221,7 @@ const LineCreationDialog = ({
 
     const onSubmit = useCallback(
         (line) => {
-            createLine(
+            onCreateLine(
                 studyUuid,
                 currentNodeUuid,
                 line[EQUIPMENT_ID],
@@ -255,7 +255,7 @@ const LineCreationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
     const clear = useCallback(() => {

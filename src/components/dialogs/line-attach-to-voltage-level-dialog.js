@@ -590,7 +590,6 @@ const LineAttachToVoltageLevelDialog = ({
                         displayConnectivity={false}
                         onCreateLine={onLineDo}
                         editData={lineToEdit}
-                        {...dialogProps}
                     />
                 )}
             </ModificationDialog>

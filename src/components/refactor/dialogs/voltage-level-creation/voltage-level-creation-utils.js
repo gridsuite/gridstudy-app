@@ -108,13 +108,14 @@ export const controleUniqueHorizontalVertical = (values, message) => {
  */
 const findBusBarSectionIndexesItSelf = (values) => {
     const indexes = [];
-    values
-        ?.filter((value) => value[SWITCH_KIND] === 'DISCONNECTOR')
-        .forEach((value, index) => {
-            if (value[FROM_BBS] === value[TO_BBS]) {
-                indexes.push(index);
-            }
-        });
+    values?.forEach((value, index) => {
+        if (
+            value[SWITCH_KIND] === 'DISCONNECTOR' &&
+            value[FROM_BBS] === value[TO_BBS]
+        ) {
+            indexes.push(index);
+        }
+    });
     return indexes;
 };
 
