@@ -19,6 +19,10 @@ import {
     VOLTAGE_LEVEL_ID,
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
+    CONNECTIVITY,
+    VOLTAGE_LEVEL,
+    ID,
+    BUS_OR_BUSBAR_SECTION,
 } from 'components/refactor/utils/field-constants';
 import yup from 'components/refactor/utils/yup-config';
 import React, { useCallback, useEffect } from 'react';
@@ -27,31 +31,35 @@ import { linesAttachToSplitLines } from 'utils/rest-api';
 import ModificationDialog from 'components/refactor/dialogs/commons/modificationDialog';
 
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
+import {
+    getConnectivityEmptyFormData,
+    getConnectivityFormData,
+    getConnectivityFormValidationSchema,
+} from '../connectivity/connectivity-form-utils';
 
 const emptyFormData = {
-    [LINE_TO_ATTACH_TO_1_ID]: '',
-    [LINE_TO_ATTACH_TO_2_ID]: '',
-    [ATTACHED_LINE_ID]: '',
-    [VOLTAGE_LEVEL_ID]: '',
-    [BUS_BAR_SECTION_ID]: '',
-    [REPLACING_LINE_1_ID]: '',
+    [LINE_TO_ATTACH_TO_1_ID]: null,
+    [LINE_TO_ATTACH_TO_2_ID]: null,
+    [ATTACHED_LINE_ID]: null,
+    [REPLACING_LINE_1_ID]: null,
     [REPLACING_LINE_1_NAME]: '',
-    [REPLACING_LINE_2_ID]: '',
+    [REPLACING_LINE_2_ID]: null,
     [REPLACING_LINE_2_NAME]: '',
+    ...getConnectivityEmptyFormData(),
 };
 
 const schema = yup
     .object()
     .shape({
-        [LINE_TO_ATTACH_TO_1_ID]: yup.string().required(),
-        [LINE_TO_ATTACH_TO_2_ID]: yup.string().required(),
-        [ATTACHED_LINE_ID]: yup.string().required(),
-        [VOLTAGE_LEVEL_ID]: yup.string().required(),
-        [BUS_BAR_SECTION_ID]: yup.string().required(),
-        [REPLACING_LINE_1_ID]: yup.string().required(),
+        [LINE_TO_ATTACH_TO_1_ID]: yup.string().nullable().required(),
+        [LINE_TO_ATTACH_TO_2_ID]: yup.string().nullable().required(),
+        [ATTACHED_LINE_ID]: yup.string().nullable().required(),
+        [REPLACING_LINE_1_ID]: yup.string().nullable().required(),
         [REPLACING_LINE_1_NAME]: yup.string(),
-        [REPLACING_LINE_2_ID]: yup.string().required(),
+        [REPLACING_LINE_2_ID]: yup.string().nullable().required(),
         [REPLACING_LINE_2_NAME]: yup.string(),
+        [ATTACHED_LINE_ID]: yup.string().nullable().required(),
+        ...getConnectivityFormValidationSchema(),
     })
     .required();
 
@@ -84,12 +92,14 @@ const LinesAttachToSplitLinesDialog = ({
                 [LINE_TO_ATTACH_TO_1_ID]: editData[LINE_TO_ATTACH_TO_1_ID],
                 [LINE_TO_ATTACH_TO_2_ID]: editData[LINE_TO_ATTACH_TO_2_ID],
                 [ATTACHED_LINE_ID]: editData[ATTACHED_LINE_ID],
-                [VOLTAGE_LEVEL_ID]: editData[VOLTAGE_LEVEL_ID],
-                [BUS_BAR_SECTION_ID]: editData[BUS_BAR_SECTION_ID],
                 [REPLACING_LINE_1_ID]: editData[REPLACING_LINE_1_ID],
                 [REPLACING_LINE_1_NAME]: editData[REPLACING_LINE_1_NAME],
                 [REPLACING_LINE_2_ID]: editData[REPLACING_LINE_2_ID],
                 [REPLACING_LINE_2_NAME]: editData[REPLACING_LINE_2_NAME],
+                ...getConnectivityFormData({
+                    voltageLevelId: editData[VOLTAGE_LEVEL_ID],
+                    busbarSectionId: editData[BUS_BAR_SECTION_ID],
+                }),
             });
         }
     }, [editData, reset]);
@@ -103,8 +113,10 @@ const LinesAttachToSplitLinesDialog = ({
                 linesAttachToSplitLine[LINE_TO_ATTACH_TO_1_ID],
                 linesAttachToSplitLine[LINE_TO_ATTACH_TO_2_ID],
                 linesAttachToSplitLine[ATTACHED_LINE_ID],
-                linesAttachToSplitLine[VOLTAGE_LEVEL_ID],
-                linesAttachToSplitLine[BUS_BAR_SECTION_ID],
+                linesAttachToSplitLine[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                linesAttachToSplitLine[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[
+                    ID
+                ],
                 linesAttachToSplitLine[REPLACING_LINE_1_ID],
                 sanitizeString(linesAttachToSplitLine[REPLACING_LINE_1_NAME]),
                 linesAttachToSplitLine[REPLACING_LINE_2_ID],
@@ -135,7 +147,7 @@ const LinesAttachToSplitLinesDialog = ({
                 {...dialogProps}
             >
                 <LinesAttachToSplitLinesForm
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                     studyUuid={studyUuid}
                 />
             </ModificationDialog>
