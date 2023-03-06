@@ -223,7 +223,10 @@ function PagedSensitivityResult({
     if (!next.fetcher) {
         next.isFetchNeedy = true;
         next.askedFilterVersion = next.indexer?.filterVersion;
-        if (filteredCount >= userRowsPerPage) {
+        if (
+            filteredCount >= userRowsPerPage &&
+            userRowsPerPage === prev.userRowsPerPage
+        ) {
             next.page = page;
         } else {
             next.page = 0;
