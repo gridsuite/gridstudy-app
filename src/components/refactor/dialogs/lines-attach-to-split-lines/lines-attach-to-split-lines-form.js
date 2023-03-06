@@ -12,12 +12,12 @@ import {
     ATTACHED_LINE_ID,
     BUS_BAR_SECTION_ID,
     ID,
-    LINE_TO_ATTACH_TO_ID_1,
-    LINE_TO_ATTACH_TO_ID_2,
-    REPLACING_LINE_ID_1,
-    REPLACING_LINE_ID_2,
-    REPLACING_LINE_NAME_1,
-    REPLACING_LINE_NAME_2,
+    LINE_TO_ATTACH_TO_1_ID,
+    LINE_TO_ATTACH_TO_2_ID,
+    REPLACING_LINE_1_ID,
+    REPLACING_LINE_2_ID,
+    REPLACING_LINE_1_NAME,
+    REPLACING_LINE_2_NAME,
     TOPOLOGY_KIND,
     VOLTAGE_LEVEL_ID,
 } from 'components/refactor/utils/field-constants';
@@ -124,7 +124,7 @@ const LinesAttachToSplitLinesForm = ({ currentNodeUuid, studyUuid }) => {
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
-            name={LINE_TO_ATTACH_TO_ID_1}
+            name={LINE_TO_ATTACH_TO_1_ID}
             label="Line1"
             options={linesIds}
             size={'small'}
@@ -135,7 +135,7 @@ const LinesAttachToSplitLinesForm = ({ currentNodeUuid, studyUuid }) => {
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
-            name={LINE_TO_ATTACH_TO_ID_2}
+            name={LINE_TO_ATTACH_TO_2_ID}
             label="Line2"
             options={linesIds}
             size={'small'}
@@ -179,19 +179,19 @@ const LinesAttachToSplitLinesForm = ({ currentNodeUuid, studyUuid }) => {
     );
 
     const newLine1IdField = (
-        <TextInput name={REPLACING_LINE_ID_1} label={'Line1ID'} />
+        <TextInput name={REPLACING_LINE_1_ID} label={'Line1ID'} />
     );
 
     const newLine1NameField = (
-        <TextInput name={REPLACING_LINE_NAME_1} label={'Line1Name'} />
+        <TextInput name={REPLACING_LINE_1_NAME} label={'Line1Name'} />
     );
 
     const newLine2IdField = (
-        <TextInput name={REPLACING_LINE_ID_2} label={'Line2ID'} />
+        <TextInput name={REPLACING_LINE_2_ID} label={'Line2ID'} />
     );
 
     const newLine2NameField = (
-        <TextInput name={REPLACING_LINE_NAME_2} label={'Line2Name'} />
+        <TextInput name={REPLACING_LINE_2_NAME} label={'Line2Name'} />
     );
 
     return (

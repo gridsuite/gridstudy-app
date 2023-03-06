@@ -60,8 +60,8 @@ import {
 import { UPDATE_TYPE } from '../../network/constants';
 import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
-import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
-import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
+import DeleteVoltageLevelOnLineDialog from '../../refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
+import DeleteAttachingLineDialog from '../../refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
 import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
 import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 
@@ -349,12 +349,12 @@ const NetworkModificationNodeEditor = () => {
         },
         DELETE_VOLTAGE_LEVEL_ON_LINE: {
             label: 'DeleteVoltageLevelOnLine',
-            dialog: () => adapt(DeleteVoltageLevelOnLineDialog, withLines),
+            dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
             icon: <AddIcon />,
         },
         DELETE_ATTACHING_LINE: {
             label: 'DeleteAttachingLine',
-            dialog: () => adapt(DeleteAttachingLineDialog, withLines),
+            dialog: () => adapt(DeleteAttachingLineDialog),
             icon: <AddIcon />,
         },
         EQUIPMENT_DELETION: {

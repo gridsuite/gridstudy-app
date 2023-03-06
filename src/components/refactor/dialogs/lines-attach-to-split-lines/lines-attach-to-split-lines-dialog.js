@@ -12,13 +12,13 @@ import PropTypes from 'prop-types';
 import {
     ATTACHED_LINE_ID,
     BUS_BAR_SECTION_ID,
-    LINE_TO_ATTACH_TO_ID_1,
-    LINE_TO_ATTACH_TO_ID_2,
-    REPLACING_LINE_ID_1,
-    REPLACING_LINE_ID_2,
-    REPLACING_LINE_NAME_1,
-    REPLACING_LINE_NAME_2,
+    REPLACING_LINE_1_ID,
+    REPLACING_LINE_2_ID,
+    REPLACING_LINE_1_NAME,
+    REPLACING_LINE_2_NAME,
     VOLTAGE_LEVEL_ID,
+    LINE_TO_ATTACH_TO_1_ID,
+    LINE_TO_ATTACH_TO_2_ID,
 } from 'components/refactor/utils/field-constants';
 import yup from 'components/refactor/utils/yup-config';
 import React, { useCallback, useEffect } from 'react';
@@ -29,29 +29,29 @@ import ModificationDialog from 'components/refactor/dialogs/commons/modification
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 
 const emptyFormData = {
-    [LINE_TO_ATTACH_TO_ID_1]: '',
-    [LINE_TO_ATTACH_TO_ID_2]: '',
+    [LINE_TO_ATTACH_TO_1_ID]: '',
+    [LINE_TO_ATTACH_TO_2_ID]: '',
     [ATTACHED_LINE_ID]: '',
     [VOLTAGE_LEVEL_ID]: '',
     [BUS_BAR_SECTION_ID]: '',
-    [REPLACING_LINE_ID_1]: '',
-    [REPLACING_LINE_NAME_1]: '',
-    [REPLACING_LINE_ID_2]: '',
-    [REPLACING_LINE_NAME_2]: '',
+    [REPLACING_LINE_1_ID]: '',
+    [REPLACING_LINE_1_NAME]: '',
+    [REPLACING_LINE_2_ID]: '',
+    [REPLACING_LINE_2_NAME]: '',
 };
 
 const schema = yup
     .object()
     .shape({
-        [LINE_TO_ATTACH_TO_ID_1]: yup.string().required(),
-        [LINE_TO_ATTACH_TO_ID_2]: yup.string().required(),
+        [LINE_TO_ATTACH_TO_1_ID]: yup.string().required(),
+        [LINE_TO_ATTACH_TO_2_ID]: yup.string().required(),
         [ATTACHED_LINE_ID]: yup.string().required(),
         [VOLTAGE_LEVEL_ID]: yup.string().required(),
         [BUS_BAR_SECTION_ID]: yup.string().required(),
-        [REPLACING_LINE_ID_1]: yup.string().required(),
-        [REPLACING_LINE_NAME_1]: yup.string(),
-        [REPLACING_LINE_ID_2]: yup.string().required(),
-        [REPLACING_LINE_NAME_2]: yup.string(),
+        [REPLACING_LINE_1_ID]: yup.string().required(),
+        [REPLACING_LINE_1_NAME]: yup.string(),
+        [REPLACING_LINE_2_ID]: yup.string().required(),
+        [REPLACING_LINE_2_NAME]: yup.string(),
     })
     .required();
 
@@ -81,15 +81,15 @@ const LinesAttachToSplitLinesDialog = ({
     useEffect(() => {
         if (editData) {
             reset({
-                [LINE_TO_ATTACH_TO_ID_1]: editData[LINE_TO_ATTACH_TO_ID_1],
-                [LINE_TO_ATTACH_TO_ID_2]: editData[LINE_TO_ATTACH_TO_ID_2],
+                [LINE_TO_ATTACH_TO_1_ID]: editData[LINE_TO_ATTACH_TO_1_ID],
+                [LINE_TO_ATTACH_TO_2_ID]: editData[LINE_TO_ATTACH_TO_2_ID],
                 [ATTACHED_LINE_ID]: editData[ATTACHED_LINE_ID],
                 [VOLTAGE_LEVEL_ID]: editData[VOLTAGE_LEVEL_ID],
                 [BUS_BAR_SECTION_ID]: editData[BUS_BAR_SECTION_ID],
-                [REPLACING_LINE_ID_1]: editData[REPLACING_LINE_ID_1],
-                [REPLACING_LINE_NAME_1]: editData[REPLACING_LINE_NAME_1],
-                [REPLACING_LINE_ID_2]: editData[REPLACING_LINE_ID_2],
-                [REPLACING_LINE_NAME_2]: editData[REPLACING_LINE_NAME_2],
+                [REPLACING_LINE_1_ID]: editData[REPLACING_LINE_1_ID],
+                [REPLACING_LINE_1_NAME]: editData[REPLACING_LINE_1_NAME],
+                [REPLACING_LINE_2_ID]: editData[REPLACING_LINE_2_ID],
+                [REPLACING_LINE_2_NAME]: editData[REPLACING_LINE_2_NAME],
             });
         }
     }, [editData, reset]);
@@ -100,15 +100,15 @@ const LinesAttachToSplitLinesDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 editData ? editData.uuid : undefined,
-                linesAttachToSplitLine[LINE_TO_ATTACH_TO_ID_1],
-                linesAttachToSplitLine[LINE_TO_ATTACH_TO_ID_2],
+                linesAttachToSplitLine[LINE_TO_ATTACH_TO_1_ID],
+                linesAttachToSplitLine[LINE_TO_ATTACH_TO_2_ID],
                 linesAttachToSplitLine[ATTACHED_LINE_ID],
                 linesAttachToSplitLine[VOLTAGE_LEVEL_ID],
                 linesAttachToSplitLine[BUS_BAR_SECTION_ID],
-                linesAttachToSplitLine[REPLACING_LINE_ID_1],
-                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_NAME_1]),
-                linesAttachToSplitLine[REPLACING_LINE_ID_2],
-                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_NAME_2])
+                linesAttachToSplitLine[REPLACING_LINE_1_ID],
+                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_1_NAME]),
+                linesAttachToSplitLine[REPLACING_LINE_2_ID],
+                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_2_NAME])
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
