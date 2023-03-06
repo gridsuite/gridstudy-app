@@ -255,7 +255,7 @@ const LineCreationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
     const clear = useCallback(() => {
