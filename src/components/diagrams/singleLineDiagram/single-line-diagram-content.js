@@ -40,17 +40,22 @@ import {
     isNodeReadOnly,
 } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
-import { fetchSvg, updateSwitchState } from '../../../utils/rest-api';
+import {
+    deleteEquipment,
+    fetchSvg,
+    updateSwitchState,
+} from '../../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-//import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
+import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import { withVLsIdsAndTopology } from '../../graph/menus/network-modification-node-editor';
 import GeneratorModificationDialog from 'components/refactor/dialogs/generator-modification/generator-modification-dialog';
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
+    const { studyUuid } = props;
     const [svg, setSvg] = useState(NoSvg);
     const classes = useDiagramStyles();
     const { diagramSizeSetter } = props;
@@ -110,7 +115,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                 setLocallySwitchedBreaker(switchElement);
 
                 updateSwitchState(
-                    props.studyUuid,
+                    studyUuid,
                     currentNode?.id,
                     breakerId,
                     newSwitchState
@@ -120,7 +125,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                 });
             }
         },
-        [props.studyUuid, currentNode, modificationInProgress]
+        [studyUuid, currentNode, modificationInProgress]
     );
 
     const handleNextVoltageLevelClick = useCallback(
@@ -167,6 +172,25 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         closeEquipmentMenu();
     };
 
+    const handleDeleteEquipment = useCallback(
+        (equipmentType, equipmentId) => {
+            deleteEquipment(
+                studyUuid,
+                currentNode?.id,
+                equipmentType,
+                equipmentId,
+                undefined
+            ).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'UnableToDeleteEquipment',
+                });
+            });
+            closeEquipmentMenu();
+        },
+        [studyUuid, currentNode?.id, closeEquipmentMenu, snackError]
+    );
+
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
@@ -179,8 +203,9 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    handleDeleteEquipment={handleDeleteEquipment}
                     currentNode={currentNode}
-                    studyUuid={props.studyUuid}
+                    studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={setModificationInProgress}
                 />
@@ -203,6 +228,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleOpenModificationDialog={handleOpenModificationDialog}
+                    handleDeleteEquipment={handleDeleteEquipment}
                 />
             )
         );
@@ -214,14 +240,24 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                 return (
                     <GeneratorModificationDialog
                         open={true}
-                        studyUuid={props.studyUuid}
+                        studyUuid={studyUuid}
                         currentNode={currentNode}
                         onClose={() => closeModificationDialog()}
                         defaultIdValue={equipmentToModify.equipmentId}
                         voltageLevelsIdsAndTopologyPromise={withVLsIdsAndTopology(
-                            props.studyUuid,
+                            studyUuid,
                             currentNode?.id
                         )}
+                    />
+                );
+            case equipments.loads:
+                return (
+                    <LoadModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        onClose={() => closeModificationDialog()}
+                        defaultIdValue={equipmentToModify.equipmentId}
                     />
                 );
             default:

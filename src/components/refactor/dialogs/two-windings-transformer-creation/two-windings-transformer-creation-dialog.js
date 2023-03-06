@@ -574,10 +574,14 @@ const TwoWindingsTransformerCreationDialog = ({
                 phaseTap,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(
+                    characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
+                ),
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(
+                    characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]
+                ),
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
@@ -628,6 +632,11 @@ const TwoWindingsTransformerCreationDialog = ({
                 titleId="CreateTwoWindingsTransformer"
                 subtitle={tabs}
                 searchCopy={searchCopy}
+                PaperProps={{
+                    sx: {
+                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                    },
+                }}
                 {...dialogProps}
             >
                 <Box

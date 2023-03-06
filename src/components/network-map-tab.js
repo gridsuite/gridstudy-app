@@ -9,6 +9,7 @@ import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
+    deleteEquipment,
     fetchLinePositions,
     fetchSubstationPositions,
 } from '../utils/rest-api';
@@ -28,7 +29,7 @@ import {
     PARAM_MAP_MANUAL_REFRESH,
 } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
-import { useIntlRef } from '@gridsuite/commons-ui';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
     isNodeReadOnly,
@@ -110,6 +111,8 @@ export const NetworkMapTab = ({
     const [isInitialized, setInitialized] = useState(false);
     const [waitingLoadData, setWaitingLoadData] = useState(true);
 
+    const { snackError } = useSnackMessage();
+
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
 
@@ -176,6 +179,7 @@ export const NetworkMapTab = ({
                 position={equipmentMenu.position}
                 handleClose={closeEquipmentMenu}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
+                handleDeleteEquipment={handleDeleteEquipment}
                 {...props}
             />
         );
@@ -217,6 +221,25 @@ export const NetworkMapTab = ({
         });
         closeEquipmentMenu();
     }
+
+    const handleDeleteEquipment = useCallback(
+        (equipmentType, equipmentId) => {
+            deleteEquipment(
+                studyUuid,
+                currentNode?.id,
+                equipmentType,
+                equipmentId,
+                undefined
+            ).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'UnableToDeleteEquipment',
+                });
+            });
+            closeEquipmentMenu();
+        },
+        [studyUuid, currentNode?.id, snackError]
+    );
 
     function closeChoiceVoltageLevelMenu() {
         setChoiceVoltageLevelsSubstationId(null);

@@ -46,7 +46,7 @@ import {
 import LineCreationForm from './line-creation-form';
 
 /**
- * Dialog to create a load in the network
+ * Dialog to create a line in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
@@ -240,10 +240,10 @@ const LineCreationDialog = ({
                 line[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                line[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(line[CONNECTIVITY_1]?.[CONNECTION_NAME]),
                 line[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                line[CONNECTIVITY_2]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(line[CONNECTIVITY_2]?.[CONNECTION_NAME]),
                 line[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 line[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
