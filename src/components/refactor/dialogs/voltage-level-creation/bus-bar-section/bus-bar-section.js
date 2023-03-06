@@ -5,13 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Grid, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import { useStyles } from 'components/dialogs/dialogUtils';
+import { Grid } from '@mui/material';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import { useFieldArray } from 'react-hook-form';
 import { BusBarSectionCreation } from './bus-bar-section-creation';
 import {
     SWITCH_TYPE,
@@ -28,12 +23,9 @@ import {
     TO_BBS,
     VERTICAL_POSITION,
 } from 'components/refactor/utils/field-constants';
-import ErrorInput from 'components/refactor/rhf-inputs/error-inputs/error-input';
+import ExpandableInput from 'components/refactor/rhf-inputs/expandable-input';
 
 export const BusBarSection = ({ id, type, errors }) => {
-    const classes = useStyles();
-    const { fields: rows, append, remove } = useFieldArray({ name: `${id}` });
-
     const busBarSectionConnection = {
         [FROM_BBS]: '',
         [TO_BBS]: '',
@@ -48,56 +40,23 @@ export const BusBarSection = ({ id, type, errors }) => {
 
     return (
         <Grid container spacing={2}>
-            {rows.map((value, index) => (
-                <Grid key={value.id} container spacing={3} item>
-                    {type ===
-                    VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION ? (
-                        <BusBarSectionCreation id={id} index={index} />
-                    ) : (
-                        <BusBarSectionConnection id={id} index={index} />
-                    )}
-
-                    <Grid item xs={1}>
-                        <IconButton
-                            className={classes.icon}
-                            onClick={() => remove(index)}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Grid>
-                </Grid>
-            ))}
-
-            <Grid item xs={3} style={{ paddingLeft: 'inherit' }}>
-                <span>
-                    <Button
-                        fullWidth
-                        className={classes.button}
-                        startIcon={<AddIcon />}
-                        onClick={() =>
-                            append(
-                                type ===
-                                    VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION
-                                    ? busBarSectionCreation
-                                    : busBarSectionConnection
-                            )
-                        }
-                        style={{ top: '-1em' }}
-                    >
-                        <FormattedMessage
-                            id={
-                                type ===
-                                VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION
-                                    ? 'CreateBusBarSection'
-                                    : 'CreateLink'
-                            }
-                        />
-                    </Button>
-                    {errors?.[BUS_BAR_SECTIONS] && (
-                        <ErrorInput name={BUS_BAR_SECTIONS} />
-                    )}
-                </span>
-            </Grid>
+            {type === VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION ? (
+                <ExpandableInput
+                    name={BUS_BAR_SECTIONS}
+                    Field={BusBarSectionCreation}
+                    addButtonLabel={'CreateVariation'}
+                    initialValue={busBarSectionCreation}
+                    errors={errors}
+                />
+            ) : (
+                <ExpandableInput
+                    name={id}
+                    Field={BusBarSectionConnection}
+                    addButtonLabel={'CreateVariation'}
+                    initialValue={busBarSectionConnection}
+                    errors={errors}
+                />
+            )}
         </Grid>
     );
 };

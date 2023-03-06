@@ -68,7 +68,7 @@ const ModificationDialog = ({
     };
 
     const handleValidate = (data) => {
-        onValidated();
+        onValidated && onValidated();
         onSave(data);
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
         closeAndClear(data, 'validateButtonClick');

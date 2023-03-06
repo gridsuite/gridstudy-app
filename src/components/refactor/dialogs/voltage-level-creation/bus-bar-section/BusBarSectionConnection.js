@@ -7,6 +7,7 @@
 
 import { gridItem } from 'components/dialogs/dialogUtils';
 import {
+    BUS_BAR_CONNECTIONS,
     BUS_BAR_SECTIONS,
     FROM_BBS,
     ID,
@@ -43,13 +44,13 @@ export const BusBarSectionConnection = ({ id, index }) => {
     }, [watchBusBarSections]);
 
     const resetBusBarSectionConnection = useCallback(() => {
-        setValue(`${id}.${index}.${FROM_BBS}`, null);
-    }, [id, index, setValue]);
+        setValue(`${BUS_BAR_CONNECTIONS}.${index}.${FROM_BBS}`, null);
+    }, [index, setValue]);
 
     const fromBBSField = (
         <AutocompleteInput
             forcePopupIcon
-            name={`${id}.${index}.${FROM_BBS}`}
+            name={`${BUS_BAR_CONNECTIONS}.${index}.${FROM_BBS}`}
             label="BusBarSection"
             options={busBarSections}
             size={'small'}
@@ -60,7 +61,7 @@ export const BusBarSectionConnection = ({ id, index }) => {
     const toBBSField = (
         <AutocompleteInput
             forcePopupIcon
-            name={`${id}.${index}.${TO_BBS}`}
+            name={`${BUS_BAR_CONNECTIONS}.${index}.${TO_BBS}`}
             label="BusBarSection"
             options={busBarSections}
             size={'small'}
@@ -69,7 +70,7 @@ export const BusBarSectionConnection = ({ id, index }) => {
 
     const switchKindField = (
         <SelectInput
-            name={`${id}.${index}.${SWITCH_KIND}`}
+            name={`${BUS_BAR_CONNECTIONS}.${index}.${SWITCH_KIND}`}
             label={'Type'}
             options={Object.values(SWITCH_TYPE)}
             fullWidth

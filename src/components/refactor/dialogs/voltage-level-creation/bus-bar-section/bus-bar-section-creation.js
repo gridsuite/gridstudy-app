@@ -9,6 +9,7 @@ import { gridItem } from 'components/dialogs/dialogUtils';
 import IntegerInput from 'components/refactor/rhf-inputs/integer-input';
 import TextInput from 'components/refactor/rhf-inputs/text-input';
 import {
+    BUS_BAR_SECTIONS,
     HORIZONTAL_POSITION,
     ID,
     NAME,
@@ -22,15 +23,21 @@ export const numericalWithButton = {
 
 export const BusBarSectionCreation = ({ id, index }) => {
     const equipmentIdField = (
-        <TextInput name={`${id}.${index}.${ID}`} label={'BusBarSectionID'} />
+        <TextInput
+            name={`${BUS_BAR_SECTIONS}.${index}.${ID}`}
+            label={'BusBarSectionID'}
+        />
     );
     const equipmentNameField = (
-        <TextInput name={`${id}.${index}.${NAME}`} label={'Name'} />
+        <TextInput
+            name={`${BUS_BAR_SECTIONS}.${index}.${NAME}`}
+            label={'Name'}
+        />
     );
 
     const horizontalPositionField = (
         <IntegerInput
-            name={`${id}.${index}.${HORIZONTAL_POSITION}`}
+            name={`${BUS_BAR_SECTIONS}.${index}.${HORIZONTAL_POSITION}`}
             label="BusBarHorizPos"
             formProps={{
                 ...numericalWithButton,
@@ -40,7 +47,7 @@ export const BusBarSectionCreation = ({ id, index }) => {
 
     const verticalPositionField = (
         <IntegerInput
-            name={`${id}.${index}.${VERTICAL_POSITION}`}
+            name={`${BUS_BAR_SECTIONS}.${index}.${VERTICAL_POSITION}`}
             label="BusBarVertPos"
             formProps={{
                 ...numericalWithButton,

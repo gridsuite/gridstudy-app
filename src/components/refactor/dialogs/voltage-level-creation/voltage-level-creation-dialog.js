@@ -44,6 +44,7 @@ import {
  * @param currentNode The node we are currently working on
  * @param studyUuid the study we are currently working on
  * @param editData the data to edit
+ * @param onCreateVoltageLevel to create voltage level from other forms,
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
@@ -96,6 +97,7 @@ const VoltageLevelCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    onCreateVoltageLevel = createVoltageLevel,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -145,7 +147,7 @@ const VoltageLevelCreationDialog = ({
 
     const onSubmit = useCallback(
         (voltageLevel) => {
-            createVoltageLevel({
+            onCreateVoltageLevel({
                 studyUuid,
                 currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
@@ -163,7 +165,7 @@ const VoltageLevelCreationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]
     );
 
     const clear = useCallback(() => {
@@ -203,6 +205,7 @@ VoltageLevelCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    onCreateVoltageLevel: PropTypes.func,
 };
 
 export default VoltageLevelCreationDialog;
