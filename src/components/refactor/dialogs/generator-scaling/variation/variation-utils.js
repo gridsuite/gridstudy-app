@@ -32,7 +32,7 @@ export const getVariationSchema = () =>
                         [ID]: yup.string().required(),
                         [NAME]: yup.string().required(),
                         [SPECIFIC_METADATA]: yup.object().shape({
-                            [TYPE]: yup.string().required(),
+                            [TYPE]: yup.string(),
                         }),
                     })
                 )
