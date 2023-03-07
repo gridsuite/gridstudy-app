@@ -133,10 +133,11 @@ export const NetworkModificationTreePane = ({
     });
 
     useEffect(() => {
+        //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', (event) => {
             broadcastChannel.postMessage(noSelectionForCopy);
         });
-        //broadcastChannel doesn't change<
+        //broadcastChannel doesn't change
     }, [broadcastChannel]);
 
     const [activeNode, setActiveNode] = useState(null);
@@ -208,16 +209,17 @@ export const NetworkModificationTreePane = ({
                 });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                    'nodeDeleted' &&
-                true === isInitiatingCopyTab.current
+                'nodeDeleted'
             ) {
                 //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
                 if (
+                    true === isInitiatingCopyTab.current &&
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) =>
                             nodeId === selectedNodeForCopyRef.current.nodeId
                     )
                 ) {
+                    dispatch(setSelectedNodeForCopy(noSelectionForCopy));
                     snackInfo({
                         messageId: 'CopiedNodeInvalidationMessage',
                     });
@@ -243,10 +245,10 @@ export const NetworkModificationTreePane = ({
                     );
                 }
                 if (
+                    true === isInitiatingCopyTab.current &&
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) =>
-                            nodeId === selectedNodeForCopyRef.current.nodeId &&
-                            true === isInitiatingCopyTab.current
+                            nodeId === selectedNodeForCopyRef.current.nodeId
                     )
                 ) {
                     //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast

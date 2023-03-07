@@ -1524,24 +1524,6 @@ export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
     return rws;
 }
 
-export function connectUpdatedNodeNotificationsWebsocket() {
-    // The websocket API doesn't allow relative urls
-    const wsbase = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
-    const wsadress =
-        wsbase +
-        PREFIX_STUDY_NOTIFICATION_WS +
-        '/notify?updateType=nodeUpdated';
-
-    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
-    // don't log the token, it's private
-    rws.onopen = function (event) {
-        console.info('Connected Websocket ' + wsadress + ' ...');
-    };
-    return rws;
-}
-
 /**
  * Function will be called to connect with notification websocket to update the studies list
  * @returns {ReconnectingWebSocket}
