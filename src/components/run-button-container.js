@@ -232,7 +232,7 @@ export function RunButtonContainer({
                     });
                 });
         } else if (action === runnable.DYNAMIC_SIMULATION) {
-            checkDynamicSimulationParameters()
+            checkDynamicSimulationParameters(studyUuid)
                 .then((isValid) => {
                     if (!isValid) {
                         // open parameters selector to configure mandatory params

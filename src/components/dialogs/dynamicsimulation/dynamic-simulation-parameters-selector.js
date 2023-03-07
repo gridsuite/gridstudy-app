@@ -26,11 +26,11 @@ import {
     updateDynamicSimulationParameters,
 } from '../../../utils/rest-api';
 
-export const checkDynamicSimulationParameters = () => {
-    return fetchDynamicSimulationParameters().then((params) => {
+export const checkDynamicSimulationParameters = (studyUuid) => {
+    return fetchDynamicSimulationParameters(studyUuid).then((params) => {
         // check mapping configuration
-        const mappings = params.mapping.values;
-        const mapping = params.mapping.value;
+        const mappings = params.mappings.map((elem) => elem.name);
+        const mapping = params.mapping;
         const isMappingValid = mappings.includes(mapping);
         return isMappingValid;
     });
@@ -64,13 +64,13 @@ const DynamicSimulationParametersSelector = (props) => {
     });
 
     useEffect(() => {
-        fetchDynamicSimulationParameters()
+        fetchDynamicSimulationParameters(studyUuid)
             .then((params) => {
                 // save all params to state
                 setDynamicSimulationParams(params);
                 // extract mapping configuration
-                const mappings = params.mapping.values;
-                const mapping = params.mapping.value;
+                const mappings = params.mappings.map((elem) => elem.name);
+                const mapping = params.mapping;
                 setDefaultMappingName(mapping);
                 setMappingNames(mappings);
             })
@@ -80,7 +80,7 @@ const DynamicSimulationParametersSelector = (props) => {
                     headerId: 'DynamicSimulationGetMappingError',
                 });
             });
-    }, [snackError]);
+    }, [snackError, studyUuid]);
 
     const handleClose = () => {
         onClose();
@@ -92,10 +92,7 @@ const DynamicSimulationParametersSelector = (props) => {
             // clone new params with chosen mapping
             const newDynamicSimulationParams = {
                 ...dynamicSimulationParams,
-                mapping: {
-                    ...dynamicSimulationParams.mapping,
-                    value: mappingName,
-                },
+                mapping: mappingName,
             };
             updateDynamicSimulationParameters(
                 studyUuid,

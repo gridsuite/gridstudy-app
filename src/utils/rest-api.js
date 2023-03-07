@@ -1170,39 +1170,40 @@ const dsConfigStorage = (() => {
     sessionStorage.setItem(
         DS_PARAMS_KEY,
         JSON.stringify({
-            timeDelay: { startTime: 0, stopTime: 500 },
-            solver: {
-                values: [
-                    {
-                        id: '1',
-                        name: 'IDA',
-                        order: 1,
-                        initStep: 0.000001,
-                        minStep: 0.000001,
-                        maxStep: 10,
-                        absAccuracy: 0.0001,
-                        relAccuracy: 0.0001,
-                    },
-                    {
-                        id: '2',
-                        name: 'Simplified',
-                        hMin: 0.000001,
-                        hMax: 1,
-                        kReduceStep: 0.5,
-                        nEff: 10,
-                        nDeadband: 2,
-                        maxRootRestart: 3,
-                        maxNewtonTry: 10,
-                        linearSolverName: 'KLU',
-                        recalculateStep: false,
-                    },
-                ],
-                value: '1',
-            },
-            mapping: {
-                values: ['gautier2', 'thang2', 'demo', 'demo2'],
-                value: 'gautier2',
-            },
+            startTime: 0,
+            stopTime: 500,
+            mapping: 'gautier2',
+            extensions: [
+                {
+                    name: 'DynaWaltzParameters',
+                    solverId: '1',
+                    solvers: [
+                        {
+                            id: '1',
+                            type: 'IDA',
+                            order: 1,
+                            initStep: 0.000001,
+                            minStep: 0.000001,
+                            maxStep: 10,
+                            absAccuracy: 0.0001,
+                            relAccuracy: 0.0001,
+                        },
+                        {
+                            id: '2',
+                            type: 'SIM',
+                            hMin: 0.000001,
+                            hMax: 1,
+                            kReduceStep: 0.5,
+                            nEff: 10,
+                            nDeadband: 2,
+                            maxRootRestart: 3,
+                            maxNewtonTry: 10,
+                            linearSolverName: 'KLU',
+                            recalculateStep: false,
+                        },
+                    ],
+                },
+            ],
         })
     );
     return sessionStorage;
@@ -1235,15 +1236,17 @@ export function startDynamicSimulation(
     // fake load configuration if not provided
     // mapping name
     if (!mappingName) {
-        mappingName = JSON.parse(dsConfigStorage.getItem(DS_PARAMS_KEY)).mapping
-            ?.value;
+        mappingName = JSON.parse(
+            dsConfigStorage.getItem(DS_PARAMS_KEY)
+        ).mapping;
     }
     // dynamicSimulationConfiguration
     if (!dynamicSimulationConfiguration) {
-        const timeDelay = JSON.parse(
-            dsConfigStorage.getItem(DS_PARAMS_KEY)
-        ).timeDelay;
-        dynamicSimulationConfiguration = { ...timeDelay };
+        const params = JSON.parse(dsConfigStorage.getItem(DS_PARAMS_KEY));
+        dynamicSimulationConfiguration = {
+            startTime: params.startTime,
+            stopTime: params.stopTime,
+        };
     }
 
     // add request params
@@ -1386,15 +1389,25 @@ export function updateDynamicSimulationProvider(studyUuid, newProvider) {
     );
     return Promise.resolve(studyUuid);
 }
+const NONE_NODE_UUID = '00000000-0000-0000-0000-000000000000';
 
-export function fetchDynamicSimulationParameters() {
+export function fetchDynamicSimulationParameters(studyUuid) {
     // fake API
-    return Promise.resolve(JSON.parse(dsConfigStorage.getItem(DS_PARAMS_KEY)));
+    const parametersPromise = Promise.resolve(
+        JSON.parse(dsConfigStorage.getItem(DS_PARAMS_KEY))
+    );
+    const mappingsPromise = getDynamicMappings(studyUuid, NONE_NODE_UUID);
+
+    return Promise.all([parametersPromise, mappingsPromise]).then(
+        ([parameters, mappings]) => ({ ...parameters, mappings })
+    );
 }
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
     // fake API
     console.log('updateDynamicSimulationParameters', [studyUuid, newParams]);
-    dsConfigStorage.setItem(DS_PARAMS_KEY, JSON.stringify(newParams));
+    const toSaveParams = { ...newParams };
+    delete toSaveParams.mappings;
+    dsConfigStorage.setItem(DS_PARAMS_KEY, JSON.stringify(toSaveParams));
     return Promise.resolve(studyUuid);
 }
 // -- Parameters API - END

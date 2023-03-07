@@ -27,6 +27,10 @@ const TAB_VALUES = {
     mappingParamsTabValue: 'Mapping',
 };
 
+const EXTENSIONS = {
+    DYNA_WALTZ: 'DynaWaltzParameters',
+};
+
 const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
     const classes = useStyles();
 
@@ -58,21 +62,27 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
 
     const handleUpdateTimeDelay = useCallback(
         (newTimeDelay) => {
-            updateParameters({ ...parameters, timeDelay: newTimeDelay });
+            updateParameters({ ...parameters, ...newTimeDelay });
         },
         [updateParameters, parameters]
     );
 
     const handleUpdateSolver = useCallback(
-        (newSolver) => {
-            updateParameters({ ...parameters, solver: newSolver });
+        (newExtension) => {
+            const foundIndex = parameters.extensions.findIndex(
+                (elem) => elem.name === EXTENSIONS.DYNA_WALTZ
+            );
+            parameters.extensions.splice(foundIndex, 1, newExtension);
+            updateParameters({
+                ...parameters,
+            });
         },
         [updateParameters, parameters]
     );
 
     const handleUpdateMapping = useCallback(
         (newMapping) => {
-            updateParameters({ ...parameters, mapping: newMapping });
+            updateParameters({ ...parameters, ...newMapping });
         },
         [updateParameters, parameters]
     );
@@ -137,7 +147,10 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                         index={TAB_VALUES.timeDelayParamsTabValue}
                     >
                         <TimeDelayParameters
-                            timeDelay={parameters.timeDelay}
+                            timeDelay={{
+                                startTime: parameters.startTime,
+                                stopTime: parameters.stopTime,
+                            }}
                             onUpdateTimeDelay={handleUpdateTimeDelay}
                         />
                     </TabPanel>
@@ -146,7 +159,14 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                         index={TAB_VALUES.solverParamsTabValue}
                     >
                         <SolverParameters
-                            solver={parameters.solver}
+                            dynaWaltzExtension={
+                                parameters.extensions[
+                                    parameters.extensions.findIndex(
+                                        (elem) =>
+                                            elem.name === EXTENSIONS.DYNA_WALTZ
+                                    )
+                                ]
+                            }
                             onUpdateSolver={handleUpdateSolver}
                         />
                     </TabPanel>
@@ -155,7 +175,10 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                         index={TAB_VALUES.mappingParamsTabValue}
                     >
                         <MappingParameters
-                            mapping={parameters.mapping}
+                            mapping={{
+                                mapping: parameters.mapping,
+                                mappings: parameters.mappings,
+                            }}
                             onUpdateMapping={handleUpdateMapping}
                         />
                     </TabPanel>

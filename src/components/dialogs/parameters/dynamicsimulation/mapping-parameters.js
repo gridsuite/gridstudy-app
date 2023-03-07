@@ -10,7 +10,7 @@ import { makeComponentsFor, TYPES } from '../util/make-component-utils';
 import { useCallback } from 'react';
 
 const MappingParameters = ({ mapping, onUpdateMapping }) => {
-    const { values } = mapping;
+    const { mappings } = mapping;
 
     const handleUpdateMapping = useCallback(
         (newMapping) => {
@@ -20,11 +20,11 @@ const MappingParameters = ({ mapping, onUpdateMapping }) => {
     );
 
     const defParams = {
-        value: {
+        mapping: {
             type: TYPES.enum,
             description: 'DynamicSimulationMapping',
-            values: values.reduce((obj, curr) => {
-                obj[curr] = curr;
+            values: mappings.reduce((obj, curr) => {
+                obj[curr.name] = curr.name;
                 return obj;
             }, {}),
             renderValue: (value) => value,

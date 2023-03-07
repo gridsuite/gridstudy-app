@@ -13,12 +13,12 @@ import SimplifiedSolverParameters from './solver/simplified-solver-parameters';
 
 const SOLVER_TYPES = {
     IDA: 'IDA',
-    SIMPLIFIED: 'Simplified',
+    SIM: 'SIM',
 };
 
-const SolverParameters = ({ solver, onUpdateSolver }) => {
-    const { value, values } = solver;
-    console.log('solver', [solver]);
+const SolverParameters = ({ dynaWaltzExtension, onUpdateSolver }) => {
+    const { solverId, solvers } = dynaWaltzExtension;
+    console.log('dynaWaltzExtension', [dynaWaltzExtension]);
 
     const handleUpdateSolver = useCallback(
         (newSolver) => {
@@ -29,44 +29,48 @@ const SolverParameters = ({ solver, onUpdateSolver }) => {
 
     const handleUpdateSolverParameters = useCallback(
         (newSolverParameters) => {
-            const newValues = Array.from(solver.values);
-            const foundIndex = newValues.findIndex(
+            const newSolvers = Array.from(dynaWaltzExtension.solvers);
+            const foundIndex = newSolvers.findIndex(
                 (elem) => elem.id === newSolverParameters.id
             );
-            newValues.splice(foundIndex, 1, newSolverParameters);
-            onUpdateSolver({ ...solver, values: newValues });
+            newSolvers.splice(foundIndex, 1, newSolverParameters);
+            onUpdateSolver({ ...dynaWaltzExtension, solvers: newSolvers });
         },
-        [onUpdateSolver, solver]
+        [onUpdateSolver, dynaWaltzExtension]
     );
 
     const defParams = {
-        value: {
+        solverId: {
             type: TYPES.enum,
             description: 'DynamicSimulationSolverType',
-            values: values.reduce((obj, curr) => {
-                obj[curr.id] = `DynamicSimulationSolver${curr.name}`;
+            values: solvers.reduce((obj, curr) => {
+                obj[curr.id] = `DynamicSimulationSolver${curr.type}`;
                 return obj;
             }, {}),
         },
     };
 
     const selectedSolver = useMemo(() => {
-        return values.find((elem) => elem.id === value);
-    }, [values, value]);
+        return solvers.find((elem) => elem.id === solverId);
+    }, [solvers, solverId]);
 
     return (
         <Grid container>
             <Typography
                 sx={{ wordBreak: 'break-word' }}
-            >{`Solver : ${JSON.stringify(solver)}`}</Typography>
-            {makeComponentsFor(defParams, solver, handleUpdateSolver)}
-            {selectedSolver?.name === SOLVER_TYPES.IDA && (
+            >{`Solver : ${JSON.stringify(dynaWaltzExtension)}`}</Typography>
+            {makeComponentsFor(
+                defParams,
+                dynaWaltzExtension,
+                handleUpdateSolver
+            )}
+            {selectedSolver?.type === SOLVER_TYPES.IDA && (
                 <IdaSolverParameters
                     idaSolver={selectedSolver}
                     onUpdateIdaSolver={handleUpdateSolverParameters}
                 />
             )}
-            {selectedSolver?.name === SOLVER_TYPES.SIMPLIFIED && (
+            {selectedSolver?.type === SOLVER_TYPES.SIM && (
                 <SimplifiedSolverParameters
                     simplifiedSolver={selectedSolver}
                     onUpdateSimplifiedSolver={handleUpdateSolverParameters}

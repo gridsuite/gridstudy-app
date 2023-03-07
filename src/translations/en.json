@@ -165,7 +165,7 @@
     "DynamicSimulationMapping": "Mapping",
     "DynamicSimulationSolverType": "Solver type",
     "DynamicSimulationSolverIDA": "IDA Solver",
-    "DynamicSimulationSolverSimplified": "Simplified Solver",
+    "DynamicSimulationSolverSIM": "Simplified Solver",
     "DynamicSimulationIDASolverOrder": "Order (1 or 2)",
     "DynamicSimulationIDASolverInitStep": "Initial step",
     "DynamicSimulationIDASolverMinStep": "Minimum step",
