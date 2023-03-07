@@ -17,6 +17,7 @@ const TabPanel = (props) => {
             hidden={value !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
+            style={{ flexGrow: 1 }}
             {...other}
         >
             {value === index && <Box p={1}>{children}</Box>}

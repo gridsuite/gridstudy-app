@@ -19,11 +19,9 @@ import {
     PARAM_LINE_PARALLEL_PATH,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../utils/config-params';
-import { useParameterState } from './parameters';
+import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
+import { useStyles } from './parameters';
 import { LabelledSilder, LineSeparator } from '../dialogUtils';
-import { CloseButton } from './common/close-button';
-import { SwitchWithLabel } from './common/switch-with-label';
-import { useStyles } from './parameters-styles';
 
 export const MapParameters = ({ hideParameters }) => {
     const classes = useStyles();
@@ -74,103 +72,110 @@ export const MapParameters = ({ hideParameters }) => {
     }, [lineFlowColorModeLocal, displayOverloadTableLocal]);
 
     return (
-        <Grid container spacing={1} className={classes.grid}>
-            <SwitchWithLabel
-                value={lineFullPathLocal}
-                label="lineFullPath"
-                callback={() => {
-                    handleChangeLineFullPath(!lineFullPathLocal);
-                }}
-            />
-            <LineSeparator />
-            <SwitchWithLabel
-                value={lineParallelPathLocal}
-                label="lineParallelPath"
-                callback={() => {
-                    handleChangeLineParallelPath(!lineParallelPathLocal);
-                }}
-            />
-            <LineSeparator />
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id="LineFlowMode" />
-                    </Box>
-                </Typography>
-            </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
-                <Select
-                    size="small"
-                    labelId="line-flow-mode-select-label"
-                    value={lineFlowModeLocal}
-                    onChange={(event) => {
-                        handleChangeLineFlowMode(event.target.value);
+        <>
+            <Grid
+                container
+                spacing={1}
+                className={classes.scrollableGrid}
+                key={'mapParameters'}
+            >
+                <SwitchWithLabel
+                    value={lineFullPathLocal}
+                    label="lineFullPath"
+                    callback={() => {
+                        handleChangeLineFullPath(!lineFullPathLocal);
                     }}
-                >
-                    <MenuItem value={LineFlowMode.STATIC_ARROWS}>
-                        <FormattedMessage id="StaticArrows" />
-                    </MenuItem>
-                    <MenuItem value={LineFlowMode.ANIMATED_ARROWS}>
-                        <FormattedMessage id="AnimatedArrows" />
-                    </MenuItem>
-                    <MenuItem value={LineFlowMode.FEEDERS}>
-                        <FormattedMessage id="Feeders" />
-                    </MenuItem>
-                </Select>
-            </Grid>
-            <LineSeparator />
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id="LineFlowColorMode" />
-                    </Box>
-                </Typography>
-            </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
-                <Select
-                    size="small"
-                    labelId="line-flow-color-mode-select-label"
-                    value={lineFlowColorModeLocal}
-                    onChange={(event) => {
-                        handleChangeLineFlowColorMode(event.target.value);
+                />
+                <LineSeparator />
+                <SwitchWithLabel
+                    value={lineParallelPathLocal}
+                    label="lineParallelPath"
+                    callback={() => {
+                        handleChangeLineParallelPath(!lineParallelPathLocal);
                     }}
-                >
-                    <MenuItem value={LineFlowColorMode.NOMINAL_VOLTAGE}>
-                        <FormattedMessage id="NominalVoltage" />
-                    </MenuItem>
-                    <MenuItem value={LineFlowColorMode.OVERLOADS}>
-                        <FormattedMessage id="Overloads" />
-                    </MenuItem>
-                </Select>
+                />
+                <LineSeparator />
+                <Grid item xs={8}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id="LineFlowMode" />
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={4} className={classes.controlItem}>
+                    <Select
+                        size="small"
+                        labelId="line-flow-mode-select-label"
+                        value={lineFlowModeLocal}
+                        onChange={(event) => {
+                            handleChangeLineFlowMode(event.target.value);
+                        }}
+                    >
+                        <MenuItem value={LineFlowMode.STATIC_ARROWS}>
+                            <FormattedMessage id="StaticArrows" />
+                        </MenuItem>
+                        <MenuItem value={LineFlowMode.ANIMATED_ARROWS}>
+                            <FormattedMessage id="AnimatedArrows" />
+                        </MenuItem>
+                        <MenuItem value={LineFlowMode.FEEDERS}>
+                            <FormattedMessage id="Feeders" />
+                        </MenuItem>
+                    </Select>
+                </Grid>
+                <LineSeparator />
+                <Grid item xs={8}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id="LineFlowColorMode" />
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={4} className={classes.controlItem}>
+                    <Select
+                        size="small"
+                        labelId="line-flow-color-mode-select-label"
+                        value={lineFlowColorModeLocal}
+                        onChange={(event) => {
+                            handleChangeLineFlowColorMode(event.target.value);
+                        }}
+                    >
+                        <MenuItem value={LineFlowColorMode.NOMINAL_VOLTAGE}>
+                            <FormattedMessage id="NominalVoltage" />
+                        </MenuItem>
+                        <MenuItem value={LineFlowColorMode.OVERLOADS}>
+                            <FormattedMessage id="Overloads" />
+                        </MenuItem>
+                    </Select>
+                </Grid>
+                <LineSeparator />
+                <LabelledSilder
+                    value={Number(lineFlowAlertThresholdLocal)}
+                    label="AlertThresholdLabel"
+                    disabled={disabledFlowAlertThreshold}
+                    onCommitCallback={(event, value) => {
+                        handleChangeLineFlowAlertThreshold(value);
+                    }}
+                    marks={alertThresholdMarks}
+                />
+                <LineSeparator />
+                <SwitchWithLabel
+                    value={displayOverloadTableLocal}
+                    label="displayOverloadTable"
+                    callback={() => {
+                        handleChangeDisplayOverloadTable(
+                            !displayOverloadTableLocal
+                        );
+                    }}
+                />
+                <LineSeparator />
+                <SwitchWithLabel
+                    value={mapManualRefreshLocal}
+                    label="MapManualRefresh"
+                    callback={() => {
+                        handleChangeMapManualRefresh(!mapManualRefreshLocal);
+                    }}
+                />
             </Grid>
-            <LineSeparator />
-            <LabelledSilder
-                value={Number(lineFlowAlertThresholdLocal)}
-                label="AlertThresholdLabel"
-                disabled={disabledFlowAlertThreshold}
-                onCommitCallback={(event, value) => {
-                    handleChangeLineFlowAlertThreshold(value);
-                }}
-                marks={alertThresholdMarks}
-            />
-            <LineSeparator />
-            <SwitchWithLabel
-                value={displayOverloadTableLocal}
-                label="displayOverloadTable"
-                callback={() => {
-                    handleChangeDisplayOverloadTable(
-                        !displayOverloadTableLocal
-                    );
-                }}
-            />
-            <LineSeparator />
-            <SwitchWithLabel
-                value={mapManualRefreshLocal}
-                label="MapManualRefresh"
-                callback={() => {
-                    handleChangeMapManualRefresh(!mapManualRefreshLocal);
-                }}
-            />
             <Grid
                 container
                 className={classes.controlItem + ' ' + classes.marginTopButton}
@@ -181,6 +186,6 @@ export const MapParameters = ({ hideParameters }) => {
                     className={classes.button}
                 />
             </Grid>
-        </Grid>
+        </>
     );
 };

@@ -242,7 +242,7 @@
 
     "descLfVoltageInitMode": "Voltage initialisation mode: ",
     "descLfTransformerVoltageControlOn": "Activate on-load tap changers: ",
-    "descLfNoGeneratorReactiveLimits": "Take the reactive limits of generators into account: ",
+    "descLfUseReactiveLimits": "Take the reactive limits of generators into account: ",
     "descLfPhaseShifterRegulationOn": "Enable automatic power flow control with phase shifting transformers: ",
     "descLfTwtSplitShuntAdmittance": "Split shunt admittance of two winding transformers: ",
     "descLfShuntCompensatorVoltageControlOn": "Enable voltage control by shunt compensators: ",

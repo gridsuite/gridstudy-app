@@ -9,15 +9,17 @@ import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 import React, { useCallback, useState } from 'react';
-import TabPanel from '../common/tab-panel';
 import TimeDelayParameters from './time-delay-parameters';
 import SolverParameters from './solver-parameters';
 import MappingParameters from './mapping-parameters';
 import { LineSeparator } from '../../dialogUtils';
-import { CloseButton } from '../common/close-button';
-import { DropDown } from '../common/drop-down';
-import { LabelledButton } from '../common/labelled-button';
-import { useStyles } from '../parameters-styles';
+import {
+    CloseButton,
+    DropDown,
+    LabelledButton,
+    useStyles,
+} from '../parameters';
+import TabPanel from '../common/tab-panel';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',
@@ -80,8 +82,12 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
     }, []);
 
     return (
-        <Grid container direction={'column'} className={classes.grid}>
-            <Grid container key="provider">
+        <>
+            <Grid
+                container
+                key="dsParameters"
+                className={classes.scrollableGrid}
+            >
                 <DropDown
                     value={provider}
                     label="Provider"
@@ -154,25 +160,22 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                         />
                     </TabPanel>
                 </Grid>
-
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={handleResetParametersAndProvider}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
             </Grid>
-        </Grid>
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={handleResetParametersAndProvider}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
+        </>
     );
 };
 

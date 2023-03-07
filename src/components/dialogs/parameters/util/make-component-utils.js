@@ -7,12 +7,10 @@
 
 import { Grid } from '@mui/material';
 import { LabelledSilder, LineSeparator } from '../../dialogUtils';
-import { SwitchWithLabel } from '../common/switch-with-label';
-import { DropDown } from '../common/drop-down';
-import { CountrySelector } from '../common/country-selector';
 import IntegerInput from '../common/integer-input';
 import DoubleInput from '../common/double-input';
 import StringInput from '../common/string-input';
+import { DropDown, SwitchWithLabel } from '../parameters';
 
 // --- define render makers --- //
 export const makeRenderSwitchWithLabel =
@@ -55,18 +53,7 @@ export const makeRenderLabelledSlider =
             />
         );
     };
-export const makeRenderCountrySelector =
-    () => (defParam, key, params, setter, value) => {
-        return (
-            <CountrySelector
-                value={value || []}
-                label={defParam.description}
-                callback={(newValues) => {
-                    setter({ ...params, [key]: [...newValues] });
-                }}
-            />
-        );
-    };
+
 export const makeRenderIntegerField =
     () => (defParam, key, params, setter, value) => {
         return (
@@ -108,7 +95,6 @@ export const TYPES = {
     enum: 'Enum',
     bool: 'Bool',
     slider: 'Slider',
-    countries: 'Countries',
     integer: 'Integer',
     double: 'Double',
     string: 'String',
@@ -119,7 +105,6 @@ const DEFAULT_RENDER = {
     [TYPES.bool]: makeRenderSwitchWithLabel(),
     [TYPES.enum]: makeRenderDropDown(),
     [TYPES.slider]: makeRenderLabelledSlider(),
-    [TYPES.countries]: makeRenderCountrySelector(),
     [TYPES.integer]: makeRenderIntegerField(),
     [TYPES.double]: makeRenderDoubleField(),
     [TYPES.string]: makeRenderStringField(),

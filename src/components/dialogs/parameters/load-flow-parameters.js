@@ -5,17 +5,143 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Button, Grid } from '@mui/material';
+import {
+    Grid,
+    Box,
+    Typography,
+    Autocomplete,
+    TextField,
+    Chip,
+    Button,
+} from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
+import { CloseButton, LabelledButton, useStyles } from './parameters';
+import { DropDown, SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { CloseButton } from './common/close-button';
-import { DropDown } from './common/drop-down';
-import { makeComponentsFor, TYPES } from './util/make-component-utils';
-import { LabelledButton } from './common/labelled-button';
-import { useStyles } from './parameters-styles';
+
+const CountrySelector = ({ value, label, callback }) => {
+    const classes = useStyles();
+    const countriesList = useMemo(() => {
+        let countriesList;
+        try {
+            countriesList = require('localized-countries')(
+                require('localized-countries/data/' +
+                    navigator.language.substr(0, 2))
+            );
+        } catch (error) {
+            // fallback to english if no localised list found
+            countriesList = require('localized-countries')(
+                require('localized-countries/data/en')
+            );
+        }
+        return countriesList;
+    }, []);
+
+    return (
+        <>
+            <Grid item xs={6}>
+                <Typography component="span" variant="body1">
+                    <Box fontWeight="fontWeightBold" m={1}>
+                        <FormattedMessage id={label} />
+                    </Box>
+                </Typography>
+            </Grid>
+            <Grid item container xs={6} className={classes.controlItem}>
+                <Autocomplete
+                    size="small"
+                    value={value}
+                    multiple={true}
+                    onChange={(event, newValues) => callback(newValues)}
+                    options={Object.keys(countriesList.object())}
+                    getOptionLabel={(code) => countriesList.get(code)}
+                    renderInput={(props) => (
+                        <TextField
+                            label={
+                                <FormattedMessage
+                                    id={
+                                        value?.length === 0
+                                            ? 'descLfAllCountries'
+                                            : 'descLfCountries'
+                                    }
+                                />
+                            }
+                            className={classes.minWidthMedium}
+                            {...props}
+                        />
+                    )}
+                    renderTags={(val, getTagsProps) =>
+                        val.map((code, index) => (
+                            <Chip
+                                id={'chip_' + code}
+                                size={'small'}
+                                label={countriesList.get(code)}
+                                {...getTagsProps({ index })}
+                            />
+                        ))
+                    }
+                />
+            </Grid>
+        </>
+    );
+};
+
+function makeComponentsFor(defParams, params, setter) {
+    return Object.keys(defParams).map((key) => (
+        <Grid container spacing={1} paddingTop={1} key={key}>
+            {makeComponentFor(defParams[key], key, params, setter)}
+            <LineSeparator />
+        </Grid>
+    ));
+}
+
+function getValue(param, key) {
+    if (!param || param[key] === undefined) return null;
+    return param[key];
+}
+function makeComponentFor(defParam, key, lfParams, setter) {
+    const value = getValue(lfParams, key);
+    if (defParam.type === TYPES.bool) {
+        return (
+            <SwitchWithLabel
+                value={value}
+                label={defParam.description}
+                callback={(ev) =>
+                    setter({ ...lfParams, [key]: ev.target.checked })
+                }
+            />
+        );
+    } else if (defParam.type === TYPES.enum) {
+        return (
+            <DropDown
+                value={value}
+                label={defParam.description}
+                values={defParam.values}
+                callback={(ev) =>
+                    setter({ ...lfParams, [key]: ev.target.value })
+                }
+            />
+        );
+    } else if (defParam.type === TYPES.countries) {
+        return (
+            <CountrySelector
+                value={value || []}
+                label={defParam.description}
+                callback={(newValues) => {
+                    setter({ ...lfParams, [key]: [...newValues] });
+                }}
+            />
+        );
+    }
+}
+
+const TYPES = {
+    enum: 'Enum',
+    bool: 'Bool',
+    countries: 'Countries',
+};
 
 const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     const defParams = {
@@ -99,9 +225,9 @@ const AdvancedLoadFlowParameters = ({
                 DC_VALUES: 'descLfDcValues',
             },
         },
-        noGeneratorReactiveLimits: {
+        useReactiveLimits: {
             type: TYPES.bool,
-            description: 'descLfNoGeneratorReactiveLimits',
+            description: 'descLfUseReactiveLimits',
         },
         twtSplitShuntAdmittance: {
             type: TYPES.bool,
@@ -173,8 +299,12 @@ export const LoadFlowParameters = ({
     }, [resetParameters, resetProvider]);
 
     return (
-        <Grid container className={classes.grid}>
-            <Grid container key="provider">
+        <>
+            <Grid
+                container
+                className={classes.scrollableGrid}
+                key="lfParameters"
+            >
                 <DropDown
                     value={provider}
                     label="Provider"
@@ -195,24 +325,21 @@ export const LoadFlowParameters = ({
                     showAdvancedLfParams={showAdvancedLfParams}
                     setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />
-
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetLfParametersAndLfProvider}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
             </Grid>
-        </Grid>
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetLfParametersAndLfProvider}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
+        </>
     );
 };

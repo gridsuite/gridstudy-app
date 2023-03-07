@@ -11,14 +11,16 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_FLUX_CONVENTION,
 } from '../../../utils/config-params';
-import { useParameterState } from './parameters';
+import {
+    CloseButton,
+    LabelledButton,
+    SwitchWithLabel,
+    useParameterState,
+    useStyles,
+} from './parameters';
 import { fetchDefaultParametersValues } from '../../../utils/rest-api';
 import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
-import { CloseButton } from './common/close-button';
-import { SwitchWithLabel } from './common/switch-with-label';
-import { LabelledButton } from './common/labelled-button';
-import { useStyles } from './parameters-styles';
 
 export const FluxConventions = {
     IIDM: 'iidm',
@@ -50,8 +52,13 @@ export const NetworkParameters = ({ hideParameters }) => {
     };
 
     return (
-        <Grid container spacing={1} className={classes.grid}>
-            <Grid item container spacing={1}>
+        <>
+            <Grid
+                container
+                spacing={1}
+                key={'networkParameters'}
+                className={classes.scrollableGrid}
+            >
                 <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
@@ -93,24 +100,22 @@ export const NetworkParameters = ({ hideParameters }) => {
                         </Alert>
                     )}
                 </Grid>
-                <LineSeparator />
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetNetworkParameters}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
             </Grid>
-        </Grid>
+            <LineSeparator />
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetNetworkParameters}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
+        </>
     );
 };

@@ -7,11 +7,8 @@
 
 import React, { useCallback } from 'react';
 import { Grid } from '@mui/material';
+import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { CloseButton } from './common/close-button';
-import { DropDown } from './common/drop-down';
-import { LabelledButton } from './common/labelled-button';
-import { useStyles } from './parameters-styles';
 
 export const SensitivityAnalysisParameters = ({
     hideParameters,
@@ -29,36 +26,34 @@ export const SensitivityAnalysisParameters = ({
     ]);
 
     return (
-        <Grid container className={classes.grid}>
-            <Grid container key="sensiAnalysisProvider">
+        <>
+            <Grid
+                container
+                key="sensiAnalysisProvider"
+                className={classes.scrollableGrid}
+            >
                 <DropDown
                     value={provider}
                     label="Provider"
                     values={providers}
                     callback={updateProviderCallback}
                 />
-
-                <Grid container paddingTop={1}>
-                    <LineSeparator />
-                </Grid>
-
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetProvider}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
             </Grid>
-        </Grid>
+            <LineSeparator />
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetProvider}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
+        </>
     );
 };
