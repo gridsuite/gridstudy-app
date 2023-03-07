@@ -8,7 +8,7 @@
 import { Box, Grid, Switch, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
-import { useStyles } from '../parameters-styles';
+import { useStyles } from '../parameters';
 
 export const SwitchWithLabel = ({ value, label, callback }) => {
     const classes = useStyles();

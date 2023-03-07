@@ -8,7 +8,7 @@
 import { Box, Grid, MenuItem, Select, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
-import { useStyles } from '../parameters-styles';
+import { useStyles } from '../parameters';
 
 export const DropDown = ({ value, label, values, callback, renderValue }) => {
     const classes = useStyles();

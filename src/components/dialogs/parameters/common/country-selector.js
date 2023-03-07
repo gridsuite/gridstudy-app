@@ -15,7 +15,7 @@ import {
     Typography,
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { useStyles } from '../parameters-styles';
+import { useStyles } from '../parameters';
 
 export const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();

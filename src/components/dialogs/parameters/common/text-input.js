@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useStyles } from '../parameters-styles';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     Box,
@@ -17,6 +16,7 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
+import { useStyles } from '../parameters';
 
 const TextInput = ({ value, label, callback, validator }) => {
     const classes = useStyles();
