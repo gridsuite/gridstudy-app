@@ -815,13 +815,11 @@ export const reducer = createReducer(initialState, {
         );
     },
     [STOP_DIAGRAM_BLINK]: (state) => {
-        let diagramStates = state.diagramStates;
-        diagramStates.forEach((diagram) => {
+        state.diagramStates.forEach((diagram) => {
             if (diagram.needsToBlink) {
                 diagram.needsToBlink = undefined;
             }
         });
-        state.diagramStates = diagramStates;
     },
     [RESET_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
         state.networkAreaDiagramDepth = 0;

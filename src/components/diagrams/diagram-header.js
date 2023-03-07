@@ -18,7 +18,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { stopDiagramBlink } from '../../redux/actions';
 
-const BLINK_LENGTH_MS = 3000;
+const BLINK_LENGTH_MS = 1800;
 
 const useStyles = makeStyles((theme) => ({
     header: {
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         borderBottomColor:
             theme.palette.mode === 'light'
                 ? theme.palette.action.selected
-                : 'rgba(0,0,0,0)',
+                : 'transparent',
     },
     actionIcon: {
         padding: 0,
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         animation: '$blink ' + BLINK_LENGTH_MS + 'ms',
     },
     '@keyframes blink': {
-        '0%, 10%': {
+        '0%, 25%': {
             backgroundColor:
                 theme.palette.mode === 'light'
                     ? theme.palette.action.disabled
