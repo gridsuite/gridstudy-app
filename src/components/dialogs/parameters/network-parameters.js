@@ -52,8 +52,13 @@ export const NetworkParameters = ({ hideParameters }) => {
     };
 
     return (
-        <Grid container spacing={1} className={classes.grid}>
-            <Grid item container spacing={1}>
+        <>
+            <Grid
+                container
+                spacing={1}
+                key={'networkParameters'}
+                className={classes.scrollableGrid}
+            >
                 <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
@@ -95,24 +100,22 @@ export const NetworkParameters = ({ hideParameters }) => {
                         </Alert>
                     )}
                 </Grid>
-                <LineSeparator />
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetNetworkParameters}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
             </Grid>
-        </Grid>
+            <LineSeparator />
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetNetworkParameters}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
+        </>
     );
 };
