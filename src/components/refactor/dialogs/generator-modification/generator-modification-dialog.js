@@ -57,7 +57,7 @@ import {
 } from '../generator-creation/reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../regulating-terminal/regulating-terminal-form-utils';
 const emptyFormData = {
-    [EQUIPMENT_ID]: null,
+    [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [ENERGY_SOURCE]: null,
     [MAXIMUM_ACTIVE_POWER]: null,
@@ -83,7 +83,7 @@ const GeneratorModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [clearOnlyId, setClearOnlyId] = useState(false);
+    const [selectedGeneratorInfos, setSelectedGeneratorInfos] = useState();
     const schema = yup
         .object()
         .shape(
@@ -91,8 +91,28 @@ const GeneratorModificationDialog = ({
                 [EQUIPMENT_ID]: yup.string().required(),
                 [EQUIPMENT_NAME]: yup.string(),
                 [ENERGY_SOURCE]: yup.string().nullable(),
-                [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-                [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+                [MAXIMUM_ACTIVE_POWER]: yup
+                    .number()
+                    .nullable()
+                    .when([], {
+                        is: () =>
+                            selectedGeneratorInfos === undefined &&
+                            editData === undefined
+                                ? true
+                                : false,
+                        then: (schema) => schema.required(),
+                    }),
+                [MINIMUM_ACTIVE_POWER]: yup
+                    .number()
+                    .nullable()
+                    .when([], {
+                        is: () =>
+                            selectedGeneratorInfos === undefined &&
+                            editData === undefined
+                                ? true
+                                : false,
+                        then: (schema) => schema.required(),
+                    }),
                 [RATED_NOMINAL_POWER]: yup.number().nullable(),
                 [TRANSIENT_REACTANCE]: yup.number().nullable(),
                 [TRANSFORMER_REACTANCE]: yup.number().nullable(),
@@ -110,7 +130,7 @@ const GeneratorModificationDialog = ({
                     .min(0, 'RealPercentage')
                     .max(1, 'RealPercentage'),
                 ...getSetPointsSchema(true),
-                ...getReactiveLimitsSchema(editData ? false : true),
+                ...getReactiveLimitsSchema(),
             },
             [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
         )
@@ -127,7 +147,6 @@ const GeneratorModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            setClearOnlyId(true);
             reset({
                 [EQUIPMENT_ID]: editData?.equipmentId,
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
@@ -175,38 +194,38 @@ const GeneratorModificationDialog = ({
     }, [editData, reset]);
 
     const calculateCurvePointsToStore = useCallback(() => {
-        const rows = getValues([REACTIVE_CAPABILITY_CURVE_TABLE]);
-        const displayedPreviousValues = editData?.reactiveCapabilityCurvePoints;
+        const rows = getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
+        const displayedPreviousValues =
+            selectedGeneratorInfos?.reactiveCapabilityCurvePoints;
+
         if (
             displayedPreviousValues &&
             rows?.length === displayedPreviousValues.length &&
-            rows[0].filter(
-                (point, index) =>
-                    point[index].p !== '' ||
-                    point[index].qminP !== '' ||
-                    point[index].qmaxP !== ''
+            rows.filter(
+                (point) =>
+                    point.p !== '' || point.qminP !== '' || point.qmaxP !== ''
             ).length === 0
         ) {
             return null;
         } else {
             const pointsToStore = [];
-            rows[0].forEach((point, index) => {
+            rows.forEach((point, index) => {
                 if (point) {
                     let pointToStore = {
-                        p: point.p,
+                        p: point?.p,
                         oldP:
                             displayedPreviousValues !== undefined
-                                ? displayedPreviousValues[index]?.oldP
+                                ? displayedPreviousValues[index]?.p
                                 : null,
-                        qminP: point.qminP,
+                        qminP: point?.qminP,
                         oldQminP:
                             displayedPreviousValues !== undefined
-                                ? displayedPreviousValues[index]?.oldQminP
+                                ? displayedPreviousValues[index]?.qminP
                                 : null,
-                        qmaxP: point.qmaxP,
+                        qmaxP: point?.qmaxP,
                         oldQmaxP:
                             displayedPreviousValues !== undefined
-                                ? displayedPreviousValues[index]?.oldQmaxP
+                                ? displayedPreviousValues[index]?.qmaxP
                                 : null,
                     };
 
@@ -215,7 +234,7 @@ const GeneratorModificationDialog = ({
             });
             return pointsToStore;
         }
-    }, [editData?.reactiveCapabilityCurvePoints, getValues]);
+    }, [getValues, selectedGeneratorInfos]);
 
     const onSubmit = useCallback(
         (generator) => {
@@ -319,8 +338,9 @@ const GeneratorModificationDialog = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     defaultIdValue={defaultIdValue}
-                    clearOnlyId={clearOnlyId}
                     editData={editData}
+                    onClear={clear}
+                    setSelectedGeneratorInfos={setSelectedGeneratorInfos}
                 />
             </ModificationDialog>
         </FormProvider>

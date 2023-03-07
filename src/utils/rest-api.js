@@ -1937,6 +1937,7 @@ export function modifyGenerator(
         minimumReactivePower: toModificationOperation(minimumReactivePower),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
     };
+
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
         headers: {

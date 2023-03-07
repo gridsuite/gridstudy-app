@@ -11,6 +11,9 @@ import {
 } from '../../../../../util/validation-functions';
 import yup from '../../../../utils/yup-config';
 import {
+    OLD_P,
+    OLD_Q_MAX_P,
+    OLD_Q_MIN_P,
     P,
     Q_MAX_P,
     Q_MIN_P,
@@ -18,16 +21,25 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../../utils/field-constants';
 
-const getRowSchema = (isNeedToValidate) =>
+const getRowSchema = () =>
     yup.object().shape({
+        [OLD_Q_MAX_P]: yup.number().nullable(),
+        [OLD_Q_MIN_P]: yup.number().nullable(),
+        [OLD_P]: yup.number(),
         [Q_MAX_P]: yup
             .number()
             .nullable()
-            .when({ is: isNeedToValidate, then: (schema) => schema.required }),
+            .when([OLD_Q_MAX_P], {
+                is: (value) => checkValueField(value),
+                then: (schema) => schema.required(),
+            }),
         [Q_MIN_P]: yup
             .number()
             .nullable()
-            .when({ is: isNeedToValidate, then: (schema) => schema.required() })
+            .when([OLD_Q_MIN_P], {
+                is: (value) => checkValueField(value),
+                then: (schema) => schema.required(),
+            })
             .max(
                 yup.ref(Q_MAX_P),
                 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
@@ -35,13 +47,19 @@ const getRowSchema = (isNeedToValidate) =>
         [P]: yup
             .number()
             .nullable()
-            .when({ is: isNeedToValidate, then: (schema) => schema.required }),
+            .when([OLD_P], {
+                is: (value) => checkValueField(value),
+                then: (schema) => schema.required(),
+            }),
     });
 
 const getRowEmptyFormData = () => ({
     [P]: null,
     [Q_MAX_P]: null,
     [Q_MIN_P]: null,
+    [OLD_P]: null,
+    [OLD_Q_MAX_P]: null,
+    [OLD_Q_MIN_P]: null,
 });
 
 export const getReactiveCapabilityCurveEmptyFormData = (
@@ -49,6 +67,10 @@ export const getReactiveCapabilityCurveEmptyFormData = (
 ) => ({
     [id]: [getRowEmptyFormData(), getRowEmptyFormData()],
 });
+
+function checkValueField(value) {
+    return value == null || value === undefined || isNaN(value);
+}
 
 function getNotNullNumbersFromArray(values) {
     return values
@@ -75,7 +97,6 @@ function checkAllValuesBetweenMinMax(values) {
 }
 
 export const getReactiveCapabilityCurveValidationSchema = (
-    isNeedToValidate,
     id = REACTIVE_CAPABILITY_CURVE_TABLE
 ) => ({
     [id]: yup
@@ -85,7 +106,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
             is: 'CURVE',
             then: (schema) =>
                 schema
-                    .of(getRowSchema(isNeedToValidate))
+                    .of(getRowSchema())
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
                     .test(
                         'checkAllValuesAreUnique',

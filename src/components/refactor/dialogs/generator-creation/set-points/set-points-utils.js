@@ -32,8 +32,14 @@ const getFrequencyRegulationEmptyFormData = (isGeneratorModification) => ({
     [DROOP]: null,
 });
 
-const getFrequencyRegulationSchema = () => ({
-    [FREQUENCY_REGULATION]: yup.bool().nullable().required(),
+const getFrequencyRegulationSchema = (isGeneratorModification) => ({
+    [FREQUENCY_REGULATION]: yup
+        .bool()
+        .nullable()
+        .when([], {
+            is: () => !isGeneratorModification,
+            then: (schema) => schema.required(),
+        }),
     [DROOP]: yup
         .number()
         .nullable()
@@ -43,21 +49,23 @@ const getFrequencyRegulationSchema = () => ({
         }),
 });
 
-const getVoltageRegulationEmptyFormData = (voltageRegulationType) => ({
+const getVoltageRegulationEmptyFormData = (isGeneratorModification) => ({
     [VOLTAGE_SET_POINT]: null,
     [Q_PERCENT]: null,
-    [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
+    [VOLTAGE_REGULATION_TYPE]: isGeneratorModification
+        ? null
+        : REGULATION_TYPES.LOCAL.id,
     [VOLTAGE_LEVEL]: null,
     [EQUIPMENT]: null,
     ...getRegulatingTerminalEmptyFormData(),
 });
 
-const getVoltageRegulationSchema = () => ({
+const getVoltageRegulationSchema = (isGeneratorModification) => ({
     [VOLTAGE_REGULATION_TYPE]: yup
         .string()
         .nullable()
         .when([VOLTAGE_REGULATION], {
-            is: true,
+            is: () => !isGeneratorModification,
             then: (schema) => schema.required(),
         }),
     [VOLTAGE_SET_POINT]: yup
@@ -108,18 +116,22 @@ export const getSetPointsEmptyFormData = (isGeneratorModification) => ({
     [VOLTAGE_REGULATION]: isGeneratorModification ? null : false,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
-    ...getVoltageRegulationEmptyFormData(
-        isGeneratorModification ? null : REGULATION_TYPES.LOCAL.id
-    ),
+    ...getVoltageRegulationEmptyFormData(isGeneratorModification),
     ...getFrequencyRegulationEmptyFormData(isGeneratorModification),
 });
 
 export const getSetPointsSchema = (isGeneratorModification) => ({
-    [VOLTAGE_REGULATION]: yup.bool().nullable().required(),
+    [VOLTAGE_REGULATION]: yup
+        .bool()
+        .nullable()
+        .when([], {
+            is: () => !isGeneratorModification,
+            then: (schema) => schema.required(),
+        }),
     ...getActivePowerSetPointSchema(isGeneratorModification),
     ...getReactivePowerSetPointSchema(isGeneratorModification),
-    ...getVoltageRegulationSchema(),
-    ...getFrequencyRegulationSchema(),
+    ...getVoltageRegulationSchema(isGeneratorModification),
+    ...getFrequencyRegulationSchema(isGeneratorModification),
 });
 
 const getReactivePowerSetPointSchema = (isGeneratorModification) => ({

@@ -115,7 +115,7 @@ const schema = yup
                 .min(0, 'RealPercentage')
                 .max(1, 'RealPercentage'),
             ...getSetPointsSchema(false),
-            ...getReactiveLimitsSchema(true),
+            ...getReactiveLimitsSchema(),
             ...getConnectivityFormValidationSchema(),
         },
         [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]

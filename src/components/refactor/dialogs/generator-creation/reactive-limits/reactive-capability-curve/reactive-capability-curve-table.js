@@ -25,6 +25,34 @@ export const ReactiveCapabilityCurveTable = ({
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();
 
+    const handleInsertRow = () => {
+        if (reactiveCapabilityCurvePoints) {
+            reactiveCapabilityCurvePoints?.splice(rows.length - 1, 0, {
+                p: undefined,
+                qminP: undefined,
+                qmaxP: undefined,
+                oldP: undefined,
+                oldQminP: undefined,
+                oldQmaxP: undefined,
+            });
+        }
+        insert(rows.length - 1, {
+            p: undefined,
+            qminP: undefined,
+            qmaxP: undefined,
+            oldP: undefined,
+            oldQminP: undefined,
+            oldQmaxP: undefined,
+        });
+    };
+
+    const handleRemoveRow = (index) => {
+        if (reactiveCapabilityCurvePoints) {
+            reactiveCapabilityCurvePoints?.splice(index, 1);
+        }
+        remove(index);
+    };
+
     return (
         <Grid item container spacing={2}>
             <Grid item xs={12}>
@@ -59,7 +87,7 @@ export const ReactiveCapabilityCurveTable = ({
                             <IconButton
                                 className={classes.icon}
                                 key={value.id}
-                                onClick={() => remove(index)}
+                                onClick={() => handleRemoveRow(index)}
                                 disabled={
                                     disabled ||
                                     index === 0 ||
@@ -74,7 +102,7 @@ export const ReactiveCapabilityCurveTable = ({
                                 <IconButton
                                     className={classes.icon}
                                     key={value.id}
-                                    onClick={() => insert(rows.length - 1, {})}
+                                    onClick={() => handleInsertRow()}
                                     disabled={disabled}
                                     style={{ top: '-1em' }}
                                 >

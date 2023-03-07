@@ -23,7 +23,7 @@ export const getReactiveLimitsEmptyFormData = () => ({
     ...getReactiveCapabilityCurveEmptyFormData(),
 });
 
-export const getReactiveLimitsSchema = (isNeedToValidate) => ({
+export const getReactiveLimitsSchema = () => ({
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
     [MINIMUM_REACTIVE_POWER]: yup
         .number()
@@ -39,5 +39,5 @@ export const getReactiveLimitsSchema = (isNeedToValidate) => ({
             is: true,
             then: (schema) => schema.required(),
         }),
-    ...getReactiveCapabilityCurveValidationSchema(isNeedToValidate),
+    ...getReactiveCapabilityCurveValidationSchema(),
 });

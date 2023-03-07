@@ -65,8 +65,9 @@ const VoltageRegulation = ({
         }
     }, [generatorInfos, setValue]);
 
-    const isDistantRegulation =
-        voltageRegulationType?.id === REGULATION_TYPES.DISTANT.id;
+    const isDistantRegulation = generatorInfos?.regulatingTerminalVlId
+        ? voltageRegulationType?.id === REGULATION_TYPES.DISTANT.id
+        : voltageRegulationType === REGULATION_TYPES.DISTANT.id;
 
     const voltageRegulationTypeField = (
         <SelectInput
