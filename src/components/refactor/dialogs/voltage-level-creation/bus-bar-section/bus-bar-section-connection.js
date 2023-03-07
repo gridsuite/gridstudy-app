@@ -17,11 +17,10 @@ import {
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 import { SWITCH_TYPE } from 'components/network/constants';
 import SelectInput from 'components/refactor/rhf-inputs/select-input';
-import { useWatch, useFormContext } from 'react-hook-form';
-import { useCallback, useMemo } from 'react';
+import { useWatch } from 'react-hook-form';
+import { useMemo } from 'react';
 
-export const BusBarSectionConnection = ({ id, index }) => {
-    const { setValue } = useFormContext();
+export const BusBarSectionConnection = ({ index }) => {
     const watchBusBarSections = useWatch({
         name: `${BUS_BAR_SECTIONS}`,
     });
@@ -29,8 +28,7 @@ export const BusBarSectionConnection = ({ id, index }) => {
     const updateBusBarSections = (watchBusBarSections) => {
         if (watchBusBarSections) {
             const filteredBusBarSections = watchBusBarSections.filter(
-                (busBarSection) =>
-                    busBarSection[ID] !== undefined && busBarSection[ID] !== ''
+                (busBarSection) => busBarSection[ID] !== ''
             );
             return filteredBusBarSections.map(
                 (busBarSection) => busBarSection[ID]
@@ -43,23 +41,20 @@ export const BusBarSectionConnection = ({ id, index }) => {
         return updateBusBarSections(watchBusBarSections);
     }, [watchBusBarSections]);
 
-    const resetBusBarSectionConnection = useCallback(() => {
-        setValue(`${BUS_BAR_CONNECTIONS}.${index}.${FROM_BBS}`, null);
-    }, [index, setValue]);
-
     const fromBBSField = (
         <AutocompleteInput
+            allowNewValue
             forcePopupIcon
             name={`${BUS_BAR_CONNECTIONS}.${index}.${FROM_BBS}`}
             label="BusBarSection"
             options={busBarSections}
             size={'small'}
-            onChangeCallback={resetBusBarSectionConnection}
         />
     );
 
     const toBBSField = (
         <AutocompleteInput
+            allowNewValue
             forcePopupIcon
             name={`${BUS_BAR_CONNECTIONS}.${index}.${TO_BBS}`}
             label="BusBarSection"
@@ -75,6 +70,7 @@ export const BusBarSectionConnection = ({ id, index }) => {
             options={Object.values(SWITCH_TYPE)}
             fullWidth
             size={'small'}
+            sx={{ fontStyle: 'italic' }}
         />
     );
 

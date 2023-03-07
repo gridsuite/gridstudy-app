@@ -35,9 +35,10 @@ import ModificationDialog from 'components/refactor/dialogs/commons/modification
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import {
     controleBusBarSectionLink,
-    controleUniqueHorizontalVertical,
-    controleUniqueId,
+    controleUniqueHorizontalVertical as uniqueHorizontalVerticalControl,
+    controleUniqueId as controlUniqueId,
 } from './voltage-level-creation-utils';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 /**
  * Dialog to create a load in the network
@@ -52,7 +53,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [NOMINAL_VOLTAGE]: '',
-    [SUBSTATION_ID]: '',
+    [SUBSTATION_ID]: null,
     [BUS_BAR_SECTIONS]: [],
     [BUS_BAR_CONNECTIONS]: [],
 };
@@ -61,24 +62,26 @@ const schema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
     [EQUIPMENT_NAME]: yup.string(),
     [NOMINAL_VOLTAGE]: yup.string().required(),
-    [SUBSTATION_ID]: yup.string().required(),
+    [SUBSTATION_ID]: yup.string().nullable().required(),
     [BUS_BAR_SECTIONS]: yup
         .array()
         .of(
             yup.object().shape({
                 [ID]: yup.string().required(),
                 [NAME]: yup.string(),
-                [HORIZONTAL_POSITION]: yup.number().min(0).required(),
-                [VERTICAL_POSITION]: yup.number().min(0).required(),
+                [HORIZONTAL_POSITION]: yup
+                    .number()
+                    .min(0)
+                    .nullable()
+                    .required(),
+                [VERTICAL_POSITION]: yup.number().min(0).nullable().required(),
             })
         )
         .min(1, 'EmptyList/bbs')
         .test('unique-positions', (values) =>
-            controleUniqueHorizontalVertical(values, 'SameHorizAndVertPos')
+            uniqueHorizontalVerticalControl(values, 'SameHorizAndVertPos')
         )
-        .test('unique-ids', (values) =>
-            controleUniqueId(values, 'DuplicateId')
-        ),
+        .test('unique-ids', (values) => controlUniqueId(values, 'DuplicateId')),
     [BUS_BAR_CONNECTIONS]: yup
         .array()
         .of(
@@ -109,23 +112,20 @@ const VoltageLevelCreationDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const {
-        reset,
-        formState: { errors },
-    } = methods;
+    const { reset } = methods;
 
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
             reset({
                 [EQUIPMENT_ID]:
-                    (voltageLevel?.equipmentId ?? voltageLevel?.id) +
+                    (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) +
                     (fromCopy ? '(1)' : ''),
                 [EQUIPMENT_NAME]:
-                    voltageLevel?.equipmentName ?? voltageLevel?.name,
-                [NOMINAL_VOLTAGE]: voltageLevel.nominalVoltage,
-                [SUBSTATION_ID]: voltageLevel.substationId,
-                [BUS_BAR_SECTIONS]: voltageLevel?.busbarSections ?? [],
-                [BUS_BAR_CONNECTIONS]: voltageLevel?.busbarConnections ?? [],
+                    voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
+                [NOMINAL_VOLTAGE]: voltageLevel[NOMINAL_VOLTAGE],
+                [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
+                [BUS_BAR_SECTIONS]: voltageLevel[BUS_BAR_SECTIONS],
+                [BUS_BAR_CONNECTIONS]: voltageLevel[BUS_BAR_CONNECTIONS],
             });
         },
         [reset]
@@ -187,12 +187,11 @@ const VoltageLevelCreationDialog = ({
                 <VoltageLevelCreationForm
                     currentNode={currentNode}
                     studyUuid={studyUuid}
-                    errors={errors}
                 />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={'VOLTAGE_LEVEL'}
+                    equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

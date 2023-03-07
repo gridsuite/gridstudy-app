@@ -15,6 +15,7 @@ import { FormattedMessage } from 'react-intl';
 import React from 'react';
 import { useStyles } from '../../dialogs/dialogUtils';
 import ErrorInput from './error-inputs/error-input';
+import MidFormError from './error-inputs/mid-form-error';
 
 // This component is used to display Array of objects
 const ExpandableInput = ({
@@ -22,7 +23,6 @@ const ExpandableInput = ({
     Field, // Used to display each object of an array
     addButtonLabel,
     initialValue, // Initial value to display when adding a new entry to array
-    //errors,
 }) => {
     const classes = useStyles();
     const {
@@ -36,7 +36,7 @@ const ExpandableInput = ({
     return (
         <Grid item container spacing={2}>
             <Grid item xs={12}>
-                <ErrorInput name={name} />
+                <ErrorInput name={name} InputField={MidFormError} />
             </Grid>
             {values.map((value, idx) => (
                 <Grid key={value.id} container spacing={2} item>

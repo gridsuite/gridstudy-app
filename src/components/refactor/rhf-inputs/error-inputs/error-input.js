@@ -8,9 +8,8 @@
 import { useController } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
-import MidFormError from './mid-form-error';
 
-const ErrorInput = ({ name }) => {
+const ErrorInput = ({ name, InputField }) => {
     const {
         fieldState: { error },
     } = useController({
@@ -35,7 +34,7 @@ const ErrorInput = ({ name }) => {
 
     return (
         error?.message && (
-            <MidFormError
+            <InputField
                 message={<FormattedMessage {...errorProps(error?.message)} />}
             />
         )

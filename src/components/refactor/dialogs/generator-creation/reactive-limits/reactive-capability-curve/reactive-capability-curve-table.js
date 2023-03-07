@@ -15,6 +15,7 @@ import { useStyles } from '../../../../../dialogs/dialogUtils';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import ErrorInput from '../../../../rhf-inputs/error-inputs/error-input';
+import MidFormError from 'components/refactor/rhf-inputs/error-inputs/mid-form-error';
 
 export const ReactiveCapabilityCurveTable = ({
     id,
@@ -27,7 +28,7 @@ export const ReactiveCapabilityCurveTable = ({
     return (
         <Grid item container spacing={2}>
             <Grid item xs={12}>
-                <ErrorInput name={id} />
+                <ErrorInput name={id} InputField={MidFormError} />
             </Grid>
 
             {tableHeadersIds.map((header) => (

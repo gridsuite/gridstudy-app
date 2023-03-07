@@ -12,7 +12,7 @@ import {
     SWITCH_TYPE,
     VOLTAGE_LEVEL_COMPONENTS,
 } from 'components/network/constants';
-import { BusBarSectionConnection } from './BusBarSectionConnection';
+import { BusBarSectionConnection } from './bus-bar-section-connection';
 import {
     BUS_BAR_SECTIONS,
     FROM_BBS,
@@ -25,10 +25,10 @@ import {
 } from 'components/refactor/utils/field-constants';
 import ExpandableInput from 'components/refactor/rhf-inputs/expandable-input';
 
-export const BusBarSection = ({ id, type, errors }) => {
+export const BusBarSection = ({ id, type }) => {
     const busBarSectionConnection = {
-        [FROM_BBS]: '',
-        [TO_BBS]: '',
+        [FROM_BBS]: null,
+        [TO_BBS]: null,
         [SWITCH_KIND]: SWITCH_TYPE[0].id,
     };
     const busBarSectionCreation = {
@@ -44,17 +44,15 @@ export const BusBarSection = ({ id, type, errors }) => {
                 <ExpandableInput
                     name={BUS_BAR_SECTIONS}
                     Field={BusBarSectionCreation}
-                    addButtonLabel={'CreateVariation'}
+                    addButtonLabel={'CreateBusBarSection'}
                     initialValue={busBarSectionCreation}
-                    errors={errors}
                 />
             ) : (
                 <ExpandableInput
                     name={id}
                     Field={BusBarSectionConnection}
-                    addButtonLabel={'CreateVariation'}
+                    addButtonLabel={'CreateLink'}
                     initialValue={busBarSectionConnection}
-                    errors={errors}
                 />
             )}
         </Grid>

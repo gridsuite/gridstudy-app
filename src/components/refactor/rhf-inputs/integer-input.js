@@ -8,7 +8,6 @@
 import React from 'react';
 import TextInput from './text-input';
 import PropTypes from 'prop-types';
-import { toPositiveIntValue } from 'components/dialogs/dialogUtils';
 
 const IntegerInput = ({ isInputPositiveOnly = false, ...props }) => {
     const inputTransform = (value) => {
@@ -17,16 +16,16 @@ const IntegerInput = ({ isInputPositiveOnly = false, ...props }) => {
     };
 
     const toIntOrNullValue = (value) => {
-        if (value === '-') return value;
-        if (value === '0') return 0;
-        return parseInt(value) || null;
+        const parsedValue = parseInt(value);
+        if (isNaN(parsedValue)) {
+            return 0;
+        }
+        return parsedValue;
     };
 
     return (
         <TextInput
-            outputTransform={
-                isInputPositiveOnly ? toPositiveIntValue : toIntOrNullValue
-            }
+            outputTransform={toIntOrNullValue}
             inputTransform={inputTransform}
             {...props}
         />

@@ -14,7 +14,7 @@ import {
     NOMINAL_VOLTAGE,
     SUBSTATION_ID,
 } from 'components/refactor/utils/field-constants';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from 'utils/rest-api';
 import {
     filledTextField,
@@ -23,12 +23,12 @@ import {
     VoltageAdornment,
 } from 'components/dialogs/dialogUtils';
 import FloatInput from 'components/refactor/rhf-inputs/float-input';
-import SelectInput from 'components/refactor/rhf-inputs/select-input';
 import TextInput from 'components/refactor/rhf-inputs/text-input';
 import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
 import { BusBarSection } from './bus-bar-section/bus-bar-section';
+import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid, errors }) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const [substations, setSubstations] = useState([]);
 
@@ -41,13 +41,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, errors }) => {
                 'SUBSTATION',
                 true
             ).then((values) => {
-                setSubstations(
-                    values
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((value) => {
-                            return { id: value };
-                        })
-                );
+                setSubstations(values.sort((a, b) => a.localeCompare(b)));
             });
     }, [studyUuid, currentNodeUuid]);
 
@@ -75,15 +69,35 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, errors }) => {
             formProps={filledTextField}
         />
     );
+    const getObjectId = useCallback((object) => {
+        if (typeof object === 'string') {
+            return object;
+        }
 
+        return object.id;
+    }, []);
     const substationField = (
-        <SelectInput
+        /*  <SelectInput
             name={SUBSTATION_ID}
             label="SUBSTATION"
             options={substations}
             fullWidth
             size={'small'}
             formProps={filledTextField}
+        /> */
+        <AutocompleteInput
+            allowNewValue
+            forcePopupIcon
+            //hack to work with freesolo autocomplete
+            //setting null programatically when freesolo is enable wont empty the field
+            name={SUBSTATION_ID}
+            label="SUBSTATION"
+            options={substations}
+            getOptionLabel={getObjectId}
+            inputTransform={(value) => (value === null ? '' : value)}
+            outputTransform={(value) => value}
+            formProps={filledTextField}
+            size={'small'}
         />
     );
 
@@ -100,7 +114,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid, errors }) => {
                 <BusBarSection
                     id={BUS_BAR_SECTIONS}
                     type={VOLTAGE_LEVEL_COMPONENTS.BUS_BAR_SECTION_CREATION}
-                    errors={errors}
                 />
                 <GridSection title={'Connectivity'} />
                 <BusBarSection
