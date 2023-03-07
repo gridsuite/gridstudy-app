@@ -30,6 +30,7 @@ import {
     SHUNT_SUSCEPTANCE_2,
 } from 'components/refactor/utils/field-constants';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 const LineCharacteristicsPane = ({
     id = CHARACTERISTICS,
@@ -125,13 +126,20 @@ const LineCharacteristicsPane = ({
     return (
         <>
             <Grid container spacing={2}>
-                <Grid item container spacing={2}>
-                    {gridItem(lineIdField, 4)}
-                    {gridItem(lineNameField, 4)}
+                {gridItem(lineIdField, 4)}
+                {gridItem(lineNameField, 4)}
+            </Grid>
+            <Grid container spacing={2}>
+                {/* better than having GridSection x 2 */}
+                <Grid item xs={12}>
+                    <h3>
+                        <FormattedMessage id={'Connectivity'} />
+                    </h3>
+                    <h4>
+                        <FormattedMessage id={'Side1'} />
+                    </h4>
                 </Grid>
             </Grid>
-            <GridSection title="Connectivity" />
-            <GridSection title="Side1" heading="4" />
             <Grid container spacing={2}>
                 {gridItem(connectivity1Field, 12)}
             </Grid>
@@ -141,24 +149,18 @@ const LineCharacteristicsPane = ({
             </Grid>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                <Grid item container spacing={2}>
-                    {gridItem(seriesResistanceField, 4)}
-                    {gridItem(seriesReactanceField, 4)}
-                </Grid>
+                {gridItem(seriesResistanceField, 4)}
+                {gridItem(seriesReactanceField, 4)}
             </Grid>
             <GridSection title="Side1" heading="4" />
             <Grid container spacing={2}>
-                <Grid item container spacing={2}>
-                    {gridItem(shuntConductance1Field, 4)}
-                    {gridItem(shuntSusceptance1Field, 4)}
-                </Grid>
+                {gridItem(shuntConductance1Field, 4)}
+                {gridItem(shuntSusceptance1Field, 4)}
             </Grid>
             <GridSection title="Side2" heading="4" />
             <Grid container spacing={2}>
-                <Grid item container spacing={2}>
-                    {gridItem(shuntConductance2Field, 4)}
-                    {gridItem(shuntSusceptance2Field, 4)}
-                </Grid>
+                {gridItem(shuntConductance2Field, 4)}
+                {gridItem(shuntSusceptance2Field, 4)}
             </Grid>
         </>
     );
