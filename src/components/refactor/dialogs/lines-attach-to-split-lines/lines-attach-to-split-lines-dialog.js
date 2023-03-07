@@ -41,11 +41,11 @@ const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
     [LINE_TO_ATTACH_TO_2_ID]: null,
     [ATTACHED_LINE_ID]: null,
-    [REPLACING_LINE_1_ID]: null,
+    [REPLACING_LINE_1_ID]: '',
     [REPLACING_LINE_1_NAME]: '',
-    [REPLACING_LINE_2_ID]: null,
+    [REPLACING_LINE_2_ID]: '',
     [REPLACING_LINE_2_NAME]: '',
-    ...getConnectivityEmptyFormData(),
+    ...getConnectivityEmptyFormData(CONNECTIVITY, false),
 };
 
 const schema = yup
@@ -54,12 +54,11 @@ const schema = yup
         [LINE_TO_ATTACH_TO_1_ID]: yup.string().nullable().required(),
         [LINE_TO_ATTACH_TO_2_ID]: yup.string().nullable().required(),
         [ATTACHED_LINE_ID]: yup.string().nullable().required(),
-        [REPLACING_LINE_1_ID]: yup.string().nullable().required(),
+        [REPLACING_LINE_1_ID]: yup.string().required(),
         [REPLACING_LINE_1_NAME]: yup.string(),
-        [REPLACING_LINE_2_ID]: yup.string().nullable().required(),
+        [REPLACING_LINE_2_ID]: yup.string().required(),
         [REPLACING_LINE_2_NAME]: yup.string(),
-        [ATTACHED_LINE_ID]: yup.string().nullable().required(),
-        ...getConnectivityFormValidationSchema(),
+        ...getConnectivityFormValidationSchema(CONNECTIVITY, false),
     })
     .required();
 
