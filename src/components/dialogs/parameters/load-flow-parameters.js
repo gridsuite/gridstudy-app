@@ -225,9 +225,9 @@ const AdvancedLoadFlowParameters = ({
                 DC_VALUES: 'descLfDcValues',
             },
         },
-        noGeneratorReactiveLimits: {
+        useReactiveLimits: {
             type: TYPES.bool,
-            description: 'descLfNoGeneratorReactiveLimits',
+            description: 'descLfUseReactiveLimits',
         },
         twtSplitShuntAdmittance: {
             type: TYPES.bool,
@@ -299,8 +299,12 @@ export const LoadFlowParameters = ({
     }, [resetParameters, resetProvider]);
 
     return (
-        <Grid container className={classes.grid}>
-            <Grid container key="provider">
+        <>
+            <Grid
+                container
+                className={classes.scrollableGrid}
+                key="lfParameters"
+            >
                 <DropDown
                     value={provider}
                     label="Provider"
@@ -321,24 +325,21 @@ export const LoadFlowParameters = ({
                     showAdvancedLfParams={showAdvancedLfParams}
                     setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />
-
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetLfParametersAndLfProvider}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
             </Grid>
-        </Grid>
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetLfParametersAndLfProvider}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
+        </>
     );
 };
