@@ -64,7 +64,6 @@ import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
 import DeleteAttachingLineDialog from '../../refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
 import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
-//import GeneratorModificationDialog from 'components/dialogs/generator-modification-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -230,16 +229,6 @@ const NetworkModificationNodeEditor = () => {
         return {
             ...p,
             voltageLevelOptionsPromise: voltageLevelOptionsPromise,
-        };
-    }
-
-    function withVLsIdsAndTopology(p) {
-        const voltageLevelsIdsAndTopologyPromise =
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id);
-        return {
-            ...p,
-            voltageLevelsIdsAndTopologyPromise:
-                voltageLevelsIdsAndTopologyPromise,
         };
     }
 
