@@ -26,36 +26,35 @@ export const SecurityAnalysisParameters = ({
     ]);
 
     return (
-        <Grid container className={classes.grid}>
-            <Grid container key="secuAnalysisProvider">
+        <>
+            <Grid
+                container
+                key="secuAnalysisProvider"
+                className={classes.scrollableGrid}
+                spacing={1}
+            >
                 <DropDown
                     value={provider}
                     label="Provider"
                     values={providers}
                     callback={updateProviderCallback}
                 />
-
-                <Grid container paddingTop={1}>
-                    <LineSeparator />
-                </Grid>
-
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetProvider}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
             </Grid>
-        </Grid>
+            <LineSeparator />
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetProvider}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
+        </>
     );
 };
