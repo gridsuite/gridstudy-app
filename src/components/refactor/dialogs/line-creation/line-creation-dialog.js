@@ -65,14 +65,6 @@ const emptyFormData = {
     ...getLimitsEmptyFormData(),
 };
 
-const schema = yup
-    .object()
-    .shape({
-        ...getLineValidationSchema(),
-        ...getLimitsValidationSchema(),
-    })
-    .required();
-
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
     LIMITS_TAB: 1,
@@ -102,6 +94,20 @@ const LineCreationDialog = ({
 
     const equipmentPath = 'lines';
 
+    const [tabIndex, setTabIndex] = useState(
+        LineCreationDialogTab.CHARACTERISTICS_TAB
+    );
+    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    const schema = yup
+        .object()
+        .shape({
+            ...getLineValidationSchema(CHARACTERISTICS, displayConnectivity),
+            ...getLimitsValidationSchema(),
+        })
+        .required();
+
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
@@ -109,15 +115,10 @@ const LineCreationDialog = ({
 
     const { reset } = methods;
 
-    const [tabIndex, setTabIndex] = useState(
-        LineCreationDialogTab.CHARACTERISTICS_TAB
-    );
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-
-  const fromSearchCopyToFormValues = (line) => {
-            console.log('DBR fromSearchCopyToFormValues', line);
-            reset({
+    const fromSearchCopyToFormValues = (line) => {
+        console.log('DBR fromSearchCopyToFormValues', line);
+        reset(
+            {
                 ...getLineFormData({
                     equipmentId: line.id + '(1)',
                     equipmentName: line.name ?? '',
@@ -130,31 +131,31 @@ const LineCreationDialog = ({
                     permanentLimit1: line.permanentLimit1,
                     permanentLimit2: line.permanentLimit2,
                     ...(displayConnectivity &&
-                      getConnectivityFormData(
-                        {
-                            voltageLevelId: line.voltageLevelId1,
-                            busbarSectionId: line.busOrBusbarSectionId1,
-                            connectionDirection: line.connectionDirection1,
-                            connectionName: line.connectionName1,
-                            connectionPosition: line.connectionPosition1,
-                        },
-                        CONNECTIVITY_1
-                    )),
-                ...(displayConnectivity &&
-                    getConnectivityFormData(
-                        {
-                            voltageLevelId: line.voltageLevelId2,
-                            busbarSectionId: line.busOrBusbarSectionId2,
-                            connectionDirection: line.connectionDirection2,
-                            connectionName: line.connectionName2,
-                            connectionPosition: line.connectionPosition2,
-                        },
-                        CONNECTIVITY_2
-                    )),
+                        getConnectivityFormData(
+                            {
+                                voltageLevelId: line.voltageLevelId1,
+                                busbarSectionId: line.busOrBusbarSectionId1,
+                                connectionDirection: line.connectionDirection1,
+                                connectionName: line.connectionName1,
+                                connectionPosition: line.connectionPosition1,
+                            },
+                            CONNECTIVITY_1
+                        )),
+                    ...(displayConnectivity &&
+                        getConnectivityFormData(
+                            {
+                                voltageLevelId: line.voltageLevelId2,
+                                busbarSectionId: line.busOrBusbarSectionId2,
+                                connectionDirection: line.connectionDirection2,
+                                connectionName: line.connectionName2,
+                                connectionPosition: line.connectionPosition2,
+                            },
+                            CONNECTIVITY_2
+                        )),
                 }),
                 ...getLimitsFormData({
-                  permanentLimit1: line.permanentLimit1,
-                  permanentLimit2: line.permanentLimit2,
+                    permanentLimit1: line.permanentLimit1,
+                    permanentLimit2: line.permanentLimit2,
                 }),
             },
             { keepDefaultValues: true }

@@ -24,7 +24,7 @@ import {
     getConnectivityFormValidationSchema,
 } from '../../connectivity/connectivity-form-utils';
 
-const lineValidationSchema = (id) => ({
+const lineValidationSchema = (id, displayConnectivity) => ({
     [id]: yup.object().shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
@@ -34,13 +34,15 @@ const lineValidationSchema = (id) => ({
         [SHUNT_CONDUCTANCE_1]: yup.number().nullable(),
         [SHUNT_SUSCEPTANCE_2]: yup.number().nullable(),
         [SHUNT_CONDUCTANCE_2]: yup.number().nullable(),
-        ...getConnectivityFormValidationSchema(CONNECTIVITY_1),
-        ...getConnectivityFormValidationSchema(CONNECTIVITY_2),
+        ...(displayConnectivity &&
+            getConnectivityFormValidationSchema(CONNECTIVITY_1)),
+        ...(displayConnectivity &&
+            getConnectivityFormValidationSchema(CONNECTIVITY_2)),
     }),
 });
 
-export const getLineValidationSchema = (id = CHARACTERISTICS) => {
-    return lineValidationSchema(id);
+export const getLineValidationSchema = (id, displayConnectivity) => {
+    return lineValidationSchema(id, displayConnectivity);
 };
 
 const lineEmptyFormData = (id) => ({
