@@ -14,7 +14,6 @@ import {
     buildNode,
     copyTreeNode,
     cutTreeNode,
-    connectNotificationsWebsocket,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -93,8 +92,7 @@ export const NetworkModificationTreePane = ({
     const { snackError, snackInfo } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
-    const [notifListenedStudyId, setNotifListenedStudyId] = useState(null);
-    const [ws, setWs] = useState(null);
+    const isInitiatingCopyTab = useRef(false);
 
     const dispatchSelectedNodeForCopy = useCallback(
         (sourceStudyId, nodeId, copyType) => {
@@ -114,58 +112,32 @@ export const NetworkModificationTreePane = ({
         broadcast.onmessage = (event) => {
             console.info('message received from broadcast channel');
             console.info(event.data);
-            setNotifListenedStudyId(event.data.sourceStudyId);
-            dispatchSelectedNodeForCopy(
-                event.data.sourceStudyId,
-                event.data.nodeId,
-                CopyType.COPY
-            );
-            //if the websocket is not initialised we initialise it
-            if (ws === null) {
-                const initWs = connectNotificationsWebsocket(
-                    event.data.sourceStudyId
+            isInitiatingCopyTab.current = false;
+            if (
+                JSON.stringify(noSelectionForCopy) ===
+                JSON.stringify(event.data)
+            ) {
+                dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+                snackInfo({
+                    messageId: 'CopiedNodeInvalidationMessage',
+                });
+            } else {
+                dispatchSelectedNodeForCopy(
+                    event.data.sourceStudyId,
+                    event.data.nodeId,
+                    CopyType.COPY
                 );
-                initWs.onmessage = function (eventWs) {
-                    let eventData = JSON.parse(eventWs.data);
-                    if (
-                        (eventData.headers &&
-                            eventData.headers.updateType === 'nodeUpdated') ||
-                        eventData.headers.updateType === 'nodeDeleted'
-                    ) {
-                        if (
-                            eventData.headers.nodes.some(
-                                (nodeId) =>
-                                    nodeId ===
-                                    selectedNodeForCopyRef.current.nodeId
-                            )
-                        ) {
-                            dispatch(
-                                setSelectedNodeForCopy(noSelectionForCopy)
-                            );
-                            snackInfo({
-                                messageId: 'CopiedNodeInvalidationMessage',
-                            });
-                        }
-                    }
-                };
-                initWs.onerror = function (eventWs) {
-                    console.error(
-                        'Unexpected Notification WebSocket error',
-                        eventWs
-                    );
-                };
-                setWs(initWs);
-            }
-            //if it's already initialised we just update the studyId we listen to
-            if (ws !== null) {
-                const filters = {
-                    studyUuid: notifListenedStudyId,
-                };
-                ws.send(JSON.stringify(filters));
             }
         };
         return broadcast;
     });
+
+    useEffect(() => {
+        window.addEventListener('beforeunload', (event) => {
+            broadcastChannel.postMessage(noSelectionForCopy);
+        });
+        //broadcastChannel doesn't change<
+    }, [broadcastChannel]);
 
     const [activeNode, setActiveNode] = useState(null);
 
@@ -236,8 +208,21 @@ export const NetworkModificationTreePane = ({
                 });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'nodeDeleted'
+                    'nodeDeleted' &&
+                true === isInitiatingCopyTab.current
             ) {
+                //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
+                if (
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) =>
+                            nodeId === selectedNodeForCopyRef.current.nodeId
+                    )
+                ) {
+                    snackInfo({
+                        messageId: 'CopiedNodeInvalidationMessage',
+                    });
+                    broadcastChannel.postMessage(noSelectionForCopy);
+                }
                 dispatch(
                     networkModificationTreeNodesRemoved(
                         studyUpdatedForce.eventData.headers['nodes']
@@ -257,21 +242,30 @@ export const NetworkModificationTreePane = ({
                         removeNotificationByNode([currentNodeRef.current?.id])
                     );
                 }
-                //needed to invalidate the copied node in the study that copied it in the first place
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) =>
-                            nodeId === selectedNodeForCopyRef.current.nodeId
+                            nodeId === selectedNodeForCopyRef.current.nodeId &&
+                            true === isInitiatingCopyTab.current
                     )
                 ) {
+                    //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
                     dispatch(setSelectedNodeForCopy(noSelectionForCopy));
                     snackInfo({
                         messageId: 'CopiedNodeInvalidationMessage',
                     });
+                    broadcastChannel.postMessage(noSelectionForCopy);
                 }
             }
         }
-    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch, snackInfo]);
+    }, [
+        studyUuid,
+        studyUpdatedForce,
+        updateNodes,
+        snackInfo,
+        dispatch,
+        broadcastChannel,
+    ]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
@@ -306,8 +300,8 @@ export const NetworkModificationTreePane = ({
                 studyUuid +
                 ' selected for copy'
         );
+        isInitiatingCopyTab.current = true;
         dispatchSelectedNodeForCopy(studyUuid, nodeId, CopyType.COPY);
-        setNotifListenedStudyId(studyUuid);
         broadcastChannel.postMessage({
             sourceStudyId: studyUuid,
             nodeId: nodeId,
@@ -363,11 +357,8 @@ export const NetworkModificationTreePane = ({
                     headerId: 'NodeDeleteError',
                 });
             });
-            if (element.id === selectedNodeForCopyRef.current.nodeId) {
-                dispatch(setSelectedNodeForCopy(noSelectionForCopy));
-            }
         },
-        [studyUuid, snackError, dispatch]
+        [studyUuid, snackError]
     );
 
     const handleBuildNode = useCallback(
