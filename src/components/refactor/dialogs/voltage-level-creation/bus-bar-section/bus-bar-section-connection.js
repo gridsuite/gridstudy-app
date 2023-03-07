@@ -66,7 +66,7 @@ export const BusBarSectionConnection = ({ index }) => {
     const switchKindField = (
         <SelectInput
             name={`${BUS_BAR_CONNECTIONS}.${index}.${SWITCH_KIND}`}
-            label={'Type'}
+            label="SUBSTATION"
             options={Object.values(SWITCH_TYPE)}
             fullWidth
             size={'small'}

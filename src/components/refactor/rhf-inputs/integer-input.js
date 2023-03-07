@@ -9,18 +9,16 @@ import React from 'react';
 import TextInput from './text-input';
 import PropTypes from 'prop-types';
 
-const IntegerInput = ({ isInputPositiveOnly = false, ...props }) => {
+const IntegerInput = ({ ...props }) => {
     const inputTransform = (value) => {
         if ('-' === value) return value;
         return value === null || isNaN(value) ? '' : value.toString();
     };
 
     const toIntOrNullValue = (value) => {
-        const parsedValue = parseInt(value);
-        if (isNaN(parsedValue)) {
-            return 0;
-        }
-        return parsedValue;
+        if (value === '-') return value;
+        if (value === '0') return 0;
+        return parseInt(value) || null;
     };
 
     return (

@@ -27,6 +27,7 @@ import TextInput from 'components/refactor/rhf-inputs/text-input';
 import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
 import { BusBarSection } from './bus-bar-section/bus-bar-section';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
+import SelectInput from 'components/refactor/rhf-inputs/select-input';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -77,14 +78,6 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         return object.id;
     }, []);
     const substationField = (
-        /*  <SelectInput
-            name={SUBSTATION_ID}
-            label="SUBSTATION"
-            options={substations}
-            fullWidth
-            size={'small'}
-            formProps={filledTextField}
-        /> */
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
