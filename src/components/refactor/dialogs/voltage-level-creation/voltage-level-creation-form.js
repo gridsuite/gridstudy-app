@@ -27,7 +27,6 @@ import TextInput from 'components/refactor/rhf-inputs/text-input';
 import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
 import { BusBarSection } from './bus-bar-section/bus-bar-section';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
-import SelectInput from 'components/refactor/rhf-inputs/select-input';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

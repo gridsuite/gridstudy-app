@@ -71,6 +71,7 @@ export const BusBarSectionConnection = ({ index }) => {
             fullWidth
             size={'small'}
             sx={{ fontStyle: 'italic' }}
+            disableClearable={true}
         />
     );
 

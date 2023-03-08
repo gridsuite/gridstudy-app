@@ -53,6 +53,7 @@ export const BusBarSectionCreation = ({ index }) => {
             formProps={{
                 ...numericalWithButton,
             }}
+            acceptValue={(value) => Number.isInteger(parseInt(value))}
         />
     );
 
