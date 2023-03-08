@@ -117,6 +117,55 @@ export const getConnectivityBusBarSectionData = ({
     };
 };
 
+export const getConnectivityPropertiesData = ({
+    voltageLevelId,
+    voltageLevelName,
+    voltageLevelSubstationId,
+    voltageLevelNominalVoltage,
+    voltageLevelTopologyKind,
+    busbarSectionId,
+    busbarSectionName,
+}) => {
+    return {
+        [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
+            voltageLevelId,
+            voltageLevelName,
+            voltageLevelSubstationId,
+            voltageLevelNominalVoltage,
+            voltageLevelTopologyKind,
+        }),
+        [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData({
+            busbarSectionId,
+            busbarSectionName,
+        }),
+    };
+};
+
+export const getConnectivityData = (
+    {
+        voltageLevelId,
+        voltageLevelName,
+        voltageLevelSubstationId,
+        voltageLevelNominalVoltage,
+        voltageLevelTopologyKind,
+        busbarSectionId,
+        busbarSectionName,
+    },
+    id = CONNECTIVITY
+) => {
+    return {
+        [id]: getConnectivityPropertiesData({
+            voltageLevelId,
+            voltageLevelName,
+            voltageLevelSubstationId,
+            voltageLevelNominalVoltage,
+            voltageLevelTopologyKind,
+            busbarSectionId,
+            busbarSectionName,
+        }),
+    };
+};
+
 export const getConnectivityFormData = (
     {
         voltageLevelId,
@@ -134,14 +183,12 @@ export const getConnectivityFormData = (
 ) => {
     return {
         [id]: {
-            [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
+            ...getConnectivityPropertiesData({
                 voltageLevelId,
                 voltageLevelName,
                 voltageLevelSubstationId,
                 voltageLevelNominalVoltage,
                 voltageLevelTopologyKind,
-            }),
-            [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData({
                 busbarSectionId,
                 busbarSectionName,
             }),

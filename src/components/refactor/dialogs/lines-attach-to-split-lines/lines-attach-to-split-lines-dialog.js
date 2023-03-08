@@ -34,7 +34,7 @@ import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 import {
     getConnectivityEmptyFormData,
     getConnectivityValidationSchema,
-    getConnectivityFormData,
+    getConnectivityData,
 } from '../connectivity/connectivity-form-utils';
 
 const emptyFormData = {
@@ -95,7 +95,7 @@ const LinesAttachToSplitLinesDialog = ({
                 [REPLACING_LINE_1_NAME]: editData[REPLACING_LINE_1_NAME],
                 [REPLACING_LINE_2_ID]: editData[REPLACING_LINE_2_ID],
                 [REPLACING_LINE_2_NAME]: editData[REPLACING_LINE_2_NAME],
-                ...getConnectivityFormData({
+                ...getConnectivityData({
                     voltageLevelId: editData[VOLTAGE_LEVEL_ID],
                     busbarSectionId: editData[BUS_BAR_SECTION_ID],
                 }),
