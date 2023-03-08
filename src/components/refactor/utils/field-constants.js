@@ -123,7 +123,7 @@ export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 export const SELECTED = 'selected';
 
 //line-attach-to-voltage-level
-export const LINE_TO_ATTACH_TO = 'lineToAttachTo';
+export const LINE_TO_ATTACH_TO_ID = 'lineToAttachToId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
 export const ATTACHMENT_POINT_NAME = 'attachmentPointName';
 export const ATTACHMENT_LINE_ID = 'attachmentLineId';

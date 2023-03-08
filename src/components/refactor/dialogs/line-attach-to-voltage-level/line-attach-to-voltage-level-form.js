@@ -14,9 +14,9 @@ import {
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
-    LINE_TO_ATTACH_TO,
+    LINE_TO_ATTACH_TO_ID,
 } from 'components/refactor/utils/field-constants';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
@@ -30,10 +30,40 @@ import { PercentageArea } from '../percentage-area/percentage-area';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
+import EditIcon from '@mui/icons-material/Edit';
+import LineCreationDialog from '../line-creation/line-creation-dialog';
+import VoltageLevelCreationDialog from 'components/dialogs/voltage-level-creation-dialog';
 
-const LineSplitWithVoltageLevelForm = ({ studyUuid, currentNode }) => {
+const LineAttachToVoltageLevelForm = ({
+    studyUuid,
+    currentNode,
+    onLineDo,
+    lineToEdit,
+    onVoltageLevelDo,
+    voltageLevelToEdit,
+    onVoltageLevelChange,
+}) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [linesOptions, setLinesOptions] = useState([]);
+    const [substationOptions, setSubstationOptions] = useState([]);
+    const [lineDialogOpen, setLineDialogOpen] = useState(false);
+    const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
+
+    const onLineDialogClose = () => {
+        setLineDialogOpen(false);
+    };
+
+    const openLineDialog = () => {
+        setLineDialogOpen(true);
+    };
+
+    const onVoltageLevelDialogClose = () => {
+        setVoltageLevelDialogOpen(false);
+    };
+
+    const openVoltageLevelDialog = () => {
+        setVoltageLevelDialogOpen(true);
+    };
 
     useEffect(() => {
         if (studyUuid && currentNode?.id)
@@ -59,6 +89,16 @@ const LineSplitWithVoltageLevelForm = ({ studyUuid, currentNode }) => {
                     })
             );
         });
+        //to remove when VoltageLevelCreationDialog is migrated
+        fetchEquipmentsIds(
+            studyUuid,
+            currentNode.id,
+            undefined,
+            'SUBSTATION',
+            true
+        ).then((values) => {
+            setSubstationOptions(values.sort((a, b) => a.localeCompare(b)));
+        });
     }, [studyUuid, currentNode?.id]);
 
     const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
@@ -70,15 +110,42 @@ const LineSplitWithVoltageLevelForm = ({ studyUuid, currentNode }) => {
         return object.id;
     }, []);
 
+    const allVoltageLevelOptions = useMemo(() => {
+        if (!voltageLevelToEdit) {
+            return voltageLevelOptions;
+        } else {
+            const formattedVoltageLevel = {
+                id: voltageLevelToEdit.equipmentId,
+                name: voltageLevelToEdit.equipmentName ?? '',
+            };
+            return [
+                formattedVoltageLevel,
+                ...voltageLevelOptions.filter(
+                    (vl) => vl.id !== formattedVoltageLevel.id
+                ),
+            ];
+        }
+    }, [voltageLevelToEdit, voltageLevelOptions]);
+
+    const getFormatedBusOrBusbarSectionOptions = useCallback(() => {
+        return voltageLevelToEdit?.busbarSections?.map((busbarSection) => {
+            return {
+                id: busbarSection.id,
+                name: busbarSection.name ?? '',
+            };
+        });
+    }, [voltageLevelToEdit]);
+
     const lineToAttachField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
             allowNewValue
             forcePopupIcon
-            name={LINE_TO_ATTACH_TO}
+            name={LINE_TO_ATTACH_TO_ID}
             label="LineToAttachTo"
             options={linesOptions}
             getOptionLabel={getObjectId}
+            outputTransform={getObjectId}
             size={'small'}
         />
     );
@@ -116,9 +183,11 @@ const LineSplitWithVoltageLevelForm = ({ studyUuid, currentNode }) => {
             label={'AttachedVoltageLevelId'}
             withPosition={false}
             withDirectionsInfos={false}
-            voltageLevelOptions={voltageLevelOptions}
+            voltageLevelOptions={allVoltageLevelOptions}
+            defaultBusOrBusbarSectionOptions={getFormatedBusOrBusbarSectionOptions()}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            onChangeCallback={onVoltageLevelChange}
         />
     );
 
@@ -144,7 +213,12 @@ const LineSplitWithVoltageLevelForm = ({ studyUuid, currentNode }) => {
             <Grid container spacing={2}>
                 {gridItem(connectivityForm, 12)}
                 {gridItem(
-                    <Button startIcon={<AddIcon />}>
+                    <Button
+                        onClick={openVoltageLevelDialog}
+                        startIcon={
+                            voltageLevelToEdit ? <EditIcon /> : <AddIcon />
+                        }
+                    >
                         <Typography align="left">
                             <FormattedMessage id="NewVoltageLevel" />
                         </Typography>
@@ -156,7 +230,10 @@ const LineSplitWithVoltageLevelForm = ({ studyUuid, currentNode }) => {
                 {gridItem(lineToIdField, 6)}
                 <Box width="100%" />
                 {gridItem(
-                    <Button startIcon={<AddIcon />}>
+                    <Button
+                        onClick={openLineDialog}
+                        startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}
+                    >
                         <Typography align="left">
                             <FormattedMessage id="AttachedLine" />
                         </Typography>
@@ -173,8 +250,32 @@ const LineSplitWithVoltageLevelForm = ({ studyUuid, currentNode }) => {
                 {gridItem(newLine2IdField, 6)}
                 {gridItem(newLine2NameField, 6)}
             </Grid>
+            {voltageLevelDialogOpen && (
+                <VoltageLevelCreationDialog
+                    open={true}
+                    onClose={onVoltageLevelDialogClose}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    substationOptionsPromise={Promise.resolve(
+                        substationOptions
+                    )}
+                    onCreateVoltageLevel={onVoltageLevelDo}
+                    editData={voltageLevelToEdit}
+                />
+            )}
+            {lineDialogOpen && (
+                <LineCreationDialog
+                    open={true}
+                    onClose={onLineDialogClose}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    displayConnectivity={false}
+                    onCreateLine={onLineDo}
+                    editData={lineToEdit}
+                />
+            )}
         </>
     );
 };
 
-export default LineSplitWithVoltageLevelForm;
+export default LineAttachToVoltageLevelForm;

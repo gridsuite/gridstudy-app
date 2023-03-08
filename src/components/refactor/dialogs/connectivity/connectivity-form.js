@@ -56,8 +56,10 @@ export const ConnectivityForm = ({
     withDirectionsInfos = true,
     withPosition = false,
     voltageLevelOptions = [],
+    defaultBusOrBusbarSectionOptions,
     studyUuid,
     currentNode,
+    onChangeCallback,
 }) => {
     const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
@@ -78,7 +80,9 @@ export const ConnectivityForm = ({
     });
 
     useEffect(() => {
-        if (watchVoltageLevelId) {
+        if (defaultBusOrBusbarSectionOptions?.length > 0) {
+            setBusOrBusbarSectionOptions(defaultBusOrBusbarSectionOptions);
+        } else if (watchVoltageLevelId) {
             switch (watchVoltageLevelTopologyKind) {
                 case 'NODE_BREAKER':
                     fetchBusbarSectionsForVoltageLevel(
@@ -110,11 +114,13 @@ export const ConnectivityForm = ({
         watchVoltageLevelTopologyKind,
         studyUuid,
         currentNodeUuid,
+        defaultBusOrBusbarSectionOptions,
     ]);
 
-    const resetBusBarSection = useCallback(() => {
+    const handleChange = useCallback(() => {
+        onChangeCallback?.();
         setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
-    }, [id, setValue]);
+    }, [id, onChangeCallback, setValue]);
 
     const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
     const getObjectId = useCallback((object) => {
@@ -133,7 +139,7 @@ export const ConnectivityForm = ({
                     ? getConnectivityVoltageLevelData({ voltageLevelId: value })
                     : value
             }
-            onChangeCallback={resetBusBarSection}
+            onChangeCallback={handleChange}
             allowNewValue
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}

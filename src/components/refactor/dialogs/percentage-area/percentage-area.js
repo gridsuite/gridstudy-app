@@ -20,45 +20,42 @@ import {
 } from 'components/refactor/utils/field-constants';
 import { useFormContext } from 'react-hook-form';
 import {
-    asMostlyPercentStr,
-    leftSideValue,
-    rightSideValue,
-    slideValue,
+    formatPercentageString,
+    getLeftSidePercentageValue,
+    getRightSidePercentageValue,
+    getSliderValue,
 } from './percentage-area-utils';
 import { FormattedMessage } from 'react-intl';
 
 /**
- * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
- * @param id optional id that has to be defined if the component is used more than once in a form
- * @param direction direction of placement. Either 'row' or 'column', 'row' by default.
- * @param withDirectionsInfos
- * @param withPosition
- * @param voltageLevelOptions list of network voltage levels
- * @param studyUuid the study we are currently working on
- * @param currentNode the currently selected tree node
- * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
+ * Component to handle a 'percentage area' (slider , left and right percentage fields)
+ * @param upperLeftText text to diplays on the top left of the slider
+ * @param upperRightText text to diplays on the top right of the slider
  */
 export const PercentageArea = ({ upperLeftText, upperRightText }) => {
     const { setValue } = useFormContext();
 
-    const handleChangeRightValue = (value) => {
-        const floatValueStr = asMostlyPercentStr(value);
+    const handleRightPercentageValueChange = (value) => {
+        const floatValueStr = formatPercentageString(value);
         const nextValue = '100-' + floatValueStr;
-        setValue(SLIDER_PERCENTAGE, slideValue(nextValue));
-        setValue(LEFT_SIDE_PERCENTAGE, leftSideValue(nextValue));
+        setValue(SLIDER_PERCENTAGE, getSliderValue(nextValue));
+        setValue(LEFT_SIDE_PERCENTAGE, getLeftSidePercentageValue(nextValue));
         return floatValueStr;
     };
 
-    const handleChangeLeftValue = (value) => {
-        const floatValueStr = asMostlyPercentStr(value);
-        setValue(SLIDER_PERCENTAGE, slideValue(floatValueStr));
-        setValue(RIGHT_SIDE_PERCENTAGE, rightSideValue(floatValueStr));
+    const handleLeftPercentageValueChange = (value) => {
+        const floatValueStr = formatPercentageString(value);
+        setValue(SLIDER_PERCENTAGE, getSliderValue(floatValueStr));
+        setValue(
+            RIGHT_SIDE_PERCENTAGE,
+            getRightSidePercentageValue(floatValueStr)
+        );
         return floatValueStr;
     };
 
     const onSliderChange = (value) => {
-        setValue(LEFT_SIDE_PERCENTAGE, leftSideValue(value));
-        setValue(RIGHT_SIDE_PERCENTAGE, rightSideValue(value));
+        setValue(LEFT_SIDE_PERCENTAGE, getLeftSidePercentageValue(value));
+        setValue(RIGHT_SIDE_PERCENTAGE, getRightSidePercentageValue(value));
         return value;
     };
 
@@ -66,8 +63,8 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
         <TextInput
             name={LEFT_SIDE_PERCENTAGE}
             adornment={percentageTextField}
-            outputTransform={handleChangeLeftValue}
-            inputTransform={asMostlyPercentStr}
+            outputTransform={handleLeftPercentageValueChange}
+            inputTransform={formatPercentageString}
             formProps={standardTextField}
         />
     );
@@ -76,8 +73,8 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
         <TextInput
             name={RIGHT_SIDE_PERCENTAGE}
             adornment={percentageTextField}
-            outputTransform={handleChangeRightValue}
-            inputTransform={asMostlyPercentStr}
+            outputTransform={handleRightPercentageValueChange}
+            inputTransform={formatPercentageString}
             formProps={standardTextField}
         />
     );

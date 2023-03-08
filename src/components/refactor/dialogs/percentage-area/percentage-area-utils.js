@@ -34,13 +34,13 @@ export const getPercentageAreaEmptyFormData = () => {
 export const getPercentageAreaData = ({ percent }) => {
     return {
         [SLIDER_PERCENTAGE]: percent,
-        [LEFT_SIDE_PERCENTAGE]: leftSideValue(percent),
-        [RIGHT_SIDE_PERCENTAGE]: rightSideValue(percent),
+        [LEFT_SIDE_PERCENTAGE]: getLeftSidePercentageValue(percent),
+        [RIGHT_SIDE_PERCENTAGE]: getRightSidePercentageValue(percent),
     };
 };
 
 const maxDecimals = 1;
-export function asMostlyPercentStr(value) {
+export function formatPercentageString(value) {
     if (value < 0) return '0';
     if (value > 100) return '100';
     if (typeof value === 'number') return value.toFixed(maxDecimals);
@@ -52,7 +52,7 @@ export function asMostlyPercentStr(value) {
     );
 }
 
-export function slideValue(str) {
+export function getSliderValue(str) {
     if (typeof str === 'string' && str.substring(0, 4) === '100-') {
         const rest = str.substring(4);
         if (isNaN(rest)) return 100;
@@ -61,13 +61,13 @@ export function slideValue(str) {
     return parseFloat(str);
 }
 
-export function leftSideValue(str) {
+export function getLeftSidePercentageValue(str) {
     if (typeof str === 'string' && str.substring(0, 4) === '100-')
         return str.substring(0, 3) - str.substring(4);
     return str;
 }
 
-export function rightSideValue(str) {
+export function getRightSidePercentageValue(str) {
     if (typeof str === 'string' && str.substring(0, 4) === '100-')
         return str.substring(4);
     const diff = 100 - str;
