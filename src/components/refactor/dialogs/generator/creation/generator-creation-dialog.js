@@ -6,13 +6,13 @@
  */
 
 import { FormProvider, useForm } from 'react-hook-form';
-import ModificationDialog from '../commons/modificationDialog';
-import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
+import ModificationDialog from '../../commons/modificationDialog';
+import EquipmentSearchDialog from '../../../../dialogs/equipment-search-dialog';
 import { useCallback, useEffect } from 'react';
-import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
+import { useFormSearchCopy } from '../../../../dialogs/form-search-copy-hook';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../utils/yup-config';
+import yup from '../../../utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
     BUS_OR_BUSBAR_SECTION,
@@ -47,28 +47,28 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-} from '../../utils/field-constants';
+} from '../../../utils/field-constants';
 import {
     getConnectivityEmptyFormData,
     getConnectivityFormData,
     getConnectivityFormValidationSchema,
-} from '../connectivity/connectivity-form-utils';
+} from '../../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
-import { getRegulatingTerminalFormData } from '../regulating-terminal/regulating-terminal-form-utils';
-import { createGenerator } from '../../../../utils/rest-api';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
+import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
+import { createGenerator } from '../../../../../utils/rest-api';
+import { sanitizeString } from '../../../../dialogs/dialogUtils';
 import {
     REGULATION_TYPES,
     UNDEFINED_CONNECTION_DIRECTION,
-} from '../../../network/constants';
+} from '../../../../network/constants';
 import {
     getSetPointsEmptyFormData,
     getSetPointsSchema,
-} from './set-points/set-points-utils';
+} from '../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
-} from './reactive-limits/reactive-limits-utils';
+} from '../reactive-limits/reactive-limits-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

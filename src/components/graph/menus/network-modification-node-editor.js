@@ -21,7 +21,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
-import GeneratorModificationDialog from 'components/refactor/dialogs/generator-modification/generator-modification-dialog';
+import GeneratorModificationDialog from 'components/refactor/dialogs/generator/modification/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
@@ -63,7 +63,7 @@ import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
 import DeleteVoltageLevelOnLineDialog from '../../refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
 import DeleteAttachingLineDialog from '../../refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
-import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
+import GeneratorCreationDialog from '../../refactor/dialogs/generator/creation/generator-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {

@@ -6,11 +6,11 @@
  */
 
 import { FormProvider, useForm } from 'react-hook-form';
-import ModificationDialog from '../commons/modificationDialog';
+import ModificationDialog from '../../commons/modificationDialog';
 import { useCallback, useEffect, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../utils/yup-config';
+import yup from '../../../utils/yup-config';
 import {
     ACTIVE_POWER_CONTROL_ON,
     ACTIVE_POWER_SET_POINT,
@@ -41,21 +41,21 @@ import {
     VOLTAGE_REGULATION_ON,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-} from '../../utils/field-constants';
+} from '../../../utils/field-constants';
 
-import { modifyGenerator } from '../../../../utils/rest-api';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
-import { REGULATION_TYPES } from '../../../network/constants';
+import { modifyGenerator } from '../../../../../utils/rest-api';
+import { sanitizeString } from '../../../../dialogs/dialogUtils';
+import { REGULATION_TYPES } from '../../../../network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import {
     getSetPointsEmptyFormData,
     getSetPointsSchema,
-} from '../generator-creation/set-points/set-points-utils';
+} from '../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
-} from '../generator-creation/reactive-limits/reactive-limits-utils';
-import { getRegulatingTerminalFormData } from '../regulating-terminal/regulating-terminal-form-utils';
+} from '../reactive-limits/reactive-limits-utils';
+import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from '../../rhf-inputs/text-input';
+import TextInput from '../../../rhf-inputs/text-input';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -21,7 +21,7 @@ import {
     STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
-} from '../../utils/field-constants';
+} from '../../../utils/field-constants';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -30,22 +30,22 @@ import {
     italicFontTextField,
     MVAPowerAdornment,
     OhmAdornment,
-} from '../../../dialogs/dialogUtils';
-import SelectInput from '../../rhf-inputs/select-input';
+} from '../../../../dialogs/dialogUtils';
+import SelectInput from '../../../rhf-inputs/select-input';
 import {
     ENERGY_SOURCES,
     getEnergySourceLabel,
-} from '../../../network/constants';
+} from '../../../../network/constants';
 import Grid from '@mui/material/Grid';
 import React, { useCallback, useEffect, useState } from 'react';
-import FloatInput from '../../rhf-inputs/float-input';
+import FloatInput from '../../../rhf-inputs/float-input';
 import {
     fetchEquipmentInfos,
     fetchEquipmentsIds,
     fetchVoltageLevelsIdAndTopology,
-} from '../../../../utils/rest-api';
-import ReactiveLimitsForm from '../generator-creation/reactive-limits/reactive-limits-form';
-import SetPointsForm from '../generator-creation/set-points/set-points-form';
+} from '../../../../../utils/rest-api';
+import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
+import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 import { useFormContext, useWatch } from 'react-hook-form';
