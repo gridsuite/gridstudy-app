@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -56,23 +56,6 @@ import {
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
-const emptyFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
-    [ENERGY_SOURCE]: null,
-    [MAXIMUM_ACTIVE_POWER]: null,
-    [MINIMUM_ACTIVE_POWER]: null,
-    [RATED_NOMINAL_POWER]: null,
-    [TRANSIENT_REACTANCE]: null,
-    [TRANSFORMER_REACTANCE]: null,
-    [PLANNED_ACTIVE_POWER_SET_POINT]: null,
-    [STARTUP_COST]: null,
-    [MARGINAL_COST]: null,
-    [PLANNED_OUTAGE_RATE]: null,
-    [FORCED_OUTAGE_RATE]: null,
-    ...getSetPointsEmptyFormData(true),
-    ...getReactiveLimitsEmptyFormData(),
-};
 
 const GeneratorModificationDialog = ({
     editData,
@@ -84,57 +67,84 @@ const GeneratorModificationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [selectedGeneratorInfos, setSelectedGeneratorInfos] = useState();
-    const schema = yup
-        .object()
-        .shape(
-            {
-                [EQUIPMENT_ID]: yup.string().required(),
-                [EQUIPMENT_NAME]: yup.string(),
-                [ENERGY_SOURCE]: yup.string().nullable(),
-                [MAXIMUM_ACTIVE_POWER]: yup
-                    .number()
-                    .nullable()
-                    .when([], {
-                        is: () =>
-                            selectedGeneratorInfos === undefined &&
-                            editData === undefined
-                                ? true
-                                : false,
-                        then: (schema) => schema.required(),
-                    }),
-                [MINIMUM_ACTIVE_POWER]: yup
-                    .number()
-                    .nullable()
-                    .when([], {
-                        is: () =>
-                            selectedGeneratorInfos === undefined &&
-                            editData === undefined
-                                ? true
-                                : false,
-                        then: (schema) => schema.required(),
-                    }),
-                [RATED_NOMINAL_POWER]: yup.number().nullable(),
-                [TRANSIENT_REACTANCE]: yup.number().nullable(),
-                [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-                [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-                [STARTUP_COST]: yup.number().nullable(),
-                [MARGINAL_COST]: yup.number().nullable(),
-                [PLANNED_OUTAGE_RATE]: yup
-                    .number()
-                    .nullable()
-                    .min(0, 'RealPercentage')
-                    .max(1, 'RealPercentage'),
-                [FORCED_OUTAGE_RATE]: yup
-                    .number()
-                    .nullable()
-                    .min(0, 'RealPercentage')
-                    .max(1, 'RealPercentage'),
-                ...getSetPointsSchema(true),
-                ...getReactiveLimitsSchema(),
-            },
-            [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
-        )
-        .required();
+
+    const isSelectedGeneratorUndefined = selectedGeneratorInfos === undefined;
+    const isEditDataUndefined = editData === undefined;
+
+    const emptyFormData = useMemo(
+        () => ({
+            [EQUIPMENT_ID]: defaultIdValue ?? null,
+            [EQUIPMENT_NAME]: '',
+            [ENERGY_SOURCE]: null,
+            [MAXIMUM_ACTIVE_POWER]: null,
+            [MINIMUM_ACTIVE_POWER]: null,
+            [RATED_NOMINAL_POWER]: null,
+            [TRANSIENT_REACTANCE]: null,
+            [TRANSFORMER_REACTANCE]: null,
+            [PLANNED_ACTIVE_POWER_SET_POINT]: null,
+            [STARTUP_COST]: null,
+            [MARGINAL_COST]: null,
+            [PLANNED_OUTAGE_RATE]: null,
+            [FORCED_OUTAGE_RATE]: null,
+            ...getSetPointsEmptyFormData(true),
+            ...getReactiveLimitsEmptyFormData(),
+        }),
+        [defaultIdValue]
+    );
+
+    const schema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape(
+                    {
+                        [EQUIPMENT_ID]: yup.string().nullable().required(),
+                        [EQUIPMENT_NAME]: yup.string(),
+                        [ENERGY_SOURCE]: yup.string().nullable(),
+                        [MAXIMUM_ACTIVE_POWER]: yup
+                            .number()
+                            .nullable()
+                            .when([], {
+                                is: () =>
+                                    isSelectedGeneratorUndefined &&
+                                    isEditDataUndefined,
+                                then: (schema) => schema.required(),
+                            }),
+                        [MINIMUM_ACTIVE_POWER]: yup
+                            .number()
+                            .nullable()
+                            .when([], {
+                                is: () =>
+                                    isSelectedGeneratorUndefined &&
+                                    isEditDataUndefined,
+                                then: (schema) => schema.required(),
+                            }),
+                        [RATED_NOMINAL_POWER]: yup.number().nullable(),
+                        [TRANSIENT_REACTANCE]: yup.number().nullable(),
+                        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+                        [PLANNED_ACTIVE_POWER_SET_POINT]: yup
+                            .number()
+                            .nullable(),
+                        [STARTUP_COST]: yup.number().nullable(),
+                        [MARGINAL_COST]: yup.number().nullable(),
+                        [PLANNED_OUTAGE_RATE]: yup
+                            .number()
+                            .nullable()
+                            .min(0, 'RealPercentage')
+                            .max(1, 'RealPercentage'),
+                        [FORCED_OUTAGE_RATE]: yup
+                            .number()
+                            .nullable()
+                            .min(0, 'RealPercentage')
+                            .max(1, 'RealPercentage'),
+                        ...getSetPointsSchema(true),
+                        ...getReactiveLimitsSchema(),
+                    },
+                    [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
+                )
+                .required(),
+        [isSelectedGeneratorUndefined, isEditDataUndefined]
+    );
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
@@ -194,14 +204,17 @@ const GeneratorModificationDialog = ({
     }, [editData, reset]);
 
     const calculateCurvePointsToStore = useCallback(() => {
-        const rows = getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
+        const reactiveCapabilityCurve = getValues(
+            REACTIVE_CAPABILITY_CURVE_TABLE
+        );
         const displayedPreviousValues =
             selectedGeneratorInfos?.reactiveCapabilityCurvePoints;
 
         if (
             displayedPreviousValues &&
-            rows?.length === displayedPreviousValues.length &&
-            rows.filter(
+            reactiveCapabilityCurve?.length ===
+                displayedPreviousValues.length &&
+            reactiveCapabilityCurve.filter(
                 (point) =>
                     point.p !== '' || point.qminP !== '' || point.qmaxP !== ''
             ).length === 0
@@ -209,7 +222,7 @@ const GeneratorModificationDialog = ({
             return null;
         } else {
             const pointsToStore = [];
-            rows.forEach((point, index) => {
+            reactiveCapabilityCurve.forEach((point, index) => {
                 if (point) {
                     let pointToStore = {
                         p: point?.p,
@@ -337,7 +350,6 @@ const GeneratorModificationDialog = ({
                 <GeneratorModificationForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    defaultIdValue={defaultIdValue}
                     editData={editData}
                     onClear={clear}
                     setSelectedGeneratorInfos={setSelectedGeneratorInfos}

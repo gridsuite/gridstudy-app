@@ -53,7 +53,6 @@ import { useFormContext, useWatch } from 'react-hook-form';
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
-    defaultIdValue,
     editData,
     onClear,
     setSelectedGeneratorInfos,
@@ -90,16 +89,12 @@ const GeneratorModificationForm = ({
     });
 
     useEffect(() => {
-        if (watchEquipmentId || defaultIdValue) {
-            if (defaultIdValue) {
-                setValue(EQUIPMENT_ID, defaultIdValue);
-            }
-            let key = watchEquipmentId ? watchEquipmentId : defaultIdValue;
+        if (watchEquipmentId) {
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
                 'generators',
-                key,
+                watchEquipmentId,
                 true
             ).then((value) => {
                 if (value) {
@@ -142,7 +137,6 @@ const GeneratorModificationForm = ({
         studyUuid,
         currentNodeUuid,
         watchEquipmentId,
-        defaultIdValue,
         editData,
         setValue,
         setSelectedGeneratorInfos,
