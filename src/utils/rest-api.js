@@ -1393,9 +1393,18 @@ const NONE_NODE_UUID = '00000000-0000-0000-0000-000000000000';
 
 export function fetchDynamicSimulationParameters(studyUuid) {
     // fake API
-    const parametersPromise = Promise.resolve(
+    /*const parametersPromise = Promise.resolve(
         JSON.parse(dsConfigStorage.getItem(DS_PARAMS_KEY))
+    );*/
+
+    console.info(
+        `Fetching dynamic simulation parameters on '${studyUuid}' ...`
     );
+    let url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
+
+    console.debug(url);
+    const parametersPromise = backendFetchJson(url);
+
     const mappingsPromise = getDynamicMappings(studyUuid, NONE_NODE_UUID);
 
     return Promise.all([parametersPromise, mappingsPromise]).then(
@@ -1404,11 +1413,23 @@ export function fetchDynamicSimulationParameters(studyUuid) {
 }
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
     // fake API
-    console.log('updateDynamicSimulationParameters', [studyUuid, newParams]);
+    /*console.log('updateDynamicSimulationParameters', [studyUuid, newParams]);
     const toSaveParams = { ...newParams };
     delete toSaveParams.mappings;
     dsConfigStorage.setItem(DS_PARAMS_KEY, JSON.stringify(toSaveParams));
-    return Promise.resolve(studyUuid);
+    return Promise.resolve(studyUuid);*/
+
+    console.info('set dynamic simulation parameters');
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
 }
 // -- Parameters API - END
 // --- Dynamic simulation API - END

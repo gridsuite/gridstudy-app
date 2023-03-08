@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import { makeComponentsFor, TYPES } from '../util/make-component-utils';
 import { useCallback, useMemo } from 'react';
 import IdaSolverParameters from './solver/ida-solver-parameters';
@@ -56,9 +56,9 @@ const SolverParameters = ({ dynaWaltzExtension, onUpdateSolver }) => {
 
     return (
         <Grid container>
-            <Typography
+            {/*<Typography
                 sx={{ wordBreak: 'break-word' }}
-            >{`Solver : ${JSON.stringify(dynaWaltzExtension)}`}</Typography>
+            >{`Solver : ${JSON.stringify(dynaWaltzExtension)}`}</Typography>*/}
             {makeComponentsFor(
                 defParams,
                 dynaWaltzExtension,

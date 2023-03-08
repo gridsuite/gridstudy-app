@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import { makeComponentsFor, TYPES } from '../util/make-component-utils';
 import { useCallback } from 'react';
 
@@ -33,7 +33,7 @@ const MappingParameters = ({ mapping, onUpdateMapping }) => {
 
     return (
         <Grid container>
-            <Typography>{`Mapping: ${JSON.stringify(mapping)}`}</Typography>
+            {/*<Typography>{`Mapping: ${JSON.stringify(mapping)}`}</Typography>*/}
             {makeComponentsFor(defParams, mapping, handleUpdateMapping)}
         </Grid>
     );
