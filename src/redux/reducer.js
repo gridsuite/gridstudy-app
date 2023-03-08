@@ -82,6 +82,8 @@ import {
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
+    STOP_DIAGRAM_BLINK,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -113,7 +115,7 @@ import {
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadDiagramStateFromSessionStorage } from './session-storage';
-import { SvgType, ViewState } from '../components/diagrams/diagram-common';
+import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -170,6 +172,7 @@ const initialState = {
     updatedSubstationsIds: [],
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
+    networkAreaDiagramNbVoltageLevels: 0,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -593,16 +596,17 @@ export const reducer = createReducer(initialState, {
                 diagram.id === action.id && diagram.svgType === action.svgType
         );
 
-        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+        if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             // First, we check if there is already a Network Area Diagram in the diagramStates.
             const firstNadIndex = diagramStates.findIndex(
-                (diagram) => diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM
+                (diagram) =>
+                    diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
             );
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
                 diagramStates.push({
                     id: action.id,
-                    svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                    svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                     state: ViewState.OPENED,
                 });
 
@@ -610,7 +614,7 @@ export const reducer = createReducer(initialState, {
                 if (state.fullScreenDiagram?.id) {
                     state.fullScreenDiagram = {
                         id: action.id,
-                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                        svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                     };
                 }
             } else {
@@ -619,7 +623,9 @@ export const reducer = createReducer(initialState, {
                     diagramStates[firstNadIndex].state === ViewState.MINIMIZED
                 ) {
                     diagramStates.forEach((diagram) => {
-                        if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                        if (
+                            diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                        ) {
                             diagram.state = ViewState.OPENED;
                         }
                     });
@@ -628,7 +634,7 @@ export const reducer = createReducer(initialState, {
                 if (diagramToOpenIndex < 0) {
                     diagramStates.push({
                         id: action.id,
-                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                        svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                         state: diagramStates[firstNadIndex].state,
                     });
                 }
@@ -638,11 +644,11 @@ export const reducer = createReducer(initialState, {
                 if (
                     state.fullScreenDiagram?.svgType &&
                     state.fullScreenDiagram?.svgType !==
-                        SvgType.NETWORK_AREA_DIAGRAM
+                        DiagramType.NETWORK_AREA_DIAGRAM
                 ) {
                     state.fullScreenDiagram = {
                         id: diagramStates[firstNadIndex].id,
-                        svgType: SvgType.NETWORK_AREA_DIAGRAM,
+                        svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                     };
                 }
             }
@@ -657,7 +663,8 @@ export const reducer = createReducer(initialState, {
                     // We minimize all the other OPENED SLD.
                     diagramStates.forEach((diagram) => {
                         if (
-                            diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
+                            diagram.svgType !==
+                                DiagramType.NETWORK_AREA_DIAGRAM &&
                             diagram.state === ViewState.OPENED
                         ) {
                             diagram.state = ViewState.MINIMIZED;
@@ -673,12 +680,13 @@ export const reducer = createReducer(initialState, {
                             diagramStates[diagramToOpenIndex].svgType +
                             ')'
                     );
+                    diagramStates[diagramToOpenIndex].needsToBlink = true;
                 }
             } else {
                 // We minimize all the other OPENED SLD.
                 diagramStates.forEach((diagram) => {
                     if (
-                        diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM &&
+                        diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
                         diagram.state === ViewState.OPENED
                     ) {
                         diagram.state = ViewState.MINIMIZED;
@@ -705,10 +713,10 @@ export const reducer = createReducer(initialState, {
     [MINIMIZE_DIAGRAM]: (state, action) => {
         const diagramStates = state.diagramStates;
 
-        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+        if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             // For network area diagrams, the ID is irrelevant, we will minimize all the NAD in the state.diagramStates.
             diagramStates.forEach((diagram) => {
-                if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                     diagram.state = ViewState.MINIMIZED;
                 }
             });
@@ -735,7 +743,7 @@ export const reducer = createReducer(initialState, {
                 diagram.id === action.id && diagram.svgType === action.svgType
         );
         if (diagramToPinToggleIndex >= 0) {
-            if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+            if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 // If the current NAD is PINNED, we set all NAD to OPENED. Otherwise, we set them to PINNED.
                 const newStateForNads =
                     diagramStates[diagramToPinToggleIndex].state ===
@@ -743,7 +751,7 @@ export const reducer = createReducer(initialState, {
                         ? ViewState.OPENED
                         : ViewState.PINNED;
                 diagramStates.forEach((diagram) => {
-                    if (diagram.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+                    if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                         diagram.state = newStateForNads;
                     }
                 });
@@ -761,8 +769,8 @@ export const reducer = createReducer(initialState, {
                     const currentlyOpenedDiagramIndex = diagramStates.findIndex(
                         (diagram) =>
                             diagram.state === ViewState.OPENED &&
-                            (diagram.svgType === SvgType.SUBSTATION ||
-                                diagram.svgType === SvgType.VOLTAGE_LEVEL)
+                            (diagram.svgType === DiagramType.SUBSTATION ||
+                                diagram.svgType === DiagramType.VOLTAGE_LEVEL)
                     );
                     if (currentlyOpenedDiagramIndex >= 0) {
                         diagramStates[diagramToPinToggleIndex].state =
@@ -780,10 +788,11 @@ export const reducer = createReducer(initialState, {
     [CLOSE_DIAGRAM]: (state, action) => {
         let diagramStates = state.diagramStates;
 
-        if (action.svgType === SvgType.NETWORK_AREA_DIAGRAM) {
+        if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             // If we close a NAD, we close all of them.
             diagramStates = diagramStates.filter(
-                (diagram) => diagram.svgType !== SvgType.NETWORK_AREA_DIAGRAM
+                (diagram) =>
+                    diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
             );
         } else {
             // If we close a SLD, we only remove one.
@@ -805,6 +814,13 @@ export const reducer = createReducer(initialState, {
             (diagram) => !idsToClose.has(diagram.id)
         );
     },
+    [STOP_DIAGRAM_BLINK]: (state) => {
+        state.diagramStates.forEach((diagram) => {
+            if (diagram.needsToBlink) {
+                diagram.needsToBlink = undefined;
+            }
+        });
+    },
     [RESET_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
         state.networkAreaDiagramDepth = 0;
     },
@@ -815,6 +831,9 @@ export const reducer = createReducer(initialState, {
         if (state.networkAreaDiagramDepth > 0) {
             state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
         }
+    },
+    [NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS]: (state, action) => {
+        state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
     },
 });
 

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -27,6 +27,7 @@ import {
     SHUNT_SUSCEPTANCE_2,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -45,7 +46,7 @@ import {
 import LineCreationForm from './line-creation-form';
 
 /**
- * Dialog to create a load in the network
+ * Dialog to create a line in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
@@ -220,7 +221,7 @@ const LineCreationDialog = ({
 
     const onSubmit = useCallback(
         (line) => {
-            createLine(
+            onCreateLine(
                 studyUuid,
                 currentNodeUuid,
                 line[EQUIPMENT_ID],
@@ -239,10 +240,10 @@ const LineCreationDialog = ({
                 line[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                line[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(line[CONNECTIVITY_1]?.[CONNECTION_NAME]),
                 line[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                line[CONNECTIVITY_2]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(line[CONNECTIVITY_2]?.[CONNECTION_NAME]),
                 line[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 line[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
@@ -254,7 +255,7 @@ const LineCreationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
     const clear = useCallback(() => {
@@ -282,7 +283,7 @@ const LineCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPE.LINE.name}
+                    equipmentType={EQUIPMENT_TYPES.LINE.type}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

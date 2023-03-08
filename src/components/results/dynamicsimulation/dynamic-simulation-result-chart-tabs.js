@@ -7,9 +7,9 @@
 import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { IconButton, Stack } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
@@ -19,7 +19,7 @@ import TooltipIconButton from './common/tooltip-icon-button';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        flexGrow: 1,
+        height: '100%',
     },
     addButton: {
         borderRadius: '50%',
@@ -28,8 +28,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DynamicSimulationResultChartTabs = ({ result }) => {
-    const { timeseries } = result;
+const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
+    const { timeseriesMetadatas } = result;
     const classes = useStyles();
 
     // tab id is auto increase and reset to zero when there is any tab
@@ -38,22 +38,6 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const [tabs, setTabs] = useState([{ id: tabIncId }]);
-
-    const series = useMemo(() => {
-        if (!timeseries) return [];
-        return timeseries.map((elem, index) => {
-            const metadata = elem.metadata;
-            const values = elem.chunks[0].values;
-            return {
-                index: index,
-                name: metadata.name,
-                data: {
-                    x: metadata.irregularIndex,
-                    y: values,
-                },
-            };
-        });
-    }, [timeseries]);
 
     const intl = useIntl();
 
@@ -103,8 +87,8 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
     };
 
     return (
-        <div className={classes.root}>
-            <Stack direction="row" maxWidth={'100vw'}>
+        <Box className={classes.root}>
+            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                 {/* tab headers */}
                 <DroppableTabs
                     id={'1'}
@@ -149,38 +133,41 @@ const DynamicSimulationResultChartTabs = ({ result }) => {
                 >
                     <AddIcon />
                 </TooltipIconButton>
-            </Stack>
+            </Box>
             {/* tab contents */}
-            {tabs.map((tab, index) => (
-                <Visibility
-                    key={`tab-${tab.id}`}
-                    value={selectedIndex}
-                    index={index}
-                >
-                    <DynamicSimulationResultChart
-                        groupId={`${tab.id}`}
-                        series={series}
-                        selected={selectedIndex === index}
-                    />
-                </Visibility>
-            ))}
-        </div>
+            <Box
+                sx={{
+                    height: 'calc(100vh - 270px)', // TODO fix layout to use flexGrow : 1
+                }}
+            >
+                {tabs.map((tab, index) => (
+                    <Visibility
+                        key={`tab-${tab.id}`}
+                        value={selectedIndex}
+                        index={index}
+                    >
+                        <DynamicSimulationResultChart
+                            groupId={`${tab.id}`}
+                            timeseriesMetadatas={timeseriesMetadatas}
+                            selected={selectedIndex === index}
+                            loadTimeSeries={loadTimeSeries}
+                        />
+                    </Visibility>
+                ))}
+            </Box>
+        </Box>
     );
 };
 
 DynamicSimulationResultChartTabs.propTypes = {
     result: PropTypes.shape({
-        timeseries: PropTypes.arrayOf(
+        timeseriesMetadatas: PropTypes.arrayOf(
             PropTypes.shape({
-                metadata: PropTypes.object,
-                chunks: PropTypes.arrayOf(
-                    PropTypes.shape({
-                        values: PropTypes.array,
-                    })
-                ),
+                name: PropTypes.string.isRequired,
             })
         ),
     }),
+    loadTimeSeries: PropTypes.func,
 };
 
 export default DynamicSimulationResultChartTabs;

@@ -220,7 +220,7 @@
 
     "descLfVoltageInitMode": "Voltage initialisation mode: ",
     "descLfTransformerVoltageControlOn": "Activate on-load tap changers: ",
-    "descLfNoGeneratorReactiveLimits": "Take the reactive limits of generators into account: ",
+    "descLfUseReactiveLimits": "Take the reactive limits of generators into account: ",
     "descLfPhaseShifterRegulationOn": "Enable automatic power flow control with phase shifting transformers: ",
     "descLfTwtSplitShuntAdmittance": "Split shunt admittance of two winding transformers: ",
     "descLfShuntCompensatorVoltageControlOn": "Enable voltage control by shunt compensators: ",
@@ -320,6 +320,7 @@
     "CheckAll": "Select all / none",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
+    "DeleteFromMenu": "Delete",
 
     "LockoutLine": "Lock out the line",
     "TripLine": "Trip the line",
@@ -474,9 +475,15 @@
     "ReactiveCapabilityCurve": "Reactive capability curve",
     "MinimumReactivePower": "Minimum reactive power",
     "MaximumReactivePower": "Maximum reactive power",
-    "P": "P",
-    "QminP": "QminP",
-    "QmaxP": "QmaxP",
+    "P": "P{labelSuffix}",
+    "QminP": "QminP{labelSuffix}",
+    "QmaxP": "QmaxP{labelSuffix}",
+    "QminPmax": "QminPmax",
+    "QmaxPmax": "QmaxPmax",
+    "Pmin": "Pmin",
+    "QminPmin": "QminPmin",
+    "QmaxPmin": "QmaxPmin",
+    "Pmax": "Pmax",
     "RegulatingTerminalGenerator": "Regulated terminal",
     "ShortCircuit": "Short-circuit",
     "TransientReactance": "Transient reactance",
@@ -513,6 +520,11 @@
     "SeriesReactanceText": "Series reactance",
     "ShuntConductanceText": "Shunt conductance",
     "ShuntSusceptanceText": "Shunt susceptance",
+    "Reactor": "Reactor",
+    "Capacitor": "Capacitor",
+    "QatNominalV": "Q at nominal voltage",
+    "QatNominalVLabel": "Q at nominal voltage (MVAr)",
+    "SusceptanceLabel": "Susceptance (S)",
 
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",
@@ -522,6 +534,7 @@
     "ShuntCompensatorErrorMaximumLessThanOne": "Maximum number of sections should be greater than 0",
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
+    "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
@@ -591,8 +604,9 @@
     "TwoWindingsTransformerPhaseTapChangerTab": "Phase tap changer",
     "ConfigureRatioTapChanger": "Configure ratio tap changer",
     "ConfigurePhaseTapChanger": "Configure phase tap changer",
-    "RegulationType": "Regulation type",
     "RegulatedSide": "Regulated side",
+    "RegulatedSide1": "Side 1",
+    "RegulatedSide2": "Side 2",
 
     "OnLoad": "On-load",
     "VoltageRegulation": "Voltage regulation",
@@ -656,7 +670,15 @@
     "HighTapRatio": "Ratio (high tap position)",
     "ImportRegulationRule": "Import regulation rule",
 
-    "GenerateTapRows": "Generate tap rows",
+    "AddRows": "Add rows",
+    "DeleteRows": "Delete rows",
+    "MoveUpRows": "Move up rows",
+    "MoveDownRows": "Move down rows",
+
+    "AddRowsDialogTitle": "How many rows do you want to add ?",
+    "AddRowsButton": "Add",
+
+    "DragAndDrop": "Drag and Drop",
 
     "CreateDephasingRule": "Create dephasing rule",
     "LowTapAlpha": "Shift angle (low tap position)",

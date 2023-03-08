@@ -532,6 +532,14 @@ export function closeDiagrams(ids) {
     };
 }
 
+export const STOP_DIAGRAM_BLINK = 'STOP_DIAGRAM_BLINK';
+
+export function stopDiagramBlink() {
+    return {
+        type: STOP_DIAGRAM_BLINK,
+    };
+}
+
 export const RESET_NETWORK_AREA_DIAGRAM_DEPTH =
     'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
 
@@ -556,6 +564,16 @@ export const DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH =
 export function decrementNetworkAreaDiagramDepth() {
     return {
         type: DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
+    };
+}
+
+export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS =
+    'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
+
+export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels) {
+    return {
+        type: NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
+        nbVoltageLevels: nbVoltageLevels,
     };
 }
 

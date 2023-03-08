@@ -106,6 +106,11 @@ export const VoltageAdornment = {
 export const filledTextField = {
     variant: 'filled',
 };
+
+export const italicFontTextField = {
+    style: { fontStyle: 'italic' },
+};
+
 export const percentageTextField = {
     position: 'end',
     text: '%',
@@ -126,6 +131,11 @@ export function toIntOrEmptyValue(val) {
     if (val === '-') return val;
     if (val === '0') return 0;
     return parseInt(val) || '';
+}
+
+export function parseIntData(val, defaultValue) {
+    const intValue = parseInt(val);
+    return isNaN(intValue) ? defaultValue : intValue;
 }
 
 export function sanitizeString(val) {

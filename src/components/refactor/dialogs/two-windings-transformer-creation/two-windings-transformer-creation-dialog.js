@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPE, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box } from '@mui/material';
 import {
@@ -48,6 +48,7 @@ import {
     TARGET_V,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -67,18 +68,18 @@ import {
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
-import PhaseTapChangerPane from './phase-tap-changer-pane/phase-tap-changer-pane';
+import PhaseTapChangerPane from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerValidationSchema,
-} from './phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import RatioTapChangerPane from './ratio-tap-changer-pane/ratio-tap-changer-pane';
+} from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+import RatioTapChangerPane from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerValidationSchema,
-} from './ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+} from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import TwoWindingsTransformerCreationDialogTabs from './two-windings-transformer-creation-dialog-tabs';
 import TwoWindingsTransformerPane from './two-windings-transformer-pane/two-windings-transformer-pane';
 import {
@@ -118,7 +119,7 @@ export const TwoWindingsTransformerCreationDialogTab = {
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
-export const MAX_TAP_NUMBER = 100;
+export const MAX_TAP_CHANGER_STEPS_NUMBER = 100;
 
 const TwoWindingsTransformerCreationDialog = ({
     editData,
@@ -457,16 +458,13 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const computeRegulatingTerminalType = (
-        tapChangerValue,
-        currentEquipmentId
-    ) => {
+    const computeRegulatingTerminalType = (tapChangerValue) => {
         if (tapChangerValue?.[EQUIPMENT]?.type) {
             return tapChangerValue?.[EQUIPMENT]?.type;
         }
 
-        if (currentEquipmentId === tapChangerValue?.[EQUIPMENT]?.id) {
-            return EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name;
+        if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
+            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
         }
 
         return undefined;
@@ -521,8 +519,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         characteristics[EQUIPMENT_ID]
                     ),
                     regulatingTerminalType: computeRegulatingTerminalType(
-                        ratioTapChangerFormValues,
-                        characteristics[EQUIPMENT_ID]
+                        ratioTapChangerFormValues
                     ),
                     regulatingTerminalVlId: computeTapTerminalVlId(
                         ratioTapChangerFormValues,
@@ -545,8 +542,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         characteristics[EQUIPMENT_ID]
                     ),
                     regulatingTerminalType: computeRegulatingTerminalType(
-                        phaseTapChangerFormValues,
-                        characteristics[EQUIPMENT_ID]
+                        phaseTapChangerFormValues
                     ),
                     regulatingTerminalVlId: computeTapTerminalVlId(
                         phaseTapChangerFormValues,
@@ -556,7 +552,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...twt[PHASE_TAP_CHANGER],
                 };
             }
-
             createTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,
@@ -579,10 +574,14 @@ const TwoWindingsTransformerCreationDialog = ({
                 phaseTap,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(
+                    characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
+                ),
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(
+                    characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]
+                ),
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
@@ -633,6 +632,11 @@ const TwoWindingsTransformerCreationDialog = ({
                 titleId="CreateTwoWindingsTransformer"
                 subtitle={tabs}
                 searchCopy={searchCopy}
+                PaperProps={{
+                    sx: {
+                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                    },
+                }}
                 {...dialogProps}
             >
                 <Box
@@ -680,7 +684,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPE.TWO_WINDINGS_TRANSFORMER.name}
+                    equipmentType={
+                        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
+                    }
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

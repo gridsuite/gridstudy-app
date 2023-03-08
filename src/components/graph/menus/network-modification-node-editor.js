@@ -36,7 +36,6 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
-import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
@@ -62,8 +61,9 @@ import { UPDATE_TYPE } from '../../network/constants';
 import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
 import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
-import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
-import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
+import DeleteVoltageLevelOnLineDialog from '../../refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
+import DeleteAttachingLineDialog from '../../refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
+import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -145,6 +145,14 @@ export const CopyType = {
     COPY: 'COPY',
     MOVE: 'MOVE',
 };
+
+export function withVLsIdsAndTopology(studyUuid, currentTreeNodeId) {
+    const voltageLevelsIdsAndTopologyPromise = fetchVoltageLevelsIdAndTopology(
+        studyUuid,
+        currentTreeNodeId
+    );
+    return voltageLevelsIdsAndTopologyPromise;
+}
 
 const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
@@ -267,8 +275,7 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_CREATION: {
             label: 'CreateGenerator',
-            dialog: () =>
-                adapt(GeneratorCreationDialog, withVLs, withVLsIdsAndTopology),
+            dialog: () => adapt(GeneratorCreationDialog),
             icon: <AddIcon />,
         },
         GENERATOR_MODIFICATION: {
@@ -348,12 +355,12 @@ const NetworkModificationNodeEditor = () => {
         },
         DELETE_VOLTAGE_LEVEL_ON_LINE: {
             label: 'DeleteVoltageLevelOnLine',
-            dialog: () => adapt(DeleteVoltageLevelOnLineDialog, withLines),
+            dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
             icon: <AddIcon />,
         },
         DELETE_ATTACHING_LINE: {
             label: 'DeleteAttachingLine',
-            dialog: () => adapt(DeleteAttachingLineDialog, withLines),
+            dialog: () => adapt(DeleteAttachingLineDialog),
             icon: <AddIcon />,
         },
         EQUIPMENT_DELETION: {

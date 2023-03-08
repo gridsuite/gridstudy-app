@@ -220,7 +220,7 @@
 
     "descLfVoltageInitMode": "Mode d'initialisation du plan de tension\u00a0:",
     "descLfTransformerVoltageControlOn": "Simuler les régleurs en charge\u00a0:",
-    "descLfNoGeneratorReactiveLimits": "Prise en compte des limites de réactif des groupes\u00a0:",
+    "descLfUseReactiveLimits": "Prise en compte des limites de réactif des groupes\u00a0:",
     "descLfPhaseShifterRegulationOn": "Activer les régulations des transformateurs déphaseurs\u00a0:",
     "descLfTwtSplitShuntAdmittance": "Répartir la susceptance des transformateurs à deux enroulements entre primaire et secondaire\u00a0:",
     "descLfShuntCompensatorVoltageControlOn": "Activer la régulation de tension des bancs de compensation\u00a0:",
@@ -320,6 +320,7 @@
     "CheckAll": "Sélectionner tout / aucun",
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
+    "DeleteFromMenu": "Supprimer",
 
     "LockoutLine": "Consigner la ligne",
     "TripLine": "Déclencher la ligne",
@@ -474,9 +475,15 @@
     "ReactiveCapabilityCurve": "Limites de réactif par diagramme",
     "MinimumReactivePower": "Puissance réactive minimale",
     "MaximumReactivePower": "Puissance réactive maximale",
-    "P": "P",
-    "QminP": "QminP",
-    "QmaxP": "QmaxP",
+    "P": "P{labelSuffix}",
+    "QminP": "QminP{labelSuffix}",
+    "QmaxP": "QmaxP{labelSuffix}",
+    "QminPmax": "QminPmax",
+    "QmaxPmax": "QmaxPmax",
+    "Pmin": "Pmin",
+    "QminPmin": "QminPmin",
+    "QmaxPmin": "QmaxPmin",
+    "Pmax": "Pmax",
     "RegulatingTerminalGenerator": "Terminal distant réglé",
     "ShortCircuit": "Court-circuit",
     "TransientReactance": "Réactance transitoire",
@@ -513,6 +520,11 @@
     "SeriesReactanceText": "Réactance série",
     "ShuntConductanceText": "Conductance parallèle",
     "ShuntSusceptanceText": "Susceptance parallèle",
+    "Reactor": "Réactance",
+    "Capacitor": "Condensateur",
+    "QatNominalV": "Q à tension nominale",
+    "QatNominalVLabel": "Q à Unom (MVAr)",
+    "SusceptanceLabel": "Susceptance (S)",
 
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Sections identiques",
@@ -522,6 +534,7 @@
     "ShuntCompensatorErrorMaximumLessThanOne": "Le nombre maximum de sections doit être supérieur à 0",
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
+    "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
 
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
@@ -591,8 +604,9 @@
     "TwoWindingsTransformerPhaseTapChangerTab": "Déphaseur",
     "ConfigureRatioTapChanger": "Créer régleur",
     "ConfigurePhaseTapChanger": "Créer déphaseur",
-    "RegulationType": "Type de régulation",
     "RegulatedSide": "Côté réglé",
+    "RegulatedSide1": "Origine",
+    "RegulatedSide2": "Extrémité",
 
     "OnLoad": "En charge",
     "VoltageRegulation": "Réglage de tension",
@@ -657,7 +671,15 @@
     "HighTapRatio": "Rapport (prise max)",
     "ImportRegulationRule": "Importer une loi de régleur",
 
-    "GenerateTapRows": "Générer les prises",
+    "AddRows": "Ajouter des lignes",
+    "DeleteRows": "Supprimer des lignes",
+    "MoveUpRows": "Monter des lignes",
+    "MoveDownRows": "Descendre des lignes",
+
+    "AddRowsDialogTitle": "Combien de lignes voulez-vous ajouter ?",
+    "AddRowsButton": "Ajouter",
+
+    "DragAndDrop": "Glisser-déposer",
 
     "CreateDephasingRule": "Créer une loi de déphasage",
     "LowTapAlpha": "Déphasage (prise min)",

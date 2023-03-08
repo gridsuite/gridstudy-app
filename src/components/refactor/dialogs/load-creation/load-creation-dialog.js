@@ -33,6 +33,7 @@ import {
     getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 /**
  * Dialog to create a load in the network
@@ -189,7 +190,7 @@ const LoadCreationDialog = ({
                 editData ? editData.uuid : undefined,
                 load.connectivity?.connectionDirection ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                load.connectivity?.connectionName ?? null,
+                sanitizeString(load.connectivity?.connectionName),
                 load.connectivity?.connectionPosition ?? null
             ).catch((error) => {
                 snackError({
@@ -225,7 +226,7 @@ const LoadCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={'LOAD'}
+                    equipmentType={EQUIPMENT_TYPES.LOAD.type}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
