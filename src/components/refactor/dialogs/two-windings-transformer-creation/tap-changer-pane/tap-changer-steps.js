@@ -12,8 +12,8 @@ import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
 import IntegerInput from '../../../rhf-inputs/integer-input';
-import DndTable from '../../../../util/dnd-table';
-import DndTableAddRowsDialog from '../../../../util/dnd-table-add-rows-dialog';
+import DndTable from '../../../../util/dnd-table/dnd-table';
+import DndTableAddRowsDialog from '../../../../util/dnd-table/dnd-table-add-rows-dialog';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -325,6 +325,7 @@ const TapChangerSteps = ({
                 arrayFormName={`${tapChanger}.${STEPS}`}
                 useFieldArrayOutput={useFieldArrayOutput}
                 columnsDefinition={completedColumnsDefinition}
+                tableHeight={320}
                 handleAddButton={handleAddRowsButton}
                 handleDeleteButton={deleteSelectedRows}
                 handleUploadButton={handleImportTapRuleButton}
