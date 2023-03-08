@@ -19,10 +19,7 @@ const TabPanelLazy = (props) => {
     }, [selected, initialized]);
 
     return (
-        <div
-            style={{ height: '100%', display: selected ? 'flex' : 'none' }}
-            {...other}
-        >
+        <div style={{ display: selected ? 'inherit' : 'none' }} {...other}>
             {initialized && children}
         </div>
     );
