@@ -33,8 +33,8 @@ import ModificationDialog from 'components/refactor/dialogs/commons/modification
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
 import {
     getConnectivityEmptyFormData,
+    getConnectivityValidationSchema,
     getConnectivityFormData,
-    getConnectivityFormValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 
 const emptyFormData = {
@@ -45,7 +45,7 @@ const emptyFormData = {
     [REPLACING_LINE_1_NAME]: '',
     [REPLACING_LINE_2_ID]: '',
     [REPLACING_LINE_2_NAME]: '',
-    ...getConnectivityEmptyFormData(CONNECTIVITY, false),
+    ...getConnectivityEmptyFormData(),
 };
 
 const schema = yup
@@ -58,7 +58,7 @@ const schema = yup
         [REPLACING_LINE_1_NAME]: yup.string(),
         [REPLACING_LINE_2_ID]: yup.string().required(),
         [REPLACING_LINE_2_NAME]: yup.string(),
-        ...getConnectivityFormValidationSchema(CONNECTIVITY, false),
+        ...getConnectivityValidationSchema(),
     })
     .required();
 

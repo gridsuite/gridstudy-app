@@ -20,8 +20,8 @@ import {
 } from 'components/refactor/utils/field-constants';
 import yup from '../../utils/yup-config';
 
-const connectivityWithPositionValidationSchema = (id) => ({
-    [id]: yup.object().shape({
+export const getConnectivityPropertiesValidationSchema = () => {
+    return {
         [VOLTAGE_LEVEL]: yup
             .object()
             .nullable()
@@ -41,70 +41,47 @@ const connectivityWithPositionValidationSchema = (id) => ({
                 [ID]: yup.string(),
                 [NAME]: yup.string(),
             }),
+    };
+};
+
+export const getConnectivityWithPositionValidationSchema = (
+    id = CONNECTIVITY
+) => ({
+    [id]: yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
         [CONNECTION_POSITION]: yup.number().nullable(),
+        ...getConnectivityPropertiesValidationSchema(),
     }),
 });
 
-const connectivityValidationSchema = (id) => ({
-    [id]: yup.object().shape({
-        [VOLTAGE_LEVEL]: yup
-            .object()
-            .nullable()
-            .required()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string(),
-                [SUBSTATION_ID]: yup.string(),
-                [NOMINAL_VOLTAGE]: yup.string(),
-                [TOPOLOGY_KIND]: yup.string().nullable(),
-            }),
-        [BUS_OR_BUSBAR_SECTION]: yup
-            .object()
-            .nullable()
-            .required()
-            .shape({
-                [ID]: yup.string(),
-                [NAME]: yup.string(),
-            }),
-    }),
-});
-
-export const getConnectivityFormValidationSchema = (
-    id = CONNECTIVITY,
-    withPosition = true
-) => {
-    return withPosition
-        ? connectivityWithPositionValidationSchema(id)
-        : connectivityValidationSchema(id);
+export const getConnectivityValidationSchema = (id = CONNECTIVITY) => {
+    return {
+        [id]: yup.object().shape(getConnectivityPropertiesValidationSchema()),
+    };
 };
 
-const connectivityWIthPositionEmptyFormData = (id) => ({
-    [id]: {
+export const getConnectivityPropertiesEmptyFormData = () => {
+    return {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
+    };
+};
+
+export const getConnectivityWithPositionEmptyFormData = (
+    id = CONNECTIVITY
+) => ({
+    [id]: {
+        ...getConnectivityPropertiesEmptyFormData(),
         [CONNECTION_DIRECTION]: null,
         [CONNECTION_NAME]: '',
         [CONNECTION_POSITION]: null,
     },
 });
 
-const connectivityEmptyFormData = (id) => ({
-    [id]: {
-        [VOLTAGE_LEVEL]: null,
-        [BUS_OR_BUSBAR_SECTION]: null,
-    },
+export const getConnectivityEmptyFormData = (id = CONNECTIVITY) => ({
+    [id]: getConnectivityPropertiesEmptyFormData(),
 });
-
-export const getConnectivityEmptyFormData = (
-    id = CONNECTIVITY,
-    withPosition = true
-) => {
-    return withPosition
-        ? connectivityWIthPositionEmptyFormData(id)
-        : connectivityEmptyFormData(id);
-};
 
 export const getConnectivityVoltageLevelData = ({
     voltageLevelId,
