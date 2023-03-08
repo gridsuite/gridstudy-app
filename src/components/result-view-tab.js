@@ -21,6 +21,7 @@ import AlertInvalidNode from './util/alert-invalid-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
+import TabPanelLazy from './results/common/tab-panel-lazy';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -171,11 +172,22 @@ export const ResultViewTab = ({
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
-            {tabIndex === 0 && !disabled && renderLoadFlowResult()}
-            {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
-            {tabIndex === 2 && !disabled && renderShortCircuitAnalysisResult()}
-            {tabIndex === 3 && !disabled && renderSensitivityAnalysisResult()}
-            {tabIndex === 4 && !disabled && renderDynamicSimulationResult()}
+            {/* tab contents */}
+            <TabPanelLazy selected={tabIndex === 0 && !disabled}>
+                {renderLoadFlowResult()}
+            </TabPanelLazy>
+            <TabPanelLazy selected={tabIndex === 1 && !disabled}>
+                {renderSecurityAnalysisResult()}
+            </TabPanelLazy>
+            <TabPanelLazy selected={tabIndex === 2 && !disabled}>
+                {renderShortCircuitAnalysisResult()}
+            </TabPanelLazy>
+            <TabPanelLazy selected={tabIndex === 3 && !disabled}>
+                {renderSensitivityAnalysisResult()}
+            </TabPanelLazy>
+            <TabPanelLazy selected={tabIndex === 4 && !disabled}>
+                {renderDynamicSimulationResult()}
+            </TabPanelLazy>
         </Paper>
     );
 };
