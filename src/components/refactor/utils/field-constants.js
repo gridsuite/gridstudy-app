@@ -119,6 +119,14 @@ export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
 export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
 export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 
+// Voltage level
+export const BUS_BAR_SECTIONS = 'busbarSections';
+export const HORIZONTAL_POSITION = 'horizPos';
+export const VERTICAL_POSITION = 'vertPos';
+export const BUS_BAR_CONNECTIONS = 'busbarConnections';
+export const FROM_BBS = 'fromBBS';
+export const TO_BBS = 'toBBS';
+export const SWITCH_KIND = 'switchKind';
 // dnd table
 export const SELECTED = 'selected';
 
