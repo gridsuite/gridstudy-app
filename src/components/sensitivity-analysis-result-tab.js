@@ -8,7 +8,13 @@
 import { useNodeData } from './study-container';
 import { fetchSensitivityAnalysisResult } from '../utils/rest-api';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { CHANGE_WAYS, KeyedColumnsRowIndexer } from '@gridsuite/commons-ui';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -18,6 +24,8 @@ import TablePaginationActions from '@mui/material/TablePagination/TablePaginatio
 import LinearProgress from '@mui/material/LinearProgress';
 
 const sensitivityAnalysisResultInvalidations = ['sensitivityAnalysisResult'];
+
+const loaderTimeoutMillis = 500;
 
 export const FUNCTION_TYPES = Object.freeze([
     'BRANCH_ACTIVE_POWER_1',
@@ -125,6 +133,8 @@ function PagedSensitivityResult({
     const [version, setVersion] = useState();
     const [overAllCount, setOverAllCount] = useState(null);
     const [filteredCount, setFilteredCount] = useState(null);
+    const [allowsShowingLoader, setAllowsShowingLoader] = useState(false);
+    const timerRef = useRef(null);
 
     const synthRef = useRef();
     const [next, prev] = [{}, synthRef.current];
@@ -136,6 +146,10 @@ function PagedSensitivityResult({
     next.page = prev?.page;
     next.userRowsPerPage = prev?.userRowsPerPage;
     next.version = prev?.version;
+
+    useEffect(() => {
+        return () => clearTimeout(timerRef.current);
+    }, []);
 
     if (
         tellDiff('node', prev?.nodeUuid, nodeUuid) ||
@@ -223,7 +237,10 @@ function PagedSensitivityResult({
     if (!next.fetcher) {
         next.isFetchNeedy = true;
         next.askedFilterVersion = next.indexer?.filterVersion;
-        if (filteredCount >= userRowsPerPage) {
+        if (
+            filteredCount >= userRowsPerPage &&
+            userRowsPerPage === prev.userRowsPerPage
+        ) {
             next.page = page;
         } else {
             next.page = 0;
@@ -239,6 +256,11 @@ function PagedSensitivityResult({
                 chunkSize: userRowsPerPage,
             };
             addIndexerParamsToSelector(next.indexer, selector);
+            setAllowsShowingLoader(false);
+            timerRef.current = setTimeout(
+                () => setAllowsShowingLoader(true),
+                loaderTimeoutMillis
+            );
 
             return fetchSensitivityAnalysisResult(
                 studyUuid,
@@ -270,6 +292,7 @@ function PagedSensitivityResult({
     if (!prev?.isFetchNeedy) {
         // OK, next
     } else if (fetched && prev.fetched !== fetched) {
+        clearTimeout(timerRef.current);
         next.isFetchNeedy = false;
         setOverAllCount(fetched.totalSensitivitiesCount);
         setFilteredCount(fetched.filteredSensitivitiesCount);
@@ -287,16 +310,16 @@ function PagedSensitivityResult({
     synthRef.current = next;
 
     const result = (!next.isFetchNeedy && fetched?.sensitivities) || [];
+    const showsLoading = isLoading && allowsShowingLoader;
 
     return (
         <>
-            {isLoading && <LinearProgress />}
+            {showsLoading && <LinearProgress />}
             <SensitivityAnalysisResult
                 result={result}
                 nOrNkIndex={nOrNkIndex}
                 sensiToIndex={sensiKindIndex}
                 indexer={next.indexer}
-                isLoading
             />
             <TablePagination
                 component="div"
