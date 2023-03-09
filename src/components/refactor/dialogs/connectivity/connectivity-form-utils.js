@@ -55,7 +55,9 @@ export const getConnectivityWithPositionValidationSchema = (
     }),
 });
 
-export const getConnectivityValidationSchema = (id = CONNECTIVITY) => {
+export const getConnectivityWithoutPositionValidationSchema = (
+    id = CONNECTIVITY
+) => {
     return {
         [id]: yup.object().shape(getConnectivityPropertiesValidationSchema()),
     };
@@ -79,7 +81,9 @@ export const getConnectivityWithPositionEmptyFormData = (
     },
 });
 
-export const getConnectivityEmptyFormData = (id = CONNECTIVITY) => ({
+export const getConnectivityWithoutPositionEmptyFormData = (
+    id = CONNECTIVITY
+) => ({
     [id]: getConnectivityPropertiesEmptyFormData(),
 });
 
