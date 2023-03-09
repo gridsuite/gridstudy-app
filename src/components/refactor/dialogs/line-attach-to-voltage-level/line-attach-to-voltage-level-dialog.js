@@ -136,7 +136,7 @@ const LineAttachToVoltageLevelDialog = ({
             attachLine(
                 studyUuid,
                 currentNodeUuid,
-                editData ? editData.uuid : undefined,
+                editData?.uuid,
                 lineAttach[LINE_TO_ATTACH_TO_ID],
                 parseFloat(lineAttach[SLIDER_PERCENTAGE]),
                 lineAttach[ATTACHMENT_POINT_ID],
@@ -146,9 +146,9 @@ const LineAttachToVoltageLevelDialog = ({
                 lineAttach[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 attachmentLine,
                 lineAttach[LINE1_ID],
-                sanitizeString(lineAttach[LINE1_NAME] ?? ''),
+                sanitizeString(lineAttach[LINE1_NAME]),
                 lineAttach[LINE2_ID],
-                sanitizeString(lineAttach[LINE2_NAME] ?? '')
+                sanitizeString(lineAttach[LINE2_NAME])
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

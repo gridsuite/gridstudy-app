@@ -16,7 +16,7 @@ import {
     LINE2_NAME,
     LINE_TO_ATTACH_TO_ID,
 } from 'components/refactor/utils/field-constants';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
@@ -33,6 +33,7 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line-creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-creation-dialog';
+import { areIdsEqual, getObjectId } from 'components/refactor/utils/utils';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
@@ -90,15 +91,6 @@ const LineAttachToVoltageLevelForm = ({
         });
     }, [studyUuid, currentNode?.id]);
 
-    const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
-    const getObjectId = useCallback((object) => {
-        if (typeof object === 'string') {
-            return object;
-        }
-
-        return object.id;
-    }, []);
-
     const allVoltageLevelOptions = useMemo(() => {
         if (!voltageLevelToEdit) {
             return voltageLevelOptions;
@@ -116,7 +108,7 @@ const LineAttachToVoltageLevelForm = ({
         }
     }, [voltageLevelToEdit, voltageLevelOptions]);
 
-    const getFormatedBusOrBusbarSectionOptions = useCallback(() => {
+    const getFormatedBusOrBusbarSectionOptions = useMemo(() => {
         return voltageLevelToEdit?.busbarSections?.map((busbarSection) => {
             return {
                 id: busbarSection.id,
@@ -173,7 +165,9 @@ const LineAttachToVoltageLevelForm = ({
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            defaultBusOrBusbarSectionOptions={getFormatedBusOrBusbarSectionOptions()}
+            defaultBusOrBusbarSectionOptions={
+                getFormatedBusOrBusbarSectionOptions
+            }
             studyUuid={studyUuid}
             currentNode={currentNode}
             onChangeCallback={onVoltageLevelChange}

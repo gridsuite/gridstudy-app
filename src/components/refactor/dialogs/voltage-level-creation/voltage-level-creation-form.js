@@ -14,7 +14,7 @@ import {
     NOMINAL_VOLTAGE,
     SUBSTATION_ID,
 } from 'components/refactor/utils/field-constants';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from 'utils/rest-api';
 import {
     filledTextField,
@@ -27,6 +27,7 @@ import TextInput from 'components/refactor/rhf-inputs/text-input';
 import { VOLTAGE_LEVEL_COMPONENTS } from 'components/network/constants';
 import { BusBarSection } from './bus-bar-section/bus-bar-section';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
+import { getObjectId } from 'components/refactor/utils/utils';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -69,13 +70,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             formProps={filledTextField}
         />
     );
-    const getObjectId = useCallback((object) => {
-        if (typeof object === 'string') {
-            return object;
-        }
 
-        return object.id;
-    }, []);
     const substationField = (
         <AutocompleteInput
             allowNewValue

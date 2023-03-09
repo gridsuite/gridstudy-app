@@ -19,6 +19,7 @@ import {
     TOPOLOGY_KIND,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
+import { areIdsEqual, getObjectId } from 'components/refactor/utils/utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
@@ -117,19 +118,19 @@ export const ConnectivityForm = ({
         defaultBusOrBusbarSectionOptions,
     ]);
 
+    useEffect(() => {
+        if (busOrBusbarSectionOptions?.length > 0) {
+            setValue(
+                `${id}.${BUS_OR_BUSBAR_SECTION}`,
+                busOrBusbarSectionOptions[0]
+            );
+        }
+    }, [busOrBusbarSectionOptions, setValue, id]);
+
     const handleChange = useCallback(() => {
         onChangeCallback?.();
         setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
     }, [id, onChangeCallback, setValue]);
-
-    const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
-    const getObjectId = useCallback((object) => {
-        if (typeof object === 'string') {
-            return object;
-        }
-
-        return object.id;
-    }, []);
 
     const newVoltageLevelField = (
         <AutocompleteInput

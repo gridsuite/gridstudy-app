@@ -240,10 +240,10 @@ const LineCreationDialog = ({
                 line[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                sanitizeString(line[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? ''),
+                sanitizeString(line[CONNECTIVITY_1]?.[CONNECTION_NAME]),
                 line[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                sanitizeString(line[CONNECTIVITY_2]?.[CONNECTION_NAME] ?? ''),
+                sanitizeString(line[CONNECTIVITY_2]?.[CONNECTION_NAME]),
                 line[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 line[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
