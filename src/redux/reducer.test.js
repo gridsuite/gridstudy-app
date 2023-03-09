@@ -22,6 +22,7 @@ import {
     togglePinDiagram,
     closeDiagram,
     closeDiagrams,
+    stopDiagramBlink,
 } from './actions';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 
@@ -122,7 +123,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const initialState2 = {
         diagramStates: [
             {
-                id: 74,
+                id: 174,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
@@ -131,15 +132,16 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState2 = {
         diagramStates: [
             {
-                id: 74,
+                id: 174,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
+                needsToBlink: true,
             },
         ],
     };
 
     expect(
-        reducer(initialState2, openDiagram(74, DiagramType.VOLTAGE_LEVEL))
+        reducer(initialState2, openDiagram(174, DiagramType.VOLTAGE_LEVEL))
     ).toEqual(expectedState2);
 
     // Open a SLD that is already minimized
@@ -192,6 +194,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
                 id: 99,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
+                needsToBlink: true,
             },
         ],
     };
@@ -1297,4 +1300,49 @@ test('reducer.CLOSE_DIAGRAMS', () => {
     expect(reducer(initialState, closeDiagrams([6, 10, 30, 455]))).toEqual(
         expectedState
     );
+});
+
+test('reducer.STOP_DIAGRAM_BLINK', () => {
+    const initialState = {
+        diagramStates: [
+            {
+                id: 102,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 202,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.PINNED,
+                needsToBlink: true,
+            },
+            {
+                id: 302,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.OPENED,
+                needsToBlink: true,
+            },
+        ],
+    };
+    const expectedState = {
+        diagramStates: [
+            {
+                id: 102,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 202,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 302,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.OPENED,
+            },
+        ],
+    };
+
+    expect(reducer(initialState, stopDiagramBlink())).toEqual(expectedState);
 });

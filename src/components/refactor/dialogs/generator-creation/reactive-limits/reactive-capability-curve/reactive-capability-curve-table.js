@@ -14,8 +14,8 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { useStyles } from '../../../../../dialogs/dialogUtils';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
-import MidFormError from '../../../../rhf-inputs/error-inputs/mid-form-error';
 import ErrorInput from '../../../../rhf-inputs/error-inputs/error-input';
+import MidFormError from 'components/refactor/rhf-inputs/error-inputs/mid-form-error';
 
 export const ReactiveCapabilityCurveTable = ({
     id,

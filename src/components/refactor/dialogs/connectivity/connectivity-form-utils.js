@@ -20,8 +20,8 @@ import {
 } from 'components/refactor/utils/field-constants';
 import yup from '../../utils/yup-config';
 
-const connectivityValidationSchema = (id) => ({
-    [id]: yup.object().shape({
+export const getConnectivityPropertiesValidationSchema = () => {
+    return {
         [VOLTAGE_LEVEL]: yup
             .object()
             .nullable()
@@ -41,29 +41,51 @@ const connectivityValidationSchema = (id) => ({
                 [ID]: yup.string(),
                 [NAME]: yup.string(),
             }),
+    };
+};
+
+export const getConnectivityWithPositionValidationSchema = (
+    id = CONNECTIVITY
+) => ({
+    [id]: yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
         [CONNECTION_POSITION]: yup.number().nullable(),
+        ...getConnectivityPropertiesValidationSchema(),
     }),
 });
 
-export const getConnectivityFormValidationSchema = (id = CONNECTIVITY) => {
-    return connectivityValidationSchema(id);
+export const getConnectivityWithoutPositionValidationSchema = (
+    id = CONNECTIVITY
+) => {
+    return {
+        [id]: yup.object().shape(getConnectivityPropertiesValidationSchema()),
+    };
 };
 
-const connectivityEmptyFormData = (id) => ({
-    [id]: {
+export const getConnectivityPropertiesEmptyFormData = () => {
+    return {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
+    };
+};
+
+export const getConnectivityWithPositionEmptyFormData = (
+    id = CONNECTIVITY
+) => ({
+    [id]: {
+        ...getConnectivityPropertiesEmptyFormData(),
         [CONNECTION_DIRECTION]: null,
         [CONNECTION_NAME]: '',
         [CONNECTION_POSITION]: null,
     },
 });
 
-export const getConnectivityEmptyFormData = (id = CONNECTIVITY) => {
-    return connectivityEmptyFormData(id);
-};
+export const getConnectivityWithoutPositionEmptyFormData = (
+    id = CONNECTIVITY
+) => ({
+    [id]: getConnectivityPropertiesEmptyFormData(),
+});
 
 export const getConnectivityVoltageLevelData = ({
     voltageLevelId,
@@ -99,6 +121,55 @@ export const getConnectivityBusBarSectionData = ({
     };
 };
 
+export const getConnectivityPropertiesData = ({
+    voltageLevelId,
+    voltageLevelName,
+    voltageLevelSubstationId,
+    voltageLevelNominalVoltage,
+    voltageLevelTopologyKind,
+    busbarSectionId,
+    busbarSectionName,
+}) => {
+    return {
+        [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
+            voltageLevelId,
+            voltageLevelName,
+            voltageLevelSubstationId,
+            voltageLevelNominalVoltage,
+            voltageLevelTopologyKind,
+        }),
+        [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData({
+            busbarSectionId,
+            busbarSectionName,
+        }),
+    };
+};
+
+export const getConnectivityData = (
+    {
+        voltageLevelId,
+        voltageLevelName,
+        voltageLevelSubstationId,
+        voltageLevelNominalVoltage,
+        voltageLevelTopologyKind,
+        busbarSectionId,
+        busbarSectionName,
+    },
+    id = CONNECTIVITY
+) => {
+    return {
+        [id]: getConnectivityPropertiesData({
+            voltageLevelId,
+            voltageLevelName,
+            voltageLevelSubstationId,
+            voltageLevelNominalVoltage,
+            voltageLevelTopologyKind,
+            busbarSectionId,
+            busbarSectionName,
+        }),
+    };
+};
+
 export const getConnectivityFormData = (
     {
         voltageLevelId,
@@ -116,14 +187,12 @@ export const getConnectivityFormData = (
 ) => {
     return {
         [id]: {
-            [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
+            ...getConnectivityPropertiesData({
                 voltageLevelId,
                 voltageLevelName,
                 voltageLevelSubstationId,
                 voltageLevelNominalVoltage,
                 voltageLevelTopologyKind,
-            }),
-            [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData({
                 busbarSectionId,
                 busbarSectionName,
             }),

@@ -119,15 +119,20 @@ export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
 export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
 export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 
+// Voltage level
+export const BUS_BAR_SECTIONS = 'busbarSections';
+export const HORIZONTAL_POSITION = 'horizPos';
+export const VERTICAL_POSITION = 'vertPos';
+export const BUS_BAR_CONNECTIONS = 'busbarConnections';
+export const FROM_BBS = 'fromBBS';
+export const TO_BBS = 'toBBS';
+export const SWITCH_KIND = 'switchKind';
 // dnd table
 export const SELECTED = 'selected';
 
 // voltage-level-on-line, attach line to another line, etc
-export const ATTACHED_LINE_ID = 'attachedLineId';
 export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
 export const LINE_TO_ATTACH_TO_2_ID = 'lineToAttachTo2Id';
-export const REPLACING_LINE_ID = 'replacingLine1Id';
-export const REPLACING_LINE_NAME = 'replacingLine1Name';
 
 // generator scaling
 export const VARIATIONS = 'variations';
@@ -138,3 +143,12 @@ export const VARIATION_VALUE = 'variationValue';
 
 // elements and directories
 export const SPECIFIC_METADATA = 'specificMetadata';
+
+export const ATTACHED_LINE_ID = 'attachedLineId';
+export const VOLTAGE_LEVEL_ID = 'voltageLevelId';
+export const BUS_BAR_SECTION_ID = 'bbsBusId';
+export const REPLACING_LINE_1_ID = 'replacingLine1Id';
+export const REPLACING_LINE_2_ID = 'replacingLine2Id';
+export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
+export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
+

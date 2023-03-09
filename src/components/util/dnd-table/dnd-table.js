@@ -22,14 +22,14 @@ import {
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useIntl } from 'react-intl';
-import DndTableButtons from './dnd-table-buttons';
-import { TableNumericalInput } from '../refactor/rhf-inputs/table-inputs/table-numerical-input';
-import { ReadOnlyInput } from '../refactor/rhf-inputs/read-only-input';
-import CheckboxInput from '../refactor/rhf-inputs/booleans/checkbox-input';
+import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
+import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
+import { TableNumericalInput } from '../../refactor/rhf-inputs/table-inputs/table-numerical-input';
+import CheckboxInput from '../../refactor/rhf-inputs/booleans/checkbox-input';
 import PropTypes from 'prop-types';
-import { SELECTED } from '../refactor/utils/field-constants';
-import ErrorInput from '../refactor/rhf-inputs/error-inputs/error-input';
-import FieldErrorAlert from '../refactor/rhf-inputs/error-inputs/field-error-alert';
+import { SELECTED } from '../../refactor/utils/field-constants';
+import ErrorInput from '../../refactor/rhf-inputs/error-inputs/error-input';
+import FieldErrorAlert from '../../refactor/rhf-inputs/error-inputs/field-error-alert';
 
 function MultiCheckbox({
     arrayFormName,
@@ -82,6 +82,7 @@ const DndTable = ({
     arrayFormName,
     useFieldArrayOutput,
     columnsDefinition,
+    tableHeight,
     handleAddButton,
     handleDeleteButton,
     handleUploadButton,
@@ -255,7 +256,7 @@ const DndTable = ({
                             <TableContainer
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
-                                sx={{ height: 320 }}
+                                sx={{ height: tableHeight }}
                             >
                                 <Table stickyHeader size="small" padding="none">
                                     {renderTableHead()}
@@ -267,16 +268,21 @@ const DndTable = ({
                 </DragDropContext>
                 <ErrorInput name={arrayFormName} InputField={FieldErrorAlert} />
             </Grid>
-            <DndTableButtons
-                arrayFormName={arrayFormName}
-                handleAddButton={handleAddButton}
-                handleDeleteButton={handleDeleteButton}
-                handleMoveUpButton={moveUpSelectedRows}
-                handleMoveDownButton={moveDownSelectedRows}
-                handleUploadButton={handleUploadButton}
-                uploadButtonMessageId={uploadButtonMessageId}
-                disabled={disabled}
-            />
+            <Grid container item>
+                <DndTableBottomLeftButtons
+                    handleUploadButton={handleUploadButton}
+                    uploadButtonMessageId={uploadButtonMessageId}
+                    disabled={disabled}
+                />
+                <DndTableBottomRightButtons
+                    arrayFormName={arrayFormName}
+                    handleAddButton={handleAddButton}
+                    handleDeleteButton={handleDeleteButton}
+                    handleMoveUpButton={moveUpSelectedRows}
+                    handleMoveDownButton={moveDownSelectedRows}
+                    disabled={disabled}
+                />
+            </Grid>
         </Grid>
     );
 };
@@ -285,6 +291,7 @@ DndTable.prototype = {
     arrayFormName: PropTypes.string.isRequired,
     useFieldArrayOutput: PropTypes.object.isRequired,
     columnsDefinition: PropTypes.object.isRequired,
+    tableHeight: PropTypes.number.isRequired,
     handleAddButton: PropTypes.func.isRequired,
     handleDeleteButton: PropTypes.func.isRequired,
     handleUploadButton: PropTypes.func.isRequired,
