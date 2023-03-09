@@ -35,15 +35,17 @@ export const ReactiveCapabilityCurveTable = ({
                 oldQminP: undefined,
                 oldQmaxP: undefined,
             });
+            insert(rows.length - 1, {
+                p: undefined,
+                qminP: undefined,
+                qmaxP: undefined,
+                oldP: undefined,
+                oldQminP: undefined,
+                oldQmaxP: undefined,
+            });
+        } else {
+            insert(rows.length - 1, {});
         }
-        insert(rows.length - 1, {
-            p: undefined,
-            qminP: undefined,
-            qmaxP: undefined,
-            oldP: undefined,
-            oldQminP: undefined,
-            oldQmaxP: undefined,
-        });
     };
 
     const handleRemoveRow = (index) => {

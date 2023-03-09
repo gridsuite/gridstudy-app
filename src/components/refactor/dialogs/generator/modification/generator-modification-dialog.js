@@ -153,7 +153,7 @@ const GeneratorModificationDialog = ({
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-    }, [reset]);
+    }, [emptyFormData, reset]);
 
     useEffect(() => {
         if (editData) {
@@ -260,14 +260,17 @@ const GeneratorModificationDialog = ({
 
             const isVoltageRegulationOn =
                 generator[VOLTAGE_REGULATION] === true ||
-                (generator[VOLTAGE_REGULATION] === null &&
-                    generator[VOLTAGE_REGULATION_ON] === true);
+                ((generator[VOLTAGE_REGULATION] === null ||
+                    generator[VOLTAGE_REGULATION] === undefined) &&
+                    (generator[VOLTAGE_REGULATION_ON] === true ||
+                        generator[VOLTAGE_REGULATION_ON] === undefined));
 
             const isReactiveCapabilityCurveOn =
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
             const isDistantRegulation =
-                generator[VOLTAGE_REGULATION] &&
+                (generator[VOLTAGE_REGULATION] === null ||
+                    generator[VOLTAGE_REGULATION] === undefined) &&
                 generator[VOLTAGE_REGULATION_TYPE] ===
                     REGULATION_TYPES.DISTANT.id;
 

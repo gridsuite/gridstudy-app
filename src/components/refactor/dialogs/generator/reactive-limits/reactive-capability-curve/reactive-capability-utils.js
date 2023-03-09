@@ -25,7 +25,7 @@ const getRowSchema = () =>
     yup.object().shape({
         [OLD_Q_MAX_P]: yup.number().nullable(),
         [OLD_Q_MIN_P]: yup.number().nullable(),
-        [OLD_P]: yup.number(),
+        [OLD_P]: yup.number().nullable(),
         [Q_MAX_P]: yup
             .number()
             .nullable()

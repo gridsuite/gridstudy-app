@@ -61,13 +61,14 @@ const VoltageRegulation = ({
             generatorInfos?.regulatingTerminalVlId ||
             generatorInfos?.regulatingTerminalConnectableId
         ) {
-            setValue(VOLTAGE_REGULATION_TYPE, REGULATION_TYPES.DISTANT);
+            setValue(VOLTAGE_REGULATION_TYPE, REGULATION_TYPES.DISTANT.id);
         }
     }, [generatorInfos, setValue]);
 
-    const isDistantRegulation = generatorInfos?.regulatingTerminalVlId
-        ? voltageRegulationType?.id === REGULATION_TYPES.DISTANT.id
-        : voltageRegulationType === REGULATION_TYPES.DISTANT.id;
+    const isDistantRegulation =
+        typeof voltageRegulationType === 'object'
+            ? voltageRegulationType?.id === REGULATION_TYPES.DISTANT.id
+            : voltageRegulationType === REGULATION_TYPES.DISTANT.id;
 
     const voltageRegulationTypeField = (
         <SelectInput

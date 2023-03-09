@@ -89,6 +89,7 @@ const GeneratorModificationForm = ({
     });
 
     useEffect(() => {
+        clearErrors();
         setGeneratorInfos(null);
         if (watchEquipmentId) {
             fetchEquipmentInfos(
@@ -132,6 +133,7 @@ const GeneratorModificationForm = ({
         setValue,
         setSelectedGeneratorInfos,
         getValues,
+        clearErrors,
     ]);
 
     const energySourceLabelId = getEnergySourceLabel(

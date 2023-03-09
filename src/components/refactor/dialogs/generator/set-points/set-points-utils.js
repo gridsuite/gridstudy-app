@@ -65,14 +65,14 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
         .string()
         .nullable()
         .when([VOLTAGE_REGULATION], {
-            is: () => !isGeneratorModification,
+            is: (value) => !value && !isGeneratorModification,
             then: (schema) => schema.required(),
         }),
     [VOLTAGE_SET_POINT]: yup
         .number()
         .nullable()
         .when([VOLTAGE_REGULATION], {
-            is: true,
+            is: (value) => value && !isGeneratorModification,
             then: (schema) => schema.required(),
         }),
     [Q_PERCENT]: yup
@@ -92,8 +92,10 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
         })
         .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
             is: (voltageRegulation, voltageRegulationType) =>
-                voltageRegulation &&
-                voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+                (voltageRegulation &&
+                    voltageRegulationType === REGULATION_TYPES.DISTANT.id) ||
+                (isGeneratorModification &&
+                    voltageRegulationType === REGULATION_TYPES.DISTANT.id),
             then: (schema) => schema.required(),
         }),
     [EQUIPMENT]: yup
@@ -106,8 +108,10 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
         })
         .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
             is: (voltageRegulation, voltageRegulationType) =>
-                voltageRegulation &&
-                voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+                (voltageRegulation &&
+                    voltageRegulationType === REGULATION_TYPES.DISTANT.id) ||
+                (isGeneratorModification &&
+                    voltageRegulationType === REGULATION_TYPES.DISTANT.id),
             then: (schema) => schema.required(),
         }),
 });
