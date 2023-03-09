@@ -77,7 +77,11 @@ export const CopyType = {
     CUT: 'CUT',
 };
 
-const noSelectionForCopy = { nodeId: null, copyType: null };
+const noSelectionForCopy = {
+    sourceStudyId: null,
+    nodeId: null,
+    copyType: null,
+};
 
 export const NetworkModificationTreePane = ({
     studyUuid,
@@ -88,6 +92,53 @@ export const NetworkModificationTreePane = ({
     const { snackError, snackInfo } = useSnackMessage();
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
+    const isInitiatingCopyTab = useRef(false);
+
+    const dispatchSelectedNodeForCopy = useCallback(
+        (sourceStudyId, nodeId, copyType) => {
+            dispatch(
+                setSelectedNodeForCopy({
+                    sourceStudyId: sourceStudyId,
+                    nodeId: nodeId,
+                    copyType: copyType,
+                })
+            );
+        },
+        [dispatch]
+    );
+
+    const [broadcastChannel] = useState(() => {
+        const broadcast = new BroadcastChannel('nodeCopyChannel');
+        broadcast.onmessage = (event) => {
+            console.info('message received from broadcast channel');
+            console.info(event.data);
+            isInitiatingCopyTab.current = false;
+            if (
+                JSON.stringify(noSelectionForCopy) ===
+                JSON.stringify(event.data)
+            ) {
+                dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+                snackInfo({
+                    messageId: 'CopiedNodeInvalidationMessage',
+                });
+            } else {
+                dispatchSelectedNodeForCopy(
+                    event.data.sourceStudyId,
+                    event.data.nodeId,
+                    CopyType.COPY
+                );
+            }
+        };
+        return broadcast;
+    });
+
+    useEffect(() => {
+        //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
+        window.addEventListener('beforeunload', (event) => {
+            broadcastChannel.postMessage(noSelectionForCopy);
+        });
+        //broadcastChannel doesn't change
+    }, [broadcastChannel]);
 
     const [activeNode, setActiveNode] = useState(null);
 
@@ -160,6 +211,20 @@ export const NetworkModificationTreePane = ({
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeDeleted'
             ) {
+                //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
+                if (
+                    true === isInitiatingCopyTab.current &&
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) =>
+                            nodeId === selectedNodeForCopyRef.current.nodeId
+                    )
+                ) {
+                    dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+                    snackInfo({
+                        messageId: 'CopiedNodeInvalidationMessage',
+                    });
+                    broadcastChannel.postMessage(noSelectionForCopy);
+                }
                 dispatch(
                     networkModificationTreeNodesRemoved(
                         studyUpdatedForce.eventData.headers['nodes']
@@ -180,19 +245,29 @@ export const NetworkModificationTreePane = ({
                     );
                 }
                 if (
+                    true === isInitiatingCopyTab.current &&
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) =>
                             nodeId === selectedNodeForCopyRef.current.nodeId
                     )
                 ) {
+                    //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
                     dispatch(setSelectedNodeForCopy(noSelectionForCopy));
                     snackInfo({
                         messageId: 'CopiedNodeInvalidationMessage',
                     });
+                    broadcastChannel.postMessage(noSelectionForCopy);
                 }
             }
         }
-    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch, snackInfo]);
+    }, [
+        studyUuid,
+        studyUpdatedForce,
+        updateNodes,
+        snackInfo,
+        dispatch,
+        broadcastChannel,
+    ]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
@@ -219,17 +294,20 @@ export const NetworkModificationTreePane = ({
         [studyUuid, snackError]
     );
 
-    const dispatchSelectedNodeForCopy = (nodeId, copyType) => {
-        dispatch(
-            setSelectedNodeForCopy({
-                nodeId: nodeId,
-                copyType: copyType,
-            })
-        );
-    };
-
     const handleCopyNode = (nodeId) => {
-        dispatchSelectedNodeForCopy(nodeId, CopyType.COPY);
+        console.info(
+            'node with id ' +
+                nodeId +
+                ' from study ' +
+                studyUuid +
+                ' selected for copy'
+        );
+        isInitiatingCopyTab.current = true;
+        dispatchSelectedNodeForCopy(studyUuid, nodeId, CopyType.COPY);
+        broadcastChannel.postMessage({
+            sourceStudyId: studyUuid,
+            nodeId: nodeId,
+        });
     };
 
     const handleCutNode = (nodeId) => {
@@ -256,6 +334,7 @@ export const NetworkModificationTreePane = ({
                 dispatch(setSelectedNodeForCopy(noSelectionForCopy));
             } else {
                 copyTreeNode(
+                    selectedNodeForCopyRef.current.sourceStudyId,
                     studyUuid,
                     selectedNodeForCopyRef.current.nodeId,
                     referenceNodeId,
@@ -280,11 +359,8 @@ export const NetworkModificationTreePane = ({
                     headerId: 'NodeDeleteError',
                 });
             });
-            if (element.id === selectedNodeForCopyRef.current.nodeId) {
-                dispatch(setSelectedNodeForCopy(noSelectionForCopy));
-            }
         },
-        [studyUuid, snackError, dispatch]
+        [studyUuid, snackError]
     );
 
     const handleBuildNode = useCallback(
