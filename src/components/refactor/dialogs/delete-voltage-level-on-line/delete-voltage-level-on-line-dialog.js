@@ -9,8 +9,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
-    REPLACING_LINE_ID,
-    REPLACING_LINE_NAME,
+    REPLACING_LINE_1_ID,
+    REPLACING_LINE_1_NAME,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
@@ -24,8 +24,8 @@ import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
     [LINE_TO_ATTACH_TO_2_ID]: null,
-    [REPLACING_LINE_ID]: '',
-    [REPLACING_LINE_NAME]: '',
+    [REPLACING_LINE_1_ID]: '',
+    [REPLACING_LINE_1_NAME]: '',
 };
 
 const schema = yup
@@ -33,8 +33,8 @@ const schema = yup
     .shape({
         [LINE_TO_ATTACH_TO_1_ID]: yup.string().nullable().required(),
         [LINE_TO_ATTACH_TO_2_ID]: yup.string().nullable().required(),
-        [REPLACING_LINE_ID]: yup.string().required(),
-        [REPLACING_LINE_NAME]: yup.string(),
+        [REPLACING_LINE_1_ID]: yup.string().required(),
+        [REPLACING_LINE_1_NAME]: yup.string(),
     })
     .required();
 
@@ -67,8 +67,8 @@ const DeleteVoltageLevelOnLineDialog = ({
             reset({
                 [LINE_TO_ATTACH_TO_1_ID]: editData.lineToAttachTo1Id,
                 [LINE_TO_ATTACH_TO_2_ID]: editData.lineToAttachTo2Id,
-                [REPLACING_LINE_ID]: editData.replacingLine1Id,
-                [REPLACING_LINE_NAME]: editData.replacingLine1Name,
+                [REPLACING_LINE_1_ID]: editData.replacingLine1Id,
+                [REPLACING_LINE_1_NAME]: editData.replacingLine1Name,
             });
         },
         [reset]
@@ -88,8 +88,8 @@ const DeleteVoltageLevelOnLineDialog = ({
                 editData ? editData.uuid : undefined,
                 formData[LINE_TO_ATTACH_TO_1_ID],
                 formData[LINE_TO_ATTACH_TO_2_ID],
-                formData[REPLACING_LINE_ID],
-                sanitizeString(formData[REPLACING_LINE_NAME])
+                formData[REPLACING_LINE_1_ID],
+                sanitizeString(formData[REPLACING_LINE_1_NAME])
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
