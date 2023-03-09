@@ -29,7 +29,7 @@
         "mjolnir.js": "^2.4.0",
         "mui-nested-menu": "^2.0.0",
         "notistack": "^2.0.3",
-        "plotly.js": "^2.17.0",
+        "plotly.js-basic-dist-min": "^2.17.0",
         "qs": "^6.9.1",
         "react": "^18.0.0",
         "react-beautiful-dnd": "^13.1.0",

@@ -6,11 +6,15 @@
  */
 import PropTypes from 'prop-types';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Plot from 'react-plotly.js';
+import Plotly from 'plotly.js-basic-dist-min';
+import createPlotlyComponent from 'react-plotly.js/factory';
 import { baseColors, defaultLayout } from './plot-config';
 import { eventCenter, PlotEvents } from './plot-events';
 import { SeriesType } from './plot-types';
 import { debounce } from '@mui/material';
+
+// create own Plot by using Plotly in basic dist for the reason of big size in standard dist plotly.js
+const Plot = createPlotlyComponent(Plotly);
 
 const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
     // these states used for responsible
