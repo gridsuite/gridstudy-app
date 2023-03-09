@@ -121,3 +121,13 @@ export const VARIATION_MODE = [
     { id: 'STACKING_UP', label: 'StackingUp' },
     { id: 'VENTILATION', label: 'Ventilation' },
 ];
+
+export const VOLTAGE_LEVEL_COMPONENTS = {
+    BUS_BAR_SECTION_CREATION: 'BusBarSectionCreation',
+    BUS_BAR_SECTION_CONNECTION: 'BusBarSectionConnection',
+};
+
+export const SWITCH_TYPE = [
+    { id: 'BREAKER', label: 'Breaker' },
+    { id: 'DISCONNECTOR', label: 'Disconnector' },
+];
