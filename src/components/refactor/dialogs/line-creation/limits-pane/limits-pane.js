@@ -11,16 +11,106 @@ import {
     CURRENT_LIMITS_2,
     LIMITS,
     PERMANENT_LIMIT,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_VALUE,
+    TEMPORARY_LIMITS,
+    SELECTED,
 } from 'components/refactor/utils/field-constants';
 import FloatInput from '../../../rhf-inputs/float-input';
+import { useIntl } from 'react-intl';
 import {
     AmpereAdornment,
     gridItem,
     GridSection,
 } from '../../../../dialogs/dialogUtils';
-import React from 'react';
+import React, { useMemo } from 'react';
+import DndTable from '../../../../util/dnd-table/dnd-table';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 
 const LimitsPane = ({ id = LIMITS }) => {
+    const intl = useIntl();
+
+    const columnsDefinition = useMemo(() => {
+        return [
+            {
+                label: 'TemporaryLimitName',
+                dataKey: TEMPORARY_LIMIT_NAME,
+                initialValue: null,
+                numeric: false,
+            },
+            {
+                label: 'TemporaryLimitDuration',
+                dataKey: TEMPORARY_LIMIT_DURATION,
+                initialValue: 0,
+                editable: true,
+                numeric: true,
+            },
+            {
+                label: 'TemporaryLimitValue',
+                dataKey: TEMPORARY_LIMIT_VALUE,
+                initialValue: 0,
+                editable: true,
+                numeric: true,
+            },
+        ].map((column) => ({
+            ...column,
+            label: intl.formatMessage({ id: column.label }).toUpperCase(),
+        }));
+    }, [intl]);
+
+    const { getValues } = useFormContext();
+
+    const useFieldArrayOutputTemporaryLimits1 = useFieldArray({
+        name: `${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`,
+    });
+
+    const useFieldArrayOutputTemporaryLimits2 = useFieldArray({
+        name: `${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`,
+    });
+
+    function getRowsToDelete(allRows) {
+        let rowsToDelete = [];
+        for (let i = 0; i < allRows.length; i++) {
+            if (allRows[i][SELECTED]) {
+                rowsToDelete.push(i);
+            }
+        }
+        return rowsToDelete;
+    }
+
+    function deleteSelectedRows1() {
+        const rowsToDelete = getRowsToDelete(
+            getValues(`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)
+        );
+        useFieldArrayOutputTemporaryLimits1.remove(rowsToDelete);
+    }
+
+    function deleteSelectedRows2() {
+        const rowsToDelete = getRowsToDelete(
+            getValues(`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)
+        );
+        useFieldArrayOutputTemporaryLimits2.remove(rowsToDelete);
+    }
+
+    const newRowData = useMemo(() => {
+        return columnsDefinition.slice(1).reduce(
+            (accumulator, currentValue) => ({
+                ...accumulator,
+                [currentValue.dataKey]: currentValue.initialValue,
+            }),
+            { [SELECTED]: false }
+        );
+    }, [columnsDefinition]);
+
+    function handleAddRowsButton1() {
+        useFieldArrayOutputTemporaryLimits1.append(newRowData);
+    }
+
+    function handleAddRowsButton2() {
+        useFieldArrayOutputTemporaryLimits2.append(newRowData);
+    }
+
     const permanentCurrentLimit1Field = (
         <FloatInput
             name={`${id}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`}
@@ -43,12 +133,34 @@ const LimitsPane = ({ id = LIMITS }) => {
             <Grid container spacing={2}>
                 {gridItem(permanentCurrentLimit1Field, 4)}
             </Grid>
-            <GridSection title="TemporaryCurrentLimitText" heading="4" />
+            <GridSection title="TemporaryCurrentLimitsText" heading="4" />
+            <DndTable
+                arrayFormName={`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`}
+                useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1}
+                handleAddButton={handleAddRowsButton1}
+                handleDeleteButton={deleteSelectedRows1}
+                columnsDefinition={columnsDefinition}
+                tableHeight={270}
+                disabled={false}
+                withLeftButtons={false}
+            />
             <GridSection title="Side2" />
             <Grid container spacing={2}>
                 {gridItem(permanentCurrentLimit2Field, 4)}
             </Grid>
-            <GridSection title="TemporaryCurrentLimitText" heading="4" />
+            <GridSection title="TemporaryCurrentLimitsText" heading="4" />
+            <Grid container spacing={2}>
+                <DndTable
+                    arrayFormName={`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`}
+                    useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2}
+                    handleAddButton={handleAddRowsButton2}
+                    handleDeleteButton={deleteSelectedRows2}
+                    columnsDefinition={columnsDefinition}
+                    tableHeight={270}
+                    disabled={false}
+                    withLeftButtons={false}
+                />
+            </Grid>
         </>
     );
 };

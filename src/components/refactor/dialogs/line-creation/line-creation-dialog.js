@@ -29,6 +29,7 @@ import {
     VOLTAGE_LEVEL,
     CHARACTERISTICS,
     LIMITS,
+    TEMPORARY_LIMITS,
 } from 'components/refactor/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
@@ -156,6 +157,8 @@ const LineCreationDialog = ({
                 ...getLimitsFormData({
                     permanentLimit1: line.permanentLimit1,
                     permanentLimit2: line.permanentLimit2,
+                    temporaryLimits1: line.temporaryLimits1,
+                    temporaryLimits2: line.temporaryLimits2,
                 }),
             },
             { keepDefaultValues: true }
@@ -199,6 +202,8 @@ const LineCreationDialog = ({
                 ...getLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
+                    temporaryLimits1: line.currentLimits1?.temporaryLimits,
+                    temporaryLimits2: line.currentLimits2?.temporaryLimits,
                 }),
             });
         },
@@ -262,6 +267,8 @@ const LineCreationDialog = ({
                 characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
                 limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
+                limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS],
+                limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS],
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
                 sanitizeString(

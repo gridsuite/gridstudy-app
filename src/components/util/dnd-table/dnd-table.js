@@ -89,6 +89,7 @@ const DndTable = ({
     handleUploadButton,
     uploadButtonMessageId,
     disabled,
+    withLeftButtons = true,
 }) => {
     const intl = useIntl();
 
@@ -270,11 +271,13 @@ const DndTable = ({
                 <ErrorInput name={arrayFormName} InputField={FieldErrorAlert} />
             </Grid>
             <Grid container item>
-                <DndTableBottomLeftButtons
-                    handleUploadButton={handleUploadButton}
-                    uploadButtonMessageId={uploadButtonMessageId}
-                    disabled={disabled}
-                />
+                {withLeftButtons && (
+                    <DndTableBottomLeftButtons
+                        handleUploadButton={handleUploadButton}
+                        uploadButtonMessageId={uploadButtonMessageId}
+                        disabled={disabled}
+                    />
+                )}
                 <DndTableBottomRightButtons
                     arrayFormName={arrayFormName}
                     handleAddButton={handleAddButton}

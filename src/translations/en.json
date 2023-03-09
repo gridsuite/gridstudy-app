@@ -527,7 +527,10 @@
     "SusceptanceLabel": "Susceptance (S)",
     "LineLimitsTab": "Limits",
     "LineCharacteristicsTab": "Characteristics",
-    "TemporaryCurrentLimitText": "Temporary current limits",
+    "TemporaryCurrentLimitsText": "Temporary current limits",
+    "TemporaryLimitDuration": "Duration",
+    "TemporaryLimitName": "Name",
+    "TemporaryLimitValue": "Value",
 
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",
@@ -597,6 +600,8 @@
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
+    "temporaryCurrentLimitGreaterThanZero": "The temporary current limit value must be strictly positive",
+    "acceptableDurationGreaterThanZero": "The acceptable duration must be strictly positive",
 
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",

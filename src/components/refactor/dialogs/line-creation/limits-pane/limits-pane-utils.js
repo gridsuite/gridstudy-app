@@ -10,6 +10,10 @@ import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     PERMANENT_LIMIT,
+    TEMPORARY_LIMITS,
+    TEMPORARY_LIMIT_NAME,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_VALUE,
 } from 'components/refactor/utils/field-constants';
 import yup from '../../../utils/yup-config';
 
@@ -20,12 +24,38 @@ const limitsValidationSchema = (id) => ({
                 .number()
                 .nullable()
                 .positive('permanentCurrentLimitGreaterThanZero'),
+            [TEMPORARY_LIMITS]: yup.array().of(
+                yup.object().shape({
+                    [TEMPORARY_LIMIT_NAME]: yup.string().required(),
+                    [TEMPORARY_LIMIT_DURATION]: yup
+                        .number()
+                        .required()
+                        .positive('acceptableDurationGreaterThanZero'),
+                    [TEMPORARY_LIMIT_VALUE]: yup
+                        .number()
+                        .required()
+                        .positive('temporaryCurrentLimitGreaterThanZero'),
+                })
+            ),
         }),
         [CURRENT_LIMITS_2]: yup.object().shape({
             [PERMANENT_LIMIT]: yup
                 .number()
                 .nullable()
                 .positive('permanentCurrentLimitGreaterThanZero'),
+            [TEMPORARY_LIMITS]: yup.array().of(
+                yup.object().shape({
+                    [TEMPORARY_LIMIT_NAME]: yup.string().required(),
+                    [TEMPORARY_LIMIT_DURATION]: yup
+                        .number()
+                        .required()
+                        .positive('acceptableDurationGreaterThanZero'),
+                    [TEMPORARY_LIMIT_VALUE]: yup
+                        .number()
+                        .required()
+                        .positive('temporaryCurrentLimitGreaterThanZero'),
+                })
+            ),
         }),
     }),
 });
@@ -38,9 +68,11 @@ const limitsEmptyFormData = (id) => ({
     [id]: {
         [CURRENT_LIMITS_1]: {
             [PERMANENT_LIMIT]: null,
+            [TEMPORARY_LIMITS]: [],
         },
         [CURRENT_LIMITS_2]: {
             [PERMANENT_LIMIT]: null,
+            [TEMPORARY_LIMITS]: [],
         },
     },
 });
@@ -50,15 +82,22 @@ export const getLimitsEmptyFormData = (id = LIMITS) => {
 };
 
 export const getLimitsFormData = (
-    { permanentLimit1 = null, permanentLimit2 = null },
+    {
+        permanentLimit1 = null,
+        permanentLimit2 = null,
+        temporaryLimits1 = [],
+        temporaryLimits2 = [],
+    },
     id = LIMITS
 ) => ({
     [id]: {
         [CURRENT_LIMITS_1]: {
             [PERMANENT_LIMIT]: permanentLimit1,
+            [TEMPORARY_LIMITS]: temporaryLimits1,
         },
         [CURRENT_LIMITS_2]: {
             [PERMANENT_LIMIT]: permanentLimit2,
+            [TEMPORARY_LIMITS]: temporaryLimits2,
         },
     },
 });
