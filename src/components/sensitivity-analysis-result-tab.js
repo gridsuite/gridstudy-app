@@ -25,7 +25,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 const sensitivityAnalysisResultInvalidations = ['sensitivityAnalysisResult'];
 
-const loaderTimeoutMillis = 800;
+const loaderTimeoutMillis = 500;
 
 export const FUNCTION_TYPES = Object.freeze([
     'BRANCH_ACTIVE_POWER_1',
