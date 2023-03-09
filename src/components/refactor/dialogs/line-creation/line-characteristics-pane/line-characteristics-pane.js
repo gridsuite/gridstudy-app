@@ -38,7 +38,6 @@ const LineCharacteristicsPane = ({
     currentNode,
     voltageLevelOptions,
 }) => {
-    // CHARACTERISTICS TAP PANE
     const lineIdField = (
         <TextInput
             name={`${id}.${EQUIPMENT_ID}`}

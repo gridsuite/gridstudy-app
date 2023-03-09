@@ -20,8 +20,8 @@ import {
 } from 'components/refactor/utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
-    getConnectivityEmptyFormData,
-    getConnectivityFormValidationSchema,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
 } from '../../connectivity/connectivity-form-utils';
 
 const lineValidationSchema = (id, displayConnectivity) => ({
@@ -35,9 +35,9 @@ const lineValidationSchema = (id, displayConnectivity) => ({
         [SHUNT_SUSCEPTANCE_2]: yup.number().nullable(),
         [SHUNT_CONDUCTANCE_2]: yup.number().nullable(),
         ...(displayConnectivity &&
-            getConnectivityFormValidationSchema(CONNECTIVITY_1)),
+            getConnectivityWithPositionValidationSchema(CONNECTIVITY_1)),
         ...(displayConnectivity &&
-            getConnectivityFormValidationSchema(CONNECTIVITY_2)),
+            getConnectivityWithPositionValidationSchema(CONNECTIVITY_2)),
     }),
 });
 
@@ -55,8 +55,8 @@ const lineEmptyFormData = (id) => ({
         [SHUNT_CONDUCTANCE_1]: null,
         [SHUNT_SUSCEPTANCE_2]: null,
         [SHUNT_CONDUCTANCE_2]: null,
-        ...getConnectivityEmptyFormData(CONNECTIVITY_1),
-        ...getConnectivityEmptyFormData(CONNECTIVITY_2),
+        ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1),
+        ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_2),
     },
 });
 

@@ -272,11 +272,11 @@ const DndTable = ({
             </Grid>
             <Grid container item>
                 {withLeftButtons && (
-                  <DndTableBottomLeftButtons
-                    handleUploadButton={handleUploadButton}
-                    uploadButtonMessageId={uploadButtonMessageId}
-                    disabled={disabled}
-                  />
+                    <DndTableBottomLeftButtons
+                        handleUploadButton={handleUploadButton}
+                        uploadButtonMessageId={uploadButtonMessageId}
+                        disabled={disabled}
+                    />
                 )}
                 <DndTableBottomRightButtons
                     arrayFormName={arrayFormName}
