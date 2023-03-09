@@ -149,6 +149,17 @@ export const SLIDER_PERCENTAGE = 'sliderPercentage';
 // voltage-level-on-line, attach line to another line, etc
 export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
 export const LINE_TO_ATTACH_TO_2_ID = 'lineToAttachTo2Id';
+
+// generator scaling
+export const VARIATIONS = 'variations';
+export const VARIATION_MODE = 'variationMode';
+export const FILTERS = 'filters';
+export const VARIATION_TYPE = 'variationType';
+export const VARIATION_VALUE = 'variationValue';
+
+// elements and directories
+export const SPECIFIC_METADATA = 'specificMetadata';
+
 export const ATTACHED_LINE_ID = 'attachedLineId';
 export const VOLTAGE_LEVEL_ID = 'voltageLevelId';
 export const BUS_BAR_SECTION_ID = 'bbsBusId';
