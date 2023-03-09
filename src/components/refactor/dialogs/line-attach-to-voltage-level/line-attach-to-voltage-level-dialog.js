@@ -29,9 +29,9 @@ import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
-    getConnectivityEmptyFormData,
-    getConnectivityFormData,
-    getConnectivityFormValidationSchema,
+    getConnectivityWithoutPositionEmptyFormData,
+    getConnectivityData,
+    getConnectivityWithoutPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LineSplitWithVoltageLevelForm from './line-attach-to-voltage-level-form';
 import {
@@ -51,7 +51,7 @@ const emptyFormData = {
     [LINE2_ID]: '',
     [LINE2_NAME]: '',
     ...getPercentageAreaEmptyFormData(),
-    ...getConnectivityEmptyFormData(),
+    ...getConnectivityWithoutPositionEmptyFormData(),
 };
 
 const schema = yup
@@ -66,7 +66,7 @@ const schema = yup
         [LINE2_ID]: yup.string().required(),
         [LINE2_NAME]: yup.string(),
         ...getPercentageAreaValidationSchema(),
-        ...getConnectivityFormValidationSchema(),
+        ...getConnectivityWithoutPositionValidationSchema(),
     })
     .required();
 
@@ -112,7 +112,7 @@ const LineAttachToVoltageLevelDialog = ({
                 ...getPercentageAreaData({
                     percent: lineAttach.percent,
                 }),
-                ...getConnectivityFormData({
+                ...getConnectivityData({
                     busbarSectionId: lineAttach.bbsOrBusId,
                     voltageLevelId:
                         lineAttach?.existingVoltageLevelId ??
@@ -242,7 +242,7 @@ const LineAttachToVoltageLevelDialog = ({
                 setNewVoltageLevel(preparedVoltageLevel);
                 reset({
                     ...methods.getValues(),
-                    ...getConnectivityFormData({
+                    ...getConnectivityData({
                         busbarSectionId:
                             preparedVoltageLevel.busbarSections[0].id,
                         voltageLevelId: preparedVoltageLevel.equipmentId,

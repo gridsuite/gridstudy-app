@@ -32,7 +32,7 @@ import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line-creation/line-creation-dialog';
-import VoltageLevelCreationDialog from 'components/dialogs/voltage-level-creation-dialog';
+import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-creation-dialog';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
@@ -45,7 +45,6 @@ const LineAttachToVoltageLevelForm = ({
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [linesOptions, setLinesOptions] = useState([]);
-    const [substationOptions, setSubstationOptions] = useState([]);
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
 
@@ -88,16 +87,6 @@ const LineAttachToVoltageLevelForm = ({
                         return { id: value };
                     })
             );
-        });
-        //to remove when VoltageLevelCreationDialog is migrated
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNode.id,
-            undefined,
-            'SUBSTATION',
-            true
-        ).then((values) => {
-            setSubstationOptions(values.sort((a, b) => a.localeCompare(b)));
         });
     }, [studyUuid, currentNode?.id]);
 
@@ -256,9 +245,6 @@ const LineAttachToVoltageLevelForm = ({
                     onClose={onVoltageLevelDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
-                    substationOptionsPromise={Promise.resolve(
-                        substationOptions
-                    )}
                     onCreateVoltageLevel={onVoltageLevelDo}
                     editData={voltageLevelToEdit}
                 />
