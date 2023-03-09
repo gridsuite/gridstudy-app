@@ -30,6 +30,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// this methode check if an object is empty or has at least on property
+// is there a better way to do that ?
+function isObjectEmpty(obj) {
+    return obj == null || Object.keys(obj).length === 0;
+}
+
 const DirectoryItemSelector = (props) => {
     const { types, equipmentTypes, itemFilter } = props;
 
@@ -180,8 +186,14 @@ const DirectoryItemSelector = (props) => {
     );
 
     useEffect(() => {
-        // this use effect is executed even when dialogue is closed, and we receive a notification
-        if (studyUpdatedForce.eventData.headers) {
+        // this use effect is executed even if the dialogue is closed.
+        // but it has to be opened at least one (nodeMap.current is not empty)
+        // we do the fetch even when it is closed to make sure all elements are up-to-date when the user
+        // browse the tree, then close the dialogue and reopen it
+        if (
+            !isObjectEmpty(nodeMap.current) &&
+            studyUpdatedForce.eventData.headers
+        ) {
             if (
                 Object.values(notificationType).includes(
                     studyUpdatedForce.eventData.headers['notificationType']
