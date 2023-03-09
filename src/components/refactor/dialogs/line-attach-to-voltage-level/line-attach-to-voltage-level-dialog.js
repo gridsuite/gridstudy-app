@@ -254,15 +254,16 @@ const LineAttachToVoltageLevelDialog = ({
         [methods, reset]
     );
 
-    const vl = methods.watch();
-
     const onVoltageLevelChange = useCallback(() => {
+        const currentVoltageLevelId =
+            methods.getValues()[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
         if (
-            vl?.connectivity?.voltageLevel?.id !== newVoltageLevel?.equipmentId
+            newVoltageLevel &&
+            currentVoltageLevelId !== newVoltageLevel?.equipmentId
         ) {
             setNewVoltageLevel(null);
         }
-    }, [vl, newVoltageLevel]);
+    }, [methods, newVoltageLevel]);
 
     return (
         <FormProvider validationSchema={schema} {...methods}>
