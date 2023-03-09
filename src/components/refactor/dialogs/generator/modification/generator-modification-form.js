@@ -89,6 +89,7 @@ const GeneratorModificationForm = ({
     });
 
     useEffect(() => {
+        setGeneratorInfos(null);
         if (watchEquipmentId) {
             fetchEquipmentInfos(
                 studyUuid,
@@ -100,16 +101,16 @@ const GeneratorModificationForm = ({
                 if (value) {
                     if (!editData) {
                         let reactiveCapabilityCurvePoints = [];
-                        value?.reactiveCapabilityCurvePoints.forEach(
+                        value?.reactiveCapabilityCurvePoints?.forEach(
                             (element) => {
-                                let obj = {};
-                                obj['p'] = undefined;
-                                obj['qminP'] = undefined;
-                                obj['qmaxP'] = undefined;
-                                obj['oldP'] = element.p;
-                                obj['oldQminP'] = element.qminP;
-                                obj['oldQmaxP'] = element.qmaxP;
-                                reactiveCapabilityCurvePoints.push(obj);
+                                reactiveCapabilityCurvePoints.push({
+                                    p: null,
+                                    qminP: null,
+                                    qmapP: null,
+                                    oldP: element.p,
+                                    oldQminP: element.qminP,
+                                    oldQmaxP: element.qmaxP,
+                                });
                             }
                         );
                         setValue(
@@ -120,18 +121,8 @@ const GeneratorModificationForm = ({
 
                     setGeneratorInfos(value);
                     setSelectedGeneratorInfos(value);
-                    // if (editData === undefined) {
-                    //     setValue(
-                    //         REACTIVE_CAPABILITY_CURVE_TABLE,
-                    //         new Array(
-                    //             value?.reactiveCapabilityCurvePoints?.length
-                    //         ).fill({})
-                    //     );
-                    // }
                 }
             });
-        } else {
-            setGeneratorInfos(null);
         }
     }, [
         studyUuid,
@@ -152,22 +143,15 @@ const GeneratorModificationForm = ({
           })
         : undefined;
     const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
-    const resetEquipmentId = useCallback(() => {
-        const equipmentId = getValues(EQUIPMENT_ID);
-        clearErrors();
-        if (equipmentId) {
-            onClear();
-        }
-    }, [clearErrors, getValues, onClear]);
     const generatorIdField = (
         <AutocompleteInput
+            allowNewValue
             name={EQUIPMENT_ID}
             label={'ID'}
             options={equipmentOptions}
             formProps={{ ...filledTextField }}
             size={'small'}
             isOptionEqualToValue={areIdsEqual}
-            onChangeCallback={resetEquipmentId}
         />
     );
 
