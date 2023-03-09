@@ -61,8 +61,9 @@ const TextInput = ({
             fullWidth
             id={id ? id : label}
             label={
-                label
-                    ? FieldLabel({
+                !label
+                    ? null
+                    : FieldLabel({
                           label,
                           values: labelValues,
                           optional:
@@ -72,7 +73,6 @@ const TextInput = ({
                                   getValues()
                               ) && !formProps?.disabled,
                       })
-                    : null
             }
             {...(adornment && {
                 adornmentPosition: adornment.position,
