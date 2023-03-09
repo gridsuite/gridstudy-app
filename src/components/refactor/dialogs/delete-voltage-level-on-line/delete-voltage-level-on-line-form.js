@@ -13,8 +13,8 @@ import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input
 import {
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
-    REPLACING_LINE_ID,
-    REPLACING_LINE_NAME,
+    REPLACING_LINE_1_ID,
+    REPLACING_LINE_1_NAME,
 } from 'components/refactor/utils/field-constants';
 import { fetchEquipmentsIds } from 'utils/rest-api';
 
@@ -73,10 +73,10 @@ const DeleteVoltageLevelOnLineForm = ({ studyUuid, currentNode }) => {
     );
 
     const replacingLineIdField = (
-        <TextInput name={REPLACING_LINE_ID} label={'ReplacingLineId'} />
+        <TextInput name={REPLACING_LINE_1_ID} label={'ReplacingLineId'} />
     );
     const replacingLineNameField = (
-        <TextInput name={REPLACING_LINE_NAME} label={'ReplacingLineName'} />
+        <TextInput name={REPLACING_LINE_1_NAME} label={'ReplacingLineName'} />
     );
 
     return (
