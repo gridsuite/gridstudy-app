@@ -140,7 +140,7 @@ const paramsInitialState = {
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
-    selectedNodeForCopy: { nodeId: null, copyType: null },
+    selectedNodeForCopy: { sourceStudyId: null, nodeId: null, copyType: null },
     network: null,
     mapEquipments: null,
     geoData: null,
