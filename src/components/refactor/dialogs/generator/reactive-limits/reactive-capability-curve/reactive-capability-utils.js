@@ -40,10 +40,21 @@ const getRowSchema = () =>
                 is: (value) => checkValueField(value),
                 then: (schema) => schema.required(),
             })
-            .max(
-                yup.ref(Q_MAX_P),
-                'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
-            ),
+            .when([Q_MAX_P], {
+                is: (value) => {
+                    return value !== null;
+                },
+                then: (schema) =>
+                    schema.max(
+                        yup.ref(Q_MAX_P),
+                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
+                    ),
+                otherwise: (schema) =>
+                    schema.max(
+                        yup.ref(OLD_Q_MAX_P),
+                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
+                    ),
+            }),
         [P]: yup
             .number()
             .nullable()
