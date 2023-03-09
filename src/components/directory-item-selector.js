@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-// this methode check if an object is empty or has at least on property
+// this methode check if an object is empty or has at least one property
 // is there a better way to do that ?
 function isObjectEmpty(obj) {
     return obj == null || Object.keys(obj).length === 0;
