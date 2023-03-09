@@ -124,6 +124,8 @@ const Diagram = (props) => {
             >
                 <DiagramHeader
                     diagramTitle={props.diagramTitle}
+                    svgType={props.svgType}
+                    diagramId={props.diagramId}
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}
                     showTogglePinControl={
