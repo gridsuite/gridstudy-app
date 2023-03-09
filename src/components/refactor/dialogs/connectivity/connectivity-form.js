@@ -16,7 +16,6 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY,
     ID,
-    TOPOLOGY_KIND,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/refactor/utils/utils';
@@ -76,15 +75,15 @@ export const ConnectivityForm = ({
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
-    const watchVoltageLevelTopologyKind = useWatch({
-        name: `${id}.${VOLTAGE_LEVEL}.${TOPOLOGY_KIND}`,
-    });
 
     useEffect(() => {
         if (defaultBusOrBusbarSectionOptions?.length > 0) {
             setBusOrBusbarSectionOptions(defaultBusOrBusbarSectionOptions);
         } else if (watchVoltageLevelId) {
-            switch (watchVoltageLevelTopologyKind) {
+            const voltageLevelTopologyKind = voltageLevelOptions.find(
+                (vl) => vl.id === watchVoltageLevelId
+            )?.topologyKind;
+            switch (voltageLevelTopologyKind) {
                 case 'NODE_BREAKER':
                     fetchBusbarSectionsForVoltageLevel(
                         studyUuid,
@@ -112,10 +111,10 @@ export const ConnectivityForm = ({
         }
     }, [
         watchVoltageLevelId,
-        watchVoltageLevelTopologyKind,
         studyUuid,
         currentNodeUuid,
         defaultBusOrBusbarSectionOptions,
+        voltageLevelOptions,
     ]);
 
     useEffect(() => {
