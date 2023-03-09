@@ -63,7 +63,7 @@ import GeneratorCreationDialog from 'components/refactor/dialogs/generator-creat
 import DeleteVoltageLevelOnLineDialog from 'components/refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
 import DeleteAttachingLineDialog from 'components/refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
 import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
-import GeneratorScalingDialog from '../../refactor/dialogs/generator-scaling/generator-scaling-dialog';
+import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scaling/generator-scaling-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
