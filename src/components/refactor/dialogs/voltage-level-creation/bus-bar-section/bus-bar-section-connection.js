@@ -34,7 +34,7 @@ export const BusBarSectionConnection = ({ index }) => {
                 (busBarSection) => busBarSection[ID]
             );
         }
-        return null;
+        return [];
     };
 
     const busBarSections = useMemo(() => {
