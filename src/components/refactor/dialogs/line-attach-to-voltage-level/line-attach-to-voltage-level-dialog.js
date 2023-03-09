@@ -212,6 +212,7 @@ const LineAttachToVoltageLevelDialog = ({
                 setAttachmentLine(preparedLine);
                 methods.setValue(ATTACHMENT_LINE_ID, preparedLine.equipmentId, {
                     shouldDirty: true,
+                    shouldValidate: true,
                 });
             });
         },
