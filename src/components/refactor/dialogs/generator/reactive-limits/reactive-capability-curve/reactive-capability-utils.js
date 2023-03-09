@@ -88,7 +88,9 @@ function getNotNullNumbersFromArray(values) {
         .map((element) =>
             // Note : convertion toNumber is necessary here to prevent corner cases like if
             // two values are "-0" and "0", which would be considered different by the Set below.
-            validateValueIsANumber(element.p) ? toNumber(element.p) : null
+            validateValueIsANumber(element.p ?? element?.oldP)
+                ? toNumber(element.p ?? element?.oldP)
+                : null
         )
         .filter((p) => p !== null);
 }

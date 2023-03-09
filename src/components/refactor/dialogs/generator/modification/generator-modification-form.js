@@ -90,6 +90,7 @@ const GeneratorModificationForm = ({
 
     useEffect(() => {
         clearErrors();
+        onClear();
         setGeneratorInfos(null);
         if (watchEquipmentId) {
             fetchEquipmentInfos(
@@ -107,7 +108,7 @@ const GeneratorModificationForm = ({
                                 reactiveCapabilityCurvePoints.push({
                                     p: null,
                                     qminP: null,
-                                    qmapP: null,
+                                    qmaxP: null,
                                     oldP: element.p,
                                     oldQminP: element.qminP,
                                     oldQmaxP: element.qmaxP,
@@ -134,6 +135,7 @@ const GeneratorModificationForm = ({
         setSelectedGeneratorInfos,
         getValues,
         clearErrors,
+        onClear,
     ]);
 
     const energySourceLabelId = getEnergySourceLabel(

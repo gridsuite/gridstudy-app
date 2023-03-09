@@ -28,20 +28,20 @@ export const ReactiveCapabilityCurveTable = ({
     const handleInsertRow = () => {
         if (reactiveCapabilityCurvePoints) {
             reactiveCapabilityCurvePoints?.splice(rows.length - 1, 0, {
-                p: undefined,
-                qminP: undefined,
-                qmaxP: undefined,
-                oldP: undefined,
-                oldQminP: undefined,
-                oldQmaxP: undefined,
+                p: null,
+                qminP: null,
+                qmaxP: null,
+                oldP: null,
+                oldQminP: null,
+                oldQmaxP: null,
             });
             insert(rows.length - 1, {
-                p: undefined,
-                qminP: undefined,
-                qmaxP: undefined,
-                oldP: undefined,
-                oldQminP: undefined,
-                oldQmaxP: undefined,
+                p: null,
+                qminP: null,
+                qmaxP: null,
+                oldP: null,
+                oldQminP: null,
+                oldQmaxP: null,
             });
         } else {
             insert(rows.length - 1, {});
