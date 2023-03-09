@@ -148,6 +148,7 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                     </Tabs>
 
                     <TabPanelLazy
+                        className={classes.tabPanel}
                         selected={
                             tabValue === TAB_VALUES.timeDelayParamsTabValue
                         }
@@ -161,6 +162,7 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                         />
                     </TabPanelLazy>
                     <TabPanelLazy
+                        className={classes.tabPanel}
                         selected={tabValue === TAB_VALUES.solverParamsTabValue}
                     >
                         <SolverParameters
@@ -176,6 +178,7 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                         />
                     </TabPanelLazy>
                     <TabPanelLazy
+                        className={classes.tabPanel}
                         selected={tabValue === TAB_VALUES.mappingParamsTabValue}
                     >
                         <MappingParameters

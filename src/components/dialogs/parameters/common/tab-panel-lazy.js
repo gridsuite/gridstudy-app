@@ -20,10 +20,7 @@ const TabPanelLazy = (props) => {
     }, [selected, initialized]);
 
     return (
-        <div
-            style={{ flexGrow: 1, display: selected ? null : 'none' }}
-            {...other}
-        >
+        <div style={{ display: selected ? null : 'none' }} {...other}>
             {initialized && <Box p={1}>{children}</Box>}
         </div>
     );

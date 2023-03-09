@@ -162,6 +162,9 @@ export const useStyles = makeStyles((theme) => ({
         paddingBottom: theme.spacing(1),
         flexGrow: 1,
     },
+    tabPanel: {
+        flexGrow: 1,
+    },
 }));
 
 export const FluxConventions = {
@@ -566,6 +569,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
                     <Grid container>
                         <TabPanelLazy
+                            className={classes.tabPanel}
                             selected={tabValue === TAB_VALUES.sldParamsTabValue}
                         >
                             <SingleLineDiagramParameters
@@ -574,11 +578,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         </TabPanelLazy>
                         <TabPanelLazy
+                            className={classes.tabPanel}
                             selected={tabValue === TAB_VALUES.mapParamsTabValue}
                         >
                             <MapParameters hideParameters={hideParameters} />
                         </TabPanelLazy>
                         <TabPanelLazy
+                            className={classes.tabPanel}
                             selected={tabValue === TAB_VALUES.lfParamsTabValue}
                         >
                             {studyUuid && (
@@ -595,6 +601,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             )}
                         </TabPanelLazy>
                         <TabPanelLazy
+                            className={classes.tabPanel}
                             selected={
                                 tabValue ===
                                 TAB_VALUES.securityAnalysisParamsTabValue
@@ -613,6 +620,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             //To be removed when Sensitivity Analysis is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanelLazy
+                                    className={classes.tabPanel}
                                     selected={
                                         tabValue ===
                                         TAB_VALUES.sensitivityAnalysisParamsTabValue
@@ -633,6 +641,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             //To be removed when ShortCircuit is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanelLazy
+                                    className={classes.tabPanel}
                                     selected={
                                         tabValue ===
                                         TAB_VALUES.shortCircuitParamsTabValue
@@ -653,6 +662,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanelLazy
+                                    className={classes.tabPanel}
                                     selected={
                                         tabValue ===
                                         TAB_VALUES.dynamicSimulationParamsTabValue
@@ -670,6 +680,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             )
                         }
                         <TabPanelLazy
+                            className={classes.tabPanel}
                             selected={
                                 tabValue === TAB_VALUES.advancedParamsTabValue
                             }
