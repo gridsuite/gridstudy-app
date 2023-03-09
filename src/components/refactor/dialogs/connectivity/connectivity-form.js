@@ -123,13 +123,10 @@ export const ConnectivityForm = ({
                 `${id}.${BUS_OR_BUSBAR_SECTION}`,
                 busOrBusbarSectionOptions[0]
             );
+        } else {
+            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
         }
     }, [busOrBusbarSectionOptions, setValue, id]);
-
-    const handleChange = useCallback(() => {
-        onChangeCallback?.();
-        setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
-    }, [id, onChangeCallback, setValue]);
 
     const newVoltageLevelField = (
         <AutocompleteInput
@@ -139,7 +136,7 @@ export const ConnectivityForm = ({
                     ? getConnectivityVoltageLevelData({ voltageLevelId: value })
                     : value
             }
-            onChangeCallback={handleChange}
+            onChangeCallback={onChangeCallback}
             allowNewValue
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
