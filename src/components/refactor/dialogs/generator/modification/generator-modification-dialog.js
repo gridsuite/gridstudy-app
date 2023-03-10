@@ -73,8 +73,6 @@ const GeneratorModificationDialog = ({
 
     const isSelectedGeneratorUndefined = generatorToModify === undefined;
     const isEditDataUndefined = editData === undefined;
-    const previousReactiveCapatabilityCurveValues =
-        generatorToModify?.reactiveCapabilityCurvePoints ?? null;
 
     const emptyFormData = useMemo(
         () => ({
@@ -143,18 +141,12 @@ const GeneratorModificationDialog = ({
                             .min(0, 'RealPercentage')
                             .max(1, 'RealPercentage'),
                         ...getSetPointsSchema(true),
-                        ...getReactiveLimitsSchema(
-                            previousReactiveCapatabilityCurveValues
-                        ),
+                        ...getReactiveLimitsSchema(true),
                     },
                     [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
                 )
                 .required(),
-        [
-            previousReactiveCapatabilityCurveValues,
-            isSelectedGeneratorUndefined,
-            isEditDataUndefined,
-        ]
+        [isSelectedGeneratorUndefined, isEditDataUndefined]
     );
     const methods = useForm({
         defaultValues: emptyFormData,

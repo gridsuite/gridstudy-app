@@ -24,9 +24,7 @@ export const getReactiveLimitsEmptyFormData = () => ({
     ...getReactiveCapabilityCurveEmptyFormData(),
 });
 
-export const getReactiveLimitsSchema = (
-    previousReactiveCapatabilityCurveValues = null
-) => ({
+export const getReactiveLimitsSchema = (isModification = false) => ({
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
     [MINIMUM_REACTIVE_POWER]: yup
         .number()
@@ -44,6 +42,6 @@ export const getReactiveLimitsSchema = (
         }),
     ...getReactiveCapabilityCurveValidationSchema(
         REACTIVE_CAPABILITY_CURVE_TABLE,
-        previousReactiveCapatabilityCurveValues
+        isModification
     ),
 });

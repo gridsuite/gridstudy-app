@@ -14,8 +14,14 @@ import {
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
+    OLD_P,
+    OLD_Q_MAX_P,
+    OLD_Q_MIN_P,
+    P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
+    Q_MAX_P,
+    Q_MIN_P,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     STARTUP_COST,
@@ -108,9 +114,12 @@ const GeneratorModificationForm = ({
                         value?.reactiveCapabilityCurvePoints?.forEach(
                             (element) => {
                                 reactiveCapabilityCurvePoints.push({
-                                    p: null,
-                                    qminP: null,
-                                    qmaxP: null,
+                                    [P]: null,
+                                    [Q_MIN_P]: null,
+                                    [Q_MAX_P]: null,
+                                    [OLD_P]: element.p,
+                                    [OLD_Q_MIN_P]: element.qminP,
+                                    [OLD_Q_MAX_P]: element.qmapP,
                                 });
                             }
                         );
