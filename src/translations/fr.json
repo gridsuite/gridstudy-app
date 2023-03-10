@@ -799,4 +799,8 @@
     "YupRequired": "Ce champ doit être renseigné",
     "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
     "YupNotTypeDefault": "La valeur du champ n'est pas au bon format"
+
+
 }
+
+

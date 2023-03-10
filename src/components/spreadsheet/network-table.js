@@ -36,10 +36,57 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import {
-    DefaultCellRenderer,
-    NumericDefaultCellRenderer,
+    DisabledEditCellRenderer,
+    EditableCellRenderer,
+    EditedLineCellRenderer,
+    EditingCellRenderer,
 } from './cell-renderers';
 import { ColumnsSettingsDialog } from './columns-settings-dialog';
+import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+
+const useEditBuffer = () => {
+    const [data, setData] = useState({});
+
+    const addDataToBuffer = useCallback(
+        (field, value) => {
+            data[field] = value;
+            setData(data);
+        },
+        [data]
+    );
+
+    const resetBuffer = useCallback(() => {
+        setData({});
+    }, []);
+
+    return [data, addDataToBuffer, resetBuffer];
+};
+
+const useEditErrors = () => {
+    const [errors, setErrors] = useState({});
+
+    const addError = useCallback(
+        (field) => {
+            errors[field] = true;
+            setErrors(errors);
+            console.log(errors);
+        },
+        [errors]
+    );
+
+    const resetError = useCallback(
+        (field) => {
+            if (errors[field]) {
+                delete errors[field];
+                setErrors(errors);
+                console.log(errors);
+            }
+        },
+        [errors]
+    );
+
+    return [errors, addError, resetError];
+};
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -115,12 +162,28 @@ const NetworkTable = (props) => {
         reorderedTableDefinitionIndexes,
         setReorderedTableDefinitionIndexes,
     ] = useState([]);
-    const [scrollToIndex, setScrollToIndex] = useState(-1);
+    const [scrollToIndex, setScrollToIndex] = useState();
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
 
     const searchTextInput = useRef(null);
 
     const intl = useIntl();
+
+    const [previousValuesBuffer, addDataToBuffer, resetBuffer] =
+        useEditBuffer();
+    const [errors, addError, resetError] = useEditErrors();
+    const [editingData, setEditingData] = useState();
+    const [isValidatingData, setIsValidatingData] = useState(false);
+
+    const isEditColumnVisible = useCallback(() => {
+        return (
+            !props.disabled &&
+            TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType &&
+            TABLES_DEFINITION_INDEXES.get(tabIndex)
+                .columns.filter((c) => c.editable)
+                .filter((c) => selectedColumnsNames.has(c.id)).length > 0
+        );
+    }, [props.disabled, selectedColumnsNames, tabIndex]);
 
     const generateTableColumns = useCallback(
         (tabIndex) => {
@@ -132,9 +195,14 @@ const NetworkTable = (props) => {
                 })
                 .map((column) => {
                     column.headerName = intl.formatMessage({ id: column.id });
+                    if (column.editable) {
+                        column.additionnalEditorParams = {
+                            addError: addError,
+                            resetError: resetError,
+                        };
+                    }
 
-                    if (!column.cellRenderer && column.numeric) {
-                        column.cellRenderer = NumericDefaultCellRenderer;
+                    if (column.numeric) {
                         column.cellRendererParams = {
                             loadFlowStatus: props.loadFlowStatus,
                             network: props.network,
@@ -148,42 +216,89 @@ const NetworkTable = (props) => {
 
                     if (lockedColumnsNames.has(column.id)) {
                         column.pinned = 'left';
-                        column.lockPinned = true;
                     } else {
                         column.pinned = undefined;
-                        column.lockPinned = undefined;
                     }
                     return column;
                 });
 
-            if (generatedTableColumns.length) {
-                function sortByIndex(a, b) {
-                    if (reorderedTableDefinitionIndexes) {
-                        if (
-                            reorderedTableDefinitionIndexes.indexOf(a.id) <
-                            reorderedTableDefinitionIndexes.indexOf(b.id)
-                        ) {
-                            return -1;
-                        }
-                        if (
-                            reorderedTableDefinitionIndexes.indexOf(a.id) >
-                            reorderedTableDefinitionIndexes.indexOf(b.id)
-                        )
-                            return 1;
+            function sortByIndex(a, b) {
+                if (reorderedTableDefinitionIndexes) {
+                    if (
+                        reorderedTableDefinitionIndexes.indexOf(a.id) <
+                        reorderedTableDefinitionIndexes.indexOf(b.id)
+                    ) {
+                        return -1;
                     }
-                    return 0;
+                    if (
+                        reorderedTableDefinitionIndexes.indexOf(a.id) >
+                        reorderedTableDefinitionIndexes.indexOf(b.id)
+                    )
+                        return 1;
                 }
-                generatedTableColumns.sort(sortByIndex);
+                return 0;
+            }
+            generatedTableColumns.sort(sortByIndex);
+
+            if (isEditColumnVisible()) {
+                generatedTableColumns.unshift({
+                    field: 'edit',
+                    locked: true,
+                    pinned: 'left',
+                    sortable: false,
+                    filter: false,
+                    resizable: false,
+                    lockPosition: 'left',
+                    width: 100,
+                    headerName: '',
+                    cellRendererSelector: (params) => {
+                        if (params.node.rowPinned) {
+                            return {
+                                component: EditingCellRenderer,
+                                params: {
+                                    setEditingData: setEditingData,
+                                    setIsValidatingData: setIsValidatingData,
+                                    tabIndex: tabIndex,
+                                    errors: errors,
+                                },
+                            };
+                        } else if (editingData?.id === params.data.id) {
+                            return {
+                                component: EditedLineCellRenderer,
+                            };
+                        } else if (editingData) {
+                            return {
+                                component: DisabledEditCellRenderer,
+                            };
+                        } else {
+                            return {
+                                component: EditableCellRenderer,
+                                params: {
+                                    isDataEditing: editingData ? true : false,
+                                    setEditingData: setEditingData,
+                                    equipmentType:
+                                        TABLES_DEFINITION_INDEXES.get(tabIndex)
+                                            .modifiableEquipmentType,
+                                },
+                            };
+                        }
+                    },
+                });
             }
             return generatedTableColumns;
         },
         [
+            addError,
+            editingData,
+            errors,
             fluxConvention,
             intl,
             lockedColumnsNames,
+            props.disabled,
             props.loadFlowStatus,
             props.network,
             reorderedTableDefinitionIndexes,
+            resetError,
             selectedColumnsNames,
         ]
     );
@@ -203,7 +318,6 @@ const NetworkTable = (props) => {
                 : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
 
             if (!datasourceRows) return [];
-
             return datasourceRows;
         },
         [props.disabled, props.network]
@@ -214,8 +328,18 @@ const NetworkTable = (props) => {
         generateTableColumns(tabIndex)
     );
 
-    const onTabChange = useCallback(() => {
-        // when we change Tab, we dont want to keep/apply the search criteria
+    const rollbackEdit = useCallback(() => {
+        //mecanism to undo last edits if it is invalidated
+        Object.entries(previousValuesBuffer).forEach(() => {
+            gridRef.current.api.undoCellEditing();
+        });
+        resetBuffer();
+        setEditingData();
+        setIsValidatingData(false);
+    }, [previousValuesBuffer, resetBuffer]);
+
+    const onSwitchTab = useCallback(() => {
+        // when we switch tab, we dont want to keep/apply the search criteria
         if (
             !searchTextInput.current.value ||
             searchTextInput.current.value !== ''
@@ -226,7 +350,8 @@ const NetworkTable = (props) => {
         gridRef?.current?.columnApi.applyColumnState({
             defaultState: { sort: null },
         });
-    }, []);
+        rollbackEdit();
+    }, [rollbackEdit]);
 
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
@@ -282,9 +407,9 @@ const NetworkTable = (props) => {
             // calculate row index to scroll to
             const rows = getRows(newIndex);
             let index = rows.findIndex((r) => r.id === props.equipmentId);
-            setScrollToIndex(index !== undefined ? index : -1);
+            setScrollToIndex(index ? index : undefined);
         } else if (manualTabSwitch) {
-            setScrollToIndex(-1);
+            setScrollToIndex();
         }
     }, [
         props.network,
@@ -325,33 +450,31 @@ const NetworkTable = (props) => {
 
     const handleColumnDrag = useCallback(
         (event) => {
+            console.log(event);
             if (event.finished && event.column) {
-                console.log(event);
+                const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
+                    reorderedTableDefinitionIndexes.indexOf(
+                        event.column.colDef.id
+                    ),
+                    1
+                );
+                const destinationIndex = isEditColumnVisible()
+                    ? event.toIndex - 1
+                    : event.toIndex;
 
-                let reorderedTableDefinitionIndexesTemp = [
-                    ...reorderedTableDefinitionIndexes,
-                ];
-                const [reorderedItem] =
-                    reorderedTableDefinitionIndexesTemp.splice(
-                        reorderedTableDefinitionIndexesTemp.indexOf(
-                            event.column.colDef.id
-                        ),
-                        1
-                    );
-                reorderedTableDefinitionIndexesTemp.splice(
-                    event.toIndex,
+                reorderedTableDefinitionIndexes.splice(
+                    destinationIndex,
                     0,
                     reorderedItem
                 );
-
                 setReorderedTableDefinitionIndexes(
-                    reorderedTableDefinitionIndexesTemp
+                    reorderedTableDefinitionIndexes
                 );
 
                 updateConfigParameter(
                     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                         TABLES_NAMES[tabIndex],
-                    JSON.stringify(reorderedTableDefinitionIndexesTemp)
+                    JSON.stringify(reorderedTableDefinitionIndexes)
                 ).catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -359,7 +482,6 @@ const NetworkTable = (props) => {
                     });
                 });
 
-                const columnDataTemp = columnData;
                 const [reorderedColDef] = columnData.splice(
                     columnData.indexOf(
                         columnData.find((obj) => {
@@ -368,11 +490,17 @@ const NetworkTable = (props) => {
                     ),
                     1
                 );
-                columnDataTemp.splice(event.toIndex, 0, reorderedColDef);
-                setColumnData(columnDataTemp);
+                columnData.splice(event.toIndex, 0, reorderedColDef);
+                setColumnData(columnData);
             }
         },
-        [columnData, reorderedTableDefinitionIndexes, snackError, tabIndex]
+        [
+            columnData,
+            isEditColumnVisible,
+            reorderedTableDefinitionIndexes,
+            snackError,
+            tabIndex,
+        ]
     );
 
     const getCSVFilename = useCallback(() => {
@@ -391,254 +519,303 @@ const NetworkTable = (props) => {
         });
     }, [getCSVFilename]);
 
-    const onCellEditRequest = useCallback((event) => {
-        const oldData = event.data;
-        const field = event.colDef.field;
+    const validateEdit = useCallback(
+        (params) => {
+            // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
+            // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
+            let groovyCr =
+                'equipment = network.' +
+                TABLES_DEFINITION_INDEXES.get(tabIndex).groovyEquipmentGetter +
+                "('" +
+                params.data.id.replace(/'/g, "\\'") +
+                "')\n";
 
-        const newValue = event.newValue;
-        const newData = { ...oldData };
+            const isTransformer =
+                editingData?.metadata.equipmentType ===
+                    TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS
+                        .modifiableEquipmentType ||
+                editingData?.metadata.equipmentType ===
+                    TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS
+                        .modifiableEquipmentType;
 
-        if (event.colDef.valueSetter) {
-            event.colDef.valueSetter(event);
-        } else {
-            newData[field] = event.newValue;
-        }
-        console.log('onCellEditRequest, updating ' + field + ' to ' + newValue);
-        const tx = {
-            update: [newData],
-        };
-        event.api.applyTransaction(tx);
+            Object.entries(previousValuesBuffer).forEach(([field, value]) => {
+                //TODO this is when we change transformer, in case we want to change the tap position from spreadsheet, we set it inside
+                // tapChanger object. so we extract the value from the object before registering a change request.
+                // this part should be removed if we don't pass tapPosition inside another Object anymore
+                const column = gridRef.current.columnApi.getColumn(field);
+                const val =
+                    isTransformer && field
+                        ? editingData[field].tapPosition
+                        : editingData[field];
+
+                groovyCr +=
+                    column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
+            });
+
+            Promise.resolve(
+                editingData?.metadata.equipmentType ===
+                    EQUIPMENT_TYPES.LOAD.type
+                    ? modifyLoad(
+                          props.studyUuid,
+                          props.currentNode?.id,
+                          editingData.id,
+                          editingData.name,
+                          editingData.type,
+                          editingData.p0,
+                          editingData.q0,
+                          undefined,
+                          undefined,
+                          false,
+                          undefined
+                      )
+                    : editingData?.metadata.equipmentType ===
+                      EQUIPMENT_TYPES.GENERATOR.type
+                    ? modifyGenerator(
+                          props.studyUuid,
+                          props.currentNode?.id,
+                          editingData.id,
+                          editingData.name,
+                          editingData.energySource,
+                          editingData.minP,
+                          editingData.maxP,
+                          undefined,
+                          editingData.targetP,
+                          editingData.targetQ,
+                          editingData.voltageRegulatorOn,
+                          editingData.targetV,
+                          undefined,
+                          undefined,
+                          undefined
+                      )
+                    : requestNetworkChange(
+                          props.studyUuid,
+                          props.currentNode?.id,
+                          groovyCr
+                      )
+            )
+                .then(() => {
+                    const transaction = {
+                        update: [editingData],
+                    };
+                    gridRef.current.api.applyTransaction(transaction);
+                    setEditingData();
+                    setIsValidatingData(false);
+                })
+                .catch((promiseErrorMsg) => {
+                    console.error(promiseErrorMsg);
+                    rollbackEdit();
+                    let message = intl.formatMessage({
+                        id: 'paramsChangingDenied',
+                    });
+                    snackError({
+                        messageTxt: message,
+                        headerId: 'paramsChangingError',
+                    });
+                });
+        },
+        [
+            editingData,
+            intl,
+            previousValuesBuffer,
+            props.currentNode?.id,
+            props.studyUuid,
+            rollbackEdit,
+            snackError,
+            tabIndex,
+        ]
+    );
+
+    const handleCellEditing = useCallback(
+        (event) => {
+            addDataToBuffer(event.colDef.field, event.oldValue);
+        },
+        [addDataToBuffer]
+    );
+
+    const handleRowEditing = useCallback(
+        (params) => {
+            if (isValidatingData) {
+                //we call stopEditing again to prevent editors flickering
+                gridRef.current.api.stopEditing();
+
+                if (Object.values(previousValuesBuffer).length === 0) {
+                    setEditingData();
+                    return;
+                }
+                validateEdit(params);
+            }
+        },
+        [isValidatingData, previousValuesBuffer, validateEdit]
+    );
+
+    //TODO s'assurer que handleEditingStopped gère tous les cas où l'utilisateur interrompt l'édition
+    const handleCellClicked = useCallback((params) => {
+        // //if a click occurs on a cell which doesn't belong to the top editing row the changes are rolled back
+        // if (
+        //     !params.rowPinned &&
+        //     (!params.colDef.cellRendererSelector ||
+        //         params.colDef?.cellRendererSelector(params).component
+        //             .name !== 'EditableCellRenderer')
+        // ) {
+        //     rollbackEdit();
+        // }
     }, []);
 
-    function commitChanges(event) {
-        function capitaliseFirst(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
+    const handleEditingStopped = useCallback(() => {
+        if (!isValidatingData) {
+            rollbackEdit();
         }
-        // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
-        // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
-        let groovyCr =
-            'equipment = network.get' +
-            capitaliseFirst(
-                TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType
-            ) +
-            "('" +
-            event.data.id.replace(/'/g, "\\'") +
-            "')\n";
+    }, [isValidatingData, rollbackEdit]);
 
-        const isTransformer =
-            event.data?.equipmentType ===
-                TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS
-                    .modifiableEquipmentType ||
-            event.data?.equipmentType ===
-                TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS
-                    .modifiableEquipmentType;
+    //TODO traiter lockedColumnsNames pour mettre à jour le statut des colonnes épinglées
+    const handleCloseColumnsSettingDialog = useCallback(() => {
+        setPopupSelectColumnNames(false);
+    }, []);
 
-        Object.values(event.data.data).forEach((cr) => {
-            //TODO this is when we change transformer, in case we want to change the tap position from spreadsheet, we set it inside
-            // tapChanger object. so we extract the value from the object before registering a change request.
-            // this part should be removed if we don't pass tapPosition inside another Object anymore
-
-            const val =
-                isTransformer && cr.value?.tapPosition
-                    ? cr.value?.tapPosition
-                    : cr.value;
-
-            groovyCr += cr.changeCmd.replace(/\{\}/g, val) + '\n';
-        });
-
-        Promise.resolve(
-            event.data.equipmentType === 'load'
-                ? modifyLoad(
-                      props.studyUuid,
-                      props.currentNode?.id,
-                      event.data.id,
-                      event.data.name?.value,
-                      event.data.type?.value,
-                      event.data.p0?.value,
-                      event.data.q0?.value,
-                      undefined,
-                      undefined,
-                      false,
-                      undefined
-                  )
-                : event.data.equipmentType === 'generator'
-                ? modifyGenerator(
-                      props.studyUuid,
-                      props.currentNode?.id,
-                      event.data.id,
-                      event.data.name?.value,
-                      event.data.energySource?.value,
-                      event.data.minP?.value,
-                      event.data.maxP?.value,
-                      undefined,
-                      event.data.targetP?.value,
-                      event.data.targetQ?.value,
-                      event.data.voltageRegulatorOn?.value,
-                      event.data.targetV?.value,
-                      undefined,
-                      undefined,
-                      undefined
-                  )
-                : requestNetworkChange(
-                      props.studyUuid,
-                      props.currentNode?.id,
-                      groovyCr
-                  )
-        )
-            .then(() => {})
-            .catch((promiseErrorMsg) => {
-                console.error(promiseErrorMsg);
-                let message = intl.formatMessage({
-                    id: 'paramsChangingDenied',
-                });
-                snackError({
-                    messageTxt: message,
-                    headerId: 'paramsChangingError',
-                });
-            });
-    }
+    const renderTabs = useCallback(() => {
+        return TABLES_NAMES.map((table) => (
+            <Tab
+                key={table}
+                label={intl.formatMessage({
+                    id: table,
+                })}
+                disabled={props.disabled}
+            />
+        ));
+    }, [intl, props.disabled]);
 
     return (
-        props.network && (
-            <>
-                <Grid container justifyContent={'space-between'}>
-                    <Grid container justifyContent={'space-between'} item>
-                        <Tabs
-                            value={tabIndex}
-                            variant="scrollable"
-                            onChange={(event, newValue) => {
-                                setTabIndex(newValue);
-                                setManualTabSwitch(true);
-                                onTabChange(newValue);
+        <>
+            <Grid container justifyContent={'space-between'}>
+                <Grid container justifyContent={'space-between'} item>
+                    <Tabs
+                        value={tabIndex}
+                        variant="scrollable"
+                        onChange={(event, newValue) => {
+                            setTabIndex(newValue);
+                            setManualTabSwitch(true);
+                            onSwitchTab(newValue);
+                        }}
+                        aria-label="tables"
+                    >
+                        {renderTabs()}
+                    </Tabs>
+                </Grid>
+                <Grid container>
+                    <Grid item className={classes.containerInputSearch}>
+                        <TextField
+                            disabled={props.disabled}
+                            className={classes.textField}
+                            size="small"
+                            placeholder={
+                                intl.formatMessage({ id: 'filter' }) + '...'
+                            }
+                            onChange={setFilter}
+                            inputRef={searchTextInput}
+                            fullWidth
+                            InputProps={{
+                                classes: {
+                                    input: classes.searchSection,
+                                },
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon
+                                            color={
+                                                props.disabled
+                                                    ? 'disabled'
+                                                    : 'inherit'
+                                            }
+                                        />
+                                    </InputAdornment>
+                                ),
                             }}
-                            aria-label="tables"
-                        >
-                            {Object.values(TABLES_DEFINITIONS).map((table) => (
-                                <Tab
-                                    key={table.name}
-                                    label={intl.formatMessage({
-                                        id: table.name,
-                                    })}
-                                    disabled={props.disabled}
-                                />
-                            ))}
-                        </Tabs>
+                        />
                     </Grid>
-                    <Grid container>
-                        <Grid item className={classes.containerInputSearch}>
-                            <TextField
-                                disabled={props.disabled}
-                                className={classes.textField}
-                                size="small"
-                                placeholder={
-                                    intl.formatMessage({ id: 'filter' }) + '...'
-                                }
-                                onChange={setFilter}
-                                inputRef={searchTextInput}
-                                fullWidth
-                                InputProps={{
-                                    classes: {
-                                        input: classes.searchSection,
-                                    },
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon
-                                                color={
-                                                    props.disabled
-                                                        ? 'disabled'
-                                                        : 'inherit'
-                                                }
-                                            />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Grid>
-                        <Grid item className={classes.selectColumns}>
-                            <span
-                                className={clsx({
-                                    [classes.disabledLabel]: props.disabled,
-                                })}
-                            >
-                                <FormattedMessage id="LabelSelectList" />
-                            </span>
+                    <Grid item className={classes.selectColumns}>
+                        <span
+                            className={clsx({
+                                [classes.disabledLabel]: props.disabled,
+                            })}
+                        >
+                            <FormattedMessage id="LabelSelectList" />
+                        </span>
+                        <IconButton
+                            disabled={props.disabled}
+                            className={
+                                selectedColumnsNames.size === 0
+                                    ? classes.blink
+                                    : ''
+                            }
+                            aria-label="dialog"
+                            onClick={handleOpenPopupSelectColumnNames}
+                        >
+                            <ViewColumnIcon />
+                        </IconButton>
+                    </Grid>
+                    {props.disabled && (
+                        <Alert
+                            className={classes.invalidNode}
+                            severity="warning"
+                        >
+                            <FormattedMessage id="InvalidNode" />
+                        </Alert>
+                    )}
+                    <Grid item className={classes.exportCsv}>
+                        <span
+                            className={clsx({
+                                [classes.disabledLabel]:
+                                    props.disabled || rowData.length === 0,
+                            })}
+                        >
+                            <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
+                        </span>
+                        <span>
                             <IconButton
-                                disabled={props.disabled}
-                                className={
-                                    selectedColumnsNames.size === 0
-                                        ? classes.blink
-                                        : ''
+                                disabled={
+                                    props.disabled || rowData.length === 0
                                 }
-                                aria-label="dialog"
-                                onClick={handleOpenPopupSelectColumnNames}
+                                aria-label="exportCSVButton"
+                                onClick={downloadCSVData}
                             >
-                                <ViewColumnIcon />
+                                <GetAppIcon />
                             </IconButton>
-                        </Grid>
-                        {props.disabled && (
-                            <Alert
-                                className={classes.invalidNode}
-                                severity="warning"
-                            >
-                                <FormattedMessage id="InvalidNode" />
-                            </Alert>
-                        )}
-                        <Grid item className={classes.exportCsv}>
-                            <span
-                                className={clsx({
-                                    [classes.disabledLabel]:
-                                        props.disabled || rowData.length === 0,
-                                })}
-                            >
-                                <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-                            </span>
-                            <span>
-                                <IconButton
-                                    disabled={
-                                        props.disabled || rowData.length === 0
-                                    }
-                                    aria-label="exportCSVButton"
-                                    onClick={downloadCSVData}
-                                >
-                                    <GetAppIcon />
-                                </IconButton>
-                            </span>
-                        </Grid>
+                        </span>
                     </Grid>
                 </Grid>
-                <div className={classes.table} style={{ flexGrow: 1 }}>
-                    <EquipmentTable
-                        gridRef={gridRef}
-                        currentNode={props.currentNode}
-                        rows={rowData}
-                        columns={columnData}
-                        fetched={props.network.isResourceFetched(
-                            TABLES_DEFINITION_INDEXES.get(tabIndex).resource
-                        )}
-                        scrollTop={scrollToIndex}
-                        visible={props.visible}
-                        handleColumnDrag={handleColumnDrag}
-                        commitChanges={commitChanges}
-                        onCellEditRequest={onCellEditRequest}
-                    />
-                </div>
-
-                <ColumnsSettingsDialog
-                    popupSelectColumnNames={popupSelectColumnNames}
-                    tabIndex={tabIndex}
-                    handleClose={() => {
-                        setPopupSelectColumnNames(false);
-                    }}
-                    reorderedTableDefinitionIndexes={
-                        reorderedTableDefinitionIndexes
-                    }
-                    selectedColumnsNames={selectedColumnsNames}
-                    setSelectedColumnsNames={setSelectedColumnsNames}
-                    lockedColumnsNames={lockedColumnsNames}
-                    setLockedColumnsNames={setLockedColumnsNames}
+            </Grid>
+            <div className={classes.table} style={{ flexGrow: 1 }}>
+                <EquipmentTable
+                    gridRef={gridRef}
+                    currentNode={props.currentNode}
+                    rows={rowData}
+                    columns={columnData}
+                    fetched={props.network.isResourceFetched(
+                        TABLES_DEFINITION_INDEXES.get(tabIndex).resource
+                    )}
+                    scrollTop={scrollToIndex}
+                    visible={props.visible}
+                    editingData={editingData}
+                    handleColumnDrag={handleColumnDrag}
+                    handleRowEditing={handleRowEditing}
+                    handleCellEditing={handleCellEditing}
+                    handleCellClicked={handleCellClicked}
+                    handleEditingStopped={handleEditingStopped}
                 />
-            </>
-        )
+            </div>
+
+            <ColumnsSettingsDialog
+                popupSelectColumnNames={popupSelectColumnNames}
+                tabIndex={tabIndex}
+                handleClose={handleCloseColumnsSettingDialog}
+                reorderedTableDefinitionIndexes={
+                    reorderedTableDefinitionIndexes
+                }
+                selectedColumnsNames={selectedColumnsNames}
+                setSelectedColumnsNames={setSelectedColumnsNames}
+                lockedColumnsNames={lockedColumnsNames}
+                setLockedColumnsNames={setLockedColumnsNames}
+            />
+        </>
     );
 };
 

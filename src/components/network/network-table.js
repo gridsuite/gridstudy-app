@@ -682,17 +682,21 @@ const NetworkTable = (props) => {
                     TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS
                         .modifiableEquipmentType;
 
+            console.log(groovyCr);
             Object.values(lineEdit.newValues).forEach((cr) => {
                 //TODO this is when we change transformer, in case we want to change the tap position from spreadsheet, we set it inside
                 // tapChanger object. so we extract the value from the object before registering a change request.
                 // this part should be removed if we don't pass tapPosition inside another Object anymore
 
+                console.log(cr);
                 const val =
                     isTransformer && cr.value?.tapPosition
                         ? cr.value?.tapPosition
                         : cr.value;
 
+                console.log(val);
                 groovyCr += cr.changeCmd.replace(/\{\}/g, val) + '\n';
+                console.log(groovyCr);
             });
 
             Promise.resolve(

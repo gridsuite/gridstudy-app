@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect, useState } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -6,71 +6,45 @@ import 'ag-grid-community/styles/ag-theme-material.css';
 
 import { useTheme } from '@mui/styles';
 import LoaderWithOverlay from '../util/loader-with-overlay';
-import CommonContextualMenu from './common-contextual-menu';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import localeText from 'translations/ag-grid-fr';
+import { useIntl } from 'react-intl';
+import { LANG_FRENCH } from '@gridsuite/commons-ui';
+import localeFrench from 'translations/ag-grid-fr';
 
 export const EquipmentTable = ({
     rows,
+    editingData,
     columns,
     scrollTop,
     gridRef,
     handleColumnDrag,
-    commitChanges,
-    onCellEditRequest,
+    handleRowEditing,
+    handleCellEditing,
+    handleCellClicked,
+    handleEditingStopped,
     ...props
 }) => {
-    const [menuItems, setMenuItems] = useState([]);
-    const [openContextualMenu, setOpenContextualMenu] = useState(false);
     const theme = useTheme();
+    const intl = useIntl();
+
+    const suppressEnter = (params) => {
+        var KEY_ENTER = 'Enter';
+        var event = params.event;
+        var key = event.key;
+        var suppress = key === KEY_ENTER;
+        return suppress;
+    };
 
     const defaultColDef = useMemo(
         () => ({
+            filter: true,
             sortable: true,
             resizable: true,
+            lockPinned: true,
+            suppressKeyboardEvent: (params) => suppressEnter(params),
         }),
         []
     );
-
-    const initialMousePosition = {
-        mouseX: null,
-        mouseY: null,
-    };
-    const [mousePosition, setMousePosition] = useState(initialMousePosition);
-
-    const handleCloseContextualMenu = useCallback(() => {
-        setOpenContextualMenu(false);
-    }, []);
-
-    const cellContextMenuListener = useCallback((event) => {
-        setMousePosition({
-            mouseX: event.event.clientX,
-            mouseY: event.event.clientY,
-        });
-
-        setMenuItems([
-            {
-                messageDescriptorId: event.data.id,
-                callback: () => {
-                    console.log('open context menu element');
-                },
-                icon: <HelpOutlineIcon fontSize="small" />,
-                disabled: true,
-            },
-        ]);
-        setOpenContextualMenu(true);
-    }, []);
-
-    const cellClickedListener = useCallback((event) => {
-        console.log('cellClicked', event);
-    }, []);
-
-    const rowEditingListener = useCallback((event) => {
-        console.log('row edited ', event);
-    }, []);
-
-    const cellEditingListener = useCallback((event) => {
-        console.log('cell edited ', event);
-    }, []);
 
     const getRowId = useMemo(() => {
         return (params) => params.data.id;
@@ -91,25 +65,30 @@ export const EquipmentTable = ({
         [scrollTop, theme.selectedRow.background]
     );
 
-    const onFirstDataRendered = useCallback(
+    const onFirstDataRendered = useCallback(() => {
+        const allColumnIds = [];
+        gridRef.current.columnApi.getColumns().forEach((column) => {
+            allColumnIds.push(column.getId());
+        });
+        gridRef.current.columnApi.autoSizeColumns(allColumnIds, false);
+    }, [gridRef]);
+
+    const getLocaleText = useCallback(
         (params) => {
-            const allColumnIds = [];
-            gridRef.current.columnApi.getColumns().forEach((column) => {
-                allColumnIds.push(column.getId());
-            });
-            gridRef.current.columnApi.autoSizeColumns(allColumnIds, false);
+            //if (!localeText.hasOwnProperty(params.key)) console.log(params);
+            if (intl.locale === LANG_FRENCH) {
+                return localeText.hasOwnProperty(params.key)
+                    ? localeFrench[params.key]
+                    : params.defaultValue;
+            } else {
+                return params.defaultValue;
+            }
         },
-        [gridRef]
+        [intl.locale]
     );
 
     return (
-        <span
-            onMouseDown={(event) => {
-                if (event.button === 2) {
-                    handleCloseContextualMenu();
-                }
-            }}
-        >
+        <>
             {!props.fetched && (
                 <LoaderWithOverlay
                     color="inherit"
@@ -127,47 +106,32 @@ export const EquipmentTable = ({
                             ref={gridRef}
                             getRowId={getRowId}
                             rowData={rows}
+                            pinnedTopRowData={
+                                editingData ? [editingData] : undefined
+                            }
+                            getRowStyle={getRowStyle}
                             columnDefs={columns}
                             defaultColDef={defaultColDef}
-                            animateRows={true}
-                            rowSelection="multiple"
-                            editType={'fullRow'}
-                            suppressPropertyNamesCheck={true}
-                            getRowStyle={getRowStyle}
-                            enableCellTextSelection={true}
                             onColumnMoved={handleColumnDrag}
-                            readOnlyEdit={true}
+                            enableCellTextSelection={true}
                             alwaysMultiSort={true}
                             onFirstDataRendered={onFirstDataRendered}
-                            onCellEditRequest={onCellEditRequest}
-                            onCellClicked={cellClickedListener}
-                            onCellValueChanged={cellEditingListener}
-                            onRowValueChanged={rowEditingListener}
-                            onCellContextMenu={cellContextMenuListener}
+                            onCellClicked={handleCellClicked}
+                            undoRedoCellEditing={true}
+                            editType={'fullRow'}
+                            onCellValueChanged={handleCellEditing}
+                            onRowValueChanged={handleRowEditing}
+                            onRowEditingStopped={handleEditingStopped}
+                            stopEditingWhenCellsLoseFocus={true}
+                            suppressDragLeaveHidesColumns={true}
+                            suppressPropertyNamesCheck={true}
+                            suppressColumnVirtualisation={true}
+                            suppressClickEdit={true}
+                            getLocaleText={getLocaleText}
                         />
                     </div>
                 </div>
             )}
-
-            {openContextualMenu && (
-                <CommonContextualMenu
-                    menuItems={menuItems}
-                    open={openContextualMenu}
-                    anchorReference="anchorPosition"
-                    anchorPosition={
-                        mousePosition.mouseY !== null &&
-                        mousePosition.mouseX !== null
-                            ? {
-                                  top: mousePosition.mouseY,
-                                  left: mousePosition.mouseX,
-                              }
-                            : undefined
-                    }
-                    onClose={() => {
-                        handleCloseContextualMenu();
-                    }}
-                />
-            )}
-        </span>
+        </>
     );
 };

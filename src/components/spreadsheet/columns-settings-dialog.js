@@ -198,6 +198,7 @@ export const ColumnsSettingsDialog = ({
 
                 {[...reorderedTableDefinitionIndexes].map((value, index) => (
                     <ListItem
+                        key={index}
                         className={classes.checkboxItem}
                         style={{
                             padding: '0 16px',

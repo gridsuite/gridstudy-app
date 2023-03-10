@@ -255,6 +255,8 @@ export const BooleanListField = ({
             }
             if (columnDefinition.resetColumnsInError) {
                 columnDefinition.resetColumnsInError.forEach((column) => {
+                    console.log(Boolean(val));
+                    console.log(column.value);
                     if (Boolean(val) === column.value) {
                         resetColumnError(column.dependencyColumn);
                     }

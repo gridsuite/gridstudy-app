@@ -1,9 +1,14 @@
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { Checkbox, Tooltip } from '@mui/material';
+import { Checkbox, Tooltip, IconButton } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
 import { RunningStatus } from 'components/util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
+import EditIcon from '@mui/icons-material/Edit';
+import { useEffect } from 'react';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -24,9 +29,30 @@ const useStyles = makeStyles((theme) => ({
     numericValue: {
         marginLeft: 'inherit',
     },
+    referenceEditRow: {
+        '& button': {
+            color: theme.palette.primary.main,
+            cursor: 'initial',
+        },
+        padding: 0,
+    },
+    leftFade: {
+        background:
+            'linear-gradient(to right, ' +
+            theme.palette.primary.main +
+            ' 0%, ' +
+            theme.palette.primary.main +
+            ' 2%, rgba(0,0,0,0) 12%)',
+        borderBottomLeftRadius: theme.spacing(0.5),
+        borderTopLeftRadius: theme.spacing(0.5),
+    },
+    topEditRow: {
+        borderTop: '1px solid ' + theme.palette.primary.main,
+        borderBottom: '1px solid ' + theme.palette.primary.main,
+    },
 }));
 
-export const BooleanCellRender = (rowData, key, style) => {
+export const BooleanCellRenderer = (rowData, key, style) => {
     const isChecked = rowData.value;
     return (
         <div key={key} style={style}>
@@ -79,7 +105,7 @@ export const formatCell = (props) => {
     return { value: value, tooltip: tooltipValue };
 };
 
-export const NumericDefaultCellRenderer = (props) => {
+export const NumericCellRenderer = (props) => {
     const classes = useStyles();
     const cellValue = formatCell(props);
     return (
@@ -113,6 +139,104 @@ export const NumericDefaultCellRenderer = (props) => {
                         text={cellValue.value}
                     />
                 )}
+            </div>
+        </div>
+    );
+};
+
+export const EditableCellRenderer = (props) => {
+    const classes = useStyles();
+    return (
+        <div style={props.style}>
+            <div className={classes.editCell}>
+                <IconButton
+                    size={'small'}
+                    onClick={() => {
+                        props.setEditingData({
+                            ...props.data,
+                            metadata: {
+                                equipmentType: props.equipmentType,
+                            },
+                        });
+                    }}
+                >
+                    <EditIcon />
+                </IconButton>
+            </div>
+        </div>
+    );
+};
+
+export const DisabledEditCellRenderer = (props) => {
+    const classes = useStyles();
+    return (
+        <div style={props.style}>
+            <div className={classes.editCell}>
+                <IconButton size={'small'} disabled>
+                    <EditIcon />
+                </IconButton>
+            </div>
+        </div>
+    );
+};
+
+export const EditedLineCellRenderer = (props) => {
+    const classes = useStyles();
+    return (
+        <div className={clsx(classes.referenceEditRow, classes.leftFade)}>
+            <div className={classes.editCell}>
+                <IconButton
+                    size={'small'}
+                    style={{ backgroundColor: 'transparent' }}
+                    disableRipple
+                >
+                    <MoreHorizIcon />
+                </IconButton>
+            </div>
+        </div>
+    );
+};
+
+export const EditingCellRenderer = (props) => {
+    const classes = useStyles();
+
+    useEffect(() => {
+        const editRow = props.api?.getPinnedTopRow(0);
+        if (editRow) {
+            props.api?.startEditingCell({
+                rowIndex: editRow.rowIndex,
+                colKey: 'edit',
+                rowPinned: editRow.rowPinned,
+            });
+        }
+    }, [props.api]);
+
+    function validateEdit() {
+        props.api?.stopEditing();
+        props.setIsValidatingData(true);
+    }
+
+    function resetEdit() {
+        props.api?.stopEditing(true);
+        props.setEditingData();
+    }
+
+    return (
+        <div
+            style={props.style}
+            className={clsx(classes.topEditRow, classes.leftFade)}
+        >
+            <div className={classes.editCell}>
+                <>
+                    <IconButton size={'small'} onClick={resetEdit}>
+                        <ClearIcon />
+                    </IconButton>
+                    {Object.entries(props.errors).length === 0 && (
+                        <IconButton size={'small'} onClick={validateEdit}>
+                            <CheckIcon />
+                        </IconButton>
+                    )}
+                </>
             </div>
         </div>
     );
