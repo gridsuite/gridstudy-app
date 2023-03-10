@@ -37,13 +37,7 @@ const DndTableBottomRightButtons = ({
     const lastRowSelected = currentRows[currentRows.length - 1]?.[SELECTED];
 
     return (
-        <Grid
-            container
-            item
-            spacing={1}
-            xs={true}
-            sx={{ justifyContent: 'flex-end' }}
-        >
+        <Grid container item xs spacing={1} sx={{ justifyContent: 'flex-end' }}>
             <Grid item>
                 <Tooltip
                     title={intl.formatMessage({

@@ -21,7 +21,7 @@ const DndTableButtons = ({
     const intl = useIntl();
 
     return (
-        <Grid container item spacing={1} xs={true}>
+        <Grid container item xs spacing={1}>
             <Grid item>
                 <Tooltip
                     title={intl.formatMessage({
