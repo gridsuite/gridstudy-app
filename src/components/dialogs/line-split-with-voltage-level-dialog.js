@@ -33,12 +33,12 @@ import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
 } from './line-split-or-attach-utils';
-import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAutocompleteField } from './inputs/use-autocomplete-field';
+import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
 import { MODIFICATION_TYPES } from '../util/modification-type';
 import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
@@ -463,6 +463,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     substationOptionsPromise={substationOptionsPromise}
                     onCreateVoltageLevel={onVoltageLevelDo}
                     editData={voltageLevelToEdit}
+                    studyUuid={studyUuid}
                 />
             )}
             <EquipmentSearchDialog
