@@ -110,7 +110,15 @@ const GeneratorModificationForm = ({
                 true
             ).then((value) => {
                 if (value) {
-                    if (!editData) {
+                    if (
+                        editData &&
+                        editData.equipmentId === getValues(EQUIPMENT_ID)
+                    ) {
+                        setValue(
+                            REACTIVE_CAPABILITY_CURVE_TABLE,
+                            editData?.reactiveCapabilityCurvePoints
+                        );
+                    } else {
                         let reactiveCapabilityCurvePoints = [];
                         value?.reactiveCapabilityCurvePoints?.forEach(
                             (element) => {
@@ -120,7 +128,7 @@ const GeneratorModificationForm = ({
                                     [Q_MAX_P]: null,
                                     [OLD_P]: element.p,
                                     [OLD_Q_MIN_P]: element.qminP,
-                                    [OLD_Q_MAX_P]: element.qmapP,
+                                    [OLD_Q_MAX_P]: element.qmaxP,
                                 });
                             }
                         );
@@ -129,7 +137,6 @@ const GeneratorModificationForm = ({
                             reactiveCapabilityCurvePoints
                         );
                     }
-
                     setGeneratorToModify(value);
                 }
             });

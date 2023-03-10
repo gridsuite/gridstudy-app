@@ -26,6 +26,9 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
+    OLD_P,
+    OLD_Q_MAX_P,
+    OLD_Q_MIN_P,
     P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
@@ -177,10 +180,8 @@ const GeneratorModificationDialog = ({
             if (!(Q_MIN_P in rcc)) {
                 rcc[Q_MIN_P] = null;
             }
-
             return rcc;
         });
-
         return reactiveCapabilityCurvePoints;
     };
 
@@ -189,7 +190,14 @@ const GeneratorModificationDialog = ({
             const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
             action === 'REMOVE'
                 ? newRccValues.splice(index, 1)
-                : newRccValues.splice(index, 0, {});
+                : newRccValues.splice(index, 0, {
+                      [P]: null,
+                      [Q_MIN_P]: null,
+                      [Q_MAX_P]: null,
+                      [OLD_P]: null,
+                      [OLD_Q_MIN_P]: null,
+                      [OLD_Q_MAX_P]: null,
+                  });
             return {
                 ...previousValue,
                 reactiveCapabilityCurvePoints: newRccValues,
