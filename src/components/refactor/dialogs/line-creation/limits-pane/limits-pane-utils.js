@@ -16,47 +16,49 @@ import {
     TEMPORARY_LIMIT_VALUE,
 } from 'components/refactor/utils/field-constants';
 import yup from '../../../utils/yup-config';
+import { areArrayElementsUnique } from '../../../utils/utils';
+import { sanitizeString } from '../../../../dialogs/dialogUtils';
+
+const temporaryLimitsTableValidationSchema = () => ({
+    [PERMANENT_LIMIT]: yup
+        .number()
+        .nullable()
+        .positive('permanentCurrentLimitGreaterThanZero'),
+    [TEMPORARY_LIMITS]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [TEMPORARY_LIMIT_NAME]: yup.string().required(),
+                [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().positive(),
+                [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+            })
+        )
+        .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
+            const namesArray = array.map((l) =>
+                sanitizeString(l[TEMPORARY_LIMIT_NAME])
+            );
+            return areArrayElementsUnique(namesArray);
+        })
+        .test(
+            'distinctDurations',
+            'TemporaryLimitDurationUnicityError',
+            (array) => {
+                const durationsArray = array.map(
+                    (l) => l[TEMPORARY_LIMIT_DURATION]
+                );
+                return areArrayElementsUnique(durationsArray);
+            }
+        ),
+});
 
 const limitsValidationSchema = (id) => ({
     [id]: yup.object().shape({
-        [CURRENT_LIMITS_1]: yup.object().shape({
-            [PERMANENT_LIMIT]: yup
-                .number()
-                .nullable()
-                .positive('permanentCurrentLimitGreaterThanZero'),
-            [TEMPORARY_LIMITS]: yup.array().of(
-                yup.object().shape({
-                    [TEMPORARY_LIMIT_NAME]: yup.string().required(),
-                    [TEMPORARY_LIMIT_DURATION]: yup
-                        .number()
-                        .required()
-                        .positive('acceptableDurationGreaterThanZero'),
-                    [TEMPORARY_LIMIT_VALUE]: yup
-                        .number()
-                        .required()
-                        .positive('temporaryCurrentLimitGreaterThanZero'),
-                })
-            ),
-        }),
-        [CURRENT_LIMITS_2]: yup.object().shape({
-            [PERMANENT_LIMIT]: yup
-                .number()
-                .nullable()
-                .positive('permanentCurrentLimitGreaterThanZero'),
-            [TEMPORARY_LIMITS]: yup.array().of(
-                yup.object().shape({
-                    [TEMPORARY_LIMIT_NAME]: yup.string().required(),
-                    [TEMPORARY_LIMIT_DURATION]: yup
-                        .number()
-                        .required()
-                        .positive('acceptableDurationGreaterThanZero'),
-                    [TEMPORARY_LIMIT_VALUE]: yup
-                        .number()
-                        .required()
-                        .positive('temporaryCurrentLimitGreaterThanZero'),
-                })
-            ),
-        }),
+        [CURRENT_LIMITS_1]: yup
+            .object()
+            .shape(temporaryLimitsTableValidationSchema()),
+        [CURRENT_LIMITS_2]: yup
+            .object()
+            .shape(temporaryLimitsTableValidationSchema()),
     }),
 });
 

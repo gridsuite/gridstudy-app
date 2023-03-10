@@ -531,6 +531,8 @@
     "TemporaryLimitDuration": "Tempo",
     "TemporaryLimitName": "Nom",
     "TemporaryLimitValue": "Valeur",
+    "TemporaryLimitNameUnicityError": "Les noms des limites temporaires doivent être uniques dans la table",
+    "TemporaryLimitDurationUnicityError": "Les tempos des limites temporaires doivent être uniques dans la table",
 
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Sections identiques",
@@ -600,8 +602,6 @@
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
-    "temporaryCurrentLimitGreaterThanZero": "La limite temporaire doit être strictement positive",
-    "acceptableDurationGreaterThanZero": "La temporisation doit être strictement positive",
 
     "PermanentCurrentLimitText1": "IST 1",
     "PermanentCurrentLimitText2": "IST 2",

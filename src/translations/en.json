@@ -531,6 +531,8 @@
     "TemporaryLimitDuration": "Duration",
     "TemporaryLimitName": "Name",
     "TemporaryLimitValue": "Value",
+    "TemporaryLimitNameUnicityError": "Temporary limit names must be unique in the table",
+    "TemporaryLimitDurationUnicityError": "Temporary limit acceptable durations must be unique in the table",
 
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",
@@ -600,8 +602,6 @@
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
-    "temporaryCurrentLimitGreaterThanZero": "The temporary current limit value must be strictly positive",
-    "acceptableDurationGreaterThanZero": "The acceptable duration must be strictly positive",
 
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
