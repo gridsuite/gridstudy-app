@@ -69,17 +69,19 @@ export const REACTIVE_LIMIT_TYPES = [
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
 ];
 
-export const ACTIVE_VARIATION_MODE = [
-    { id: 'PROPORTIONAL', label: 'Proportional' },
-    { id: 'REGULAR_DISTRIBUTION', label: 'RegularDistribution' },
-    { id: 'VENTILATION', label: 'Ventilation' },
-];
+export const ACTIVE_VARIATION_MODES = {
+    PROPORTIONAL: { id: 'PROPORTIONAL', label: 'Proportional' },
+    REGULAR_DISTRIBUTION: {
+        id: 'REGULAR_DISTRIBUTION',
+        label: 'RegularDistribution',
+    },
+    VENTILATION: { id: 'VENTILATION', label: 'Ventilation' },
+};
 
-export const REACTIVE_VARIATION_MODE = [
-    { id: 'CONSTANT_Q', label: 'ConstantQWithoutUnit' },
-    // to add later after correcting implementation in the backend (Powsybl)
-    // { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
-];
+export const REACTIVE_VARIATION_MODES = {
+    CONSTANT_Q: { id: 'CONSTANT_Q', label: 'ConstantQWithoutUnit' },
+    TAN_PHI_FIXED: { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
+};
 
 export function getLoadTypeLabel(loadTypeId) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;

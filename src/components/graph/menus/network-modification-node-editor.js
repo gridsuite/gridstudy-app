@@ -57,7 +57,7 @@ import {
     setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
-import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
+import LoadScalingDialog from 'components/refactor/dialogs/load-scaling/load-scaling-dialog';
 import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
 import GeneratorCreationDialog from 'components/refactor/dialogs/generator-creation/generator-creation-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
