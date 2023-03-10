@@ -41,7 +41,7 @@ const DndTableBottomRightButtons = ({
             container
             item
             spacing={1}
-            xs={6}
+            xs={true}
             sx={{ justifyContent: 'flex-end' }}
         >
             <Grid item>

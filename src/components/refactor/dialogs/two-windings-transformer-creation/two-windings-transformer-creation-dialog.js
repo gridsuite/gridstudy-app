@@ -153,6 +153,12 @@ const TwoWindingsTransformerCreationDialog = ({
             : null;
     };
 
+    const addSelectedFieldToSteps = (steps) => {
+        return steps?.map((step) => {
+            return { ...step, selected: false };
+        });
+    };
+
     const getTapSideForEdit = (twt, tap) => {
         return tap?.regulatingTerminalId === twt.equipmentId
             ? tap?.regulatingTerminalVlId === twt?.voltageLevelId1
@@ -245,7 +251,9 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: twt?.[PHASE_TAP_CHANGER]?.[STEPS],
+                    steps: addSelectedFieldToSteps(
+                        twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                    ),
                     equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId,
                     equipmentType:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalType,
@@ -276,7 +284,9 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: twt?.[RATIO_TAP_CHANGER]?.[STEPS],
+                    steps: addSelectedFieldToSteps(
+                        twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ),
                     equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId,
                     equipmentType:
                         twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalType,
@@ -352,7 +362,9 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: twt?.[RATIO_TAP_CHANGER]?.[STEPS],
+                    steps: addSelectedFieldToSteps(
+                        twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ),
                     equipmentId:
                         twt?.[RATIO_TAP_CHANGER]
                             ?.regulatingTerminalConnectableId,
@@ -390,7 +402,9 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: twt?.[PHASE_TAP_CHANGER]?.[STEPS],
+                    steps: addSelectedFieldToSteps(
+                        twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                    ),
                     voltageLevelId:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
                     equipmentId:
