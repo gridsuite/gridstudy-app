@@ -62,8 +62,8 @@ const validationModificationRow = (currentValues, previousValues, id) => {
     const requiredProperties = [P, Q_MAX_P, Q_MIN_P];
 
     mergedValues.forEach((value, index) => {
-        for (const property in requiredProperties) {
-            if (!value?.[property]) {
+        requiredProperties.forEach((property) => {
+            if (value?.[property] == null) {
                 errors.push(
                     new yup.ValidationError(
                         'YupRequired',
@@ -72,7 +72,7 @@ const validationModificationRow = (currentValues, previousValues, id) => {
                     )
                 );
             }
-        }
+        });
 
         if (value?.[Q_MIN_P] > value?.[Q_MAX_P]) {
             errors.push(

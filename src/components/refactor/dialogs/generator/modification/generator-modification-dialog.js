@@ -160,6 +160,7 @@ const GeneratorModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
+
     const { reset, getValues } = methods;
 
     //this method empties the form, and let us pass custom data that we want to set

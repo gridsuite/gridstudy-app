@@ -16,6 +16,7 @@ import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import MidFormError from '../../../../rhf-inputs/error-inputs/mid-form-error';
 import ErrorInput from '../../../../rhf-inputs/error-inputs/error-input';
+import { P, Q_MAX_P, Q_MIN_P } from 'components/refactor/utils/field-constants';
 export const ReactiveCapabilityCurveTable = ({
     id,
     tableHeadersIds,
@@ -36,7 +37,11 @@ export const ReactiveCapabilityCurveTable = ({
         //         oldQmaxP: null,
         //     });
         // } else {
-        insert(rows.length - 1, {});
+        insert(rows.length - 1, {
+            [P]: null,
+            [Q_MIN_P]: null,
+            [Q_MAX_P]: null,
+        });
         // }
     };
 

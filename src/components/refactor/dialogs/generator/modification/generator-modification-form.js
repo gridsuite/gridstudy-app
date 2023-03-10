@@ -111,9 +111,6 @@ const GeneratorModificationForm = ({
                                     p: null,
                                     qminP: null,
                                     qmaxP: null,
-                                    oldP: element.p,
-                                    oldQminP: element.qminP,
-                                    oldQmaxP: element.qmaxP,
                                 });
                             }
                         );
