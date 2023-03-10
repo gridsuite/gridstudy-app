@@ -184,6 +184,19 @@ const GeneratorModificationDialog = ({
         return reactiveCapabilityCurvePoints;
     };
 
+    const handleReactiveCapabilityCurveTableRow = (action, index) => {
+        setGeneratorToModify((previousValue) => {
+            const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
+            action === 'REMOVE'
+                ? newRccValues.splice(index, 1)
+                : newRccValues.splice(index, 0, {});
+            return {
+                ...previousValue,
+                reactiveCapabilityCurvePoints: newRccValues,
+            };
+        });
+    };
+
     useEffect(() => {
         if (editData) {
             reset({
@@ -394,6 +407,9 @@ const GeneratorModificationDialog = ({
                     onClear={clear}
                     generatorToModify={generatorToModify}
                     setGeneratorToModify={setGeneratorToModify}
+                    handleReactiveCapabilityCurveTableRow={
+                        handleReactiveCapabilityCurveTableRow
+                    }
                 />
             </ModificationDialog>
         </FormProvider>

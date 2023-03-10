@@ -29,21 +29,13 @@ export const ReactiveCapabilityCurveTable = ({
     tableHeadersIds,
     disabled = false,
     reactiveCapabilityCurvePoints,
+    handleReactiveCapabilityCurveTableRow,
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();
 
     const handleInsertRow = () => {
-        // if (reactiveCapabilityCurvePoints) {
-        //     insert(rows.length - 1, {
-        //         p: null,
-        //         qminP: null,
-        //         qmaxP: null,
-        //         oldP: null,
-        //         oldQminP: null,
-        //         oldQmaxP: null,
-        //     });
-        // } else {
+        handleReactiveCapabilityCurveTableRow('INSERT', rows.length - 1);
         insert(rows.length - 1, {
             [P]: null,
             [Q_MIN_P]: null,
@@ -52,14 +44,10 @@ export const ReactiveCapabilityCurveTable = ({
             [OLD_Q_MIN_P]: null,
             [OLD_Q_MAX_P]: null,
         });
-        // }
     };
 
     const handleRemoveRow = (index) => {
-        // if (reactiveCapabilityCurvePoints) {
-        //     reactiveCapabilityCurvePoints?.splice(index, 1);
-        // }
-
+        handleReactiveCapabilityCurveTableRow('REMOVE', index);
         remove(index);
     };
 

@@ -21,17 +21,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../../utils/field-constants';
 
-const buildValidationError = (errors, field) => {
-    return errors.length === 0
-        ? true
-        : {
-              name: 'ValidationError',
-              path: `${field}`,
-              errors: [],
-              inner: errors,
-          };
-};
-
 const getCreationRowSchema = () =>
     yup.object().shape({
         [Q_MAX_P]: yup.number().nullable().required(),

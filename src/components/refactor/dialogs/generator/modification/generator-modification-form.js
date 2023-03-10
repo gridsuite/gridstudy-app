@@ -63,6 +63,7 @@ const GeneratorModificationForm = ({
     onClear,
     generatorToModify,
     setGeneratorToModify,
+    handleReactiveCapabilityCurveTableRow,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
@@ -303,7 +304,12 @@ const GeneratorModificationForm = ({
             </Grid>
 
             {/* Reactive limits part */}
-            <ReactiveLimitsForm generatorInfos={generatorToModify} />
+            <ReactiveLimitsForm
+                generatorInfos={generatorToModify}
+                handleReactiveCapabilityCurveTableRow={
+                    handleReactiveCapabilityCurveTableRow
+                }
+            />
 
             {/* Set points part */}
             <SetPointsForm
