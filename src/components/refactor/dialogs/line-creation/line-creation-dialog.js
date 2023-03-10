@@ -245,6 +245,12 @@ const LineCreationDialog = ({
         );
     }, [tabIndex, tabIndexesWithError]);
 
+    const sanitizeLimitNames = (temporaryLimitList) =>
+        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
+            ...temporaryLimit,
+            name: sanitizeString(name), // update only name property
+        }));
+
     const onSubmit = useCallback(
         (line) => {
             console.log('DBR onSubmit', line);
@@ -267,8 +273,12 @@ const LineCreationDialog = ({
                 characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
                 limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS],
-                limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS],
+                sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                ),
+                sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                ),
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
                 sanitizeString(
