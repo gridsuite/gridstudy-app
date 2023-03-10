@@ -11,9 +11,6 @@ import {
 } from '../../../../../util/validation-functions';
 import yup from '../../../../utils/yup-config';
 import {
-    OLD_P,
-    OLD_Q_MAX_P,
-    OLD_Q_MIN_P,
     P,
     Q_MAX_P,
     Q_MIN_P,
@@ -21,56 +18,80 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../../utils/field-constants';
 
-const getRowSchema = () =>
+const buildValidationError = (errors, field) => {
+    return errors.length === 0
+        ? true
+        : {
+              name: 'ValidationError',
+              path: `${field}`,
+              errors: [],
+              inner: errors,
+          };
+};
+
+const getCreationRowSchema = () =>
     yup.object().shape({
-        [OLD_Q_MAX_P]: yup.number().nullable(),
-        [OLD_Q_MIN_P]: yup.number().nullable(),
-        [OLD_P]: yup.number().nullable(),
-        [Q_MAX_P]: yup
-            .number()
-            .nullable()
-            .when([OLD_Q_MAX_P], {
-                is: (value) => checkValueField(value),
-                then: (schema) => schema.required(),
-            }),
+        [Q_MAX_P]: yup.number().nullable().required(),
         [Q_MIN_P]: yup
             .number()
             .nullable()
-            .when([OLD_Q_MIN_P], {
-                is: (value) => checkValueField(value),
-                then: (schema) => schema.required(),
-            })
-            .when([Q_MAX_P], {
-                is: (value) => {
-                    return value !== null;
-                },
-                then: (schema) =>
-                    schema.max(
-                        yup.ref(Q_MAX_P),
-                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
-                    ),
-                otherwise: (schema) =>
-                    schema.max(
-                        yup.ref(OLD_Q_MAX_P),
-                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
-                    ),
-            }),
-        [P]: yup
-            .number()
-            .nullable()
-            .when([OLD_P], {
-                is: (value) => checkValueField(value),
-                then: (schema) => schema.required(),
-            }),
+            .required()
+            .max(
+                yup.ref(Q_MAX_P),
+                'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
+            ),
+        [P]: yup.number().nullable().required(),
     });
+
+const getModificationRowSchema = () =>
+    yup.object().shape({
+        [Q_MAX_P]: yup.number().nullable(),
+        [Q_MIN_P]: yup.number().nullable(),
+        [P]: yup.number().nullable(),
+    });
+
+// it is not possible to access array index in yup, in order to compare currentValues with previous ones, we need to it manually
+const validationModificationRow = (currentValues, previousValues, id) => {
+    const errors = [];
+
+    const mergedValues = mergeCurrentAndPreviousValues(
+        currentValues,
+        previousValues
+    );
+
+    const requiredProperties = [P, Q_MAX_P, Q_MIN_P];
+
+    mergedValues.forEach((value, index) => {
+        for (const property in requiredProperties) {
+            if (!value?.[property]) {
+                errors.push(
+                    new yup.ValidationError(
+                        'YupRequired',
+                        null,
+                        `${id}[${index}].${property}`
+                    )
+                );
+            }
+        }
+
+        if (value?.[Q_MIN_P] > value?.[Q_MAX_P]) {
+            errors.push(
+                new yup.ValidationError(
+                    'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence',
+                    null,
+                    `${id}[${index}].${Q_MIN_P}`
+                )
+            );
+        }
+    });
+
+    return buildValidationError(errors, id);
+};
 
 const getRowEmptyFormData = () => ({
     [P]: null,
     [Q_MAX_P]: null,
     [Q_MIN_P]: null,
-    [OLD_P]: null,
-    [OLD_Q_MAX_P]: null,
-    [OLD_Q_MIN_P]: null,
 });
 
 export const getReactiveCapabilityCurveEmptyFormData = (
@@ -78,10 +99,6 @@ export const getReactiveCapabilityCurveEmptyFormData = (
 ) => ({
     [id]: [getRowEmptyFormData(), getRowEmptyFormData()],
 });
-
-function checkValueField(value) {
-    return value == null || value === undefined || isNaN(value);
-}
 
 function getNotNullNumbersFromArray(values) {
     return values
@@ -101,6 +118,23 @@ function checkAllValuesAreUnique(values) {
     return setOfPs.length === validActivePowerValues.length;
 }
 
+//merge previous and current values for validation, if current value is null, we take previous one for a specific field
+function mergeCurrentAndPreviousValues(currentValues, previousValues) {
+    if (previousValues === null) {
+        return currentValues;
+    }
+
+    return currentValues.map((curVal, index) => {
+        for (const [key, value] of Object.entries(curVal)) {
+            if (value === null) {
+                curVal[key] = previousValues[index]?.[key];
+            }
+        }
+
+        return curVal;
+    });
+}
+
 function checkAllValuesBetweenMinMax(values) {
     const validActivePowerValues = getNotNullNumbersFromArray(values);
     const minP = validActivePowerValues[0];
@@ -110,7 +144,8 @@ function checkAllValuesBetweenMinMax(values) {
 }
 
 export const getReactiveCapabilityCurveValidationSchema = (
-    id = REACTIVE_CAPABILITY_CURVE_TABLE
+    id = REACTIVE_CAPABILITY_CURVE_TABLE,
+    previousValues = null
 ) => ({
     [id]: yup
         .array()
@@ -119,17 +154,41 @@ export const getReactiveCapabilityCurveValidationSchema = (
             is: 'CURVE',
             then: (schema) =>
                 schema
-                    .of(getRowSchema())
+                    .when([], {
+                        is: () => previousValues === null,
+                        then: (schema) => schema.of(getCreationRowSchema()),
+                        otherwise: schema
+                            .of(getModificationRowSchema())
+                            .test('validate-modification-rows', (values) =>
+                                validationModificationRow(
+                                    values,
+                                    previousValues,
+                                    id
+                                )
+                            ),
+                    })
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
                     .test(
                         'checkAllValuesAreUnique',
                         'ReactiveCapabilityCurveCreationErrorPInvalid',
-                        (values) => checkAllValuesAreUnique(values)
+                        (values) =>
+                            checkAllValuesAreUnique(
+                                mergeCurrentAndPreviousValues(
+                                    values,
+                                    previousValues
+                                )
+                            )
                     )
                     .test(
                         'checkAllValuesBetweenMinMax',
                         'ReactiveCapabilityCurveCreationErrorPOutOfRange',
-                        (values) => checkAllValuesBetweenMinMax(values)
+                        (values) =>
+                            checkAllValuesBetweenMinMax(
+                                mergeCurrentAndPreviousValues(
+                                    values,
+                                    previousValues
+                                )
+                            )
                     ),
         }),
 });

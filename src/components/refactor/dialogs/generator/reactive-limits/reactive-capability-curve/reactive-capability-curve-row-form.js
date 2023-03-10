@@ -18,7 +18,7 @@ const ReactiveCapabilityCurveRowForm = ({
     id,
     index,
     labelSuffix,
-    rowReactiveCapabilityCurvePoint,
+    previousValues,
 }) => {
     const pField = (
         <FloatInput
@@ -26,7 +26,7 @@ const ReactiveCapabilityCurveRowForm = ({
             label={'P'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ActivePowerAdornment}
-            previousValue={rowReactiveCapabilityCurvePoint?.p}
+            previousValue={previousValues?.p}
         />
     );
 
@@ -36,7 +36,7 @@ const ReactiveCapabilityCurveRowForm = ({
             label={'QminP'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ReactivePowerAdornment}
-            previousValue={rowReactiveCapabilityCurvePoint?.qminP}
+            previousValue={previousValues?.qminP}
         />
     );
 
@@ -46,7 +46,7 @@ const ReactiveCapabilityCurveRowForm = ({
             label={'QmaxP'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ReactivePowerAdornment}
-            previousValue={rowReactiveCapabilityCurvePoint?.qmaxP}
+            previousValue={previousValues?.qmaxP}
         />
     );
 

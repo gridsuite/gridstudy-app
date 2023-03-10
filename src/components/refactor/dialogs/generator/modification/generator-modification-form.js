@@ -55,14 +55,18 @@ const GeneratorModificationForm = ({
     currentNode,
     editData,
     onClear,
-    setSelectedGeneratorInfos,
+    generatorToModify,
+    setGeneratorToModify,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
-    const [generatorInfos, setGeneratorInfos] = useState();
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const { setValue, getValues, clearErrors } = useFormContext();
+
+    const watchEquipmentId = useWatch({
+        name: EQUIPMENT_ID,
+    });
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -84,14 +88,12 @@ const GeneratorModificationForm = ({
             });
         }
     }, [studyUuid, currentNodeUuid]);
-    const watchEquipmentId = useWatch({
-        name: EQUIPMENT_ID,
-    });
 
     useEffect(() => {
         clearErrors();
-        onClear();
-        setGeneratorInfos(null);
+        setGeneratorToModify(null);
+        onClear({ [EQUIPMENT_ID]: watchEquipmentId });
+
         if (watchEquipmentId) {
             fetchEquipmentInfos(
                 studyUuid,
@@ -121,25 +123,24 @@ const GeneratorModificationForm = ({
                         );
                     }
 
-                    setGeneratorInfos(value);
-                    setSelectedGeneratorInfos(value);
+                    setGeneratorToModify(value);
                 }
             });
         }
     }, [
+        watchEquipmentId,
         studyUuid,
         currentNodeUuid,
-        watchEquipmentId,
         editData,
         setValue,
-        setSelectedGeneratorInfos,
+        setGeneratorToModify,
         getValues,
         clearErrors,
         onClear,
     ]);
 
     const energySourceLabelId = getEnergySourceLabel(
-        generatorInfos?.energySource
+        generatorToModify?.energySource
     );
     const previousEnergySourceLabel = energySourceLabelId
         ? intl.formatMessage({
@@ -164,7 +165,7 @@ const GeneratorModificationForm = ({
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={generatorInfos?.name}
+            previousValue={generatorToModify?.name}
             clearable={true}
         />
     );
@@ -186,7 +187,7 @@ const GeneratorModificationForm = ({
             name={MAXIMUM_ACTIVE_POWER}
             label={'MaximumActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorInfos?.maxP}
+            previousValue={generatorToModify?.maxP}
             clearable={true}
         />
     );
@@ -196,7 +197,7 @@ const GeneratorModificationForm = ({
             name={MINIMUM_ACTIVE_POWER}
             label={'MinimumActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorInfos?.minP}
+            previousValue={generatorToModify?.minP}
             clearable={true}
         />
     );
@@ -206,7 +207,7 @@ const GeneratorModificationForm = ({
             name={RATED_NOMINAL_POWER}
             label={'RatedNominalPowerText'}
             adornment={MVAPowerAdornment}
-            previousValue={generatorInfos?.ratedS}
+            previousValue={generatorToModify?.ratedS}
             clearable={true}
         />
     );
@@ -216,7 +217,7 @@ const GeneratorModificationForm = ({
             name={TRANSIENT_REACTANCE}
             label={'TransientReactance'}
             adornment={OhmAdornment}
-            previousValue={generatorInfos?.transientReactance}
+            previousValue={generatorToModify?.transientReactance}
         />
     );
 
@@ -225,7 +226,7 @@ const GeneratorModificationForm = ({
             name={TRANSFORMER_REACTANCE}
             label={'TransformerReactance'}
             adornment={OhmAdornment}
-            previousValue={generatorInfos?.stepUpTransformerReactance}
+            previousValue={generatorToModify?.stepUpTransformerReactance}
         />
     );
 
@@ -234,7 +235,7 @@ const GeneratorModificationForm = ({
             name={PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPoint'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorInfos?.plannedActivePowerSetPoint}
+            previousValue={generatorToModify?.plannedActivePowerSetPoint}
         />
     );
 
@@ -242,7 +243,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={STARTUP_COST}
             label={'StartupCost'}
-            previousValue={generatorInfos?.startupCost}
+            previousValue={generatorToModify?.startupCost}
         />
     );
 
@@ -250,7 +251,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={MARGINAL_COST}
             label={'MarginalCost'}
-            previousValue={generatorInfos?.marginalCost}
+            previousValue={generatorToModify?.marginalCost}
         />
     );
 
@@ -258,7 +259,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={PLANNED_OUTAGE_RATE}
             label={'PlannedOutageRate'}
-            previousValue={generatorInfos?.plannedOutageRate}
+            previousValue={generatorToModify?.plannedOutageRate}
         />
     );
 
@@ -266,7 +267,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={FORCED_OUTAGE_RATE}
             label={'ForcedOutageRate'}
-            previousValue={generatorInfos?.forcedOutageRate}
+            previousValue={generatorToModify?.forcedOutageRate}
         />
     );
 
@@ -296,7 +297,7 @@ const GeneratorModificationForm = ({
             </Grid>
 
             {/* Reactive limits part */}
-            <ReactiveLimitsForm generatorInfos={generatorInfos} />
+            <ReactiveLimitsForm generatorInfos={generatorToModify} />
 
             {/* Set points part */}
             <SetPointsForm
@@ -304,7 +305,7 @@ const GeneratorModificationForm = ({
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}
                 isGeneratorModification={true}
-                generatorInfos={generatorInfos}
+                generatorInfos={generatorToModify}
             />
 
             {/* Short Circuit of start part */}

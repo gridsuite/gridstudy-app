@@ -26,33 +26,34 @@ export const ReactiveCapabilityCurveTable = ({
     const classes = useStyles();
 
     const handleInsertRow = () => {
-        if (reactiveCapabilityCurvePoints) {
-            reactiveCapabilityCurvePoints?.splice(rows.length - 1, 0, {
-                p: null,
-                qminP: null,
-                qmaxP: null,
-                oldP: null,
-                oldQminP: null,
-                oldQmaxP: null,
-            });
-            insert(rows.length - 1, {
-                p: null,
-                qminP: null,
-                qmaxP: null,
-                oldP: null,
-                oldQminP: null,
-                oldQmaxP: null,
-            });
-        } else {
-            insert(rows.length - 1, {});
-        }
+        // if (reactiveCapabilityCurvePoints) {
+        //     insert(rows.length - 1, {
+        //         p: null,
+        //         qminP: null,
+        //         qmaxP: null,
+        //         oldP: null,
+        //         oldQminP: null,
+        //         oldQmaxP: null,
+        //     });
+        // } else {
+        insert(rows.length - 1, {});
+        // }
     };
 
     const handleRemoveRow = (index) => {
-        if (reactiveCapabilityCurvePoints) {
-            reactiveCapabilityCurvePoints?.splice(index, 1);
-        }
+        // if (reactiveCapabilityCurvePoints) {
+        //     reactiveCapabilityCurvePoints?.splice(index, 1);
+        // }
+
         remove(index);
+    };
+
+    const calculatePreviousValuesIndex = (index) => {
+        if (index === rows.length - 1) {
+            return reactiveCapabilityCurvePoints[
+                reactiveCapabilityCurvePoints.length - 1
+            ];
+        }
     };
 
     return (
@@ -80,7 +81,7 @@ export const ReactiveCapabilityCurveTable = ({
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
-                            rowReactiveCapabilityCurvePoint={
+                            previousValues={
                                 reactiveCapabilityCurvePoints &&
                                 reactiveCapabilityCurvePoints[index]
                             }

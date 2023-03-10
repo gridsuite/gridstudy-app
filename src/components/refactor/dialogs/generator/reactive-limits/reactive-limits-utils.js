@@ -9,6 +9,7 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../utils/field-constants';
 import {
     getReactiveCapabilityCurveEmptyFormData,
@@ -23,7 +24,9 @@ export const getReactiveLimitsEmptyFormData = () => ({
     ...getReactiveCapabilityCurveEmptyFormData(),
 });
 
-export const getReactiveLimitsSchema = () => ({
+export const getReactiveLimitsSchema = (
+    previousReactiveCapatabilityCurveValues = null
+) => ({
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
     [MINIMUM_REACTIVE_POWER]: yup
         .number()
@@ -39,5 +42,8 @@ export const getReactiveLimitsSchema = () => ({
             is: true,
             then: (schema) => schema.required(),
         }),
-    ...getReactiveCapabilityCurveValidationSchema(),
+    ...getReactiveCapabilityCurveValidationSchema(
+        REACTIVE_CAPABILITY_CURVE_TABLE,
+        previousReactiveCapatabilityCurveValues
+    ),
 });

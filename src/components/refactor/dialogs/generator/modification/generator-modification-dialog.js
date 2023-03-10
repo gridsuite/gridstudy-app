@@ -69,10 +69,12 @@ const GeneratorModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [selectedGeneratorInfos, setSelectedGeneratorInfos] = useState();
+    const [generatorToModify, setGeneratorToModify] = useState();
 
-    const isSelectedGeneratorUndefined = selectedGeneratorInfos === undefined;
+    const isSelectedGeneratorUndefined = generatorToModify === undefined;
     const isEditDataUndefined = editData === undefined;
+    const previousReactiveCapatabilityCurveValues =
+        generatorToModify?.reactiveCapabilityCurvePoints ?? null;
 
     const emptyFormData = useMemo(
         () => ({
@@ -141,12 +143,18 @@ const GeneratorModificationDialog = ({
                             .min(0, 'RealPercentage')
                             .max(1, 'RealPercentage'),
                         ...getSetPointsSchema(true),
-                        ...getReactiveLimitsSchema(),
+                        ...getReactiveLimitsSchema(
+                            previousReactiveCapatabilityCurveValues
+                        ),
                     },
                     [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
                 )
                 .required(),
-        [isSelectedGeneratorUndefined, isEditDataUndefined]
+        [
+            previousReactiveCapatabilityCurveValues,
+            isSelectedGeneratorUndefined,
+            isEditDataUndefined,
+        ]
     );
     const methods = useForm({
         defaultValues: emptyFormData,
@@ -154,9 +162,13 @@ const GeneratorModificationDialog = ({
     });
     const { reset, getValues } = methods;
 
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [emptyFormData, reset]);
+    //this method empties the form, and let us pass custom data that we want to set
+    const clear = useCallback(
+        (customData = {}) => {
+            reset({ ...emptyFormData, ...customData });
+        },
+        [emptyFormData, reset]
+    );
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
@@ -240,7 +252,7 @@ const GeneratorModificationDialog = ({
             REACTIVE_CAPABILITY_CURVE_TABLE
         );
         const displayedPreviousValues =
-            selectedGeneratorInfos?.reactiveCapabilityCurvePoints;
+            generatorToModify?.reactiveCapabilityCurvePoints;
 
         if (
             displayedPreviousValues &&
@@ -279,7 +291,7 @@ const GeneratorModificationDialog = ({
             });
             return pointsToStore;
         }
-    }, [getValues, selectedGeneratorInfos]);
+    }, [getValues, generatorToModify]);
 
     const onSubmit = useCallback(
         (generator) => {
@@ -387,7 +399,8 @@ const GeneratorModificationDialog = ({
                     currentNode={currentNode}
                     editData={editData}
                     onClear={clear}
-                    setSelectedGeneratorInfos={setSelectedGeneratorInfos}
+                    generatorToModify={generatorToModify}
+                    setGeneratorToModify={setGeneratorToModify}
                 />
             </ModificationDialog>
         </FormProvider>
