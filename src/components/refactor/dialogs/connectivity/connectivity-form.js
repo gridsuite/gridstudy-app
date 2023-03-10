@@ -51,7 +51,7 @@ import {
  */
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
-    label,
+    label = 'VoltageLevel',
     direction = 'row',
     withDirectionsInfos = true,
     withPosition = false,
@@ -59,7 +59,7 @@ export const ConnectivityForm = ({
     defaultBusOrBusbarSectionOptions,
     studyUuid,
     currentNode,
-    onChangeCallback,
+    onVoltageLevelChangeCallback,
 }) => {
     const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
@@ -117,14 +117,17 @@ export const ConnectivityForm = ({
         voltageLevelOptions,
     ]);
 
+    const handleChange = useCallback(() => {
+        onVoltageLevelChangeCallback?.();
+        setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
+    }, [id, onVoltageLevelChangeCallback, setValue]);
+
     useEffect(() => {
         if (busOrBusbarSectionOptions?.length > 0) {
             setValue(
                 `${id}.${BUS_OR_BUSBAR_SECTION}`,
                 busOrBusbarSectionOptions[0]
             );
-        } else {
-            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
         }
     }, [busOrBusbarSectionOptions, setValue, id]);
 
@@ -136,11 +139,11 @@ export const ConnectivityForm = ({
                     ? getConnectivityVoltageLevelData({ voltageLevelId: value })
                     : value
             }
-            onChangeCallback={onChangeCallback}
+            onChangeCallback={handleChange}
             allowNewValue
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
-            label={label ?? 'VoltageLevel'}
+            label={label}
             options={voltageLevelOptions}
             getOptionLabel={getObjectId}
             size={'small'}

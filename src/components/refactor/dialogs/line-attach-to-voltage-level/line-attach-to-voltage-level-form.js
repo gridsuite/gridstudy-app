@@ -12,19 +12,18 @@ import {
     ATTACHMENT_POINT_NAME,
     LINE1_ID,
     LINE1_NAME,
+    LINE1_SUBSTATION,
     LINE2_ID,
     LINE2_NAME,
+    LINE2_SUBSTATION,
     LINE_TO_ATTACH_TO_ID,
 } from 'components/refactor/utils/field-constants';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
-import {
-    fetchEquipmentsIds,
-    fetchVoltageLevelsIdAndTopology,
-} from 'utils/rest-api';
+import { fetchLines, fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 import { PercentageArea } from '../percentage-area/percentage-area';
 import { Box, Button, Typography } from '@mui/material';
@@ -34,6 +33,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line-creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-creation-dialog';
 import { areIdsEqual, getObjectId } from 'components/refactor/utils/utils';
+import { ReadOnlyInput } from '../../rhf-inputs/read-only-input';
+import { useFormContext } from 'react-hook-form';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
@@ -48,6 +49,7 @@ const LineAttachToVoltageLevelForm = ({
     const [linesOptions, setLinesOptions] = useState([]);
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
+    const { setValue, getValues } = useFormContext();
 
     const onLineDialogClose = () => {
         setLineDialogOpen(false);
@@ -66,7 +68,7 @@ const LineAttachToVoltageLevelForm = ({
     };
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id)
+        if (studyUuid && currentNode?.id) {
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -74,21 +76,12 @@ const LineAttachToVoltageLevelForm = ({
                     );
                 }
             );
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNode.id,
-            undefined,
-            'LINE',
-            true
-        ).then((values) => {
-            setLinesOptions(
-                values
-                    .sort((a, b) => a.localeCompare(b))
-                    .map((value) => {
-                        return { id: value };
-                    })
-            );
-        });
+            fetchLines(studyUuid, currentNode.id, []).then((values) => {
+                setLinesOptions(
+                    values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                );
+            });
+        }
     }, [studyUuid, currentNode?.id]);
 
     const allVoltageLevelOptions = useMemo(() => {
@@ -117,6 +110,21 @@ const LineAttachToVoltageLevelForm = ({
         });
     }, [voltageLevelToEdit]);
 
+    const onAttachmentLineChange = useCallback(() => {
+        const attachmentLineId = getValues(LINE_TO_ATTACH_TO_ID);
+        const lineToAttachTo = linesOptions.find(
+            (l) => l?.id === attachmentLineId
+        );
+        setValue(
+            LINE1_SUBSTATION,
+            lineToAttachTo?.voltageLevelName1 ?? lineToAttachTo?.voltageLevelId1
+        );
+        setValue(
+            LINE2_SUBSTATION,
+            lineToAttachTo?.voltageLevelName2 ?? lineToAttachTo?.voltageLevelId2
+        );
+    }, [getValues, linesOptions, setValue]);
+
     const lineToAttachField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
@@ -128,6 +136,7 @@ const LineAttachToVoltageLevelForm = ({
             getOptionLabel={getObjectId}
             outputTransform={getObjectId}
             size={'small'}
+            onChangeCallback={onAttachmentLineChange}
         />
     );
 
@@ -146,6 +155,8 @@ const LineAttachToVoltageLevelForm = ({
             formProps={{ disabled: true }}
         />
     );
+    const line1SubstationField = <ReadOnlyInput name={LINE1_SUBSTATION} />;
+    const line2SubstationField = <ReadOnlyInput name={LINE2_SUBSTATION} />;
 
     const newLine1IdField = <TextInput name={LINE1_ID} label={'Line1ID'} />;
 
@@ -183,10 +194,21 @@ const LineAttachToVoltageLevelForm = ({
             <GridSection title="LineToAttachTo" />
             <Grid container spacing={2} alignItems="center">
                 {gridItem(lineToAttachField, 5)}
-                {gridItem(<></>, 1)}
+                {gridItem(
+                    <Typography sx={{ textAlign: 'center' }}>
+                        {line1SubstationField}
+                    </Typography>,
+                    1
+                )}
                 {gridItem(percentageArea, 5)}
-                {gridItem(<></>, 1)}
+                {gridItem(
+                    <Typography sx={{ textAlign: 'center' }}>
+                        {line2SubstationField}
+                    </Typography>,
+                    1
+                )}
             </Grid>
+
             <GridSection title="AttachmentPoint" />
             <Grid container spacing={2}>
                 {gridItem(attachmentPointIdField, 6)}

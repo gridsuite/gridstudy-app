@@ -41,7 +41,7 @@ export const getPercentageAreaData = ({ percent }) => {
 
 const maxDecimals = 1;
 export function formatPercentageString(value) {
-    if (value < 0) return '0';
+    if (!value || value < 0) return '0';
     if (value > 100) return '100';
     if (typeof value === 'number') return value.toFixed(maxDecimals);
     if (typeof value !== 'string') return '';

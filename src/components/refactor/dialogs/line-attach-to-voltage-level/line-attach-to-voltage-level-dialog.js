@@ -20,6 +20,8 @@ import {
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
     LINE_TO_ATTACH_TO_ID,
+    LINE1_SUBSTATION,
+    LINE2_SUBSTATION,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -50,6 +52,8 @@ const emptyFormData = {
     [LINE1_NAME]: '',
     [LINE2_ID]: '',
     [LINE2_NAME]: '',
+    [LINE1_SUBSTATION]: '',
+    [LINE2_SUBSTATION]: '',
     ...getPercentageAreaEmptyFormData(),
     ...getConnectivityWithoutPositionEmptyFormData(),
 };
