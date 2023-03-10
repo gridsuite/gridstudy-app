@@ -1379,19 +1379,22 @@ export function updateTreeNode(studyUuid, node) {
 }
 
 export function copyTreeNode(
-    studyUuid,
+    sourceStudyId,
+    targetStudyId,
     nodeToCopyUuid,
     referenceNodeUuid,
     insertMode
 ) {
     const nodeCopyUrl =
-        getStudyUrl(studyUuid) +
+        getStudyUrl(targetStudyId) +
         '/tree/nodes?insertMode=' +
         insertMode +
         '&nodeToCopyUuid=' +
         nodeToCopyUuid +
         '&referenceNodeUuid=' +
-        referenceNodeUuid;
+        referenceNodeUuid +
+        '&sourceStudyUuid=' +
+        sourceStudyId;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',

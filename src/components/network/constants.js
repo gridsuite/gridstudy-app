@@ -103,21 +103,31 @@ export const BRANCH_STATUS_ACTION = {
     SWITCH_ON: 'SWITCH_ON',
 };
 
-export const VARIATION_TYPE = [
-    { id: 'DELTA_P', label: 'DeltaP' },
-    { id: 'TARGET_P', label: 'TargetPText' },
-];
+export const VARIATION_TYPES = {
+    DELTA_P: { id: 'DELTA_P', label: 'DeltaP' },
+    TARGET_P: { id: 'TARGET_P', label: 'TargetPText' },
+};
 
-export const VARIATION_MODE = [
-    { id: 'PROPORTIONAL', label: 'Proportional' },
-    {
+export const VARIATION_MODES = {
+    PROPORTIONAL: { id: 'PROPORTIONAL', label: 'Proportional' },
+    PROPORTIONAL_TO_PMAX: {
         id: 'PROPORTIONAL_TO_PMAX',
         label: 'ProportionalToPMax',
     },
-    {
+    REGULAR_DISTRIBUTION: {
         id: 'REGULAR_DISTRIBUTION',
         label: 'RegularDistribution',
     },
-    { id: 'STACKING_UP', label: 'StackingUp' },
-    { id: 'VENTILATION', label: 'Ventilation' },
+    STACKING_UP: { id: 'STACKING_UP', label: 'StackingUp' },
+    VENTILATION: { id: 'VENTILATION', label: 'Ventilation' },
+};
+
+export const VOLTAGE_LEVEL_COMPONENTS = {
+    BUS_BAR_SECTION_CREATION: 'BusBarSectionCreation',
+    BUS_BAR_SECTION_CONNECTION: 'BusBarSectionConnection',
+};
+
+export const SWITCH_TYPE = [
+    { id: 'BREAKER', label: 'Breaker' },
+    { id: 'DISCONNECTOR', label: 'Disconnector' },
 ];
