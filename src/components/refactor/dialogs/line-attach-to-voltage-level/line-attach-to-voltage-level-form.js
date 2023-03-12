@@ -12,13 +12,11 @@ import {
     ATTACHMENT_POINT_NAME,
     LINE1_ID,
     LINE1_NAME,
-    LINE1_SUBSTATION,
     LINE2_ID,
     LINE2_NAME,
-    LINE2_SUBSTATION,
     LINE_TO_ATTACH_TO_ID,
 } from 'components/refactor/utils/field-constants';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
@@ -33,7 +31,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line-creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-creation-dialog';
 import { areIdsEqual, getObjectId } from 'components/refactor/utils/utils';
-import { ReadOnlyInput } from '../../rhf-inputs/read-only-input';
 import { useFormContext } from 'react-hook-form';
 
 const LineAttachToVoltageLevelForm = ({
@@ -49,7 +46,10 @@ const LineAttachToVoltageLevelForm = ({
     const [linesOptions, setLinesOptions] = useState([]);
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
-    const { setValue, getValues } = useFormContext();
+    const [line1Substation, setLine1Substation] = useState('');
+    const [line2Substation, setLine2Substation] = useState('');
+
+    const { getValues, watch } = useFormContext();
 
     const onLineDialogClose = () => {
         setLineDialogOpen(false);
@@ -110,20 +110,19 @@ const LineAttachToVoltageLevelForm = ({
         });
     }, [voltageLevelToEdit]);
 
-    const onAttachmentLineChange = useCallback(() => {
-        const attachmentLineId = getValues(LINE_TO_ATTACH_TO_ID);
+    const watchLineToAttachTo = watch(`${LINE_TO_ATTACH_TO_ID}`);
+    useEffect(() => {
         const lineToAttachTo = linesOptions.find(
-            (l) => l?.id === attachmentLineId
+            (l) => l?.id === watchLineToAttachTo
         );
-        setValue(
-            LINE1_SUBSTATION,
+
+        setLine1Substation(
             lineToAttachTo?.voltageLevelName1 ?? lineToAttachTo?.voltageLevelId1
         );
-        setValue(
-            LINE2_SUBSTATION,
+        setLine2Substation(
             lineToAttachTo?.voltageLevelName2 ?? lineToAttachTo?.voltageLevelId2
         );
-    }, [getValues, linesOptions, setValue]);
+    }, [getValues, linesOptions, watchLineToAttachTo]);
 
     const lineToAttachField = (
         <AutocompleteInput
@@ -136,7 +135,6 @@ const LineAttachToVoltageLevelForm = ({
             getOptionLabel={getObjectId}
             outputTransform={getObjectId}
             size={'small'}
-            onChangeCallback={onAttachmentLineChange}
         />
     );
 
@@ -155,8 +153,6 @@ const LineAttachToVoltageLevelForm = ({
             formProps={{ disabled: true }}
         />
     );
-    const line1SubstationField = <ReadOnlyInput name={LINE1_SUBSTATION} />;
-    const line2SubstationField = <ReadOnlyInput name={LINE2_SUBSTATION} />;
 
     const newLine1IdField = <TextInput name={LINE1_ID} label={'Line1ID'} />;
 
@@ -181,7 +177,7 @@ const LineAttachToVoltageLevelForm = ({
             }
             studyUuid={studyUuid}
             currentNode={currentNode}
-            onChangeCallback={onVoltageLevelChange}
+            onVoltageLevelChangeCallback={onVoltageLevelChange}
         />
     );
 
@@ -196,14 +192,14 @@ const LineAttachToVoltageLevelForm = ({
                 {gridItem(lineToAttachField, 5)}
                 {gridItem(
                     <Typography sx={{ textAlign: 'center' }}>
-                        {line1SubstationField}
+                        {line1Substation}
                     </Typography>,
                     1
                 )}
                 {gridItem(percentageArea, 5)}
                 {gridItem(
                     <Typography sx={{ textAlign: 'center' }}>
-                        {line2SubstationField}
+                        {line2Substation}
                     </Typography>,
                     1
                 )}

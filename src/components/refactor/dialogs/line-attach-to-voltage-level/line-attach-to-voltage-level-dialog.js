@@ -20,8 +20,6 @@ import {
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
     LINE_TO_ATTACH_TO_ID,
-    LINE1_SUBSTATION,
-    LINE2_SUBSTATION,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -52,8 +50,6 @@ const emptyFormData = {
     [LINE1_NAME]: '',
     [LINE2_ID]: '',
     [LINE2_NAME]: '',
-    [LINE1_SUBSTATION]: '',
-    [LINE2_SUBSTATION]: '',
     ...getPercentageAreaEmptyFormData(),
     ...getConnectivityWithoutPositionEmptyFormData(),
 };
@@ -100,7 +96,7 @@ const LineAttachToVoltageLevelDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const { reset } = methods;
+    const { reset, getValues, setValue } = methods;
 
     const fromEditDataToFormValues = useCallback(
         (lineAttach) => {
@@ -214,13 +210,13 @@ const LineAttachToVoltageLevelDialog = ({
                     },
                 };
                 setAttachmentLine(preparedLine);
-                methods.setValue(ATTACHMENT_LINE_ID, preparedLine.equipmentId, {
-                    shouldDirty: true,
+                setValue(`${ATTACHMENT_LINE_ID}`, preparedLine.equipmentId, {
                     shouldValidate: true,
+                    shouldDirty: true,
                 });
             });
         },
-        [methods]
+        [setValue]
     );
 
     const onVoltageLevelDo = useCallback(
@@ -245,29 +241,31 @@ const LineAttachToVoltageLevelDialog = ({
                     busbarConnections: busbarConnections,
                 };
                 setNewVoltageLevel(preparedVoltageLevel);
-                reset({
-                    ...methods.getValues(),
-                    ...getConnectivityData({
-                        busbarSectionId:
-                            preparedVoltageLevel.busbarSections[0].id,
-                        voltageLevelId: preparedVoltageLevel.equipmentId,
-                    }),
-                });
+                setValue(
+                    `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,
+                    {
+                        [ID]: preparedVoltageLevel.equipmentId,
+                    },
+                    {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                    }
+                );
             });
         },
-        [methods, reset]
+        [setValue]
     );
 
     const onVoltageLevelChange = useCallback(() => {
         const currentVoltageLevelId =
-            methods.getValues()[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
+            getValues()[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
         if (
             newVoltageLevel &&
             currentVoltageLevelId !== newVoltageLevel?.equipmentId
         ) {
             setNewVoltageLevel(null);
         }
-    }, [methods, newVoltageLevel]);
+    }, [getValues, newVoltageLevel]);
 
     return (
         <FormProvider validationSchema={schema} {...methods}>
