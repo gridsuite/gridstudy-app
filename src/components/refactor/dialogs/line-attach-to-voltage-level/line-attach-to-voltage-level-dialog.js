@@ -19,7 +19,7 @@ import {
     ATTACHMENT_LINE_ID,
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
-    LINE_TO_ATTACH_TO_ID,
+    LINE_TO_ATTACH_OR_SPLIT_ID,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -34,15 +34,14 @@ import {
     getConnectivityWithoutPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LineSplitWithVoltageLevelForm from './line-attach-to-voltage-level-form';
-import {
-    getPercentageAreaData,
-    getPercentageAreaEmptyFormData,
-    getPercentageAreaValidationSchema,
-} from '../percentage-area/percentage-area-utils';
 import { MODIFICATION_TYPES } from 'components/util/modification-type';
+import {
+    getLineToAttachOrSplitEmptyFormData,
+    getLineToAttachOrSplitFormData,
+    getLineToAttachOrSplitFormValidationSchema,
+} from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 
 const emptyFormData = {
-    [LINE_TO_ATTACH_TO_ID]: null,
     [ATTACHMENT_LINE_ID]: '',
     [ATTACHMENT_POINT_ID]: '',
     [ATTACHMENT_POINT_NAME]: '',
@@ -50,14 +49,13 @@ const emptyFormData = {
     [LINE1_NAME]: '',
     [LINE2_ID]: '',
     [LINE2_NAME]: '',
-    ...getPercentageAreaEmptyFormData(),
+    ...getLineToAttachOrSplitEmptyFormData(),
     ...getConnectivityWithoutPositionEmptyFormData(),
 };
 
 const schema = yup
     .object()
     .shape({
-        [LINE_TO_ATTACH_TO_ID]: yup.string().nullable().required(),
         [ATTACHMENT_LINE_ID]: yup.string().required(),
         [ATTACHMENT_POINT_ID]: yup.string().required(),
         [ATTACHMENT_POINT_NAME]: yup.string(),
@@ -65,7 +63,7 @@ const schema = yup
         [LINE1_NAME]: yup.string(),
         [LINE2_ID]: yup.string().required(),
         [LINE2_NAME]: yup.string(),
-        ...getPercentageAreaValidationSchema(),
+        ...getLineToAttachOrSplitFormValidationSchema(),
         ...getConnectivityWithoutPositionValidationSchema(),
     })
     .required();
@@ -101,7 +99,6 @@ const LineAttachToVoltageLevelDialog = ({
     const fromEditDataToFormValues = useCallback(
         (lineAttach) => {
             reset({
-                [LINE_TO_ATTACH_TO_ID]: lineAttach.lineToAttachToId,
                 [LINE1_ID]: lineAttach.newLine1Id,
                 [LINE1_NAME]: lineAttach.newLine1Name,
                 [LINE2_ID]: lineAttach.newLine2Id,
@@ -109,7 +106,8 @@ const LineAttachToVoltageLevelDialog = ({
                 [ATTACHMENT_LINE_ID]: lineAttach?.attachmentLine?.equipmentId,
                 [ATTACHMENT_POINT_ID]: lineAttach?.attachmentPointId,
                 [ATTACHMENT_POINT_NAME]: lineAttach?.attachmentPointName,
-                ...getPercentageAreaData({
+                ...getLineToAttachOrSplitFormData({
+                    lineToAttachOrSplitId: lineAttach?.lineToAttachToId,
                     percent: lineAttach.percent,
                 }),
                 ...getConnectivityData({
@@ -137,7 +135,7 @@ const LineAttachToVoltageLevelDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 editData?.uuid,
-                lineAttach[LINE_TO_ATTACH_TO_ID],
+                lineAttach[LINE_TO_ATTACH_OR_SPLIT_ID],
                 parseFloat(lineAttach[SLIDER_PERCENTAGE]),
                 lineAttach[ATTACHMENT_POINT_ID],
                 sanitizeString(lineAttach[ATTACHMENT_POINT_NAME]),

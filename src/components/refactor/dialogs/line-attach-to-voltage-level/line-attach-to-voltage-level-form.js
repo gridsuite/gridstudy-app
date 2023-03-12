@@ -14,24 +14,20 @@ import {
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
-    LINE_TO_ATTACH_TO_ID,
 } from 'components/refactor/utils/field-constants';
 import React, { useEffect, useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
-import { fetchLines, fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
-import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
-import { PercentageArea } from '../percentage-area/percentage-area';
+import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line-creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-creation-dialog';
-import { areIdsEqual, getObjectId } from 'components/refactor/utils/utils';
-import { useFormContext } from 'react-hook-form';
+import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
@@ -43,13 +39,8 @@ const LineAttachToVoltageLevelForm = ({
     onVoltageLevelChange,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [linesOptions, setLinesOptions] = useState([]);
     const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
-    const [line1Substation, setLine1Substation] = useState('');
-    const [line2Substation, setLine2Substation] = useState('');
-
-    const { getValues, watch } = useFormContext();
 
     const onLineDialogClose = () => {
         setLineDialogOpen(false);
@@ -76,11 +67,6 @@ const LineAttachToVoltageLevelForm = ({
                     );
                 }
             );
-            fetchLines(studyUuid, currentNode.id, []).then((values) => {
-                setLinesOptions(
-                    values.sort((a, b) => a?.id?.localeCompare(b?.id))
-                );
-            });
         }
     }, [studyUuid, currentNode?.id]);
 
@@ -110,31 +96,11 @@ const LineAttachToVoltageLevelForm = ({
         });
     }, [voltageLevelToEdit]);
 
-    const watchLineToAttachTo = watch(`${LINE_TO_ATTACH_TO_ID}`);
-    useEffect(() => {
-        const lineToAttachTo = linesOptions.find(
-            (l) => l?.id === watchLineToAttachTo
-        );
-
-        setLine1Substation(
-            lineToAttachTo?.voltageLevelName1 ?? lineToAttachTo?.voltageLevelId1
-        );
-        setLine2Substation(
-            lineToAttachTo?.voltageLevelName2 ?? lineToAttachTo?.voltageLevelId2
-        );
-    }, [getValues, linesOptions, watchLineToAttachTo]);
-
-    const lineToAttachField = (
-        <AutocompleteInput
-            isOptionEqualToValue={areIdsEqual}
-            allowNewValue
-            forcePopupIcon
-            name={LINE_TO_ATTACH_TO_ID}
-            label="LineToAttachTo"
-            options={linesOptions}
-            getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
-            size={'small'}
+    const lineToAttachToForm = (
+        <LineToAttachOrSplitForm
+            label={'LineToAttachTo'}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
         />
     );
 
@@ -172,39 +138,17 @@ const LineAttachToVoltageLevelForm = ({
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            defaultBusOrBusbarSectionOptions={
-                getFormatedBusOrBusbarSectionOptions
-            }
+            newBusOrBusbarSectionOptions={getFormatedBusOrBusbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
             onVoltageLevelChangeCallback={onVoltageLevelChange}
         />
     );
 
-    const percentageArea = (
-        <PercentageArea upperLeftText={'Line1'} upperRightText={'Line2'} />
-    );
-
     return (
         <>
             <GridSection title="LineToAttachTo" />
-            <Grid container spacing={2} alignItems="center">
-                {gridItem(lineToAttachField, 5)}
-                {gridItem(
-                    <Typography sx={{ textAlign: 'center' }}>
-                        {line1Substation}
-                    </Typography>,
-                    1
-                )}
-                {gridItem(percentageArea, 5)}
-                {gridItem(
-                    <Typography sx={{ textAlign: 'center' }}>
-                        {line2Substation}
-                    </Typography>,
-                    1
-                )}
-            </Grid>
-
+            {gridItem(lineToAttachToForm, 12)}
             <GridSection title="AttachmentPoint" />
             <Grid container spacing={2}>
                 {gridItem(attachmentPointIdField, 6)}

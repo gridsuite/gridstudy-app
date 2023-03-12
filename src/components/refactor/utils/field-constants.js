@@ -131,7 +131,7 @@ export const SWITCH_KIND = 'switchKind';
 export const SELECTED = 'selected';
 
 //line-attach-to-voltage-level
-export const LINE_TO_ATTACH_TO_ID = 'lineToAttachToId';
+export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
 export const ATTACHMENT_POINT_NAME = 'attachmentPointName';
 export const ATTACHMENT_LINE_ID = 'attachmentLineId';
@@ -139,8 +139,6 @@ export const LINE1_NAME = 'Line1Name';
 export const LINE2_NAME = 'Line2Name';
 export const LINE1_ID = 'Line1Id';
 export const LINE2_ID = 'Line2Id';
-export const LINE1_SUBSTATION = 'Line1Substation';
-export const LINE2_SUBSTATION = 'Line2Substation';
 
 //percentage-area
 export const PERCENTAGE_AREA = 'percentageArea';

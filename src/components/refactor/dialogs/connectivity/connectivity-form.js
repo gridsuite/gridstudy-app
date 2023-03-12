@@ -45,8 +45,10 @@ import {
  * @param withDirectionsInfos
  * @param withPosition
  * @param voltageLevelOptions list of network voltage levels
+ * @param newBusOrBusbarSectionOptions list of bus or bus bar sections for the newly created voltage level
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
+ * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const ConnectivityForm = ({
@@ -56,7 +58,7 @@ export const ConnectivityForm = ({
     withDirectionsInfos = true,
     withPosition = false,
     voltageLevelOptions = [],
-    defaultBusOrBusbarSectionOptions,
+    newBusOrBusbarSectionOptions,
     studyUuid,
     currentNode,
     onVoltageLevelChangeCallback,
@@ -77,8 +79,8 @@ export const ConnectivityForm = ({
     });
 
     useEffect(() => {
-        if (defaultBusOrBusbarSectionOptions?.length > 0) {
-            setBusOrBusbarSectionOptions(defaultBusOrBusbarSectionOptions);
+        if (newBusOrBusbarSectionOptions?.length > 0) {
+            setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
         } else if (watchVoltageLevelId) {
             const voltageLevelTopologyKind = voltageLevelOptions.find(
                 (vl) => vl.id === watchVoltageLevelId
@@ -113,7 +115,7 @@ export const ConnectivityForm = ({
         watchVoltageLevelId,
         studyUuid,
         currentNodeUuid,
-        defaultBusOrBusbarSectionOptions,
+        newBusOrBusbarSectionOptions,
         voltageLevelOptions,
     ]);
 
