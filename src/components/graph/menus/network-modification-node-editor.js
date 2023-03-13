@@ -19,7 +19,7 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
+import LineAttachToVoltageLevelDialog from '../../refactor/dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
@@ -323,13 +323,7 @@ const NetworkModificationNodeEditor = () => {
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
             label: 'LineAttachToVoltageLevel',
-            dialog: () =>
-                adapt(
-                    LineAttachToVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LineAttachToVoltageLevelDialog),
             icon: <AddIcon />,
         },
         LINES_ATTACH_TO_SPLIT_LINES: {
