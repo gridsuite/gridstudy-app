@@ -17,7 +17,7 @@ import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-function DndTableAddRowsDialog({ open, handleAddRowsButton, onClose }) {
+function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
     const [rowNumber, setRowNumber] = useState(1);
 
     function handleOnClose() {
@@ -46,7 +46,7 @@ function DndTableAddRowsDialog({ open, handleAddRowsButton, onClose }) {
                 </Button>
                 <Button
                     onClick={() => {
-                        handleAddRowsButton(rowNumber);
+                        handleAddButton(rowNumber);
                         handleOnClose();
                     }}
                 >

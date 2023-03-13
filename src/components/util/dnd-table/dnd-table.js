@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { Box } from '@mui/system';
 import {
@@ -22,6 +22,7 @@ import {
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useIntl } from 'react-intl';
+import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../../refactor/rhf-inputs/table-inputs/table-numerical-input';
 import CheckboxInput from '../../refactor/rhf-inputs/booleans/checkbox-input';
@@ -30,7 +31,9 @@ import { SELECTED } from '../../refactor/utils/field-constants';
 import ErrorInput from '../../refactor/rhf-inputs/error-inputs/error-input';
 import FieldErrorAlert from '../../refactor/rhf-inputs/error-inputs/field-error-alert';
 import { ReadOnlyInput } from '../../refactor/rhf-inputs/read-only-input';
-import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
+import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
+
+export const MAX_ROWS_NUMBER = 100;
 
 function MultiCheckbox({
     arrayFormName,
@@ -84,21 +87,25 @@ const DndTable = ({
     useFieldArrayOutput,
     columnsDefinition,
     tableHeight,
-    handleAddButton,
-    handleDeleteButton,
+    allowedToAddRows = () => Promise.resolve(true),
+    createRows,
     handleUploadButton,
     uploadButtonMessageId,
     disabled,
 }) => {
     const intl = useIntl();
 
-    const { getValues, setValue } = useFormContext();
+    const { getValues, setValue, setError, clearErrors } = useFormContext();
 
     const {
         fields: tapSteps, // don't use it to access form data ! check doc
         move,
         swap,
+        append,
+        remove,
     } = useFieldArrayOutput;
+
+    const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
 
     function renderTableCell(rowId, rowIndex, column) {
         let CustomTableCell = column.editable
@@ -113,6 +120,53 @@ const DndTable = ({
                 disabled={disabled}
             />
         );
+    }
+
+    function handleAddRowsButton() {
+        allowedToAddRows().then((isAllowed) => {
+            if (isAllowed) {
+                setOpenAddRowsDialog(true);
+            }
+        });
+    }
+
+    function handleCloseAddRowsDialog() {
+        setOpenAddRowsDialog(false);
+    }
+
+    function addNewRows(numberOfRows) {
+        // checking if not exceeding 100 steps
+        if (tapSteps.length + numberOfRows > MAX_ROWS_NUMBER) {
+            setError(arrayFormName, {
+                type: 'custom',
+                message: {
+                    id: 'MaximumRowNumberError',
+                    value: MAX_ROWS_NUMBER,
+                },
+            });
+            return;
+        }
+        clearErrors(arrayFormName);
+
+        const tapRowsToAdd = createRows(numberOfRows).map((row) => {
+            return { ...row, [SELECTED]: false };
+        });
+
+        // note : an id prop is automatically added in each row
+        append(tapRowsToAdd);
+    }
+
+    function deleteSelectedRows() {
+        const currentTapRows = getValues(arrayFormName);
+
+        let rowsToDelete = [];
+        for (let i = 0; i < currentTapRows.length; i++) {
+            if (currentTapRows[i][SELECTED]) {
+                rowsToDelete.push(i);
+            }
+        }
+
+        remove(rowsToDelete);
     }
 
     function selectAllRows() {
@@ -277,13 +331,18 @@ const DndTable = ({
                 />
                 <DndTableBottomRightButtons
                     arrayFormName={arrayFormName}
-                    handleAddButton={handleAddButton}
-                    handleDeleteButton={handleDeleteButton}
+                    handleAddButton={handleAddRowsButton}
+                    handleDeleteButton={deleteSelectedRows}
                     handleMoveUpButton={moveUpSelectedRows}
                     handleMoveDownButton={moveDownSelectedRows}
                     disabled={disabled}
                 />
             </Grid>
+            <DndTableAddRowsDialog
+                open={openAddRowsDialog}
+                handleAddButton={addNewRows}
+                onClose={handleCloseAddRowsDialog}
+            />
         </Grid>
     );
 };
@@ -293,8 +352,8 @@ DndTable.prototype = {
     useFieldArrayOutput: PropTypes.object.isRequired,
     columnsDefinition: PropTypes.object.isRequired,
     tableHeight: PropTypes.number.isRequired,
-    handleAddButton: PropTypes.func.isRequired,
-    handleDeleteButton: PropTypes.func.isRequired,
+    allowedToAddRows: PropTypes.func,
+    createRows: PropTypes.func.isRequired,
     handleUploadButton: PropTypes.func.isRequired,
     uploadButtonMessageId: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
