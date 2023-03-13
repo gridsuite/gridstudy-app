@@ -83,6 +83,7 @@ import {
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
+    STOP_DIAGRAM_BLINK,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -139,7 +140,7 @@ const paramsInitialState = {
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
-    selectedNodeForCopy: { nodeId: null, copyType: null },
+    selectedNodeForCopy: { sourceStudyId: null, nodeId: null, copyType: null },
     network: null,
     mapEquipments: null,
     geoData: null,
@@ -679,6 +680,7 @@ export const reducer = createReducer(initialState, {
                             diagramStates[diagramToOpenIndex].svgType +
                             ')'
                     );
+                    diagramStates[diagramToOpenIndex].needsToBlink = true;
                 }
             } else {
                 // We minimize all the other OPENED SLD.
@@ -811,6 +813,13 @@ export const reducer = createReducer(initialState, {
         state.diagramStates = state.diagramStates.filter(
             (diagram) => !idsToClose.has(diagram.id)
         );
+    },
+    [STOP_DIAGRAM_BLINK]: (state) => {
+        state.diagramStates.forEach((diagram) => {
+            if (diagram.needsToBlink) {
+                diagram.needsToBlink = undefined;
+            }
+        });
     },
     [RESET_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
         state.networkAreaDiagramDepth = 0;

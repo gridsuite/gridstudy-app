@@ -39,9 +39,9 @@ import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
-    getConnectivityEmptyFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
-    getConnectivityFormValidationSchema,
+    getConnectivityWithPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LineCreationForm from './line-creation-form';
 
@@ -59,8 +59,8 @@ import LineCreationForm from './line-creation-form';
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    ...getConnectivityEmptyFormData(CONNECTIVITY_1),
-    ...getConnectivityEmptyFormData(CONNECTIVITY_2),
+    ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1),
+    ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_2),
     [SERIES_RESISTANCE]: null,
     [SERIES_REACTANCE]: null,
     [SHUNT_SUSCEPTANCE_1]: null,
@@ -86,9 +86,9 @@ const LineCreationDialog = ({
             [EQUIPMENT_ID]: yup.string().required(),
             [EQUIPMENT_NAME]: yup.string(),
             ...(displayConnectivity &&
-                getConnectivityFormValidationSchema(CONNECTIVITY_1)),
+                getConnectivityWithPositionValidationSchema(CONNECTIVITY_1)),
             ...(displayConnectivity &&
-                getConnectivityFormValidationSchema(CONNECTIVITY_2)),
+                getConnectivityWithPositionValidationSchema(CONNECTIVITY_2)),
             [SERIES_RESISTANCE]: yup.number().nullable().required(),
             [SERIES_REACTANCE]: yup.number().nullable().required(),
             [SHUNT_SUSCEPTANCE_1]: yup.number().nullable(),
@@ -221,7 +221,7 @@ const LineCreationDialog = ({
 
     const onSubmit = useCallback(
         (line) => {
-            createLine(
+            onCreateLine(
                 studyUuid,
                 currentNodeUuid,
                 line[EQUIPMENT_ID],
@@ -255,7 +255,7 @@ const LineCreationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
     const clear = useCallback(() => {
