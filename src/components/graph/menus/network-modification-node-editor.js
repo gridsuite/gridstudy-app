@@ -7,19 +7,19 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    fetchNetworkModifications,
-    deleteModifications,
-    fetchNetworkModification,
     changeNetworkModificationOrder,
-    fetchSubstations,
-    fetchLines,
-    fetchVoltageLevels,
     copyOrMoveModifications,
+    deleteModifications,
+    fetchLines,
+    fetchNetworkModification,
+    fetchNetworkModifications,
+    fetchSubstations,
+    fetchVoltageLevels,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
+import LineAttachToVoltageLevelDialog from '../../refactor/dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
@@ -40,7 +40,6 @@ import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-c
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
-import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
 import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import AddIcon from '@mui/icons-material/Add';
@@ -58,12 +57,13 @@ import {
     setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
-import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
-import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
 import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
-import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
-import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
-import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
+import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
+import GeneratorCreationDialog from 'components/refactor/dialogs/generator-creation/generator-creation-dialog';
+import DeleteVoltageLevelOnLineDialog from 'components/refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
+import DeleteAttachingLineDialog from 'components/refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
+import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
+import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scaling/generator-scaling-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -307,7 +307,7 @@ const NetworkModificationNodeEditor = () => {
         },
         VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
-            dialog: () => adapt(VoltageLevelCreationDialog, withSubstations),
+            dialog: () => adapt(VoltageLevelCreationDialog),
             icon: <AddIcon />,
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
@@ -323,24 +323,12 @@ const NetworkModificationNodeEditor = () => {
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
             label: 'LineAttachToVoltageLevel',
-            dialog: () =>
-                adapt(
-                    LineAttachToVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LineAttachToVoltageLevelDialog),
             icon: <AddIcon />,
         },
         LINES_ATTACH_TO_SPLIT_LINES: {
             label: 'LinesAttachToSplitLines',
-            dialog: () =>
-                adapt(
-                    LinesAttachToSplitLinesDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LinesAttachToSplitLinesDialog),
             icon: <AddIcon />,
         },
         GENERATOR_SCALING: {
@@ -355,12 +343,12 @@ const NetworkModificationNodeEditor = () => {
         },
         DELETE_VOLTAGE_LEVEL_ON_LINE: {
             label: 'DeleteVoltageLevelOnLine',
-            dialog: () => adapt(DeleteVoltageLevelOnLineDialog, withLines),
+            dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
             icon: <AddIcon />,
         },
         DELETE_ATTACHING_LINE: {
             label: 'DeleteAttachingLine',
-            dialog: () => adapt(DeleteAttachingLineDialog, withLines),
+            dialog: () => adapt(DeleteAttachingLineDialog),
             icon: <AddIcon />,
         },
         EQUIPMENT_DELETION: {

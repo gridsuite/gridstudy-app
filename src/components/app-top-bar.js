@@ -94,7 +94,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
         (state) => state.networkAreaDiagramDepth
     );
 
-    const enterOnSubstationCB = useCallback(
+    const centerOnSubstationCB = useCallback(
         (e, element) => {
             const substationId =
                 element.type === EQUIPMENT_TYPES.SUBSTATION.type
@@ -139,7 +139,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                         </IconButton>
                     )}
                     <IconButton
-                        onClick={(e) => enterOnSubstationCB(e, element)}
+                        onClick={(e) => centerOnSubstationCB(e, element)}
                         size={'small'}
                     >
                         <GpsFixedIcon fontSize={'small'} />

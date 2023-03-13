@@ -542,6 +542,14 @@ export function closeDiagrams(ids) {
     };
 }
 
+export const STOP_DIAGRAM_BLINK = 'STOP_DIAGRAM_BLINK';
+
+export function stopDiagramBlink() {
+    return {
+        type: STOP_DIAGRAM_BLINK,
+    };
+}
+
 export const RESET_NETWORK_AREA_DIAGRAM_DEPTH =
     'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
 

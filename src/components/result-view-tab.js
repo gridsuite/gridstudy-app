@@ -21,6 +21,7 @@ import AlertInvalidNode from './util/alert-invalid-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
+import TabPanelLazy from './results/common/tab-panel-lazy';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -34,6 +35,10 @@ const useStyles = makeStyles((theme) => ({
     analysisResult: {
         display: 'flex',
         flexDirection: 'column',
+        flexGrow: 1,
+    },
+    tabPanel: {
+        display: 'flex',
         flexGrow: 1,
     },
 }));
@@ -171,11 +176,37 @@ export const ResultViewTab = ({
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
-            {tabIndex === 0 && !disabled && renderLoadFlowResult()}
-            {tabIndex === 1 && !disabled && renderSecurityAnalysisResult()}
-            {tabIndex === 2 && !disabled && renderShortCircuitAnalysisResult()}
-            {tabIndex === 3 && !disabled && renderSensitivityAnalysisResult()}
-            {tabIndex === 4 && !disabled && renderDynamicSimulationResult()}
+            {/* tab contents */}
+            <TabPanelLazy
+                className={classes.tabPanel}
+                selected={tabIndex === 0 && !disabled}
+            >
+                {renderLoadFlowResult()}
+            </TabPanelLazy>
+            <TabPanelLazy
+                className={classes.tabPanel}
+                selected={tabIndex === 1 && !disabled}
+            >
+                {renderSecurityAnalysisResult()}
+            </TabPanelLazy>
+            <TabPanelLazy
+                className={classes.tabPanel}
+                selected={tabIndex === 2 && !disabled}
+            >
+                {renderShortCircuitAnalysisResult()}
+            </TabPanelLazy>
+            <TabPanelLazy
+                className={classes.tabPanel}
+                selected={tabIndex === 3 && !disabled}
+            >
+                {renderSensitivityAnalysisResult()}
+            </TabPanelLazy>
+            <TabPanelLazy
+                className={classes.tabPanel}
+                selected={tabIndex === 4 && !disabled}
+            >
+                {renderDynamicSimulationResult()}
+            </TabPanelLazy>
         </Paper>
     );
 };

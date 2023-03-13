@@ -125,16 +125,12 @@ export const useStyles = makeStyles((theme) => ({
     title: {
         padding: theme.spacing(2),
     },
-    grid: {
-        paddingTop: theme.spacing(2),
-        padding: theme.spacing(0),
-        flexGrow: 1,
-    },
     minWidthMedium: {
         minWidth: theme.spacing(20),
     },
     controlItem: {
         justifyContent: 'flex-end',
+        flexGrow: 1,
     },
     button: {
         marginBottom: theme.spacing(2),
@@ -146,6 +142,17 @@ export const useStyles = makeStyles((theme) => ({
     },
     marginTopButton: {
         marginTop: 10,
+        position: 'sticky',
+        bottom: 0,
+    },
+    scrollableGrid: {
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        maxHeight: '60vh',
+        paddingRight: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(1),
+        flexGrow: 1,
     },
 }));
 
@@ -437,6 +444,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                 hidden={value !== index}
                 id={`simple-tabpanel-${index}`}
                 aria-labelledby={`simple-tab-${index}`}
+                style={{ flexGrow: 1 }}
                 {...other}
             >
                 {value === index && <Box p={1}>{children}</Box>}
@@ -474,7 +482,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                     <FormattedMessage id="parameters" />
                 </Typography>
             </DialogTitle>
-            <DialogContent>
+            <DialogContent style={{ overflowY: 'hidden' }}>
                 <Container maxWidth="md">
                     <Tabs
                         value={tabValue}
@@ -524,93 +532,101 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         />
                     </Tabs>
 
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.sldParamsTabValue}
-                    >
-                        <SingleLineDiagramParameters
-                            hideParameters={hideParameters}
-                            componentLibraries={componentLibraries}
-                        />
-                    </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.mapParamsTabValue}
-                    >
-                        <MapParameters hideParameters={hideParameters} />
-                    </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.lfParamsTabValue}
-                    >
-                        {studyUuid && (
-                            <LoadFlowParameters
+                    <Grid container>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.sldParamsTabValue}
+                        >
+                            <SingleLineDiagramParameters
                                 hideParameters={hideParameters}
-                                parametersBackend={loadFlowParametersBackend}
-                                showAdvancedLfParams={showAdvancedLfParams}
-                                setShowAdvancedLfParams={
-                                    setShowAdvancedLfParams
-                                }
+                                componentLibraries={componentLibraries}
                             />
-                        )}
-                    </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.securityAnalysisParamsTabValue}
-                    >
-                        {studyUuid && (
-                            <SecurityAnalysisParameters
+                        </TabPanel>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.mapParamsTabValue}
+                        >
+                            <MapParameters hideParameters={hideParameters} />
+                        </TabPanel>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.lfParamsTabValue}
+                        >
+                            {studyUuid && (
+                                <LoadFlowParameters
+                                    hideParameters={hideParameters}
+                                    parametersBackend={
+                                        loadFlowParametersBackend
+                                    }
+                                    showAdvancedLfParams={showAdvancedLfParams}
+                                    setShowAdvancedLfParams={
+                                        setShowAdvancedLfParams
+                                    }
+                                />
+                            )}
+                        </TabPanel>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.securityAnalysisParamsTabValue}
+                        >
+                            {studyUuid && (
+                                <SecurityAnalysisParameters
+                                    hideParameters={hideParameters}
+                                    parametersBackend={
+                                        securityAnalysisParametersBackend
+                                    }
+                                />
+                            )}
+                        </TabPanel>
+                        {
+                            //To be removed when Sensitivity Analysis is not in developer mode only.
+                            enableDeveloperMode && (
+                                <TabPanel
+                                    value={tabValue}
+                                    index={
+                                        TAB_VALUES.sensitivityAnalysisParamsTabValue
+                                    }
+                                >
+                                    {studyUuid && (
+                                        <SensitivityAnalysisParameters
+                                            hideParameters={hideParameters}
+                                            parametersBackend={
+                                                sensitivityAnalysisParametersBackend
+                                            }
+                                        />
+                                    )}
+                                </TabPanel>
+                            )
+                        }
+                        {
+                            //To be removed when ShortCircuit is not in developer mode only.
+                            enableDeveloperMode && (
+                                <TabPanel
+                                    value={tabValue}
+                                    index={
+                                        TAB_VALUES.shortCircuitParamsTabValue
+                                    }
+                                >
+                                    {studyUuid && (
+                                        <ShortCircuitParameters
+                                            hideParameters={hideParameters}
+                                            useShortCircuitParameters={
+                                                useShortCircuitParameters
+                                            }
+                                        />
+                                    )}
+                                </TabPanel>
+                            )
+                        }
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.advancedParamsTabValue}
+                        >
+                            <NetworkParameters
                                 hideParameters={hideParameters}
-                                parametersBackend={
-                                    securityAnalysisParametersBackend
-                                }
                             />
-                        )}
-                    </TabPanel>
-                    {
-                        //To be removed when Sensitivity Analysis is not in developer mode only.
-                        enableDeveloperMode && (
-                            <TabPanel
-                                value={tabValue}
-                                index={
-                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
-                                }
-                            >
-                                {studyUuid && (
-                                    <SensitivityAnalysisParameters
-                                        hideParameters={hideParameters}
-                                        parametersBackend={
-                                            sensitivityAnalysisParametersBackend
-                                        }
-                                    />
-                                )}
-                            </TabPanel>
-                        )
-                    }
-                    {
-                        //To be removed when ShortCircuit is not in developer mode only.
-                        enableDeveloperMode && (
-                            <TabPanel
-                                value={tabValue}
-                                index={TAB_VALUES.shortCircuitParamsTabValue}
-                            >
-                                {studyUuid && (
-                                    <ShortCircuitParameters
-                                        hideParameters={hideParameters}
-                                        useShortCircuitParameters={
-                                            useShortCircuitParameters
-                                        }
-                                    />
-                                )}
-                            </TabPanel>
-                        )
-                    }
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.advancedParamsTabValue}
-                    >
-                        <NetworkParameters hideParameters={hideParameters} />
-                    </TabPanel>
+                        </TabPanel>
+                    </Grid>
                 </Container>
             </DialogContent>
         </Dialog>

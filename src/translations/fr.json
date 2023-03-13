@@ -220,7 +220,7 @@
 
     "descLfVoltageInitMode": "Mode d'initialisation du plan de tension\u00a0:",
     "descLfTransformerVoltageControlOn": "Simuler les régleurs en charge\u00a0:",
-    "descLfNoGeneratorReactiveLimits": "Prise en compte des limites de réactif des groupes\u00a0:",
+    "descLfUseReactiveLimits": "Prise en compte des limites de réactif des groupes\u00a0:",
     "descLfPhaseShifterRegulationOn": "Activer les régulations des transformateurs déphaseurs\u00a0:",
     "descLfTwtSplitShuntAdmittance": "Répartir la susceptance des transformateurs à deux enroulements entre primaire et secondaire\u00a0:",
     "descLfShuntCompensatorVoltageControlOn": "Activer la régulation de tension des bancs de compensation\u00a0:",
@@ -678,6 +678,7 @@
 
     "AddRowsDialogTitle": "Combien de lignes voulez-vous ajouter ?",
     "AddRowsButton": "Ajouter",
+    "MaximumRowNumberError": "Le nombre de lignes ne doit pas dépasser la valeur {value}",
 
     "DragAndDrop": "Glisser-déposer",
 

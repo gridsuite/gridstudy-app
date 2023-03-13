@@ -107,6 +107,10 @@ export const filledTextField = {
     variant: 'filled',
 };
 
+export const standardTextField = {
+    variant: 'standard',
+};
+
 export const italicFontTextField = {
     style: { fontStyle: 'italic' },
 };
@@ -139,7 +143,8 @@ export function parseIntData(val, defaultValue) {
 }
 
 export function sanitizeString(val) {
-    return val.trim() === '' ? null : val.trim();
+    const trimedValue = val?.trim();
+    return trimedValue === '' ? null : trimedValue;
 }
 
 export const toFloatValue = (val) => {

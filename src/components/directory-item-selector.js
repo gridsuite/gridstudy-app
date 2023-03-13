@@ -30,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// this method checks if an object (as map here) is empty or has at least one property
+function isObjectEmpty(obj) {
+    return obj == null || Object.keys(obj).length === 0;
+}
+
 const DirectoryItemSelector = (props) => {
     const { types, equipmentTypes, itemFilter } = props;
 
@@ -180,7 +185,14 @@ const DirectoryItemSelector = (props) => {
     );
 
     useEffect(() => {
-        if (openRef.current && studyUpdatedForce.eventData.headers) {
+        // this effect is executed even if the dialog is closed.
+        // but it has to be opened at least one time (nodeMap.current is not empty)
+        // we do the fetch even when it is closed to make sure all elements are up-to-date when the user
+        // browse the tree, then close the dialog and reopen it
+        if (
+            !isObjectEmpty(nodeMap.current) &&
+            studyUpdatedForce.eventData.headers
+        ) {
             if (
                 Object.values(notificationType).includes(
                     studyUpdatedForce.eventData.headers['notificationType']
