@@ -55,28 +55,27 @@ const SolverParameters = ({ dynaWaltzExtension, onUpdateSolver }) => {
     }, [solvers, solverId]);
 
     return (
-        <Grid container>
-            {/*<Typography
-                sx={{ wordBreak: 'break-word' }}
-            >{`Solver : ${JSON.stringify(dynaWaltzExtension)}`}</Typography>*/}
-            {makeComponentsFor(
-                defParams,
-                dynaWaltzExtension,
-                handleUpdateSolver
-            )}
-            {selectedSolver?.type === SOLVER_TYPES.IDA && (
-                <IdaSolverParameters
-                    idaSolver={selectedSolver}
-                    onUpdateIdaSolver={handleUpdateSolverParameters}
-                />
-            )}
-            {selectedSolver?.type === SOLVER_TYPES.SIM && (
-                <SimplifiedSolverParameters
-                    simplifiedSolver={selectedSolver}
-                    onUpdateSimplifiedSolver={handleUpdateSolverParameters}
-                />
-            )}
-        </Grid>
+        dynaWaltzExtension && (
+            <Grid container>
+                {makeComponentsFor(
+                    defParams,
+                    dynaWaltzExtension,
+                    handleUpdateSolver
+                )}
+                {selectedSolver?.type === SOLVER_TYPES.IDA && (
+                    <IdaSolverParameters
+                        idaSolver={selectedSolver}
+                        onUpdateIdaSolver={handleUpdateSolverParameters}
+                    />
+                )}
+                {selectedSolver?.type === SOLVER_TYPES.SIM && (
+                    <SimplifiedSolverParameters
+                        simplifiedSolver={selectedSolver}
+                        onUpdateSimplifiedSolver={handleUpdateSolverParameters}
+                    />
+                )}
+            </Grid>
+        )
     );
 };
 

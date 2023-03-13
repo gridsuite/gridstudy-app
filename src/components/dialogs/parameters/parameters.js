@@ -26,27 +26,21 @@ import {
 } from '@mui/material';
 
 import {
-    fetchDefaultDynamicSimulationProvider,
     fetchDefaultSecurityAnalysisProvider,
     fetchDefaultSensitivityAnalysisProvider,
-    fetchDynamicSimulationParameters,
-    fetchDynamicSimulationProvider,
-    fetchDynamicSimulationProviders,
     fetchSecurityAnalysisProvider,
-    fetchSecurityAnalysisProviders,
     fetchSensitivityAnalysisProvider,
+    fetchSecurityAnalysisProviders,
     fetchSensitivityAnalysisProviders,
-    getDefaultLoadFlowProvider,
-    getLoadFlowParameters,
-    getLoadFlowProvider,
-    getLoadFlowProviders,
-    setLoadFlowParameters,
-    setLoadFlowProvider,
     updateConfigParameter,
-    updateDynamicSimulationParameters,
-    updateDynamicSimulationProvider,
     updateSecurityAnalysisProvider,
     updateSensitivityAnalysisProvider,
+    getLoadFlowParameters,
+    getLoadFlowProviders,
+    getLoadFlowProvider,
+    getDefaultLoadFlowProvider,
+    setLoadFlowProvider,
+    setLoadFlowParameters,
 } from '../../../utils/rest-api';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -67,7 +61,6 @@ import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
-import TabPanelLazy from './common/tab-panel-lazy';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -443,17 +436,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
-    const dynamicSimulationParametersBackend = useParametersBackend(
-        user,
-        'DynamicSimulation',
-        fetchDynamicSimulationProviders,
-        fetchDynamicSimulationProvider,
-        fetchDefaultDynamicSimulationProvider,
-        updateDynamicSimulationProvider,
-        fetchDynamicSimulationParameters,
-        updateDynamicSimulationParameters
-    );
-
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
@@ -568,24 +550,24 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                     </Tabs>
 
                     <Grid container>
-                        <TabPanelLazy
-                            className={classes.tabPanel}
-                            selected={tabValue === TAB_VALUES.sldParamsTabValue}
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.sldParamsTabValue}
                         >
                             <SingleLineDiagramParameters
                                 hideParameters={hideParameters}
                                 componentLibraries={componentLibraries}
                             />
-                        </TabPanelLazy>
-                        <TabPanelLazy
-                            className={classes.tabPanel}
-                            selected={tabValue === TAB_VALUES.mapParamsTabValue}
+                        </TabPanel>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.mapParamsTabValue}
                         >
                             <MapParameters hideParameters={hideParameters} />
-                        </TabPanelLazy>
-                        <TabPanelLazy
-                            className={classes.tabPanel}
-                            selected={tabValue === TAB_VALUES.lfParamsTabValue}
+                        </TabPanel>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.lfParamsTabValue}
                         >
                             {studyUuid && (
                                 <LoadFlowParameters
@@ -599,13 +581,10 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     }
                                 />
                             )}
-                        </TabPanelLazy>
-                        <TabPanelLazy
-                            className={classes.tabPanel}
-                            selected={
-                                tabValue ===
-                                TAB_VALUES.securityAnalysisParamsTabValue
-                            }
+                        </TabPanel>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.securityAnalysisParamsTabValue}
                         >
                             {studyUuid && (
                                 <SecurityAnalysisParameters
@@ -615,14 +594,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     }
                                 />
                             )}
-                        </TabPanelLazy>
+                        </TabPanel>
                         {
                             //To be removed when Sensitivity Analysis is not in developer mode only.
                             enableDeveloperMode && (
-                                <TabPanelLazy
-                                    className={classes.tabPanel}
-                                    selected={
-                                        tabValue ===
+                                <TabPanel
+                                    value={tabValue}
+                                    index={
                                         TAB_VALUES.sensitivityAnalysisParamsTabValue
                                     }
                                 >
@@ -634,16 +612,15 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                             }
                                         />
                                     )}
-                                </TabPanelLazy>
+                                </TabPanel>
                             )
                         }
                         {
                             //To be removed when ShortCircuit is not in developer mode only.
                             enableDeveloperMode && (
-                                <TabPanelLazy
-                                    className={classes.tabPanel}
-                                    selected={
-                                        tabValue ===
+                                <TabPanel
+                                    value={tabValue}
+                                    index={
                                         TAB_VALUES.shortCircuitParamsTabValue
                                     }
                                 >
@@ -655,40 +632,35 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                             }
                                         />
                                     )}
-                                </TabPanelLazy>
+                                </TabPanel>
                             )
                         }
                         {
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
-                                <TabPanelLazy
-                                    className={classes.tabPanel}
-                                    selected={
-                                        tabValue ===
+                                <TabPanel
+                                    value={tabValue}
+                                    index={
                                         TAB_VALUES.dynamicSimulationParamsTabValue
                                     }
                                 >
                                     {studyUuid && (
                                         <DynamicSimulationParameters
+                                            user={user}
                                             hideParameters={hideParameters}
-                                            parametersBackend={
-                                                dynamicSimulationParametersBackend
-                                            }
                                         />
                                     )}
-                                </TabPanelLazy>
+                                </TabPanel>
                             )
                         }
-                        <TabPanelLazy
-                            className={classes.tabPanel}
-                            selected={
-                                tabValue === TAB_VALUES.advancedParamsTabValue
-                            }
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.advancedParamsTabValue}
                         >
                             <NetworkParameters
                                 hideParameters={hideParameters}
                             />
-                        </TabPanelLazy>
+                        </TabPanel>
                     </Grid>
                 </Container>
             </DialogContent>

@@ -17,9 +17,18 @@ import {
     CloseButton,
     DropDown,
     LabelledButton,
+    useParametersBackend,
     useStyles,
 } from '../parameters';
 import TabPanelLazy from '../common/tab-panel-lazy';
+import {
+    fetchDefaultDynamicSimulationProvider,
+    fetchDynamicSimulationParameters,
+    fetchDynamicSimulationProvider,
+    fetchDynamicSimulationProviders,
+    updateDynamicSimulationParameters,
+    updateDynamicSimulationProvider,
+} from '../../../../utils/rest-api';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',
@@ -31,7 +40,7 @@ const EXTENSIONS = {
     DYNA_WALTZ: 'DynaWaltzParameters',
 };
 
-const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
+const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
 
     const [
@@ -42,7 +51,16 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
         parameters,
         updateParameters,
         resetParameters,
-    ] = parametersBackend;
+    ] = useParametersBackend(
+        user,
+        'DynamicSimulation',
+        fetchDynamicSimulationProviders,
+        fetchDynamicSimulationProvider,
+        fetchDefaultDynamicSimulationProvider,
+        updateDynamicSimulationProvider,
+        fetchDynamicSimulationParameters,
+        updateDynamicSimulationParameters
+    );
 
     const [tabValue, setTabValue] = useState(
         TAB_VALUES.timeDelayParamsTabValue
@@ -154,10 +172,14 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                         }
                     >
                         <TimeDelayParameters
-                            timeDelay={{
-                                startTime: parameters.startTime,
-                                stopTime: parameters.stopTime,
-                            }}
+                            timeDelay={
+                                parameters
+                                    ? {
+                                          startTime: parameters.startTime,
+                                          stopTime: parameters.stopTime,
+                                      }
+                                    : undefined
+                            }
                             onUpdateTimeDelay={handleUpdateTimeDelay}
                         />
                     </TabPanelLazy>
@@ -167,12 +189,15 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                     >
                         <SolverParameters
                             dynaWaltzExtension={
-                                parameters.extensions[
-                                    parameters.extensions.findIndex(
-                                        (elem) =>
-                                            elem.name === EXTENSIONS.DYNA_WALTZ
-                                    )
-                                ]
+                                parameters
+                                    ? parameters.extensions[
+                                          parameters.extensions.findIndex(
+                                              (elem) =>
+                                                  elem.name ===
+                                                  EXTENSIONS.DYNA_WALTZ
+                                          )
+                                      ]
+                                    : undefined
                             }
                             onUpdateSolver={handleUpdateSolver}
                         />
@@ -182,10 +207,14 @@ const DynamicSimulationParameters = ({ hideParameters, parametersBackend }) => {
                         selected={tabValue === TAB_VALUES.mappingParamsTabValue}
                     >
                         <MappingParameters
-                            mapping={{
-                                mapping: parameters.mapping,
-                                mappings: parameters.mappings,
-                            }}
+                            mapping={
+                                parameters
+                                    ? {
+                                          mapping: parameters.mapping,
+                                          mappings: parameters.mappings,
+                                      }
+                                    : undefined
+                            }
                             onUpdateMapping={handleUpdateMapping}
                         />
                     </TabPanelLazy>

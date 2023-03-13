@@ -32,10 +32,11 @@ const MappingParameters = ({ mapping, onUpdateMapping }) => {
     };
 
     return (
-        <Grid container>
-            {/*<Typography>{`Mapping: ${JSON.stringify(mapping)}`}</Typography>*/}
-            {makeComponentsFor(defParams, mapping, handleUpdateMapping)}
-        </Grid>
+        mapping && (
+            <Grid container>
+                {makeComponentsFor(defParams, mapping, handleUpdateMapping)}
+            </Grid>
+        )
     );
 };
 

@@ -33,16 +33,15 @@ const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
         },
     };
     return (
-        <Grid container>
-            {/*<Typography>
-                {`Time delay : ${JSON.stringify(timeDelay)}`}
-            </Typography>*/}
-            {makeComponentsFor(
-                defParams,
-                timeDelay,
-                delayedHandleUpdateTimeDelay
-            )}
-        </Grid>
+        timeDelay && (
+            <Grid container>
+                {makeComponentsFor(
+                    defParams,
+                    timeDelay,
+                    delayedHandleUpdateTimeDelay
+                )}
+            </Grid>
+        )
     );
 };
 
