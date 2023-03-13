@@ -38,7 +38,7 @@ function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
                     onChange={(event) => {
                         setRowNumber(
                             !event.target.value
-                                ? undefined
+                                ? 0
                                 : parseInt(event.target.value)
                         );
                     }}
@@ -49,6 +49,7 @@ function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
+                    disabled={rowNumber <= 0}
                     onClick={() => {
                         handleAddButton(rowNumber);
                         handleOnClose();
