@@ -6,7 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
 import TextInput from 'components/refactor/rhf-inputs/text-input';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
@@ -14,10 +14,11 @@ import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
-    REPLACING_LINE_ID,
-    REPLACING_LINE_NAME,
+    REPLACING_LINE_1_ID,
+    REPLACING_LINE_1_NAME,
 } from 'components/refactor/utils/field-constants';
 import { fetchEquipmentsIds } from 'utils/rest-api';
+import { areIdsEqual, getObjectId } from 'components/refactor/utils/utils';
 
 const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
     const [linesOptions, setLinesOptions] = useState([]);
@@ -39,11 +40,6 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
             );
         });
     }, [studyUuid, currentNode?.id]);
-
-    const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
-    const getObjectId = useCallback((object) => {
-        return typeof object === 'string' ? object : object?.id ?? null;
-    }, []);
 
     const lineToAttachTo1Field = (
         <AutocompleteInput
@@ -88,10 +84,10 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
     );
 
     const replacingLineIdField = (
-        <TextInput name={REPLACING_LINE_ID} label={'ReplacingLineId'} />
+        <TextInput name={REPLACING_LINE_1_ID} label={'ReplacingLineId'} />
     );
     const replacingLineNameField = (
-        <TextInput name={REPLACING_LINE_NAME} label={'ReplacingLineName'} />
+        <TextInput name={REPLACING_LINE_1_NAME} label={'ReplacingLineName'} />
     );
 
     return (

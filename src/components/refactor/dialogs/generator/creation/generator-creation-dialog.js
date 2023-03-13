@@ -49,10 +49,15 @@ import {
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
 import {
-    getConnectivityEmptyFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
+<<<<<<< HEAD:src/components/refactor/dialogs/generator/creation/generator-creation-dialog.js
     getConnectivityFormValidationSchema,
 } from '../../connectivity/connectivity-form-utils';
+=======
+    getConnectivityWithPositionValidationSchema,
+} from '../connectivity/connectivity-form-utils';
+>>>>>>> main:src/components/refactor/dialogs/generator-creation/generator-creation-dialog.js
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 import { createGenerator } from '../../../../../utils/rest-api';
@@ -86,7 +91,7 @@ const emptyFormData = {
     [FORCED_OUTAGE_RATE]: null,
     ...getSetPointsEmptyFormData(false),
     ...getReactiveLimitsEmptyFormData(),
-    ...getConnectivityEmptyFormData(),
+    ...getConnectivityWithPositionEmptyFormData(),
 };
 
 const schema = yup
@@ -116,7 +121,7 @@ const schema = yup
                 .max(1, 'RealPercentage'),
             ...getSetPointsSchema(false),
             ...getReactiveLimitsSchema(),
-            ...getConnectivityFormValidationSchema(),
+            ...getConnectivityWithPositionValidationSchema(),
         },
         [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
     )

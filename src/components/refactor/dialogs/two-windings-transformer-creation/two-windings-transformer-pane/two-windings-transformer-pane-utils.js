@@ -24,8 +24,8 @@ import {
 } from 'components/refactor/utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
-    getConnectivityEmptyFormData,
-    getConnectivityFormValidationSchema,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
 } from '../../connectivity/connectivity-form-utils';
 
 const twoWindingsTransformerValidationSchema = (id) => ({
@@ -54,8 +54,8 @@ const twoWindingsTransformerValidationSchema = (id) => ({
                 .nullable()
                 .positive('permanentCurrentLimitGreaterThanZero'),
         }),
-        ...getConnectivityFormValidationSchema(CONNECTIVITY_1),
-        ...getConnectivityFormValidationSchema(CONNECTIVITY_2),
+        ...getConnectivityWithPositionValidationSchema(CONNECTIVITY_1),
+        ...getConnectivityWithPositionValidationSchema(CONNECTIVITY_2),
     }),
 });
 
@@ -82,8 +82,8 @@ const twoWindingsTransformerEmptyFormData = (id) => ({
         [CURRENT_LIMITS_2]: {
             [PERMANENT_LIMIT]: null,
         },
-        ...getConnectivityEmptyFormData(CONNECTIVITY_1),
-        ...getConnectivityEmptyFormData(CONNECTIVITY_2),
+        ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1),
+        ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_2),
     },
 });
 

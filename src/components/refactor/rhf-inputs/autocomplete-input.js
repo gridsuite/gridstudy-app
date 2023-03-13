@@ -74,7 +74,7 @@ const AutocompleteInput = ({
                 freeSolo: true,
                 autoComplete: true,
                 blurOnSelect: true,
-                autoSelect: true,
+                autoSelect: false,
                 onInputChange: (_, data) => {
                     handleChange(data);
                 },

@@ -69,3 +69,19 @@ export const areNumbersOrdered = (array) => {
     }
     return true;
 };
+
+export const findIndexesOfDuplicateFieldValues = (values, fieldName) => {
+    const counts = new Map();
+    values.forEach((element, index) => {
+        const value = element[fieldName];
+        counts.set(value, (counts.get(value) || []).concat(index));
+    });
+    return [...counts.values()].filter((indexes) => indexes.length > 1).flat();
+};
+
+export const areIdsEqual = (val1, val2) => {
+    return val1.id === val2.id;
+};
+export const getObjectId = (object) => {
+    return typeof object === 'string' ? object : object?.id ?? null;
+};
