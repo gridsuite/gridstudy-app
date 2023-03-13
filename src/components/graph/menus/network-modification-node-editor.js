@@ -428,7 +428,7 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentNode, snackError, dispatch]);
+    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -521,7 +521,7 @@ const NetworkModificationNodeEditor = () => {
                     headerId: 'errDeleteModificationMsg',
                 });
             });
-    }, [currentNode, selectedItems, snackError, studyUuid]);
+    }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
     const doCutModification = useCallback(() => {
         if (!currentNode) return;
@@ -533,7 +533,7 @@ const NetworkModificationNodeEditor = () => {
             copyType: CopyType.MOVE,
             originNodeUuid: currentNode.id,
         });
-    }, [currentNode, selectedItems]);
+    }, [currentNode?.id, selectedItems]);
 
     const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
@@ -602,7 +602,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [
         copiedModifications,
-        currentNode,
+        currentNode?.id,
         copyInfos,
         snackError,
         snackWarning,
@@ -686,7 +686,7 @@ const NetworkModificationNodeEditor = () => {
                 setModifications(modifications); // rollback
             });
         },
-        [modifications, studyUuid, currentNode, snackError]
+        [modifications, studyUuid, currentNode?.id, snackError]
     );
 
     const isLoading = () => {
