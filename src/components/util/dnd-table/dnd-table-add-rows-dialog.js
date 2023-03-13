@@ -36,7 +36,11 @@ function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
                     type="Number"
                     value={rowNumber}
                     onChange={(event) => {
-                        setRowNumber(parseInt(event.target.value));
+                        setRowNumber(
+                            !event.target.value
+                                ? undefined
+                                : parseInt(event.target.value)
+                        );
                     }}
                 />
             </DialogContent>
