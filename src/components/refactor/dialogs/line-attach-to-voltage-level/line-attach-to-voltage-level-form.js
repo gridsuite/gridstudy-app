@@ -88,14 +88,12 @@ const LineAttachToVoltageLevelForm = ({
     }, [voltageLevelToEdit, voltageLevelOptions]);
 
     const getFormatedBusOrBusbarSectionOptions = useMemo(() => {
-        return voltageLevelToEdit?.busbarSections
-            ?.sort((a, b) => a?.id?.localeCompare(b?.id))
-            .map((busbarSection) => {
-                return {
-                    id: busbarSection.id,
-                    name: busbarSection.name ?? '',
-                };
-            });
+        return voltageLevelToEdit?.busbarSections?.map((busbarSection) => {
+            return {
+                id: busbarSection.id,
+                name: busbarSection.name ?? '',
+            };
+        });
     }, [voltageLevelToEdit]);
 
     const lineToAttachToForm = (
