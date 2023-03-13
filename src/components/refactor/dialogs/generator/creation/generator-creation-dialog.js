@@ -51,13 +51,8 @@ import {
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
-<<<<<<< HEAD:src/components/refactor/dialogs/generator/creation/generator-creation-dialog.js
-    getConnectivityFormValidationSchema,
-} from '../../connectivity/connectivity-form-utils';
-=======
     getConnectivityWithPositionValidationSchema,
-} from '../connectivity/connectivity-form-utils';
->>>>>>> main:src/components/refactor/dialogs/generator-creation/generator-creation-dialog.js
+} from '../../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 import { createGenerator } from '../../../../../utils/rest-api';
