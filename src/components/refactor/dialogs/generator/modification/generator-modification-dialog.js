@@ -161,9 +161,11 @@ const GeneratorModificationDialog = ({
     //this method empties the form, and let us pass custom data that we want to set
     const clear = useCallback(
         (customData = {}) => {
-            reset({ ...emptyFormData, ...customData });
+            if (!editData) {
+                reset({ ...emptyFormData, ...customData });
+            }
         },
-        [emptyFormData, reset]
+        [editData, emptyFormData, reset]
     );
 
     //in order to work properly, react hook form needs all fields to be set at least to null

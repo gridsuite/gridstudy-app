@@ -41,14 +41,14 @@ const getModificationRowSchema = () =>
             .number()
             .nullable()
             .when([OLD_Q_MAX_P], {
-                is: null,
+                is: (oldQmaxP) => oldQmaxP == null,
                 then: (schema) => schema.required(),
             }),
         [Q_MIN_P]: yup
             .number()
             .nullable()
             .when([OLD_Q_MIN_P], {
-                is: null,
+                is: (oldQminP) => oldQminP == null,
                 then: (schema) => schema.required(),
             })
             .when([Q_MAX_P], {
@@ -68,7 +68,7 @@ const getModificationRowSchema = () =>
             .number()
             .nullable()
             .when([OLD_P], {
-                is: null,
+                is: (oldP) => oldP == null, // we need to check null and undefined
                 then: (schema) => schema.required(),
             }),
         [OLD_Q_MAX_P]: yup.number().nullable(),
@@ -138,7 +138,8 @@ export const getReactiveCapabilityCurveValidationSchema = (
                     .when([], {
                         is: () => !isGeneratorModification,
                         then: (schema) => schema.of(getCreationRowSchema()),
-                        otherwise: schema.of(getModificationRowSchema()),
+                        otherwise: (schema) =>
+                            schema.of(getModificationRowSchema()),
                     })
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
                     .test(

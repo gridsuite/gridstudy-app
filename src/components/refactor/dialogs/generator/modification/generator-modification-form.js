@@ -99,8 +99,6 @@ const GeneratorModificationForm = ({
     useEffect(() => {
         clearErrors();
         setGeneratorToModify(null);
-        onClear({ [EQUIPMENT_ID]: watchEquipmentId });
-
         if (watchEquipmentId) {
             fetchEquipmentInfos(
                 studyUuid,
@@ -162,6 +160,9 @@ const GeneratorModificationForm = ({
           })
         : undefined;
     const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
+    const changeCallBack = () => {
+        setValue(REACTIVE_CAPABILITY_CURVE_TABLE, [{}, {}]);
+    };
     const generatorIdField = (
         <AutocompleteInput
             allowNewValue
@@ -171,6 +172,7 @@ const GeneratorModificationForm = ({
             formProps={{ ...filledTextField }}
             size={'small'}
             isOptionEqualToValue={areIdsEqual}
+            onChangeCallback={changeCallBack}
         />
     );
 
