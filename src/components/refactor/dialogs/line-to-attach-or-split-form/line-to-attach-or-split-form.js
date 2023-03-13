@@ -70,19 +70,9 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
         <>
             <Grid container spacing={2} alignItems="center">
                 {gridItem(lineToAttachOrSplitField, 5)}
-                {gridItem(
-                    <Typography sx={{ textAlign: 'center' }}>
-                        {line1Substation}
-                    </Typography>,
-                    1
-                )}
+                {gridItem(<Typography>{line1Substation}</Typography>, 1)}
                 {gridItem(percentageArea, 5)}
-                {gridItem(
-                    <Typography sx={{ textAlign: 'center' }}>
-                        {line2Substation}
-                    </Typography>,
-                    1
-                )}
+                {gridItem(<Typography>{line2Substation}</Typography>, 1)}
             </Grid>
         </>
     );

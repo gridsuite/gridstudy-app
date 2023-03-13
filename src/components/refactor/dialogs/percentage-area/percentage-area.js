@@ -109,14 +109,14 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
                     </Grid>
                 </Grid>
                 {slider}
-            </Grid>
-            <Grid container spacing={2} item>
-                <Grid item xs={3} align={'start'}>
-                    {leftSidePercentageField}
-                </Grid>
-                <Grid item xs={6}></Grid>
-                <Grid item xs={3} align={'end'}>
-                    {rightSidePercentageField}
+                <Grid container spacing={2} item>
+                    <Grid item xs={3} align={'start'}>
+                        {leftSidePercentageField}
+                    </Grid>
+                    <Grid item xs={6}></Grid>
+                    <Grid item xs={3} align={'end'}>
+                        {rightSidePercentageField}
+                    </Grid>
                 </Grid>
             </Grid>
         </>
