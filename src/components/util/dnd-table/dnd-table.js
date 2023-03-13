@@ -35,8 +35,8 @@ import { TableTexteInput } from '../../refactor/rhf-inputs/table-inputs/table-te
 
 function MultiCheckbox({
     arrayFormName,
-    handleClickIfChecked,
-    handleClickIfUnchecked,
+    handleClickCheck,
+    handleClickUncheck,
     ...props
 }) {
     const arrayToWatch = useWatch({
@@ -50,8 +50,8 @@ function MultiCheckbox({
             checked={arrayToWatch.length > 0 && allRowSelected}
             onChange={(event) => {
                 event.target.checked
-                    ? handleClickIfChecked()
-                    : handleClickIfUnchecked();
+                    ? handleClickCheck()
+                    : handleClickUncheck();
             }}
             {...props}
         />
@@ -186,8 +186,8 @@ const DndTable = ({
                     <TableCell sx={{ width: '5%', textAlign: 'center' }}>
                         <MultiCheckbox
                             arrayFormName={arrayFormName}
-                            handleClickIfChecked={selectAllRows}
-                            handleClickIfUnchecked={unselectAllRows}
+                            handleClickCheck={selectAllRows}
+                            handleClickUncheck={unselectAllRows}
                             disabled={disabled || tapSteps.length === 0}
                         />
                     </TableCell>

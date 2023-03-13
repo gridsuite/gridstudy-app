@@ -214,7 +214,6 @@ const TapChangerSteps = ({
 
             currentTapRows.forEach((row, index) => {
                 currentTapRows[index][createTapRuleColumn] = current;
-
                 current += interval;
             });
             replace(currentTapRows);
