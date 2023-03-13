@@ -700,6 +700,7 @@
 
     "AddRowsDialogTitle": "Combien de lignes voulez-vous ajouter ?",
     "AddRowsButton": "Ajouter",
+    "MaximumRowNumberError": "Le nombre de lignes ne doit pas dépasser la valeur {value}",
 
     "DragAndDrop": "Glisser-déposer",
 
