@@ -33,6 +33,12 @@ import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import { TableNumericalInput } from '../../refactor/rhf-inputs/table-inputs/table-numerical-input';
 import { TableTexteInput } from '../../refactor/rhf-inputs/table-inputs/table-text-input';
 
+export const addSelectedFieldToLines = (lines) => {
+    return lines?.map((line) => {
+        return { ...line, selected: false };
+    });
+};
+
 function MultiCheckbox({
     arrayFormName,
     handleClickCheck,

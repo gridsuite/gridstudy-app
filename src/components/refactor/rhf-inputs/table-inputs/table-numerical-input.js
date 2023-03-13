@@ -82,7 +82,7 @@ export const TableNumericalInput = ({
             tooltip = intl.formatMessage({ id: 'OnlyMax' }, { max });
         }
         if (tooltip !== '') {
-            return <Tooltip title={tooltip}>{renderNumericText()}</Tooltip>;
+            return <Tooltip title={tooltip}>{renderNumericText}</Tooltip>;
         }
         return renderNumericText;
     };

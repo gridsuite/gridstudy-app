@@ -60,6 +60,7 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
 } from './limits-pane/limits-pane-utils';
+import { addSelectedFieldToLines } from '../../../util/dnd-table/dnd-table';
 
 const emptyFormData = {
     ...getLineEmptyFormData(),
@@ -129,8 +130,12 @@ const LineCreationDialog = ({
                     shuntSusceptance1: unitToMicroUnit(line.b1),
                     shuntConductance2: unitToMicroUnit(line.g2),
                     shuntSusceptance2: unitToMicroUnit(line.b2),
-                    permanentLimit1: line.permanentLimit1,
-                    permanentLimit2: line.permanentLimit2,
+                    permanentLimit1: addSelectedFieldToLines(
+                        line.permanentLimit1
+                    ),
+                    permanentLimit2: addSelectedFieldToLines(
+                        line.permanentLimit2
+                    ),
                     ...(displayConnectivity &&
                         getConnectivityFormData(
                             {
@@ -202,8 +207,12 @@ const LineCreationDialog = ({
                 ...getLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
-                    temporaryLimits1: line.currentLimits1?.temporaryLimits,
-                    temporaryLimits2: line.currentLimits2?.temporaryLimits,
+                    temporaryLimits1: addSelectedFieldToLines(
+                        line.currentLimits1?.temporaryLimits
+                    ),
+                    temporaryLimits2: addSelectedFieldToLines(
+                        line.currentLimits2?.temporaryLimits
+                    ),
                 }),
             });
         },

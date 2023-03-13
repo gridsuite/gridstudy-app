@@ -36,7 +36,7 @@ const LimitsPane = ({ id = LIMITS }) => {
             {
                 label: 'TemporaryLimitName',
                 dataKey: TEMPORARY_LIMIT_NAME,
-                initialValue: '',
+                initialValue: undefined,
                 editable: true,
                 numeric: false,
             },

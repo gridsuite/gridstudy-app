@@ -87,6 +87,7 @@ import {
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
 } from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
+import { addSelectedFieldToLines } from '../../../util/dnd-table/dnd-table';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -151,12 +152,6 @@ const TwoWindingsTransformerCreationDialog = ({
         return Array.isArray(values) && values.length > 0
             ? Math.max(...values)
             : null;
-    };
-
-    const addSelectedFieldToSteps = (steps) => {
-        return steps?.map((step) => {
-            return { ...step, selected: false };
-        });
     };
 
     const getTapSideForEdit = (twt, tap) => {
@@ -251,7 +246,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToSteps(
+                    steps: addSelectedFieldToLines(
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId,
@@ -284,7 +279,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToSteps(
+                    steps: addSelectedFieldToLines(
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId,
@@ -362,7 +357,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToSteps(
+                    steps: addSelectedFieldToLines(
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     equipmentId:
@@ -402,7 +397,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToSteps(
+                    steps: addSelectedFieldToLines(
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     voltageLevelId:

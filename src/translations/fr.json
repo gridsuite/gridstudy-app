@@ -528,9 +528,9 @@
     "LineLimitsTab": "Limites",
     "LineCharacteristicsTab": "Caractéristiques",
     "TemporaryCurrentLimitsText": "Limites d'intensité temporaires",
-    "TemporaryLimitDuration": "Tempo",
+    "TemporaryLimitDuration": "Tempo (s)",
     "TemporaryLimitName": "Nom",
-    "TemporaryLimitValue": "Valeur",
+    "TemporaryLimitValue": "Valeur (A)",
     "TemporaryLimitNameUnicityError": "Les noms des limites temporaires doivent être uniques dans la table",
     "TemporaryLimitDurationUnicityError": "Les tempos des limites temporaires doivent être uniques dans la table",
 
