@@ -10,11 +10,8 @@ import {
     changeNetworkModificationOrder,
     copyOrMoveModifications,
     deleteModifications,
-    fetchLines,
     fetchNetworkModification,
     fetchNetworkModifications,
-    fetchSubstations,
-    fetchVoltageLevels,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -221,17 +218,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLs(p) {
-        const voltageLevelOptionsPromise = fetchVoltageLevels(
-            studyUuid,
-            currentNode?.id
-        );
-        return {
-            ...p,
-            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
-        };
-    }
-
     function withVLsIdsAndTopology(p) {
         const voltageLevelsIdsAndTopologyPromise =
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id);
@@ -239,26 +225,6 @@ const NetworkModificationNodeEditor = () => {
             ...p,
             voltageLevelsIdsAndTopologyPromise:
                 voltageLevelsIdsAndTopologyPromise,
-        };
-    }
-
-    function withLines(p) {
-        const lineOptionsPromise = fetchLines(studyUuid, currentNode?.id, []);
-        return {
-            ...p,
-            lineOptionsPromise: lineOptionsPromise,
-        };
-    }
-
-    function withSubstations(p) {
-        const substationOptionsPromise = fetchSubstations(
-            studyUuid,
-            currentNode?.id,
-            []
-        );
-        return {
-            ...p,
-            substationOptionsPromise: substationOptionsPromise,
         };
     }
 
