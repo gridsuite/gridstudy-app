@@ -161,7 +161,7 @@ const GeneratorModificationForm = ({
         : undefined;
     const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
     const changeCallBack = () => {
-        setValue(REACTIVE_CAPABILITY_CURVE_TABLE, [{}, {}]);
+        if (!editData) setValue(REACTIVE_CAPABILITY_CURVE_TABLE, [{}, {}]);
     };
     const generatorIdField = (
         <AutocompleteInput
