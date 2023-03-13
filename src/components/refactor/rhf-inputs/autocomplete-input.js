@@ -112,7 +112,7 @@ AutocompleteInput.propTypes = {
     outputTransform: PropTypes.func,
     inputTransform: PropTypes.func,
     readOnly: PropTypes.bool,
-    previousValue: PropTypes.object,
+    previousValue: PropTypes.any,
     allowNewValue: PropTypes.bool,
     formProps: PropTypes.object,
 };

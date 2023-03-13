@@ -40,7 +40,7 @@ SelectInput.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     options: PropTypes.array.isRequired,
-    previousValue: PropTypes.object,
+    previousValue: PropTypes.any,
 };
 
 export default SelectInput;
