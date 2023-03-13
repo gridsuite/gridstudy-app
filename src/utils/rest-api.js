@@ -1233,27 +1233,6 @@ export function startDynamicSimulation(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/dynamic-simulation/run?';
 
-    // fake load configuration if not provided
-    // mapping name
-    if (!mappingName) {
-        mappingName = JSON.parse(
-            dsConfigStorage.getItem(DS_PARAMS_KEY)
-        ).mapping;
-    }
-    // dynamicSimulationConfiguration
-    if (!dynamicSimulationConfiguration) {
-        const params = JSON.parse(dsConfigStorage.getItem(DS_PARAMS_KEY));
-        dynamicSimulationConfiguration = {
-            startTime: params.startTime,
-            stopTime: params.stopTime,
-        };
-    }
-
-    // add request params
-    if (mappingName) {
-        startDynamicSimulationUrl += `mappingName=${mappingName}`;
-    }
-
     // add body
     const body = JSON.stringify(dynamicSimulationConfiguration ?? {});
 
@@ -1392,11 +1371,6 @@ export function updateDynamicSimulationProvider(studyUuid, newProvider) {
 const NONE_NODE_UUID = '00000000-0000-0000-0000-000000000000';
 
 export function fetchDynamicSimulationParameters(studyUuid) {
-    // fake API
-    /*const parametersPromise = Promise.resolve(
-        JSON.parse(dsConfigStorage.getItem(DS_PARAMS_KEY))
-    );*/
-
     console.info(
         `Fetching dynamic simulation parameters on '${studyUuid}' ...`
     );
@@ -1412,13 +1386,6 @@ export function fetchDynamicSimulationParameters(studyUuid) {
     );
 }
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
-    // fake API
-    /*console.log('updateDynamicSimulationParameters', [studyUuid, newParams]);
-    const toSaveParams = { ...newParams };
-    delete toSaveParams.mappings;
-    dsConfigStorage.setItem(DS_PARAMS_KEY, JSON.stringify(toSaveParams));
-    return Promise.resolve(studyUuid);*/
-
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
