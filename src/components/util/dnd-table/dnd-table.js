@@ -98,7 +98,7 @@ const DndTable = ({
     const { getValues, setValue, setError, clearErrors } = useFormContext();
 
     const {
-        fields: tapSteps, // don't use it to access form data ! check doc
+        fields: currentRows, // don't use it to access form data ! check doc
         move,
         swap,
         append,
@@ -136,7 +136,7 @@ const DndTable = ({
 
     function addNewRows(numberOfRows) {
         // checking if not exceeding 100 steps
-        if (tapSteps.length + numberOfRows > MAX_ROWS_NUMBER) {
+        if (currentRows.length + numberOfRows > MAX_ROWS_NUMBER) {
             setError(arrayFormName, {
                 type: 'custom',
                 message: {
@@ -148,20 +148,20 @@ const DndTable = ({
         }
         clearErrors(arrayFormName);
 
-        const tapRowsToAdd = createRows(numberOfRows).map((row) => {
+        const rowsToAdd = createRows(numberOfRows).map((row) => {
             return { ...row, [SELECTED]: false };
         });
 
         // note : an id prop is automatically added in each row
-        append(tapRowsToAdd);
+        append(rowsToAdd);
     }
 
     function deleteSelectedRows() {
-        const currentTapRows = getValues(arrayFormName);
+        const currentRowsValues = getValues(arrayFormName);
 
         let rowsToDelete = [];
-        for (let i = 0; i < currentTapRows.length; i++) {
-            if (currentTapRows[i][SELECTED]) {
+        for (let i = 0; i < currentRowsValues.length; i++) {
+            if (currentRowsValues[i][SELECTED]) {
                 rowsToDelete.push(i);
             }
         }
@@ -170,42 +170,42 @@ const DndTable = ({
     }
 
     function selectAllRows() {
-        for (let i = 0; i < tapSteps.length; i++) {
+        for (let i = 0; i < currentRows.length; i++) {
             setValue(`${arrayFormName}[${i}].${SELECTED}`, true);
         }
     }
 
     function unselectAllRows() {
-        for (let i = 0; i < tapSteps.length; i++) {
+        for (let i = 0; i < currentRows.length; i++) {
             setValue(`${arrayFormName}[${i}].${SELECTED}`, false);
         }
     }
 
     function moveUpSelectedRows() {
-        const currentTapRows = getValues(arrayFormName);
+        const currentRowsValues = getValues(arrayFormName);
 
-        if (currentTapRows[0][SELECTED]) {
+        if (currentRowsValues[0][SELECTED]) {
             // we can't move up more the rows, so we stop
             return;
         }
 
-        for (let i = 1; i < currentTapRows.length; i++) {
-            if (currentTapRows[i][SELECTED]) {
+        for (let i = 1; i < currentRowsValues.length; i++) {
+            if (currentRowsValues[i][SELECTED]) {
                 swap(i - 1, i);
             }
         }
     }
 
     function moveDownSelectedRows() {
-        const currentTapRows = getValues(arrayFormName);
+        const currentRowsValues = getValues(arrayFormName);
 
-        if (currentTapRows[currentTapRows.length - 1][SELECTED]) {
+        if (currentRowsValues[currentRowsValues.length - 1][SELECTED]) {
             // we can't move down more the rows, so we stop
             return;
         }
 
-        for (let i = currentTapRows.length - 2; i >= 0; i--) {
-            if (currentTapRows[i][SELECTED]) {
+        for (let i = currentRowsValues.length - 2; i >= 0; i--) {
+            if (currentRowsValues[i][SELECTED]) {
                 swap(i, i + 1);
             }
         }
@@ -232,7 +232,7 @@ const DndTable = ({
                             arrayFormName={arrayFormName}
                             handleClickCheck={selectAllRows}
                             handleClickUncheck={unselectAllRows}
-                            disabled={disabled || tapSteps.length === 0}
+                            disabled={disabled || currentRows.length === 0}
                         />
                     </TableCell>
                     {columnsDefinition.map((column) => (
@@ -258,7 +258,7 @@ const DndTable = ({
     function renderTableBody(providedDroppable) {
         return (
             <TableBody>
-                {tapSteps.map((row, index) => (
+                {currentRows.map((row, index) => (
                     <Draggable
                         key={row.id}
                         draggableId={row.id.toString()}
