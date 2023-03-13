@@ -28,6 +28,7 @@ import SubmitButton from './submitButton';
  * @param {CallbackEvent} onSave callback when saving the modification
  * @param {Boolean} disabledSave to control disabled prop of the validate button
  * @param {Object} searchCopy Object managing search equipments for copy
+ * @param {ReactElement} headerPane a header content set just under the dialog title
  * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  */
@@ -39,6 +40,7 @@ const ModificationDialog = ({
     onValidationError,
     disabledSave = false,
     searchCopy,
+    headerPane = undefined,
     subtitle,
     onValidated,
     ...dialogProps
@@ -90,6 +92,9 @@ const ModificationDialog = ({
                     </Grid>
                     {searchCopy && <Grid item> {copyEquipmentButton} </Grid>}
                 </Grid>
+                <Grid container justifyContent={'space-between'}>
+                    {headerPane}
+                </Grid>
                 {subtitle}
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
@@ -119,6 +124,7 @@ ModificationDialog.propTypes = {
     disabledSave: PropTypes.bool,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
+    headerPane: PropTypes.element,
 };
 
 export default ModificationDialog;

@@ -7,21 +7,17 @@
 
 import { Grid } from '@mui/material';
 import {
-    filledTextField,
     gridItem,
     GridSection,
     MicroSusceptanceAdornment,
     OhmAdornment,
 } from '../../../../dialogs/dialogUtils';
 import FloatInput from '../../../rhf-inputs/float-input';
-import TextInput from '../../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
     SHUNT_CONDUCTANCE_1,
@@ -38,22 +34,6 @@ const LineCharacteristicsPane = ({
     currentNode,
     voltageLevelOptions,
 }) => {
-    const lineIdField = (
-        <TextInput
-            name={`${id}.${EQUIPMENT_ID}`}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
-    );
-
-    const lineNameField = (
-        <TextInput
-            name={`${id}.${EQUIPMENT_NAME}`}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
-
     const seriesResistanceField = (
         <FloatInput
             name={`${id}.${SERIES_RESISTANCE}`}
@@ -124,11 +104,7 @@ const LineCharacteristicsPane = ({
 
     return (
         <>
-            <Grid container spacing={2}>
-                {gridItem(lineIdField, 4)}
-                {gridItem(lineNameField, 4)}
-            </Grid>
-            <Grid container spacing={2}>
+            <Grid container spacing={0}>
                 {/* better than having GridSection x 2 */}
                 <Grid item xs={12}>
                     <h3>

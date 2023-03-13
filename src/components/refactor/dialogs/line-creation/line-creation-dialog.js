@@ -7,7 +7,7 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTION_DIRECTION,
@@ -30,6 +30,7 @@ import {
     CHARACTERISTICS,
     LIMITS,
     TEMPORARY_LIMITS,
+    TAB_HEADER,
 } from 'components/refactor/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
@@ -37,6 +38,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { createLine, fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import {
+    filledTextField,
+    gridItem,
     microUnitToUnit,
     sanitizeString,
     unitToMicroUnit,
@@ -60,9 +63,16 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
 } from './limits-pane/limits-pane-utils';
-import { addSelectedFieldToLines } from '../../../util/dnd-table/dnd-table';
+import {
+    getHeaderEmptyFormData,
+    getHeaderFormData,
+    getHeaderValidationSchema,
+} from './line-creation-dialog-utils';
+import { addSelectedFieldToRows } from '../../../util/dnd-table/dnd-table';
+import TextInput from '../../rhf-inputs/text-input';
 
 const emptyFormData = {
+    ...getHeaderEmptyFormData(),
     ...getLineEmptyFormData(),
     ...getLimitsEmptyFormData(),
 };
@@ -105,6 +115,7 @@ const LineCreationDialog = ({
     const schema = yup
         .object()
         .shape({
+            ...getHeaderValidationSchema(),
             ...getLineValidationSchema(CHARACTERISTICS, displayConnectivity),
             ...getLimitsValidationSchema(),
         })
@@ -118,24 +129,19 @@ const LineCreationDialog = ({
     const { reset } = methods;
 
     const fromSearchCopyToFormValues = (line) => {
-        console.log('DBR fromSearchCopyToFormValues', line);
         reset(
             {
-                ...getLineFormData({
+                ...getHeaderFormData({
                     equipmentId: line.id + '(1)',
                     equipmentName: line.name ?? '',
+                }),
+                ...getLineFormData({
                     seriesResistance: line.r,
                     seriesReactance: line.x,
-                    shuntConductance1: unitToMicroUnit(line.g1), // this form uses and displays microSiemens
-                    shuntSusceptance1: unitToMicroUnit(line.b1),
-                    shuntConductance2: unitToMicroUnit(line.g2),
-                    shuntSusceptance2: unitToMicroUnit(line.b2),
-                    permanentLimit1: addSelectedFieldToLines(
-                        line.permanentLimit1
-                    ),
-                    permanentLimit2: addSelectedFieldToLines(
-                        line.permanentLimit2
-                    ),
+                    shuntConductance1: line.g1, // this form uses and displays microSiemens
+                    shuntSusceptance1: line.b1,
+                    shuntConductance2: line.g2,
+                    shuntSusceptance2: line.b2,
                     ...(displayConnectivity &&
                         getConnectivityFormData(
                             {
@@ -162,8 +168,12 @@ const LineCreationDialog = ({
                 ...getLimitsFormData({
                     permanentLimit1: line.permanentLimit1,
                     permanentLimit2: line.permanentLimit2,
-                    temporaryLimits1: line.temporaryLimits1,
-                    temporaryLimits2: line.temporaryLimits2,
+                    temporaryLimits1: addSelectedFieldToRows(
+                        line.temporaryLimits1
+                    ),
+                    temporaryLimits2: addSelectedFieldToRows(
+                        line.temporaryLimits2
+                    ),
                 }),
             },
             { keepDefaultValues: true }
@@ -172,11 +182,12 @@ const LineCreationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (line) => {
-            console.log('DBR fromEditDataToFormValues', line);
             reset({
-                ...getLineFormData({
+                ...getHeaderFormData({
                     equipmentId: line.equipmentId,
                     equipmentName: line.equipmentName,
+                }),
+                ...getLineFormData({
                     seriesResistance: line.seriesResistance,
                     seriesReactance: line.seriesReactance,
                     shuntConductance1: unitToMicroUnit(line.shuntConductance1),
@@ -207,10 +218,10 @@ const LineCreationDialog = ({
                 ...getLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToLines(
+                    temporaryLimits1: addSelectedFieldToRows(
                         line.currentLimits1?.temporaryLimits
                     ),
-                    temporaryLimits2: addSelectedFieldToLines(
+                    temporaryLimits2: addSelectedFieldToRows(
                         line.currentLimits2?.temporaryLimits
                     ),
                 }),
@@ -257,19 +268,19 @@ const LineCreationDialog = ({
     const sanitizeLimitNames = (temporaryLimitList) =>
         temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
             ...temporaryLimit,
-            name: sanitizeString(name), // update only name property
+            name: sanitizeString(name),
         }));
 
     const onSubmit = useCallback(
         (line) => {
-            console.log('DBR onSubmit', line);
+            const header = line[TAB_HEADER];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
             onCreateLine(
                 studyUuid,
                 currentNodeUuid,
-                characteristics[EQUIPMENT_ID],
-                sanitizeString(characteristics[EQUIPMENT_NAME]),
+                header[EQUIPMENT_ID],
+                sanitizeString(header[EQUIPMENT_NAME]),
                 characteristics[SERIES_RESISTANCE],
                 characteristics[SERIES_REACTANCE],
                 microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_1]),
@@ -327,6 +338,29 @@ const LineCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const lineIdField = (
+        <TextInput
+            name={`${TAB_HEADER}.${EQUIPMENT_ID}`}
+            label={'ID'}
+            formProps={{ autoFocus: true, ...filledTextField }}
+        />
+    );
+
+    const lineNameField = (
+        <TextInput
+            name={`${TAB_HEADER}.${EQUIPMENT_NAME}`}
+            label={'Name'}
+            formProps={filledTextField}
+        />
+    );
+
+    const headerFields = (
+        <Grid container spacing={2}>
+            {gridItem(lineIdField, 4)}
+            {gridItem(lineNameField, 4)}
+        </Grid>
+    );
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -339,6 +373,7 @@ const LineCreationDialog = ({
                 titleId="CreateLine"
                 subtitle={tabs}
                 searchCopy={searchCopy}
+                headerPane={headerFields}
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs

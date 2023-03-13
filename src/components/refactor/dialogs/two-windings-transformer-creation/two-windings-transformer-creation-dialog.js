@@ -87,7 +87,7 @@ import {
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
 } from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
-import { addSelectedFieldToLines } from '../../../util/dnd-table/dnd-table';
+import { addSelectedFieldToRows } from '../../../util/dnd-table/dnd-table';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -246,7 +246,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToLines(
+                    steps: addSelectedFieldToRows(
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId,
@@ -279,7 +279,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToLines(
+                    steps: addSelectedFieldToRows(
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId,
@@ -357,7 +357,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToLines(
+                    steps: addSelectedFieldToRows(
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     equipmentId:
@@ -397,7 +397,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToLines(
+                    steps: addSelectedFieldToRows(
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     voltageLevelId:

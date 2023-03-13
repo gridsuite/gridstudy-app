@@ -119,6 +119,7 @@ export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
 export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
 export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
 export const LIMITS = 'limits';
+export const TAB_HEADER = 'tabHeader';
 export const TEMPORARY_LIMITS = 'temporaryLimits';
 export const TEMPORARY_LIMIT_NAME = 'name';
 export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';

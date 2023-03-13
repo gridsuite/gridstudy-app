@@ -9,8 +9,6 @@ import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
     SHUNT_CONDUCTANCE_1,
@@ -26,8 +24,6 @@ import {
 
 const lineValidationSchema = (id, displayConnectivity) => ({
     [id]: yup.object().shape({
-        [EQUIPMENT_ID]: yup.string().required(),
-        [EQUIPMENT_NAME]: yup.string(),
         [SERIES_RESISTANCE]: yup.number().nullable().required(),
         [SERIES_REACTANCE]: yup.number().nullable().required(),
         [SHUNT_SUSCEPTANCE_1]: yup.number().nullable(),
@@ -47,8 +43,6 @@ export const getLineValidationSchema = (id, displayConnectivity) => {
 
 const lineEmptyFormData = (id) => ({
     [id]: {
-        [EQUIPMENT_ID]: '',
-        [EQUIPMENT_NAME]: '',
         [SERIES_RESISTANCE]: null,
         [SERIES_REACTANCE]: null,
         [SHUNT_SUSCEPTANCE_1]: null,
@@ -66,8 +60,6 @@ export const getLineEmptyFormData = (id = CHARACTERISTICS) => {
 
 export const getLineFormData = (
     {
-        equipmentId,
-        equipmentName = '',
         seriesResistance = null,
         seriesReactance = null,
         shuntConductance1 = null,
@@ -78,19 +70,15 @@ export const getLineFormData = (
         connectivity2 = null,
     },
     id = CHARACTERISTICS
-) => {
-    return {
-        [id]: {
-            [EQUIPMENT_ID]: equipmentId,
-            [EQUIPMENT_NAME]: equipmentName,
-            [SERIES_RESISTANCE]: seriesResistance,
-            [SERIES_REACTANCE]: seriesReactance,
-            [SHUNT_CONDUCTANCE_1]: shuntConductance1,
-            [SHUNT_SUSCEPTANCE_1]: shuntSusceptance1,
-            [SHUNT_CONDUCTANCE_2]: shuntConductance2,
-            [SHUNT_SUSCEPTANCE_2]: shuntSusceptance2,
-            [CONNECTIVITY_1]: connectivity1,
-            [CONNECTIVITY_2]: connectivity2,
-        },
-    };
-};
+) => ({
+    [id]: {
+        [SERIES_RESISTANCE]: seriesResistance,
+        [SERIES_REACTANCE]: seriesReactance,
+        [SHUNT_CONDUCTANCE_1]: shuntConductance1,
+        [SHUNT_SUSCEPTANCE_1]: shuntSusceptance1,
+        [SHUNT_CONDUCTANCE_2]: shuntConductance2,
+        [SHUNT_SUSCEPTANCE_2]: shuntSusceptance2,
+        [CONNECTIVITY_1]: connectivity1,
+        [CONNECTIVITY_2]: connectivity2,
+    },
+});
