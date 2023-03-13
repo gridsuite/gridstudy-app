@@ -22,19 +22,20 @@ import {
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useIntl } from 'react-intl';
-import DndTableButtons from './dnd-table-buttons';
-import { TableNumericalInput } from '../refactor/rhf-inputs/table-inputs/table-numerical-input';
-import { TableReadOnlyInput } from '../refactor/rhf-inputs/table-inputs/table-read-only-input';
-import CheckboxInput from '../refactor/rhf-inputs/booleans/checkbox-input';
+import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
+import { TableNumericalInput } from '../../refactor/rhf-inputs/table-inputs/table-numerical-input';
+import CheckboxInput from '../../refactor/rhf-inputs/booleans/checkbox-input';
 import PropTypes from 'prop-types';
-import { SELECTED } from '../refactor/utils/field-constants';
-import ErrorInput from '../refactor/rhf-inputs/error-inputs/error-input';
-import FieldErrorAlert from '../refactor/rhf-inputs/error-inputs/field-error-alert';
+import { SELECTED } from '../../refactor/utils/field-constants';
+import ErrorInput from '../../refactor/rhf-inputs/error-inputs/error-input';
+import FieldErrorAlert from '../../refactor/rhf-inputs/error-inputs/field-error-alert';
+import { ReadOnlyInput } from '../../refactor/rhf-inputs/read-only-input';
+import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 
 function MultiCheckbox({
     arrayFormName,
-    handleClickIfChecked,
-    handleClickIfUnchecked,
+    handleClickCheck,
+    handleClickUncheck,
     ...props
 }) {
     const arrayToWatch = useWatch({
@@ -48,8 +49,8 @@ function MultiCheckbox({
             checked={arrayToWatch.length > 0 && allRowSelected}
             onChange={(event) => {
                 event.target.checked
-                    ? handleClickIfChecked()
-                    : handleClickIfUnchecked();
+                    ? handleClickCheck()
+                    : handleClickUncheck();
             }}
             {...props}
         />
@@ -59,7 +60,7 @@ function MultiCheckbox({
 function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 1 }}>
-            <TableReadOnlyInput
+            <ReadOnlyInput
                 name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                 {...props}
             />
@@ -82,6 +83,7 @@ const DndTable = ({
     arrayFormName,
     useFieldArrayOutput,
     columnsDefinition,
+    tableHeight,
     handleAddButton,
     handleDeleteButton,
     handleUploadButton,
@@ -164,19 +166,18 @@ const DndTable = ({
         move(result.source.index, result.destination.index);
     }
 
-    //TODO fix alignment of column names when no rows ?
     function renderTableHead() {
         return (
             <TableHead>
                 <TableRow>
-                    <TableCell>
+                    <TableCell sx={{ width: '3%' }}>
                         {/* empty cell for the drag and drop column */}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ width: '5%', textAlign: 'center' }}>
                         <MultiCheckbox
                             arrayFormName={arrayFormName}
-                            handleClickIfChecked={selectAllRows}
-                            handleClickIfUnchecked={unselectAllRows}
+                            handleClickCheck={selectAllRows}
+                            handleClickUncheck={unselectAllRows}
                             disabled={disabled || tapSteps.length === 0}
                         />
                     </TableCell>
@@ -221,6 +222,7 @@ const DndTable = ({
                                     placement="right"
                                 >
                                     <TableCell
+                                        sx={{ textAlign: 'center' }}
                                         {...(disabled
                                             ? {}
                                             : { ...provided.dragHandleProps })}
@@ -228,7 +230,7 @@ const DndTable = ({
                                         <DragIndicatorIcon />
                                     </TableCell>
                                 </Tooltip>
-                                <TableCell>
+                                <TableCell sx={{ textAlign: 'center' }}>
                                     <CheckboxInput
                                         name={`${arrayFormName}[${index}].${SELECTED}`}
                                         formProps={{ disabled }}
@@ -255,7 +257,7 @@ const DndTable = ({
                             <TableContainer
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
-                                sx={{ height: 320 }}
+                                sx={{ height: tableHeight }}
                             >
                                 <Table stickyHeader size="small" padding="none">
                                     {renderTableHead()}
@@ -267,16 +269,21 @@ const DndTable = ({
                 </DragDropContext>
                 <ErrorInput name={arrayFormName} InputField={FieldErrorAlert} />
             </Grid>
-            <DndTableButtons
-                arrayFormName={arrayFormName}
-                handleAddButton={handleAddButton}
-                handleDeleteButton={handleDeleteButton}
-                handleMoveUpButton={moveUpSelectedRows}
-                handleMoveDownButton={moveDownSelectedRows}
-                handleUploadButton={handleUploadButton}
-                uploadButtonMessageId={uploadButtonMessageId}
-                disabled={disabled}
-            />
+            <Grid container item>
+                <DndTableBottomLeftButtons
+                    handleUploadButton={handleUploadButton}
+                    uploadButtonMessageId={uploadButtonMessageId}
+                    disabled={disabled}
+                />
+                <DndTableBottomRightButtons
+                    arrayFormName={arrayFormName}
+                    handleAddButton={handleAddButton}
+                    handleDeleteButton={handleDeleteButton}
+                    handleMoveUpButton={moveUpSelectedRows}
+                    handleMoveDownButton={moveDownSelectedRows}
+                    disabled={disabled}
+                />
+            </Grid>
         </Grid>
     );
 };
@@ -285,6 +292,7 @@ DndTable.prototype = {
     arrayFormName: PropTypes.string.isRequired,
     useFieldArrayOutput: PropTypes.object.isRequired,
     columnsDefinition: PropTypes.object.isRequired,
+    tableHeight: PropTypes.number.isRequired,
     handleAddButton: PropTypes.func.isRequired,
     handleDeleteButton: PropTypes.func.isRequired,
     handleUploadButton: PropTypes.func.isRequired,

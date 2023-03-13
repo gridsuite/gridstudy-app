@@ -16,9 +16,9 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY,
     ID,
-    TOPOLOGY_KIND,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
+import { areIdsEqual, getObjectId } from 'components/refactor/utils/utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
@@ -45,19 +45,23 @@ import {
  * @param withDirectionsInfos
  * @param withPosition
  * @param voltageLevelOptions list of network voltage levels
+ * @param newBusOrBusbarSectionOptions list of bus or bus bar sections for the newly created voltage level
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
+ * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
  * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
  */
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
-    label,
+    label = 'VoltageLevel',
     direction = 'row',
     withDirectionsInfos = true,
     withPosition = false,
     voltageLevelOptions = [],
+    newBusOrBusbarSectionOptions,
     studyUuid,
     currentNode,
+    onVoltageLevelChangeCallback,
 }) => {
     const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
@@ -73,13 +77,15 @@ export const ConnectivityForm = ({
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
-    const watchVoltageLevelTopologyKind = useWatch({
-        name: `${id}.${VOLTAGE_LEVEL}.${TOPOLOGY_KIND}`,
-    });
 
     useEffect(() => {
-        if (watchVoltageLevelId) {
-            switch (watchVoltageLevelTopologyKind) {
+        if (newBusOrBusbarSectionOptions?.length > 0) {
+            setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
+        } else if (watchVoltageLevelId) {
+            const voltageLevelTopologyKind = voltageLevelOptions.find(
+                (vl) => vl.id === watchVoltageLevelId
+            )?.topologyKind;
+            switch (voltageLevelTopologyKind) {
                 case 'NODE_BREAKER':
                     fetchBusbarSectionsForVoltageLevel(
                         studyUuid,
@@ -107,23 +113,25 @@ export const ConnectivityForm = ({
         }
     }, [
         watchVoltageLevelId,
-        watchVoltageLevelTopologyKind,
         studyUuid,
         currentNodeUuid,
+        newBusOrBusbarSectionOptions,
+        voltageLevelOptions,
     ]);
 
-    const resetBusBarSection = useCallback(() => {
+    const handleChange = useCallback(() => {
+        onVoltageLevelChangeCallback?.();
         setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
-    }, [id, setValue]);
+    }, [id, onVoltageLevelChangeCallback, setValue]);
 
-    const areIdsEqual = useCallback((val1, val2) => val1.id === val2.id, []);
-    const getObjectId = useCallback((object) => {
-        if (typeof object === 'string') {
-            return object;
+    useEffect(() => {
+        if (busOrBusbarSectionOptions?.length > 0) {
+            setValue(
+                `${id}.${BUS_OR_BUSBAR_SECTION}`,
+                busOrBusbarSectionOptions[0]
+            );
         }
-
-        return object.id;
-    }, []);
+    }, [busOrBusbarSectionOptions, setValue, id]);
 
     const newVoltageLevelField = (
         <AutocompleteInput
@@ -133,11 +141,11 @@ export const ConnectivityForm = ({
                     ? getConnectivityVoltageLevelData({ voltageLevelId: value })
                     : value
             }
-            onChangeCallback={resetBusBarSection}
+            onChangeCallback={handleChange}
             allowNewValue
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
-            label={label ?? 'VoltageLevel'}
+            label={label}
             options={voltageLevelOptions}
             getOptionLabel={getObjectId}
             size={'small'}

@@ -39,14 +39,14 @@ import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
-    getConnectivityEmptyFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
-    getConnectivityFormValidationSchema,
+    getConnectivityWithPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LineCreationForm from './line-creation-form';
 
 /**
- * Dialog to create a load in the network
+ * Dialog to create a line in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
@@ -59,8 +59,8 @@ import LineCreationForm from './line-creation-form';
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    ...getConnectivityEmptyFormData(CONNECTIVITY_1),
-    ...getConnectivityEmptyFormData(CONNECTIVITY_2),
+    ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1),
+    ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_2),
     [SERIES_RESISTANCE]: null,
     [SERIES_REACTANCE]: null,
     [SHUNT_SUSCEPTANCE_1]: null,
@@ -86,9 +86,9 @@ const LineCreationDialog = ({
             [EQUIPMENT_ID]: yup.string().required(),
             [EQUIPMENT_NAME]: yup.string(),
             ...(displayConnectivity &&
-                getConnectivityFormValidationSchema(CONNECTIVITY_1)),
+                getConnectivityWithPositionValidationSchema(CONNECTIVITY_1)),
             ...(displayConnectivity &&
-                getConnectivityFormValidationSchema(CONNECTIVITY_2)),
+                getConnectivityWithPositionValidationSchema(CONNECTIVITY_2)),
             [SERIES_RESISTANCE]: yup.number().nullable().required(),
             [SERIES_REACTANCE]: yup.number().nullable().required(),
             [SHUNT_SUSCEPTANCE_1]: yup.number().nullable(),
@@ -221,7 +221,7 @@ const LineCreationDialog = ({
 
     const onSubmit = useCallback(
         (line) => {
-            createLine(
+            onCreateLine(
                 studyUuid,
                 currentNodeUuid,
                 line[EQUIPMENT_ID],
@@ -240,10 +240,10 @@ const LineCreationDialog = ({
                 line[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                line[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(line[CONNECTIVITY_1]?.[CONNECTION_NAME]),
                 line[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                line[CONNECTIVITY_2]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(line[CONNECTIVITY_2]?.[CONNECTION_NAME]),
                 line[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 line[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
@@ -255,7 +255,7 @@ const LineCreationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
     const clear = useCallback(() => {

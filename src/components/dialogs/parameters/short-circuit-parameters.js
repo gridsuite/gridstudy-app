@@ -209,29 +209,31 @@ export const ShortCircuitParameters = ({
     }, [studyUuid, snackError, setShortCircuitParams]);
 
     return (
-        <Grid container className={classes.grid}>
-            <Grid container key="params">
+        <>
+            <Grid
+                container
+                key="shortCircuitParameters"
+                className={classes.scrollableGrid}
+            >
                 <BasicShortCircuitParameters
                     shortCircuitParams={shortCircuitParams || {}}
                     commitShortCircuitParams={commitShortCircuitParameter}
                 />
-                <Grid
-                    container
-                    className={
-                        classes.controlItem + ' ' + classes.marginTopButton
-                    }
-                    maxWidth="md"
-                >
-                    <LabelledButton
-                        callback={resetShortCircuitParameters}
-                        label="resetToDefault"
-                    />
-                    <CloseButton
-                        hideParameters={hideParameters}
-                        className={classes.button}
-                    />
-                </Grid>
             </Grid>
-        </Grid>
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={resetShortCircuitParameters}
+                    label="resetToDefault"
+                />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
+            </Grid>
+        </>
     );
 };

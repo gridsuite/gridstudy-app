@@ -54,26 +54,23 @@ const TextInput = ({
 
     const transformedValue = inputTransform(value);
 
+    const fieldLabel = !label
+        ? null
+        : FieldLabel({
+              label,
+              values: labelValues,
+              optional:
+                  !isFieldRequired(name, validationSchema, getValues()) &&
+                  !formProps?.disabled,
+          });
+
     return (
         <Field
             key={id ? id : label}
             size="small"
             fullWidth
             id={id ? id : label}
-            label={
-                label
-                    ? FieldLabel({
-                          label,
-                          values: labelValues,
-                          optional:
-                              !isFieldRequired(
-                                  name,
-                                  validationSchema,
-                                  getValues()
-                              ) && !formProps?.disabled,
-                      })
-                    : null
-            }
+            label={fieldLabel}
             {...(adornment && {
                 adornmentPosition: adornment.position,
                 adornmentText: adornment?.text,
