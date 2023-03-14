@@ -13,9 +13,15 @@ import {
 import yup from '../../utils/yup-config';
 
 const percentageAreaValidationSchema = () => ({
-    [SLIDER_PERCENTAGE]: yup.string(),
-    [LEFT_SIDE_PERCENTAGE]: yup.string(),
-    [RIGHT_SIDE_PERCENTAGE]: yup.string(),
+    [SLIDER_PERCENTAGE]: yup.number(),
+    [LEFT_SIDE_PERCENTAGE]: yup
+        .number()
+        .min(0.1, 'OutOfBoundsPercentage')
+        .max(99.9, 'OutOfBoundsPercentage'),
+    [RIGHT_SIDE_PERCENTAGE]: yup
+        .number()
+        .min(0.1, 'OutOfBoundsPercentage')
+        .max(99.9, 'OutOfBoundsPercentage'),
 });
 export const getPercentageAreaValidationSchema = () => {
     return percentageAreaValidationSchema();
@@ -23,8 +29,8 @@ export const getPercentageAreaValidationSchema = () => {
 
 const percentageAreaEmptyFormData = () => ({
     [SLIDER_PERCENTAGE]: 50,
-    [LEFT_SIDE_PERCENTAGE]: 50,
-    [RIGHT_SIDE_PERCENTAGE]: 50,
+    [LEFT_SIDE_PERCENTAGE]: '50.0',
+    [RIGHT_SIDE_PERCENTAGE]: '50.0',
 });
 
 export const getPercentageAreaEmptyFormData = () => {
@@ -56,15 +62,15 @@ export function getSliderValue(str) {
     if (typeof str === 'string' && str.substring(0, 4) === '100-') {
         const rest = str.substring(4);
         if (isNaN(rest)) return 100;
-        return str.substring(0, 3) - rest;
+        return parseFloat(str.substring(0, 3) - rest);
     }
     return parseFloat(str);
 }
 
 export function getLeftSidePercentageValue(str) {
     if (typeof str === 'string' && str.substring(0, 4) === '100-')
-        return str.substring(0, 3) - str.substring(4);
-    return str;
+        return (str.substring(0, 3) - str.substring(4)).toFixed(maxDecimals);
+    return str.toFixed(maxDecimals);
 }
 
 export function getRightSidePercentageValue(str) {
