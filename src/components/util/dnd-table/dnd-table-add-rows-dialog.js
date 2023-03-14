@@ -17,7 +17,7 @@ import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-function DndTableAddRowsDialog({ open, handleAddRowsButton, onClose }) {
+function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
     const [rowNumber, setRowNumber] = useState(1);
 
     function handleOnClose() {
@@ -36,7 +36,11 @@ function DndTableAddRowsDialog({ open, handleAddRowsButton, onClose }) {
                     type="Number"
                     value={rowNumber}
                     onChange={(event) => {
-                        setRowNumber(parseInt(event.target.value));
+                        setRowNumber(
+                            !event.target.value
+                                ? 0
+                                : parseInt(event.target.value)
+                        );
                     }}
                 />
             </DialogContent>
@@ -45,8 +49,9 @@ function DndTableAddRowsDialog({ open, handleAddRowsButton, onClose }) {
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button
+                    disabled={rowNumber <= 0}
                     onClick={() => {
-                        handleAddRowsButton(rowNumber);
+                        handleAddButton(rowNumber);
                         handleOnClose();
                     }}
                 >
