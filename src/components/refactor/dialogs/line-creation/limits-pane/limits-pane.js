@@ -15,7 +15,6 @@ import {
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
-    SELECTED,
 } from 'components/refactor/utils/field-constants';
 import FloatInput from '../../../rhf-inputs/float-input';
 import { useIntl } from 'react-intl';
@@ -26,7 +25,7 @@ import {
 } from '../../../../dialogs/dialogUtils';
 import React, { useMemo } from 'react';
 import DndTable from '../../../../util/dnd-table/dnd-table';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFieldArray } from 'react-hook-form';
 
 const LimitsPane = ({ id = LIMITS }) => {
     const intl = useIntl();
@@ -60,8 +59,6 @@ const LimitsPane = ({ id = LIMITS }) => {
         }));
     }, [intl]);
 
-    const { getValues } = useFormContext();
-
     const useFieldArrayOutputTemporaryLimits1 = useFieldArray({
         name: `${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`,
     });
@@ -70,46 +67,17 @@ const LimitsPane = ({ id = LIMITS }) => {
         name: `${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`,
     });
 
-    function getRowsToDelete(allRows) {
-        let rowsToDelete = [];
-        for (let i = 0; i < allRows.length; i++) {
-            if (allRows[i][SELECTED]) {
-                rowsToDelete.push(i);
-            }
-        }
-        return rowsToDelete;
-    }
-
-    function deleteSelectedRows1() {
-        const rowsToDelete = getRowsToDelete(
-            getValues(`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`)
-        );
-        useFieldArrayOutputTemporaryLimits1.remove(rowsToDelete);
-    }
-
-    function deleteSelectedRows2() {
-        const rowsToDelete = getRowsToDelete(
-            getValues(`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`)
-        );
-        useFieldArrayOutputTemporaryLimits2.remove(rowsToDelete);
-    }
-
     const newRowData = useMemo(() => {
-        return columnsDefinition.slice(1).reduce(
-            (accumulator, currentValue) => ({
-                ...accumulator,
-                [currentValue.dataKey]: currentValue.initialValue,
-            }),
-            { [SELECTED]: false }
-        );
+        return columnsDefinition.reduce((accumulator, currentValue) => ({
+            ...accumulator,
+            [currentValue.dataKey]: currentValue.initialValue,
+        }));
     }, [columnsDefinition]);
 
-    function handleAddRowsButton1() {
-        useFieldArrayOutputTemporaryLimits1.append(newRowData);
-    }
-
-    function handleAddRowsButton2() {
-        useFieldArrayOutputTemporaryLimits2.append(newRowData);
+    function createLimitRows(numberOfRows) {
+        const newRows = [];
+        newRows.push(newRowData);
+        return newRows;
     }
 
     const permanentCurrentLimit1Field = (
@@ -138,12 +106,11 @@ const LimitsPane = ({ id = LIMITS }) => {
             <DndTable
                 arrayFormName={`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`}
                 useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1}
-                handleAddButton={handleAddRowsButton1}
-                handleDeleteButton={deleteSelectedRows1}
+                createRows={createLimitRows}
                 columnsDefinition={columnsDefinition}
                 tableHeight={270}
-                disabled={false}
                 withLeftButtons={false}
+                withAddRowsDialog={false}
             />
             <GridSection title="Side2" />
             <Grid container spacing={2}>
@@ -154,12 +121,11 @@ const LimitsPane = ({ id = LIMITS }) => {
                 <DndTable
                     arrayFormName={`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`}
                     useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2}
-                    handleAddButton={handleAddRowsButton2}
-                    handleDeleteButton={deleteSelectedRows2}
+                    createRows={createLimitRows}
                     columnsDefinition={columnsDefinition}
                     tableHeight={270}
-                    disabled={false}
                     withLeftButtons={false}
+                    withAddRowsDialog={false}
                 />
             </Grid>
         </>

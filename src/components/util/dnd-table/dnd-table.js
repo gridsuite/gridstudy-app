@@ -106,8 +106,9 @@ const DndTable = ({
     createRows,
     handleUploadButton,
     uploadButtonMessageId,
-    disabled,
+    disabled = false,
     withLeftButtons = true,
+    withAddRowsDialog = true,
 }) => {
     const intl = useIntl();
 
@@ -141,7 +142,12 @@ const DndTable = ({
     function handleAddRowsButton() {
         allowedToAddRows().then((isAllowed) => {
             if (isAllowed) {
-                setOpenAddRowsDialog(true);
+                if (withAddRowsDialog) {
+                    setOpenAddRowsDialog(true);
+                } else {
+                    // directly add a single row
+                    addNewRows(1);
+                }
             }
         });
     }
@@ -375,6 +381,8 @@ DndTable.prototype = {
     handleUploadButton: PropTypes.func.isRequired,
     uploadButtonMessageId: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
+    withLeftButtons: PropTypes.bool,
+    withAddRowsDialog: PropTypes.bool,
 };
 
 export default DndTable;
