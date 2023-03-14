@@ -184,7 +184,7 @@ export const EditableCellRenderer = (props) => {
     );
 };
 
-export const DisabledEditCellRenderer = (props) => {
+export const DisabledCellRenderer = (props) => {
     const classes = useStyles();
     return (
         <div style={props.style}>
@@ -197,7 +197,7 @@ export const DisabledEditCellRenderer = (props) => {
     );
 };
 
-export const EditedLineCellRenderer = (props) => {
+export const ReferenceLineCellRenderer = (props) => {
     const classes = useStyles();
 
     return (
@@ -219,6 +219,7 @@ export const EditingCellRenderer = (props) => {
     const classes = useStyles();
 
     const validateEdit = useCallback(() => {
+        //stopEditing triggers the events onCellValueChanged and once every cells have been processed it triggers onRowValueChanged
         props.api?.stopEditing();
         props.setIsValidatingData(true);
     }, [props]);
@@ -228,18 +229,19 @@ export const EditingCellRenderer = (props) => {
         props.setEditingData();
     }, [props]);
 
+    const isFormInvalid = Object.entries(props.context.editErrors).length !== 0;
     return (
         <span style={props.style} className={classes.leftFade}>
             <div className={classes.editCell}>
                 <>
-                    {props.context.startEditing()}
+                    {
+                        //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
+                        props.context.startEditing()
+                    }
                     <IconButton
                         size={'small'}
                         onClick={validateEdit}
-                        disabled={
-                            Object.entries(props.context.editErrors).length !==
-                            0
-                        }
+                        disabled={isFormInvalid}
                     >
                         <CheckIcon />
                     </IconButton>

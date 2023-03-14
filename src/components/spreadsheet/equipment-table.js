@@ -22,31 +22,19 @@ const useStyles = makeStyles((theme) => ({
 export const EquipmentTable = ({
     rows,
     editingData,
-    setEditingData,
+    startEditing,
     columns,
     scrollTop,
     gridRef,
     handleColumnDrag,
     handleRowEditing,
     handleCellEditing,
-    handleCellClicked,
     handleEditingStopped,
     ...props
 }) => {
     const classes = useStyles();
     const theme = useTheme();
     const intl = useIntl();
-
-    const startEditing = useCallback(() => {
-        const topRow = gridRef.current?.api?.getPinnedTopRow(0);
-        if (topRow) {
-            gridRef.current.api?.startEditingCell({
-                rowIndex: topRow.rowIndex,
-                colKey: 'edit',
-                rowPinned: topRow.rowPinned,
-            });
-        }
-    }, [gridRef]);
 
     const getRowStyle = useCallback(
         (params) => {
@@ -124,21 +112,18 @@ export const EquipmentTable = ({
                         ref={gridRef}
                         getRowId={getRowId}
                         rowData={rows}
-                        pinnedTopRowData={
-                            editingData ? [editingData] : undefined
-                        }
+                        pinnedTopRowData={editingData}
                         getRowStyle={getRowStyle}
                         columnDefs={columns}
                         defaultColDef={defaultColDef}
-                        onColumnMoved={handleColumnDrag}
                         enableCellTextSelection={true}
                         alwaysMultiSort={true}
-                        onCellClicked={handleCellClicked}
                         undoRedoCellEditing={true}
                         editType={'fullRow'}
                         onCellValueChanged={handleCellEditing}
                         onRowValueChanged={handleRowEditing}
                         onRowEditingStopped={handleEditingStopped}
+                        onColumnMoved={handleColumnDrag}
                         suppressDragLeaveHidesColumns={true}
                         suppressPropertyNamesCheck={true}
                         suppressColumnVirtualisation={true}

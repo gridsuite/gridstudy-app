@@ -12,8 +12,7 @@ import Network from '../network/network';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
-import InputAdornment from '@mui/material/InputAdornment';
-import { IconButton, TextField, Grid, Alert } from '@mui/material';
+import { IconButton, Grid, Alert } from '@mui/material';
 import {
     modifyGenerator,
     modifyLoad,
@@ -31,19 +30,20 @@ import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
-import SearchIcon from '@mui/icons-material/Search';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import GetAppIcon from '@mui/icons-material/GetApp';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import {
-    DisabledEditCellRenderer,
+    DisabledCellRenderer,
     EditableCellRenderer,
-    EditedLineCellRenderer,
     EditingCellRenderer,
+    ReferenceLineCellRenderer,
 } from './cell-renderers';
 import { ColumnsSettingsDialog } from './columns-settings-dialog';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { CsvExport } from './export-csv';
+import { GlobalFilter } from './global-filter';
+import { EquipmentTabs } from './equipment-tabs';
 
 const useEditBuffer = () => {
     const [data, setData] = useState({});
@@ -64,30 +64,14 @@ const useEditBuffer = () => {
 };
 
 const useStyles = makeStyles((theme) => ({
-    searchSection: {
-        paddingRight: theme.spacing(1),
-        alignItems: 'center',
-    },
     table: {
         marginTop: theme.spacing(2.5),
         lineHeight: 'unset',
-    },
-    containerInputSearch: {
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(1),
+        flexGrow: 1,
     },
     selectColumns: {
         marginTop: theme.spacing(2),
         marginLeft: theme.spacing(6),
-    },
-    exportCsv: {
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(6),
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'baseline',
-        position: 'absolute',
-        right: 0,
     },
     blink: {
         animation: '$blink 2s infinite',
@@ -142,8 +126,6 @@ const NetworkTable = (props) => {
     const [tabIndex, setTabIndex] = useState(0);
     const [scrollToIndex, setScrollToIndex] = useState();
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
-
-    const searchTextInput = useRef(null);
 
     const [previousValuesBuffer, addDataToBuffer, resetBuffer] =
         useEditBuffer();
@@ -217,11 +199,11 @@ const NetworkTable = (props) => {
                         };
                     } else if (editingData?.id === params.data.id) {
                         return {
-                            component: EditedLineCellRenderer,
+                            component: ReferenceLineCellRenderer,
                         };
                     } else if (editingData) {
                         return {
-                            component: DisabledEditCellRenderer,
+                            component: DisabledCellRenderer,
                         };
                     } else {
                         return {
@@ -328,20 +310,24 @@ const NetworkTable = (props) => {
         setIsValidatingData(false);
     }, [previousValuesBuffer, resetBuffer]);
 
-    const onSwitchTab = useCallback(() => {
-        // when we switch tab, we dont want to keep/apply the search criteria
-        if (
-            !searchTextInput.current.value ||
-            searchTextInput.current.value !== ''
-        ) {
-            searchTextInput.current.value = '';
-        }
+    const globalFilterRef = useRef(null);
+    const cleanTableState = useCallback(() => {
+        globalFilterRef.current.resetFilter();
         gridRef?.current?.api.setFilterModel(null);
         gridRef?.current?.columnApi.applyColumnState({
             defaultState: { sort: null },
         });
         rollbackEdit();
     }, [rollbackEdit]);
+
+    const handleSwitchTab = useCallback(
+        (value) => {
+            setManualTabSwitch(true);
+            setTabIndex(value);
+            cleanTableState();
+        },
+        [cleanTableState]
+    );
 
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
@@ -409,10 +395,6 @@ const NetworkTable = (props) => {
         getRows,
         manualTabSwitch,
     ]);
-
-    function setFilter(event) {
-        gridRef.current.api.setQuickFilter(event.target.value);
-    }
 
     useEffect(() => {
         const tmpDataKeySet = new Set();
@@ -491,22 +473,6 @@ const NetworkTable = (props) => {
             tabIndex,
         ]
     );
-
-    const getCSVFilename = useCallback(() => {
-        const tabName = TABLES_DEFINITION_INDEXES.get(tabIndex).name;
-        const localisedTabName = intl.formatMessage({ id: tabName });
-        return localisedTabName
-            .trim()
-            .replace(/[\\/:"*?<>|\s]/g, '-') // Removes the filesystem sensible characters
-            .substring(0, 27); // Best practice : limits the filename size to 31 characters (27+'.csv')
-    }, [intl, tabIndex]);
-
-    const downloadCSVData = useCallback(() => {
-        gridRef?.current?.api?.exportDataAsCsv({
-            suppressQuotes: true,
-            fileName: getCSVFilename(),
-        });
-    }, [getCSVFilename]);
 
     const buildEditPromise = useCallback(
         (editingData, groovyCr) => {
@@ -677,58 +643,25 @@ const NetworkTable = (props) => {
                 label={intl.formatMessage({
                     id: table,
                 })}
-                disabled={props.disabled}
+                disabled={props.disabled || editingData}
             />
         ));
-    }, [intl, props.disabled]);
+    }, [editingData, intl, props.disabled]);
 
     return (
         <>
             <Grid container justifyContent={'space-between'}>
-                <Grid container justifyContent={'space-between'} item>
-                    <Tabs
-                        value={tabIndex}
-                        variant="scrollable"
-                        onChange={(event, newValue) => {
-                            setTabIndex(newValue);
-                            setManualTabSwitch(true);
-                            onSwitchTab(newValue);
-                        }}
-                        aria-label="tables"
-                    >
-                        {renderTabs()}
-                    </Tabs>
-                </Grid>
+                <EquipmentTabs
+                    disabled={props.disabled || editingData}
+                    tabIndex={tabIndex}
+                    handleSwitchTab={handleSwitchTab}
+                />
                 <Grid container>
-                    <Grid item className={classes.containerInputSearch}>
-                        <TextField
-                            disabled={props.disabled}
-                            className={classes.textField}
-                            size="small"
-                            placeholder={
-                                intl.formatMessage({ id: 'filter' }) + '...'
-                            }
-                            onChange={setFilter}
-                            inputRef={searchTextInput}
-                            fullWidth
-                            InputProps={{
-                                classes: {
-                                    input: classes.searchSection,
-                                },
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon
-                                            color={
-                                                props.disabled
-                                                    ? 'disabled'
-                                                    : 'inherit'
-                                            }
-                                        />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    </Grid>
+                    <GlobalFilter
+                        disabled={props.disabled}
+                        gridRef={gridRef}
+                        ref={globalFilterRef}
+                    />
                     <Grid item className={classes.selectColumns}>
                         <span
                             className={clsx({
@@ -749,57 +682,39 @@ const NetworkTable = (props) => {
                             <ViewColumnIcon />
                         </IconButton>
                     </Grid>
-                    {props.disabled && (
-                        <Alert
-                            className={classes.invalidNode}
-                            severity="warning"
-                        >
-                            <FormattedMessage id="InvalidNode" />
-                        </Alert>
-                    )}
-                    <Grid item className={classes.exportCsv}>
-                        <span
-                            className={clsx({
-                                [classes.disabledLabel]:
-                                    props.disabled || rowData.length === 0,
-                            })}
-                        >
-                            <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
-                        </span>
-                        <span>
-                            <IconButton
-                                disabled={
-                                    props.disabled || rowData.length === 0
-                                }
-                                aria-label="exportCSVButton"
-                                onClick={downloadCSVData}
-                            >
-                                <GetAppIcon />
-                            </IconButton>
-                        </span>
-                    </Grid>
+                    <CsvExport
+                        gridRef={gridRef}
+                        tableName={TABLES_DEFINITION_INDEXES.get(tabIndex).name}
+                        disabled={props.disabled || rowData.length === 0}
+                    />
                 </Grid>
             </Grid>
-            <div className={classes.table} style={{ flexGrow: 1 }}>
-                <EquipmentTable
-                    gridRef={gridRef}
-                    currentNode={props.currentNode}
-                    rows={rowData}
-                    columns={columnData}
-                    fetched={props.network.isResourceFetched(
-                        TABLES_DEFINITION_INDEXES.get(tabIndex).resource
-                    )}
-                    scrollTop={scrollToIndex}
-                    visible={props.visible}
-                    editingData={editingData}
-                    startEditing={startEditing}
-                    network={props.network}
-                    handleColumnDrag={handleColumnDrag}
-                    handleRowEditing={handleRowEditing}
-                    handleCellEditing={handleCellEditing}
-                    handleEditingStopped={handleEditingStopped}
-                />
-            </div>
+            {props.disabled ? (
+                <Alert className={classes.invalidNode} severity="warning">
+                    <FormattedMessage id="InvalidNode" />
+                </Alert>
+            ) : (
+                <div className={classes.table}>
+                    <EquipmentTable
+                        gridRef={gridRef}
+                        currentNode={props.currentNode}
+                        rows={rowData}
+                        columns={columnData}
+                        editingData={editingData ? [editingData] : undefined}
+                        fetched={props.network.isResourceFetched(
+                            TABLES_DEFINITION_INDEXES.get(tabIndex).resource
+                        )}
+                        scrollTop={scrollToIndex}
+                        visible={props.visible}
+                        startEditing={startEditing}
+                        network={props.network}
+                        handleColumnDrag={handleColumnDrag}
+                        handleRowEditing={handleRowEditing}
+                        handleCellEditing={handleCellEditing}
+                        handleEditingStopped={handleEditingStopped}
+                    />
+                </div>
+            )}
 
             <ColumnsSettingsDialog
                 popupSelectColumnNames={popupSelectColumnNames}
