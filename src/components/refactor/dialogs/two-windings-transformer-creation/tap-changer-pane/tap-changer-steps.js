@@ -12,8 +12,9 @@ import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
 import IntegerInput from '../../../rhf-inputs/integer-input';
-import DndTable from '../../../../util/dnd-table/dnd-table';
-import DndTableAddRowsDialog from '../../../../util/dnd-table/dnd-table-add-rows-dialog';
+import DndTable, {
+    MAX_ROWS_NUMBER,
+} from '../../../../util/dnd-table/dnd-table';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -24,7 +25,6 @@ import {
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/refactor/utils/field-constants';
-import { MAX_TAP_CHANGER_STEPS_NUMBER } from '../two-windings-transformer-creation-dialog';
 import PropTypes from 'prop-types';
 
 const TapChangerSteps = ({
@@ -41,8 +41,7 @@ const TapChangerSteps = ({
 }) => {
     const intl = useIntl();
 
-    const { trigger, getValues, setValue, setError, clearErrors } =
-        useFormContext();
+    const { trigger, getValues, setValue } = useFormContext();
 
     const useFieldArrayOutput = useFieldArray({
         name: `${tapChanger}.${STEPS}`,
@@ -51,8 +50,6 @@ const TapChangerSteps = ({
     const {
         fields: tapSteps, // don't use it to access form data ! check doc
         replace,
-        append,
-        remove,
     } = useFieldArrayOutput;
 
     const lowTapPosition = useWatch({
@@ -61,40 +58,19 @@ const TapChangerSteps = ({
 
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
-    const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
 
-    function handleAddRowsButton() {
+    function allowedToAddTapRows() {
         // triggering validation on low tap position before generating rows (the field is required)
-        trigger(`${tapChanger}.${LOW_TAP_POSITION}`).then((result) => {
-            // if the trigger returns false, it means the field validation didn't pass -> we don't generate rows
-            // the user will see the low tap field in red
-            if (result) {
-                setOpenAddRowsDialog(true);
-            }
-        });
+        // if the trigger returns false, it means the field validation didn't pass -> we don't generate rows
+        // the user will see the low tap field in red
+        return trigger(`${tapChanger}.${LOW_TAP_POSITION}`);
     }
 
-    function addNewRows(numberOfRows) {
+    function createTapRows(numberOfRows) {
         const currentLowTapPosition = getValues(
             `${tapChanger}.${LOW_TAP_POSITION}`
         );
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
-
-        // checking if not exceeding 100 steps
-        if (
-            currentTapRows.length + numberOfRows >
-            MAX_TAP_CHANGER_STEPS_NUMBER
-        ) {
-            setError(`${tapChanger}.${STEPS}`, {
-                type: 'custom',
-                message: {
-                    id: 'TapPositionValueError',
-                    value: MAX_TAP_CHANGER_STEPS_NUMBER,
-                },
-            });
-            return;
-        }
-        clearErrors(`${tapChanger}.${STEPS}`);
 
         let nextHighestTap;
         if (currentTapRows.length === 0) {
@@ -112,7 +88,7 @@ const TapChangerSteps = ({
                     ...accumulator,
                     [currentValue.dataKey]: currentValue.initialValue,
                 }),
-                { [SELECTED]: false, [STEPS_TAP]: nextHighestTap }
+                { [STEPS_TAP]: nextHighestTap }
             );
             tapRowsToAdd.push(newRow);
             if (i !== numberOfRows - 1) {
@@ -120,47 +96,15 @@ const TapChangerSteps = ({
             }
         }
 
-        // note : an id prop is automatically added in each row
-        append(tapRowsToAdd);
         setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, nextHighestTap);
-    }
 
-    function handleCloseAddRowsDialog() {
-        setOpenAddRowsDialog(false);
-    }
-
-    function deleteSelectedRows() {
-        const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
-
-        let rowsToDelete = [];
-        for (let i = 0; i < currentTapRows.length; i++) {
-            if (currentTapRows[i][SELECTED]) {
-                rowsToDelete.push(i);
-            }
-        }
-
-        remove(rowsToDelete);
-
-        const currentHighTapPosition = getValues(
-            `${tapChanger}.${HIGH_TAP_POSITION}`
-        );
-
-        let newHighTapPosition;
-        if (currentTapRows.length === rowsToDelete.length) {
-            newHighTapPosition = null;
-        } else {
-            newHighTapPosition = currentHighTapPosition - rowsToDelete.length;
-        }
-        setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
+        return tapRowsToAdd;
     }
 
     const resetTapNumbers = useCallback(
         (tapSteps) => {
             const currentTapRows =
                 tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
-            if (currentTapRows.length === 0) {
-                return;
-            }
 
             const currentLowTapPosition = getValues(
                 `${tapChanger}.${LOW_TAP_POSITION}`
@@ -214,7 +158,6 @@ const TapChangerSteps = ({
 
             currentTapRows.forEach((row, index) => {
                 currentTapRows[index][createTapRuleColumn] = current;
-
                 current += interval;
             });
             replace(currentTapRows);
@@ -234,11 +177,11 @@ const TapChangerSteps = ({
             header: true,
             skipEmptyLines: true,
             complete: function (results) {
-                if (results.data.length > MAX_TAP_CHANGER_STEPS_NUMBER) {
+                if (results.data.length > MAX_ROWS_NUMBER) {
                     setFileParseError(
                         intl.formatMessage(
                             { id: 'TapPositionValueError' },
-                            { value: MAX_TAP_CHANGER_STEPS_NUMBER }
+                            { value: MAX_ROWS_NUMBER }
                         )
                     );
                     return;
@@ -326,8 +269,8 @@ const TapChangerSteps = ({
                 useFieldArrayOutput={useFieldArrayOutput}
                 columnsDefinition={completedColumnsDefinition}
                 tableHeight={320}
-                handleAddButton={handleAddRowsButton}
-                handleDeleteButton={deleteSelectedRows}
+                allowedToAddRows={allowedToAddTapRows}
+                createRows={createTapRows}
                 handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
                 disabled={disabled}
@@ -345,11 +288,6 @@ const TapChangerSteps = ({
                 setOpenImportRuleDialog={setOpenImportRuleDialog}
                 csvColumns={csvColumns}
                 handleImportTapRule={handleImportTapRule}
-            />
-            <DndTableAddRowsDialog
-                open={openAddRowsDialog}
-                handleAddRowsButton={addNewRows}
-                onClose={handleCloseAddRowsDialog}
             />
         </Grid>
     );
