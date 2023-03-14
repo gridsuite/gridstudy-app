@@ -5,25 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextField, Tooltip } from '@mui/material';
+import { TextField } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { useIntl } from 'react-intl';
 
-export const TableNumericalInput = ({
-    name,
-    min,
-    max,
-    style,
-    inputProps,
-    ...props
-}) => {
+export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
     const { trigger } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
-
-    const intl = useIntl();
 
     const inputTransform = (value) => {
         if (['-', '.'].includes(value)) return value;
@@ -51,7 +41,6 @@ export const TableNumericalInput = ({
             value={transformedValue}
             onChange={handleInputChange}
             error={!!error?.message}
-            type="Number"
             size={'small'}
             fullWidth
             inputRef={ref}
@@ -59,9 +48,8 @@ export const TableNumericalInput = ({
                 style: {
                     fontSize: 'small',
                 },
-                min: { min },
-                max: { max },
-                step: 'any',
+                inputMode: 'numeric',
+                pattern: '[0-9]*',
                 lang: 'en-US', // to have . as decimal separator
                 ...inputProps,
             }}
@@ -72,20 +60,5 @@ export const TableNumericalInput = ({
         />
     );
 
-    const renderNumericTextWithTooltip = () => {
-        let tooltip = '';
-        if (min !== undefined && max !== undefined) {
-            tooltip = intl.formatMessage({ id: 'MinMax' }, { min, max });
-        } else if (min !== undefined) {
-            tooltip = intl.formatMessage({ id: 'OnlyMin' }, { min });
-        } else if (max !== undefined) {
-            tooltip = intl.formatMessage({ id: 'OnlyMax' }, { max });
-        }
-        if (tooltip !== '') {
-            return <Tooltip title={tooltip}>{renderNumericText}</Tooltip>;
-        }
-        return renderNumericText;
-    };
-
-    return <div>{renderNumericTextWithTooltip()}</div>;
+    return <div>{renderNumericText}</div>;
 };

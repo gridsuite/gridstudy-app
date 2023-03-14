@@ -54,9 +54,9 @@ import LineLimitsPane from './line-limits-pane/line-limits-pane';
 import LineCreationDialogTabs from './line-creation-dialog-tabs';
 import LineCharacteristicsPane from './line-characteristics-pane/line-characteristics-pane';
 import {
-    getLineEmptyFormData,
-    getLineFormData,
-    getLineValidationSchema,
+    getCharacteristicsEmptyFormData,
+    getCharacteristicsFormData,
+    getCharacteristicsValidationSchema,
 } from './line-characteristics-pane/line-characteristics-pane-utils';
 import {
     getLimitsEmptyFormData,
@@ -73,7 +73,7 @@ import TextInput from '../../rhf-inputs/text-input';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
-    ...getLineEmptyFormData(),
+    ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(),
 };
 
@@ -116,7 +116,10 @@ const LineCreationDialog = ({
         .object()
         .shape({
             ...getHeaderValidationSchema(),
-            ...getLineValidationSchema(CHARACTERISTICS, displayConnectivity),
+            ...getCharacteristicsValidationSchema(
+                CHARACTERISTICS,
+                displayConnectivity
+            ),
             ...getLimitsValidationSchema(),
         })
         .required();
@@ -135,7 +138,7 @@ const LineCreationDialog = ({
                     equipmentId: line.id + '(1)',
                     equipmentName: line.name ?? '',
                 }),
-                ...getLineFormData({
+                ...getCharacteristicsFormData({
                     seriesResistance: line.r,
                     seriesReactance: line.x,
                     shuntConductance1: unitToMicroUnit(line.g1), // this form uses and displays microSiemens
@@ -187,7 +190,7 @@ const LineCreationDialog = ({
                     equipmentId: line.equipmentId,
                     equipmentName: line.equipmentName,
                 }),
-                ...getLineFormData({
+                ...getCharacteristicsFormData({
                     seriesResistance: line.seriesResistance,
                     seriesReactance: line.seriesReactance,
                     shuntConductance1: unitToMicroUnit(line.shuntConductance1),

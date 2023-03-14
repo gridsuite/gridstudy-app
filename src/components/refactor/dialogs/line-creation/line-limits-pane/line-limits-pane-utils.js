@@ -34,9 +34,9 @@ const temporaryLimitsTableValidationSchema = () => ({
             })
         )
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
-            const namesArray = array.map((l) =>
-                sanitizeString(l[TEMPORARY_LIMIT_NAME])
-            );
+            const namesArray = array
+                .filter((l) => !!l[TEMPORARY_LIMIT_NAME])
+                .map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
             return areArrayElementsUnique(namesArray);
         })
         .test(

@@ -22,7 +22,7 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../connectivity/connectivity-form-utils';
 
-const lineValidationSchema = (id, displayConnectivity) => ({
+const characteristicsValidationSchema = (id, displayConnectivity) => ({
     [id]: yup.object().shape({
         [SERIES_RESISTANCE]: yup.number().nullable().required(),
         [SERIES_REACTANCE]: yup.number().nullable().required(),
@@ -37,11 +37,11 @@ const lineValidationSchema = (id, displayConnectivity) => ({
     }),
 });
 
-export const getLineValidationSchema = (id, displayConnectivity) => {
-    return lineValidationSchema(id, displayConnectivity);
+export const getCharacteristicsValidationSchema = (id, displayConnectivity) => {
+    return characteristicsValidationSchema(id, displayConnectivity);
 };
 
-const lineEmptyFormData = (id) => ({
+const characteristicsEmptyFormData = (id) => ({
     [id]: {
         [SERIES_RESISTANCE]: null,
         [SERIES_REACTANCE]: null,
@@ -54,11 +54,11 @@ const lineEmptyFormData = (id) => ({
     },
 });
 
-export const getLineEmptyFormData = (id = CHARACTERISTICS) => {
-    return lineEmptyFormData(id);
+export const getCharacteristicsEmptyFormData = (id = CHARACTERISTICS) => {
+    return characteristicsEmptyFormData(id);
 };
 
-export const getLineFormData = (
+export const getCharacteristicsFormData = (
     {
         seriesResistance = null,
         seriesReactance = null,
