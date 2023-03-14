@@ -36,6 +36,8 @@ const PREFIX_LOADFLOW_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/loadflow';
 const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/security-analysis';
+const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/dynamic-simulation';
 
 function getToken() {
     const state = store.getState();
@@ -1340,33 +1342,62 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
 }
 
 // -- Parameters API - BEGIN
+
+function getDynamicSimulationUrl() {
+    return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
+}
+
 export function fetchDynamicSimulationProviders() {
     // fake API
-    return Promise.resolve(
+    /*return Promise.resolve(
         JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY)).values
-    );
+    );*/
+    console.info('fetch dynamic simulation providers');
+    const url = getDynamicSimulationUrl() + 'providers';
+    console.debug(url);
+    return backendFetchJson(url);
 }
-export function fetchDynamicSimulationProvider() {
+export function fetchDynamicSimulationProvider(studyUuid) {
     // fake API
-    return Promise.resolve(
+    /*return Promise.resolve(
         JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY)).value
-    );
+    );*/
+    console.info('fetch dynamic simulation provider');
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
+    console.debug(url);
+    return backendFetchText(url);
 }
 export function fetchDefaultDynamicSimulationProvider() {
     // fake API
-    return Promise.resolve(
+    /*return Promise.resolve(
         JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY)).values[0]
-    );
+    );*/
+    console.info('fetch default dynamic simulation provider');
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/dynamic-simulation-default-provider';
+    console.debug(url);
+    return backendFetchText(url);
 }
 export function updateDynamicSimulationProvider(studyUuid, newProvider) {
     // fake API
-    console.log('updateDynamicSimulationProvider', [studyUuid, newProvider]);
+    /*console.log('updateDynamicSimulationProvider', [studyUuid, newProvider]);
     const dsProviderItem = JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY));
     dsConfigStorage.setItem(
         DS_PROVIDER_KEY,
         JSON.stringify({ ...dsProviderItem, value: newProvider })
     );
-    return Promise.resolve(studyUuid);
+    return Promise.resolve(studyUuid);*/
+    console.info('update dynamic simulation provider');
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newProvider,
+    });
 }
 const NONE_NODE_UUID = '00000000-0000-0000-0000-000000000000';
 
