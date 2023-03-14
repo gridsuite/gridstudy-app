@@ -125,7 +125,7 @@ const fetchPredefinedProperties = () => {
  * @param editData the data to edit
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
-const SubstationCreationDialog = ({
+const SubstationCreationDialogOld = ({
     studyUuid,
     currentNode,
     editData,
@@ -283,10 +283,10 @@ const SubstationCreationDialog = ({
     );
 };
 
-SubstationCreationDialog.propTypes = {
+SubstationCreationDialogOld.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
 };
 
-export default SubstationCreationDialog;
+export default SubstationCreationDialogOld;
