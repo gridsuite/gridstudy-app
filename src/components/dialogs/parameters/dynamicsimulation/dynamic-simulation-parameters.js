@@ -121,18 +121,20 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                 key="dsParameters"
                 className={classes.scrollableGrid}
             >
-                <DropDown
-                    value={provider}
-                    label="Provider"
-                    values={Object.entries(providers).reduce(
-                        (obj, [key, value]) => {
-                            obj[key] = `DynamicSimulationProvider${value}`;
-                            return obj;
-                        },
-                        {}
-                    )}
-                    callback={handleUpdateProvider}
-                />
+                {providers && provider && (
+                    <DropDown
+                        value={provider}
+                        label="Provider"
+                        values={Object.entries(providers).reduce(
+                            (obj, [key, value]) => {
+                                obj[key] = `DynamicSimulationProvider${value}`;
+                                return obj;
+                            },
+                            {}
+                        )}
+                        callback={handleUpdateProvider}
+                    />
+                )}
 
                 <Grid container paddingTop={1}>
                     <LineSeparator />

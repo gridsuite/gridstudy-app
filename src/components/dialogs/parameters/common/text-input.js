@@ -20,12 +20,11 @@ import { useStyles } from '../parameters';
 
 const TextInput = ({ value, label, callback, validator }) => {
     const classes = useStyles();
-    const [initialValue] = useState(value);
-    const [controlledValue, setControlledValue] = useState(value);
+    const [textValue, setTextValue] = useState(value);
     const handleCallback = useCallback(
         (event) => {
             const value = event.target.value;
-            setControlledValue(value);
+            setTextValue(value);
             if (validator.isValid(value)) {
                 callback(event);
             }
@@ -33,12 +32,10 @@ const TextInput = ({ value, label, callback, validator }) => {
         [callback, validator]
     );
 
-    // used to reset the initial value from an outside button
+    // to reset the default value when click on 'Default Values' button
     useEffect(() => {
-        if (value === initialValue) {
-            setControlledValue(initialValue);
-        }
-    }, [value, initialValue]);
+        setTextValue(value);
+    }, [value]);
 
     return (
         <>
@@ -53,16 +50,14 @@ const TextInput = ({ value, label, callback, validator }) => {
                 <TextField
                     size={'small'}
                     onChange={handleCallback}
-                    value={controlledValue}
-                    error={!validator.isValid(controlledValue)}
+                    value={textValue}
+                    error={!validator.isValid(textValue)}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
                                 <div
                                     style={{
-                                        visibility: validator.isValid(
-                                            controlledValue
-                                        )
+                                        visibility: validator.isValid(textValue)
                                             ? 'hidden'
                                             : 'visible',
                                     }}
