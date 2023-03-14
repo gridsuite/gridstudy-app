@@ -125,6 +125,36 @@ const TableWrapper = (props) => {
     const [rowData, setRowData] = useState([]);
     const [columnData, setColumnData] = useState([]);
 
+    const startEditing = useCallback(() => {
+        const topRow = gridRef.current?.api?.getPinnedTopRow(0);
+        if (topRow) {
+            gridRef.current.api?.startEditingCell({
+                rowIndex: topRow.rowIndex,
+                colKey: 'edit',
+                rowPinned: topRow.rowPinned,
+            });
+        }
+    }, [gridRef]);
+
+    const rollbackEdit = useCallback(() => {
+        //mecanism to undo last edits if it is invalidated
+        Object.entries(priorValuesBuffer).forEach(() => {
+            gridRef.current.api.undoCellEditing();
+        });
+        resetBuffer();
+        setEditingData();
+        setIsValidatingData(false);
+    }, [priorValuesBuffer, resetBuffer]);
+
+    const cleanTableState = useCallback(() => {
+        globalFilterRef.current.resetFilter();
+        gridRef?.current?.api.setFilterModel(null);
+        gridRef?.current?.columnApi.applyColumnState({
+            defaultState: { sort: null },
+        });
+        rollbackEdit();
+    }, [rollbackEdit]);
+
     const isEditColumnVisible = useCallback(() => {
         return (
             !props.disabled &&
@@ -209,7 +239,7 @@ const TableWrapper = (props) => {
                 },
             });
         },
-        [editingData, tabIndex]
+        [editingData?.id, startEditing, tabIndex]
     );
 
     const generateTableColumns = useCallback(
@@ -274,36 +304,6 @@ const TableWrapper = (props) => {
         setColumnData(generateTableColumns(tabIndex));
         setRowData(getRows(tabIndex));
     }, [generateTableColumns, getRows, tabIndex]);
-
-    const startEditing = useCallback(() => {
-        const topRow = gridRef.current?.api?.getPinnedTopRow(0);
-        if (topRow) {
-            gridRef.current.api?.startEditingCell({
-                rowIndex: topRow.rowIndex,
-                colKey: 'edit',
-                rowPinned: topRow.rowPinned,
-            });
-        }
-    }, [gridRef]);
-
-    const rollbackEdit = useCallback(() => {
-        //mecanism to undo last edits if it is invalidated
-        Object.entries(priorValuesBuffer).forEach(() => {
-            gridRef.current.api.undoCellEditing();
-        });
-        resetBuffer();
-        setEditingData();
-        setIsValidatingData(false);
-    }, [priorValuesBuffer, resetBuffer]);
-
-    const cleanTableState = useCallback(() => {
-        globalFilterRef.current.resetFilter();
-        gridRef?.current?.api.setFilterModel(null);
-        gridRef?.current?.columnApi.applyColumnState({
-            defaultState: { sort: null },
-        });
-        rollbackEdit();
-    }, [rollbackEdit]);
 
     const handleSwitchTab = useCallback(
         (value) => {

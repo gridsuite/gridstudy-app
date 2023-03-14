@@ -8,7 +8,7 @@
 import { equipments } from '../../network/network-equipments';
 import { BooleanCellRenderer, NumericCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
-import { BooleanListField, NumericalField } from '../equipment-table-editors';
+import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 
