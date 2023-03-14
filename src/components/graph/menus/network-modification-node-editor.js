@@ -10,11 +10,8 @@ import {
     changeNetworkModificationOrder,
     copyOrMoveModifications,
     deleteModifications,
-    fetchLines,
     fetchNetworkModification,
     fetchNetworkModifications,
-    fetchSubstations,
-    fetchVoltageLevels,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -40,7 +37,7 @@ import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-c
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
-import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
+import LineSplitWithVoltageLevelDialog from '../../refactor/dialogs/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -221,17 +218,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLs(p) {
-        const voltageLevelOptionsPromise = fetchVoltageLevels(
-            studyUuid,
-            currentNode?.id
-        );
-        return {
-            ...p,
-            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
-        };
-    }
-
     function withVLsIdsAndTopology(p) {
         const voltageLevelsIdsAndTopologyPromise =
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id);
@@ -239,26 +225,6 @@ const NetworkModificationNodeEditor = () => {
             ...p,
             voltageLevelsIdsAndTopologyPromise:
                 voltageLevelsIdsAndTopologyPromise,
-        };
-    }
-
-    function withLines(p) {
-        const lineOptionsPromise = fetchLines(studyUuid, currentNode?.id, []);
-        return {
-            ...p,
-            lineOptionsPromise: lineOptionsPromise,
-        };
-    }
-
-    function withSubstations(p) {
-        const substationOptionsPromise = fetchSubstations(
-            studyUuid,
-            currentNode?.id,
-            []
-        );
-        return {
-            ...p,
-            substationOptionsPromise: substationOptionsPromise,
         };
     }
 
@@ -312,13 +278,7 @@ const NetworkModificationNodeEditor = () => {
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
-            dialog: () =>
-                adapt(
-                    LineSplitWithVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LineSplitWithVoltageLevelDialog),
             icon: <AddIcon />,
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
