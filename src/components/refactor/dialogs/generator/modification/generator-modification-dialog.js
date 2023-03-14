@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -77,6 +77,30 @@ const GeneratorModificationDialog = ({
     const isSelectedGeneratorUndefined = generatorToModify === undefined;
     const isEditDataUndefined = editData === undefined;
 
+    const [
+        shouldEmptyFormOnGeneratorIdChange,
+        setShouldEmptyFormOnGeneratorIdChange,
+    ] = useState(!editData);
+
+    //in order to work properly, react hook form needs all fields to be set at least to null
+    const completeReactiveCapabilityCurvePointsData = (
+        reactiveCapabilityCurvePoints
+    ) => {
+        reactiveCapabilityCurvePoints.map((rcc) => {
+            if (!(P in rcc)) {
+                rcc[P] = null;
+            }
+            if (!(Q_MAX_P in rcc)) {
+                rcc[Q_MAX_P] = null;
+            }
+            if (!(Q_MIN_P in rcc)) {
+                rcc[Q_MIN_P] = null;
+            }
+            return rcc;
+        });
+        return reactiveCapabilityCurvePoints;
+    };
+
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_ID]: defaultIdValue ?? null,
@@ -93,10 +117,83 @@ const GeneratorModificationDialog = ({
             [PLANNED_OUTAGE_RATE]: null,
             [FORCED_OUTAGE_RATE]: null,
             ...getSetPointsEmptyFormData(true),
-            ...getReactiveLimitsEmptyFormData(),
+            ...getReactiveLimitsEmptyFormData(true),
         }),
         [defaultIdValue]
     );
+
+    const formDataFromEditData = useMemo(
+        () =>
+            editData
+                ? {
+                      [EQUIPMENT_ID]: editData?.equipmentId,
+                      [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
+                      [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
+                      [MAXIMUM_ACTIVE_POWER]:
+                          editData?.maxActivePower?.value ?? null,
+                      [MINIMUM_ACTIVE_POWER]:
+                          editData?.minActivePower?.value ?? null,
+                      [RATED_NOMINAL_POWER]:
+                          editData?.ratedNominalPower?.value ?? null,
+                      [ACTIVE_POWER_SET_POINT]:
+                          editData?.activePowerSetpoint?.value ?? null,
+                      [VOLTAGE_REGULATION]:
+                          editData?.voltageRegulationOn?.value ?? null,
+                      [VOLTAGE_SET_POINT]:
+                          editData?.voltageSetpoint?.value ?? null,
+                      [REACTIVE_POWER_SET_POINT]:
+                          editData?.reactivePowerSetpoint?.value ?? null,
+                      [PLANNED_ACTIVE_POWER_SET_POINT]:
+                          editData?.plannedActivePowerSetPoint?.value ?? null,
+                      [STARTUP_COST]: editData?.startupCost?.value ?? null,
+                      [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
+                      [PLANNED_OUTAGE_RATE]:
+                          editData?.plannedOutageRate?.value ?? null,
+                      [FORCED_OUTAGE_RATE]:
+                          editData?.forcedOutageRate?.value ?? null,
+                      [FREQUENCY_REGULATION]:
+                          editData?.participate?.value ?? null,
+                      [DROOP]: editData?.droop?.value ?? null,
+                      [TRANSIENT_REACTANCE]:
+                          editData?.transientReactance?.value ?? null,
+                      [TRANSFORMER_REACTANCE]:
+                          editData?.stepUpTransformerReactance?.value ?? null,
+                      [VOLTAGE_REGULATION_TYPE]: editData?.regulatingTerminalId
+                          ? REGULATION_TYPES.DISTANT.id
+                          : REGULATION_TYPES.LOCAL.id,
+                      [MINIMUM_REACTIVE_POWER]:
+                          editData?.minimumReactivePower?.value ?? null,
+                      [MAXIMUM_REACTIVE_POWER]:
+                          editData?.maximumReactivePower?.value ?? null,
+                      [Q_PERCENT]: editData?.qPercent?.value ?? null,
+                      [REACTIVE_CAPABILITY_CURVE_CHOICE]:
+                          editData?.minimumReactivePower ||
+                          editData?.maximumReactivePower
+                              ? 'MINMAX'
+                              : 'CURVE',
+                      [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                          completeReactiveCapabilityCurvePointsData(
+                              editData?.reactiveCapabilityCurvePoints
+                          ) ?? [{}, {}],
+                      ...getRegulatingTerminalFormData({
+                          equipmentId: editData?.regulatingTerminalId?.value,
+                          equipmentType:
+                              editData?.regulatingTerminalType?.value,
+                          voltageLevelId:
+                              editData?.regulatingTerminalVlId?.value,
+                      }),
+                  }
+                : null,
+        [editData]
+    );
+
+    const defaultFormData = useMemo(() => {
+        if (!editData) {
+            return emptyFormData;
+        } else {
+            return formDataFromEditData;
+        }
+    }, [editData, emptyFormData, formDataFromEditData]);
 
     const schema = useMemo(
         () =>
@@ -152,7 +249,7 @@ const GeneratorModificationDialog = ({
         [isSelectedGeneratorUndefined, isEditDataUndefined]
     );
     const methods = useForm({
-        defaultValues: emptyFormData,
+        defaultValues: defaultFormData,
         resolver: yupResolver(schema),
     });
 
@@ -160,32 +257,14 @@ const GeneratorModificationDialog = ({
 
     //this method empties the form, and let us pass custom data that we want to set
     const clear = useCallback(
-        (customData = {}) => {
-            if (!editData) {
-                reset({ ...emptyFormData, ...customData });
-            }
+        (customData = {}, keepDefaultValues = false) => {
+            reset(
+                { ...emptyFormData, ...customData },
+                { keepDefaultValues: keepDefaultValues }
+            );
         },
-        [editData, emptyFormData, reset]
+        [emptyFormData, reset]
     );
-
-    //in order to work properly, react hook form needs all fields to be set at least to null
-    const completeReactiveCapabilityCurvePointsData = (
-        reactiveCapabilityCurvePoints
-    ) => {
-        reactiveCapabilityCurvePoints.map((rcc) => {
-            if (!(P in rcc)) {
-                rcc[P] = null;
-            }
-            if (!(Q_MAX_P in rcc)) {
-                rcc[Q_MAX_P] = null;
-            }
-            if (!(Q_MIN_P in rcc)) {
-                rcc[Q_MIN_P] = null;
-            }
-            return rcc;
-        });
-        return reactiveCapabilityCurvePoints;
-    };
 
     const handleReactiveCapabilityCurveTableRow = (action, index) => {
         setGeneratorToModify((previousValue) => {
@@ -206,62 +285,6 @@ const GeneratorModificationDialog = ({
             };
         });
     };
-
-    useEffect(() => {
-        if (editData) {
-            reset({
-                [EQUIPMENT_ID]: editData?.equipmentId,
-                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
-                [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
-                [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
-                [RATED_NOMINAL_POWER]:
-                    editData?.ratedNominalPower?.value ?? null,
-                [ACTIVE_POWER_SET_POINT]:
-                    editData?.activePowerSetpoint?.value ?? null,
-                [VOLTAGE_REGULATION]:
-                    editData?.voltageRegulationOn?.value ?? null,
-                [VOLTAGE_SET_POINT]: editData?.voltageSetpoint?.value ?? null,
-                [REACTIVE_POWER_SET_POINT]:
-                    editData?.reactivePowerSetpoint?.value ?? null,
-                [PLANNED_ACTIVE_POWER_SET_POINT]:
-                    editData?.plannedActivePowerSetPoint?.value ?? null,
-                [STARTUP_COST]: editData?.startupCost?.value ?? null,
-                [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
-                [PLANNED_OUTAGE_RATE]:
-                    editData?.plannedOutageRate?.value ?? null,
-                [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
-                [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
-                [DROOP]: editData?.droop?.value ?? null,
-                [TRANSIENT_REACTANCE]:
-                    editData?.transientReactance?.value ?? null,
-                [TRANSFORMER_REACTANCE]:
-                    editData?.stepUpTransformerReactance?.value ?? null,
-                [VOLTAGE_REGULATION_TYPE]: editData?.regulatingTerminalId
-                    ? REGULATION_TYPES.DISTANT.id
-                    : REGULATION_TYPES.LOCAL.id,
-                [MINIMUM_REACTIVE_POWER]:
-                    editData?.minimumReactivePower?.value ?? null,
-                [MAXIMUM_REACTIVE_POWER]:
-                    editData?.maximumReactivePower?.value ?? null,
-                [Q_PERCENT]: editData?.qPercent?.value ?? null,
-                [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                    editData?.minimumReactivePower ||
-                    editData?.maximumReactivePower
-                        ? 'MINMAX'
-                        : 'CURVE',
-                [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                    completeReactiveCapabilityCurvePointsData(
-                        editData?.reactiveCapabilityCurvePoints
-                    ) ?? [{}, {}],
-                ...getRegulatingTerminalFormData({
-                    equipmentId: editData?.regulatingTerminalId?.value,
-                    equipmentType: editData?.regulatingTerminalType?.value,
-                    voltageLevelId: editData?.regulatingTerminalVlId?.value,
-                }),
-            });
-        }
-    }, [editData, reset]);
 
     const calculateCurvePointsToStore = useCallback(() => {
         const reactiveCapabilityCurve = getValues(
@@ -413,12 +436,17 @@ const GeneratorModificationDialog = ({
                 <GeneratorModificationForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    editData={editData}
-                    onClear={clear}
+                    resetForm={clear}
                     generatorToModify={generatorToModify}
                     setGeneratorToModify={setGeneratorToModify}
                     handleReactiveCapabilityCurveTableRow={
                         handleReactiveCapabilityCurveTableRow
+                    }
+                    shouldEmptyFormOnGeneratorIdChange={
+                        shouldEmptyFormOnGeneratorIdChange
+                    }
+                    setShouldEmptyFormOnGeneratorIdChange={
+                        setShouldEmptyFormOnGeneratorIdChange
                     }
                 />
             </ModificationDialog>

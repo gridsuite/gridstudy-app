@@ -41,14 +41,14 @@ const getModificationRowSchema = () =>
             .number()
             .nullable()
             .when([OLD_Q_MAX_P], {
-                is: (oldQmaxP) => oldQmaxP == null,
+                is: (oldQmaxP) => oldQmaxP === null,
                 then: (schema) => schema.required(),
             }),
         [Q_MIN_P]: yup
             .number()
             .nullable()
             .when([OLD_Q_MIN_P], {
-                is: (oldQminP) => oldQminP == null,
+                is: (oldQminP) => oldQminP === null,
                 then: (schema) => schema.required(),
             })
             .when([Q_MAX_P], {
@@ -68,7 +68,7 @@ const getModificationRowSchema = () =>
             .number()
             .nullable()
             .when([OLD_P], {
-                is: (oldP) => oldP == null, // we need to check null and undefined
+                is: (oldP) => oldP === null,
                 then: (schema) => schema.required(),
             }),
         [OLD_Q_MAX_P]: yup.number().nullable(),
@@ -76,17 +76,32 @@ const getModificationRowSchema = () =>
         [OLD_P]: yup.number().nullable(),
     });
 
-const getRowEmptyFormData = () => ({
+const getCreationRowEmptyFormData = () => ({
     [P]: null,
     [Q_MAX_P]: null,
     [Q_MIN_P]: null,
 });
 
-export const getReactiveCapabilityCurveEmptyFormData = (
-    id = REACTIVE_CAPABILITY_CURVE_TABLE
-) => ({
-    [id]: [getRowEmptyFormData(), getRowEmptyFormData()],
+const getModificationRowEmptyFormData = () => ({
+    [P]: null,
+    [Q_MAX_P]: null,
+    [Q_MIN_P]: null,
+    [OLD_P]: null,
+    [OLD_Q_MAX_P]: null,
+    [OLD_Q_MIN_P]: null,
 });
+
+export const getReactiveCapabilityCurveEmptyFormData = (
+    id = REACTIVE_CAPABILITY_CURVE_TABLE,
+    isGeneratorModification = false
+) => {
+    const rowEmptyFormData = isGeneratorModification
+        ? getModificationRowEmptyFormData()
+        : getCreationRowEmptyFormData();
+    return {
+        [id]: [rowEmptyFormData, rowEmptyFormData],
+    };
+};
 
 function getNotNullPFromArray(values, isGeneratorModification) {
     return values

@@ -59,17 +59,18 @@ import { useFormContext, useWatch } from 'react-hook-form';
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
-    editData,
-    onClear,
+    resetForm,
     generatorToModify,
     setGeneratorToModify,
     handleReactiveCapabilityCurveTableRow,
+    shouldEmptyFormOnGeneratorIdChange,
+    setShouldEmptyFormOnGeneratorIdChange,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const { setValue, getValues, clearErrors } = useFormContext();
+    const { clearErrors } = useFormContext();
 
     const watchEquipmentId = useWatch({
         name: EQUIPMENT_ID,
@@ -96,9 +97,11 @@ const GeneratorModificationForm = ({
         }
     }, [studyUuid, currentNodeUuid]);
 
+    //this useEffect fetches previous equipment properties values, resets form values
+    //then create empty reactive limits table depending on fetched equipment data
     useEffect(() => {
         clearErrors();
-        setGeneratorToModify(null);
+
         if (watchEquipmentId) {
             fetchEquipmentInfos(
                 studyUuid,
@@ -106,49 +109,54 @@ const GeneratorModificationForm = ({
                 'generators',
                 watchEquipmentId,
                 true
-            ).then((value) => {
-                if (value) {
-                    if (
-                        editData &&
-                        editData.equipmentId === getValues(EQUIPMENT_ID)
-                    ) {
-                        setValue(
-                            REACTIVE_CAPABILITY_CURVE_TABLE,
-                            editData?.reactiveCapabilityCurvePoints
-                        );
-                    } else {
-                        let reactiveCapabilityCurvePoints = [];
-                        value?.reactiveCapabilityCurvePoints?.forEach(
-                            (element) => {
-                                reactiveCapabilityCurvePoints.push({
-                                    [P]: null,
-                                    [Q_MIN_P]: null,
-                                    [Q_MAX_P]: null,
-                                    [OLD_P]: element.p,
-                                    [OLD_Q_MIN_P]: element.qminP,
-                                    [OLD_Q_MAX_P]: element.qmaxP,
-                                });
-                            }
-                        );
-                        setValue(
-                            REACTIVE_CAPABILITY_CURVE_TABLE,
-                            reactiveCapabilityCurvePoints
-                        );
+            )
+                .then((value) => {
+                    if (value) {
+                        // when editing modification form, first render should not trigger this reset
+                        // which would empty the form instead of displaying data of existing form
+                        if (shouldEmptyFormOnGeneratorIdChange) {
+                            //creating empty table depending on existing generator
+                            let reactiveCapabilityCurvePoints = [];
+                            value?.reactiveCapabilityCurvePoints?.forEach(
+                                (element) => {
+                                    reactiveCapabilityCurvePoints.push({
+                                        [P]: null,
+                                        [Q_MIN_P]: null,
+                                        [Q_MAX_P]: null,
+                                        [OLD_P]: element.p,
+                                        [OLD_Q_MIN_P]: element.qminP,
+                                        [OLD_Q_MAX_P]: element.qmaxP,
+                                    });
+                                }
+                            );
+
+                            // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
+                            resetForm(
+                                {
+                                    [EQUIPMENT_ID]: watchEquipmentId,
+                                    [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                                        reactiveCapabilityCurvePoints,
+                                },
+                                true
+                            );
+                        }
+                        setShouldEmptyFormOnGeneratorIdChange(true);
+                        setGeneratorToModify(value);
                     }
-                    setGeneratorToModify(value);
-                }
-            });
+                })
+                .catch(() => setGeneratorToModify(null));
+        } else {
+            setGeneratorToModify(null);
         }
     }, [
         watchEquipmentId,
+        setShouldEmptyFormOnGeneratorIdChange,
+        shouldEmptyFormOnGeneratorIdChange,
         studyUuid,
         currentNodeUuid,
-        editData,
-        setValue,
         setGeneratorToModify,
-        getValues,
         clearErrors,
-        onClear,
+        resetForm,
     ]);
 
     const energySourceLabelId = getEnergySourceLabel(
@@ -160,9 +168,7 @@ const GeneratorModificationForm = ({
           })
         : undefined;
     const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
-    const changeCallBack = () => {
-        if (!editData) setValue(REACTIVE_CAPABILITY_CURVE_TABLE, [{}, {}]);
-    };
+
     const generatorIdField = (
         <AutocompleteInput
             allowNewValue
@@ -172,7 +178,6 @@ const GeneratorModificationForm = ({
             formProps={{ ...filledTextField }}
             size={'small'}
             isOptionEqualToValue={areIdsEqual}
-            onChangeCallback={changeCallBack}
         />
     );
 
