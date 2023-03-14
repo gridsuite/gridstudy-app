@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useState,
+    useRef,
+    useDebugValue,
+} from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from '../network/network';
@@ -25,6 +31,7 @@ import {
     TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
+    MIN_COLUMN_WIDTH,
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
@@ -60,32 +67,6 @@ const useEditBuffer = () => {
     }, []);
 
     return [data, addDataToBuffer, resetBuffer];
-};
-
-const useEditErrors = () => {
-    const [errors, setErrors] = useState({});
-
-    const addError = useCallback(
-        (field) => {
-            errors[field] = true;
-            setErrors(errors);
-            console.log(errors);
-        },
-        [errors]
-    );
-
-    const resetError = useCallback(
-        (field) => {
-            if (errors[field]) {
-                delete errors[field];
-                setErrors(errors);
-                console.log(errors);
-            }
-        },
-        [errors]
-    );
-
-    return [errors, addError, resetError];
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -138,6 +119,7 @@ const useStyles = makeStyles((theme) => ({
 const NetworkTable = (props) => {
     const gridRef = useRef();
 
+    const intl = useIntl();
     const classes = useStyles();
 
     const { snackError } = useSnackMessage();
@@ -152,26 +134,25 @@ const NetworkTable = (props) => {
         (state) => state.allReorderedTableDefinitionIndexes
     );
 
-    const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
-
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
-    const [tabIndex, setTabIndex] = useState(0);
+
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
     const [
         reorderedTableDefinitionIndexes,
         setReorderedTableDefinitionIndexes,
     ] = useState([]);
+
+    const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
+
+    const [tabIndex, setTabIndex] = useState(0);
     const [scrollToIndex, setScrollToIndex] = useState();
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
 
     const searchTextInput = useRef(null);
 
-    const intl = useIntl();
-
     const [previousValuesBuffer, addDataToBuffer, resetBuffer] =
         useEditBuffer();
-    const [errors, addError, resetError] = useEditErrors();
     const [editingData, setEditingData] = useState();
     const [isValidatingData, setIsValidatingData] = useState(false);
 
@@ -185,6 +166,87 @@ const NetworkTable = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
+    const enrichColumn = useCallback(
+        (column) => {
+            column.headerName = intl.formatMessage({ id: column.id });
+
+            if (column.numeric) {
+                column.cellRendererParams = {
+                    loadFlowStatus: props.loadFlowStatus,
+                    network: props.network,
+                };
+
+                if (column.normed) {
+                    column.cellRendererParams.fluxConvention = fluxConvention;
+                }
+            }
+
+            column.width = column.columnWidth
+                ? column.columnWidth
+                : MIN_COLUMN_WIDTH;
+
+            column.pinned = lockedColumnsNames.has(column.id)
+                ? 'left'
+                : undefined;
+
+            return column;
+        },
+        [
+            fluxConvention,
+            intl,
+            lockedColumnsNames,
+            props.loadFlowStatus,
+            props.network,
+        ]
+    );
+
+    const addEditColumn = useCallback(
+        (columns) => {
+            columns.unshift({
+                field: 'edit',
+                locked: true,
+                pinned: 'left',
+                lockPosition: 'left',
+                sortable: false,
+                filter: false,
+                resizable: false,
+                width: 100,
+                headerName: '',
+                cellRendererSelector: (params) => {
+                    if (params.node.rowPinned) {
+                        return {
+                            component: EditingCellRenderer,
+                            params: {
+                                setEditingData: setEditingData,
+                                setIsValidatingData: setIsValidatingData,
+                                tabIndex: tabIndex,
+                            },
+                        };
+                    } else if (editingData?.id === params.data.id) {
+                        return {
+                            component: EditedLineCellRenderer,
+                        };
+                    } else if (editingData) {
+                        return {
+                            component: DisabledEditCellRenderer,
+                        };
+                    } else {
+                        return {
+                            component: EditableCellRenderer,
+                            params: {
+                                setEditingData: setEditingData,
+                                equipmentType:
+                                    TABLES_DEFINITION_INDEXES.get(tabIndex)
+                                        .modifiableEquipmentType,
+                            },
+                        };
+                    }
+                },
+            });
+        },
+        [editingData, tabIndex]
+    );
+
     const generateTableColumns = useCallback(
         (tabIndex) => {
             const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(
@@ -193,34 +255,7 @@ const NetworkTable = (props) => {
                 .columns.filter((c) => {
                     return selectedColumnsNames.has(c.id);
                 })
-                .map((column) => {
-                    column.headerName = intl.formatMessage({ id: column.id });
-                    if (column.editable) {
-                        column.additionnalEditorParams = {
-                            addError: addError,
-                            resetError: resetError,
-                        };
-                    }
-
-                    if (column.numeric) {
-                        column.cellRendererParams = {
-                            loadFlowStatus: props.loadFlowStatus,
-                            network: props.network,
-                        };
-
-                        if (column.normed) {
-                            column.cellRendererParams.fluxConvention =
-                                fluxConvention;
-                        }
-                    }
-
-                    if (lockedColumnsNames.has(column.id)) {
-                        column.pinned = 'left';
-                    } else {
-                        column.pinned = undefined;
-                    }
-                    return column;
-                });
+                .map((column) => enrichColumn(column));
 
             function sortByIndex(a, b) {
                 if (reorderedTableDefinitionIndexes) {
@@ -241,64 +276,15 @@ const NetworkTable = (props) => {
             generatedTableColumns.sort(sortByIndex);
 
             if (isEditColumnVisible()) {
-                generatedTableColumns.unshift({
-                    field: 'edit',
-                    locked: true,
-                    pinned: 'left',
-                    sortable: false,
-                    filter: false,
-                    resizable: false,
-                    lockPosition: 'left',
-                    width: 100,
-                    headerName: '',
-                    cellRendererSelector: (params) => {
-                        if (params.node.rowPinned) {
-                            return {
-                                component: EditingCellRenderer,
-                                params: {
-                                    setEditingData: setEditingData,
-                                    setIsValidatingData: setIsValidatingData,
-                                    tabIndex: tabIndex,
-                                    errors: errors,
-                                },
-                            };
-                        } else if (editingData?.id === params.data.id) {
-                            return {
-                                component: EditedLineCellRenderer,
-                            };
-                        } else if (editingData) {
-                            return {
-                                component: DisabledEditCellRenderer,
-                            };
-                        } else {
-                            return {
-                                component: EditableCellRenderer,
-                                params: {
-                                    isDataEditing: editingData ? true : false,
-                                    setEditingData: setEditingData,
-                                    equipmentType:
-                                        TABLES_DEFINITION_INDEXES.get(tabIndex)
-                                            .modifiableEquipmentType,
-                                },
-                            };
-                        }
-                    },
-                });
+                addEditColumn(generatedTableColumns);
             }
             return generatedTableColumns;
         },
         [
-            addError,
-            editingData,
-            errors,
-            fluxConvention,
-            intl,
-            lockedColumnsNames,
-            props.disabled,
-            props.loadFlowStatus,
-            props.network,
+            addEditColumn,
+            enrichColumn,
+            isEditColumnVisible,
             reorderedTableDefinitionIndexes,
-            resetError,
             selectedColumnsNames,
         ]
     );
@@ -398,7 +384,7 @@ const NetworkTable = (props) => {
 
     useEffect(() => {
         if (
-            props.equipmentId !== null && // TODO always equals to true. Maybe this function is broken ?
+            props.equipmentId !== null &&
             props.equipmentType !== null &&
             !manualTabSwitch
         ) {
@@ -421,7 +407,7 @@ const NetworkTable = (props) => {
     ]);
 
     function setFilter(event) {
-        gridRef.current.api.setQuickFilter(event.target.value); // Value from the user's input
+        gridRef.current.api.setQuickFilter(event.target.value);
     }
 
     useEffect(() => {
@@ -450,7 +436,6 @@ const NetworkTable = (props) => {
 
     const handleColumnDrag = useCallback(
         (event) => {
-            console.log(event);
             if (event.finished && event.column) {
                 const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
                     reorderedTableDefinitionIndexes.indexOf(
@@ -648,29 +633,32 @@ const NetworkTable = (props) => {
         [isValidatingData, previousValuesBuffer, validateEdit]
     );
 
-    //TODO s'assurer que handleEditingStopped gère tous les cas où l'utilisateur interrompt l'édition
-    const handleCellClicked = useCallback((params) => {
-        // //if a click occurs on a cell which doesn't belong to the top editing row the changes are rolled back
-        // if (
-        //     !params.rowPinned &&
-        //     (!params.colDef.cellRendererSelector ||
-        //         params.colDef?.cellRendererSelector(params).component
-        //             .name !== 'EditableCellRenderer')
-        // ) {
-        //     rollbackEdit();
-        // }
-    }, []);
-
     const handleEditingStopped = useCallback(() => {
         if (!isValidatingData) {
             rollbackEdit();
         }
     }, [isValidatingData, rollbackEdit]);
 
-    //TODO traiter lockedColumnsNames pour mettre à jour le statut des colonnes épinglées
     const handleCloseColumnsSettingDialog = useCallback(() => {
         setPopupSelectColumnNames(false);
     }, []);
+
+    useEffect(() => {
+        const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
+            .columns.filter((column) => lockedColumnsNames.has(column.id))
+            .map((column) => {
+                return { colId: column.field, pinned: 'left' };
+            });
+
+        if (isEditColumnVisible()) {
+            lockedColumnsConfig.unshift({ colId: 'edit', pinned: 'left' });
+        }
+
+        gridRef.current?.columnApi?.applyColumnState({
+            state: lockedColumnsConfig,
+            defaultState: { pinned: null },
+        });
+    }, [isEditColumnVisible, lockedColumnsNames, tabIndex]);
 
     const renderTabs = useCallback(() => {
         return TABLES_NAMES.map((table) => (
@@ -741,11 +729,10 @@ const NetworkTable = (props) => {
                         </span>
                         <IconButton
                             disabled={props.disabled}
-                            className={
-                                selectedColumnsNames.size === 0
-                                    ? classes.blink
-                                    : ''
-                            }
+                            className={clsx({
+                                [classes.blink]:
+                                    selectedColumnsNames.size === 0,
+                            })}
                             aria-label="dialog"
                             onClick={handleOpenPopupSelectColumnNames}
                         >
@@ -795,10 +782,10 @@ const NetworkTable = (props) => {
                     scrollTop={scrollToIndex}
                     visible={props.visible}
                     editingData={editingData}
+                    network={props.network}
                     handleColumnDrag={handleColumnDrag}
                     handleRowEditing={handleRowEditing}
                     handleCellEditing={handleCellEditing}
-                    handleCellClicked={handleCellClicked}
                     handleEditingStopped={handleEditingStopped}
                 />
             </div>

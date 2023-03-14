@@ -73,20 +73,7 @@ export const TapChangerSelector = ({
 };
 
 export const NumericalField = forwardRef(
-    (
-        {
-            defaultValue,
-            min,
-            max,
-            addError,
-            resetError,
-            setter,
-            style,
-            inputProps,
-            ...props
-        },
-        ref
-    ) => {
+    ({ defaultValue, min, max, setter, style, inputProps, ...props }, ref) => {
         const [error, setError] = useState(false);
         const intl = useIntl();
 
@@ -123,27 +110,22 @@ export const NumericalField = forwardRef(
 
         const validateChange = useCallback(
             (newVal) => {
+                const updatedErrors = { ...props.context.editErrors };
                 if (isValid(newVal, min, max)) {
                     setError(false);
-                    props.colDef.additionnalEditorParams.resetError(
-                        props.colDef.field
-                    );
-                    console.log('######### - DEBUG TAG - #########2');
+                    delete updatedErrors[props.colDef.field];
+
+                    props.context.setEditErrors(updatedErrors);
+                    props.context.editErrors = updatedErrors;
                 } else {
                     setError(true);
-                    props.colDef.additionnalEditorParams.addError(
-                        props.colDef.field
-                    );
-                    console.log('######### - DEBUG TAG - #########');
+                    updatedErrors[props.colDef.field] = true;
+
+                    props.context.setEditErrors(updatedErrors);
+                    props.context.editErrors = updatedErrors;
                 }
             },
-            [
-                isValid,
-                min,
-                max,
-                props.colDef.field,
-                props.colDef.additionnalEditorParams,
-            ]
+            [isValid, min, max, props.context, props.colDef.field]
         );
 
         const validateEvent = useCallback(
@@ -204,42 +186,6 @@ export const NumericalField = forwardRef(
     }
 );
 
-export const NameField = ({
-    defaultValue,
-    setColumnError,
-    resetColumnError,
-    forceLineUpdate,
-    columnDefinition,
-    setter,
-    style,
-    ...props
-}) => {
-    const validateChange = useCallback(
-        (ev) => {
-            const newVal = ev.target.value;
-            setter(newVal);
-        },
-        [setter]
-    );
-
-    return (
-        <TextField
-            defaultValue={defaultValue}
-            onChange={validateChange}
-            {...props}
-            size={'small'}
-            margin={'none'}
-            style={{ ...style, padding: 0 }}
-            inputProps={{
-                style: {
-                    textAlign: 'center',
-                    fontSize: 'small',
-                },
-            }}
-        />
-    );
-};
-
 export const BooleanListField = ({
     setColumnError,
     resetColumnError,
@@ -249,33 +195,29 @@ export const BooleanListField = ({
     defaultValue,
     ...props
 }) => {
+    const createInitialState = () => {
+        return {
+            value: defaultValue,
+        };
+    };
+
+    const initialState = createInitialState();
     const intl = useIntl();
-    const [value, setValue] = useState(defaultValue === true ? 1 : 0);
+    const [value, setValue] = useState(initialState.value);
 
     const validateChange = useCallback(
         (ev) => {
             const val = ev.target.value;
             setValue(val);
-            setter(val === 1);
-
-            if (columnDefinition.forceUpdateOnChange) {
-                forceLineUpdate();
-            }
-            if (columnDefinition.resetColumnsInError) {
-                columnDefinition.resetColumnsInError.forEach((column) => {
+            if (props.colDef.resetColumnsInError) {
+                props.colDef.resetColumnsInError.forEach((column) => {
                     if (Boolean(val) === column.value) {
-                        resetColumnError(column.dependencyColumn);
+                        //resetColumnError(column.dependencyColumn);
                     }
                 });
             }
         },
-        [
-            setter,
-            forceLineUpdate,
-            columnDefinition.forceUpdateOnChange,
-            columnDefinition.resetColumnsInError,
-            resetColumnError,
-        ]
+        [props.colDef.resetColumnsInError]
     );
 
     return (
@@ -284,12 +226,15 @@ export const BooleanListField = ({
             onChange={validateChange}
             size={'medium'}
             margin={'none'}
+            style={{
+                width: '100%',
+            }}
             {...props}
         >
-            <MenuItem value={1} key={columnDefinition.dataKey + '_1'}>
+            <MenuItem value={1} key={props.colDef.field + '_1'}>
                 <em>{intl.formatMessage({ id: 'true' })}</em>
             </MenuItem>
-            <MenuItem value={0} key={columnDefinition.dataKey + '_0'}>
+            <MenuItem value={0} key={props.colDef.field + '_0'}>
                 <em>{intl.formatMessage({ id: 'false' })}</em>
             </MenuItem>
         </Select>

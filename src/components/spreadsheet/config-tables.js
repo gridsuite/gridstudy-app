@@ -8,7 +8,7 @@
 import { equipments } from '../network/network-equipments';
 import { BooleanCellRenderer, NumericCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
-import { NumericalField } from './equipment-table-editors';
+import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 
@@ -41,7 +41,7 @@ const applyFluxConvention = (convention, val) => {
 
 export const ROW_HEIGHT = 38;
 export const HEADER_ROW_HEIGHT = 64;
-export const MIN_COLUMN_WIDTH = 180;
+export const MIN_COLUMN_WIDTH = 160;
 export const MEDIUM_COLUMN_WIDTH = 220;
 export const LARGE_COLUMN_WIDTH = 340;
 export const EDIT_CELL_WIDTH = 65;
@@ -130,12 +130,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage1 = network
-                        ? nominalVoltage(network, params.data.voltageLevelId1)
-                        : undefined;
-                    return params.data.nominalVoltage1;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId1
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -144,12 +143,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage2 = network
-                        ? nominalVoltage(network, params.data.voltageLevelId2)
-                        : undefined;
-                    return params.data.nominalVoltage2;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId2
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -220,12 +218,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage1 = network
-                        ? nominalVoltage(network, params.data.voltageLevelId1)
-                        : undefined;
-                    return params.data.nominalVoltage1;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId1
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -234,12 +231,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage2 = network
-                        ? nominalVoltage(network, params.data.voltageLevelId2)
-                        : undefined;
-                    return params.data.nominalVoltage2;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId2
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -284,19 +280,16 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'LoadTapChangingCapabilities',
                 field: 'loadTapChangingCapabilities',
-                valueGetter: (params) => {
-                    return params?.data?.ratioTapChanger
-                        ?.loadTapChangingCapabilities;
-                },
+                valueGetter: (params) =>
+                    params?.data?.ratioTapChanger?.loadTapChangingCapabilities,
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
             },
             {
                 id: 'RegulatingRatio',
                 field: 'regulatingRatio',
-                valueGetter: (params) => {
-                    return params?.data?.ratioTapChanger?.regulating;
-                },
+                valueGetter: (params) =>
+                    params?.data?.ratioTapChanger?.regulating,
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
             },
@@ -316,9 +309,8 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio'),
                 fractionDigits: 0,
-                valueGetter: (params) => {
-                    return params?.data?.ratioTapChanger?.tapPosition;
-                },
+                valueGetter: (params) =>
+                    params?.data?.ratioTapChanger?.tapPosition,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger.tapPosition = params.newValue;
                     return params;
@@ -336,17 +328,15 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode',
                 field: 'regulationMode',
-                valueGetter: (params) => {
-                    return params?.data?.phaseTapChanger?.regulationMode;
-                },
+                valueGetter: (params) =>
+                    params?.data?.phaseTapChanger?.regulationMode,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'RegulatingPhase',
                 field: 'regulatingPhase',
-                valueGetter: (params) => {
-                    return params?.data?.phaseTapChanger?.regulating;
-                },
+                valueGetter: (params) =>
+                    params?.data?.phaseTapChanger?.regulating,
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
             },
@@ -358,9 +348,8 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase'),
                 fractionDigits: 0,
-                valueGetter: (params) => {
-                    return params?.data?.phaseTapChanger?.tapPosition;
-                },
+                valueGetter: (params) =>
+                    params?.data?.phaseTapChanger?.tapPosition,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger.tapPosition = params.newValue;
                     return params;
@@ -383,9 +372,8 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
-                valueGetter: (params) => {
-                    return params?.data?.phaseTapChanger?.regulationValue;
-                },
+                valueGetter: (params) =>
+                    params?.data?.phaseTapChanger?.regulationValue,
             },
         ],
     },
@@ -421,9 +409,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params, network) => {
-                    return nominalVoltage(network, params.voltageLevelId1);
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId1
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -432,9 +422,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params, network) => {
-                    return nominalVoltage(network, params.voltageLevelId2);
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId2
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -443,9 +435,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide3',
                 field: 'nominalVoltage3',
-                valueGetter: (params, network) => {
-                    return nominalVoltage(network, params.voltageLevelId3);
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId3
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -533,9 +527,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 1),
                 fractionDigits: 0,
-                valueGetter: (params) => {
-                    return params?.ratioTapChanger1?.tapPosition;
-                },
+                valueGetter: (params) => params?.ratioTapChanger1?.tapPosition,
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -574,9 +566,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 2),
                 fractionDigits: 0,
-                valueGetter: (params) => {
-                    return params?.ratioTapChanger2?.tapPosition;
-                },
+                valueGetter: (params) => params?.ratioTapChanger2?.tapPosition,
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -615,9 +605,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 3),
                 fractionDigits: 0,
-                valueGetter: (params) => {
-                    return params?.ratioTapChanger3?.tapPosition;
-                },
+                valueGetter: (params) => params?.ratioTapChanger3?.tapPosition,
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -647,9 +635,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 1),
                 fractionDigits: 0,
-                valueGetter: (params) => {
-                    return params?.phaseTapChanger1?.tapPosition;
-                },
+                valueGetter: (params) => params?.phaseTapChanger1?.tapPosition,
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -688,9 +674,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 2),
                 fractionDigits: 0,
-                valueGetter: (params) => {
-                    return params?.phaseTapChanger2?.tapPosition;
-                },
+                valueGetter: (params) => params?.phaseTapChanger2?.tapPosition,
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -729,9 +713,7 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 3),
                 fractionDigits: 0,
-                valueGetter: (params) => {
-                    return params?.phaseTapChanger3?.tapPosition;
-                },
+                valueGetter: (params) => params?.phaseTapChanger3?.tapPosition,
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -778,12 +760,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage = network
-                        ? nominalVoltage(network, params.data.voltageLevelId)
-                        : undefined;
-                    return params.data.nominalVoltage;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -915,9 +896,13 @@ export const TABLES_DEFINITIONS = {
                 cellRenderer: BooleanCellRenderer,
                 forceUpdateOnChange: true,
                 changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
-                //editor: BooleanListField,
-
-                //TODO D
+                editable: true,
+                cellEditor: BooleanListField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.voltageRegulatorOn,
+                    };
+                },
                 resetColumnsInError: [
                     {
                         dependencyColumn: 'targetQ',
@@ -978,14 +963,6 @@ export const TABLES_DEFINITIONS = {
                 id: 'LoadType',
                 field: 'type',
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
-                /*editor: ({ equipment, ...props }) =>
-                    EnumField({
-                        enumList: [
-                            ...LOAD_TYPES,
-                            { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
-                        ],
-                        ...props,
-                    }),*/
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: () => {
@@ -1004,12 +981,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage = network
-                        ? nominalVoltage(network, params.data.voltageLevelId)
-                        : undefined;
-                    return params.data.nominalVoltage;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -1090,12 +1066,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage = network
-                        ? nominalVoltage(network, params.data.voltageLevelId)
-                        : undefined;
-                    return params.data.nominalVoltage;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -1150,12 +1125,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage = network
-                        ? nominalVoltage(network, params.data.voltageLevelId)
-                        : undefined;
-                    return params.data.nominalVoltage;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -1219,12 +1193,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage = network
-                        ? nominalVoltage(network, params.data.voltageLevelId)
-                        : undefined;
-                    return params.data.nominalVoltage;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -1386,12 +1359,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage = network
-                        ? nominalVoltage(network, params.data.voltageLevelId)
-                        : undefined;
-                    return params.data.nominalVoltage;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -1459,12 +1431,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage = network
-                        ? nominalVoltage(network, params.data.voltageLevelId)
-                        : undefined;
-                    return params.data.nominalVoltage;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',
@@ -1545,12 +1516,11 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params, network) => {
-                    params.data.nominalVoltage = network
-                        ? nominalVoltage(network, params.data.voltageLevelId)
-                        : undefined;
-                    return params.data.nominalVoltage;
-                },
+                valueGetter: (params) =>
+                    nominalVoltage(
+                        params.context.network,
+                        params.data.voltageLevelId
+                    ),
                 numeric: true,
                 cellRenderer: NumericCellRenderer,
                 filter: 'agNumberColumnFilter',

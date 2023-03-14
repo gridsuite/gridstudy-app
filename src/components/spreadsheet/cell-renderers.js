@@ -5,12 +5,29 @@ import clsx from 'clsx';
 import { RunningStatus } from 'components/util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 const useStyles = makeStyles((theme) => ({
+    editCell: {
+        '& button': {
+            margin: 0,
+            padding: 0,
+            position: 'absolute',
+            textAlign: 'center',
+            bottom: theme.spacing(0.8),
+        },
+        '& button:first-child': {
+            // Only applies to the first child
+            left: theme.spacing(2),
+        },
+        '& button:nth-child(2)': {
+            // Only applies to the second child
+            right: theme.spacing(3),
+        },
+    },
     tableCell: {
         fontSize: 'small',
         cursor: 'initial',
@@ -37,18 +54,18 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
     },
     leftFade: {
+        position: 'absolute',
+        left: 0,
+        width: '100%',
+        height: '100%',
         background:
             'linear-gradient(to right, ' +
             theme.palette.primary.main +
             ' 0%, ' +
             theme.palette.primary.main +
             ' 2%, rgba(0,0,0,0) 12%)',
-        borderBottomLeftRadius: theme.spacing(0.5),
-        borderTopLeftRadius: theme.spacing(0.5),
-    },
-    topEditRow: {
-        borderTop: '1px solid ' + theme.palette.primary.main,
-        borderBottom: '1px solid ' + theme.palette.primary.main,
+        borderBottomLeftRadius: theme.spacing(0.8),
+        borderTopLeftRadius: theme.spacing(0.8),
     },
 }));
 
@@ -146,20 +163,20 @@ export const NumericCellRenderer = (props) => {
 
 export const EditableCellRenderer = (props) => {
     const classes = useStyles();
+
+    const handleStartEditing = useCallback(() => {
+        props.setEditingData({
+            ...props.data,
+            metadata: {
+                equipmentType: props.equipmentType,
+            },
+        });
+    }, [props]);
+
     return (
         <div style={props.style}>
             <div className={classes.editCell}>
-                <IconButton
-                    size={'small'}
-                    onClick={() => {
-                        props.setEditingData({
-                            ...props.data,
-                            metadata: {
-                                equipmentType: props.equipmentType,
-                            },
-                        });
-                    }}
-                >
+                <IconButton size={'small'} onClick={handleStartEditing}>
                     <EditIcon />
                 </IconButton>
             </div>
@@ -182,6 +199,7 @@ export const DisabledEditCellRenderer = (props) => {
 
 export const EditedLineCellRenderer = (props) => {
     const classes = useStyles();
+
     return (
         <div className={clsx(classes.referenceEditRow, classes.leftFade)}>
             <div className={classes.editCell}>
@@ -200,44 +218,38 @@ export const EditedLineCellRenderer = (props) => {
 export const EditingCellRenderer = (props) => {
     const classes = useStyles();
 
-    useEffect(() => {
-        const editRow = props.api?.getPinnedTopRow(0);
-        if (editRow) {
-            props.api?.startEditingCell({
-                rowIndex: editRow.rowIndex,
-                colKey: 'edit',
-                rowPinned: editRow.rowPinned,
-            });
-        }
-    }, [props.api]);
+    props.context.startEditing();
 
-    function validateEdit() {
+    const validateEdit = useCallback(() => {
         props.api?.stopEditing();
         props.setIsValidatingData(true);
-    }
+    }, [props]);
 
-    function resetEdit() {
+    const resetEdit = useCallback(() => {
         props.api?.stopEditing(true);
         props.setEditingData();
-    }
+    }, [props]);
 
     return (
-        <div
-            style={props.style}
-            className={clsx(classes.topEditRow, classes.leftFade)}
-        >
+        <span style={props.style} className={clsx(classes.leftFade)}>
             <div className={classes.editCell}>
                 <>
+                    <IconButton
+                        size={'small'}
+                        onClick={validateEdit}
+                        disabled={
+                            Object.entries(props.context.editErrors).length !==
+                            0
+                        }
+                    >
+                        <CheckIcon />
+                    </IconButton>
+
                     <IconButton size={'small'} onClick={resetEdit}>
                         <ClearIcon />
                     </IconButton>
-                    {Object.entries(props.errors).length === 0 && (
-                        <IconButton size={'small'} onClick={validateEdit}>
-                            <CheckIcon />
-                        </IconButton>
-                    )}
                 </>
             </div>
-        </div>
+        </span>
     );
 };
