@@ -159,9 +159,6 @@ export const useStyles = makeStyles((theme) => ({
         paddingBottom: theme.spacing(1),
         flexGrow: 1,
     },
-    tabPanel: {
-        flexGrow: 1,
-    },
 }));
 
 export const FluxConventions = {
@@ -174,6 +171,23 @@ export const LabelledButton = ({ callback, label, name }) => {
         <Button onClick={callback} className={name}>
             <FormattedMessage id={label} />
         </Button>
+    );
+};
+
+export const TabPanel = (props) => {
+    const { children, value, index, ...other } = props;
+    return (
+        <Typography
+            component="div"
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            style={{ flexGrow: 1 }}
+            {...other}
+        >
+            {value === index && <Box p={1}>{children}</Box>}
+        </Typography>
     );
 };
 
@@ -443,23 +457,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
-
-    function TabPanel(props) {
-        const { children, value, index, ...other } = props;
-        return (
-            <Typography
-                component="div"
-                role="tabpanel"
-                hidden={value !== index}
-                id={`simple-tabpanel-${index}`}
-                aria-labelledby={`simple-tab-${index}`}
-                style={{ flexGrow: 1 }}
-                {...other}
-            >
-                {value === index && <Box p={1}>{children}</Box>}
-            </Typography>
-        );
-    }
 
     useEffect(() => {
         setTabValue((oldValue) => {

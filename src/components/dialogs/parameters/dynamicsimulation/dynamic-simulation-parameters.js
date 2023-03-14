@@ -17,10 +17,10 @@ import {
     CloseButton,
     DropDown,
     LabelledButton,
+    TabPanel,
     useParametersBackend,
     useStyles,
 } from '../parameters';
-import TabPanelLazy from '../common/tab-panel-lazy';
 import {
     fetchDefaultDynamicSimulationProvider,
     fetchDynamicSimulationParameters,
@@ -165,11 +165,9 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                         />
                     </Tabs>
 
-                    <TabPanelLazy
-                        className={classes.tabPanel}
-                        selected={
-                            tabValue === TAB_VALUES.timeDelayParamsTabValue
-                        }
+                    <TabPanel
+                        value={tabValue}
+                        index={TAB_VALUES.timeDelayParamsTabValue}
                     >
                         <TimeDelayParameters
                             timeDelay={
@@ -182,10 +180,10 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                             }
                             onUpdateTimeDelay={handleUpdateTimeDelay}
                         />
-                    </TabPanelLazy>
-                    <TabPanelLazy
-                        className={classes.tabPanel}
-                        selected={tabValue === TAB_VALUES.solverParamsTabValue}
+                    </TabPanel>
+                    <TabPanel
+                        value={tabValue}
+                        index={TAB_VALUES.solverParamsTabValue}
                     >
                         <SolverParameters
                             dynaWaltzExtension={
@@ -201,10 +199,10 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                             }
                             onUpdateSolver={handleUpdateSolver}
                         />
-                    </TabPanelLazy>
-                    <TabPanelLazy
-                        className={classes.tabPanel}
-                        selected={tabValue === TAB_VALUES.mappingParamsTabValue}
+                    </TabPanel>
+                    <TabPanel
+                        value={tabValue}
+                        index={TAB_VALUES.mappingParamsTabValue}
                     >
                         <MappingParameters
                             mapping={
@@ -217,7 +215,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                             }
                             onUpdateMapping={handleUpdateMapping}
                         />
-                    </TabPanelLazy>
+                    </TabPanel>
                 </Grid>
             </Grid>
             <Grid
