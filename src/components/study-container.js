@@ -616,7 +616,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
-                // In order to avoid glitches during sld and map rendering,
+                // In order to avoid glitches during sld (this force closes all slds) and map rendering,
                 // lines and substations have to be prefetched and set before network creation event is dispatched
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
@@ -659,7 +659,7 @@ export function StudyContainer({ view, onChangeTab }) {
         ) {
             return;
         }
-        loadNetwork(true);
+        loadNetwork(previousCurrentNode); // loadNetwork(false) only at app startup, otherwise slds are force closed
     }, [loadNetwork, currentNode, wsConnected]);
 
     useEffect(() => {

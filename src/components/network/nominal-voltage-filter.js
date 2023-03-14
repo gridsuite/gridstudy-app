@@ -77,7 +77,7 @@ const NominalVoltageFilter = (props) => {
     };
 
     return (
-        network && (
+        network?.getNominalVoltages()?.length > 0 && (
             <Paper>
                 <List className={classes.nominalVoltageZone}>
                     <ListItem className={classes.nominalVoltageItem}>
