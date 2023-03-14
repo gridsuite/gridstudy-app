@@ -430,12 +430,19 @@ export default class Network {
                 );
         });
         Promise.all(fetchers).then((values) => {
-            values.forEach((value) => {
-                if (nodeBeforeFetch === currentNodeRef.current) {
+            const allValidValues = values.every((v) => v);
+
+            // if all value are valid, we set the equipments, otherwise we wait for the correct values
+            if (allValidValues) {
+                values.forEach((value) => {
                     this.lazyLoaders.get(value.equipment).fetched = true;
                     this.setEquipment(value.equipment, value.values);
-                }
-            });
+                });
+            } else {
+                this.lazyLoaders.forEach((val) => {
+                    val.fetched = false;
+                });
+            }
             this.dispatch(networkCreated(this));
         });
     }
