@@ -603,7 +603,7 @@ const NetworkModificationNodeEditor = () => {
         ({ source, destination }) => {
             setIsDragging(false);
             if (
-                !currentNode ||
+                !currentNode?.id ||
                 destination === null ||
                 source.index === destination.index
             )
