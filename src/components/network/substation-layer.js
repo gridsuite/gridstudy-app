@@ -114,12 +114,12 @@ class SubstationLayer extends CompositeLayer {
             props.getNameOrId !== oldProps.getNameOrId ||
             props.filteredNominalVoltages !== oldProps.filteredNominalVoltages
         ) {
-            let substationsLabels = [];
+            let substationsLabels = props.data;
 
-            if (props.network != null && props.geoData != null) {
+            if (props.network != null && props.geoData != null && props.filteredNominalVoltages != null) {
                 // we construct the substations where there is at least one voltage level with a nominal voltage
                 // present in the filteredVoltageLevels property, in order to handle correctly the substations labels visibility
-                substationsLabels = props.data.filter(
+                substationsLabels = substationsLabels.filter(
                     (substation) =>
                         substation.voltageLevels.find((v) =>
                             props.filteredNominalVoltages.includes(
@@ -156,7 +156,7 @@ class SubstationLayer extends CompositeLayer {
                     getRadius: (voltageLevel) =>
                         SUBSTATION_RADIUS *
                         (voltageLevel.nominalVoltageIndex + 1),
-                    visible: this.props.filteredNominalVoltages.includes(
+                    visible: !this.props.filteredNominalVoltages || this.props.filteredNominalVoltages.includes(
                         e.nominalVoltage
                     ),
                     updateTriggers: {
@@ -207,7 +207,7 @@ SubstationLayer.defaultProps = {
     network: null,
     geoData: null,
     getNominalVoltageColor: { type: 'accessor', value: [255, 255, 255] },
-    filteredNominalVoltages: [],
+    filteredNominalVoltages: null,
     labelsVisible: false,
     labelColor: { type: 'color', value: [255, 255, 255] },
     labelSize: 12,

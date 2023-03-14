@@ -85,7 +85,6 @@ const NetworkMap = (props) => {
     const readyToDisplay =
         props.mapEquipments !== null &&
         props.geoData !== null &&
-        props.filteredNominalVoltages !== null &&
         !props.disabled;
 
     const readyToDisplaySubstations =
