@@ -448,7 +448,7 @@ export default class Network {
     }
 
     constructor(studyUuid, currentNodeRef, errHandler, dispatch, prefetch) {
-        const currentNodeUuid = currentNodeRef.current?.id;
+        const currentNodeUuid = currentNodeRef?.current?.id;
         this.generateEquipementHandler({
             substations: () => fetchSubstations(studyUuid, currentNodeUuid),
             loads: () => fetchLoads(studyUuid, currentNodeUuid),
