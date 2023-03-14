@@ -50,7 +50,7 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             'LOAD',
             true
         ).then((values) => {
-            setEquipmentOptions(values);
+            setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
         });
     }, [studyUuid, currentNodeUuid]);
 
@@ -86,7 +86,7 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             forcePopupIcon
             name={`${EQUIPMENT_ID}`}
             label="ID"
-            options={equipmentOptions.sort((a, b) => a.localeCompare(b))}
+            options={equipmentOptions}
             getOptionLabel={getObjectId}
             size={'small'}
             formProps={{ autoFocus: true, ...filledTextField }}
