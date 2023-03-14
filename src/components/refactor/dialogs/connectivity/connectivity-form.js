@@ -72,7 +72,7 @@ export const ConnectivityForm = ({
 
     const intl = useIntl();
 
-    const { setValue } = useFormContext();
+    const { setValue, getValues } = useFormContext();
 
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
@@ -125,13 +125,19 @@ export const ConnectivityForm = ({
     }, [id, onVoltageLevelChangeCallback, setValue]);
 
     useEffect(() => {
-        if (busOrBusbarSectionOptions?.length > 0) {
+        const currentBusOrBusbarSection = getValues(
+            `${id}.${BUS_OR_BUSBAR_SECTION}`
+        );
+        if (
+            busOrBusbarSectionOptions?.length > 0 &&
+            !currentBusOrBusbarSection
+        ) {
             setValue(
                 `${id}.${BUS_OR_BUSBAR_SECTION}`,
                 busOrBusbarSectionOptions[0]
             );
         }
-    }, [busOrBusbarSectionOptions, setValue, id]);
+    }, [busOrBusbarSectionOptions, setValue, id, getValues]);
 
     const newVoltageLevelField = (
         <AutocompleteInput
