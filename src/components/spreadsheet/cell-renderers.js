@@ -180,7 +180,7 @@ export const EditableCellRenderer = (props) => {
             <IconButton
                 size={'small'}
                 onClick={handleStartEditing}
-                disabled={props.context.editingData ? true : false}
+                disabled={props.context.isEditing}
             >
                 <EditIcon />
             </IconButton>

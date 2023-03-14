@@ -138,7 +138,7 @@ export const EquipmentTable = ({
                             network: network,
                             editErrors: {},
                             dynamicValidation: {},
-                            editingData: editingData,
+                            isEditing: editingData ? true : false,
                             startEditing: startEditing,
                         }}
                     />
