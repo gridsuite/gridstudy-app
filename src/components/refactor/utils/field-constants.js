@@ -130,6 +130,22 @@ export const SWITCH_KIND = 'switchKind';
 // dnd table
 export const SELECTED = 'selected';
 
+//line-attach-to-voltage-level
+export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
+export const ATTACHMENT_POINT_ID = 'attachmentPointId';
+export const ATTACHMENT_POINT_NAME = 'attachmentPointName';
+export const ATTACHMENT_LINE_ID = 'attachmentLineId';
+export const LINE1_NAME = 'Line1Name';
+export const LINE2_NAME = 'Line2Name';
+export const LINE1_ID = 'Line1Id';
+export const LINE2_ID = 'Line2Id';
+
+//percentage-area
+export const PERCENTAGE_AREA = 'percentageArea';
+export const LEFT_SIDE_PERCENTAGE = 'leftSidePercentage';
+export const RIGHT_SIDE_PERCENTAGE = 'rightSidePercentage';
+export const SLIDER_PERCENTAGE = 'sliderPercentage';
+
 // voltage-level-on-line, attach line to another line, etc
 export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
 export const LINE_TO_ATTACH_TO_2_ID = 'lineToAttachTo2Id';
