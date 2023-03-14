@@ -429,6 +429,9 @@ export default class Network {
                     })
                 );
         });
+        this.lazyLoaders.forEach((val) => {
+            val.fetched = false;
+        });
         Promise.all(fetchers).then((values) => {
             const allValidValues = values.every((v) => v);
 
@@ -437,10 +440,6 @@ export default class Network {
                 values.forEach((value) => {
                     this.lazyLoaders.get(value.equipment).fetched = true;
                     this.setEquipment(value.equipment, value.values);
-                });
-            } else {
-                this.lazyLoaders.forEach((val) => {
-                    val.fetched = false;
                 });
             }
             this.dispatch(networkCreated(this));
