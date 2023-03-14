@@ -31,8 +31,8 @@ const headerIds = [
 ];
 
 const ReactiveLimitsForm = ({
-    generatorInfos,
-    handleReactiveCapabilityCurveTableRow,
+    generatorToModify,
+    updateReactiveCapabilityCurveTableRow,
 }) => {
     const reactiveCapabilityCurveChoice = useWatch({
         name: REACTIVE_CAPABILITY_CURVE_CHOICE,
@@ -71,11 +71,9 @@ const ReactiveLimitsForm = ({
             id={REACTIVE_CAPABILITY_CURVE_TABLE}
             tableHeadersIds={headerIds}
             isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
-            reactiveCapabilityCurvePoints={
-                generatorInfos?.reactiveCapabilityCurvePoints
-            }
-            handleReactiveCapabilityCurveTableRow={
-                handleReactiveCapabilityCurveTableRow
+            previousValues={generatorToModify?.reactiveCapabilityCurvePoints}
+            updateReactiveCapabilityCurveTableRow={
+                updateReactiveCapabilityCurveTableRow
             }
         />
     );

@@ -20,7 +20,8 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../../utils/field-constants';
-
+export const INSERT = 'INSERT';
+export const REMOVE = 'REMOVE';
 const getCreationRowSchema = () =>
     yup.object().shape({
         [Q_MAX_P]: yup.number().nullable().required(),

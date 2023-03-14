@@ -62,6 +62,7 @@ import {
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
+import { REMOVE } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 const GeneratorModificationDialog = ({
     editData,
@@ -266,10 +267,10 @@ const GeneratorModificationDialog = ({
         [emptyFormData, reset]
     );
 
-    const handleReactiveCapabilityCurveTableRow = (action, index) => {
+    const updateReactiveCapabilityCurveTableRow = (action, index) => {
         setGeneratorToModify((previousValue) => {
             const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
-            action === 'REMOVE'
+            action === REMOVE
                 ? newRccValues.splice(index, 1)
                 : newRccValues.splice(index, 0, {
                       [P]: null,
@@ -439,8 +440,8 @@ const GeneratorModificationDialog = ({
                     resetForm={clear}
                     generatorToModify={generatorToModify}
                     setGeneratorToModify={setGeneratorToModify}
-                    handleReactiveCapabilityCurveTableRow={
-                        handleReactiveCapabilityCurveTableRow
+                    updateReactiveCapabilityCurveTableRow={
+                        updateReactiveCapabilityCurveTableRow
                     }
                     shouldEmptyFormOnGeneratorIdChange={
                         shouldEmptyFormOnGeneratorIdChange

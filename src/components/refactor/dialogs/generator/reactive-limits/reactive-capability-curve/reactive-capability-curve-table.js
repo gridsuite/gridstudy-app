@@ -24,19 +24,21 @@ import {
     Q_MIN_P,
 } from 'components/refactor/utils/field-constants';
 import MidFormError from 'components/refactor/rhf-inputs/error-inputs/mid-form-error';
+import { INSERT, REMOVE } from './reactive-capability-utils';
 
 export const ReactiveCapabilityCurveTable = ({
     id,
     tableHeadersIds,
     disabled = false,
-    reactiveCapabilityCurvePoints,
-    handleReactiveCapabilityCurveTableRow,
+    previousValues,
+    updateReactiveCapabilityCurveTableRow,
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();
 
     const handleInsertRow = () => {
-        handleReactiveCapabilityCurveTableRow('INSERT', rows.length - 1);
+        if (previousValues && updateReactiveCapabilityCurveTableRow)
+            updateReactiveCapabilityCurveTableRow(INSERT, rows.length - 1);
         insert(rows.length - 1, {
             [P]: null,
             [Q_MIN_P]: null,
@@ -48,7 +50,8 @@ export const ReactiveCapabilityCurveTable = ({
     };
 
     const handleRemoveRow = (index) => {
-        handleReactiveCapabilityCurveTableRow('REMOVE', index);
+        if (previousValues && updateReactiveCapabilityCurveTableRow)
+            updateReactiveCapabilityCurveTableRow(REMOVE, index);
         remove(index);
     };
 
@@ -77,10 +80,7 @@ export const ReactiveCapabilityCurveTable = ({
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
-                            previousValues={
-                                reactiveCapabilityCurvePoints &&
-                                reactiveCapabilityCurvePoints[index]
-                            }
+                            previousValues={previousValues?.[index]}
                         />
                         <Grid item xs={1}>
                             <IconButton

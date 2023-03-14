@@ -62,7 +62,7 @@ const GeneratorModificationForm = ({
     resetForm,
     generatorToModify,
     setGeneratorToModify,
-    handleReactiveCapabilityCurveTableRow,
+    updateReactiveCapabilityCurveTableRow,
     shouldEmptyFormOnGeneratorIdChange,
     setShouldEmptyFormOnGeneratorIdChange,
 }) => {
@@ -319,9 +319,9 @@ const GeneratorModificationForm = ({
 
             {/* Reactive limits part */}
             <ReactiveLimitsForm
-                generatorInfos={generatorToModify}
-                handleReactiveCapabilityCurveTableRow={
-                    handleReactiveCapabilityCurveTableRow
+                generatorToModify={generatorToModify}
+                updateReactiveCapabilityCurveTableRow={
+                    updateReactiveCapabilityCurveTableRow
                 }
             />
 
