@@ -54,16 +54,16 @@ export const TABLES_DEFINITIONS = {
         resource: equipments.substations,
         columns: [
             {
-                field: 'id',
                 id: 'ID',
+                field: 'id',
             },
             {
-                field: 'name',
                 id: 'Name',
+                field: 'name',
             },
             {
-                field: 'countryName',
                 id: 'Country',
+                field: 'countryName',
             },
         ],
     },

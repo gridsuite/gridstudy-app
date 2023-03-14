@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { RunningStatus } from 'components/util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -229,8 +229,10 @@ export const EditingCellRenderer = (props) => {
         [props.context.editErrors]
     );
 
-    //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
-    props.context.startEditing();
+    useEffect(() => {
+        //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
+        props.context.startEditing();
+    }, [props.context]);
 
     return (
         <div className={clsx(classes.leftFade, classes.editCell)}>

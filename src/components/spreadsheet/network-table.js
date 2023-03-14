@@ -122,6 +122,9 @@ const NetworkTable = (props) => {
 
     const globalFilterRef = useRef(null);
 
+    const [rowData, setRowData] = useState([]);
+    const [columnData, setColumnData] = useState([]);
+
     const isEditColumnVisible = useCallback(() => {
         return (
             !props.disabled &&
@@ -250,10 +253,6 @@ const NetworkTable = (props) => {
         ]
     );
 
-    useEffect(() => {
-        setColumnData(generateTableColumns(tabIndex));
-    }, [tabIndex, generateTableColumns]);
-
     const getRows = useCallback(
         (index) => {
             if (props.disabled) {
@@ -270,6 +269,11 @@ const NetworkTable = (props) => {
         [props.disabled, props.network]
     );
 
+    useEffect(() => {
+        setColumnData(generateTableColumns(tabIndex));
+        setRowData(getRows(tabIndex));
+    }, [generateTableColumns, getRows, tabIndex]);
+
     const startEditing = useCallback(() => {
         const topRow = gridRef.current?.api?.getPinnedTopRow(0);
         if (topRow) {
@@ -280,11 +284,6 @@ const NetworkTable = (props) => {
             });
         }
     }, [gridRef]);
-
-    const [rowData, setRowData] = useState(getRows(tabIndex));
-    const [columnData, setColumnData] = useState(
-        generateTableColumns(tabIndex)
-    );
 
     const rollbackEdit = useCallback(() => {
         //mecanism to undo last edits if it is invalidated
@@ -386,10 +385,6 @@ const NetworkTable = (props) => {
             gridRef.current.api?.ensureIndexVisible(scrollToIndex, 'top');
         }
     }, [gridRef, scrollToIndex]);
-
-    useEffect(() => {
-        setRowData(getRows(tabIndex));
-    }, [tabIndex, getRows]);
 
     useEffect(() => {
         const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
