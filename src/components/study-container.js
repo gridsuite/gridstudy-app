@@ -766,7 +766,7 @@ export function StudyContainer({ view, onChangeTab }) {
             errMessage={
                 studyErrorMessage || networkLoadingFailMessage || errorMessage
             }
-            loading={studyPending || !paramsLoaded}
+            loading={studyPending || !paramsLoaded} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane
