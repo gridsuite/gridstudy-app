@@ -107,6 +107,10 @@ export const filledTextField = {
     variant: 'filled',
 };
 
+export const standardTextField = {
+    variant: 'standard',
+};
+
 export const italicFontTextField = {
     style: { fontStyle: 'italic' },
 };

@@ -677,6 +677,7 @@
 
     "AddRowsDialogTitle": "How many rows do you want to add ?",
     "AddRowsButton": "Add",
+    "MaximumRowNumberError": "The number of rows must not exceed the value {value}",
 
     "DragAndDrop": "Drag and Drop",
 

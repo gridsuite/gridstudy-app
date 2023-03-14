@@ -74,7 +74,7 @@ const AutocompleteInput = ({
                 freeSolo: true,
                 autoComplete: true,
                 blurOnSelect: true,
-                autoSelect: true,
+                autoSelect: false,
                 onInputChange: (_, data) => {
                     handleChange(data);
                 },
@@ -112,7 +112,7 @@ AutocompleteInput.propTypes = {
     outputTransform: PropTypes.func,
     inputTransform: PropTypes.func,
     readOnly: PropTypes.bool,
-    previousValue: PropTypes.object,
+    previousValue: PropTypes.any,
     allowNewValue: PropTypes.bool,
     formProps: PropTypes.object,
 };
