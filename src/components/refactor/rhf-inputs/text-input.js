@@ -117,7 +117,7 @@ TextInput.propTypes = {
     transformValue: PropTypes.func,
     acceptValue: PropTypes.func,
     formProps: PropTypes.object,
-    previousValue: PropTypes.object,
+    previousValue: PropTypes.any,
     clearable: PropTypes.bool,
 };
 
