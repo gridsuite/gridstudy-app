@@ -9,10 +9,8 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from '../network/network';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { IconButton, Grid, Alert } from '@mui/material';
+import { Grid, Alert } from '@mui/material';
 import {
     modifyGenerator,
     modifyLoad,
@@ -30,16 +28,13 @@ import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
-import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import {
-    DisabledCellRenderer,
     EditableCellRenderer,
     EditingCellRenderer,
     ReferenceLineCellRenderer,
 } from './cell-renderers';
-import { ColumnsSettingsDialog } from './columns-settings-dialog';
+import { ColumnsConfig } from './columns-config';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
@@ -68,10 +63,6 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2.5),
         lineHeight: 'unset',
         flexGrow: 1,
-    },
-    selectColumns: {
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(6),
     },
     blink: {
         animation: '$blink 2s infinite',
@@ -112,8 +103,6 @@ const NetworkTable = (props) => {
         (state) => state.allReorderedTableDefinitionIndexes
     );
 
-    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
-
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
     const [
@@ -127,10 +116,11 @@ const NetworkTable = (props) => {
     const [scrollToIndex, setScrollToIndex] = useState();
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
 
-    const [previousValuesBuffer, addDataToBuffer, resetBuffer] =
-        useEditBuffer();
+    const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
     const [editingData, setEditingData] = useState();
     const [isValidatingData, setIsValidatingData] = useState(false);
+
+    const globalFilterRef = useRef(null);
 
     const isEditColumnVisible = useCallback(() => {
         return (
@@ -200,10 +190,6 @@ const NetworkTable = (props) => {
                     } else if (editingData?.id === params.data.id) {
                         return {
                             component: ReferenceLineCellRenderer,
-                        };
-                    } else if (editingData) {
-                        return {
-                            component: DisabledCellRenderer,
                         };
                     } else {
                         return {
@@ -302,15 +288,14 @@ const NetworkTable = (props) => {
 
     const rollbackEdit = useCallback(() => {
         //mecanism to undo last edits if it is invalidated
-        Object.entries(previousValuesBuffer).forEach(() => {
+        Object.entries(priorValuesBuffer).forEach(() => {
             gridRef.current.api.undoCellEditing();
         });
         resetBuffer();
         setEditingData();
         setIsValidatingData(false);
-    }, [previousValuesBuffer, resetBuffer]);
+    }, [priorValuesBuffer, resetBuffer]);
 
-    const globalFilterRef = useRef(null);
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
         gridRef?.current?.api.setFilterModel(null);
@@ -397,28 +382,31 @@ const NetworkTable = (props) => {
     ]);
 
     useEffect(() => {
-        const tmpDataKeySet = new Set();
-        TABLES_DEFINITION_INDEXES.get(tabIndex)
-            .columns.filter((col) => selectedColumnsNames.has(col.id))
-            .forEach((col) => tmpDataKeySet.add(col.dataKey));
-        setRowData(getRows(tabIndex));
-    }, [tabIndex, selectedColumnsNames, getRows]);
+        if (scrollToIndex) {
+            gridRef.current.api?.ensureIndexVisible(scrollToIndex, 'top');
+        }
+    }, [gridRef, scrollToIndex]);
 
     useEffect(() => {
-        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        if (props.network.isResourceFetched(resource)) {
-            const rows = props.network[resource];
-            rows.forEach((row, index) => {
-                if (!row.id) row.id = index;
+        setRowData(getRows(tabIndex));
+    }, [tabIndex, getRows]);
+
+    useEffect(() => {
+        const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
+            .columns.filter((column) => lockedColumnsNames.has(column.id))
+            .map((column) => {
+                return { colId: column.field, pinned: 'left' };
             });
 
-            setRowData(rows);
+        if (isEditColumnVisible()) {
+            lockedColumnsConfig.unshift({ colId: 'edit', pinned: 'left' });
         }
-    }, [props.network, tabIndex]);
 
-    const handleOpenPopupSelectColumnNames = () => {
-        setPopupSelectColumnNames(true);
-    };
+        gridRef.current?.columnApi?.applyColumnState({
+            state: lockedColumnsConfig,
+            defaultState: { pinned: null },
+        });
+    }, [isEditColumnVisible, lockedColumnsNames, tabIndex]);
 
     const handleColumnDrag = useCallback(
         (event) => {
@@ -531,28 +519,20 @@ const NetworkTable = (props) => {
                 params.data.id.replace(/'/g, "\\'") +
                 "')\n";
 
-            const isTransformer =
-                editingData?.metadata.equipmentType ===
-                    TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS
-                        .modifiableEquipmentType ||
-                editingData?.metadata.equipmentType ===
-                    TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS
-                        .modifiableEquipmentType;
-
-            Object.entries(previousValuesBuffer).forEach(([field, value]) => {
-                //TODO this is when we change transformer, in case we want to change the tap position from spreadsheet, we set it inside
-                // tapChanger object. so we extract the value from the object before registering a change request.
-                // this part should be removed if we don't pass tapPosition inside another Object anymore
+            const wrappedEditedData = {
+                data: editingData,
+            };
+            Object.entries(priorValuesBuffer).forEach(([field, value]) => {
                 const column = gridRef.current.columnApi.getColumn(field);
-                const val =
-                    isTransformer && field
-                        ? editingData[field].tapPosition
-                        : editingData[field];
+                const val = column.colDef.valueGetter
+                    ? column.colDef.valueGetter(wrappedEditedData)
+                    : editingData[field];
 
                 groovyCr +=
                     column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
 
+            console.log(groovyCr);
             const editPromise = buildEditPromise(editingData, groovyCr);
             Promise.resolve(editPromise)
                 .then(() => {
@@ -579,74 +559,47 @@ const NetworkTable = (props) => {
             buildEditPromise,
             editingData,
             intl,
-            previousValuesBuffer,
+            priorValuesBuffer,
             rollbackEdit,
             snackError,
             tabIndex,
         ]
     );
 
+    //this listener is called for each cell modified
     const handleCellEditing = useCallback(
-        (event) => {
-            addDataToBuffer(event.colDef.field, event.oldValue);
+        (params) => {
+            addDataToBuffer(params.colDef.field, params.oldValue);
         },
         [addDataToBuffer]
     );
 
+    //this listener is called once all cells listener have been called
     const handleRowEditing = useCallback(
         (params) => {
             if (isValidatingData) {
                 //we call stopEditing again to prevent editors flickering
-                gridRef.current.api.stopEditing();
+                //gridRef.current.api.stopEditing();
 
-                if (Object.values(previousValuesBuffer).length === 0) {
+                if (Object.values(priorValuesBuffer).length === 0) {
                     setEditingData();
                     return;
                 }
                 validateEdit(params);
             }
         },
-        [isValidatingData, previousValuesBuffer, validateEdit]
+        [isValidatingData, priorValuesBuffer, validateEdit]
     );
 
-    const handleEditingStopped = useCallback(() => {
-        if (!isValidatingData) {
-            rollbackEdit();
-        }
-    }, [isValidatingData, rollbackEdit]);
-
-    const handleCloseColumnsSettingDialog = useCallback(() => {
-        setPopupSelectColumnNames(false);
-    }, []);
-
-    useEffect(() => {
-        const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
-            .columns.filter((column) => lockedColumnsNames.has(column.id))
-            .map((column) => {
-                return { colId: column.field, pinned: 'left' };
-            });
-
-        if (isEditColumnVisible()) {
-            lockedColumnsConfig.unshift({ colId: 'edit', pinned: 'left' });
-        }
-
-        gridRef.current?.columnApi?.applyColumnState({
-            state: lockedColumnsConfig,
-            defaultState: { pinned: null },
-        });
-    }, [isEditColumnVisible, lockedColumnsNames, tabIndex]);
-
-    const renderTabs = useCallback(() => {
-        return TABLES_NAMES.map((table) => (
-            <Tab
-                key={table}
-                label={intl.formatMessage({
-                    id: table,
-                })}
-                disabled={props.disabled || editingData}
-            />
-        ));
-    }, [editingData, intl, props.disabled]);
+    const handleEditingStopped = useCallback(
+        (params) => {
+            if (!isValidatingData) {
+                rollbackEdit();
+            }
+            params.context.dynamicValidation = {};
+        },
+        [isValidatingData, rollbackEdit]
+    );
 
     return (
         <>
@@ -658,34 +611,31 @@ const NetworkTable = (props) => {
                 />
                 <Grid container>
                     <GlobalFilter
-                        disabled={props.disabled}
+                        disabled={!!(props.disabled || editingData)}
                         gridRef={gridRef}
                         ref={globalFilterRef}
                     />
-                    <Grid item className={classes.selectColumns}>
-                        <span
-                            className={clsx({
-                                [classes.disabledLabel]: props.disabled,
-                            })}
-                        >
-                            <FormattedMessage id="LabelSelectList" />
-                        </span>
-                        <IconButton
-                            disabled={props.disabled}
-                            className={clsx({
-                                [classes.blink]:
-                                    selectedColumnsNames.size === 0,
-                            })}
-                            aria-label="dialog"
-                            onClick={handleOpenPopupSelectColumnNames}
-                        >
-                            <ViewColumnIcon />
-                        </IconButton>
-                    </Grid>
+                    <ColumnsConfig
+                        tabIndex={tabIndex}
+                        disabled={!!(props.disabled || editingData)}
+                        reorderedTableDefinitionIndexes={
+                            reorderedTableDefinitionIndexes
+                        }
+                        selectedColumnsNames={selectedColumnsNames}
+                        setSelectedColumnsNames={setSelectedColumnsNames}
+                        lockedColumnsNames={lockedColumnsNames}
+                        setLockedColumnsNames={setLockedColumnsNames}
+                    />
                     <CsvExport
                         gridRef={gridRef}
                         tableName={TABLES_DEFINITION_INDEXES.get(tabIndex).name}
-                        disabled={props.disabled || rowData.length === 0}
+                        disabled={
+                            !!(
+                                props.disabled ||
+                                rowData.length === 0 ||
+                                editingData
+                            )
+                        }
                     />
                 </Grid>
             </Grid>
@@ -704,7 +654,7 @@ const NetworkTable = (props) => {
                         fetched={props.network.isResourceFetched(
                             TABLES_DEFINITION_INDEXES.get(tabIndex).resource
                         )}
-                        scrollTop={scrollToIndex}
+                        scrollToIndex={scrollToIndex}
                         visible={props.visible}
                         startEditing={startEditing}
                         network={props.network}
@@ -715,19 +665,6 @@ const NetworkTable = (props) => {
                     />
                 </div>
             )}
-
-            <ColumnsSettingsDialog
-                popupSelectColumnNames={popupSelectColumnNames}
-                tabIndex={tabIndex}
-                handleClose={handleCloseColumnsSettingDialog}
-                reorderedTableDefinitionIndexes={
-                    reorderedTableDefinitionIndexes
-                }
-                selectedColumnsNames={selectedColumnsNames}
-                setSelectedColumnsNames={setSelectedColumnsNames}
-                lockedColumnsNames={lockedColumnsNames}
-                setLockedColumnsNames={setLockedColumnsNames}
-            />
         </>
     );
 };

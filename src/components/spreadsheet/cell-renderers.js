@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { Checkbox, Tooltip, IconButton } from '@mui/material';
 import { makeStyles } from '@mui/styles';
@@ -5,7 +12,7 @@ import clsx from 'clsx';
 import { RunningStatus } from 'components/util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -69,19 +76,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const BooleanCellRenderer = (rowData, key, style) => {
-    const isChecked = rowData.value;
+export const BooleanCellRenderer = (props) => {
+    const isChecked = props.value;
     return (
-        <div key={key} style={style}>
-            <div>
-                {isChecked !== undefined && (
-                    <Checkbox
-                        color="default"
-                        checked={isChecked}
-                        disableRipple={true}
-                    />
-                )}
-            </div>
+        <div>
+            {isChecked !== undefined && (
+                <Checkbox
+                    color="default"
+                    checked={isChecked}
+                    disableRipple={true}
+                />
+            )}
         </div>
     );
 };
@@ -126,37 +131,34 @@ export const NumericCellRenderer = (props) => {
     const classes = useStyles();
     const cellValue = formatCell(props);
     return (
-        <div key={props.rowIndex}>
-            <div className={classes.tableCell}>
-                {cellValue.tooltip !== undefined ? (
-                    <Tooltip
-                        disableFocusListener
-                        disableTouchListener
-                        title={cellValue.tooltip}
-                    >
-                        <div
-                            children={cellValue.value}
-                            className={clsx({
-                                [classes.valueInvalid]:
-                                    props.colDef.canBeInvalidated &&
-                                    props.loadFlowStatus !==
-                                        RunningStatus.SUCCEED,
-                                [classes.numericValue]: props.colDef.numeric,
-                            })}
-                        />
-                    </Tooltip>
-                ) : (
-                    <OverflowableText
+        <div className={classes.tableCell}>
+            {cellValue.tooltip !== undefined ? (
+                <Tooltip
+                    disableFocusListener
+                    disableTouchListener
+                    title={cellValue.tooltip}
+                >
+                    <div
+                        children={cellValue.value}
                         className={clsx({
                             [classes.valueInvalid]:
                                 props.colDef.canBeInvalidated &&
                                 props.loadFlowStatus !== RunningStatus.SUCCEED,
                             [classes.numericValue]: props.colDef.numeric,
                         })}
-                        text={cellValue.value}
                     />
-                )}
-            </div>
+                </Tooltip>
+            ) : (
+                <OverflowableText
+                    className={clsx({
+                        [classes.valueInvalid]:
+                            props.colDef.canBeInvalidated &&
+                            props.loadFlowStatus !== RunningStatus.SUCCEED,
+                        [classes.numericValue]: props.colDef.numeric,
+                    })}
+                    text={cellValue.value}
+                />
+            )}
         </div>
     );
 };
@@ -174,25 +176,14 @@ export const EditableCellRenderer = (props) => {
     }, [props]);
 
     return (
-        <div style={props.style}>
-            <div className={classes.editCell}>
-                <IconButton size={'small'} onClick={handleStartEditing}>
-                    <EditIcon />
-                </IconButton>
-            </div>
-        </div>
-    );
-};
-
-export const DisabledCellRenderer = (props) => {
-    const classes = useStyles();
-    return (
-        <div style={props.style}>
-            <div className={classes.editCell}>
-                <IconButton size={'small'} disabled>
-                    <EditIcon />
-                </IconButton>
-            </div>
+        <div className={classes.editCell}>
+            <IconButton
+                size={'small'}
+                onClick={handleStartEditing}
+                disabled={props.context.editingData ? true : false}
+            >
+                <EditIcon />
+            </IconButton>
         </div>
     );
 };
@@ -201,16 +192,20 @@ export const ReferenceLineCellRenderer = (props) => {
     const classes = useStyles();
 
     return (
-        <div className={clsx(classes.referenceEditRow, classes.leftFade)}>
-            <div className={classes.editCell}>
-                <IconButton
-                    size={'small'}
-                    style={{ backgroundColor: 'transparent' }}
-                    disableRipple
-                >
-                    <MoreHorizIcon />
-                </IconButton>
-            </div>
+        <div
+            className={clsx(
+                classes.referenceEditRow,
+                classes.leftFade,
+                classes.editCell
+            )}
+        >
+            <IconButton
+                size={'small'}
+                style={{ backgroundColor: 'transparent' }}
+                disableRipple
+            >
+                <MoreHorizIcon />
+            </IconButton>
         </div>
     );
 };
@@ -231,26 +226,22 @@ export const EditingCellRenderer = (props) => {
 
     const isFormInvalid = Object.entries(props.context.editErrors).length !== 0;
     return (
-        <span style={props.style} className={classes.leftFade}>
-            <div className={classes.editCell}>
-                <>
-                    {
-                        //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
-                        props.context.startEditing()
-                    }
-                    <IconButton
-                        size={'small'}
-                        onClick={validateEdit}
-                        disabled={isFormInvalid}
-                    >
-                        <CheckIcon />
-                    </IconButton>
+        <div className={clsx(classes.leftFade, classes.editCell)}>
+            {
+                //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
+                props.context.startEditing()
+            }
+            <IconButton
+                size={'small'}
+                onClick={validateEdit}
+                disabled={isFormInvalid}
+            >
+                <CheckIcon />
+            </IconButton>
 
-                    <IconButton size={'small'} onClick={resetEdit}>
-                        <ClearIcon />
-                    </IconButton>
-                </>
-            </div>
-        </span>
+            <IconButton size={'small'} onClick={resetEdit}>
+                <ClearIcon />
+            </IconButton>
+        </div>
     );
 };

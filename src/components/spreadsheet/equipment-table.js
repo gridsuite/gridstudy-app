@@ -1,4 +1,11 @@
-import React, { useMemo, useCallback, useEffect } from 'react';
+/**
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import React, { useMemo, useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -24,13 +31,14 @@ export const EquipmentTable = ({
     editingData,
     startEditing,
     columns,
-    scrollTop,
+    scrollToIndex,
     gridRef,
     handleColumnDrag,
     handleRowEditing,
     handleCellEditing,
     handleEditingStopped,
-    ...props
+    fetched,
+    network,
 }) => {
     const classes = useStyles();
     const theme = useTheme();
@@ -38,7 +46,7 @@ export const EquipmentTable = ({
 
     const getRowStyle = useCallback(
         (params) => {
-            if (params.rowIndex === scrollTop) {
+            if (params.rowIndex === scrollToIndex) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
@@ -52,7 +60,11 @@ export const EquipmentTable = ({
                 };
             }
         },
-        [scrollTop, theme.palette.primary.main, theme.selectedRow.background]
+        [
+            scrollToIndex,
+            theme.palette.primary.main,
+            theme.selectedRow.background,
+        ]
     );
 
     const getLocaleText = useCallback(
@@ -67,12 +79,6 @@ export const EquipmentTable = ({
         },
         [intl.locale]
     );
-
-    useEffect(() => {
-        if (scrollTop) {
-            gridRef.current.api?.ensureIndexVisible(scrollTop, 'top');
-        }
-    }, [gridRef, scrollTop]);
 
     const getRowId = useMemo(() => {
         return (params) => params.data.id;
@@ -99,14 +105,13 @@ export const EquipmentTable = ({
 
     return (
         <>
-            {!props.fetched && (
+            {!fetched ? (
                 <LoaderWithOverlay
                     color="inherit"
                     loaderSize={70}
                     loadingMessageText={'LoadingRemoteData'}
                 />
-            )}
-            {props.fetched && (
+            ) : (
                 <div className={clsx([theme.aggrid, classes.grid])}>
                     <AgGridReact
                         ref={gridRef}
@@ -130,8 +135,10 @@ export const EquipmentTable = ({
                         suppressClickEdit={true}
                         getLocaleText={getLocaleText}
                         context={{
-                            network: props.network,
+                            network: network,
                             editErrors: {},
+                            dynamicValidation: {},
+                            editingData: editingData,
                             startEditing: startEditing,
                         }}
                     />

@@ -1,7 +1,21 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Checkbox, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import {
+    Checkbox,
+    Grid,
+    IconButton,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+} from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
@@ -15,6 +29,8 @@ import {
 } from './config-tables';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import clsx from 'clsx';
+import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 
 const useStyles = makeStyles((theme) => ({
     checkboxSelectAll: {
@@ -33,19 +49,23 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '1.2em',
         color: theme.palette.action.disabled,
     },
+    selectColumns: {
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(6),
+    },
 }));
 
-export const ColumnsSettingsDialog = ({
-    popupSelectColumnNames,
+export const ColumnsConfig = ({
     tabIndex,
-    handleClose,
     reorderedTableDefinitionIndexes,
     selectedColumnsNames,
     setSelectedColumnsNames,
     lockedColumnsNames,
     setLockedColumnsNames,
-    ...props
+    disabled,
 }) => {
+    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
+
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
     );
@@ -57,6 +77,14 @@ export const ColumnsSettingsDialog = ({
     const intl = useIntl();
     const classes = useStyles();
 
+    const handleOpenPopupSelectColumnNames = useCallback(() => {
+        setPopupSelectColumnNames(true);
+    }, []);
+
+    const handleCloseColumnsSettingDialog = useCallback(() => {
+        setPopupSelectColumnNames(false);
+    }, []);
+
     const handleCancelPopupSelectColumnNames = useCallback(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
         setSelectedColumnsNames(
@@ -66,14 +94,14 @@ export const ColumnsSettingsDialog = ({
         setLockedColumnsNames(
             new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
         );
-        handleClose();
+        handleCloseColumnsSettingDialog();
     }, [
         allDisplayedColumnsNames,
         tabIndex,
         setSelectedColumnsNames,
         allLockedColumnsNames,
         setLockedColumnsNames,
-        handleClose,
+        handleCloseColumnsSettingDialog,
     ]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
@@ -109,13 +137,13 @@ export const ColumnsSettingsDialog = ({
             });
         });
         setLockedColumnsNames(lockedColumnsNames);
-        handleClose();
+        handleCloseColumnsSettingDialog();
     }, [
         tabIndex,
         selectedColumnsNames,
         lockedColumnsNames,
         setLockedColumnsNames,
-        handleClose,
+        handleCloseColumnsSettingDialog,
         allDisplayedColumnsNames,
         setSelectedColumnsNames,
         snackError,
@@ -231,20 +259,40 @@ export const ColumnsSettingsDialog = ({
     };
 
     return (
-        <SelectOptionsDialog
-            open={popupSelectColumnNames}
-            onClose={handleCancelPopupSelectColumnNames}
-            onClick={handleSaveSelectedColumnNames}
-            title={intl.formatMessage({
-                id: 'ColumnsList',
-            })}
-            child={checkListColumnsNames()}
-            //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beatiful-dnd warning related to nested scroll containers
-            style={{
-                '& .MuiPaper-root': {
-                    overflowY: 'visible',
-                },
-            }}
-        />
+        <Grid item className={classes.selectColumns}>
+            <span
+                className={clsx({
+                    [classes.disabledLabel]: disabled,
+                })}
+            >
+                <FormattedMessage id="LabelSelectList" />
+            </span>
+            <IconButton
+                disabled={disabled}
+                className={clsx({
+                    [classes.blink]: selectedColumnsNames.size === 0,
+                })}
+                aria-label="dialog"
+                onClick={handleOpenPopupSelectColumnNames}
+            >
+                <ViewColumnIcon />
+            </IconButton>
+
+            <SelectOptionsDialog
+                open={popupSelectColumnNames}
+                onClose={handleCancelPopupSelectColumnNames}
+                onClick={handleSaveSelectedColumnNames}
+                title={intl.formatMessage({
+                    id: 'ColumnsList',
+                })}
+                child={checkListColumnsNames()}
+                //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beatiful-dnd warning related to nested scroll containers
+                style={{
+                    '& .MuiPaper-root': {
+                        overflowY: 'visible',
+                    },
+                }}
+            />
+        </Grid>
     );
 };

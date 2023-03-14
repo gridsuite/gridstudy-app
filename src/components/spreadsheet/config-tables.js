@@ -822,7 +822,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        max: 'maxP',
+                        maxExpression: 'maxP',
                         defaultValue: params.data.minP,
                     };
                 },
@@ -840,7 +840,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        min: 'minP',
+                        minExpression: 'minP',
                         defaultValue: params.data.maxP,
                     };
                 },
@@ -862,8 +862,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        min: 'minP',
-                        max: 'maxP',
+                        minExpression: 'minP',
+                        maxExpression: 'maxP',
                         defaultValue: params.data.targetP,
                     };
                 },
@@ -927,7 +927,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.targetV,
-                        max: 10,
+                        maxExpression: 10,
                     };
                 },
                 editableCondition: {

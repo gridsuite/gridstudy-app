@@ -32,7 +32,7 @@ const refreshEditingCell = (params) => {
 };
 
 export const NumericalField = forwardRef(
-    ({ defaultValue, min, max, ...props }, ref) => {
+    ({ defaultValue, minExpression, maxExpression, ...props }, ref) => {
         const [error, setError] = useState(false);
         const intl = useIntl();
 
@@ -49,14 +49,26 @@ export const NumericalField = forwardRef(
         });
         const [value, setValue] = useState(defaultValue);
 
-        //min and max are either a reference to a variable or a static number
+        //minExpression and maxExpression are either a reference to a variable or a static number
         const getMin = useCallback(() => {
-            return isNaN(min) ? props.data[min] : min;
-        }, [min, props.data]);
+            if (!isNaN(minExpression)) {
+                return minExpression;
+            }
+            if (props.context.dynamicValidation[minExpression]) {
+                return props.context.dynamicValidation[minExpression];
+            }
+            return props.data[minExpression];
+        }, [minExpression, props.context.dynamicValidation, props.data]);
 
         const getMax = useCallback(() => {
-            return isNaN(max) ? props.data[max] : max;
-        }, [max, props.data]);
+            if (!isNaN(maxExpression)) {
+                return maxExpression;
+            }
+            if (props.context.dynamicValidation[maxExpression]) {
+                return props.context.dynamicValidation[maxExpression];
+            }
+            return props.data[maxExpression];
+        }, [maxExpression, props.context.dynamicValidation, props.data]);
 
         const [minValue, setMinValue] = useState(getMin());
         const [maxValue, setMaxValue] = useState(getMax());
@@ -96,10 +108,15 @@ export const NumericalField = forwardRef(
             (ev) => {
                 const newVal = ev.target.value;
                 setValue(newVal);
-                props.data[props.colDef.field] = parseFloat(newVal);
+                props.context.dynamicValidation[props.colDef.field] =
+                    parseFloat(newVal);
                 validateChange(newVal);
             },
-            [props, validateChange]
+            [
+                props.colDef.field,
+                props.context.dynamicValidation,
+                validateChange,
+            ]
         );
 
         function renderNumericText() {
