@@ -10,17 +10,13 @@ import {
     changeNetworkModificationOrder,
     copyOrMoveModifications,
     deleteModifications,
-    fetchLines,
     fetchNetworkModification,
     fetchNetworkModifications,
-    fetchSubstations,
-    fetchVoltageLevels,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../refactor/dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from 'components/refactor/dialogs/generator/modification/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
@@ -36,11 +32,12 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
+import LoadModificationDialog from '../../refactor/dialogs/load-modification/load-modification-dialog';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
-import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
+import LineSplitWithVoltageLevelDialog from '../../refactor/dialogs/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -221,37 +218,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLs(p) {
-        const voltageLevelOptionsPromise = fetchVoltageLevels(
-            studyUuid,
-            currentNode?.id
-        );
-        return {
-            ...p,
-            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
-        };
-    }
-
-    function withLines(p) {
-        const lineOptionsPromise = fetchLines(studyUuid, currentNode?.id, []);
-        return {
-            ...p,
-            lineOptionsPromise: lineOptionsPromise,
-        };
-    }
-
-    function withSubstations(p) {
-        const substationOptionsPromise = fetchSubstations(
-            studyUuid,
-            currentNode?.id,
-            []
-        );
-        return {
-            ...p,
-            substationOptionsPromise: substationOptionsPromise,
-        };
-    }
-
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
@@ -301,13 +267,7 @@ const NetworkModificationNodeEditor = () => {
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
-            dialog: () =>
-                adapt(
-                    LineSplitWithVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LineSplitWithVoltageLevelDialog),
             icon: <AddIcon />,
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
