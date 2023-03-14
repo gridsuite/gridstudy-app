@@ -35,8 +35,6 @@ import { useIntl } from 'react-intl';
 const LoadModificationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
-    const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
-        useState(true);
     const [loadInfos, setLoadInfos] = useState(null);
     const intl = useIntl();
 
@@ -53,7 +51,6 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             true
         ).then((values) => {
             setEquipmentOptions(values);
-            setLoadingEquipmentOptions(false);
         });
     }, [studyUuid, currentNodeUuid]);
 
@@ -85,17 +82,11 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
 
     const loadIdField = (
         <AutocompleteInput
-            allowNewValue={true}
+            allowNewValue
             forcePopupIcon
-            //hack to work with freesolo autocomplete
-            //setting null programatically when freesolo is enable wont empty the field
             name={`${EQUIPMENT_ID}`}
             label="ID"
-            options={
-                loadingEquipmentOptions
-                    ? []
-                    : equipmentOptions.sort((a, b) => a.localeCompare(b))
-            }
+            options={equipmentOptions.sort((a, b) => a.localeCompare(b))}
             getOptionLabel={getObjectId}
             size={'small'}
             formProps={{ autoFocus: true, ...filledTextField }}
@@ -108,6 +99,7 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             label={'Name'}
             formProps={filledTextField}
             previousValue={loadInfos?.name}
+            clearable
         />
     );
 
@@ -135,6 +127,7 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={loadInfos?.p0}
+            clearable
         />
     );
 
@@ -144,6 +137,7 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
             previousValue={loadInfos?.q0}
+            clearable
         />
     );
 
