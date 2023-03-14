@@ -373,6 +373,10 @@ const App = () => {
                 }
             );
 
+            // Dispatch globally when all params are loaded to allow easy waiting.
+            // This might not be necessary but allows to gradually migrate parts
+            // of the code that don't subscribe to exactly the parameters they need.
+            // Code that depends on this could be rewritten to depend on what it acually needs.
             Promise.all([fetchCommonConfigPromise, fetchAppConfigPromise])
                 .then(() => {
                     dispatch(setParamsLoaded());

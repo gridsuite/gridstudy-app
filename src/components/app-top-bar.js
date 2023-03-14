@@ -121,31 +121,30 @@ const CustomSuffixRenderer = ({ props, element }) => {
         element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
     )
         return (
-            network && (
-                <>
-                    {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type && (
-                        <IconButton
-                            disabled={
-                                networkAreaDiagramNbVoltageLevels >
-                                    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS &&
-                                networkAreaDiagramDepth !== 0
-                            }
-                            onClick={(e) =>
-                                openNetworkAreaDiagramCB(e, element)
-                            }
-                            size={'small'}
-                        >
-                            <TimelineIcon fontSize={'small'} />
-                        </IconButton>
-                    )}
+            <>
+                {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type && (
                     <IconButton
-                        onClick={(e) => centerOnSubstationCB(e, element)}
+                        disabled={
+                            networkAreaDiagramNbVoltageLevels >
+                                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS &&
+                            networkAreaDiagramDepth !== 0
+                        }
+                        onClick={(e) =>
+                            openNetworkAreaDiagramCB(e, element)
+                        }
                         size={'small'}
                     >
-                        <GpsFixedIcon fontSize={'small'} />
+                        <TimelineIcon fontSize={'small'} />
                     </IconButton>
-                </>
-            )
+                )}
+                <IconButton
+                    disabled={!network && element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
+                    onClick={(e) => centerOnSubstationCB(e, element)}
+                    size={'small'}
+                >
+                    <GpsFixedIcon fontSize={'small'} />
+                </IconButton>
+            </>
         );
 
     return (

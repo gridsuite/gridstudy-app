@@ -383,7 +383,8 @@ const NetworkModificationNodeEditor = () => {
     }, [editData]);
 
     useEffect(() => {
-        // first time then fetch modifications
+        // first time with currentNode initialized then fetch modifications
+        // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
         if (
             currentNode &&
@@ -456,7 +457,6 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const doDeleteModification = useCallback(() => {
-        if (!currentNode) return;
         deleteModifications(
             studyUuid,
             currentNode.id,
@@ -472,7 +472,6 @@ const NetworkModificationNodeEditor = () => {
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
     const doCutModification = useCallback(() => {
-        if (!currentNode) return;
         // just memorize the list of selected modifications
         setCopiedModifications(
             Array.from(selectedItems).map((item) => item.uuid)
@@ -492,7 +491,6 @@ const NetworkModificationNodeEditor = () => {
     }, [selectedItems]);
 
     const doPasteModification = useCallback(() => {
-        if (!currentNode) return;
         if (copyInfos.copyType === CopyType.MOVE) {
             copyOrMoveModifications(
                 studyUuid,
@@ -647,47 +645,45 @@ const NetworkModificationNodeEditor = () => {
 
     const renderNetworkModificationsList = (network) => {
         return (
-            network && (
-                <DragDropContext
-                    onDragEnd={commit}
-                    onDragStart={() => setIsDragging(true)}
+            <DragDropContext
+                onDragEnd={commit}
+                onDragStart={() => setIsDragging(true)}
+            >
+                <Droppable
+                    droppableId="network-modification-list"
+                    isDropDisabled={isLoading() || isAnyNodeBuilding}
                 >
-                    <Droppable
-                        droppableId="network-modification-list"
-                        isDropDisabled={isLoading() || isAnyNodeBuilding}
-                    >
-                        {(provided) => (
-                            <div
-                                className={classes.listContainer}
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                            >
-                                <CheckboxList
-                                    className={classes.list}
-                                    onChecked={setSelectedItems}
-                                    values={modifications}
-                                    itemComparator={(a, b) => a.uuid === b.uuid}
-                                    itemRenderer={(props) => (
-                                        <ModificationListItem
-                                            key={props.item.uuid}
-                                            onEdit={doEditModification}
-                                            isDragging={isDragging}
-                                            network={network}
-                                            isOneNodeBuilding={
-                                                isAnyNodeBuilding
-                                            }
-                                            {...props}
-                                            disabled={isLoading()}
-                                        />
-                                    )}
-                                    toggleSelectAll={toggleSelectAll}
-                                />
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
-            )
+                    {(provided) => (
+                        <div
+                            className={classes.listContainer}
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                        >
+                            <CheckboxList
+                                className={classes.list}
+                                onChecked={setSelectedItems}
+                                values={modifications}
+                                itemComparator={(a, b) => a.uuid === b.uuid}
+                                itemRenderer={(props) => (
+                                    <ModificationListItem
+                                        key={props.item.uuid}
+                                        onEdit={doEditModification}
+                                        isDragging={isDragging}
+                                        network={network}
+                                        isOneNodeBuilding={
+                                            isAnyNodeBuilding
+                                        }
+                                        {...props}
+                                        disabled={isLoading()}
+                                    />
+                                )}
+                                toggleSelectAll={toggleSelectAll}
+                            />
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
         );
     };
 
@@ -775,7 +771,7 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCutModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={selectedItems.size === 0 || isAnyNodeBuilding}
+                    disabled={selectedItems.size === 0 || isAnyNodeBuilding || !currentNode}
                 >
                     <ContentCutIcon />
                 </IconButton>
@@ -806,21 +802,22 @@ const NetworkModificationNodeEditor = () => {
                             className={classes.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) ||
-                                isAnyNodeBuilding
+                                isAnyNodeBuilding ||
+                                !currentNode
                             }
                         >
                             <ContentPasteIcon />
                         </IconButton>
                     </span>
                 </Tooltip>
-                <IconButton
-                    onClick={doDeleteModification}
-                    size={'small'}
-                    className={classes.toolbarIcon}
-                    disabled={!(selectedItems?.size > 0) || isAnyNodeBuilding}
-                >
-                    <DeleteIcon />
-                </IconButton>
+                    <IconButton
+                        onClick={doDeleteModification}
+                        size={'small'}
+                        className={classes.toolbarIcon}
+                        disabled={!(selectedItems?.size > 0) || isAnyNodeBuilding || !currentNode}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
             </Toolbar>
             {renderPaneSubtitle()}
 
