@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -168,7 +168,7 @@ const LineAttachToVoltageLevelDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
-    const onLineDo = useCallback(
+    const onLineCreationDo = useCallback(
         (
             studyUuid,
             currentNodeUuid,
@@ -217,7 +217,7 @@ const LineAttachToVoltageLevelDialog = ({
         [setValue]
     );
 
-    const onVoltageLevelDo = useCallback(
+    const onVoltageLevelCreationDo = useCallback(
         ({
             studyUuid,
             currentNodeUuid,
@@ -255,8 +255,9 @@ const LineAttachToVoltageLevelDialog = ({
     );
 
     const onVoltageLevelChange = useCallback(() => {
-        const currentVoltageLevelId =
-            getValues()[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
+        const currentVoltageLevelId = getValues(
+            `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`
+        );
         if (
             newVoltageLevel &&
             currentVoltageLevelId !== newVoltageLevel?.equipmentId
@@ -279,9 +280,9 @@ const LineAttachToVoltageLevelDialog = ({
                 <LineSplitWithVoltageLevelForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    onLineDo={onLineDo}
+                    onLineCreationDo={onLineCreationDo}
                     lineToEdit={attachmentLine}
-                    onVoltageLevelDo={onVoltageLevelDo}
+                    onVoltageLevelCreationDo={onVoltageLevelCreationDo}
                     voltageLevelToEdit={newVoltageLevel}
                     onVoltageLevelChange={onVoltageLevelChange}
                 />
