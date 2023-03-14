@@ -18,10 +18,8 @@ import { FormattedMessage } from 'react-intl';
 import { useCSVPicker } from '../../../../dialogs/inputs/input-hooks';
 
 import CsvDownloader from 'react-csv-downloader';
-import {
-    MAX_TAP_CHANGER_STEPS_NUMBER,
-    PHASE_TAP,
-} from '../two-windings-transformer-creation-dialog';
+import { PHASE_TAP } from '../two-windings-transformer-creation-dialog';
+import { MAX_ROWS_NUMBER } from '../../../../util/dnd-table/dnd-table';
 
 export const ImportRuleDialog = (props) => {
     const handleCloseDialog = () => {
@@ -35,7 +33,7 @@ export const ImportRuleDialog = (props) => {
                 : 'ImportRegulationRule',
         header: props.csvColumns,
         resetTrigger: props.openImportRuleDialog,
-        maxTapNumber: MAX_TAP_CHANGER_STEPS_NUMBER,
+        maxTapNumber: MAX_ROWS_NUMBER,
     });
 
     const handleSave = () => {
