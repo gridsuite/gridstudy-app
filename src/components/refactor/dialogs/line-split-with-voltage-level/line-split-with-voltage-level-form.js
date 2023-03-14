@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -27,7 +27,7 @@ import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-
 const LineSplitWithVoltageLevelForm = ({
     studyUuid,
     currentNode,
-    onVoltageLevelDo,
+    onVoltageLevelCreationDo,
     voltageLevelToEdit,
     onVoltageLevelChange,
 }) => {
@@ -71,7 +71,7 @@ const LineSplitWithVoltageLevelForm = ({
         }
     }, [voltageLevelToEdit, voltageLevelOptions]);
 
-    const getFormatedBusOrBusbarSectionOptions = useMemo(() => {
+    const formatedBusOrBusbarSectionOptions = useMemo(() => {
         return voltageLevelToEdit?.busbarSections
             ?.sort((a, b) => a?.id?.localeCompare(b?.id))
             .map((busbarSection) => {
@@ -108,7 +108,7 @@ const LineSplitWithVoltageLevelForm = ({
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            newBusOrBusbarSectionOptions={getFormatedBusOrBusbarSectionOptions}
+            newBusOrBusbarSectionOptions={formatedBusOrBusbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
             onVoltageLevelChangeCallback={onVoltageLevelChange}
@@ -151,7 +151,7 @@ const LineSplitWithVoltageLevelForm = ({
                     onClose={onVoltageLevelDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
-                    onCreateVoltageLevel={onVoltageLevelDo}
+                    onCreateVoltageLevel={onVoltageLevelCreationDo}
                     editData={voltageLevelToEdit}
                 />
             )}
