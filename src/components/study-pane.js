@@ -317,23 +317,21 @@ const StudyPane = ({
 
     function renderTableView() {
         return (
-            props.view === StudyView.SPREADSHEET && (
-                <Paper className={clsx('singlestretch-child', classes.table)}>
-                    <NetworkTable
-                        network={network}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        equipmentId={tableEquipment.id}
-                        equipmentType={tableEquipment.type}
-                        equipmentChanged={tableEquipment.changed}
-                        loadFlowStatus={getLoadFlowRunningStatus(
-                            loadFlowInfos?.loadFlowStatus
-                        )}
-                        disabled={disabled}
-                        visible={props.view === StudyView.SPREADSHEET}
-                    />
-                </Paper>
-            )
+            <Paper className={clsx('singlestretch-child', classes.table)}>
+                <NetworkTable
+                    network={network}
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    equipmentId={tableEquipment.id}
+                    equipmentType={tableEquipment.type}
+                    equipmentChanged={tableEquipment.changed}
+                    loadFlowStatus={getLoadFlowRunningStatus(
+                        loadFlowInfos?.loadFlowStatus
+                    )}
+                    disabled={disabled}
+                    visible={props.view === StudyView.SPREADSHEET}
+                />
+            </Paper>
         );
     }
 
