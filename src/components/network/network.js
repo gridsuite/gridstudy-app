@@ -417,7 +417,7 @@ export default class Network {
         //  equipment loading without necessarily dispatch update
 
         // we keep the node id before fetching, so we can check if it changed when retrieving data
-        const nodeBeforeFetch = currentNodeRef.current
+        const nodeBeforeFetch = currentNodeRef.current;
         equipments.forEach((equipment) => {
             const fetcher = this.lazyLoaders.get(equipment);
             if (fetcher)
@@ -429,7 +429,7 @@ export default class Network {
                     })
                 );
         });
-        Promise.all(fetchers).then(( ) => {
+        Promise.all(fetchers).then((values) => {
             values.forEach((value) => {
                 if (nodeBeforeFetch === currentNodeRef.current) {
                     this.lazyLoaders.get(value.equipment).fetched = true;
