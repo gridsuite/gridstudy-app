@@ -50,7 +50,7 @@ import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
-import LimitsPane from './limits-pane/limits-pane';
+import LineLimitsPane from './line-limits-pane/line-limits-pane';
 import LineCreationDialogTabs from './line-creation-dialog-tabs';
 import LineCharacteristicsPane from './line-characteristics-pane/line-characteristics-pane';
 import {
@@ -62,7 +62,7 @@ import {
     getLimitsEmptyFormData,
     getLimitsFormData,
     getLimitsValidationSchema,
-} from './limits-pane/limits-pane-utils';
+} from './line-limits-pane/line-limits-pane-utils';
 import {
     getHeaderEmptyFormData,
     getHeaderFormData,
@@ -138,10 +138,10 @@ const LineCreationDialog = ({
                 ...getLineFormData({
                     seriesResistance: line.r,
                     seriesReactance: line.x,
-                    shuntConductance1: line.g1, // this form uses and displays microSiemens
-                    shuntSusceptance1: line.b1,
-                    shuntConductance2: line.g2,
-                    shuntSusceptance2: line.b2,
+                    shuntConductance1: unitToMicroUnit(line.g1), // this form uses and displays microSiemens
+                    shuntSusceptance1: unitToMicroUnit(line.b1),
+                    shuntConductance2: unitToMicroUnit(line.g2),
+                    shuntSusceptance2: unitToMicroUnit(line.b2),
                     ...(displayConnectivity &&
                         getConnectivityFormData(
                             {
@@ -399,7 +399,7 @@ const LineCreationDialog = ({
                     hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB}
                     p={1}
                 >
-                    <LimitsPane />
+                    <LineLimitsPane />
                 </Box>
 
                 <EquipmentSearchDialog

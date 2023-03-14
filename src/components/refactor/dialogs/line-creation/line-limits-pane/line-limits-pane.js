@@ -27,7 +27,7 @@ import React, { useMemo } from 'react';
 import DndTable from '../../../../util/dnd-table/dnd-table';
 import { useFieldArray } from 'react-hook-form';
 
-const LimitsPane = ({ id = LIMITS }) => {
+const LineLimitsPane = ({ id = LIMITS }) => {
     const intl = useIntl();
 
     const columnsDefinition = useMemo(() => {
@@ -132,4 +132,4 @@ const LimitsPane = ({ id = LIMITS }) => {
     );
 };
 
-export default LimitsPane;
+export default LineLimitsPane;
