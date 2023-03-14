@@ -10,6 +10,7 @@ import React, {
     useState,
     forwardRef,
     useImperativeHandle,
+    useEffect,
 } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -44,10 +45,15 @@ export const NumericalField = forwardRef(
                 refreshValidation() {
                     setMaxValue(getMax());
                     setMinValue(getMin());
+                    validateChange();
                 },
             };
         });
         const [value, setValue] = useState(defaultValue);
+
+        useEffect(() => {
+            refreshEditingCell(props);
+        }, [props, value]);
 
         //minExpression and maxExpression are either a reference to a variable or a static number
         const getMin = useCallback(() => {
@@ -87,22 +93,25 @@ export const NumericalField = forwardRef(
             );
         }, []);
 
-        const validateChange = useCallback(
-            (newVal) => {
-                const updatedErrors = { ...props.context.editErrors };
-                if (isValid(newVal, minValue, maxValue)) {
-                    setError(false);
-                    delete updatedErrors[props.colDef.field];
-                    props.context.editErrors = updatedErrors;
-                } else {
-                    setError(true);
-                    updatedErrors[props.colDef.field] = true;
-                    props.context.editErrors = updatedErrors;
-                }
-                refreshEditingCell(props);
-            },
-            [props, isValid, minValue, maxValue]
-        );
+        const validateChange = useCallback(() => {
+            const updatedErrors = { ...props.context.editErrors };
+            if (isValid(value, minValue, maxValue)) {
+                setError(false);
+                delete updatedErrors[props.colDef.field];
+                props.context.editErrors = updatedErrors;
+            } else {
+                setError(true);
+                updatedErrors[props.colDef.field] = true;
+                props.context.editErrors = updatedErrors;
+            }
+        }, [
+            props.colDef.field,
+            props.context,
+            minValue,
+            maxValue,
+            value,
+            isValid,
+        ]);
 
         const validateEvent = useCallback(
             (ev) => {
@@ -110,13 +119,8 @@ export const NumericalField = forwardRef(
                 setValue(newVal);
                 props.context.dynamicValidation[props.colDef.field] =
                     parseFloat(newVal);
-                validateChange(newVal);
             },
-            [
-                props.colDef.field,
-                props.context.dynamicValidation,
-                validateChange,
-            ]
+            [props]
         );
 
         function renderNumericText() {

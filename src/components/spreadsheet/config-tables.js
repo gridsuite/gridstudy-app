@@ -927,7 +927,6 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.targetV,
-                        maxExpression: 10,
                     };
                 },
                 editableCondition: {

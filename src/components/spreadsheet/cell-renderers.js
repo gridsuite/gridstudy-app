@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { RunningStatus } from 'components/util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -224,7 +224,10 @@ export const EditingCellRenderer = (props) => {
         props.setEditingData();
     }, [props]);
 
-    const isFormInvalid = Object.entries(props.context.editErrors).length !== 0;
+    const isFormInvalid = useMemo(
+        () => Object.entries(props.context.editErrors).length !== 0,
+        [props.context.editErrors]
+    );
     return (
         <div className={clsx(classes.leftFade, classes.editCell)}>
             {

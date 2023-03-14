@@ -605,7 +605,7 @@ const NetworkTable = (props) => {
         <>
             <Grid container justifyContent={'space-between'}>
                 <EquipmentTabs
-                    disabled={props.disabled || editingData}
+                    disabled={!!(props.disabled || editingData)}
                     tabIndex={tabIndex}
                     handleSwitchTab={handleSwitchTab}
                 />
