@@ -670,9 +670,7 @@ const NetworkModificationNodeEditor = () => {
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
                                         network={network}
-                                        isOneNodeBuilding={
-                                            isAnyNodeBuilding
-                                        }
+                                        isOneNodeBuilding={isAnyNodeBuilding}
                                         {...props}
                                         disabled={isLoading()}
                                     />
@@ -771,7 +769,11 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCutModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={selectedItems.size === 0 || isAnyNodeBuilding || !currentNode}
+                    disabled={
+                        selectedItems.size === 0 ||
+                        isAnyNodeBuilding ||
+                        !currentNode
+                    }
                 >
                     <ContentCutIcon />
                 </IconButton>
@@ -810,14 +812,18 @@ const NetworkModificationNodeEditor = () => {
                         </IconButton>
                     </span>
                 </Tooltip>
-                    <IconButton
-                        onClick={doDeleteModification}
-                        size={'small'}
-                        className={classes.toolbarIcon}
-                        disabled={!(selectedItems?.size > 0) || isAnyNodeBuilding || !currentNode}
-                    >
-                        <DeleteIcon />
-                    </IconButton>
+                <IconButton
+                    onClick={doDeleteModification}
+                    size={'small'}
+                    className={classes.toolbarIcon}
+                    disabled={
+                        !(selectedItems?.size > 0) ||
+                        isAnyNodeBuilding ||
+                        !currentNode
+                    }
+                >
+                    <DeleteIcon />
+                </IconButton>
             </Toolbar>
             {renderPaneSubtitle()}
 

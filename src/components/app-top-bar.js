@@ -129,16 +129,17 @@ const CustomSuffixRenderer = ({ props, element }) => {
                                 NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS &&
                             networkAreaDiagramDepth !== 0
                         }
-                        onClick={(e) =>
-                            openNetworkAreaDiagramCB(e, element)
-                        }
+                        onClick={(e) => openNetworkAreaDiagramCB(e, element)}
                         size={'small'}
                     >
                         <TimelineIcon fontSize={'small'} />
                     </IconButton>
                 )}
                 <IconButton
-                    disabled={!network && element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
+                    disabled={
+                        !network &&
+                        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
+                    }
                     onClick={(e) => centerOnSubstationCB(e, element)}
                     size={'small'}
                 >
