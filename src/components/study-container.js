@@ -620,7 +620,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
                     studyUuid,
-                    currentNode?.id,
+                    currentNodeRef, // we use currentNodeRef instead of currentNode to check if the node has changed while we fetch data
                     displayNetworkLoadingFailMessage,
                     dispatch,
                     {
@@ -630,7 +630,7 @@ export function StudyContainer({ view, onChangeTab }) {
             } else {
                 const network = new Network(
                     studyUuid,
-                    currentNode?.id,
+                    currentNodeRef,
                     displayNetworkLoadingFailMessage,
                     dispatch
                 );

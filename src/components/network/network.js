@@ -410,30 +410,38 @@ export default class Network {
         }
     }
 
-    prefetch(equipments) {
+    prefetch(equipments, currentNodeRef) {
         let fetchers = [];
         // TODO: here, instead of calling fetcher() method of the lazy loader (instead of method fetch() which fetches and dispatches equipment update)
         //  and modifying directly its "fetched" attribute, some refactoring should be done in remote-resource-handler in order to allow
         //  equipment loading without necessarily dispatch update
+
+        // we keep the node id before fetching, so we can check if it changed when retrieving data
+        const nodeBeforeFetch = currentNodeRef.current
         equipments.forEach((equipment) => {
             const fetcher = this.lazyLoaders.get(equipment);
             if (fetcher)
                 fetchers.push(
                     fetcher.fetcher().then((values) => {
-                        return { values: values, equipment: equipment };
+                        if (nodeBeforeFetch === currentNodeRef.current) {
+                            return { values: values, equipment: equipment };
+                        }
                     })
                 );
         });
-        Promise.all(fetchers).then((values) => {
+        Promise.all(fetchers).then(( ) => {
             values.forEach((value) => {
-                this.lazyLoaders.get(value.equipment).fetched = true;
-                this.setEquipment(value.equipment, value.values);
+                if (nodeBeforeFetch === currentNodeRef.current) {
+                    this.lazyLoaders.get(value.equipment).fetched = true;
+                    this.setEquipment(value.equipment, value.values);
+                }
             });
             this.dispatch(networkCreated(this));
         });
     }
 
-    constructor(studyUuid, currentNodeUuid, errHandler, dispatch, prefetch) {
+    constructor(studyUuid, currentNodeRef, errHandler, dispatch, prefetch) {
+        const currentNodeUuid = currentNodeRef.current?.id;
         this.generateEquipementHandler({
             substations: () => fetchSubstations(studyUuid, currentNodeUuid),
             loads: () => fetchLoads(studyUuid, currentNodeUuid),
@@ -464,7 +472,7 @@ export default class Network {
         this.dispatch = dispatch;
 
         if (prefetch !== undefined) {
-            this.prefetch(prefetch.equipments);
+            this.prefetch(prefetch.equipments, currentNodeRef);
         }
     }
 
