@@ -228,12 +228,12 @@ export const EditingCellRenderer = (props) => {
         () => Object.entries(props.context.editErrors).length !== 0,
         [props.context.editErrors]
     );
+
+    //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
+    props.context.startEditing();
+
     return (
         <div className={clsx(classes.leftFade, classes.editCell)}>
-            {
-                //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
-                props.context.startEditing()
-            }
             <IconButton
                 size={'small'}
                 onClick={validateEdit}
