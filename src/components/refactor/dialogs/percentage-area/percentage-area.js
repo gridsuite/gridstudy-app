@@ -39,7 +39,16 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
         const floatValueStr = formatPercentageString(value);
         const nextValue = '100-' + floatValueStr;
         setValue(SLIDER_PERCENTAGE, getSliderValue(nextValue));
-        setValue(LEFT_SIDE_PERCENTAGE, getLeftSidePercentageValue(nextValue));
+        setValue(LEFT_SIDE_PERCENTAGE, getLeftSidePercentageValue(nextValue), {
+            shouldValidate: true,
+        });
+        setValue(
+            RIGHT_SIDE_PERCENTAGE,
+            getRightSidePercentageValue(nextValue),
+            {
+                shouldValidate: true,
+            }
+        );
         return floatValueStr;
     };
 
@@ -48,14 +57,28 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
         setValue(SLIDER_PERCENTAGE, getSliderValue(floatValueStr));
         setValue(
             RIGHT_SIDE_PERCENTAGE,
-            getRightSidePercentageValue(floatValueStr)
+            getRightSidePercentageValue(floatValueStr),
+            {
+                shouldValidate: true,
+            }
+        );
+        setValue(
+            LEFT_SIDE_PERCENTAGE,
+            getLeftSidePercentageValue(floatValueStr),
+            {
+                shouldValidate: true,
+            }
         );
         return floatValueStr;
     };
 
     const onSliderChange = (value) => {
-        setValue(LEFT_SIDE_PERCENTAGE, getLeftSidePercentageValue(value));
-        setValue(RIGHT_SIDE_PERCENTAGE, getRightSidePercentageValue(value));
+        setValue(LEFT_SIDE_PERCENTAGE, getLeftSidePercentageValue(value), {
+            shouldValidate: true,
+        });
+        setValue(RIGHT_SIDE_PERCENTAGE, getRightSidePercentageValue(value), {
+            shouldValidate: true,
+        });
         return value;
     };
 

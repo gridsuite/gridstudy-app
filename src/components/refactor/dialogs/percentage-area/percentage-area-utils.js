@@ -68,9 +68,13 @@ export function getSliderValue(str) {
 }
 
 export function getLeftSidePercentageValue(str) {
-    if (typeof str === 'string' && str.substring(0, 4) === '100-')
-        return (str.substring(0, 3) - str.substring(4)).toFixed(maxDecimals);
-    return str.toFixed(maxDecimals);
+    if (typeof str === 'string') {
+        return str.substring(0, 4) === '100-'
+            ? str.substring(0, 3) - str.substring(4)
+            : str;
+    } else {
+        return str.toFixed(maxDecimals);
+    }
 }
 
 export function getRightSidePercentageValue(str) {
