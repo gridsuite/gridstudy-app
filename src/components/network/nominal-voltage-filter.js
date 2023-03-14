@@ -110,6 +110,7 @@ const NominalVoltageFilter = (props) => {
                                 key={value}
                                 button
                                 onClick={handleToggle([value], true)}
+                                disabled={!filteredNominalVoltages}
                             >
                                 <Checkbox
                                     color="default"
