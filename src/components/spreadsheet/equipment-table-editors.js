@@ -49,11 +49,6 @@ export const NumericalField = forwardRef(
                 },
             };
         });
-        const [value, setValue] = useState(defaultValue);
-
-        useEffect(() => {
-            refreshEditingCell(props);
-        }, [props, value]);
 
         //minExpression and maxExpression are either a reference to a variable or a static number
         const getMin = useCallback(() => {
@@ -78,6 +73,11 @@ export const NumericalField = forwardRef(
 
         const [minValue, setMinValue] = useState(getMin());
         const [maxValue, setMaxValue] = useState(getMax());
+        const [value, setValue] = useState(defaultValue);
+
+        useEffect(() => {
+            refreshEditingCell(props);
+        }, [props, value]);
 
         const isValid = useCallback((val, minVal, maxVal) => {
             if (isNaN(val)) {
