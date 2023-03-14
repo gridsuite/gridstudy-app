@@ -7,9 +7,17 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../utils/yup-config';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
+import {COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME} from "../../utils/field-constants";
+import {getPropertiesSchema} from "./property/property-utils";
+import SubstationCreationForm from "./substation-creation-form";
 
 const emptyFormData = {};
-const schema = yup.object().shape({});
+const schema = yup.object().shape({
+    [EQUIPMENT_ID]: yup.string().required(),
+    [EQUIPMENT_NAME]: yup.string(),
+    [COUNTRY]: yup.string().nullable(),
+    ...getPropertiesSchema()
+});
 
 const SubstationCreationDialog = ({
     editData,
@@ -56,6 +64,7 @@ const SubstationCreationDialog = ({
                 searchCopy={searchCopy}
                 {...dialogProps}
             >
+                <SubstationCreationForm/>
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}

@@ -368,6 +368,11 @@ export const useCountryValue = (props) => {
         [localizedCountriesModule]
     );
 
+    useEffect(() => {
+        console.log('values : ', values);
+        console.log('localizedCountriesModule : ', localizedCountriesModule)
+    }, [values, localizedCountriesModule])
+
     return useAutocompleteField({
         values,
         getLabel: getOptionLabel,
