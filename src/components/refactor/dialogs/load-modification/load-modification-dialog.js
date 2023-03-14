@@ -35,7 +35,7 @@ import LoadModificationForm from './load-modification-form';
 const schema = yup
     .object()
     .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_ID]: yup.string().nullable().required(),
         [EQUIPMENT_NAME]: yup.string(),
         [LOAD_TYPE]: yup.string().nullable(),
         [ACTIVE_POWER]: yup.number().nullable(),
