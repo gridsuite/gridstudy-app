@@ -62,7 +62,7 @@ export function getSliderValue(str) {
     if (typeof str === 'string' && str.substring(0, 4) === '100-') {
         const rest = str.substring(4);
         if (isNaN(rest)) return 100;
-        return parseFloat(str.substring(0, 3) - rest);
+        return str.substring(0, 3) - rest;
     }
     return parseFloat(str);
 }
