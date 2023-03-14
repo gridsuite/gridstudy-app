@@ -138,7 +138,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 <IconButton
                     disabled={
                         !network &&
-                        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
+                        element.type !== EQUIPMENT_TYPES.SUBSTATION.type
                     }
                     onClick={(e) => centerOnSubstationCB(e, element)}
                     size={'small'}
