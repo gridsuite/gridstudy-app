@@ -26,7 +26,7 @@ import {
     MAX_LOCKS_PER_TAB,
     TABLES_COLUMNS_NAMES,
     TABLES_NAMES,
-} from './config-tables';
+} from './utils/config-tables';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import clsx from 'clsx';

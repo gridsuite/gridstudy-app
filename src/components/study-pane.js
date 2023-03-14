@@ -36,7 +36,7 @@ import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
-import NetworkTable from './spreadsheet/network-table';
+import TableWrapper from './spreadsheet/table-wrapper';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -318,7 +318,7 @@ const StudyPane = ({
     function renderTableView() {
         return (
             <Paper className={clsx('singlestretch-child', classes.table)}>
-                <NetworkTable
+                <TableWrapper
                     network={network}
                     studyUuid={studyUuid}
                     currentNode={currentNode}

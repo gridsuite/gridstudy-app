@@ -23,7 +23,7 @@ import {
     TABLES_DEFINITIONS,
     TABLES_NAMES,
     MIN_COLUMN_WIDTH,
-} from './config-tables';
+} from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -33,7 +33,7 @@ import {
     EditableCellRenderer,
     EditingCellRenderer,
     ReferenceLineCellRenderer,
-} from './cell-renderers';
+} from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import { CsvExport } from './export-csv';
@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NetworkTable = (props) => {
+const TableWrapper = (props) => {
     const gridRef = useRef();
 
     const intl = useIntl();
@@ -664,7 +664,7 @@ const NetworkTable = (props) => {
     );
 };
 
-NetworkTable.defaultProps = {
+TableWrapper.defaultProps = {
     network: null,
     studyUuid: '',
     currentNode: null,
@@ -675,7 +675,7 @@ NetworkTable.defaultProps = {
     disabled: false,
 };
 
-NetworkTable.propTypes = {
+TableWrapper.propTypes = {
     network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
@@ -686,4 +686,4 @@ NetworkTable.propTypes = {
     disabled: PropTypes.bool,
 };
 
-export default NetworkTable;
+export default TableWrapper;

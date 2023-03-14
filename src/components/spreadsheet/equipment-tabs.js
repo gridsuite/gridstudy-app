@@ -7,7 +7,7 @@
 
 import { Grid, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { TABLES_NAMES } from './config-tables';
+import { TABLES_NAMES } from './utils/config-tables';
 
 export const EquipmentTabs = ({ tabIndex, handleSwitchTab, disabled }) => {
     const intl = useIntl();
