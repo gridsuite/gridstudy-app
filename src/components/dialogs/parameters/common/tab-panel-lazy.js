@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 const TabPanelLazy = (props) => {
@@ -21,7 +20,7 @@ const TabPanelLazy = (props) => {
 
     return (
         <div style={{ display: selected ? null : 'none' }} {...other}>
-            {initialized && <Box p={1}>{children}</Box>}
+            {initialized && children}
         </div>
     );
 };

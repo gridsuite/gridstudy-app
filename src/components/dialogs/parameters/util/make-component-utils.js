@@ -10,8 +10,7 @@ import { LabelledSilder, LineSeparator } from '../../dialogUtils';
 import IntegerInput from '../common/integer-input';
 import DoubleInput from '../common/double-input';
 import StringInput from '../common/string-input';
-import { SwitchWithLabel } from '../parameters';
-import { DropDown } from '../common/drop-down';
+import { DropDown, SwitchWithLabel } from '../parameters';
 
 // --- define render makers --- //
 export const makeRenderSwitchWithLabel =

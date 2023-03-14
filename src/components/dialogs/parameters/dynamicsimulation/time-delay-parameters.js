@@ -29,7 +29,7 @@ const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
         },
         stopTime: {
             type: TYPES.integer,
-            description: 'DynamicSimulationStartTime',
+            description: 'DynamicSimulationStopTime',
         },
     };
     return (

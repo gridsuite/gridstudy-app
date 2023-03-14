@@ -138,7 +138,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     <LineSeparator />
                 </Grid>
 
-                <Grid item maxWidth="md">
+                <Grid item maxWidth="md" width="100%">
                     <Tabs
                         value={tabValue}
                         variant="scrollable"
