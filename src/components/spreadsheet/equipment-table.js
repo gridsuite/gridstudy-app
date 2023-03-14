@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useEffect, useState } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 export const EquipmentTable = ({
     rows,
     editingData,
+    setEditingData,
     columns,
     scrollTop,
     gridRef,
@@ -35,8 +36,6 @@ export const EquipmentTable = ({
     const classes = useStyles();
     const theme = useTheme();
     const intl = useIntl();
-
-    const [editErrors, setEditErrors] = useState({});
 
     const startEditing = useCallback(() => {
         const topRow = gridRef.current?.api?.getPinnedTopRow(0);
@@ -81,11 +80,6 @@ export const EquipmentTable = ({
         [intl.locale]
     );
 
-    const handleRowEditingStarted = useCallback(() => {
-        // console.log('######### - DEBUG TAG - #########');
-        // setIsEditing(true);
-    }, []);
-
     useEffect(() => {
         if (scrollTop) {
             gridRef.current.api?.ensureIndexVisible(scrollTop, 'top');
@@ -98,11 +92,8 @@ export const EquipmentTable = ({
 
     //we filter enter key event to prevent closing edit mode
     const suppressEnter = (params) => {
-        var KEY_ENTER = 'Enter';
-        var event = params.event;
-        var key = event.key;
-        var suppress = key === KEY_ENTER;
-        return suppress;
+        const filteredKeys = ['Enter', 'Tab'];
+        return filteredKeys.includes(params.event.key);
     };
 
     const defaultColDef = useMemo(
@@ -148,7 +139,6 @@ export const EquipmentTable = ({
                         onCellValueChanged={handleCellEditing}
                         onRowValueChanged={handleRowEditing}
                         onRowEditingStopped={handleEditingStopped}
-                        onRowEditingStarted={handleRowEditingStarted}
                         suppressDragLeaveHidesColumns={true}
                         suppressPropertyNamesCheck={true}
                         suppressColumnVirtualisation={true}
@@ -156,9 +146,8 @@ export const EquipmentTable = ({
                         getLocaleText={getLocaleText}
                         context={{
                             network: props.network,
-                            editErrors: editErrors,
+                            editErrors: {},
                             startEditing: startEditing,
-                            setEditErrors: setEditErrors,
                         }}
                     />
                 </div>

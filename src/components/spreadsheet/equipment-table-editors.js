@@ -16,64 +16,23 @@ import MenuItem from '@mui/material/MenuItem';
 import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 
-const ITEM_HEIGHT = 36;
-const ITEMS_NUMBER = 5;
-const ITEMS_PADDING = 8;
-
-export const TapChangerSelector = ({
-    tapChanger,
-    setColumnError,
-    resetColumnError,
-    forceLineUpdate,
-    columnDefinition,
-    setter,
-    defaultValue,
-    ...props
-}) => {
-    return (
-        <Select
-            defaultValue={
-                /*
-                the generic caller code uses the 'numeric' attributes of the column
-                to chose for the defaultValue prop either the raw value
-                (here and object with a tapPosition field)
-                or the formatted value (using cellDataGetter, here the tapPosition integer)
-                so to avoid problems if this logic ever changes, don't use defaultValue here
-                */
-                tapChanger.tapPosition
-            }
-            onChange={(ev) => {
-                setter({ ...tapChanger, tapPosition: ev.target.value });
-            }}
-            size={'medium'}
-            margin={'none'}
-            MenuProps={{
-                PaperProps: {
-                    sx: {
-                        maxHeight: ITEM_HEIGHT * ITEMS_NUMBER + ITEMS_PADDING,
-                    },
-                },
-            }}
-            {...props}
-        >
-            {[
-                ...Array(
-                    tapChanger.highTapPosition - tapChanger.lowTapPosition + 1
-                ),
-            ].map((step, index) => (
-                <MenuItem
-                    key={'tapChanger' + index}
-                    value={index + tapChanger.lowTapPosition}
-                >
-                    {index + tapChanger.lowTapPosition}
-                </MenuItem>
-            ))}
-        </Select>
-    );
+const refreshEditingCell = (params) => {
+    const rowNode = params.api.getPinnedTopRow(0);
+    const refreshConfig = {
+        rowNodes: [rowNode],
+        columns: ['edit'],
+        force: true,
+    };
+    params.api.getCellEditorInstances().forEach((cellEditor) => {
+        if (cellEditor.refreshValidation) {
+            cellEditor.refreshValidation();
+        }
+    });
+    params.api.refreshCells(refreshConfig);
 };
 
 export const NumericalField = forwardRef(
-    ({ defaultValue, min, max, setter, style, inputProps, ...props }, ref) => {
+    ({ defaultValue, min, max, ...props }, ref) => {
         const [error, setError] = useState(false);
         const intl = useIntl();
 
@@ -82,17 +41,25 @@ export const NumericalField = forwardRef(
                 getValue() {
                     return value;
                 },
+                refreshValidation() {
+                    setMaxValue(getMax());
+                    setMinValue(getMin());
+                },
             };
         });
+        const [value, setValue] = useState(defaultValue);
 
-        const createInitialState = () => {
-            return {
-                value: defaultValue,
-            };
-        };
+        //min and max are either a reference to a variable or a static number
+        const getMin = useCallback(() => {
+            return isNaN(min) ? props.data[min] : min;
+        }, [min, props.data]);
 
-        const initialState = createInitialState();
-        const [value, setValue] = useState(initialState.value);
+        const getMax = useCallback(() => {
+            return isNaN(max) ? props.data[max] : max;
+        }, [max, props.data]);
+
+        const [minValue, setMinValue] = useState(getMin());
+        const [maxValue, setMaxValue] = useState(getMax());
 
         const isValid = useCallback((val, minVal, maxVal) => {
             if (isNaN(val)) {
@@ -111,30 +78,28 @@ export const NumericalField = forwardRef(
         const validateChange = useCallback(
             (newVal) => {
                 const updatedErrors = { ...props.context.editErrors };
-                if (isValid(newVal, min, max)) {
+                if (isValid(newVal, minValue, maxValue)) {
                     setError(false);
                     delete updatedErrors[props.colDef.field];
-
-                    props.context.setEditErrors(updatedErrors);
                     props.context.editErrors = updatedErrors;
                 } else {
                     setError(true);
                     updatedErrors[props.colDef.field] = true;
-
-                    props.context.setEditErrors(updatedErrors);
                     props.context.editErrors = updatedErrors;
                 }
+                refreshEditingCell(props);
             },
-            [isValid, min, max, props.context, props.colDef.field]
+            [props, isValid, minValue, maxValue]
         );
 
         const validateEvent = useCallback(
             (ev) => {
                 const newVal = ev.target.value;
                 setValue(newVal);
+                props.data[props.colDef.field] = parseFloat(newVal);
                 validateChange(newVal);
             },
-            [validateChange]
+            [props, validateChange]
         );
 
         function renderNumericText() {
@@ -147,17 +112,15 @@ export const NumericalField = forwardRef(
                     type={'number'}
                     size={'small'}
                     margin={'none'}
-                    style={{ ...style, padding: 0 }}
                     inputProps={{
                         style: {
                             textAlign: 'center',
                             fontSize: 'small',
                         },
-                        min: { min },
-                        max: { max },
+                        min: { minValue },
+                        max: { maxValue },
                         step: 'any',
                         lang: 'en-US', // to have . as decimal separator
-                        ...inputProps,
                     }}
                 />
             );
@@ -165,12 +128,21 @@ export const NumericalField = forwardRef(
 
         function renderNumericTextWithTooltip() {
             let tooltip = '';
-            if (min !== undefined && max !== undefined) {
-                tooltip = intl.formatMessage({ id: 'MinMax' }, { min, max });
-            } else if (min !== undefined) {
-                tooltip = intl.formatMessage({ id: 'OnlyMin' }, { min });
-            } else if (max !== undefined) {
-                tooltip = intl.formatMessage({ id: 'OnlyMax' }, { max });
+            if (minValue !== undefined && maxValue !== undefined) {
+                tooltip = intl.formatMessage(
+                    { id: 'MinMax' },
+                    { min: minValue, max: maxValue }
+                );
+            } else if (minValue !== undefined) {
+                tooltip = intl.formatMessage(
+                    { id: 'OnlyMin' },
+                    { min: minValue }
+                );
+            } else if (maxValue !== undefined) {
+                tooltip = intl.formatMessage(
+                    { id: 'OnlyMax' },
+                    { max: maxValue }
+                );
             }
             if (tooltip !== '') {
                 return <Tooltip title={tooltip}>{renderNumericText()}</Tooltip>;
@@ -186,57 +158,54 @@ export const NumericalField = forwardRef(
     }
 );
 
-export const BooleanListField = ({
-    setColumnError,
-    resetColumnError,
-    forceLineUpdate,
-    columnDefinition,
-    setter,
-    defaultValue,
-    ...props
-}) => {
-    const createInitialState = () => {
-        return {
-            value: defaultValue,
-        };
-    };
+export const BooleanListField = forwardRef(
+    ({ defaultValue, ...props }, ref) => {
+        const intl = useIntl();
+        const [value, setValue] = useState(defaultValue);
 
-    const initialState = createInitialState();
-    const intl = useIntl();
-    const [value, setValue] = useState(initialState.value);
+        useImperativeHandle(ref, () => {
+            return {
+                getValue() {
+                    return value;
+                },
+            };
+        });
 
-    const validateChange = useCallback(
-        (ev) => {
-            const val = ev.target.value;
-            setValue(val);
-            if (props.colDef.resetColumnsInError) {
-                props.colDef.resetColumnsInError.forEach((column) => {
-                    if (Boolean(val) === column.value) {
-                        //resetColumnError(column.dependencyColumn);
-                    }
-                });
-            }
-        },
-        [props.colDef.resetColumnsInError]
-    );
+        const validateChange = useCallback(
+            (ev) => {
+                const val = ev.target.value;
+                setValue(val);
+                if (props.colDef.resetColumnsInError) {
+                    const updatedErrors = { ...props.context.editErrors };
 
-    return (
-        <Select
-            value={value}
-            onChange={validateChange}
-            size={'medium'}
-            margin={'none'}
-            style={{
-                width: '100%',
-            }}
-            {...props}
-        >
-            <MenuItem value={1} key={props.colDef.field + '_1'}>
-                <em>{intl.formatMessage({ id: 'true' })}</em>
-            </MenuItem>
-            <MenuItem value={0} key={props.colDef.field + '_0'}>
-                <em>{intl.formatMessage({ id: 'false' })}</em>
-            </MenuItem>
-        </Select>
-    );
-};
+                    props.colDef.resetColumnsInError.forEach((column) => {
+                        if (Boolean(val) === column.value) {
+                            delete updatedErrors[column.dependencyColumn];
+                        }
+                    });
+                    props.context.editErrors = updatedErrors;
+                }
+                refreshEditingCell(props);
+            },
+            [props]
+        );
+
+        return (
+            <Select
+                ref={ref}
+                value={value}
+                onChange={validateChange}
+                size={'medium'}
+                margin={'none'}
+                style={{ width: '100%' }}
+            >
+                <MenuItem value={1} key={props.colDef.field + '_1'}>
+                    <em>{intl.formatMessage({ id: 'true' })}</em>
+                </MenuItem>
+                <MenuItem value={0} key={props.colDef.field + '_0'}>
+                    <em>{intl.formatMessage({ id: 'false' })}</em>
+                </MenuItem>
+            </Select>
+        );
+    }
+);

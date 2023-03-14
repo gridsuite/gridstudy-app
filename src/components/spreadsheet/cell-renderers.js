@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { RunningStatus } from 'components/util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -218,8 +218,6 @@ export const EditedLineCellRenderer = (props) => {
 export const EditingCellRenderer = (props) => {
     const classes = useStyles();
 
-    props.context.startEditing();
-
     const validateEdit = useCallback(() => {
         props.api?.stopEditing();
         props.setIsValidatingData(true);
@@ -231,9 +229,10 @@ export const EditingCellRenderer = (props) => {
     }, [props]);
 
     return (
-        <span style={props.style} className={clsx(classes.leftFade)}>
+        <span style={props.style} className={classes.leftFade}>
             <div className={classes.editCell}>
                 <>
+                    {props.context.startEditing()}
                     <IconButton
                         size={'small'}
                         onClick={validateEdit}

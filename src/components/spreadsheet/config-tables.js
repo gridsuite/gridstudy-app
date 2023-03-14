@@ -822,7 +822,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        max: params.data.maxP,
+                        max: 'maxP',
                         defaultValue: params.data.minP,
                     };
                 },
@@ -840,7 +840,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        min: params.data.minP,
+                        min: 'minP',
                         defaultValue: params.data.maxP,
                     };
                 },
@@ -862,8 +862,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        min: params.data.minP,
-                        max: params.data.maxP,
+                        min: 'minP',
+                        max: 'maxP',
                         defaultValue: params.data.targetP,
                     };
                 },
@@ -900,7 +900,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: BooleanListField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue: params.data.voltageRegulatorOn,
+                        defaultValue: params.data.voltageRegulatorOn | 0,
                     };
                 },
                 resetColumnsInError: [

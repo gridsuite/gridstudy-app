@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useState,
-    useRef,
-    useDebugValue,
-} from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from '../network/network';
@@ -219,7 +213,6 @@ const NetworkTable = (props) => {
                             params: {
                                 setEditingData: setEditingData,
                                 setIsValidatingData: setIsValidatingData,
-                                tabIndex: tabIndex,
                             },
                         };
                     } else if (editingData?.id === params.data.id) {
@@ -308,6 +301,17 @@ const NetworkTable = (props) => {
         },
         [props.disabled, props.network]
     );
+
+    const startEditing = useCallback(() => {
+        const topRow = gridRef.current?.api?.getPinnedTopRow(0);
+        if (topRow) {
+            gridRef.current.api?.startEditingCell({
+                rowIndex: topRow.rowIndex,
+                colKey: 'edit',
+                rowPinned: topRow.rowPinned,
+            });
+        }
+    }, [gridRef]);
 
     const [rowData, setRowData] = useState(getRows(tabIndex));
     const [columnData, setColumnData] = useState(
@@ -504,6 +508,52 @@ const NetworkTable = (props) => {
         });
     }, [getCSVFilename]);
 
+    const buildEditPromise = useCallback(
+        (editingData, groovyCr) => {
+            switch (editingData?.metadata.equipmentType) {
+                case EQUIPMENT_TYPES.LOAD.type:
+                    return modifyLoad(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.type,
+                        editingData.p0,
+                        editingData.q0,
+                        undefined,
+                        undefined,
+                        false,
+                        undefined
+                    );
+                case EQUIPMENT_TYPES.GENERATOR.type:
+                    return modifyGenerator(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.energySource,
+                        editingData.minP,
+                        editingData.maxP,
+                        undefined,
+                        editingData.targetP,
+                        editingData.targetQ,
+                        editingData.voltageRegulatorOn,
+                        editingData.targetV,
+                        undefined,
+                        undefined,
+                        undefined
+                    );
+                default:
+                    return requestNetworkChange(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        groovyCr
+                    );
+            }
+        },
+        [props.currentNode?.id, props.studyUuid]
+    );
+
     const validateEdit = useCallback(
         (params) => {
             // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
@@ -537,47 +587,8 @@ const NetworkTable = (props) => {
                     column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
 
-            Promise.resolve(
-                editingData?.metadata.equipmentType ===
-                    EQUIPMENT_TYPES.LOAD.type
-                    ? modifyLoad(
-                          props.studyUuid,
-                          props.currentNode?.id,
-                          editingData.id,
-                          editingData.name,
-                          editingData.type,
-                          editingData.p0,
-                          editingData.q0,
-                          undefined,
-                          undefined,
-                          false,
-                          undefined
-                      )
-                    : editingData?.metadata.equipmentType ===
-                      EQUIPMENT_TYPES.GENERATOR.type
-                    ? modifyGenerator(
-                          props.studyUuid,
-                          props.currentNode?.id,
-                          editingData.id,
-                          editingData.name,
-                          editingData.energySource,
-                          editingData.minP,
-                          editingData.maxP,
-                          undefined,
-                          editingData.targetP,
-                          editingData.targetQ,
-                          editingData.voltageRegulatorOn,
-                          editingData.targetV,
-                          undefined,
-                          undefined,
-                          undefined
-                      )
-                    : requestNetworkChange(
-                          props.studyUuid,
-                          props.currentNode?.id,
-                          groovyCr
-                      )
-            )
+            const editPromise = buildEditPromise(editingData, groovyCr);
+            Promise.resolve(editPromise)
                 .then(() => {
                     const transaction = {
                         update: [editingData],
@@ -599,11 +610,10 @@ const NetworkTable = (props) => {
                 });
         },
         [
+            buildEditPromise,
             editingData,
             intl,
             previousValuesBuffer,
-            props.currentNode?.id,
-            props.studyUuid,
             rollbackEdit,
             snackError,
             tabIndex,
@@ -782,6 +792,7 @@ const NetworkTable = (props) => {
                     scrollTop={scrollToIndex}
                     visible={props.visible}
                     editingData={editingData}
+                    startEditing={startEditing}
                     network={props.network}
                     handleColumnDrag={handleColumnDrag}
                     handleRowEditing={handleRowEditing}
