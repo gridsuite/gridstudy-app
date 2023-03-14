@@ -56,20 +56,14 @@ export const TABLES_DEFINITIONS = {
             {
                 field: 'id',
                 id: 'ID',
-                filter: true,
-                editable: true,
             },
             {
                 field: 'name',
                 id: 'Name',
-                filter: true,
-                editable: true,
             },
             {
                 field: 'countryName',
                 id: 'Country',
-                filter: true,
-                editable: true,
             },
         ],
     },
