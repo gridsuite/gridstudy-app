@@ -231,8 +231,8 @@ export const EditingCellRenderer = (props) => {
 
     useEffect(() => {
         //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
-        props.context.startEditing();
-    }, [props.context]);
+        props.startEditing();
+    }, [props]);
 
     return (
         <div className={clsx(classes.leftFade, classes.editCell)}>

@@ -188,6 +188,7 @@ const NetworkTable = (props) => {
                             params: {
                                 setEditingData: setEditingData,
                                 setIsValidatingData: setIsValidatingData,
+                                startEditing: startEditing,
                             },
                         };
                     } else if (editingData?.id === params.data.id) {
@@ -651,7 +652,6 @@ const NetworkTable = (props) => {
                         )}
                         scrollToIndex={scrollToIndex}
                         visible={props.visible}
-                        startEditing={startEditing}
                         network={props.network}
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}

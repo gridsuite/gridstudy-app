@@ -139,7 +139,6 @@ export const EquipmentTable = ({
                             editErrors: {},
                             dynamicValidation: {},
                             isEditing: editingData ? true : false,
-                            startEditing: startEditing,
                         }}
                     />
                 </div>
