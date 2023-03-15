@@ -7,9 +7,6 @@
 
 import Grid from '@mui/material/Grid';
 import {
-    ATTACHMENT_LINE_ID,
-    ATTACHMENT_POINT_ID,
-    ATTACHMENT_POINT_NAME,
     LINE1_ID,
     LINE1_NAME,
     LINE2_ID,
@@ -17,38 +14,25 @@ import {
 } from 'components/refactor/utils/field-constants';
 import React, { useEffect, useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../../dialogs/dialogUtils';
-
+import AddIcon from '@mui/icons-material/ControlPoint';
+import EditIcon from '@mui/icons-material/Edit';
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
-import { Box, Button, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import AddIcon from '@mui/icons-material/ControlPoint';
-import EditIcon from '@mui/icons-material/Edit';
-import LineCreationDialog from '../line-creation/line-creation-dialog';
-import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
+import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-creation-dialog';
 
-const LineAttachToVoltageLevelForm = ({
+const LineSplitWithVoltageLevelForm = ({
     studyUuid,
     currentNode,
-    onLineCreationDo,
-    lineToEdit,
     onVoltageLevelCreationDo,
     voltageLevelToEdit,
     onVoltageLevelChange,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [lineDialogOpen, setLineDialogOpen] = useState(false);
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
-
-    const onLineDialogClose = () => {
-        setLineDialogOpen(false);
-    };
-
-    const openLineDialog = () => {
-        setLineDialogOpen(true);
-    };
 
     const onVoltageLevelDialogClose = () => {
         setVoltageLevelDialogOpen(false);
@@ -98,27 +82,11 @@ const LineAttachToVoltageLevelForm = ({
             });
     }, [voltageLevelToEdit]);
 
-    const lineToAttachToForm = (
+    const lineToSplitForm = (
         <LineToAttachOrSplitForm
-            label={'LineToAttachTo'}
+            label={'LineToSplit'}
             studyUuid={studyUuid}
             currentNode={currentNode}
-        />
-    );
-
-    const attachmentPointIdField = (
-        <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} />
-    );
-
-    const attachmentPointNameField = (
-        <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} />
-    );
-
-    const lineToIdField = (
-        <TextInput
-            name={ATTACHMENT_LINE_ID}
-            label={'AttachedLineId'}
-            formProps={{ disabled: true }}
         />
     );
 
@@ -136,7 +104,7 @@ const LineAttachToVoltageLevelForm = ({
 
     const connectivityForm = (
         <ConnectivityForm
-            label={'AttachedVoltageLevelId'}
+            label={'VoltageLevelToSplitAt'}
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
@@ -149,13 +117,8 @@ const LineAttachToVoltageLevelForm = ({
 
     return (
         <>
-            <GridSection title="LineToAttachTo" />
-            {gridItem(lineToAttachToForm, 12)}
-            <GridSection title="AttachmentPoint" />
-            <Grid container spacing={2}>
-                {gridItem(attachmentPointIdField, 6)}
-                {gridItem(attachmentPointNameField, 6)}
-            </Grid>
+            <GridSection title="LineToSplit" />
+            {gridItem(lineToSplitForm, 12)}
             <GridSection title="VoltageLevel" />
             <Grid container spacing={2}>
                 {gridItem(connectivityForm, 12)}
@@ -168,21 +131,6 @@ const LineAttachToVoltageLevelForm = ({
                     >
                         <Typography align="left">
                             <FormattedMessage id="NewVoltageLevel" />
-                        </Typography>
-                    </Button>
-                )}
-            </Grid>
-            <GridSection title="AttachedLine" />
-            <Grid container spacing={2}>
-                {gridItem(lineToIdField, 6)}
-                <Box width="100%" />
-                {gridItem(
-                    <Button
-                        onClick={openLineDialog}
-                        startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}
-                    >
-                        <Typography align="left">
-                            <FormattedMessage id="AttachedLine" />
                         </Typography>
                     </Button>
                 )}
@@ -207,19 +155,8 @@ const LineAttachToVoltageLevelForm = ({
                     editData={voltageLevelToEdit}
                 />
             )}
-            {lineDialogOpen && (
-                <LineCreationDialog
-                    open={true}
-                    onClose={onLineDialogClose}
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                    displayConnectivity={false}
-                    onCreateLine={onLineCreationDo}
-                    editData={lineToEdit}
-                />
-            )}
         </>
     );
 };
 
-export default LineAttachToVoltageLevelForm;
+export default LineSplitWithVoltageLevelForm;
