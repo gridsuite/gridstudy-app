@@ -13,7 +13,6 @@ import 'ag-grid-community/styles/ag-theme-material.css';
 
 import { makeStyles, useTheme } from '@mui/styles';
 import LoaderWithOverlay from '../util/loader-with-overlay';
-import localeText from 'translations/ag-grid-fr';
 import { useIntl } from 'react-intl';
 import { LANG_FRENCH } from '@gridsuite/commons-ui';
 import localeFrench from 'translations/ag-grid-fr';
@@ -72,7 +71,7 @@ export const EquipmentTable = ({
             if (intl.locale !== LANG_FRENCH) {
                 return params.defaultValue;
             } else {
-                return localeText.hasOwnProperty(params.key)
+                return localeFrench.hasOwnProperty(params.key)
                     ? localeFrench[params.key]
                     : params.defaultValue;
             }
