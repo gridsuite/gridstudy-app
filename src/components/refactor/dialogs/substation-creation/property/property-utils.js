@@ -20,9 +20,17 @@ export const fetchPredefinedProperties = () => {
 };
 
 export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
-    [id]: yup.array().of(
-        yup.object().shape({
-            [NAME]: yup.string().nullable().required(),
-            [VALUE]: yup.string().nullable().required(),
-        }))
+    [id]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [NAME]: yup.string().nullable().required(),
+                [VALUE]: yup.string().nullable().required(),
+            })
+        )
+        .test(
+            'checkUniqueProperties',
+            'DuplicatedProps',
+            (values) => values.length === new Set(values.map((v) => v.name)).size
+        ),
 });

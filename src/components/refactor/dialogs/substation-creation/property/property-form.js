@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import AutocompleteInput from '../../../rhf-inputs/autocomplete-input';
 import {NAME, VALUE, VARIATION_MODE} from '../../../utils/field-constants';
 import { fetchPredefinedProperties } from './property-utils';
-import { useWatch } from 'react-hook-form';
+import {useController, useFormContext, useWatch} from 'react-hook-form';
 
 const PropertyForm = ({ name, index }) => {
     const [predefinedProperties, setPredefinedProperties] = useState();
