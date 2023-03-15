@@ -283,7 +283,7 @@ const TableWrapper = (props) => {
 
     const getRows = useCallback(
         (index) => {
-            if (props.disabled) {
+            if (props.disabled || !props.network) {
                 return [];
             }
             const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
@@ -644,7 +644,7 @@ const TableWrapper = (props) => {
                         rows={rowData}
                         columns={columnData}
                         editingData={editingData ? [editingData] : undefined}
-                        fetched={props.network.isResourceFetched(
+                        fetched={props.network?.isResourceFetched(
                             TABLES_DEFINITION_INDEXES.get(tabIndex).resource
                         )}
                         scrollToIndex={scrollToIndex}
