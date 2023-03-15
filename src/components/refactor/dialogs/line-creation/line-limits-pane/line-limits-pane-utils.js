@@ -29,7 +29,7 @@ const temporaryLimitsTableValidationSchema = () => ({
         .of(
             yup.object().shape({
                 [TEMPORARY_LIMIT_NAME]: yup.string().required(),
-                [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().positive(),
+                [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
                 [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
             })
         )
