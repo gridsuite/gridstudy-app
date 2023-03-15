@@ -71,8 +71,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
     }, [studyUuid, currentNode?.id, watchType, snackError]);
 
     const handleChange = useCallback(() => {
-        // TODO LGA : should be null, but works better (now) with empty string
-        setValue(EQUIPMENT_ID, '');
+        setValue(EQUIPMENT_ID, null);
     }, [setValue]);
 
     const equipmentTypeField = (
@@ -97,7 +96,12 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
             label="ID"
             options={equipmentsOptions}
             getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
+            //hack to work with freesolo autocomplete
+            //setting null programatically when freesolo is enable wont empty the field
+            inputTransform={(value) => (value === null ? '' : value)}
+            outputTransform={(value) =>
+                value === '' ? null : getObjectId(value)
+            }
             size={'small'}
             formProps={filledTextField}
         />
