@@ -13,7 +13,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
-const DndTableButtons = ({
+const DndTableBottomLeftButtons = ({
     handleUploadButton,
     uploadButtonMessageId,
     disabled,
@@ -21,7 +21,7 @@ const DndTableButtons = ({
     const intl = useIntl();
 
     return (
-        <Grid container item spacing={1} xs={6}>
+        <Grid container item xs spacing={1}>
             <Grid item>
                 <Tooltip
                     title={intl.formatMessage({
@@ -44,10 +44,10 @@ const DndTableButtons = ({
     );
 };
 
-DndTableButtons.prototype = {
+DndTableBottomLeftButtons.prototype = {
     handleUploadButton: PropTypes.func.isRequired,
     uploadButtonMessageId: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
 };
 
-export default DndTableButtons;
+export default DndTableBottomLeftButtons;
