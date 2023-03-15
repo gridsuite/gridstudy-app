@@ -1,6 +1,13 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useParameterState } from '../../dialogs/parameters/parameters';
 import { PARAM_LANGUAGE } from '../../../utils/config-params';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { getComputedLanguage } from '../../../utils/language';
 import AutocompleteInput from './autocomplete-input';
 
@@ -11,6 +18,7 @@ const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
     const englishCountriesModule = require('localized-countries')(
         require('localized-countries/data/en')
     );
+
     const localizedCountriesModule = useMemo(() => {
         try {
             return require('localized-countries')(
@@ -29,19 +37,6 @@ const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
                 ? Object.keys(localizedCountriesModule.object())
                 : [],
         [localizedCountriesModule]
-    );
-
-    useEffect(() => {
-        console.log('values : ', values);
-        console.log('localizedCountriesModule : ', localizedCountriesModule);
-    }, [values, localizedCountriesModule]);
-
-    useEffect(() => {
-        console.log('values local : ', localizedCountriesModule.get('AF'));
-    }, []);
-    const countries = useMemo(
-        () => values.map((value) => localizedCountriesModule.get(value)),
-        [values, localizedCountriesModule]
     );
 
     return (

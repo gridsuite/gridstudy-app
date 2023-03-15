@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import Grid from '@mui/material/Grid';
 import {
     filledTextField,
@@ -11,13 +18,13 @@ import {
     COUNTRY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    ID,
 } from '../../utils/field-constants';
 import CountrySelectionInput from '../../rhf-inputs/country-selection-input';
 import ExpandableInput from '../../rhf-inputs/expandable-input';
 import PropertyForm from './property/property-form';
+import { getPropertyInitialValues } from './property/property-utils';
 
-const SubstationCreationForm = ({}) => {
+const SubstationCreationForm = () => {
     const substationIdField = (
         <TextInput
             name={EQUIPMENT_ID}
@@ -48,8 +55,10 @@ const SubstationCreationForm = ({}) => {
             name={ADDITIONAL_PROPERTIES}
             Field={PropertyForm}
             addButtonLabel={'AddProperty'}
+            initialValue={getPropertyInitialValues()}
         />
     );
+
     return (
         <>
             <Grid container spacing={2}>

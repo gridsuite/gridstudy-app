@@ -1,9 +1,16 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { gridItem } from '../../../../dialogs/dialogUtils';
 import React, { useEffect, useMemo, useState } from 'react';
 import AutocompleteInput from '../../../rhf-inputs/autocomplete-input';
-import {NAME, VALUE, VARIATION_MODE} from '../../../utils/field-constants';
+import { NAME, VALUE } from '../../../utils/field-constants';
 import { fetchPredefinedProperties } from './property-utils';
-import {useController, useFormContext, useWatch} from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 const PropertyForm = ({ name, index }) => {
     const [predefinedProperties, setPredefinedProperties] = useState();
@@ -34,6 +41,7 @@ const PropertyForm = ({ name, index }) => {
             options={predefinedNames}
             label={'PropertyName'}
             size={'small'}
+            allowNewValue
         />
     );
 
@@ -43,6 +51,7 @@ const PropertyForm = ({ name, index }) => {
             options={predefinedValues}
             label={'PropertyValue'}
             size={'small'}
+            allowNewValue
         />
     );
 

@@ -266,7 +266,7 @@ const NetworkModificationNodeEditor = () => {
             dialog: () => adapt(TwoWindingsTransformerCreationDialog),
             icon: <AddIcon />,
         },
-        SUBSTATION_CREATION_REFACTOR: {
+        SUBSTATION_CREATION: {
             label: 'CreateSubstation',
             dialog: () => adapt(SubstationCreationDialog),
             icon: <AddIcon />,
