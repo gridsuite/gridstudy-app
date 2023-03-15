@@ -251,20 +251,10 @@ const TableWrapper = (props) => {
                 .map((column) => enrichColumn(column));
 
             function sortByIndex(a, b) {
-                if (reorderedTableDefinitionIndexes) {
-                    if (
-                        reorderedTableDefinitionIndexes.indexOf(a.id) <
-                        reorderedTableDefinitionIndexes.indexOf(b.id)
-                    ) {
-                        return -1;
-                    }
-                    if (
-                        reorderedTableDefinitionIndexes.indexOf(a.id) >
-                        reorderedTableDefinitionIndexes.indexOf(b.id)
-                    )
-                        return 1;
-                }
-                return 0;
+                return (
+                    reorderedTableDefinitionIndexes.indexOf(a.id) -
+                    reorderedTableDefinitionIndexes.indexOf(b.id)
+                );
             }
             generatedTableColumns.sort(sortByIndex);
 
@@ -290,7 +280,7 @@ const TableWrapper = (props) => {
             const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
             const datasourceRows = tableDefinition.getter
                 ? tableDefinition.getter(props.network)
-                : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
+                : props.network[tableDefinition.resource];
 
             if (!datasourceRows) return [];
             return datasourceRows;
@@ -361,12 +351,16 @@ const TableWrapper = (props) => {
             props.equipmentType !== null &&
             !manualTabSwitch
         ) {
-            const newIndex = getTabIndexFromEquipementType(props.equipmentType);
-            setTabIndex(newIndex); // select the right table type
+            const newTabIndex = getTabIndexFromEquipementType(
+                props.equipmentType
+            );
+            setTabIndex(newTabIndex); // select the right table type
             // calculate row index to scroll to
-            const rows = getRows(newIndex);
-            let index = rows.findIndex((r) => r.id === props.equipmentId);
-            setScrollToIndex(index ? index : undefined);
+            const newRowIndex = rowData.findIndex(
+                (r) => r.id === props.equipmentId
+            );
+            //test different to -1 because findIndex returns -1 when no occurence is found
+            setScrollToIndex(newRowIndex !== -1 ? newRowIndex : undefined);
         } else if (manualTabSwitch) {
             setScrollToIndex();
         }
@@ -375,8 +369,8 @@ const TableWrapper = (props) => {
         props.equipmentId,
         props.equipmentType,
         props.equipmentChanged,
-        getRows,
         manualTabSwitch,
+        rowData,
     ]);
 
     useEffect(() => {
@@ -436,11 +430,9 @@ const TableWrapper = (props) => {
                 });
 
                 const [reorderedColDef] = columnData.splice(
-                    columnData.indexOf(
-                        columnData.find((obj) => {
-                            return obj.id === event.column.colDef.id;
-                        })
-                    ),
+                    columnData.findIndex((obj) => {
+                        return obj.id === event.column.colDef.id;
+                    }),
                     1
                 );
                 columnData.splice(event.toIndex, 0, reorderedColDef);
