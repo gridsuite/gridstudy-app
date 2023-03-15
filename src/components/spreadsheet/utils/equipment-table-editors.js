@@ -39,19 +39,6 @@ export const NumericalField = forwardRef(
         const [error, setError] = useState(false);
         const intl = useIntl();
 
-        useImperativeHandle(ref, () => {
-            return {
-                getValue() {
-                    return value;
-                },
-                refreshValidation() {
-                    setMaxValue(getMax());
-                    setMinValue(getMin());
-                    validateChange();
-                },
-            };
-        });
-
         //minExpression and maxExpression are either a reference to a variable or a static number
         const getMin = useCallback(() => {
             if (!isNaN(minExpression)) {
@@ -114,6 +101,23 @@ export const NumericalField = forwardRef(
             value,
             isValid,
         ]);
+
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue() {
+                        return value;
+                    },
+                    refreshValidation() {
+                        setMaxValue(getMax());
+                        setMinValue(getMin());
+                        validateChange();
+                    },
+                };
+            },
+            [getMax, getMin, validateChange, value]
+        );
 
         const validateEvent = useCallback(
             (ev) => {
@@ -186,13 +190,17 @@ export const BooleanListField = forwardRef(
         const intl = useIntl();
         const [value, setValue] = useState(defaultValue);
 
-        useImperativeHandle(ref, () => {
-            return {
-                getValue() {
-                    return value;
-                },
-            };
-        });
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    getValue() {
+                        return value;
+                    },
+                };
+            },
+            [value]
+        );
 
         const validateChange = useCallback(
             (ev) => {
