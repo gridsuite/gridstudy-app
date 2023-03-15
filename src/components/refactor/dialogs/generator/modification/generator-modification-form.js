@@ -43,7 +43,7 @@ import {
     getEnergySourceLabel,
 } from '../../../../network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     fetchEquipmentInfos,
@@ -60,21 +60,24 @@ const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
     resetForm,
+    editData,
     generatorToModify,
     setGeneratorToModify,
     updateReactiveCapabilityCurveTableRow,
-    shouldEmptyFormOnGeneratorIdChange,
-    setShouldEmptyFormOnGeneratorIdChange,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const { clearErrors } = useFormContext();
-
+    const shouldEmptyFormOnGeneratorIdChangeRef = useRef();
     const watchEquipmentId = useWatch({
         name: EQUIPMENT_ID,
     });
+
+    useEffect(() => {
+        if (!editData) shouldEmptyFormOnGeneratorIdChangeRef.current = true;
+    }, [editData]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -101,7 +104,6 @@ const GeneratorModificationForm = ({
     //then create empty reactive limits table depending on fetched equipment data
     useEffect(() => {
         clearErrors();
-
         if (watchEquipmentId) {
             fetchEquipmentInfos(
                 studyUuid,
@@ -114,7 +116,7 @@ const GeneratorModificationForm = ({
                     if (value) {
                         // when editing modification form, first render should not trigger this reset
                         // which would empty the form instead of displaying data of existing form
-                        if (shouldEmptyFormOnGeneratorIdChange) {
+                        if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
                             //creating empty table depending on existing generator
                             let reactiveCapabilityCurvePoints = [];
                             value?.reactiveCapabilityCurvePoints?.forEach(
@@ -129,7 +131,6 @@ const GeneratorModificationForm = ({
                                     });
                                 }
                             );
-
                             // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
                             resetForm(
                                 {
@@ -140,18 +141,17 @@ const GeneratorModificationForm = ({
                                 true
                             );
                         }
-                        setShouldEmptyFormOnGeneratorIdChange(true);
+                        shouldEmptyFormOnGeneratorIdChangeRef.current = true;
                         setGeneratorToModify(value);
                     }
                 })
                 .catch(() => setGeneratorToModify(null));
         } else {
+            resetForm();
             setGeneratorToModify(null);
         }
     }, [
         watchEquipmentId,
-        setShouldEmptyFormOnGeneratorIdChange,
-        shouldEmptyFormOnGeneratorIdChange,
         studyUuid,
         currentNodeUuid,
         setGeneratorToModify,

@@ -62,7 +62,10 @@ import {
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
-import { REMOVE } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import {
+    getModificationRowEmptyFormData,
+    REMOVE,
+} from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 const GeneratorModificationDialog = ({
     editData,
@@ -77,11 +80,6 @@ const GeneratorModificationDialog = ({
 
     const isSelectedGeneratorUndefined = generatorToModify === undefined;
     const isEditDataUndefined = editData === undefined;
-
-    const [
-        shouldEmptyFormOnGeneratorIdChange,
-        setShouldEmptyFormOnGeneratorIdChange,
-    ] = useState(!editData);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
@@ -175,7 +173,10 @@ const GeneratorModificationDialog = ({
                       [REACTIVE_CAPABILITY_CURVE_TABLE]:
                           completeReactiveCapabilityCurvePointsData(
                               editData?.reactiveCapabilityCurvePoints
-                          ) ?? [{}, {}],
+                          ) ?? [
+                              getModificationRowEmptyFormData(),
+                              getModificationRowEmptyFormData(),
+                          ],
                       ...getRegulatingTerminalFormData({
                           equipmentId: editData?.regulatingTerminalId?.value,
                           equipmentType:
@@ -438,16 +439,11 @@ const GeneratorModificationDialog = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     resetForm={clear}
+                    editData={editData}
                     generatorToModify={generatorToModify}
                     setGeneratorToModify={setGeneratorToModify}
                     updateReactiveCapabilityCurveTableRow={
                         updateReactiveCapabilityCurveTableRow
-                    }
-                    shouldEmptyFormOnGeneratorIdChange={
-                        shouldEmptyFormOnGeneratorIdChange
-                    }
-                    setShouldEmptyFormOnGeneratorIdChange={
-                        setShouldEmptyFormOnGeneratorIdChange
                     }
                 />
             </ModificationDialog>
