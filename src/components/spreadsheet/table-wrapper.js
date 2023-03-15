@@ -180,13 +180,10 @@ const TableWrapper = (props) => {
                 }
             }
 
-            column.width = column.columnWidth
-                ? column.columnWidth
-                : MIN_COLUMN_WIDTH;
-
-            column.pinned = lockedColumnsNames.has(column.id)
-                ? 'left'
-                : undefined;
+            column.width = column.columnWidth || MIN_COLUMN_WIDTH;
+            if (lockedColumnsNames.has(column.id)) {
+                column.pinned = 'left';
+            }
 
             return column;
         },
