@@ -1210,13 +1210,9 @@ const dsConfigStorage = (() => {
     );
     return sessionStorage;
 })();
-export function getDynamicMappings(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching dynamic mappings on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/dynamic-simulation/mappings';
+export function getDynamicMappings(studyUuid) {
+    console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/mappings';
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -1399,7 +1395,6 @@ export function updateDynamicSimulationProvider(studyUuid, newProvider) {
         body: newProvider,
     });
 }
-const NONE_NODE_UUID = '00000000-0000-0000-0000-000000000000';
 
 export function fetchDynamicSimulationParameters(studyUuid) {
     console.info(
@@ -1410,7 +1405,7 @@ export function fetchDynamicSimulationParameters(studyUuid) {
     console.debug(url);
     const parametersPromise = backendFetchJson(url);
 
-    const mappingsPromise = getDynamicMappings(studyUuid, NONE_NODE_UUID);
+    const mappingsPromise = getDynamicMappings(studyUuid);
 
     return Promise.all([parametersPromise, mappingsPromise]).then(
         ([parameters, mappings]) => ({ ...parameters, mappings })
