@@ -32,7 +32,7 @@ const SetPointsForm = ({
     studyUuid,
     currentNodeUuid,
     voltageLevelOptions,
-    isGeneratorModification,
+    isGeneratorModification = false,
     generatorInfos,
 }) => {
     const intl = useIntl();

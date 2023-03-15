@@ -84,7 +84,7 @@ const emptyFormData = {
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
-    ...getSetPointsEmptyFormData(false),
+    ...getSetPointsEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
     ...getConnectivityWithPositionEmptyFormData(),
 };
@@ -114,7 +114,7 @@ const schema = yup
                 .nullable()
                 .min(0, 'RealPercentage')
                 .max(1, 'RealPercentage'),
-            ...getSetPointsSchema(false),
+            ...getSetPointsSchema(),
             ...getReactiveLimitsSchema(),
             ...getConnectivityWithPositionValidationSchema(),
         },

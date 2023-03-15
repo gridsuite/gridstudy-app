@@ -116,7 +116,7 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
         }),
 });
 
-export const getSetPointsEmptyFormData = (isGeneratorModification) => ({
+export const getSetPointsEmptyFormData = (isGeneratorModification = false) => ({
     [VOLTAGE_REGULATION]: isGeneratorModification ? null : false,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
@@ -124,7 +124,7 @@ export const getSetPointsEmptyFormData = (isGeneratorModification) => ({
     ...getFrequencyRegulationEmptyFormData(isGeneratorModification),
 });
 
-export const getSetPointsSchema = (isGeneratorModification) => ({
+export const getSetPointsSchema = (isGeneratorModification = false) => ({
     [VOLTAGE_REGULATION]: yup
         .bool()
         .nullable()
