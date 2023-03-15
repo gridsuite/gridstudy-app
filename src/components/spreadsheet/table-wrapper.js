@@ -137,7 +137,7 @@ const TableWrapper = (props) => {
     }, [gridRef]);
 
     const rollbackEdit = useCallback(() => {
-        //mecanism to undo last edits if it is invalidated
+        //system to undo last edits if they are invalidated
         Object.entries(priorValuesBuffer).forEach(() => {
             gridRef.current.api.undoCellEditing();
         });
