@@ -70,11 +70,11 @@ export const EquipmentTable = ({
     const getLocaleText = useCallback(
         (params) => {
             if (intl.locale === LANG_FRENCH) {
+                return params.defaultValue;
+            } else {
                 return localeText.hasOwnProperty(params.key)
                     ? localeFrench[params.key]
                     : params.defaultValue;
-            } else {
-                return params.defaultValue;
             }
         },
         [intl.locale]

@@ -19,17 +19,19 @@ import { useIntl } from 'react-intl';
 
 const refreshEditingCell = (params) => {
     const rowNode = params.api.getPinnedTopRow(0);
-    const refreshConfig = {
-        rowNodes: [rowNode],
-        columns: ['edit'],
-        force: true,
-    };
-    params.api.getCellEditorInstances().forEach((cellEditor) => {
-        if (cellEditor.refreshValidation) {
-            cellEditor.refreshValidation();
-        }
-    });
-    params.api.refreshCells(refreshConfig);
+    if (rowNode) {
+        const refreshConfig = {
+            rowNodes: [rowNode],
+            columns: ['edit'],
+            force: true,
+        };
+        params.api.getCellEditorInstances().forEach((cellEditor) => {
+            if (cellEditor.refreshValidation) {
+                cellEditor.refreshValidation();
+            }
+        });
+        params.api.refreshCells(refreshConfig);
+    }
 };
 
 export const NumericalField = forwardRef(
