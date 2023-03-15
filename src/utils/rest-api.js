@@ -1158,58 +1158,7 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
 }
 
 // --- Dynamic simulation API - BEGIN
-// fake config storage for dynamic simulation
-const DS_PARAMS_KEY = 'dsParams';
-const DS_PROVIDER_KEY = 'dsProvider';
-const dsConfigStorage = (() => {
-    sessionStorage.setItem(
-        DS_PROVIDER_KEY,
-        JSON.stringify({
-            values: ['DynaWaltz'],
-            value: 'DynaWaltz',
-        })
-    );
-    sessionStorage.setItem(
-        DS_PARAMS_KEY,
-        JSON.stringify({
-            startTime: 0,
-            stopTime: 500,
-            mapping: 'gautier2',
-            extensions: [
-                {
-                    name: 'DynaWaltzParameters',
-                    solverId: '1',
-                    solvers: [
-                        {
-                            id: '1',
-                            type: 'IDA',
-                            order: 1,
-                            initStep: 0.000001,
-                            minStep: 0.000001,
-                            maxStep: 10,
-                            absAccuracy: 0.0001,
-                            relAccuracy: 0.0001,
-                        },
-                        {
-                            id: '2',
-                            type: 'SIM',
-                            hMin: 0.000001,
-                            hMax: 1,
-                            kReduceStep: 0.5,
-                            nEff: 10,
-                            nDeadband: 2,
-                            maxRootRestart: 3,
-                            maxNewtonTry: 10,
-                            linearSolverName: 'KLU',
-                            recalculateStep: false,
-                        },
-                    ],
-                },
-            ],
-        })
-    );
-    return sessionStorage;
-})();
+
 export function getDynamicMappings(studyUuid) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/mappings';
@@ -1344,30 +1293,18 @@ function getDynamicSimulationUrl() {
 }
 
 export function fetchDynamicSimulationProviders() {
-    // fake API
-    /*return Promise.resolve(
-        JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY)).values
-    );*/
     console.info('fetch dynamic simulation providers');
     const url = getDynamicSimulationUrl() + 'providers';
     console.debug(url);
     return backendFetchJson(url);
 }
 export function fetchDynamicSimulationProvider(studyUuid) {
-    // fake API
-    /*return Promise.resolve(
-        JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY)).value
-    );*/
     console.info('fetch dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
     console.debug(url);
     return backendFetchText(url);
 }
 export function fetchDefaultDynamicSimulationProvider() {
-    // fake API
-    /*return Promise.resolve(
-        JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY)).values[0]
-    );*/
     console.info('fetch default dynamic simulation provider');
     const url =
         PREFIX_STUDY_QUERIES + '/v1/dynamic-simulation-default-provider';
@@ -1375,14 +1312,6 @@ export function fetchDefaultDynamicSimulationProvider() {
     return backendFetchText(url);
 }
 export function updateDynamicSimulationProvider(studyUuid, newProvider) {
-    // fake API
-    /*console.log('updateDynamicSimulationProvider', [studyUuid, newProvider]);
-    const dsProviderItem = JSON.parse(dsConfigStorage.getItem(DS_PROVIDER_KEY));
-    dsConfigStorage.setItem(
-        DS_PROVIDER_KEY,
-        JSON.stringify({ ...dsProviderItem, value: newProvider })
-    );
-    return Promise.resolve(studyUuid);*/
     console.info('update dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
     console.debug(url);
