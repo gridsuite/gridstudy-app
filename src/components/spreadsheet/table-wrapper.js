@@ -518,7 +518,6 @@ const TableWrapper = (props) => {
                     column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
 
-            console.log(groovyCr);
             const editPromise = buildEditPromise(editingData, groovyCr);
             Promise.resolve(editPromise)
                 .then(() => {
