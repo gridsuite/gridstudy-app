@@ -76,6 +76,9 @@ const NominalVoltageFilter = (props) => {
         dispatch(filteredNominalVoltagesUpdated(newFiltered));
     };
 
+    if (!network?.getNominalVoltages()?.length > 0) {
+        return false;
+    }
     return (
         <Paper>
             <List className={classes.nominalVoltageZone}>
@@ -109,6 +112,7 @@ const NominalVoltageFilter = (props) => {
                             key={value}
                             button
                             onClick={handleToggle([value], true)}
+                            disabled={!filteredNominalVoltages}
                         >
                             <Checkbox
                                 color="default"
