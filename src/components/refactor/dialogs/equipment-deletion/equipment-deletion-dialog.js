@@ -26,7 +26,7 @@ const schema = yup
     .required();
 
 const emptyFormData = {
-    [TYPE]: null,
+    [TYPE]: EQUIPMENT_TYPES.LINE,
     [EQUIPMENT_ID]: null,
 };
 
@@ -56,7 +56,6 @@ const EquipmentDeletionDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
-            console.debug('EquipmentDeletion.fromEditDataToForm', editData);
             reset({
                 [TYPE]: EQUIPMENT_TYPES[editData.equipmentType],
                 [EQUIPMENT_ID]: editData.equipmentId,

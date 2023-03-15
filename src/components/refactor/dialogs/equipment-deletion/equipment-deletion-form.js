@@ -48,13 +48,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
         name: TYPE,
     });
 
-    const { setValue, getValues } = useFormContext();
-    useEffect(() => {
-        const wasType = getValues(TYPE);
-        if (!wasType) {
-            setValue(TYPE, EQUIPMENT_TYPES.LINE);
-        }
-    }, [setValue, getValues]);
+    const { setValue } = useFormContext();
 
     useEffect(() => {
         setEquipmentsOptions([]);
