@@ -56,6 +56,7 @@ import {
     createTwoWindingsTransformer,
     fetchVoltageLevelsIdAndTopology,
 } from 'utils/rest-api';
+import { roundToDefaultPrecision } from '../../../../utils/rounding.js';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
@@ -193,8 +194,12 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.equipmentName,
                     seriesResistance: twt.seriesResistance,
                     seriesReactance: twt.seriesReactance,
-                    magnetizingConductance: twt.magnetizingConductance,
-                    magnetizingSusceptance: twt.magnetizingSusceptance,
+                    magnetizingConductance: roundToDefaultPrecision(
+                        twt.magnetizingConductance * 1e6
+                    ),
+                    magnetizingSusceptance: roundToDefaultPrecision(
+                        twt.magnetizingSusceptance * 1e6
+                    ),
                     ratedVoltage1: twt.ratedVoltage1,
                     ratedVoltage2: twt.ratedVoltage2,
                     ratedS: twt.ratedS,
@@ -300,8 +305,12 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.name ?? '',
                     seriesResistance: twt.r,
                     seriesReactance: twt.x,
-                    magnetizingConductance: twt.g,
-                    magnetizingSusceptance: twt.b,
+                    magnetizingConductance: roundToDefaultPrecision(
+                        twt.g * 1e6
+                    ),
+                    magnetizingSusceptance: roundToDefaultPrecision(
+                        twt.b * 1e6
+                    ),
                     ratedVoltage1: twt.ratedU1,
                     ratedVoltage2: twt.ratedU2,
                     ratedS: twt.ratedS,
@@ -517,6 +526,13 @@ const TwoWindingsTransformerCreationDialog = ({
                 permanentLimit:
                     characteristics[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
             };
+
+            characteristics[MAGNETIZING_CONDUCTANCE] = roundToDefaultPrecision(
+                characteristics[MAGNETIZING_CONDUCTANCE] / 1e6
+            );
+            characteristics[MAGNETIZING_SUSCEPTANCE] = roundToDefaultPrecision(
+                characteristics[MAGNETIZING_SUSCEPTANCE] / 1e6
+            );
 
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
