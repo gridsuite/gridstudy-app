@@ -26,6 +26,12 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
+    const watchType = useWatch({
+        name: TYPE,
+    });
+
+    const { setValue } = useFormContext();
+
     const richTypeLabel = (rt) => {
         return intl.formatMessage({ id: rt.type });
     };
@@ -43,12 +49,6 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
         );
         return ret;
     }, []);
-
-    const watchType = useWatch({
-        name: TYPE,
-    });
-
-    const { setValue } = useFormContext();
 
     useEffect(() => {
         setEquipmentsOptions([]);
