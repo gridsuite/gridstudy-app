@@ -50,7 +50,7 @@ const SubstationCreationForm = () => {
         />
     );
 
-    const AdditionalProps = (
+    const additionalProps = (
         <ExpandableInput
             name={ADDITIONAL_PROPERTIES}
             Field={PropertyForm}
@@ -69,7 +69,7 @@ const SubstationCreationForm = () => {
 
             <Grid container>
                 <GridSection title={'AdditionalInformations'} />
-                {AdditionalProps}
+                {additionalProps}
             </Grid>
         </>
     );

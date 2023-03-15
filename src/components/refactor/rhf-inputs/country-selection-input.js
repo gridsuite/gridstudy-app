@@ -31,7 +31,7 @@ const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
         }
     }, [languageLocal, englishCountriesModule]);
 
-    const values = useMemo(
+    const options = useMemo(
         () =>
             localizedCountriesModule
                 ? Object.keys(localizedCountriesModule.object())
@@ -42,7 +42,7 @@ const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
     return (
         <AutocompleteInput
             name={name}
-            options={values}
+            options={options}
             label={label}
             formProps={formProps}
             getOptionLabel={(value) => localizedCountriesModule.get(value)}

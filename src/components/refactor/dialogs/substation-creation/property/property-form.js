@@ -14,25 +14,22 @@ import { useWatch } from 'react-hook-form';
 
 const PropertyForm = ({ name, index }) => {
     const [predefinedProperties, setPredefinedProperties] = useState();
-    const propertyName = useWatch({ name: `${name}.${index}.${NAME}` });
+    const watchPropertyName = useWatch({ name: `${name}.${index}.${NAME}` });
 
     const predefinedNames = useMemo(() => {
         return Object.keys(predefinedProperties ?? {}).sort();
     }, [predefinedProperties]);
 
     const predefinedValues = useMemo(() => {
-        return predefinedProperties?.[propertyName]?.sort() ?? [];
-    }, [propertyName, predefinedProperties]);
+        return predefinedProperties?.[watchPropertyName]?.sort() ?? [];
+    }, [watchPropertyName, predefinedProperties]);
 
     useEffect(() => {
-        const fetchPromise = fetchPredefinedProperties();
-        if (fetchPromise) {
-            fetchPromise.then((res) => {
-                if (res?.substation) {
-                    setPredefinedProperties(res.substation);
-                }
-            });
-        }
+        fetchPredefinedProperties().then((res) => {
+            if (res?.substation) {
+                setPredefinedProperties(res.substation);
+            }
+        });
     }, []);
 
     const nameField = (

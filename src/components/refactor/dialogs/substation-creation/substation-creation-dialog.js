@@ -19,6 +19,8 @@ import {
     COUNTRY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    NAME,
+    VALUE,
 } from '../../utils/field-constants';
 import { getPropertiesSchema } from './property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
@@ -40,7 +42,7 @@ const schema = yup.object().shape({
 const getProperties = (properties) => {
     return properties
         ? Object.entries(properties).map((p) => {
-              return { name: p[0], value: p[1] };
+              return { [NAME]: p[0], [VALUE]: p[1] };
           })
         : null;
 };
@@ -63,12 +65,15 @@ const SubstationCreationDialog = ({
     const { reset } = methods;
 
     const fromSearchCopyToFormValues = (substation) => {
-        reset({
-            [EQUIPMENT_ID]: substation.id + '(1)',
-            [EQUIPMENT_NAME]: substation.name ?? '',
-            [COUNTRY]: substation.countryCode,
-            [ADDITIONAL_PROPERTIES]: getProperties(substation.properties),
-        });
+        reset(
+            {
+                [EQUIPMENT_ID]: substation.id + '(1)',
+                [EQUIPMENT_NAME]: substation.name ?? '',
+                [COUNTRY]: substation.countryCode,
+                [ADDITIONAL_PROPERTIES]: getProperties(substation.properties),
+            },
+            { keepDefaultValues: true }
+        );
     };
 
     const searchCopy = useFormSearchCopy({

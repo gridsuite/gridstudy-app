@@ -13,6 +13,11 @@ import {
     VALUE,
 } from '../../../utils/field-constants';
 
+function checkUniqueProperties(properties) {
+    const validValues = properties.filter((v) => v?.name && v?.value);
+    return validValues.length === new Set(validValues.map((v) => v.name)).size;
+}
+
 export const fetchPredefinedProperties = () => {
     return fetchAppsAndUrls().then((res) => {
         const studyMetadata = res.find((metadata) => metadata.name === 'Study');
@@ -41,10 +46,7 @@ export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
                 [VALUE]: yup.string().nullable().required(),
             })
         )
-        .test(
-            'checkUniqueProperties',
-            'DuplicatedProps',
-            (values) =>
-                values.length === new Set(values.map((v) => v.name)).size
+        .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
+            checkUniqueProperties(values)
         ),
 });
