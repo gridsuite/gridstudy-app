@@ -181,9 +181,9 @@ const TableWrapper = (props) => {
             }
 
             column.width = column.columnWidth || MIN_COLUMN_WIDTH;
-            if (lockedColumnsNames.has(column.id)) {
-                column.pinned = 'left';
-            }
+            column.pinned = lockedColumnsNames.has(column.id)
+                ? 'left'
+                : undefined;
 
             return column;
         },
