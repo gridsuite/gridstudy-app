@@ -429,9 +429,7 @@ export default class Network {
                     })
                 );
         });
-        this.lazyLoaders.forEach((val) => {
-            val.fetched = false;
-        });
+
         Promise.all(fetchers).then((values) => {
             const allValidValues = values.every((v) => v);
 
