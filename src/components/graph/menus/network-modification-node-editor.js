@@ -358,7 +358,7 @@ const NetworkModificationNodeEditor = () => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') return;
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode?.id)
+        fetchNetworkModifications(studyUuid, currentNode.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -376,18 +376,20 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentNode.id, currentNode.type, snackError, dispatch]);
+    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
     }, [editData]);
 
     useEffect(() => {
-        // first time then fetch modifications
+        // first time with currentNode initialized then fetch modifications
+        // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
         if (
-            !currentNodeIdRef.current ||
-            currentNodeIdRef.current !== currentNode.id
+            currentNode &&
+            (!currentNodeIdRef.current ||
+                currentNodeIdRef.current !== currentNode.id)
         ) {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
@@ -457,7 +459,7 @@ const NetworkModificationNodeEditor = () => {
     const doDeleteModification = useCallback(() => {
         deleteModifications(
             studyUuid,
-            currentNode?.id,
+            currentNode.id,
             [...selectedItems.values()].map((item) => item.uuid)
         )
             .then()
@@ -478,7 +480,7 @@ const NetworkModificationNodeEditor = () => {
             copyType: CopyType.MOVE,
             originNodeUuid: currentNode.id,
         });
-    }, [currentNode.id, selectedItems]);
+    }, [currentNode?.id, selectedItems]);
 
     const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
@@ -546,7 +548,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [
         copiedModifications,
-        currentNode.id,
+        currentNode?.id,
         copyInfos,
         snackError,
         snackWarning,
@@ -600,7 +602,11 @@ const NetworkModificationNodeEditor = () => {
     const commit = useCallback(
         ({ source, destination }) => {
             setIsDragging(false);
-            if (destination === null || source.index === destination.index)
+            if (
+                !currentNode?.id ||
+                destination === null ||
+                source.index === destination.index
+            )
                 return;
             const res = [...modifications];
             const [item] = res.splice(source.index, 1);
@@ -615,7 +621,7 @@ const NetworkModificationNodeEditor = () => {
             setModifications(res);
             changeNetworkModificationOrder(
                 studyUuid,
-                currentNode?.id,
+                currentNode.id,
                 item.uuid,
                 before
             ).catch((error) => {
@@ -763,7 +769,11 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCutModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={selectedItems.size === 0 || isAnyNodeBuilding}
+                    disabled={
+                        selectedItems.size === 0 ||
+                        isAnyNodeBuilding ||
+                        !currentNode
+                    }
                 >
                     <ContentCutIcon />
                 </IconButton>
@@ -794,7 +804,8 @@ const NetworkModificationNodeEditor = () => {
                             className={classes.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) ||
-                                isAnyNodeBuilding
+                                isAnyNodeBuilding ||
+                                !currentNode
                             }
                         >
                             <ContentPasteIcon />
@@ -805,7 +816,11 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doDeleteModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={!(selectedItems?.size > 0) || isAnyNodeBuilding}
+                    disabled={
+                        !(selectedItems?.size > 0) ||
+                        isAnyNodeBuilding ||
+                        !currentNode
+                    }
                 >
                     <DeleteIcon />
                 </IconButton>
@@ -826,7 +841,6 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationDialog
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
-                network={network}
                 currentNodeUuid={currentNode?.id}
                 onOpenDialog={setEditDialogOpen}
                 dialogs={dialogs}
