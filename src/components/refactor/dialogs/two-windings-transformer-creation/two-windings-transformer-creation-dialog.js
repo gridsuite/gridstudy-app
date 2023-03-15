@@ -56,7 +56,10 @@ import {
     createTwoWindingsTransformer,
     fetchVoltageLevelsIdAndTopology,
 } from 'utils/rest-api';
-import { roundToDefaultPrecision } from '../../../../utils/rounding.js';
+import {
+    microUnitToUnit,
+    unitToMicroUnit,
+} from '../../../../utils/rounding.js';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
@@ -194,11 +197,11 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.equipmentName,
                     seriesResistance: twt.seriesResistance,
                     seriesReactance: twt.seriesReactance,
-                    magnetizingConductance: roundToDefaultPrecision(
-                        twt.magnetizingConductance * 1e6
+                    magnetizingConductance: unitToMicroUnit(
+                        twt.magnetizingConductance
                     ),
-                    magnetizingSusceptance: roundToDefaultPrecision(
-                        twt.magnetizingSusceptance * 1e6
+                    magnetizingSusceptance: unitToMicroUnit(
+                        twt.magnetizingSusceptance
                     ),
                     ratedVoltage1: twt.ratedVoltage1,
                     ratedVoltage2: twt.ratedVoltage2,
@@ -305,12 +308,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.name ?? '',
                     seriesResistance: twt.r,
                     seriesReactance: twt.x,
-                    magnetizingConductance: roundToDefaultPrecision(
-                        twt.g * 1e6
-                    ),
-                    magnetizingSusceptance: roundToDefaultPrecision(
-                        twt.b * 1e6
-                    ),
+                    magnetizingConductance: unitToMicroUnit(twt.g),
+                    magnetizingSusceptance: unitToMicroUnit(twt.b),
                     ratedVoltage1: twt.ratedU1,
                     ratedVoltage2: twt.ratedU2,
                     ratedS: twt.ratedS,
@@ -527,11 +526,11 @@ const TwoWindingsTransformerCreationDialog = ({
                     characteristics[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
             };
 
-            characteristics[MAGNETIZING_CONDUCTANCE] = roundToDefaultPrecision(
-                characteristics[MAGNETIZING_CONDUCTANCE] / 1e6
+            characteristics[MAGNETIZING_CONDUCTANCE] = microUnitToUnit(
+                characteristics[MAGNETIZING_CONDUCTANCE]
             );
-            characteristics[MAGNETIZING_SUSCEPTANCE] = roundToDefaultPrecision(
-                characteristics[MAGNETIZING_SUSCEPTANCE] / 1e6
+            characteristics[MAGNETIZING_SUSCEPTANCE] = microUnitToUnit(
+                characteristics[MAGNETIZING_SUSCEPTANCE]
             );
 
             let ratioTap = undefined;

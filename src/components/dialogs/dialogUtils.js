@@ -121,10 +121,6 @@ export const percentageTextField = {
 };
 export const func_identity = (e) => e;
 
-// TODO replace with roundToDefaultPrecision(e * 1e6) and roundToDefaultPrecision(e / 1e6) cf PR 1146
-export const unitToMicroUnit = (e) => e * Math.pow(10, 6);
-export const microUnitToUnit = (e) => e / Math.pow(10, 6);
-
 export function toIntValue(val) {
     if (val === '-') return val;
     return parseInt(val) || 0;

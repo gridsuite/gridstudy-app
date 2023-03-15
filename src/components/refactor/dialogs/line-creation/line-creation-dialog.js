@@ -40,10 +40,9 @@ import { createLine, fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import {
     filledTextField,
     gridItem,
-    microUnitToUnit,
     sanitizeString,
-    unitToMicroUnit,
 } from '../../../dialogs/dialogUtils';
+import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
