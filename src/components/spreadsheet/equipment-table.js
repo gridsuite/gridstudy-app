@@ -18,6 +18,7 @@ import { useIntl } from 'react-intl';
 import { LANG_FRENCH } from '@gridsuite/commons-ui';
 import localeFrench from 'translations/ag-grid-fr';
 import clsx from 'clsx';
+import { FILTER_KEYS } from './utils/config-tables';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -29,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
 export const EquipmentTable = ({
     rows,
     editingData,
-    startEditing,
     columns,
     scrollToIndex,
     gridRef,
@@ -84,10 +84,9 @@ export const EquipmentTable = ({
         return (params) => params.data.id;
     }, []);
 
-    //we filter enter key event to prevent closing edit mode
-    const suppressEnter = (params) => {
-        const filteredKeys = ['Enter', 'Tab'];
-        return filteredKeys.includes(params.event.key);
+    //we filter enter key event to prevent closing or opening edit mode
+    const suppressKeyEvent = (params) => {
+        return FILTER_KEYS.includes(params.event.key);
     };
 
     const defaultColDef = useMemo(
@@ -98,7 +97,7 @@ export const EquipmentTable = ({
             lockPinned: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
-            suppressKeyboardEvent: (params) => suppressEnter(params),
+            suppressKeyboardEvent: (params) => suppressKeyEvent(params),
         }),
         []
     );
