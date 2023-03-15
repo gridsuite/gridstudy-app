@@ -215,6 +215,7 @@ const TableWrapper = (props) => {
                             params: {
                                 setEditingData: setEditingData,
                                 setIsValidatingData: setIsValidatingData,
+                                isValidatingData: isValidatingData,
                                 startEditing: startEditing,
                             },
                         };
@@ -236,7 +237,7 @@ const TableWrapper = (props) => {
                 },
             });
         },
-        [editingData?.id, startEditing, tabIndex]
+        [editingData?.id, isValidatingData, startEditing, tabIndex]
     );
 
     const generateTableColumns = useCallback(
@@ -571,9 +572,6 @@ const TableWrapper = (props) => {
     const handleRowEditing = useCallback(
         (params) => {
             if (isValidatingData) {
-                //we call stopEditing again to prevent editors flickering
-                //gridRef.current.api.stopEditing();
-
                 if (Object.values(priorValuesBuffer).length === 0) {
                     setEditingData();
                     return;

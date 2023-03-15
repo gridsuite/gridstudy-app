@@ -231,7 +231,9 @@ export const EditingCellRenderer = (props) => {
 
     useEffect(() => {
         //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
-        props.startEditing();
+        if (!props.isValidatingData) {
+            props.startEditing();
+        }
     }, [props]);
 
     return (
