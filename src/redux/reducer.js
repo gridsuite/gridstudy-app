@@ -33,6 +33,7 @@ import {
     USE_NAME,
     SELECT_LANGUAGE,
     SELECT_COMPUTED_LANGUAGE,
+    SET_PARAMS_LOADED,
     STUDY_UPDATED,
     DISPLAY_OVERLOAD_TABLE,
     MAP_MANUAL_REFRESH,
@@ -111,6 +112,7 @@ import {
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
     PARAM_DEVELOPER_MODE,
+    PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -135,6 +137,7 @@ const paramsInitialState = {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
+    [PARAMS_LOADED]: false,
 };
 
 const initialState = {
@@ -356,6 +359,10 @@ export const reducer = createReducer(initialState, {
 
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
         state.computedLanguage = action.computedLanguage;
+    },
+
+    [SET_PARAMS_LOADED]: (state, action) => {
+        state[PARAMS_LOADED] = action[PARAMS_LOADED];
     },
 
     [USE_NAME]: (state, action) => {
