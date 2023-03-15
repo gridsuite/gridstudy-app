@@ -18,7 +18,7 @@ import { useIntl } from 'react-intl';
 import { LANG_FRENCH } from '@gridsuite/commons-ui';
 import localeFrench from 'translations/ag-grid-fr';
 import clsx from 'clsx';
-import { FILTER_KEYS } from './utils/config-tables';
+import { ALLOWED_KEYS } from './utils/config-tables';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -86,7 +86,7 @@ export const EquipmentTable = ({
 
     //we filter enter key event to prevent closing or opening edit mode
     const suppressKeyEvent = (params) => {
-        return FILTER_KEYS.includes(params.event.key);
+        return !ALLOWED_KEYS.includes(params.event.key);
     };
 
     const defaultColDef = useMemo(
