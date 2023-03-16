@@ -317,7 +317,7 @@ const GeneratorModificationDialog = ({
     );
 
     useEffect(() => {
-        if (editData?.equipmentId && !setGeneratorToModify) {
+        if (editData?.equipmentId) {
             getEquipmentInfo(editData?.equipmentId)?.catch(() =>
                 setGeneratorToModify(null)
             );
@@ -330,6 +330,18 @@ const GeneratorModificationDialog = ({
         clear,
         getEquipmentInfo,
     ]);
+
+    useEffect(() => {
+        if (!editData || (editData && generatorToModify)) {
+            setOpen(true);
+            return;
+        }
+        if (editData && !generatorToModify) {
+            setTimeout(() => {
+                setOpen(true);
+            }, 200);
+        }
+    }, [editData, generatorToModify]);
 
     const updateReactiveCapabilityCurveTableRow = (action, index) => {
         setGeneratorToModify((previousValue) => {
@@ -515,19 +527,6 @@ const GeneratorModificationDialog = ({
             </FormProvider>
         );
     };
-
-    useEffect(() => {
-        if (!editData || (editData && generatorToModify)) {
-            setOpen(true);
-            return;
-        }
-
-        if (editData && !generatorToModify) {
-            setTimeout(() => {
-                setOpen(true);
-            }, 200);
-        }
-    }, [editData, generatorToModify]);
 
     return <div>{open && dialogContent()}</div>;
 };
