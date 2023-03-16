@@ -35,37 +35,41 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
     const { setValue } = useFormContext();
 
     const handleLeftPercentageValueChange = (value) => {
-        const formattedValue = formatPercentageValue(value);
-        const sanitizedValue = sanitizePercentageValue(100 - formattedValue);
-        setValue(SLIDER_PERCENTAGE, formattedValue);
-        setValue(LEFT_SIDE_PERCENTAGE, formattedValue, {
+        const leftPercentageValue = formatPercentageValue(value);
+        const rightPercentageValue = sanitizePercentageValue(
+            100 - leftPercentageValue
+        );
+        setValue(SLIDER_PERCENTAGE, leftPercentageValue);
+        setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
             shouldValidate: true,
         });
-        setValue(RIGHT_SIDE_PERCENTAGE, sanitizedValue, {
+        setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
             shouldValidate: true,
         });
-        return formattedValue;
+        return leftPercentageValue;
     };
 
     const handleRightPercentageValueChange = (value) => {
-        const formattedValue = formatPercentageValue(value);
-        const sanitizedValue = sanitizePercentageValue(100 - formattedValue);
-        setValue(SLIDER_PERCENTAGE, sanitizedValue);
-        setValue(LEFT_SIDE_PERCENTAGE, sanitizedValue, {
+        const rightPercentageValue = formatPercentageValue(value);
+        const leftPercentageValue = sanitizePercentageValue(
+            100 - rightPercentageValue
+        );
+        setValue(SLIDER_PERCENTAGE, leftPercentageValue);
+        setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
             shouldValidate: true,
         });
-        setValue(RIGHT_SIDE_PERCENTAGE, formattedValue, {
+        setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
             shouldValidate: true,
         });
-        return formattedValue;
+        return rightPercentageValue;
     };
 
     const onSliderChange = (value) => {
-        const sanitizedValue = sanitizePercentageValue(100 - value);
+        const rightPercentageValue = sanitizePercentageValue(100 - value);
         setValue(LEFT_SIDE_PERCENTAGE, value, {
             shouldValidate: true,
         });
-        setValue(RIGHT_SIDE_PERCENTAGE, sanitizedValue, {
+        setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
             shouldValidate: true,
         });
         return value;
