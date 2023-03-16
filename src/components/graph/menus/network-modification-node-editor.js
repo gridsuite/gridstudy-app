@@ -34,7 +34,6 @@ import LoadModificationDialog from '../../refactor/dialogs/load-modification/loa
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
-import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import LineSplitWithVoltageLevelDialog from '../../refactor/dialogs/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import AddIcon from '@mui/icons-material/Add';
@@ -52,7 +51,7 @@ import {
     setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
-import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
+import LoadScalingDialog from 'components/refactor/dialogs/load-scaling/load-scaling-dialog';
 import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
 import GeneratorCreationDialog from 'components/refactor/dialogs/generator/creation/generator-creation-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
@@ -60,6 +59,7 @@ import DeleteAttachingLineDialog from 'components/refactor/dialogs/delete-attach
 import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scaling/generator-scaling-dialog';
 import GeneratorModificationDialog from 'components/refactor/dialogs/generator/modification/generator-modification-dialog';
+import SubstationCreationDialog from 'components/refactor/dialogs/substation-creation/substation-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {

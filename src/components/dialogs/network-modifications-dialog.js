@@ -99,7 +99,6 @@ const NetworkModificationDialog = ({
 NetworkModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    network: PropTypes.object.isRequired,
 };
 
 export default NetworkModificationDialog;
