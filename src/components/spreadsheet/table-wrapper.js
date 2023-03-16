@@ -138,6 +138,7 @@ const TableWrapper = (props) => {
 
     const rollbackEdit = useCallback(() => {
         //system to undo last edits if they are invalidated
+        //we need to call undoCellEditing for each field edited, the method only undo the last change to an individual cell
         Object.entries(priorValuesBuffer).forEach(() => {
             gridRef.current.api.undoCellEditing();
         });
@@ -170,9 +171,9 @@ const TableWrapper = (props) => {
             column.headerName = intl.formatMessage({ id: column.id });
 
             if (column.numeric) {
+                //numeric columns need the current loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value is transient
                 column.cellRendererParams = {
                     loadFlowStatus: props.loadFlowStatus,
-                    network: props.network,
                 };
 
                 if (column.normed) {
@@ -187,13 +188,7 @@ const TableWrapper = (props) => {
 
             return column;
         },
-        [
-            fluxConvention,
-            intl,
-            lockedColumnsNames,
-            props.loadFlowStatus,
-            props.network,
-        ]
+        [fluxConvention, intl, lockedColumnsNames, props.loadFlowStatus]
     );
 
     const addEditColumn = useCallback(
