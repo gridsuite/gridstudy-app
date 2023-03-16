@@ -16,23 +16,23 @@ const IdaSolverParameters = ({ idaSolver, onUpdateIdaSolver }) => {
             description: 'DynamicSimulationIDASolverOrder',
         },
         initStep: {
-            type: TYPES.double,
+            type: TYPES.float,
             description: 'DynamicSimulationIDASolverInitStep',
         },
         minStep: {
-            type: TYPES.double,
+            type: TYPES.float,
             description: 'DynamicSimulationIDASolverMinStep',
         },
         maxStep: {
-            type: TYPES.double,
+            type: TYPES.float,
             description: 'DynamicSimulationIDASolverMaxStep',
         },
         absAccuracy: {
-            type: TYPES.double,
+            type: TYPES.float,
             description: 'DynamicSimulationIDASolverAbsAccuracy',
         },
         relAccuracy: {
-            type: TYPES.double,
+            type: TYPES.float,
             description: 'DynamicSimulationIDASolverRelAccuracy',
         },
     };

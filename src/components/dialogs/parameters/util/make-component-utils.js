@@ -8,8 +8,8 @@
 import { Grid } from '@mui/material';
 import { LabelledSilder, LineSeparator } from '../../dialogUtils';
 import IntegerInput from '../common/integer-input';
-import DoubleInput from '../common/double-input';
-import StringInput from '../common/string-input';
+import FloatInput from '../common/float-input';
+import TextInput from '../common/text-input';
 import { DropDown, SwitchWithLabel } from '../parameters';
 
 // --- define render makers --- //
@@ -60,32 +60,28 @@ export const makeRenderIntegerField =
             <IntegerInput
                 value={value}
                 label={defParam.description}
-                callback={(ev) =>
-                    setter({ ...params, [key]: +ev.target.value })
-                }
+                callback={({ value }) => setter({ ...params, [key]: value })}
             />
         );
     };
-export const makeRenderDoubleField =
+export const makeRenderFloatField =
     () => (defParam, key, params, setter, value) => {
         return (
-            <DoubleInput
+            <FloatInput
                 value={value}
                 label={defParam.description}
-                callback={(ev) =>
-                    setter({ ...params, [key]: +ev.target.value })
-                }
+                callback={({ value }) => setter({ ...params, [key]: value })}
             />
         );
     };
 
-export const makeRenderStringField =
+export const makeRenderTextField =
     () => (defParam, key, params, setter, value) => {
         return (
-            <StringInput
+            <TextInput
                 value={value}
                 label={defParam.description}
-                callback={(ev) => setter({ ...params, [key]: ev.target.value })}
+                callback={({ value }) => setter({ ...params, [key]: value })}
             />
         );
     };
@@ -96,8 +92,8 @@ export const TYPES = {
     bool: 'Bool',
     slider: 'Slider',
     integer: 'Integer',
-    double: 'Double',
-    string: 'String',
+    float: 'Float',
+    text: 'Text',
 };
 
 // --- define default render for each data types
@@ -106,8 +102,8 @@ const DEFAULT_RENDER = {
     [TYPES.enum]: makeRenderDropDown(),
     [TYPES.slider]: makeRenderLabelledSlider(),
     [TYPES.integer]: makeRenderIntegerField(),
-    [TYPES.double]: makeRenderDoubleField(),
-    [TYPES.string]: makeRenderStringField(),
+    [TYPES.float]: makeRenderFloatField(),
+    [TYPES.text]: makeRenderTextField(),
 };
 
 export const makeComponentsFor = (defParams, params, setter) => {

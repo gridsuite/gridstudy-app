@@ -15,15 +15,15 @@ const SimplifiedSolverParameters = ({
 }) => {
     const defParams = {
         hMin: {
-            type: TYPES.double,
+            type: TYPES.float,
             description: 'DynamicSimulationSimplifiedSolverHMin',
         },
         hMax: {
-            type: TYPES.double,
+            type: TYPES.float,
             description: 'DynamicSimulationSimplifiedSolverHMax',
         },
         kReduceStep: {
-            type: TYPES.double,
+            type: TYPES.float,
             description: 'DynamicSimulationSimplifiedSolverKReduceStep',
         },
         nEff: {
@@ -39,7 +39,7 @@ const SimplifiedSolverParameters = ({
             description: 'DynamicSimulationSimplifiedSolverMaxNewtonTry',
         },
         linearSolverName: {
-            type: TYPES.string,
+            type: TYPES.text,
             description: 'DynamicSimulationSimplifiedSolverLinearSolverName',
         },
         recalculateStep: {

@@ -6,11 +6,11 @@
  */
 
 import * as yup from 'yup';
-import RHFIntegerInput from '../../../refactor/rhf-inputs/integer-input';
+import RHFFloatInput from '../../../refactor/rhf-inputs/float-input';
 import WrapperInput from './wrapper-input';
 
-const IntegerInput = ({ value, label, callback }) => {
-    const validator = yup.number().integer();
+const FloatInput = ({ value, label, callback }) => {
+    const validator = yup.number();
     return (
         <WrapperInput
             value={value}
@@ -18,9 +18,9 @@ const IntegerInput = ({ value, label, callback }) => {
             callback={callback}
             validator={validator}
         >
-            <RHFIntegerInput name={'value'} label={''} />
+            <RHFFloatInput name={'value'} label={''} />
         </WrapperInput>
     );
 };
 
-export default IntegerInput;
+export default FloatInput;
