@@ -14,8 +14,6 @@ import 'ag-grid-community/styles/ag-theme-material.css';
 import { makeStyles, useTheme } from '@mui/styles';
 import LoaderWithOverlay from '../util/loader-with-overlay';
 import { useIntl } from 'react-intl';
-import { LANG_FRENCH } from '@gridsuite/commons-ui';
-import localeFrench from 'translations/ag-grid-fr';
 import clsx from 'clsx';
 import { ALLOWED_KEYS } from './utils/config-tables';
 
@@ -68,12 +66,11 @@ export const EquipmentTable = ({
 
     const getLocaleText = useCallback(
         (params) => {
-            return intl.locale === LANG_FRENCH &&
-                localeFrench.hasOwnProperty(params.key)
-                ? localeFrench[params.key]
-                : params.defaultValue;
+            return intl.formatMessage({
+                id: params.key,
+            });
         },
-        [intl.locale]
+        [intl]
     );
 
     const getRowId = useMemo(() => {
