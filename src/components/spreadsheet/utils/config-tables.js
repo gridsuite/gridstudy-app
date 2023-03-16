@@ -47,6 +47,8 @@ export const LARGE_COLUMN_WIDTH = 340;
 export const EDIT_CELL_WIDTH = 65;
 export const MAX_LOCKS_PER_TAB = 5;
 
+export const DEFAULT_SORT_ORDER = 'asc';
+
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
@@ -56,6 +58,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -78,6 +81,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -107,6 +111,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -196,6 +201,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -383,6 +389,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -740,6 +747,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -944,6 +952,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -1046,6 +1055,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -1106,6 +1116,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -1174,6 +1185,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -1244,6 +1256,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -1340,6 +1353,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -1412,6 +1426,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ID',
                 field: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
@@ -1497,6 +1512,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
