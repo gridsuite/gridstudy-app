@@ -9,7 +9,6 @@ import { OverflowableText } from '@gridsuite/commons-ui';
 import { Checkbox, Tooltip, IconButton } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import clsx from 'clsx';
-import { RunningStatus } from 'components/util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
 import { useCallback, useEffect, useMemo } from 'react';
