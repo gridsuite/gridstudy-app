@@ -101,10 +101,9 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
                     voltageRegulationType,
                     oldVoltageLevel
                 ) =>
-                    !oldVoltageLevel &&
+                    oldVoltageLevel == null &&
                     (voltageRegulation == null || voltageRegulation) &&
                     voltageRegulationType === REGULATION_TYPES.DISTANT.id,
-
                 then: (schema) => schema.required(),
             }
         ),
@@ -116,13 +115,28 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [NAME]: yup.string().nullable(),
             [TYPE]: yup.string(),
         })
-        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, OLD_EQUIPMENT], {
-            is: (voltageRegulation, voltageRegulationType, oldEquipment) =>
-                !oldEquipment &&
-                (voltageRegulation == null || voltageRegulation) &&
-                voltageRegulationType === REGULATION_TYPES.DISTANT.id,
-            then: (schema) => schema.required(),
-        }),
+        .when(
+            [
+                VOLTAGE_REGULATION,
+                VOLTAGE_REGULATION_TYPE,
+                OLD_EQUIPMENT,
+                VOLTAGE_LEVEL,
+            ],
+            {
+                is: (
+                    voltageRegulation,
+                    voltageRegulationType,
+                    oldEquipment,
+                    vl
+                ) =>
+                    (!oldEquipment &&
+                        (voltageRegulation == null || voltageRegulation) &&
+                        voltageRegulationType ===
+                            REGULATION_TYPES.DISTANT.id) ||
+                    vl,
+                then: (schema) => schema.required(),
+            }
+        ),
 });
 
 export const getSetPointsEmptyFormData = (isGeneratorModification = false) => ({

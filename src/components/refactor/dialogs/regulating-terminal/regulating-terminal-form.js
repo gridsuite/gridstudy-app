@@ -12,6 +12,8 @@ import makeStyles from '@mui/styles/makeStyles';
 import {
     EQUIPMENT,
     ID,
+    OLD_EQUIPMENT,
+    OLD_VOLTAGE_LEVEL,
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
@@ -88,6 +90,19 @@ const RegulatingTerminalForm = ({
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
+
+    useEffect(() => {
+        if (previousRegulatingTerminalValue) {
+            setValue(OLD_VOLTAGE_LEVEL, previousRegulatingTerminalValue);
+        }
+        if (previousEquipmentSectionTypeValue) {
+            setValue(OLD_EQUIPMENT, previousEquipmentSectionTypeValue);
+        }
+    }, [
+        previousEquipmentSectionTypeValue,
+        previousRegulatingTerminalValue,
+        setValue,
+    ]);
 
     useEffect(() => {
         if (watchVoltageLevelId) {

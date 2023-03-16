@@ -111,7 +111,7 @@ function getNotNullPFromArray(values, isGeneratorModification) {
         .map((element) => {
             //in case of modification, if p is null, we validate old_p value
             const pValue =
-                isGeneratorModification && !element[P]
+                isGeneratorModification && element[P] === null
                     ? element[OLD_P]
                     : element[P];
 

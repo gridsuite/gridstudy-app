@@ -159,9 +159,10 @@ const GeneratorModificationForm = ({
                                             ? REGULATION_TYPES.DISTANT.id
                                             : REGULATION_TYPES.LOCAL.id,
                                     [OLD_VOLTAGE_LEVEL]:
-                                        value?.regulatingTerminalVlId,
+                                        value?.regulatingTerminalVlId ?? null,
                                     [OLD_EQUIPMENT]:
-                                        value?.regulatingTerminalConnectableId,
+                                        value?.regulatingTerminalConnectableId ??
+                                        null,
                                 },
                                 true
                             );
