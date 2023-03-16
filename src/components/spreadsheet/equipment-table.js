@@ -96,6 +96,15 @@ export const EquipmentTable = ({
         []
     );
 
+    const gridContext = useMemo(() => {
+        return {
+            network: network,
+            editErrors: {},
+            dynamicValidation: {},
+            isEditing: editingData ? true : false,
+        };
+    }, [editingData, network]);
+
     return (
         <>
             {!fetched ? (
@@ -127,12 +136,7 @@ export const EquipmentTable = ({
                         suppressColumnVirtualisation={true}
                         suppressClickEdit={true}
                         getLocaleText={getLocaleText}
-                        context={{
-                            network: network,
-                            editErrors: {},
-                            dynamicValidation: {},
-                            isEditing: editingData ? true : false,
-                        }}
+                        context={gridContext}
                     />
                 </div>
             )}
