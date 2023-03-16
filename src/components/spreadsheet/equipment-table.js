@@ -65,11 +65,10 @@ export const EquipmentTable = ({
     );
 
     const getLocaleText = useCallback(
-        (params) => {
-            return intl.formatMessage({
+        (params) =>
+            intl.formatMessage({
                 id: params.key,
-            });
-        },
+            }),
         [intl]
     );
 
