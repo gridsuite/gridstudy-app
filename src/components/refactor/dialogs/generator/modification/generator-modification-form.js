@@ -14,16 +14,9 @@ import {
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    OLD_P,
-    OLD_Q_MAX_P,
-    OLD_Q_MIN_P,
-    P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
-    Q_MAX_P,
-    Q_MIN_P,
     RATED_NOMINAL_POWER,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
     STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
@@ -46,7 +39,6 @@ import Grid from '@mui/material/Grid';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
-    fetchEquipmentInfos,
     fetchEquipmentsIds,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../../../utils/rest-api';
@@ -64,6 +56,7 @@ const GeneratorModificationForm = ({
     generatorToModify,
     setGeneratorToModify,
     updateReactiveCapabilityCurveTableRow,
+    getEquipmentInfo,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
@@ -105,47 +98,7 @@ const GeneratorModificationForm = ({
     useEffect(() => {
         clearErrors();
         if (watchEquipmentId) {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'generators',
-                watchEquipmentId,
-                true
-            )
-                .then((value) => {
-                    if (value) {
-                        // when editing modification form, first render should not trigger this reset
-                        // which would empty the form instead of displaying data of existing form
-                        if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
-                            //creating empty table depending on existing generator
-                            let reactiveCapabilityCurvePoints = [];
-                            value?.reactiveCapabilityCurvePoints?.forEach(
-                                (element) => {
-                                    reactiveCapabilityCurvePoints.push({
-                                        [P]: null,
-                                        [Q_MIN_P]: null,
-                                        [Q_MAX_P]: null,
-                                        [OLD_P]: element.p,
-                                        [OLD_Q_MIN_P]: element.qminP,
-                                        [OLD_Q_MAX_P]: element.qmaxP,
-                                    });
-                                }
-                            );
-                            // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
-                            resetForm(
-                                {
-                                    [EQUIPMENT_ID]: watchEquipmentId,
-                                    [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                                        reactiveCapabilityCurvePoints,
-                                },
-                                true
-                            );
-                        }
-                        shouldEmptyFormOnGeneratorIdChangeRef.current = true;
-                        setGeneratorToModify(value);
-                    }
-                })
-                .catch(() => setGeneratorToModify(null));
+            getEquipmentInfo()?.catch(() => setGeneratorToModify(null));
         } else {
             resetForm();
             setGeneratorToModify(null);
@@ -157,6 +110,7 @@ const GeneratorModificationForm = ({
         setGeneratorToModify,
         clearErrors,
         resetForm,
+        getEquipmentInfo,
     ]);
 
     const energySourceLabelId = getEnergySourceLabel(

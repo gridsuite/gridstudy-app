@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -49,7 +49,10 @@ import {
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
 
-import { modifyGenerator } from '../../../../../utils/rest-api';
+import {
+    fetchEquipmentInfos,
+    modifyGenerator,
+} from '../../../../../utils/rest-api';
 import { sanitizeString } from '../../../../dialogs/dialogUtils';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import GeneratorModificationForm from './generator-modification-form';
@@ -77,7 +80,8 @@ const GeneratorModificationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
-
+    const [open, setOpen] = useState(false);
+    const shouldEmptyFormOnGeneratorIdChangeRef = useRef();
     const isSelectedGeneratorUndefined = generatorToModify === undefined;
     const isEditDataUndefined = editData === undefined;
 
@@ -267,6 +271,58 @@ const GeneratorModificationDialog = ({
         },
         [emptyFormData, reset]
     );
+    const getEquipmentInfo = useCallback(() => {
+        fetchEquipmentInfos(
+            studyUuid,
+            currentNodeUuid,
+            'generators',
+            editData?.equipmentId,
+            true
+        ).then((value) => {
+            if (value) {
+                // when editing modification form, first render should not trigger this reset
+                // which would empty the form instead of displaying data of existing form
+                if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
+                    //creating empty table depending on existing generator
+                    let reactiveCapabilityCurvePoints = [];
+                    value?.reactiveCapabilityCurvePoints?.forEach((element) => {
+                        reactiveCapabilityCurvePoints.push({
+                            [P]: null,
+                            [Q_MIN_P]: null,
+                            [Q_MAX_P]: null,
+                            [OLD_P]: element.p,
+                            [OLD_Q_MIN_P]: element.qminP,
+                            [OLD_Q_MAX_P]: element.qmaxP,
+                        });
+                    });
+                    // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
+                    clear(
+                        {
+                            [EQUIPMENT_ID]: editData?.equipmentId,
+                            [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                                reactiveCapabilityCurvePoints,
+                        },
+                        true
+                    );
+                }
+                shouldEmptyFormOnGeneratorIdChangeRef.current = true;
+                setGeneratorToModify(value);
+            }
+        });
+    }, [clear, currentNodeUuid, editData?.equipmentId, studyUuid]);
+
+    useEffect(() => {
+        if (editData?.equipmentId) {
+            getEquipmentInfo()?.catch(() => setGeneratorToModify(null));
+        }
+    }, [
+        studyUuid,
+        currentNodeUuid,
+        setGeneratorToModify,
+        editData?.equipmentId,
+        clear,
+        getEquipmentInfo,
+    ]);
 
     const updateReactiveCapabilityCurveTableRow = (action, index) => {
         setGeneratorToModify((previousValue) => {
@@ -424,31 +480,52 @@ const GeneratorModificationDialog = ({
         ]
     );
 
-    return (
-        <FormProvider validationSchema={schema} {...methods}>
-            <ModificationDialog
-                fullWidth
-                onClear={clear}
-                onSave={onSubmit}
-                aria-labelledby="dialog-modification-generator"
-                maxWidth={'md'}
-                titleId="ModifyGenerator"
-                {...dialogProps}
-            >
-                <GeneratorModificationForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    resetForm={clear}
-                    editData={editData}
-                    generatorToModify={generatorToModify}
-                    setGeneratorToModify={setGeneratorToModify}
-                    updateReactiveCapabilityCurveTableRow={
-                        updateReactiveCapabilityCurveTableRow
-                    }
-                />
-            </ModificationDialog>
-        </FormProvider>
-    );
+    const dialogContent = () => {
+        return (
+            <FormProvider validationSchema={schema} {...methods}>
+                <ModificationDialog
+                    fullWidth
+                    onClear={clear}
+                    onSave={onSubmit}
+                    aria-labelledby="dialog-modification-generator"
+                    maxWidth={'md'}
+                    titleId="ModifyGenerator"
+                    {...dialogProps}
+                >
+                    <GeneratorModificationForm
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        resetForm={clear}
+                        editData={editData}
+                        generatorToModify={generatorToModify}
+                        setGeneratorToModify={setGeneratorToModify}
+                        updateReactiveCapabilityCurveTableRow={
+                            updateReactiveCapabilityCurveTableRow
+                        }
+                        getEquipmentInfo={getEquipmentInfo}
+                    />
+                </ModificationDialog>
+            </FormProvider>
+        );
+    };
+
+    useEffect(() => {
+        if (!editData) {
+            setOpen(true);
+            return;
+        }
+        if (editData && generatorToModify) {
+            setOpen(true);
+            return;
+        }
+        if (editData && !generatorToModify) {
+            setTimeout(() => {
+                setOpen(true);
+            }, 200);
+        }
+    }, [editData, generatorToModify]);
+
+    return <div>{open && dialogContent()}</div>;
 };
 
 export default GeneratorModificationDialog;
