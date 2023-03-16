@@ -10,6 +10,8 @@ import {
     ID,
     NAME,
     NOMINAL_VOLTAGE,
+    OLD_EQUIPMENT,
+    OLD_VOLTAGE_LEVEL,
     SUBSTATION_ID,
     TOPOLOGY_KIND,
     TYPE,
@@ -43,6 +45,8 @@ export const getRegulatingTerminalValidationSchema = () => {
 };
 
 const regulatingTerminalEmptyFormData = () => ({
+    [OLD_VOLTAGE_LEVEL]: null,
+    [OLD_EQUIPMENT]: null,
     [VOLTAGE_LEVEL]: null,
     [EQUIPMENT]: null,
 });
@@ -96,8 +100,12 @@ export const getRegulatingTerminalFormData = ({
     equipmentId = null,
     equipmentName,
     equipmentType,
+    oldVoltageLevel = null,
+    oldEquipment = null,
 }) => {
     return {
+        [OLD_VOLTAGE_LEVEL]: oldVoltageLevel,
+        [OLD_EQUIPMENT]: oldEquipment,
         [VOLTAGE_LEVEL]: getRegulatingTerminalVoltageLevelData({
             voltageLevelId,
             voltageLevelName,

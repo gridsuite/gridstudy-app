@@ -31,14 +31,14 @@ export const ReactiveCapabilityCurveTable = ({
     tableHeadersIds,
     disabled = false,
     previousValues,
-    updateReactiveCapabilityCurveTableRow,
+    updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();
 
     const handleInsertRow = () => {
-        if (previousValues && updateReactiveCapabilityCurveTableRow)
-            updateReactiveCapabilityCurveTableRow(INSERT, rows.length - 1);
+        if (previousValues && updatePreviousReactiveCapabilityCurveTable)
+            updatePreviousReactiveCapabilityCurveTable(INSERT, rows.length - 1);
         insert(rows.length - 1, {
             [P]: null,
             [Q_MIN_P]: null,
@@ -50,8 +50,8 @@ export const ReactiveCapabilityCurveTable = ({
     };
 
     const handleRemoveRow = (index) => {
-        if (previousValues && updateReactiveCapabilityCurveTableRow)
-            updateReactiveCapabilityCurveTableRow(REMOVE, index);
+        if (previousValues && updatePreviousReactiveCapabilityCurveTable)
+            updatePreviousReactiveCapabilityCurveTable(REMOVE, index);
         remove(index);
     };
 

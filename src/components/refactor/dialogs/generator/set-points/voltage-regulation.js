@@ -12,7 +12,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import React, { useEffect } from 'react';
+import React from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     gridItem,
@@ -24,51 +24,36 @@ import RegulatingTerminalForm from '../../regulating-terminal/regulating-termina
 import { Box } from '@mui/system';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 const VoltageRegulation = ({
     studyUuid,
     currentNodeUuid,
     voltageLevelOptions,
-    generatorInfos,
+    previousValues,
 }) => {
     const intl = useIntl();
-    const { setValue } = useFormContext();
-    function getPreviousRegulationType(generatorInfos) {
-        if (generatorInfos?.voltageRegulatorOn) {
-            return generatorInfos?.regulatingTerminalVlId ||
-                generatorInfos?.regulatingTerminalConnectableId
-                ? REGULATION_TYPES.DISTANT
-                : REGULATION_TYPES.LOCAL;
+    function getPreviousRegulationType(previousValues) {
+        if (previousValues?.voltageRegulatorOn) {
+            return previousValues?.regulatingTerminalVlId ||
+                previousValues?.regulatingTerminalConnectableId
+                ? intl.formatMessage({
+                      id: REGULATION_TYPES.DISTANT.label,
+                  })
+                : intl.formatMessage({
+                      id: REGULATION_TYPES.LOCAL.label,
+                  });
         } else {
             return null;
         }
     }
-    const previousRegulationTypeLabel = getPreviousRegulationType(
-        generatorInfos
-    )?.label
-        ? intl.formatMessage({
-              id: getPreviousRegulationType(generatorInfos)?.label,
-          })
-        : undefined;
 
     const voltageRegulationType = useWatch({
         name: VOLTAGE_REGULATION_TYPE,
     });
 
-    useEffect(() => {
-        if (
-            generatorInfos?.regulatingTerminalVlId ||
-            generatorInfos?.regulatingTerminalConnectableId
-        ) {
-            setValue(VOLTAGE_REGULATION_TYPE, REGULATION_TYPES.DISTANT.id);
-        }
-    }, [generatorInfos, setValue]);
-
     const isDistantRegulation =
-        typeof voltageRegulationType === 'object'
-            ? voltageRegulationType?.id === REGULATION_TYPES.DISTANT.id
-            : voltageRegulationType === REGULATION_TYPES.DISTANT.id;
+        voltageRegulationType === REGULATION_TYPES.DISTANT.id;
 
     const voltageRegulationTypeField = (
         <SelectInput
@@ -78,7 +63,7 @@ const VoltageRegulation = ({
             size={'small'}
             disableClearable={true}
             formProps={italicFontTextField}
-            previousValue={previousRegulationTypeLabel}
+            previousValue={getPreviousRegulationType(previousValues)}
         />
     );
 
@@ -87,7 +72,7 @@ const VoltageRegulation = ({
             name={VOLTAGE_SET_POINT}
             label={'VoltageText'}
             adornment={VoltageAdornment}
-            previousValue={generatorInfos?.targetV}
+            previousValue={previousValues?.targetV}
             clearable={true}
         />
     );
@@ -100,13 +85,13 @@ const VoltageRegulation = ({
             currentNodeUuid={currentNodeUuid}
             studyUuid={studyUuid}
             previousRegulatingTerminalValue={
-                generatorInfos?.regulatingTerminalVlId
+                previousValues?.regulatingTerminalVlId
             }
             previousEquipmentSectionTypeValue={
-                generatorInfos?.regulatingTerminalConnectableType
-                    ? generatorInfos?.regulatingTerminalConnectableType +
+                previousValues?.regulatingTerminalConnectableType
+                    ? previousValues?.regulatingTerminalConnectableType +
                       ' : ' +
-                      generatorInfos?.regulatingTerminalConnectableId
+                      previousValues?.regulatingTerminalConnectableId
                     : null
             }
         />
@@ -117,7 +102,7 @@ const VoltageRegulation = ({
             name={Q_PERCENT}
             label={'QPercentText'}
             adornment={percentageTextField}
-            previousValue={generatorInfos?.qPercent}
+            previousValue={previousValues?.qPercent}
         />
     );
 

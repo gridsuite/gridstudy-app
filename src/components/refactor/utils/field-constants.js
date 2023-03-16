@@ -175,3 +175,6 @@ export const REPLACING_LINE_1_ID = 'replacingLine1Id';
 export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
 export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
+
+export const OLD_VOLTAGE_LEVEL = 'oldVoltageLevel';
+export const OLD_EQUIPMENT = 'oldEquipment';

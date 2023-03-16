@@ -13,6 +13,8 @@ import {
     ID,
     NAME,
     NOMINAL_VOLTAGE,
+    OLD_EQUIPMENT,
+    OLD_VOLTAGE_LEVEL,
     Q_PERCENT,
     REACTIVE_POWER_SET_POINT,
     SUBSTATION_ID,
@@ -80,6 +82,7 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
         .nullable()
         .max(100, 'NormalizedPercentage')
         .min(0, 'NormalizedPercentage'),
+    [OLD_VOLTAGE_LEVEL]: yup.string().nullable(),
     [VOLTAGE_LEVEL]: yup
         .object()
         .nullable()
@@ -90,14 +93,21 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [NOMINAL_VOLTAGE]: yup.string(),
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
-        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
-            is: (voltageRegulation, voltageRegulationType) =>
-                (voltageRegulation &&
-                    voltageRegulationType === REGULATION_TYPES.DISTANT.id) ||
-                (isGeneratorModification &&
-                    voltageRegulationType === REGULATION_TYPES.DISTANT.id),
-            then: (schema) => schema.required(),
-        }),
+        .when(
+            [VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, OLD_VOLTAGE_LEVEL],
+            {
+                is: (
+                    voltageRegulation,
+                    voltageRegulationType,
+                    oldVoltageLevel
+                ) =>
+                    !oldVoltageLevel &&
+                    (voltageRegulation == null || voltageRegulation) &&
+                    voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+
+                then: (schema) => schema.required(),
+            }
+        ),
     [EQUIPMENT]: yup
         .object()
         .nullable()
@@ -106,12 +116,11 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [NAME]: yup.string().nullable(),
             [TYPE]: yup.string(),
         })
-        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
-            is: (voltageRegulation, voltageRegulationType) =>
-                (voltageRegulation &&
-                    voltageRegulationType === REGULATION_TYPES.DISTANT.id) ||
-                (isGeneratorModification &&
-                    voltageRegulationType === REGULATION_TYPES.DISTANT.id),
+        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, OLD_EQUIPMENT], {
+            is: (voltageRegulation, voltageRegulationType, oldEquipment) =>
+                !oldEquipment &&
+                (voltageRegulation == null || voltageRegulation) &&
+                voltageRegulationType === REGULATION_TYPES.DISTANT.id,
             then: (schema) => schema.required(),
         }),
 });

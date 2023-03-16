@@ -18,6 +18,7 @@ import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
+import { Box } from '@mui/material';
 
 const FrequencyRegulation = ({ isGeneratorModification, generatorInfos }) => {
     const intl = useIntl();
@@ -41,11 +42,13 @@ const FrequencyRegulation = ({ isGeneratorModification, generatorInfos }) => {
     }
 
     const frequencyRegulationField = isGeneratorModification ? (
-        <CheckboxNullableInput
-            name={FREQUENCY_REGULATION}
-            label={'FrequencyRegulation'}
-            previousValue={previousFrequencyRegulation}
-        />
+        <Box>
+            <CheckboxNullableInput
+                name={FREQUENCY_REGULATION}
+                label={'FrequencyRegulation'}
+                previousValue={previousFrequencyRegulation}
+            />
+        </Box>
     ) : (
         <SwitchInput
             name={FREQUENCY_REGULATION}

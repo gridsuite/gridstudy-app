@@ -157,17 +157,17 @@ const GeneratorModificationDialog = ({
                           editData?.transientReactance?.value ?? null,
                       [TRANSFORMER_REACTANCE]:
                           editData?.stepUpTransformerReactance?.value ?? null,
-                      [VOLTAGE_REGULATION_TYPE]: editData?.regulatingTerminalId
-                          ? REGULATION_TYPES.DISTANT.id
-                          : REGULATION_TYPES.LOCAL.id,
+                      [VOLTAGE_REGULATION_TYPE]:
+                          editData?.voltageRegulationType?.value ?? null,
                       [MINIMUM_REACTIVE_POWER]:
                           editData?.minimumReactivePower?.value ?? null,
                       [MAXIMUM_REACTIVE_POWER]:
                           editData?.maximumReactivePower?.value ?? null,
                       [Q_PERCENT]: editData?.qPercent?.value ?? null,
                       [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                          editData?.minimumReactivePower ||
-                          editData?.maximumReactivePower
+                          !editData?.reactiveCapabilityCurve?.value &&
+                          (editData?.minimumReactivePower ||
+                              editData?.maximumReactivePower)
                               ? 'MINMAX'
                               : 'CURVE',
                       [REACTIVE_CAPABILITY_CURVE_TABLE]:
@@ -268,7 +268,7 @@ const GeneratorModificationDialog = ({
         [emptyFormData, reset]
     );
 
-    const updateReactiveCapabilityCurveTableRow = (action, index) => {
+    const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
         setGeneratorToModify((previousValue) => {
             const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
             action === REMOVE
@@ -381,13 +381,13 @@ const GeneratorModificationDialog = ({
                 isVoltageRegulationOn && isDistantRegulation
                     ? generator[Q_PERCENT]
                     : null,
-                generator[PLANNED_ACTIVE_POWER_SET_POINT] ?? null,
-                generator[STARTUP_COST] ?? null,
-                generator[MARGINAL_COST] ?? null,
-                generator[PLANNED_OUTAGE_RATE] ?? null,
-                generator[FORCED_OUTAGE_RATE] ?? null,
-                generator[TRANSIENT_REACTANCE] ?? null,
-                generator[TRANSFORMER_REACTANCE] ?? null,
+                generator[PLANNED_ACTIVE_POWER_SET_POINT],
+                generator[STARTUP_COST],
+                generator[MARGINAL_COST],
+                generator[PLANNED_OUTAGE_RATE],
+                generator[FORCED_OUTAGE_RATE],
+                generator[TRANSIENT_REACTANCE],
+                generator[TRANSFORMER_REACTANCE],
                 generator[VOLTAGE_REGULATION_TYPE],
                 isVoltageRegulationOn && isDistantRegulation
                     ? generator[EQUIPMENT]?.id
@@ -442,8 +442,8 @@ const GeneratorModificationDialog = ({
                     editData={editData}
                     generatorToModify={generatorToModify}
                     setGeneratorToModify={setGeneratorToModify}
-                    updateReactiveCapabilityCurveTableRow={
-                        updateReactiveCapabilityCurveTableRow
+                    updatePreviousReactiveCapabilityCurveTable={
+                        updatePreviousReactiveCapabilityCurveTable
                     }
                 />
             </ModificationDialog>

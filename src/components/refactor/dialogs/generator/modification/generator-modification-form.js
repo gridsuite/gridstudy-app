@@ -14,19 +14,23 @@ import {
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
+    OLD_EQUIPMENT,
     OLD_P,
     OLD_Q_MAX_P,
     OLD_Q_MIN_P,
+    OLD_VOLTAGE_LEVEL,
     P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q_MAX_P,
     Q_MIN_P,
     RATED_NOMINAL_POWER,
+    REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
+    VOLTAGE_REGULATION_TYPE,
 } from '../../../utils/field-constants';
 import {
     ActivePowerAdornment,
@@ -41,6 +45,7 @@ import SelectInput from '../../../rhf-inputs/select-input';
 import {
     ENERGY_SOURCES,
     getEnergySourceLabel,
+    REGULATION_TYPES,
 } from '../../../../network/constants';
 import Grid from '@mui/material/Grid';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -63,7 +68,7 @@ const GeneratorModificationForm = ({
     editData,
     generatorToModify,
     setGeneratorToModify,
-    updateReactiveCapabilityCurveTableRow,
+    updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
@@ -137,6 +142,19 @@ const GeneratorModificationForm = ({
                                     [EQUIPMENT_ID]: watchEquipmentId,
                                     [REACTIVE_CAPABILITY_CURVE_TABLE]:
                                         reactiveCapabilityCurvePoints,
+                                    [REACTIVE_CAPABILITY_CURVE_CHOICE]:
+                                        value?.minMaxReactiveLimits != null
+                                            ? 'MINMAX'
+                                            : 'CURVE',
+                                    [VOLTAGE_REGULATION_TYPE]:
+                                        value?.regulatingTerminalVlId ||
+                                        value?.regulatingTerminalConnectableId
+                                            ? REGULATION_TYPES.DISTANT.id
+                                            : REGULATION_TYPES.LOCAL.id,
+                                    [OLD_VOLTAGE_LEVEL]:
+                                        value?.regulatingTerminalVlId,
+                                    [OLD_EQUIPMENT]:
+                                        value?.regulatingTerminalConnectableId,
                                 },
                                 true
                             );
@@ -320,8 +338,8 @@ const GeneratorModificationForm = ({
             {/* Reactive limits part */}
             <ReactiveLimitsForm
                 generatorToModify={generatorToModify}
-                updateReactiveCapabilityCurveTableRow={
-                    updateReactiveCapabilityCurveTableRow
+                updatePreviousReactiveCapabilityCurveTable={
+                    updatePreviousReactiveCapabilityCurveTable
                 }
             />
 
@@ -331,7 +349,7 @@ const GeneratorModificationForm = ({
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}
                 isGeneratorModification={true}
-                generatorInfos={generatorToModify}
+                previousValues={generatorToModify}
             />
 
             {/* Short Circuit of start part */}
