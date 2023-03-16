@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
     grid: {
         width: 'auto',
         height: '100%',
+        position: 'relative',
     },
 }));
 
@@ -107,14 +108,14 @@ export const EquipmentTable = ({
 
     return (
         <>
-            {!fetched ? (
-                <LoaderWithOverlay
-                    color="inherit"
-                    loaderSize={70}
-                    loadingMessageText={'LoadingRemoteData'}
-                />
-            ) : (
-                <div className={clsx([theme.aggrid, classes.grid])}>
+            <div className={clsx([theme.aggrid, classes.grid])}>
+                {!fetched ? (
+                    <LoaderWithOverlay
+                        color="inherit"
+                        loaderSize={70}
+                        loadingMessageText={'LoadingRemoteData'}
+                    />
+                ) : (
                     <AgGridReact
                         ref={gridRef}
                         getRowId={getRowId}
@@ -138,8 +139,8 @@ export const EquipmentTable = ({
                         getLocaleText={getLocaleText}
                         context={gridContext}
                     />
-                </div>
-            )}
+                )}
+            </div>
         </>
     );
 };
