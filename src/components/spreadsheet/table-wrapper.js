@@ -171,9 +171,13 @@ const TableWrapper = (props) => {
             column.headerName = intl.formatMessage({ id: column.id });
 
             if (column.numeric) {
-                //numeric columns need the current loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value is transient
+                //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
+                const isValueInvalid =
+                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                    column.canBeInvalidated;
+
                 column.cellRendererParams = {
-                    loadFlowStatus: props.loadFlowStatus,
+                    isValueInvalid: isValueInvalid,
                 };
 
                 if (column.normed) {

@@ -96,9 +96,7 @@ export const DefaultCellRenderer = (props) => {
     return (
         <OverflowableText
             className={clsx({
-                [classes.valueInvalid]:
-                    props.colDef.canBeInvalidated &&
-                    props.loadFlowStatus !== RunningStatus.SUCCEED,
+                [classes.valueInvalid]: props.isValueInvalid,
                 [classes.numericValue]: props.colDef.numeric,
             })}
             text={props.value}
@@ -141,9 +139,7 @@ export const NumericCellRenderer = (props) => {
                     <div
                         children={cellValue.value}
                         className={clsx({
-                            [classes.valueInvalid]:
-                                props.colDef.canBeInvalidated &&
-                                props.loadFlowStatus !== RunningStatus.SUCCEED,
+                            [classes.valueInvalid]: props.isValueInvalid,
                             [classes.numericValue]: props.colDef.numeric,
                         })}
                     />
@@ -151,9 +147,7 @@ export const NumericCellRenderer = (props) => {
             ) : (
                 <OverflowableText
                     className={clsx({
-                        [classes.valueInvalid]:
-                            props.colDef.canBeInvalidated &&
-                            props.loadFlowStatus !== RunningStatus.SUCCEED,
+                        [classes.valueInvalid]: props.isValueInvalid,
                         [classes.numericValue]: props.colDef.numeric,
                     })}
                     text={cellValue.value}
