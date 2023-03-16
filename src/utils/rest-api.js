@@ -1169,7 +1169,6 @@ export function getDynamicMappings(studyUuid) {
 export function startDynamicSimulation(
     studyUuid,
     currentNodeUuid,
-    mappingName,
     dynamicSimulationConfiguration
 ) {
     console.info(

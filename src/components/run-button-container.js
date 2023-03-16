@@ -183,10 +183,7 @@ export function RunButtonContainer({
         );
     };
 
-    const handleStartDynamicSimulation = ({
-        mappingName,
-        dynamicSimulationConfiguration,
-    }) => {
+    const handleStartDynamicSimulation = (dynamicSimulationConfiguration) => {
         // close the dialog
         setShowDynamicSimulationParametersSelector(false);
 
@@ -196,7 +193,6 @@ export function RunButtonContainer({
         startDynamicSimulation(
             studyUuid,
             currentNode?.id,
-            mappingName,
             dynamicSimulationConfiguration
         ).catch((error) => {
             snackError({

@@ -88,25 +88,22 @@ const DynamicSimulationParametersSelector = (props) => {
 
     const handleStart = () => {
         if (inputForm.validate()) {
-            // save parameters before start computation
-            // clone new params with chosen mapping
-            const newDynamicSimulationParams = {
-                ...dynamicSimulationParams,
-                mapping: mappingName,
-            };
-            updateDynamicSimulationParameters(
-                studyUuid,
-                newDynamicSimulationParams
-            ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'DynamicSimulationParametersChangeError',
+            // start computation with override parameters
+            onStart({ mapping: mappingName }).then(() => {
+                // save parameters after start computation successfully
+                const newDynamicSimulationParams = {
+                    ...dynamicSimulationParams,
+                    mapping: mappingName,
+                };
+                updateDynamicSimulationParameters(
+                    studyUuid,
+                    newDynamicSimulationParams
+                ).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'DynamicSimulationParametersChangeError',
+                    });
                 });
-            });
-
-            // start computation
-            onStart({
-                mappingName: mappingName,
             });
         }
     };
