@@ -7,7 +7,6 @@
 
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import TextInput from '../../rhf-inputs/text-input';
 import {
     percentageTextField,
     standardTextField,
@@ -20,12 +19,12 @@ import {
 } from 'components/refactor/utils/field-constants';
 import { useFormContext } from 'react-hook-form';
 import {
-    formatPercentageString,
-    getLeftSidePercentageValue,
-    getRightSidePercentageValue,
-    getSliderValue,
+    formatPercentageValue,
+    isValidPercentage,
+    sanitizePercentageValue,
 } from './percentage-area-utils';
 import { FormattedMessage } from 'react-intl';
+import TextInput from 'components/refactor/rhf-inputs/text-input';
 
 /**
  * Component to handle a 'percentage area' (slider , left and right percentage fields)
@@ -35,27 +34,44 @@ import { FormattedMessage } from 'react-intl';
 export const PercentageArea = ({ upperLeftText, upperRightText }) => {
     const { setValue } = useFormContext();
 
-    const handleRightPercentageValueChange = (value) => {
-        const floatValueStr = formatPercentageString(value);
-        const nextValue = '100-' + floatValueStr;
-        setValue(SLIDER_PERCENTAGE, getSliderValue(nextValue));
-        setValue(LEFT_SIDE_PERCENTAGE, getLeftSidePercentageValue(nextValue));
-        return floatValueStr;
+    const handleLeftPercentageValueChange = (value) => {
+        const leftPercentageValue = formatPercentageValue(value);
+        const rightPercentageValue = sanitizePercentageValue(
+            100 - leftPercentageValue
+        );
+        setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
+        setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
+            shouldValidate: true,
+        });
+        setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
+            shouldValidate: true,
+        });
+        return leftPercentageValue;
     };
 
-    const handleLeftPercentageValueChange = (value) => {
-        const floatValueStr = formatPercentageString(value);
-        setValue(SLIDER_PERCENTAGE, getSliderValue(floatValueStr));
-        setValue(
-            RIGHT_SIDE_PERCENTAGE,
-            getRightSidePercentageValue(floatValueStr)
+    const handleRightPercentageValueChange = (value) => {
+        const rightPercentageValue = formatPercentageValue(value);
+        const leftPercentageValue = sanitizePercentageValue(
+            100 - rightPercentageValue
         );
-        return floatValueStr;
+        setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
+        setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
+            shouldValidate: true,
+        });
+        setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
+            shouldValidate: true,
+        });
+        return rightPercentageValue;
     };
 
     const onSliderChange = (value) => {
-        setValue(LEFT_SIDE_PERCENTAGE, getLeftSidePercentageValue(value));
-        setValue(RIGHT_SIDE_PERCENTAGE, getRightSidePercentageValue(value));
+        const rightPercentageValue = sanitizePercentageValue(100 - value);
+        setValue(LEFT_SIDE_PERCENTAGE, value, {
+            shouldValidate: true,
+        });
+        setValue(RIGHT_SIDE_PERCENTAGE, rightPercentageValue, {
+            shouldValidate: true,
+        });
         return value;
     };
 
@@ -63,8 +79,8 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
         <TextInput
             name={LEFT_SIDE_PERCENTAGE}
             adornment={percentageTextField}
+            acceptValue={isValidPercentage}
             outputTransform={handleLeftPercentageValueChange}
-            inputTransform={formatPercentageString}
             formProps={standardTextField}
         />
     );
@@ -73,8 +89,8 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
         <TextInput
             name={RIGHT_SIDE_PERCENTAGE}
             adornment={percentageTextField}
+            acceptValue={isValidPercentage}
             outputTransform={handleRightPercentageValueChange}
-            inputTransform={formatPercentageString}
             formProps={standardTextField}
         />
     );
