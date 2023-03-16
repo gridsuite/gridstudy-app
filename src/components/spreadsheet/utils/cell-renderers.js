@@ -18,20 +18,17 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 const useStyles = makeStyles((theme) => ({
     editCell: {
+        position: 'absolute',
+        left: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+    },
+    referenceEditRow: {
         '& button': {
-            margin: 0,
-            padding: 0,
-            position: 'absolute',
-            textAlign: 'center',
-            bottom: theme.spacing(0.8),
-        },
-        '& button:first-child': {
-            // Only applies to the first child
-            left: theme.spacing(2),
-        },
-        '& button:nth-child(2)': {
-            // Only applies to the second child
-            right: theme.spacing(3),
+            color: theme.palette.primary.main,
+            cursor: 'initial',
         },
     },
     tableCell: {
@@ -52,18 +49,7 @@ const useStyles = makeStyles((theme) => ({
     numericValue: {
         marginLeft: 'inherit',
     },
-    referenceEditRow: {
-        '& button': {
-            color: theme.palette.primary.main,
-            cursor: 'initial',
-        },
-        padding: 0,
-    },
     leftFade: {
-        position: 'absolute',
-        left: 0,
-        width: '100%',
-        height: '100%',
         background:
             'linear-gradient(to right, ' +
             theme.palette.primary.main +
