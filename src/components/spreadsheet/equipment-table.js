@@ -75,7 +75,7 @@ export const EquipmentTable = ({
         [intl]
     );
 
-    const getRowId = useCallback(() => (params) => params.data.id, []);
+    const getRowId = useCallback((params) => params.data.id, []);
 
     //we filter enter key event to prevent closing or opening edit mode
     const suppressKeyEvent = (params) => {
