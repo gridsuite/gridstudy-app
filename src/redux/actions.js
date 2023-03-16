@@ -23,6 +23,7 @@ import {
     PARAM_FLUX_CONVENTION,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_DEVELOPER_MODE,
+    PARAMS_LOADED,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -144,6 +145,15 @@ export function selectComputedLanguage(computedLanguage) {
     return {
         type: SELECT_COMPUTED_LANGUAGE,
         computedLanguage: computedLanguage,
+    };
+}
+
+export const SET_PARAMS_LOADED = 'SET_PARAMS_LOADED';
+
+export function setParamsLoaded() {
+    return {
+        type: SET_PARAMS_LOADED,
+        [PARAMS_LOADED]: true,
     };
 }
 

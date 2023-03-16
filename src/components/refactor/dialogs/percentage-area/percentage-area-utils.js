@@ -13,9 +13,15 @@ import {
 import yup from '../../utils/yup-config';
 
 const percentageAreaValidationSchema = () => ({
-    [SLIDER_PERCENTAGE]: yup.string(),
-    [LEFT_SIDE_PERCENTAGE]: yup.string(),
-    [RIGHT_SIDE_PERCENTAGE]: yup.string(),
+    [SLIDER_PERCENTAGE]: yup.number(),
+    [LEFT_SIDE_PERCENTAGE]: yup
+        .number()
+        .min(0.1, 'OutOfBoundsPercentage')
+        .max(99.9, 'OutOfBoundsPercentage'),
+    [RIGHT_SIDE_PERCENTAGE]: yup
+        .number()
+        .min(0.1, 'OutOfBoundsPercentage')
+        .max(99.9, 'OutOfBoundsPercentage'),
 });
 export const getPercentageAreaValidationSchema = () => {
     return percentageAreaValidationSchema();
@@ -34,42 +40,27 @@ export const getPercentageAreaEmptyFormData = () => {
 export const getPercentageAreaData = ({ percent }) => {
     return {
         [SLIDER_PERCENTAGE]: percent,
-        [LEFT_SIDE_PERCENTAGE]: getLeftSidePercentageValue(percent),
-        [RIGHT_SIDE_PERCENTAGE]: getRightSidePercentageValue(percent),
+        [LEFT_SIDE_PERCENTAGE]: percent,
+        [RIGHT_SIDE_PERCENTAGE]: sanitizePercentageValue(100 - percent),
     };
 };
 
-const maxDecimals = 1;
-export function formatPercentageString(value) {
-    if (!value || value < 0) return '0';
-    if (value > 100) return '100';
-    if (typeof value === 'number') return value.toFixed(maxDecimals);
-    if (typeof value !== 'string') return '';
-    const rgxra = /^(\d*)([.,]*)(\d*)/.exec(value);
-    if (!rgxra) return '';
-    return (
-        rgxra[1] + rgxra[2].substring(0, 1) + rgxra[3].substring(0, maxDecimals)
-    );
+export const isValidPercentage = (val) => {
+    return /^\d*[.,]?\d?$/.test(val);
+};
+
+//used to format substaction of two percentages (avoid having more than one decimal)
+export function sanitizePercentageValue(value) {
+    return Math.round(value * 10) / 10;
 }
 
-export function getSliderValue(str) {
-    if (typeof str === 'string' && str.substring(0, 4) === '100-') {
-        const rest = str.substring(4);
-        if (isNaN(rest)) return 100;
-        return str.substring(0, 3) - rest;
+export function formatPercentageValue(value) {
+    if (!value || value < 0) return 0;
+    if (value > 100) return 100;
+    if (typeof value === 'string') {
+        const tmp = value?.replace(',', '.');
+        if (tmp.endsWith('.')) return tmp;
+        return parseFloat(value);
     }
-    return parseFloat(str);
-}
-
-export function getLeftSidePercentageValue(str) {
-    if (typeof str === 'string' && str.substring(0, 4) === '100-')
-        return str.substring(0, 3) - str.substring(4);
-    return str;
-}
-
-export function getRightSidePercentageValue(str) {
-    if (typeof str === 'string' && str.substring(0, 4) === '100-')
-        return str.substring(4);
-    const diff = 100 - str;
-    return isNaN(diff) || diff === 100.0 ? '100' : diff.toFixed(maxDecimals);
+    return value;
 }
