@@ -26,6 +26,12 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 
+export const NETWORK_EQUIPMENT_FETCHED = 'NETWORK_EQUIPMENT_FETCHED';
+
+export function isNetworkEquipmentsFetched(fetched) {
+    return {type: NETWORK_EQUIPMENT_FETCHED, networkEquipmentsFetched: fetched};
+}
+
 export const NETWORK_CREATED = 'NETWORK_CREATED';
 
 export function networkCreated(network) {

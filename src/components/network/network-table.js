@@ -254,6 +254,7 @@ const NetworkTable = (props) => {
     const classes = useStyles();
 
     const { snackError } = useSnackMessage();
+    const equipmentFetched = useSelector((state) => state.networkEquipmentsFetched);
 
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
@@ -1168,7 +1169,7 @@ const NetworkTable = (props) => {
                 currentNode={props.currentNode}
                 rows={rows}
                 columns={columns}
-                fetched={props.network.isResourceFetched(resource)}
+                fetched={equipmentFetched}
                 scrollTop={scrollToIndex}
                 visible={props.visible}
                 showEditRow={isModifyingRow()}

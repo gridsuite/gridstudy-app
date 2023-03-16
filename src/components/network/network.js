@@ -6,7 +6,7 @@
  */
 
 import { RemoteResourceHandler } from '../util/remote-resource-handler';
-import { networkCreated, networkEquipmentLoaded } from '../../redux/actions';
+import {networkCreated, networkEquipmentLoaded, isNetworkEquipmentsFetched} from '../../redux/actions';
 import {
     fetchAllEquipments,
     fetchBatteries,
@@ -424,6 +424,7 @@ export default class Network {
                 fetchers.push(
                     fetcher.fetcher().then((values) => {
                         if (nodeBeforeFetch === currentNodeRef.current) {
+                            this.dispatch(isNetworkEquipmentsFetched(false));
                             return { values: values, equipment: equipment };
                         }
                     })
@@ -433,14 +434,14 @@ export default class Network {
         Promise.all(fetchers).then((values) => {
             const allValidValues = values.every((v) => v);
 
-            // if all value are valid, we set the equipments, otherwise we wait for the correct values
-            if (allValidValues) {
+            if (allValidValues && nodeBeforeFetch === currentNodeRef.current) {
                 values.forEach((value) => {
                     this.lazyLoaders.get(value.equipment).fetched = true;
                     this.setEquipment(value.equipment, value.values);
                 });
+                this.dispatch(isNetworkEquipmentsFetched(true));
+                this.dispatch(networkCreated(this));
             }
-            this.dispatch(networkCreated(this));
         });
     }
 
