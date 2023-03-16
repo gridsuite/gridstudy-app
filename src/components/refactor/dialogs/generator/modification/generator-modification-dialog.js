@@ -271,49 +271,56 @@ const GeneratorModificationDialog = ({
         },
         [emptyFormData, reset]
     );
-    const getEquipmentInfo = useCallback(() => {
-        fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            'generators',
-            editData?.equipmentId,
-            true
-        ).then((value) => {
-            if (value) {
-                // when editing modification form, first render should not trigger this reset
-                // which would empty the form instead of displaying data of existing form
-                if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
-                    //creating empty table depending on existing generator
-                    let reactiveCapabilityCurvePoints = [];
-                    value?.reactiveCapabilityCurvePoints?.forEach((element) => {
-                        reactiveCapabilityCurvePoints.push({
-                            [P]: null,
-                            [Q_MIN_P]: null,
-                            [Q_MAX_P]: null,
-                            [OLD_P]: element.p,
-                            [OLD_Q_MIN_P]: element.qminP,
-                            [OLD_Q_MAX_P]: element.qmaxP,
-                        });
-                    });
-                    // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
-                    clear(
-                        {
-                            [EQUIPMENT_ID]: editData?.equipmentId,
-                            [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                                reactiveCapabilityCurvePoints,
-                        },
-                        true
-                    );
+    const getEquipmentInfo = useCallback(
+        (equipmentId) => {
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNodeUuid,
+                'generators',
+                equipmentId,
+                true
+            ).then((value) => {
+                if (value) {
+                    // when editing modification form, first render should not trigger this reset
+                    // which would empty the form instead of displaying data of existing form
+                    if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
+                        //creating empty table depending on existing generator
+                        let reactiveCapabilityCurvePoints = [];
+                        value?.reactiveCapabilityCurvePoints?.forEach(
+                            (element) => {
+                                reactiveCapabilityCurvePoints.push({
+                                    [P]: null,
+                                    [Q_MIN_P]: null,
+                                    [Q_MAX_P]: null,
+                                    [OLD_P]: element.p,
+                                    [OLD_Q_MIN_P]: element.qminP,
+                                    [OLD_Q_MAX_P]: element.qmaxP,
+                                });
+                            }
+                        );
+                        // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
+                        clear(
+                            {
+                                [EQUIPMENT_ID]: equipmentId,
+                                [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                                    reactiveCapabilityCurvePoints,
+                            },
+                            true
+                        );
+                    }
+                    shouldEmptyFormOnGeneratorIdChangeRef.current = true;
+                    setGeneratorToModify(value);
                 }
-                shouldEmptyFormOnGeneratorIdChangeRef.current = true;
-                setGeneratorToModify(value);
-            }
-        });
-    }, [clear, currentNodeUuid, editData?.equipmentId, studyUuid]);
+            });
+        },
+        [clear, currentNodeUuid, studyUuid]
+    );
 
     useEffect(() => {
-        if (editData?.equipmentId) {
-            getEquipmentInfo()?.catch(() => setGeneratorToModify(null));
+        if (editData?.equipmentId && !setGeneratorToModify) {
+            getEquipmentInfo(editData?.equipmentId)?.catch(() =>
+                setGeneratorToModify(null)
+            );
         }
     }, [
         studyUuid,
@@ -510,14 +517,11 @@ const GeneratorModificationDialog = ({
     };
 
     useEffect(() => {
-        if (!editData) {
+        if (!editData || (editData && generatorToModify)) {
             setOpen(true);
             return;
         }
-        if (editData && generatorToModify) {
-            setOpen(true);
-            return;
-        }
+
         if (editData && !generatorToModify) {
             setTimeout(() => {
                 setOpen(true);

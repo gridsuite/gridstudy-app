@@ -36,7 +36,7 @@ import {
     getEnergySourceLabel,
 } from '../../../../network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     fetchEquipmentsIds,
@@ -63,14 +63,9 @@ const GeneratorModificationForm = ({
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
     const { clearErrors } = useFormContext();
-    const shouldEmptyFormOnGeneratorIdChangeRef = useRef();
     const watchEquipmentId = useWatch({
         name: EQUIPMENT_ID,
     });
-
-    useEffect(() => {
-        if (!editData) shouldEmptyFormOnGeneratorIdChangeRef.current = true;
-    }, [editData]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -98,7 +93,9 @@ const GeneratorModificationForm = ({
     useEffect(() => {
         clearErrors();
         if (watchEquipmentId) {
-            getEquipmentInfo()?.catch(() => setGeneratorToModify(null));
+            getEquipmentInfo(watchEquipmentId)?.catch(() =>
+                setGeneratorToModify(null)
+            );
         } else {
             resetForm();
             setGeneratorToModify(null);
