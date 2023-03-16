@@ -68,13 +68,10 @@ export const EquipmentTable = ({
 
     const getLocaleText = useCallback(
         (params) => {
-            if (intl.locale !== LANG_FRENCH) {
-                return params.defaultValue;
-            } else {
-                return localeFrench.hasOwnProperty(params.key)
-                    ? localeFrench[params.key]
-                    : params.defaultValue;
-            }
+            return intl.locale === LANG_FRENCH &&
+                localeFrench.hasOwnProperty(params.key)
+                ? localeFrench[params.key]
+                : params.defaultValue;
         },
         [intl.locale]
     );
