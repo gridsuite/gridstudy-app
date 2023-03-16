@@ -24,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const GRID_PREFIX = 'grid.';
+
 export const EquipmentTable = ({
     rows,
     editingData,
@@ -65,10 +67,10 @@ export const EquipmentTable = ({
     );
 
     const getLocaleText = useCallback(
-        (params) =>
-            intl.formatMessage({
-                id: params.key,
-            }),
+        (params) => {
+            const key = GRID_PREFIX + params.key;
+            return intl.messages[key] || params.defaultValue;
+        },
         [intl]
     );
 
