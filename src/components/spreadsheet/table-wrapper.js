@@ -182,6 +182,8 @@ const TableWrapper = (props) => {
             }
 
             column.width = column.columnWidth || MIN_COLUMN_WIDTH;
+
+            //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
             column.pinned = lockedColumnsNames.has(column.id)
                 ? 'left'
                 : undefined;
