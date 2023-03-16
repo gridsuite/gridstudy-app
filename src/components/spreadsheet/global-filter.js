@@ -26,11 +26,11 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
     const classes = useStyles();
     const intl = useIntl();
 
-    const inputRef = useRef(null);
+    const inputRef = useRef();
     const resetFilter = useCallback(() => {
         if (!inputRef.current.value || inputRef.current.value !== '') {
             inputRef.current.value = '';
-            gridRef.current.api.setQuickFilter(null);
+            gridRef.current.api.setQuickFilter();
         }
     }, [gridRef]);
 

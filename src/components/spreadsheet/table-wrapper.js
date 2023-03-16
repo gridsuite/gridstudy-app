@@ -120,7 +120,7 @@ const TableWrapper = (props) => {
     const [editingData, setEditingData] = useState();
     const [isValidatingData, setIsValidatingData] = useState(false);
 
-    const globalFilterRef = useRef(null);
+    const globalFilterRef = useRef();
 
     const [rowData, setRowData] = useState([]);
     const [columnData, setColumnData] = useState([]);
