@@ -8,8 +8,8 @@
     "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
     "studyDeletedSuccessMsg": "Étude supprimée",
     "deleteStudyError": "Vous ne pouvez pas supprimer une étude dont vous n'êtes pas propriétaire",
-    "equipmentsSearchingError": "Une erreur est survenue lors de la recherche des équipements",
-    "equipmentsLoadingError": "Une erreur est survenue lors du chargement des équipements disponibles",
+    "equipmentsSearchingError": "Une erreur est survenue lors de la recherche des ouvrages",
+    "equipmentsLoadingError": "Une erreur est survenue lors du chargement des ouvrages disponibles",
 
     "renameStudyMsg": "Nouveau nom de l'étude\u00a0:",
     "renameStudy": "Renommer l'étude",
@@ -40,8 +40,8 @@
     "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
     "nameValidityCheckErrorMsg": "Erreur à la vérification du nom d'étude\u00a0:",
 
-    "diagonalLabel": "Afficher les noms d'équipement en diagonal\u00a0:",
-    "centerLabel": "Centrer les noms d'équipement\u00a0:",
+    "diagonalLabel": "Afficher les noms d'ouvrage en diagonal\u00a0:",
+    "centerLabel": "Centrer les noms d'ouvrage\u00a0:",
     "topologicalColoring": "Coloration topologique",
     "SingleLineDiagram": "Schéma unifilaire",
 
@@ -564,6 +564,7 @@
     "AddProperty": "Ajouter une propriété",
     "PropertyName": "Nom de la propriété",
     "PropertyValue": "Valeur de la propriété",
+    "DuplicatedProps": "Propriétés dupliquées : chaque propriété doit être unique",
 
     "CreateVoltageLevel": "Créer un poste",
     "Substation": "Site",

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -32,9 +32,9 @@ import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
     currentNode,
-    onLineDo,
+    onLineCreationDo,
     lineToEdit,
-    onVoltageLevelDo,
+    onVoltageLevelCreationDo,
     voltageLevelToEdit,
     onVoltageLevelChange,
 }) => {
@@ -87,13 +87,15 @@ const LineAttachToVoltageLevelForm = ({
         }
     }, [voltageLevelToEdit, voltageLevelOptions]);
 
-    const getFormatedBusOrBusbarSectionOptions = useMemo(() => {
-        return voltageLevelToEdit?.busbarSections?.map((busbarSection) => {
-            return {
-                id: busbarSection.id,
-                name: busbarSection.name ?? '',
-            };
-        });
+    const formatedBusOrBusbarSectionOptions = useMemo(() => {
+        return voltageLevelToEdit?.busbarSections
+            ?.sort((a, b) => a?.id?.localeCompare(b?.id))
+            .map((busbarSection) => {
+                return {
+                    id: busbarSection.id,
+                    name: busbarSection.name ?? '',
+                };
+            });
     }, [voltageLevelToEdit]);
 
     const lineToAttachToForm = (
@@ -138,7 +140,7 @@ const LineAttachToVoltageLevelForm = ({
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            newBusOrBusbarSectionOptions={getFormatedBusOrBusbarSectionOptions}
+            newBusOrBusbarSectionOptions={formatedBusOrBusbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
             onVoltageLevelChangeCallback={onVoltageLevelChange}
@@ -201,7 +203,7 @@ const LineAttachToVoltageLevelForm = ({
                     onClose={onVoltageLevelDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
-                    onCreateVoltageLevel={onVoltageLevelDo}
+                    onCreateVoltageLevel={onVoltageLevelCreationDo}
                     editData={voltageLevelToEdit}
                 />
             )}
@@ -212,7 +214,7 @@ const LineAttachToVoltageLevelForm = ({
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     displayConnectivity={false}
-                    onCreateLine={onLineDo}
+                    onCreateLine={onLineCreationDo}
                     editData={lineToEdit}
                 />
             )}

@@ -564,6 +564,7 @@
     "AddProperty": "Add property",
     "PropertyName": "Property name",
     "PropertyValue": "Property value",
+    "DuplicatedProps": "Duplicated properties: each property must be unique",
 
     "CreateVoltageLevel": "Create a voltage level",
     "Substation": "Substation",
