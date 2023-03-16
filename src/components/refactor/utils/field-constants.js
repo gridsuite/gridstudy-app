@@ -156,12 +156,13 @@ export const SLIDER_PERCENTAGE = 'sliderPercentage';
 export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
 export const LINE_TO_ATTACH_TO_2_ID = 'lineToAttachTo2Id';
 
-// generator scaling
+// scaling
 export const VARIATIONS = 'variations';
 export const VARIATION_MODE = 'variationMode';
 export const FILTERS = 'filters';
 export const VARIATION_TYPE = 'variationType';
 export const VARIATION_VALUE = 'variationValue';
+export const REACTIVE_VARIATION_MODE = 'reactiveVariationMode';
 
 // elements and directories
 export const SPECIFIC_METADATA = 'specificMetadata';
@@ -173,3 +174,8 @@ export const REPLACING_LINE_1_ID = 'replacingLine1Id';
 export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
 export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
+
+// substation
+export const COUNTRY = 'country';
+export const VALUE = 'value';
+export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
