@@ -24,23 +24,15 @@ import { getLoadTypeLabel, LOAD_TYPES } from '../../../network/constants';
 import FloatInput from '../../rhf-inputs/float-input';
 import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useState } from 'react';
-import {
-    fetchEquipmentInfos,
-    fetchEquipmentsIds,
-} from '../../../../utils/rest-api';
+import { fetchEquipmentsIds } from '../../../../utils/rest-api';
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
-import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 
-const LoadModificationForm = ({ currentNode, studyUuid }) => {
+const LoadModificationForm = ({ currentNode, studyUuid, loadInfos }) => {
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
-    const [loadInfos, setLoadInfos] = useState(null);
-    const intl = useIntl();
 
-    const loadId = useWatch({
-        name: `${EQUIPMENT_ID}`,
-    });
+    const intl = useIntl();
 
     useEffect(() => {
         fetchEquipmentsIds(
@@ -53,24 +45,6 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
         });
     }, [studyUuid, currentNodeUuid]);
-
-    useEffect(() => {
-        if (loadId) {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'loads',
-                loadId,
-                true
-            ).then((value) => {
-                if (value) {
-                    setLoadInfos(value);
-                }
-            });
-        } else {
-            setLoadInfos(null);
-        }
-    }, [studyUuid, currentNodeUuid, loadId]);
 
     const getObjectId = useCallback((object) => {
         if (typeof object === 'string') {

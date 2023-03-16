@@ -15,9 +15,9 @@ import {
     REACTIVE_POWER,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
-import { modifyLoad } from '../../../../utils/rest-api';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import { fetchEquipmentInfos, modifyLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
@@ -50,6 +50,8 @@ const LoadModificationDialog = ({
     studyUuid,
     ...dialogProps
 }) => {
+    const [open, setOpen] = useState(false);
+    const [loadInfos, setLoadInfos] = useState(null);
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
@@ -69,7 +71,11 @@ const LoadModificationDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const { reset } = methods;
+    const { reset, control } = methods;
+    const loadId = useWatch({
+        name: `${EQUIPMENT_ID}`,
+        control: control,
+    });
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
@@ -83,6 +89,35 @@ const LoadModificationDialog = ({
         },
         [reset]
     );
+    useEffect(() => {
+        if (loadId) {
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNodeUuid,
+                'loads',
+                loadId,
+                true
+            ).then((value) => {
+                if (value) {
+                    setLoadInfos(value);
+                }
+            });
+        } else {
+            setLoadInfos(null);
+        }
+    }, [studyUuid, currentNodeUuid, loadId]);
+
+    useEffect(() => {
+        if (!editData || (editData && loadInfos)) {
+            setOpen(true);
+            return;
+        }
+        if (editData && !loadInfos) {
+            setTimeout(() => {
+                setOpen(true);
+            }, 200);
+        }
+    }, [editData, loadInfos]);
 
     useEffect(() => {
         if (editData) {
@@ -92,7 +127,6 @@ const LoadModificationDialog = ({
 
     const onSubmit = useCallback(
         (load) => {
-            console.log(load);
             modifyLoad(
                 studyUuid,
                 currentNodeUuid,
@@ -119,24 +153,29 @@ const LoadModificationDialog = ({
         reset(emptyFormData);
     }, [reset, emptyFormData]);
 
-    return (
-        <FormProvider validationSchema={schema} {...methods}>
-            <ModificationDialog
-                fullWidth
-                onClear={clear}
-                onSave={onSubmit}
-                aria-labelledby="dialog-modify-load"
-                maxWidth={'md'}
-                titleId="ModifyLoad"
-                {...dialogProps}
-            >
-                <LoadModificationForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                />
-            </ModificationDialog>
-        </FormProvider>
-    );
+    const dialogContent = () => {
+        return (
+            <FormProvider validationSchema={schema} {...methods}>
+                <ModificationDialog
+                    fullWidth
+                    onClear={clear}
+                    onSave={onSubmit}
+                    aria-labelledby="dialog-modify-load"
+                    maxWidth={'md'}
+                    titleId="ModifyLoad"
+                    {...dialogProps}
+                >
+                    <LoadModificationForm
+                        currentNode={currentNode}
+                        studyUuid={studyUuid}
+                        loadInfos={loadInfos}
+                    />
+                </ModificationDialog>
+            </FormProvider>
+        );
+    };
+
+    return <div>{open && dialogContent()}</div>;
 };
 
 LoadModificationDialog.propTypes = {
