@@ -24,6 +24,7 @@ export const PARAM_COMPONENT_LIBRARY = 'componentLibrary';
 export const PARAM_FLUX_CONVENTION = 'fluxConvention';
 export const PARAM_LANGUAGE = 'language';
 export const PARAM_DEVELOPER_MODE = 'enableDeveloperMode';
+export const PARAMS_LOADED = 'paramsLoaded';
 
 export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
 

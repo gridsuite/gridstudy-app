@@ -89,6 +89,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
 
     const connectivityForm = (
         <ConnectivityForm
+            label={'AttachedVoltageLevelId'}
             voltageLevelOptions={voltageLevelOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}

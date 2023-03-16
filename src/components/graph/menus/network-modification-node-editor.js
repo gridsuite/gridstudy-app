@@ -10,17 +10,13 @@ import {
     changeNetworkModificationOrder,
     copyOrMoveModifications,
     deleteModifications,
-    fetchLines,
     fetchNetworkModification,
     fetchNetworkModifications,
-    fetchSubstations,
-    fetchVoltageLevels,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../refactor/dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
@@ -36,11 +32,12 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
+import LoadModificationDialog from '../../refactor/dialogs/load-modification/load-modification-dialog';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
-import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
+import LineSplitWithVoltageLevelDialog from '../../refactor/dialogs/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -221,17 +218,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLs(p) {
-        const voltageLevelOptionsPromise = fetchVoltageLevels(
-            studyUuid,
-            currentNode?.id
-        );
-        return {
-            ...p,
-            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
-        };
-    }
-
     function withVLsIdsAndTopology(p) {
         const voltageLevelsIdsAndTopologyPromise =
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id);
@@ -239,26 +225,6 @@ const NetworkModificationNodeEditor = () => {
             ...p,
             voltageLevelsIdsAndTopologyPromise:
                 voltageLevelsIdsAndTopologyPromise,
-        };
-    }
-
-    function withLines(p) {
-        const lineOptionsPromise = fetchLines(studyUuid, currentNode?.id, []);
-        return {
-            ...p,
-            lineOptionsPromise: lineOptionsPromise,
-        };
-    }
-
-    function withSubstations(p) {
-        const substationOptionsPromise = fetchSubstations(
-            studyUuid,
-            currentNode?.id,
-            []
-        );
-        return {
-            ...p,
-            substationOptionsPromise: substationOptionsPromise,
         };
     }
 
@@ -312,13 +278,7 @@ const NetworkModificationNodeEditor = () => {
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
-            dialog: () =>
-                adapt(
-                    LineSplitWithVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LineSplitWithVoltageLevelDialog),
             icon: <AddIcon />,
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
@@ -398,7 +358,7 @@ const NetworkModificationNodeEditor = () => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') return;
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode?.id)
+        fetchNetworkModifications(studyUuid, currentNode.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -416,18 +376,20 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentNode.id, currentNode.type, snackError, dispatch]);
+    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
     }, [editData]);
 
     useEffect(() => {
-        // first time then fetch modifications
+        // first time with currentNode initialized then fetch modifications
+        // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
         if (
-            !currentNodeIdRef.current ||
-            currentNodeIdRef.current !== currentNode.id
+            currentNode &&
+            (!currentNodeIdRef.current ||
+                currentNodeIdRef.current !== currentNode.id)
         ) {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
@@ -497,7 +459,7 @@ const NetworkModificationNodeEditor = () => {
     const doDeleteModification = useCallback(() => {
         deleteModifications(
             studyUuid,
-            currentNode?.id,
+            currentNode.id,
             [...selectedItems.values()].map((item) => item.uuid)
         )
             .then()
@@ -518,7 +480,7 @@ const NetworkModificationNodeEditor = () => {
             copyType: CopyType.MOVE,
             originNodeUuid: currentNode.id,
         });
-    }, [currentNode.id, selectedItems]);
+    }, [currentNode?.id, selectedItems]);
 
     const doCopyModification = useCallback(() => {
         // just memorize the list of selected modifications
@@ -586,7 +548,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [
         copiedModifications,
-        currentNode.id,
+        currentNode?.id,
         copyInfos,
         snackError,
         snackWarning,
@@ -640,7 +602,11 @@ const NetworkModificationNodeEditor = () => {
     const commit = useCallback(
         ({ source, destination }) => {
             setIsDragging(false);
-            if (destination === null || source.index === destination.index)
+            if (
+                !currentNode?.id ||
+                destination === null ||
+                source.index === destination.index
+            )
                 return;
             const res = [...modifications];
             const [item] = res.splice(source.index, 1);
@@ -655,7 +621,7 @@ const NetworkModificationNodeEditor = () => {
             setModifications(res);
             changeNetworkModificationOrder(
                 studyUuid,
-                currentNode?.id,
+                currentNode.id,
                 item.uuid,
                 before
             ).catch((error) => {
@@ -803,7 +769,11 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCutModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={selectedItems.size === 0 || isAnyNodeBuilding}
+                    disabled={
+                        selectedItems.size === 0 ||
+                        isAnyNodeBuilding ||
+                        !currentNode
+                    }
                 >
                     <ContentCutIcon />
                 </IconButton>
@@ -834,7 +804,8 @@ const NetworkModificationNodeEditor = () => {
                             className={classes.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) ||
-                                isAnyNodeBuilding
+                                isAnyNodeBuilding ||
+                                !currentNode
                             }
                         >
                             <ContentPasteIcon />
@@ -845,7 +816,11 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doDeleteModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={!(selectedItems?.size > 0) || isAnyNodeBuilding}
+                    disabled={
+                        !(selectedItems?.size > 0) ||
+                        isAnyNodeBuilding ||
+                        !currentNode
+                    }
                 >
                     <DeleteIcon />
                 </IconButton>
@@ -866,7 +841,6 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationDialog
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
-                network={network}
                 currentNodeUuid={currentNode?.id}
                 onOpenDialog={setEditDialogOpen}
                 dialogs={dialogs}
