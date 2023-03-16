@@ -168,3 +168,8 @@ export const REPLACING_LINE_1_ID = 'replacingLine1Id';
 export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
 export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
+
+// substation
+export const COUNTRY = 'country';
+export const VALUE = 'value';
+export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
