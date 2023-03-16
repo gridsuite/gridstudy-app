@@ -254,7 +254,9 @@ const NetworkTable = (props) => {
     const classes = useStyles();
 
     const { snackError } = useSnackMessage();
-    const equipmentFetched = useSelector((state) => state.networkEquipmentsFetched);
+    const equipmentFetched = useSelector(
+        (state) => state.networkEquipmentsFetched
+    );
 
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
@@ -1162,7 +1164,6 @@ const NetworkTable = (props) => {
     }
 
     function renderTable(rows) {
-        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
         const columns = generateTableColumns(tabIndex);
         return (
             <EquipmentTable

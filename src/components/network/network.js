@@ -6,7 +6,11 @@
  */
 
 import { RemoteResourceHandler } from '../util/remote-resource-handler';
-import {networkCreated, networkEquipmentLoaded, isNetworkEquipmentsFetched} from '../../redux/actions';
+import {
+    networkCreated,
+    networkEquipmentLoaded,
+    isNetworkEquipmentsFetched,
+} from '../../redux/actions';
 import {
     fetchAllEquipments,
     fetchBatteries,

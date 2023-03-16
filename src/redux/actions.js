@@ -29,7 +29,10 @@ import {
 export const NETWORK_EQUIPMENT_FETCHED = 'NETWORK_EQUIPMENT_FETCHED';
 
 export function isNetworkEquipmentsFetched(fetched) {
-    return {type: NETWORK_EQUIPMENT_FETCHED, networkEquipmentsFetched: fetched};
+    return {
+        type: NETWORK_EQUIPMENT_FETCHED,
+        networkEquipmentsFetched: fetched,
+    };
 }
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
