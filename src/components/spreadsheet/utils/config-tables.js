@@ -528,7 +528,12 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 1),
                 fractionDigits: 0,
-                valueGetter: (params) => params?.ratioTapChanger1?.tapPosition,
+                valueGetter: (params) =>
+                    params?.data?.ratioTapChanger1?.tapPosition,
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger1.tapPosition = params.newValue;
+                    return params;
+                },
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -567,7 +572,12 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 2),
                 fractionDigits: 0,
-                valueGetter: (params) => params?.ratioTapChanger2?.tapPosition,
+                valueGetter: (params) =>
+                    params?.data?.ratioTapChanger2?.tapPosition,
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger2.tapPosition = params.newValue;
+                    return params;
+                },
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -606,7 +616,12 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 3),
                 fractionDigits: 0,
-                valueGetter: (params) => params?.ratioTapChanger3?.tapPosition,
+                valueGetter: (params) =>
+                    params?.data?.ratioTapChanger3?.tapPosition,
+                valueSetter: (params) => {
+                    params.data.ratioTapChanger3.tapPosition = params.newValue;
+                    return params;
+                },
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -636,7 +651,12 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 1),
                 fractionDigits: 0,
-                valueGetter: (params) => params?.phaseTapChanger1?.tapPosition,
+                valueGetter: (params) =>
+                    params?.data?.phaseTapChanger1?.tapPosition,
+                valueSetter: (params) => {
+                    params.data.phaseTapChanger1.tapPosition = params.newValue;
+                    return params;
+                },
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -675,7 +695,12 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 2),
                 fractionDigits: 0,
-                valueGetter: (params) => params?.phaseTapChanger2?.tapPosition,
+                valueGetter: (params) =>
+                    params?.data?.phaseTapChanger2?.tapPosition,
+                valueSetter: (params) => {
+                    params.data.phaseTapChanger2.tapPosition = params.newValue;
+                    return params;
+                },
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
@@ -714,7 +739,12 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 3),
                 fractionDigits: 0,
-                valueGetter: (params) => params?.phaseTapChanger3?.tapPosition,
+                valueGetter: (params) =>
+                    params?.data?.phaseTapChanger3?.tapPosition,
+                valueSetter: (params) => {
+                    params.data.phaseTapChanger3.tapPosition = params.newValue;
+                    return params;
+                },
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {

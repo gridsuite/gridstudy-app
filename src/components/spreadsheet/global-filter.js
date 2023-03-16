@@ -29,7 +29,7 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
     const inputRef = useRef();
     const resetFilter = useCallback(() => {
         inputRef.current.value = '';
-        gridRef.current.api.setQuickFilter();
+        gridRef.current?.api?.setQuickFilter();
     }, [gridRef]);
 
     useImperativeHandle(
