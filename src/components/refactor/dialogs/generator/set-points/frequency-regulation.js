@@ -20,28 +20,29 @@ import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
 
-const FrequencyRegulation = ({ isGeneratorModification, generatorInfos }) => {
+const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
     const intl = useIntl();
-    const frequencyRegulation = useWatch({
+    const watchFrequencyRegulation = useWatch({
         name: FREQUENCY_REGULATION,
     });
 
     const isFrequencyRegulationOn =
-        frequencyRegulation === true ||
-        (frequencyRegulation === null &&
-            generatorInfos?.activePowerControlOn === true);
+        watchFrequencyRegulation === true ||
+        (watchFrequencyRegulation === null &&
+            previousValues?.activePowerControlOn === true);
 
     let previousFrequencyRegulation = '';
-    if (generatorInfos?.activePowerControlOn) {
+    if (previousValues?.activePowerControlOn) {
         previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
     } else if (
-        generatorInfos?.activePowerControlOn === false ||
-        (generatorInfos && generatorInfos.activePowerControlOn === undefined)
+        previousValues?.activePowerControlOn === false ||
+        (previousValues && previousValues.activePowerControlOn === undefined)
     ) {
         previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
     }
 
     const frequencyRegulationField = isGeneratorModification ? (
+        /** wrappe with box to avoid warning */
         <Box>
             <CheckboxNullableInput
                 name={FREQUENCY_REGULATION}
@@ -50,10 +51,12 @@ const FrequencyRegulation = ({ isGeneratorModification, generatorInfos }) => {
             />
         </Box>
     ) : (
-        <SwitchInput
-            name={FREQUENCY_REGULATION}
-            label={'FrequencyRegulation'}
-        />
+        <Box>
+            <SwitchInput
+                name={FREQUENCY_REGULATION}
+                label={'FrequencyRegulation'}
+            />
+        </Box>
     );
 
     const droopField = (
@@ -61,7 +64,7 @@ const FrequencyRegulation = ({ isGeneratorModification, generatorInfos }) => {
             name={DROOP}
             label={'Droop'}
             adornment={percentageTextField}
-            previousValue={generatorInfos?.droop}
+            previousValue={previousValues?.droop}
         />
     );
 
@@ -70,7 +73,7 @@ const FrequencyRegulation = ({ isGeneratorModification, generatorInfos }) => {
             {isGeneratorModification
                 ? gridItemWithTooltip(
                       frequencyRegulationField,
-                      frequencyRegulation !== null ? (
+                      watchFrequencyRegulation !== null ? (
                           ''
                       ) : (
                           <FormattedMessage id={'NoModification'} />

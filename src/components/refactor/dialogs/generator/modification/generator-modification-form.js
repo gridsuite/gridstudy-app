@@ -60,6 +60,7 @@ import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { getModificationRowEmptyFormData } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -123,16 +124,19 @@ const GeneratorModificationForm = ({
                         // which would empty the form instead of displaying data of existing form
                         if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
                             //creating empty table depending on existing generator
-                            let reactiveCapabilityCurvePoints = [];
+                            let reactiveCapabilityCurvePoints = [
+                                getModificationRowEmptyFormData(),
+                                getModificationRowEmptyFormData(),
+                            ];
                             value?.reactiveCapabilityCurvePoints?.forEach(
                                 (element) => {
                                     reactiveCapabilityCurvePoints.push({
                                         [P]: null,
                                         [Q_MIN_P]: null,
                                         [Q_MAX_P]: null,
-                                        [OLD_P]: element.p,
-                                        [OLD_Q_MIN_P]: element.qminP,
-                                        [OLD_Q_MAX_P]: element.qmaxP,
+                                        [OLD_P]: element.p ?? null,
+                                        [OLD_Q_MIN_P]: element.qminP ?? null,
+                                        [OLD_Q_MAX_P]: element.qmaxP ?? null,
                                     });
                                 }
                             );

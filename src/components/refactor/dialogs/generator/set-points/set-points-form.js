@@ -36,13 +36,13 @@ const SetPointsForm = ({
     previousValues,
 }) => {
     const intl = useIntl();
-    const voltageRegulation = useWatch({
+    const watchVoltageRegulation = useWatch({
         name: VOLTAGE_REGULATION,
     });
 
     const isVoltageRegulationOn =
-        voltageRegulation ||
-        (voltageRegulation === null &&
+        watchVoltageRegulation ||
+        (watchVoltageRegulation === null &&
             previousValues?.voltageRegulatorOn === true);
 
     const previousRegulation = () => {
@@ -72,10 +72,12 @@ const SetPointsForm = ({
             />
         </Box>
     ) : (
-        <SwitchInput
-            name={VOLTAGE_REGULATION}
-            label={'VoltageRegulationText'}
-        />
+        <Box>
+            <SwitchInput
+                name={VOLTAGE_REGULATION}
+                label={'VoltageRegulationText'}
+            />
+        </Box>
     );
 
     const reactivePowerSetPointField = (
@@ -105,7 +107,7 @@ const SetPointsForm = ({
                 <Box sx={{ width: '100%' }} />
                 {gridItemWithTooltip(
                     voltageRegulationField,
-                    voltageRegulation !== null ? (
+                    watchVoltageRegulation !== null ? (
                         ''
                     ) : (
                         <FormattedMessage id={'NoModification'} />
@@ -120,7 +122,7 @@ const SetPointsForm = ({
                 <Box sx={{ width: '100%' }} />
                 <FrequencyRegulation
                     isGeneratorModification={isGeneratorModification}
-                    generatorInfos={previousValues}
+                    previousValues={previousValues}
                 />
             </Grid>
         </>
