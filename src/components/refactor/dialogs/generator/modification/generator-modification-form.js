@@ -128,6 +128,9 @@ const GeneratorModificationForm = ({
                                 getModificationRowEmptyFormData(),
                                 getModificationRowEmptyFormData(),
                             ];
+                            if (value?.reactiveCapabilityCurvePoints) {
+                                reactiveCapabilityCurvePoints = [];
+                            }
                             value?.reactiveCapabilityCurvePoints?.forEach(
                                 (element) => {
                                     reactiveCapabilityCurvePoints.push({
