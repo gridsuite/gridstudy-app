@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -259,7 +259,12 @@ const GeneratorModificationDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const { reset, getValues } = methods;
+    const { reset, getValues, control } = methods;
+
+    const watchEquipmentId = useWatch({
+        name: EQUIPMENT_ID,
+        control: control,
+    });
 
     //this method empties the form, and let us pass custom data that we want to set
     const clear = useCallback(
@@ -316,17 +321,22 @@ const GeneratorModificationDialog = ({
         [clear, currentNodeUuid, studyUuid]
     );
 
+    //this useEffect fetches previous equipment properties values, resets form values
+    //then create empty reactive limits table depending on fetched equipment data
     useEffect(() => {
-        if (editData?.equipmentId) {
-            getEquipmentInfo(editData?.equipmentId)?.catch(() =>
+        if (watchEquipmentId) {
+            getEquipmentInfo(watchEquipmentId)?.catch(() =>
                 setGeneratorToModify(null)
             );
+        } else {
+            clear();
+            setGeneratorToModify(null);
         }
     }, [
+        watchEquipmentId,
         studyUuid,
         currentNodeUuid,
         setGeneratorToModify,
-        editData?.equipmentId,
         clear,
         getEquipmentInfo,
     ]);

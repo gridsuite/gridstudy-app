@@ -46,26 +46,17 @@ import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
-import { useFormContext, useWatch } from 'react-hook-form';
 
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
-    resetForm,
-    editData,
     generatorToModify,
-    setGeneratorToModify,
     updateReactiveCapabilityCurveTableRow,
-    getEquipmentInfo,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const { clearErrors } = useFormContext();
-    const watchEquipmentId = useWatch({
-        name: EQUIPMENT_ID,
-    });
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -87,28 +78,6 @@ const GeneratorModificationForm = ({
             });
         }
     }, [studyUuid, currentNodeUuid]);
-
-    //this useEffect fetches previous equipment properties values, resets form values
-    //then create empty reactive limits table depending on fetched equipment data
-    useEffect(() => {
-        clearErrors();
-        if (watchEquipmentId) {
-            getEquipmentInfo(watchEquipmentId)?.catch(() =>
-                setGeneratorToModify(null)
-            );
-        } else {
-            resetForm();
-            setGeneratorToModify(null);
-        }
-    }, [
-        watchEquipmentId,
-        studyUuid,
-        currentNodeUuid,
-        setGeneratorToModify,
-        clearErrors,
-        resetForm,
-        getEquipmentInfo,
-    ]);
 
     const energySourceLabelId = getEnergySourceLabel(
         generatorToModify?.energySource
