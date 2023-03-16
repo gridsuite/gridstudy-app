@@ -209,9 +209,9 @@ const TableWrapper = (props) => {
                             component: EditingCellRenderer,
                             params: {
                                 setEditingData: setEditingData,
+                                startEditing: startEditing,
                                 setIsValidatingData: setIsValidatingData,
                                 isValidatingData: isValidatingData,
-                                startEditing: startEditing,
                             },
                         };
                     } else if (editingData?.id === params.data.id) {
@@ -597,6 +597,9 @@ const TableWrapper = (props) => {
                         disabled={!!(props.disabled || editingData)}
                         reorderedTableDefinitionIndexes={
                             reorderedTableDefinitionIndexes
+                        }
+                        setReorderedTableDefinitionIndexes={
+                            setReorderedTableDefinitionIndexes
                         }
                         selectedColumnsNames={selectedColumnsNames}
                         setSelectedColumnsNames={setSelectedColumnsNames}

@@ -24,6 +24,7 @@ import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     MAX_LOCKS_PER_TAB,
+    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
     TABLES_NAMES,
 } from './utils/config-tables';
@@ -31,6 +32,8 @@ import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import clsx from 'clsx';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 const useStyles = makeStyles((theme) => ({
     checkboxSelectAll: {
@@ -58,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
 export const ColumnsConfig = ({
     tabIndex,
     reorderedTableDefinitionIndexes,
+    setReorderedTableDefinitionIndexes,
     selectedColumnsNames,
     setSelectedColumnsNames,
     lockedColumnsNames,
@@ -71,6 +75,9 @@ export const ColumnsConfig = ({
     );
     const allLockedColumnsNames = useSelector(
         (state) => state.allLockedColumnsNames
+    );
+    const allReorderedTableDefinitionIndexes = useSelector(
+        (state) => state.allReorderedTableDefinitionIndexes
     );
 
     const { snackError } = useSnackMessage();
@@ -94,6 +101,10 @@ export const ColumnsConfig = ({
         setLockedColumnsNames(
             new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
         );
+        const allReorderedTemp = allReorderedTableDefinitionIndexes[tabIndex];
+        setReorderedTableDefinitionIndexes(
+            allReorderedTemp ? JSON.parse(allReorderedTemp) : []
+        );
         handleCloseColumnsSettingDialog();
     }, [
         allDisplayedColumnsNames,
@@ -101,6 +112,8 @@ export const ColumnsConfig = ({
         setSelectedColumnsNames,
         allLockedColumnsNames,
         setLockedColumnsNames,
+        allReorderedTableDefinitionIndexes,
+        setReorderedTableDefinitionIndexes,
         handleCloseColumnsSettingDialog,
     ]);
 
@@ -137,12 +150,25 @@ export const ColumnsConfig = ({
             });
         });
         setLockedColumnsNames(lockedColumnsNames);
+
+        updateConfigParameter(
+            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
+                TABLES_NAMES[tabIndex],
+            JSON.stringify(reorderedTableDefinitionIndexes)
+        ).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'paramsChangingError',
+            });
+        });
+
         handleCloseColumnsSettingDialog();
     }, [
         tabIndex,
         selectedColumnsNames,
         lockedColumnsNames,
         setLockedColumnsNames,
+        reorderedTableDefinitionIndexes,
         handleCloseColumnsSettingDialog,
         allDisplayedColumnsNames,
         setSelectedColumnsNames,
@@ -189,6 +215,27 @@ export const ColumnsConfig = ({
         setLockedColumnsNames(newLocked);
     };
 
+    const handleDrag = useCallback(
+        ({ source, destination }) => {
+            if (destination) {
+                let reorderedTableDefinitionIndexesTemp = [
+                    ...reorderedTableDefinitionIndexes,
+                ];
+                const [reorderedItem] =
+                    reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
+                reorderedTableDefinitionIndexesTemp.splice(
+                    destination.index,
+                    0,
+                    reorderedItem
+                );
+                setReorderedTableDefinitionIndexes(
+                    reorderedTableDefinitionIndexesTemp
+                );
+            }
+        },
+        [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes]
+    );
+
     const renderColumnConfigLockIcon = (value) => {
         if (selectedColumnsNames.has(value)) {
             if (lockedColumnsNames.has(value)) {
@@ -224,36 +271,91 @@ export const ColumnsConfig = ({
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
 
-                {[...reorderedTableDefinitionIndexes].map((value, index) => (
-                    <ListItem
-                        key={index}
-                        className={classes.checkboxItem}
-                        style={{
-                            padding: '0 16px',
-                        }}
-                    >
-                        <ListItemIcon
-                            onClick={handleClickOnLock(value)}
-                            style={{
-                                minWidth: 0,
-                                width: '20px',
-                            }}
-                        >
-                            {renderColumnConfigLockIcon(value)}
-                        </ListItemIcon>
-                        <ListItemIcon onClick={handleToggle(value)}>
-                            <Checkbox
-                                checked={selectedColumnsNames.has(value)}
-                            />
-                        </ListItemIcon>
-                        <ListItemText
-                            onClick={handleToggle(value)}
-                            primary={intl.formatMessage({
-                                id: `${value}`,
-                            })}
-                        />
-                    </ListItem>
-                ))}
+                <DragDropContext onDragEnd={handleDrag}>
+                    <Droppable droppableId="network-table-columns-list">
+                        {(provided) => (
+                            <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
+                                {[...reorderedTableDefinitionIndexes].map(
+                                    (value, index) => (
+                                        <Draggable
+                                            draggableId={tabIndex + '-' + index}
+                                            index={index}
+                                            key={tabIndex + '-' + index}
+                                        >
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                >
+                                                    <ListItem
+                                                        className={
+                                                            classes.checkboxItem
+                                                        }
+                                                        style={{
+                                                            padding: '0 16px',
+                                                        }}
+                                                    >
+                                                        <IconButton
+                                                            {...provided.dragHandleProps}
+                                                            className={
+                                                                classes.dragIcon
+                                                            }
+                                                            size={'small'}
+                                                        >
+                                                            <DragIndicatorIcon
+                                                                edge="start"
+                                                                spacing={0}
+                                                            />
+                                                        </IconButton>
+
+                                                        <ListItemIcon
+                                                            onClick={handleClickOnLock(
+                                                                value
+                                                            )}
+                                                            style={{
+                                                                minWidth: 0,
+                                                                width: '20px',
+                                                            }}
+                                                        >
+                                                            {renderColumnConfigLockIcon(
+                                                                value
+                                                            )}
+                                                        </ListItemIcon>
+                                                        <ListItemIcon
+                                                            onClick={handleToggle(
+                                                                value
+                                                            )}
+                                                        >
+                                                            <Checkbox
+                                                                checked={selectedColumnsNames.has(
+                                                                    value
+                                                                )}
+                                                            />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            onClick={handleToggle(
+                                                                value
+                                                            )}
+                                                            primary={intl.formatMessage(
+                                                                {
+                                                                    id: `${value}`,
+                                                                }
+                                                            )}
+                                                        />
+                                                    </ListItem>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    )
+                                )}
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             </>
         );
     };
