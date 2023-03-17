@@ -190,7 +190,7 @@ export function RunButtonContainer({
         setComputationStopped(false);
 
         // start server side dynamic simulation
-        startDynamicSimulation(
+        return startDynamicSimulation(
             studyUuid,
             currentNode?.id,
             dynamicSimulationConfiguration
