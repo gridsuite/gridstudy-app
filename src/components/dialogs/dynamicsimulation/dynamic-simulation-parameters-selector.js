@@ -78,7 +78,7 @@ const DynamicSimulationParametersSelector = (props) => {
                     headerId: 'DynamicSimulationGetMappingError',
                 });
             });
-    }, [snackError, studyUuid]);
+    }, [snackError, studyUuid, setMappingName]);
 
     const handleClose = () => {
         onClose();
