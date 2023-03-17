@@ -564,24 +564,23 @@ const TableWrapper = (props) => {
     const handleRowEditing = useCallback(
         (params) => {
             if (isValidatingData) {
-                if (Object.values(priorValuesBuffer).length === 0) {
-                    setEditingData();
-                    return;
-                }
                 validateEdit(params);
             }
         },
-        [isValidatingData, priorValuesBuffer, validateEdit]
+        [isValidatingData, validateEdit]
     );
 
     const handleEditingStopped = useCallback(
         (params) => {
-            if (!isValidatingData) {
+            if (
+                !isValidatingData ||
+                Object.values(priorValuesBuffer).length === 0
+            ) {
                 rollbackEdit();
             }
             params.context.dynamicValidation = {};
         },
-        [isValidatingData, rollbackEdit]
+        [isValidatingData, priorValuesBuffer, rollbackEdit]
     );
 
     return (
