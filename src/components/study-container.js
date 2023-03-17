@@ -40,7 +40,7 @@ import {
     studyUpdated,
     setCurrentTreeNode,
     setDeletedEquipments,
-    setUpdatedSubstationsIds,
+    setUpdatedSubstationsIds, isNetworkEquipmentsFetched,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './util/waiting-loader';
@@ -637,6 +637,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 );
                 // For initial network loading, no need to initialize lines and substations at first,
                 // lazy loading will do the job (no glitches to avoid)
+                dispatch(isNetworkEquipmentsFetched(true));
                 dispatch(networkCreated(network));
             }
         },
