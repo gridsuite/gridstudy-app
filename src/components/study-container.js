@@ -40,7 +40,8 @@ import {
     studyUpdated,
     setCurrentTreeNode,
     setDeletedEquipments,
-    setUpdatedSubstationsIds, isNetworkEquipmentsFetched,
+    setUpdatedSubstationsIds,
+    isNetworkEquipmentsFetched,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './util/waiting-loader';
