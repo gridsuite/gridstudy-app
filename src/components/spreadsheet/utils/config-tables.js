@@ -12,16 +12,6 @@ import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 
-/**
- * Used for boolean cell data value to render a checkbox
- * @param {any} rowData data of row
- * @param {any} columnDefinition definition of column
- * @param {any} key key of element
- * @param {any} style style for table cell element
- * @param {any} rowIndex rowIndex of element
- * @returns {JSX.Element} Component template
- */
-
 const generateTapPositions = (params) => {
     return params
         ? Array.from(
@@ -39,12 +29,9 @@ const applyFluxConvention = (convention, val) => {
     return val;
 };
 
-export const ROW_HEIGHT = 38;
-export const HEADER_ROW_HEIGHT = 64;
 export const MIN_COLUMN_WIDTH = 160;
 export const MEDIUM_COLUMN_WIDTH = 220;
 export const LARGE_COLUMN_WIDTH = 340;
-export const EDIT_CELL_WIDTH = 65;
 export const MAX_LOCKS_PER_TAB = 5;
 
 export const DEFAULT_SORT_ORDER = 'asc';
