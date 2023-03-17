@@ -41,7 +41,6 @@ const MAPPING_SELECTION_LABEL = 'DynamicSimulationMappingSelection';
 const DynamicSimulationParametersSelector = (props) => {
     const { open, onClose, onStart, studyUuid } = props;
 
-    const [defaultMappingName, setDefaultMappingName] = useState(null);
     const [mappingNames, setMappingNames] = useState([]);
     const [dynamicSimulationParams, setDynamicSimulationParams] =
         useState(null);
@@ -50,18 +49,17 @@ const DynamicSimulationParametersSelector = (props) => {
 
     const inputForm = useInputForm();
 
-    const [mappingName, mappingNameField] = useAutocompleteField({
-        label: MAPPING_SELECTION_LABEL,
-        inputForm: inputForm,
-        values: mappingNames,
-        defaultValue: mappingNames.includes(defaultMappingName)
-            ? defaultMappingName
-            : undefined,
-        validation: {
-            isFieldRequired: true,
-        },
-        getLabel: getIdOrSelf,
-    });
+    const [mappingName, mappingNameField, setMappingName] =
+        useAutocompleteField({
+            label: MAPPING_SELECTION_LABEL,
+            inputForm: inputForm,
+            values: mappingNames,
+            defaultValue: '',
+            validation: {
+                isFieldRequired: true,
+            },
+            getLabel: getIdOrSelf,
+        });
 
     useEffect(() => {
         fetchDynamicSimulationParameters(studyUuid)
@@ -71,8 +69,8 @@ const DynamicSimulationParametersSelector = (props) => {
                 // extract mapping configuration
                 const mappings = params.mappings.map((elem) => elem.name);
                 const mapping = params.mapping;
-                setDefaultMappingName(mapping);
                 setMappingNames(mappings);
+                setMappingName(mapping);
             })
             .catch((error) => {
                 snackError({
