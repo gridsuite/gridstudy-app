@@ -76,19 +76,6 @@ export const BooleanCellRenderer = (props) => {
     );
 };
 
-export const DefaultCellRenderer = (props) => {
-    const classes = useStyles();
-    return (
-        <OverflowableText
-            className={clsx({
-                [classes.valueInvalid]: props.isValueInvalid,
-                [classes.numericValue]: props.colDef.numeric,
-            })}
-            text={props.value}
-        />
-    );
-};
-
 export const formatCell = (props) => {
     let value = props.value;
     let tooltipValue = undefined;

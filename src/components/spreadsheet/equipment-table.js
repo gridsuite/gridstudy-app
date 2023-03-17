@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
 
         //overrides the default computed max heigt for ag grid default selector editor to make it more usable
+        //can be removed if a custom selector editor is implemented
         '& .ag-select-list': {
             maxHeight: '300px !important',
         },
