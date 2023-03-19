@@ -10,6 +10,7 @@ import IntegerInput from '../common/integer-input';
 import FloatInput from '../common/float-input';
 import TextInput from '../common/text-input';
 import { DropDown, SwitchWithLabel } from '../parameters';
+import { LineSeparator } from '../../dialogUtils';
 
 // --- define render makers --- //
 export const makeRenderSwitchWithLabel =
