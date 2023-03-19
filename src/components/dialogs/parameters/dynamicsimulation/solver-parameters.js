@@ -18,7 +18,6 @@ const SOLVER_TYPES = {
 
 const SolverParameters = ({ dynaWaltzExtension, onUpdateSolver }) => {
     const { solverId, solvers } = dynaWaltzExtension;
-    console.log('dynaWaltzExtension', [dynaWaltzExtension]);
 
     const handleUpdateSolver = useCallback(
         (newSolver) => {

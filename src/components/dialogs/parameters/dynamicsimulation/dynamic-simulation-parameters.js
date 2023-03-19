@@ -8,7 +8,7 @@
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import TimeDelayParameters from './time-delay-parameters';
 import SolverParameters from './solver-parameters';
 import MappingParameters from './mapping-parameters';
@@ -108,12 +108,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
     }, []);
-    useEffect(() => {
-        console.log('Mounted DynamicSimulationParameters');
-        return () => {
-            console.log('Unmounted DynamicSimulationParameters');
-        };
-    }, []);
+
     return (
         <>
             <Grid

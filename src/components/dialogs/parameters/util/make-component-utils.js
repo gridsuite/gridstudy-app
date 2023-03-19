@@ -6,7 +6,6 @@
  */
 
 import { Grid } from '@mui/material';
-import { LabelledSilder, LineSeparator } from '../../dialogUtils';
 import IntegerInput from '../common/integer-input';
 import FloatInput from '../common/float-input';
 import TextInput from '../common/text-input';
@@ -34,22 +33,6 @@ export const makeRenderDropDown =
                 values={defParam.values}
                 callback={(ev) => setter({ ...params, [key]: ev.target.value })}
                 renderValue={defParam.renderValue}
-            />
-        );
-    };
-export const makeRenderLabelledSlider =
-    () => (defParam, key, params, setter, value) => {
-        return (
-            <LabelledSilder
-                value={Number(value)}
-                label={defParam.description}
-                onCommitCallback={(event, currentValue) => {
-                    setter({ ...params, [key]: currentValue });
-                }}
-                marks={[
-                    { value: Number(0), label: '0' },
-                    { value: Number(100), label: '100' },
-                ]}
             />
         );
     };
@@ -90,7 +73,6 @@ export const makeRenderTextField =
 export const TYPES = {
     enum: 'Enum',
     bool: 'Bool',
-    slider: 'Slider',
     integer: 'Integer',
     float: 'Float',
     text: 'Text',
@@ -100,7 +82,6 @@ export const TYPES = {
 const DEFAULT_RENDER = {
     [TYPES.bool]: makeRenderSwitchWithLabel(),
     [TYPES.enum]: makeRenderDropDown(),
-    [TYPES.slider]: makeRenderLabelledSlider(),
     [TYPES.integer]: makeRenderIntegerField(),
     [TYPES.float]: makeRenderFloatField(),
     [TYPES.text]: makeRenderTextField(),

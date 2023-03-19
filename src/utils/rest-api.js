@@ -1158,7 +1158,6 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
 }
 
 // --- Dynamic simulation API - BEGIN
-
 export function getDynamicMappings(studyUuid) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/mappings';
@@ -1286,7 +1285,6 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
 }
 
 // -- Parameters API - BEGIN
-
 function getDynamicSimulationUrl() {
     return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
 }

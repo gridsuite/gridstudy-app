@@ -50,7 +50,6 @@ const SimplifiedSolverParameters = ({
 
     const handleUpdateSimplifiedSolver = useCallback(
         (newSimplifiedParameters) => {
-            console.log('newSimplifiedParameters', newSimplifiedParameters);
             onUpdateSimplifiedSolver(newSimplifiedParameters);
         },
         [onUpdateSimplifiedSolver]

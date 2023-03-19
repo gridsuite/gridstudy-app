@@ -39,7 +39,6 @@ const IdaSolverParameters = ({ idaSolver, onUpdateIdaSolver }) => {
 
     const handleUpdateIdaSolver = useCallback(
         (newIdaParameters) => {
-            console.log('newIdaParameters', newIdaParameters);
             onUpdateIdaSolver(newIdaParameters);
         },
         [onUpdateIdaSolver]

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
     Grid,
@@ -297,13 +297,6 @@ export const LoadFlowParameters = ({
         resetParameters();
         resetProvider();
     }, [resetParameters, resetProvider]);
-
-    useEffect(() => {
-        console.log('Mounted LoadFlowParameters');
-        return () => {
-            console.log('Unmounted LoadFlowParameters');
-        };
-    }, []);
 
     return (
         <>
