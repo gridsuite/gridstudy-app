@@ -69,6 +69,7 @@ import {
     getModificationRowEmptyFormData,
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { useOpenOnMount } from '../../commons/handle-modification-form';
 
 const GeneratorModificationDialog = ({
     editData,
@@ -80,8 +81,10 @@ const GeneratorModificationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
-    const [open, setOpen] = useState(false);
-    const shouldEmptyFormOnGeneratorIdChangeRef = useRef();
+    const shouldEmptyFormOnGeneratorIdChangeRef = useRef(
+        editData ? false : true
+    );
+    const open = useOpenOnMount(editData, generatorToModify, 200);
     const isSelectedGeneratorUndefined = generatorToModify === undefined;
     const isEditDataUndefined = editData === undefined;
 
@@ -284,39 +287,41 @@ const GeneratorModificationDialog = ({
                 'generators',
                 equipmentId,
                 true
-            ).then((value) => {
-                if (value) {
-                    // when editing modification form, first render should not trigger this reset
-                    // which would empty the form instead of displaying data of existing form
-                    if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
-                        //creating empty table depending on existing generator
-                        let reactiveCapabilityCurvePoints = [];
-                        value?.reactiveCapabilityCurvePoints?.forEach(
-                            (element) => {
-                                reactiveCapabilityCurvePoints.push({
-                                    [P]: null,
-                                    [Q_MIN_P]: null,
-                                    [Q_MAX_P]: null,
-                                    [OLD_P]: element.p,
-                                    [OLD_Q_MIN_P]: element.qminP,
-                                    [OLD_Q_MAX_P]: element.qmaxP,
-                                });
-                            }
-                        );
-                        // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
-                        clear(
-                            {
-                                [EQUIPMENT_ID]: equipmentId,
-                                [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                                    reactiveCapabilityCurvePoints,
-                            },
-                            true
-                        );
+            )
+                .then((value) => {
+                    if (value) {
+                        // when editing modification form, first render should not trigger this reset
+                        // which would empty the form instead of displaying data of existing form
+                        if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
+                            //creating empty table depending on existing generator
+                            let reactiveCapabilityCurvePoints = [];
+                            value?.reactiveCapabilityCurvePoints?.forEach(
+                                (element) => {
+                                    reactiveCapabilityCurvePoints.push({
+                                        [P]: null,
+                                        [Q_MIN_P]: null,
+                                        [Q_MAX_P]: null,
+                                        [OLD_P]: element.p,
+                                        [OLD_Q_MIN_P]: element.qminP,
+                                        [OLD_Q_MAX_P]: element.qmaxP,
+                                    });
+                                }
+                            );
+                            // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
+                            clear(
+                                {
+                                    [EQUIPMENT_ID]: equipmentId,
+                                    [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                                        reactiveCapabilityCurvePoints,
+                                },
+                                true
+                            );
+                        }
+                        shouldEmptyFormOnGeneratorIdChangeRef.current = true;
+                        setGeneratorToModify(value);
                     }
-                    shouldEmptyFormOnGeneratorIdChangeRef.current = true;
-                    setGeneratorToModify(value);
-                }
-            });
+                })
+                .catch(() => setGeneratorToModify(null));
         },
         [clear, currentNodeUuid, studyUuid]
     );
@@ -325,33 +330,12 @@ const GeneratorModificationDialog = ({
     //then create empty reactive limits table depending on fetched equipment data
     useEffect(() => {
         if (watchEquipmentId) {
-            getEquipmentInfo(watchEquipmentId)?.catch(() =>
-                setGeneratorToModify(null)
-            );
+            getEquipmentInfo(watchEquipmentId);
         } else {
             clear();
             setGeneratorToModify(null);
         }
-    }, [
-        watchEquipmentId,
-        studyUuid,
-        currentNodeUuid,
-        setGeneratorToModify,
-        clear,
-        getEquipmentInfo,
-    ]);
-
-    useEffect(() => {
-        if (!editData || (editData && generatorToModify)) {
-            setOpen(true);
-            return;
-        }
-        if (editData && !generatorToModify) {
-            setTimeout(() => {
-                setOpen(true);
-            }, 200);
-        }
-    }, [editData, generatorToModify]);
+    }, [watchEquipmentId, studyUuid, currentNodeUuid, clear, getEquipmentInfo]);
 
     const updateReactiveCapabilityCurveTableRow = (action, index) => {
         setGeneratorToModify((previousValue) => {
@@ -509,36 +493,33 @@ const GeneratorModificationDialog = ({
         ]
     );
 
-    const dialogContent = () => {
-        return (
-            <FormProvider validationSchema={schema} {...methods}>
-                <ModificationDialog
-                    fullWidth
-                    onClear={clear}
-                    onSave={onSubmit}
-                    aria-labelledby="dialog-modification-generator"
-                    maxWidth={'md'}
-                    titleId="ModifyGenerator"
-                    {...dialogProps}
-                >
-                    <GeneratorModificationForm
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        resetForm={clear}
-                        editData={editData}
-                        generatorToModify={generatorToModify}
-                        setGeneratorToModify={setGeneratorToModify}
-                        updateReactiveCapabilityCurveTableRow={
-                            updateReactiveCapabilityCurveTableRow
-                        }
-                        getEquipmentInfo={getEquipmentInfo}
-                    />
-                </ModificationDialog>
-            </FormProvider>
-        );
-    };
-
-    return <div>{open && dialogContent()}</div>;
+    return (
+        <>
+            {open && (
+                <FormProvider validationSchema={schema} {...methods}>
+                    <ModificationDialog
+                        fullWidth
+                        onClear={clear}
+                        onSave={onSubmit}
+                        aria-labelledby="dialog-modification-generator"
+                        maxWidth={'md'}
+                        titleId="ModifyGenerator"
+                        {...dialogProps}
+                    >
+                        <GeneratorModificationForm
+                            studyUuid={studyUuid}
+                            currentNode={currentNode}
+                            generatorToModify={generatorToModify}
+                            setGeneratorToModify={setGeneratorToModify}
+                            updateReactiveCapabilityCurveTableRow={
+                                updateReactiveCapabilityCurveTableRow
+                            }
+                        />
+                    </ModificationDialog>
+                </FormProvider>
+            )}
+        </>
+    );
 };
 
 export default GeneratorModificationDialog;

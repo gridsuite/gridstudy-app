@@ -20,6 +20,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { fetchEquipmentInfos, modifyLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
+import { useOpenOnMount } from '../commons/handle-modification-form';
 import ModificationDialog from '../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 
@@ -50,10 +51,10 @@ const LoadModificationDialog = ({
     studyUuid,
     ...dialogProps
 }) => {
-    const [open, setOpen] = useState(false);
     const [loadInfos, setLoadInfos] = useState(null);
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const isOpen = useOpenOnMount(editData, loadInfos, 200);
 
     const emptyFormData = useMemo(
         () => ({
@@ -73,7 +74,7 @@ const LoadModificationDialog = ({
 
     const { reset, control } = methods;
     const loadId = useWatch({
-        name: `${EQUIPMENT_ID}`,
+        name: EQUIPMENT_ID,
         control: control,
     });
 
@@ -106,18 +107,6 @@ const LoadModificationDialog = ({
             setLoadInfos(null);
         }
     }, [studyUuid, currentNodeUuid, loadId]);
-
-    useEffect(() => {
-        if (!editData || (editData && loadInfos)) {
-            setOpen(true);
-            return;
-        }
-        if (editData && !loadInfos) {
-            setTimeout(() => {
-                setOpen(true);
-            }, 200);
-        }
-    }, [editData, loadInfos]);
 
     useEffect(() => {
         if (editData) {
@@ -153,29 +142,29 @@ const LoadModificationDialog = ({
         reset(emptyFormData);
     }, [reset, emptyFormData]);
 
-    const dialogContent = () => {
-        return (
-            <FormProvider validationSchema={schema} {...methods}>
-                <ModificationDialog
-                    fullWidth
-                    onClear={clear}
-                    onSave={onSubmit}
-                    aria-labelledby="dialog-modify-load"
-                    maxWidth={'md'}
-                    titleId="ModifyLoad"
-                    {...dialogProps}
-                >
-                    <LoadModificationForm
-                        currentNode={currentNode}
-                        studyUuid={studyUuid}
-                        loadInfos={loadInfos}
-                    />
-                </ModificationDialog>
-            </FormProvider>
-        );
-    };
-
-    return <div>{open && dialogContent()}</div>;
+    return (
+        <div>
+            {isOpen && (
+                <FormProvider validationSchema={schema} {...methods}>
+                    <ModificationDialog
+                        fullWidth
+                        onClear={clear}
+                        onSave={onSubmit}
+                        aria-labelledby="dialog-modify-load"
+                        maxWidth={'md'}
+                        titleId="ModifyLoad"
+                        {...dialogProps}
+                    >
+                        <LoadModificationForm
+                            currentNode={currentNode}
+                            studyUuid={studyUuid}
+                            loadInfos={loadInfos}
+                        />
+                    </ModificationDialog>
+                </FormProvider>
+            )}
+        </div>
+    );
 };
 
 LoadModificationDialog.propTypes = {
