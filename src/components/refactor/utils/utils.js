@@ -85,3 +85,7 @@ export const areIdsEqual = (val1, val2) => {
 export const getObjectId = (object) => {
     return typeof object === 'string' ? object : object?.id ?? null;
 };
+
+export const getPreviousValueFieldName = (fieldName) => {
+    return fieldName + 'Previous';
+};
