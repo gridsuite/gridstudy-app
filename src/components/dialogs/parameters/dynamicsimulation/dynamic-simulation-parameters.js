@@ -29,11 +29,13 @@ import {
     updateDynamicSimulationParameters,
     updateDynamicSimulationProvider,
 } from '../../../../utils/rest-api';
+import NetworkParameters from './network-parameters';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',
     solverParamsTabValue: 'Solver',
     mappingParamsTabValue: 'Mapping',
+    networkParamsTabValue: 'Network',
 };
 
 const EXTENSIONS = {
@@ -113,6 +115,19 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         [updateParameters, parameters]
     );
 
+    const handleUpdateNetwork = useCallback(
+        (newExtension) => {
+            const foundIndex = parameters.extensions.findIndex(
+                (elem) => elem.name === EXTENSIONS.DYNA_WALTZ
+            );
+            parameters.extensions.splice(foundIndex, 1, newExtension);
+            updateParameters({
+                ...parameters,
+            });
+        },
+        [updateParameters, parameters]
+    );
+
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
     }, []);
@@ -168,6 +183,12 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                             }
                             value={TAB_VALUES.mappingParamsTabValue}
                         />
+                        <Tab
+                            label={
+                                <FormattedMessage id="DynamicSimulationNetwork" />
+                            }
+                            value={TAB_VALUES.networkParamsTabValue}
+                        />
                     </Tabs>
 
                     <TabPanel
@@ -221,6 +242,26 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                                     : undefined
                             }
                             onUpdateMapping={handleUpdateMapping}
+                        />
+                    </TabPanel>
+                    <TabPanel
+                        value={tabValue}
+                        index={TAB_VALUES.networkParamsTabValue}
+                    >
+                        <NetworkParameters
+                            key={`network-${resetRevision}`} // to force remount a component having internal states
+                            dynaWaltzExtension={
+                                parameters
+                                    ? parameters.extensions[
+                                          parameters.extensions.findIndex(
+                                              (elem) =>
+                                                  elem.name ===
+                                                  EXTENSIONS.DYNA_WALTZ
+                                          )
+                                      ]
+                                    : undefined
+                            }
+                            onUpdateNetwork={handleUpdateNetwork}
                         />
                     </TabPanel>
                 </Grid>
