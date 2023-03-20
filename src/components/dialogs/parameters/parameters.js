@@ -298,32 +298,40 @@ export const useParametersBackend = (
         ]
     );
 
-    const resetParameters = useCallback(() => {
-        backendUpdateParameters(studyUuid, null)
-            .then(() => {
-                return backendFetchParameters(studyUuid)
-                    .then((params) => setParams(params))
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'fetch' + type + 'ParametersError',
+    const resetParameters = useCallback(
+        (callBack) => {
+            backendUpdateParameters(studyUuid, null)
+                .then(() => {
+                    return backendFetchParameters(studyUuid)
+                        .then((params) => {
+                            setParams(params);
+                            if (callBack) {
+                                callBack();
+                            }
+                        })
+                        .catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'fetch' + type + 'ParametersError',
+                            });
                         });
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'update' + type + 'ParametersError',
                     });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'update' + type + 'ParametersError',
                 });
-            });
-    }, [
-        studyUuid,
-        type,
-        backendUpdateParameters,
-        backendFetchParameters,
-        snackError,
-        setParams,
-    ]);
+        },
+        [
+            studyUuid,
+            type,
+            backendUpdateParameters,
+            backendFetchParameters,
+            snackError,
+            setParams,
+        ]
+    );
 
     useEffect(() => {
         if (studyUuid) {

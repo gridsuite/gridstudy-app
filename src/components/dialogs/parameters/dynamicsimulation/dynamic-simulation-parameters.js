@@ -66,6 +66,9 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         TAB_VALUES.timeDelayParamsTabValue
     );
 
+    // to force remount a component having internal states
+    const [resetRevision, setResetRevision] = useState(0);
+
     const handleUpdateProvider = useCallback(
         (evt) => {
             updateProvider(evt.target.value);
@@ -74,8 +77,13 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
     );
 
     const handleResetParametersAndProvider = useCallback(() => {
-        resetParameters();
         resetProvider();
+        resetParameters(
+            () =>
+                setResetRevision(
+                    (prevState) => prevState + 1
+                ) /* to force remount a component having internal states */
+        );
     }, [resetParameters, resetProvider]);
 
     const handleUpdateTimeDelay = useCallback(
@@ -167,6 +175,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                         index={TAB_VALUES.timeDelayParamsTabValue}
                     >
                         <TimeDelayParameters
+                            key={`time-delay-${resetRevision}`} // to force remount a component having internal states
                             timeDelay={
                                 parameters
                                     ? {
@@ -183,6 +192,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                         index={TAB_VALUES.solverParamsTabValue}
                     >
                         <SolverParameters
+                            key={`solver-${resetRevision}`} // to force remount a component having internal states
                             dynaWaltzExtension={
                                 parameters
                                     ? parameters.extensions[
