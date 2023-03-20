@@ -95,10 +95,10 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         [updateParameters, parameters]
     );
 
-    const handleUpdateSolver = useCallback(
+    const updateExtension = useCallback(
         (newExtension) => {
             const foundIndex = parameters.extensions.findIndex(
-                (elem) => elem.name === EXTENSIONS.DYNA_WALTZ
+                (elem) => elem.name === newExtension.name
             );
             parameters.extensions.splice(foundIndex, 1, newExtension);
             updateParameters({
@@ -106,6 +106,13 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
             });
         },
         [updateParameters, parameters]
+    );
+
+    const handleUpdateSolver = useCallback(
+        (newExtension) => {
+            updateExtension(newExtension);
+        },
+        [updateExtension]
     );
 
     const handleUpdateMapping = useCallback(
@@ -117,15 +124,9 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
 
     const handleUpdateNetwork = useCallback(
         (newExtension) => {
-            const foundIndex = parameters.extensions.findIndex(
-                (elem) => elem.name === EXTENSIONS.DYNA_WALTZ
-            );
-            parameters.extensions.splice(foundIndex, 1, newExtension);
-            updateParameters({
-                ...parameters,
-            });
+            updateExtension(newExtension);
         },
-        [updateParameters, parameters]
+        [updateExtension]
     );
 
     const handleTabChange = useCallback((event, newValue) => {
