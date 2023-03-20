@@ -20,8 +20,8 @@ const SolverParameters = ({ dynaWaltzExtension, onUpdateSolver }) => {
     const { solverId, solvers } = dynaWaltzExtension;
 
     const handleUpdateSolver = useCallback(
-        (newSolver) => {
-            onUpdateSolver(newSolver);
+        (newDynaWaltzExtension) => {
+            onUpdateSolver(newDynaWaltzExtension);
         },
         [onUpdateSolver]
     );
