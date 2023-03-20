@@ -27,18 +27,13 @@ const WrapperInput = ({ value, label, callback, validator, children }) => {
         resolver: yupResolver(schema),
     });
 
-    const { handleSubmit, watch, reset } = methods;
+    const { handleSubmit, watch } = methods;
 
     // to commit by onChange rather than onSubmit
     useEffect(() => {
         const subscription = watch(handleSubmit(callback));
         return () => subscription.unsubscribe();
     }, [handleSubmit, watch, callback]);
-
-    // to reset the default value when click on 'Default Values' button
-    useEffect(() => {
-        reset({ value: value });
-    }, [value, reset]);
 
     return (
         <>
