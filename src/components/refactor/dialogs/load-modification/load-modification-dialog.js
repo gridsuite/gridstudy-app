@@ -54,7 +54,7 @@ const LoadModificationDialog = ({
     const [loadInfos, setLoadInfos] = useState(null);
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const isOpen = useOpenOnMount(editData, loadInfos, 200);
+    const open = useOpenOnMount(editData, loadInfos, 200);
 
     const emptyFormData = useMemo(
         () => ({
@@ -143,8 +143,8 @@ const LoadModificationDialog = ({
     }, [reset, emptyFormData]);
 
     return (
-        <div>
-            {isOpen && (
+        <>
+            {open && (
                 <FormProvider validationSchema={schema} {...methods}>
                     <ModificationDialog
                         fullWidth
@@ -163,7 +163,7 @@ const LoadModificationDialog = ({
                     </ModificationDialog>
                 </FormProvider>
             )}
-        </div>
+        </>
     );
 };
 
