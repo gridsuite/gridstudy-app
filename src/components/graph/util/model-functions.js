@@ -47,7 +47,8 @@ export function recursiveSearchFirstNodeOfType(
 ) {
     if (
         elements.type === nodeType &&
-        (buildStatusList === undefined || buildStatusList.includes(elements.buildStatus))
+        (buildStatusList === undefined ||
+            buildStatusList.includes(elements.buildStatus))
     ) {
         return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
     }

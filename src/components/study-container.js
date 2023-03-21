@@ -513,8 +513,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     });
 
                 const firstSelectedNode =
-                    getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', ['BUILT', 'BUILT_WITH_WARNING', 'BUILT_WITH_ERROR']) ||
-                    getFirstNodeOfType(tree, 'ROOT');
+                    getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
+                        'BUILT',
+                        'BUILT_WITH_WARNING',
+                        'BUILT_WITH_ERROR',
+                    ]) || getFirstNodeOfType(tree, 'ROOT');
 
                 // To get positions we must get the node from the model class
                 const ModelFirstSelectedNode = {
