@@ -308,11 +308,7 @@ const GeneratorModificationForm = ({
             </Grid>
 
             {/* Reactive limits part */}
-            <ReactiveLimitsForm
-                updatePreviousReactiveCapabilityCurveTable={
-                    updatePreviousReactiveCapabilityCurveTable
-                }
-            />
+            <ReactiveLimitsForm />
 
             {/* Set points part */}
             <SetPointsForm

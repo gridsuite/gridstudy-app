@@ -30,10 +30,7 @@ const headerIds = [
     'MaximumReactivePower',
 ];
 
-const ReactiveLimitsForm = ({
-    //generatorToModify,
-    updatePreviousReactiveCapabilityCurveTable,
-}) => {
+const ReactiveLimitsForm = () => {
     const reactiveCapabilityCurveChoice = useWatch({
         name: REACTIVE_CAPABILITY_CURVE_CHOICE,
     });
@@ -55,9 +52,6 @@ const ReactiveLimitsForm = ({
             name={MINIMUM_REACTIVE_POWER}
             label={'MinimumReactivePower'}
             adornment={ReactivePowerAdornment}
-            // previousValue={
-            //     generatorToModify?.minMaxReactiveLimits?.minimumReactivePower
-            // }
         />
     );
 
@@ -66,9 +60,6 @@ const ReactiveLimitsForm = ({
             name={MAXIMUM_REACTIVE_POWER}
             label={'MaximumReactivePower'}
             adornment={ReactivePowerAdornment}
-            // previousValue={
-            //     generatorToModify?.minMaxReactiveLimits?.maximumReactivePower
-            // }
         />
     );
 
@@ -77,10 +68,6 @@ const ReactiveLimitsForm = ({
             id={REACTIVE_CAPABILITY_CURVE_TABLE}
             tableHeadersIds={headerIds}
             isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
-            //previousValues={generatorToModify?.reactiveCapabilityCurvePoints}
-            updatePreviousReactiveCapabilityCurveTable={
-                updatePreviousReactiveCapabilityCurveTable
-            }
         />
     );
 

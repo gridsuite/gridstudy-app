@@ -29,8 +29,6 @@ export const ReactiveCapabilityCurveTable = ({
     id,
     tableHeadersIds,
     disabled = false,
-    //previousValues,
-    updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();
@@ -38,8 +36,6 @@ export const ReactiveCapabilityCurveTable = ({
 
     const handleInsertRow = () => {
         console.log(getValues(REACTIVE_CAPABILITY_CURVE_TABLE));
-        //if (getValues(REACTIVE_CAPABILITY_CURVE_TABLE) && updatePreviousReactiveCapabilityCurveTable)
-          //  updatePreviousReactiveCapabilityCurveTable(INSERT, rows.length - 1);
         insert(rows.length - 1, {
             [P]: null,
             [Q_MIN_P]: null,
@@ -51,8 +47,6 @@ export const ReactiveCapabilityCurveTable = ({
     };
 
     const handleRemoveRow = (index) => {
-        /*if (getValues(REACTIVE_CAPABILITY_CURVE_TABLE) && updatePreviousReactiveCapabilityCurveTable)
-            updatePreviousReactiveCapabilityCurveTable(REMOVE, index);*/
         remove(index);
     };
 
@@ -81,13 +75,12 @@ export const ReactiveCapabilityCurveTable = ({
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
-                            //previousValues={previousValues?.[index]}
                         />
                         <Grid item xs={1}>
                             <IconButton
                                 className={classes.icon}
                                 key={value.id}
-                                onClick={() => handleRemoveRow(index)}
+                                onClick={() => remove(index)}
                                 disabled={
                                     disabled ||
                                     index === 0 ||
@@ -102,7 +95,14 @@ export const ReactiveCapabilityCurveTable = ({
                                 <IconButton
                                     className={classes.icon}
                                     key={value.id}
-                                    onClick={() => handleInsertRow()}
+                                    onClick={() => insert(rows.length - 1, {
+                                        [P]: null,
+                                        [Q_MIN_P]: null,
+                                        [Q_MAX_P]: null,
+                                        [PREVIOUS_P]: null,
+                                        [PREVIOUS_Q_MIN_P]: null,
+                                        [PREVIOUS_Q_MAX_P]: null,
+                                    })}
                                     disabled={disabled}
                                     style={{ top: '-1em' }}
                                 >
