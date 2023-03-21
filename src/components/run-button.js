@@ -141,9 +141,14 @@ const RunButton = (props) => {
         }
     }, [enableDeveloperMode, setSelectedIndex]);
 
-    function getRunningStatus() {
+    const getRunningStatus = useCallback(() => {
         return props.getStatus(getRunnable());
-    }
+    }, [getRunnable, props]);
+
+    useEffect(() => {
+        const runningStatus = getRunningStatus();
+        props?.setButtonStatus(runningStatus);
+    }, [getRunningStatus, props]);
 
     let buttonDisabled =
         props.disabled ||
@@ -173,7 +178,6 @@ const RunButton = (props) => {
             className={getStyle(getRunningStatus())}
             buttonDisabled={buttonDisabled}
             selectionDisabled={selectionDisabled}
-            //startIcon={props.getStartIcon(getRunningStatus())}
             buttonStatus={props?.buttonStatus}
             text={
                 props.getText

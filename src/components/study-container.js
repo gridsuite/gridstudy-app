@@ -126,7 +126,13 @@ export function useNodeData(
         fetcher(studyUuid, nodeUuid)
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid) {
-                    setResult(resultConversion ? resultConversion(res) : res);
+                    if (res) {
+                        setResult(
+                            resultConversion ? resultConversion(res) : res
+                        );
+                    } else {
+                        setResult(RunningStatus.FAILED);
+                    }
                 }
             })
             .catch((err) => {

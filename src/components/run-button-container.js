@@ -86,8 +86,7 @@ export function RunButtonContainer({
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
     );
-    //const [buttonStatus, setButtonStatus] = useState(RunningStatus.IDLE);
-    let buttonStatus = RunningStatus.IDLE;
+    const [buttonStatus, setButtonStatus] = useState(RunningStatus.IDLE);
 
     useEffect(() => {
         if (
@@ -164,17 +163,13 @@ export function RunButtonContainer({
         setShowSensiParametersSelector(false);
         setComputationStopped(false);
 
-        buttonStatus = RunningStatus.RUNNING;
+        setButtonStatus(RunningStatus.RUNNING);
         // start server side security analysis
         startSensitivityAnalysis(
             studyUuid,
             currentNode?.id,
             sensiConfiguration
         );
-        const runningStatus = getRunningStatus(runnable.SENSITIVITY_ANALYSIS);
-        if (runningStatus) {
-            buttonStatus = runningStatus;
-        }
     };
 
     const handleStartDynamicSimulation = ({
@@ -259,7 +254,7 @@ export function RunButtonContainer({
         return runnableName;
     };
 
-    const RUNNABLES = useMemo(() => {
+    const runnables = useMemo(() => {
         let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
         if (enableDeveloperMode) {
             // SHORTCIRCUIT is currently a dev feature
@@ -274,21 +269,22 @@ export function RunButtonContainer({
 
     useEffect(() => {
         setIsComputationRunning(
-            RUNNABLES.some(function (runnable) {
+            runnables.some(function (runnable) {
                 return getRunningStatus(runnable) === RunningStatus.RUNNING;
             })
         );
-    }, [setIsComputationRunning, getRunningStatus, RUNNABLES]);
+    }, [setIsComputationRunning, getRunningStatus, runnables]);
 
     return (
         <>
             <RunButton
-                runnables={RUNNABLES}
+                runnables={runnables}
                 actionOnRunnable={ACTION_ON_RUNNABLES}
                 getStatus={getRunningStatus}
                 onStartClick={startComputation}
                 getText={getRunningText}
                 buttonStatus={buttonStatus}
+                setButtonStatus={setButtonStatus}
                 computationStopped={computationStopped}
                 disabled={isModificationsInProgress || disabled}
             />

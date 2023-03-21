@@ -57,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
     stop: {
         color: 'red',
     },
+    rotate: {
+        animation: 'spin 1000ms infinite',
+    },
 }));
 
 const SplitButton = (props) => {
