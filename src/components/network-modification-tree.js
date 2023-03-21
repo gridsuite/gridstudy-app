@@ -77,8 +77,10 @@ const NetworkModificationTree = ({
             ) {
                 case 'BUILT':
                     return '#70d136';
-                case 'NOT_BUILT':
-                    return '#9196a1';
+                case 'BUILT_WITH_WARNING':
+                    return '#FFA500';
+                case 'BUILT_WITH_ERROR':
+                    return '#DC143C';
                 default:
                     return '#9196a1';
             }

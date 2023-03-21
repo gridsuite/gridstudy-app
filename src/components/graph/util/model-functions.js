@@ -29,12 +29,12 @@ export function convertNodetoReactFlowModelNode(node, parentNodeUuid) {
 
 // Return the first node of type nodeType and specific buildStatus
 // in the tree model
-export function getFirstNodeOfType(elements, nodeType, buildStatus) {
+export function getFirstNodeOfType(elements, nodeType, buildStatusList) {
     return recursiveSearchFirstNodeOfType(
         elements,
         undefined, // first is Root node without parent node
         nodeType,
-        buildStatus
+        buildStatusList
     );
 }
 
@@ -43,11 +43,11 @@ export function recursiveSearchFirstNodeOfType(
     elements,
     parentNodeUuid,
     nodeType,
-    buildStatus
+    buildStatusList
 ) {
     if (
         elements.type === nodeType &&
-        (buildStatus === undefined || elements.buildStatus === buildStatus)
+        (buildStatusList === undefined || buildStatusList.includes(elements.buildStatus))
     ) {
         return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
     }
@@ -57,7 +57,7 @@ export function recursiveSearchFirstNodeOfType(
             child,
             elements.id,
             nodeType,
-            buildStatus
+            buildStatusList
         );
         if (found) {
             return found;
@@ -73,7 +73,7 @@ export function isNodeReadOnly(node) {
 export function isNodeBuilt(node) {
     if (!node) return false;
     if (node.type === 'ROOT') return true;
-    return node.data?.buildStatus === 'BUILT';
+    return node.data?.buildStatus.startsWith('BUILT');
 }
 
 export function isSameNode(node1, node2) {
