@@ -38,8 +38,8 @@ export const ReactiveCapabilityCurveTable = ({
 
     const handleInsertRow = () => {
         console.log(getValues(REACTIVE_CAPABILITY_CURVE_TABLE));
-        if (getValues(REACTIVE_CAPABILITY_CURVE_TABLE) && updatePreviousReactiveCapabilityCurveTable)
-            updatePreviousReactiveCapabilityCurveTable(INSERT, rows.length - 1);
+        //if (getValues(REACTIVE_CAPABILITY_CURVE_TABLE) && updatePreviousReactiveCapabilityCurveTable)
+          //  updatePreviousReactiveCapabilityCurveTable(INSERT, rows.length - 1);
         insert(rows.length - 1, {
             [P]: null,
             [Q_MIN_P]: null,
@@ -51,8 +51,8 @@ export const ReactiveCapabilityCurveTable = ({
     };
 
     const handleRemoveRow = (index) => {
-        if (getValues(REACTIVE_CAPABILITY_CURVE_TABLE) && updatePreviousReactiveCapabilityCurveTable)
-            updatePreviousReactiveCapabilityCurveTable(REMOVE, index);
+        /*if (getValues(REACTIVE_CAPABILITY_CURVE_TABLE) && updatePreviousReactiveCapabilityCurveTable)
+            updatePreviousReactiveCapabilityCurveTable(REMOVE, index);*/
         remove(index);
     };
 
