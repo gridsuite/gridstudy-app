@@ -173,7 +173,8 @@ const RunButton = (props) => {
             className={getStyle(getRunningStatus())}
             buttonDisabled={buttonDisabled}
             selectionDisabled={selectionDisabled}
-            startIcon={props.getStartIcon(getRunningStatus())}
+            //startIcon={props.getStartIcon(getRunningStatus())}
+            buttonStatus={props?.buttonStatus}
             text={
                 props.getText
                     ? props.getText(getRunnable(), getRunningStatus())

@@ -20,6 +20,11 @@ import makeStyles from '@mui/styles/makeStyles';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import StopIcon from '@mui/icons-material/Stop';
 import ListItemText from '@mui/material/ListItemText';
+import LoopIcon from '@mui/icons-material/Loop';
+import DoneIcon from '@mui/icons-material/Done';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import PlayIcon from '@mui/icons-material/PlayArrow';
+import { RunningStatus } from './running-status';
 
 const useStyles = makeStyles((theme) => ({
     expand: {
@@ -87,6 +92,20 @@ const SplitButton = (props) => {
         setOpen(false);
     };
 
+    const getRunningIcon = (status) => {
+        switch (status) {
+            case RunningStatus.RUNNING:
+                return <LoopIcon className={classes.rotate} />;
+            case RunningStatus.SUCCEED:
+                return <DoneIcon />;
+            case RunningStatus.FAILED:
+                return <ErrorOutlineIcon />;
+            case RunningStatus.IDLE:
+            default:
+                return <PlayIcon />;
+        }
+    };
+
     const breakText = (text) => {
         return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
     };
@@ -98,7 +117,7 @@ const SplitButton = (props) => {
             <ButtonGroup className={props.className} ref={anchorRef}>
                 <Button
                     variant="outlined"
-                    startIcon={props.startIcon}
+                    startIcon={getRunningIcon(props?.buttonStatus)}
                     className={props.className}
                     disabled={props.buttonDisabled}
                     onClick={handleClick}

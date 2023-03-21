@@ -21,10 +21,7 @@ import {
     stopDynamicSimulation,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
-import LoopIcon from '@mui/icons-material/Loop';
-import DoneIcon from '@mui/icons-material/Done';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import PlayIcon from '@mui/icons-material/PlayArrow';
+
 import ContingencyListSelector from './dialogs/contingency-list-selector';
 import makeStyles from '@mui/styles/makeStyles';
 import {
@@ -40,12 +37,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
-
-const useStyles = makeStyles((theme) => ({
-    rotate: {
-        animation: 'spin 1000ms infinite',
-    },
-}));
 
 export function RunButtonContainer({
     studyUuid,
@@ -88,8 +79,6 @@ export function RunButtonContainer({
 
     const { snackError } = useSnackMessage();
 
-    const classes = useStyles();
-
     const dispatch = useDispatch();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -97,6 +86,9 @@ export function RunButtonContainer({
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
     );
+    //const [buttonStatus, setButtonStatus] = useState(RunningStatus.IDLE);
+    let buttonStatus = RunningStatus.IDLE;
+
     useEffect(() => {
         if (
             ranLoadflow &&
@@ -170,15 +162,19 @@ export function RunButtonContainer({
     const handleStartSensi = (sensiConfiguration) => {
         // close the contingency list selection window
         setShowSensiParametersSelector(false);
-
         setComputationStopped(false);
 
+        buttonStatus = RunningStatus.RUNNING;
         // start server side security analysis
         startSensitivityAnalysis(
             studyUuid,
             currentNode?.id,
             sensiConfiguration
         );
+        const runningStatus = getRunningStatus(runnable.SENSITIVITY_ANALYSIS);
+        if (runningStatus) {
+            buttonStatus = runningStatus;
+        }
     };
 
     const handleStartDynamicSimulation = ({
@@ -263,20 +259,6 @@ export function RunButtonContainer({
         return runnableName;
     };
 
-    const getRunningIcon = (status) => {
-        switch (status) {
-            case RunningStatus.RUNNING:
-                return <LoopIcon className={classes.rotate} />;
-            case RunningStatus.SUCCEED:
-                return <DoneIcon />;
-            case RunningStatus.FAILED:
-                return <ErrorOutlineIcon />;
-            case RunningStatus.IDLE:
-            default:
-                return <PlayIcon />;
-        }
-    };
-
     const RUNNABLES = useMemo(() => {
         let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
         if (enableDeveloperMode) {
@@ -306,7 +288,7 @@ export function RunButtonContainer({
                 getStatus={getRunningStatus}
                 onStartClick={startComputation}
                 getText={getRunningText}
-                getStartIcon={getRunningIcon}
+                buttonStatus={buttonStatus}
                 computationStopped={computationStopped}
                 disabled={isModificationsInProgress || disabled}
             />
