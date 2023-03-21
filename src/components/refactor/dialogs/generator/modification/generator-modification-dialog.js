@@ -70,6 +70,38 @@ import {
     PREVIOUS_Q_MIN_P,
 } from './generator-modification-utils';
 
+const schema = yup
+    .object()
+    .shape(
+        {
+            [EQUIPMENT_ID]: yup.string().nullable().required(),
+            [EQUIPMENT_NAME]: yup.string(),
+            [ENERGY_SOURCE]: yup.string().nullable(),
+            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+            [MINIMUM_ACTIVE_POWER]: yup.number().nullable(),
+            [RATED_NOMINAL_POWER]: yup.number().nullable(),
+            [TRANSIENT_REACTANCE]: yup.number().nullable(),
+            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            [STARTUP_COST]: yup.number().nullable(),
+            [MARGINAL_COST]: yup.number().nullable(),
+            [PLANNED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, 'RealPercentage')
+                .max(1, 'RealPercentage'),
+            [FORCED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, 'RealPercentage')
+                .max(1, 'RealPercentage'),
+            ...getSetPointsSchema(true),
+            ...getReactiveLimitsSchema(true),
+        },
+        [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
+    )
+    .required();
+
 const GeneratorModificationDialog = ({
     editData,
     defaultIdValue,
@@ -100,17 +132,14 @@ const GeneratorModificationDialog = ({
             [MARGINAL_COST]: null,
             [PLANNED_OUTAGE_RATE]: null,
             [FORCED_OUTAGE_RATE]: null,
-            ...getSetPointsEmptyFormData(true),
+            ...getSetPointsEmptyFormData(null, null, null),
             ...getReactiveLimitsEmptyFormData(true),
         }),
         [defaultIdValue]
     );
 
     const formDataFromEditData = useMemo(
-        () =>
-            editData
-                ? assignValuesToForm(editData)
-                : null,
+        () => (editData ? assignValuesToForm(editData) : null),
         [editData]
     );
 
@@ -123,59 +152,11 @@ const GeneratorModificationDialog = ({
         }
     }, [editData, emptyFormData, formDataFromEditData]);
 
-    const schema = useMemo(
+    /*const schema = useMemo(
         () =>
-            yup
-                .object()
-                .shape(
-                    {
-                        [EQUIPMENT_ID]: yup.string().nullable().required(),
-                        [EQUIPMENT_NAME]: yup.string(),
-                        [ENERGY_SOURCE]: yup.string().nullable(),
-                        [MAXIMUM_ACTIVE_POWER]: yup
-                            .number()
-                            .nullable()
-                            .when([], {
-                                is: () =>
-                                    isSelectedGeneratorUndefined &&
-                                    isEditDataUndefined,
-                                then: (schema) => schema.required(),
-                            }),
-                        [MINIMUM_ACTIVE_POWER]: yup
-                            .number()
-                            .nullable()
-                            .when([], {
-                                is: () =>
-                                    isSelectedGeneratorUndefined &&
-                                    isEditDataUndefined,
-                                then: (schema) => schema.required(),
-                            }),
-                        [RATED_NOMINAL_POWER]: yup.number().nullable(),
-                        [TRANSIENT_REACTANCE]: yup.number().nullable(),
-                        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-                        [PLANNED_ACTIVE_POWER_SET_POINT]: yup
-                            .number()
-                            .nullable(),
-                        [STARTUP_COST]: yup.number().nullable(),
-                        [MARGINAL_COST]: yup.number().nullable(),
-                        [PLANNED_OUTAGE_RATE]: yup
-                            .number()
-                            .nullable()
-                            .min(0, 'RealPercentage')
-                            .max(1, 'RealPercentage'),
-                        [FORCED_OUTAGE_RATE]: yup
-                            .number()
-                            .nullable()
-                            .min(0, 'RealPercentage')
-                            .max(1, 'RealPercentage'),
-                        ...getSetPointsSchema(true),
-                        ...getReactiveLimitsSchema(true),
-                    },
-                    [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
-                )
-                .required(),
+
         [isSelectedGeneratorUndefined, isEditDataUndefined]
-    );
+    );*/
     const methods = useForm({
         defaultValues: defaultFormData,
         resolver: yupResolver(schema),
@@ -190,9 +171,7 @@ const GeneratorModificationDialog = ({
             if (editData) {
                 customData = {
                     ...customData,
-                    ...assignValuesToForm(
-                        editData
-                    ),
+                    ...assignValuesToForm(editData),
                 };
                 console.log('customData', customData);
             }

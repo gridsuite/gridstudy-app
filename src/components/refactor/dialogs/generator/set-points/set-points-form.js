@@ -35,9 +35,7 @@ const SetPointsForm = ({
     currentNodeUuid,
     voltageLevelOptions,
     isGeneratorModification = false,
-    //previousValues,
 }) => {
-    const intl = useIntl();
     const watchVoltageRegulation = useWatch({
         name: VOLTAGE_REGULATION,
     });
@@ -47,20 +45,11 @@ const SetPointsForm = ({
         (watchVoltageRegulation === null &&
             getPreviousValueFieldName(VOLTAGE_REGULATION));
 
-    const previousRegulation = () => {
-        if (getPreviousValueFieldName(VOLTAGE_REGULATION))
-            return intl.formatMessage({ id: 'On' });
-        else if (getPreviousValueFieldName(VOLTAGE_REGULATION) === false)
-            return intl.formatMessage({ id: 'Off' });
-        else return null;
-    };
-
     const activePowerSetPointField = (
         <FloatInput
             name={ACTIVE_POWER_SET_POINT}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-            //previousValue={previousValues?.targetP}
             clearable={true}
         />
     );
@@ -70,7 +59,6 @@ const SetPointsForm = ({
             <CheckboxNullableInput
                 name={VOLTAGE_REGULATION}
                 label={'VoltageRegulationText'}
-                //previousValue={previousRegulation()}
             />
         </Box>
     ) : (
@@ -87,7 +75,6 @@ const SetPointsForm = ({
             name={REACTIVE_POWER_SET_POINT}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
-           // previousValue={previousValues?.targetQ}
             clearable={true}
         />
     );

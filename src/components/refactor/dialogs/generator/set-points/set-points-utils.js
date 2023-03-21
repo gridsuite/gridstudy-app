@@ -32,8 +32,8 @@ import {
     PREVIOUS_VOLTAGE_REGULATION, PREVIOUS_VOLTAGE_SET_POINT
 } from "../modification/generator-modification-utils";
 
-const getFrequencyRegulationEmptyFormData = (isGeneratorModification) => ({
-    [FREQUENCY_REGULATION]: isGeneratorModification ? null : false,
+const getFrequencyRegulationEmptyFormData = (frequencyRegulation) => ({
+    [FREQUENCY_REGULATION]: frequencyRegulation,
     [DROOP]: null,
 });
 
@@ -54,12 +54,10 @@ const getFrequencyRegulationSchema = () => ({
         }),
 });
 
-const getVoltageRegulationEmptyFormData = (isGeneratorModification) => ({
+const getVoltageRegulationEmptyFormData = (voltageRegulationType) => ({
     [VOLTAGE_SET_POINT]: null,
     [Q_PERCENT]: null,
-    [VOLTAGE_REGULATION_TYPE]: isGeneratorModification
-        ? null
-        : REGULATION_TYPES.LOCAL.id,
+    [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
     [VOLTAGE_LEVEL]: null,
     [EQUIPMENT]: null,
     ...getRegulatingTerminalEmptyFormData(),
@@ -141,12 +139,16 @@ const getVoltageRegulationSchema = () => ({
         ),
 });
 
-export const getSetPointsEmptyFormData = (isGeneratorModification = false) => ({
-    [VOLTAGE_REGULATION]: isGeneratorModification ? null : false,
+export const getSetPointsEmptyFormData = (
+    voltageRegulation = false,
+    voltageRegulationType = REGULATION_TYPES.LOCAL.id,
+    frequencyRegulation = false
+                                          ) => ({
+    [VOLTAGE_REGULATION]: voltageRegulation,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
-    ...getVoltageRegulationEmptyFormData(isGeneratorModification),
-    ...getFrequencyRegulationEmptyFormData(isGeneratorModification),
+    ...getVoltageRegulationEmptyFormData(voltageRegulationType),
+    ...getFrequencyRegulationEmptyFormData(frequencyRegulation),
 });
 
 export const getSetPointsSchema = (isGeneratorModification = false) => ({
