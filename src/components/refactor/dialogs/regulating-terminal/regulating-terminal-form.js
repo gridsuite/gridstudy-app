@@ -12,8 +12,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import {
     EQUIPMENT,
     ID,
-    OLD_EQUIPMENT,
-    OLD_VOLTAGE_LEVEL,
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/refactor/utils/field-constants';
@@ -81,8 +79,8 @@ const RegulatingTerminalForm = ({
     currentNodeUuid,
     voltageLevelOptions = [],
     equipmentSectionTypeDefaultValue,
-    previousRegulatingTerminalValue,
-    previousEquipmentSectionTypeValue,
+    //previousRegulatingTerminalValue,
+    //previousEquipmentSectionTypeValue,
 }) => {
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
     const { setValue } = useFormContext();
@@ -90,19 +88,6 @@ const RegulatingTerminalForm = ({
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
-
-    useEffect(() => {
-        if (previousRegulatingTerminalValue) {
-            setValue(OLD_VOLTAGE_LEVEL, previousRegulatingTerminalValue);
-        }
-        if (previousEquipmentSectionTypeValue) {
-            setValue(OLD_EQUIPMENT, previousEquipmentSectionTypeValue);
-        }
-    }, [
-        previousEquipmentSectionTypeValue,
-        previousRegulatingTerminalValue,
-        setValue,
-    ]);
 
     useEffect(() => {
         if (watchVoltageLevelId) {
@@ -152,7 +137,7 @@ const RegulatingTerminalForm = ({
                             options={voltageLevelOptions}
                             getOptionLabel={(vl) => (vl?.[ID] ? vl?.[ID] : '')}
                             onChangeCallback={resetEquipment}
-                            previousValue={previousRegulatingTerminalValue}
+                            //previousValue={previousRegulatingTerminalValue}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value
                             */
@@ -209,7 +194,7 @@ const RegulatingTerminalForm = ({
                             selectOnFocus
                             id="equipment"
                             disabled={!watchVoltageLevelId || disabled}
-                            previousValue={previousEquipmentSectionTypeValue}
+                            //previousValue={previousEquipmentSectionTypeValue}
                             options={equipmentsOptions}
                             getOptionLabel={(equipment) => {
                                 return equipment === ''

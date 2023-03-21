@@ -13,8 +13,6 @@ import {
     ID,
     NAME,
     NOMINAL_VOLTAGE,
-    OLD_EQUIPMENT,
-    OLD_VOLTAGE_LEVEL,
     Q_PERCENT,
     REACTIVE_POWER_SET_POINT,
     SUBSTATION_ID,
@@ -28,6 +26,7 @@ import {
 import yup from '../../../utils/yup-config';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
+import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
 
 const getFrequencyRegulationEmptyFormData = (isGeneratorModification) => ({
     [FREQUENCY_REGULATION]: isGeneratorModification ? null : false,
@@ -82,7 +81,6 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
         .nullable()
         .max(100, 'NormalizedPercentage')
         .min(0, 'NormalizedPercentage'),
-    [OLD_VOLTAGE_LEVEL]: yup.string().nullable(),
     [VOLTAGE_LEVEL]: yup
         .object()
         .nullable()
@@ -94,7 +92,7 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
         .when(
-            [VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, OLD_VOLTAGE_LEVEL],
+            [VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, getPreviousValueFieldName(VOLTAGE_LEVEL)],
             {
                 is: (
                     voltageRegulation,
@@ -119,7 +117,7 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [
                 VOLTAGE_REGULATION,
                 VOLTAGE_REGULATION_TYPE,
-                OLD_EQUIPMENT,
+                getPreviousValueFieldName(EQUIPMENT),
                 VOLTAGE_LEVEL,
             ],
             {

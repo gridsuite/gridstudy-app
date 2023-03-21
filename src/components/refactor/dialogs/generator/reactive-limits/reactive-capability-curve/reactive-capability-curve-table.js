@@ -12,45 +12,46 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { useStyles } from '../../../../../dialogs/dialogUtils';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import ErrorInput from '../../../../rhf-inputs/error-inputs/error-input';
 import {
-    OLD_P,
-    OLD_Q_MAX_P,
-    OLD_Q_MIN_P,
     P,
     Q_MAX_P,
     Q_MIN_P,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
 } from 'components/refactor/utils/field-constants';
 import MidFormError from 'components/refactor/rhf-inputs/error-inputs/mid-form-error';
 import { INSERT, REMOVE } from './reactive-capability-utils';
+import { PREVIOUS_P, PREVIOUS_Q_MAX_P, PREVIOUS_Q_MIN_P } from '../../modification/generator-modification-utils';
 
 export const ReactiveCapabilityCurveTable = ({
     id,
     tableHeadersIds,
     disabled = false,
-    previousValues,
+    //previousValues,
     updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();
+    const {getValues} = useFormContext();
 
     const handleInsertRow = () => {
-        if (previousValues && updatePreviousReactiveCapabilityCurveTable)
+        console.log(getValues(REACTIVE_CAPABILITY_CURVE_TABLE));
+        if (getValues(REACTIVE_CAPABILITY_CURVE_TABLE) && updatePreviousReactiveCapabilityCurveTable)
             updatePreviousReactiveCapabilityCurveTable(INSERT, rows.length - 1);
         insert(rows.length - 1, {
             [P]: null,
             [Q_MIN_P]: null,
             [Q_MAX_P]: null,
-            [OLD_P]: null,
-            [OLD_Q_MIN_P]: null,
-            [OLD_Q_MAX_P]: null,
+            [PREVIOUS_P]: null,
+            [PREVIOUS_Q_MIN_P]: null,
+            [PREVIOUS_Q_MAX_P]: null,
         });
     };
 
     const handleRemoveRow = (index) => {
-        if (previousValues && updatePreviousReactiveCapabilityCurveTable)
+        if (getValues(REACTIVE_CAPABILITY_CURVE_TABLE) && updatePreviousReactiveCapabilityCurveTable)
             updatePreviousReactiveCapabilityCurveTable(REMOVE, index);
         remove(index);
     };
@@ -80,7 +81,7 @@ export const ReactiveCapabilityCurveTable = ({
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
-                            previousValues={previousValues?.[index]}
+                            //previousValues={previousValues?.[index]}
                         />
                         <Grid item xs={1}>
                             <IconButton

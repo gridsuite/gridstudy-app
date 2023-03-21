@@ -19,6 +19,7 @@ import FloatInput from '../../../rhf-inputs/float-input';
 import {
     ACTIVE_POWER_SET_POINT,
     REACTIVE_POWER_SET_POINT,
+    VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
 } from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
@@ -27,13 +28,14 @@ import VoltageRegulation from './voltage-regulation';
 import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
+import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
 
 const SetPointsForm = ({
     studyUuid,
     currentNodeUuid,
     voltageLevelOptions,
     isGeneratorModification = false,
-    previousValues,
+    //previousValues,
 }) => {
     const intl = useIntl();
     const watchVoltageRegulation = useWatch({
@@ -43,12 +45,12 @@ const SetPointsForm = ({
     const isVoltageRegulationOn =
         watchVoltageRegulation ||
         (watchVoltageRegulation === null &&
-            previousValues?.voltageRegulatorOn === true);
+            getPreviousValueFieldName(VOLTAGE_REGULATION) === true);
 
     const previousRegulation = () => {
-        if (previousValues?.voltageRegulatorOn)
+        if (getPreviousValueFieldName(VOLTAGE_REGULATION))
             return intl.formatMessage({ id: 'On' });
-        else if (previousValues?.voltageRegulatorOn === false)
+        else if (getPreviousValueFieldName(VOLTAGE_REGULATION) === false)
             return intl.formatMessage({ id: 'Off' });
         else return null;
     };
@@ -58,7 +60,7 @@ const SetPointsForm = ({
             name={ACTIVE_POWER_SET_POINT}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={previousValues?.targetP}
+            //previousValue={previousValues?.targetP}
             clearable={true}
         />
     );
@@ -68,7 +70,7 @@ const SetPointsForm = ({
             <CheckboxNullableInput
                 name={VOLTAGE_REGULATION}
                 label={'VoltageRegulationText'}
-                previousValue={previousRegulation()}
+                //previousValue={previousRegulation()}
             />
         </Box>
     ) : (
@@ -85,7 +87,7 @@ const SetPointsForm = ({
             name={REACTIVE_POWER_SET_POINT}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.targetQ}
+           // previousValue={previousValues?.targetQ}
             clearable={true}
         />
     );
@@ -95,7 +97,7 @@ const SetPointsForm = ({
             voltageLevelOptions={voltageLevelOptions}
             currentNodeUuid={currentNodeUuid}
             studyUuid={studyUuid}
-            previousValues={previousValues}
+            //previousValues={previousValues}
         />
     );
 
@@ -122,7 +124,7 @@ const SetPointsForm = ({
                 <Box sx={{ width: '100%' }} />
                 <FrequencyRegulation
                     isGeneratorModification={isGeneratorModification}
-                    previousValues={previousValues}
+                    //previousValues={previousValues}
                 />
             </Grid>
         </>

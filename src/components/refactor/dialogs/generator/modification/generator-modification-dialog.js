@@ -26,9 +26,6 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
-    OLD_P,
-    OLD_Q_MAX_P,
-    OLD_Q_MIN_P,
     P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
@@ -66,6 +63,11 @@ import {
     getModificationRowEmptyFormData,
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import {
+    PREVIOUS_P,
+    PREVIOUS_Q_MAX_P,
+    PREVIOUS_Q_MIN_P,
+} from './generator-modification-utils';
 
 const GeneratorModificationDialog = ({
     editData,
@@ -124,70 +126,10 @@ const GeneratorModificationDialog = ({
     const formDataFromEditData = useMemo(
         () =>
             editData
-                ? {
-                      [EQUIPMENT_ID]: editData?.equipmentId,
-                      [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                      [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
-                      [MAXIMUM_ACTIVE_POWER]:
-                          editData?.maxActivePower?.value ?? null,
-                      [MINIMUM_ACTIVE_POWER]:
-                          editData?.minActivePower?.value ?? null,
-                      [RATED_NOMINAL_POWER]:
-                          editData?.ratedNominalPower?.value ?? null,
-                      [ACTIVE_POWER_SET_POINT]:
-                          editData?.activePowerSetpoint?.value ?? null,
-                      [VOLTAGE_REGULATION]:
-                          editData?.voltageRegulationOn?.value ?? null,
-                      [VOLTAGE_SET_POINT]:
-                          editData?.voltageSetpoint?.value ?? null,
-                      [REACTIVE_POWER_SET_POINT]:
-                          editData?.reactivePowerSetpoint?.value ?? null,
-                      [PLANNED_ACTIVE_POWER_SET_POINT]:
-                          editData?.plannedActivePowerSetPoint?.value ?? null,
-                      [STARTUP_COST]: editData?.startupCost?.value ?? null,
-                      [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
-                      [PLANNED_OUTAGE_RATE]:
-                          editData?.plannedOutageRate?.value ?? null,
-                      [FORCED_OUTAGE_RATE]:
-                          editData?.forcedOutageRate?.value ?? null,
-                      [FREQUENCY_REGULATION]:
-                          editData?.participate?.value ?? null,
-                      [DROOP]: editData?.droop?.value ?? null,
-                      [TRANSIENT_REACTANCE]:
-                          editData?.transientReactance?.value ?? null,
-                      [TRANSFORMER_REACTANCE]:
-                          editData?.stepUpTransformerReactance?.value ?? null,
-                      [VOLTAGE_REGULATION_TYPE]:
-                          editData?.voltageRegulationType?.value ?? null,
-                      [MINIMUM_REACTIVE_POWER]:
-                          editData?.minimumReactivePower?.value ?? null,
-                      [MAXIMUM_REACTIVE_POWER]:
-                          editData?.maximumReactivePower?.value ?? null,
-                      [Q_PERCENT]: editData?.qPercent?.value ?? null,
-                      [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                          !editData?.reactiveCapabilityCurve?.value &&
-                          (editData?.minimumReactivePower ||
-                              editData?.maximumReactivePower)
-                              ? 'MINMAX'
-                              : 'CURVE',
-                      [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                          completeReactiveCapabilityCurvePointsData(
-                              editData?.reactiveCapabilityCurvePoints
-                          ) ?? [
-                              getModificationRowEmptyFormData(),
-                              getModificationRowEmptyFormData(),
-                          ],
-                      ...getRegulatingTerminalFormData({
-                          equipmentId: editData?.regulatingTerminalId?.value,
-                          equipmentType:
-                              editData?.regulatingTerminalType?.value,
-                          voltageLevelId:
-                              editData?.regulatingTerminalVlId?.value,
-                          oldEquipment: editData?.regulatingTerminalId?.value,
-                          oldVoltageLevel:
-                              editData?.regulatingTerminalVlId?.value,
-                      }),
-                  }
+                ? assignValuesToForm(
+                      editData,
+                      completeReactiveCapabilityCurvePointsData
+                  )
                 : null,
         [editData]
     );
@@ -196,6 +138,7 @@ const GeneratorModificationDialog = ({
         if (!editData) {
             return emptyFormData;
         } else {
+            console.log('editData', editData);
             return formDataFromEditData;
         }
     }, [editData, emptyFormData, formDataFromEditData]);
@@ -262,13 +205,24 @@ const GeneratorModificationDialog = ({
 
     //this method empties the form, and let us pass custom data that we want to set
     const clear = useCallback(
-        (customData = {}, keepDefaultValues = false) => {
+        (customData = {}, keepValues = false) => {
+            console.log('clear', keepValues);
+            if (editData) {
+                customData = {
+                    ...customData,
+                    ...assignValuesToForm(
+                        editData,
+                        completeReactiveCapabilityCurvePointsData
+                    ),
+                };
+                console.log('customData', customData);
+            }
             reset(
                 { ...emptyFormData, ...customData },
-                { keepDefaultValues: keepDefaultValues }
+                { keepDefaultValues: keepValues }
             );
         },
-        [emptyFormData, reset]
+        [editData, emptyFormData, reset]
     );
 
     const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
@@ -280,9 +234,9 @@ const GeneratorModificationDialog = ({
                       [P]: null,
                       [Q_MIN_P]: null,
                       [Q_MAX_P]: null,
-                      [OLD_P]: null,
-                      [OLD_Q_MIN_P]: null,
-                      [OLD_Q_MAX_P]: null,
+                      [PREVIOUS_P]: null,
+                      [PREVIOUS_Q_MIN_P]: null,
+                      [PREVIOUS_Q_MAX_P]: null,
                   });
             return {
                 ...previousValue,
@@ -329,7 +283,6 @@ const GeneratorModificationDialog = ({
                                 ? displayedPreviousValues[index]?.qmaxP
                                 : null,
                     };
-
                     pointsToStore.push(pointToStore);
                 }
             });
@@ -455,3 +408,54 @@ const GeneratorModificationDialog = ({
 };
 
 export default GeneratorModificationDialog;
+function assignValuesToForm(
+    editData,
+    completeReactiveCapabilityCurvePointsData
+) {
+    return {
+        [EQUIPMENT_ID]: editData?.equipmentId,
+        [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
+        [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
+        [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
+        [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
+        [RATED_NOMINAL_POWER]: editData?.ratedNominalPower?.value ?? null,
+        [ACTIVE_POWER_SET_POINT]: editData?.activePowerSetpoint?.value ?? null,
+        [VOLTAGE_REGULATION]: editData?.voltageRegulationOn?.value ?? null,
+        [VOLTAGE_SET_POINT]: editData?.voltageSetpoint?.value ?? null,
+        [REACTIVE_POWER_SET_POINT]:
+            editData?.reactivePowerSetpoint?.value ?? null,
+        [PLANNED_ACTIVE_POWER_SET_POINT]:
+            editData?.plannedActivePowerSetPoint?.value ?? null,
+        [STARTUP_COST]: editData?.startupCost?.value ?? null,
+        [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
+        [PLANNED_OUTAGE_RATE]: editData?.plannedOutageRate?.value ?? null,
+        [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
+        [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
+        [DROOP]: editData?.droop?.value ?? null,
+        [TRANSIENT_REACTANCE]: editData?.transientReactance?.value ?? null,
+        [TRANSFORMER_REACTANCE]:
+            editData?.stepUpTransformerReactance?.value ?? null,
+        [VOLTAGE_REGULATION_TYPE]:
+            editData?.voltageRegulationType?.value ?? null,
+        [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower?.value ?? null,
+        [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower?.value ?? null,
+        [Q_PERCENT]: editData?.qPercent?.value ?? null,
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]:
+            !editData?.reactiveCapabilityCurve?.value &&
+            (editData?.minimumReactivePower || editData?.maximumReactivePower)
+                ? 'MINMAX'
+                : 'CURVE',
+        [REACTIVE_CAPABILITY_CURVE_TABLE]:
+            completeReactiveCapabilityCurvePointsData(
+                editData?.reactiveCapabilityCurvePoints
+            ) ?? [
+                getModificationRowEmptyFormData(),
+                getModificationRowEmptyFormData(),
+            ],
+        ...getRegulatingTerminalFormData({
+            equipmentId: editData?.regulatingTerminalId?.value,
+            equipmentType: editData?.regulatingTerminalType?.value,
+            voltageLevelId: editData?.regulatingTerminalVlId?.value,
+        }),
+    };
+}

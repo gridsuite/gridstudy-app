@@ -31,15 +31,15 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
         (watchFrequencyRegulation === null &&
             previousValues?.activePowerControlOn === true);
 
-    let previousFrequencyRegulation = '';
-    if (previousValues?.activePowerControlOn) {
-        previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
-    } else if (
-        previousValues?.activePowerControlOn === false ||
-        (previousValues && previousValues.activePowerControlOn === undefined)
-    ) {
-        previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
-    }
+    // let previousFrequencyRegulation = '';
+    // if (previousValues?.activePowerControlOn) {
+    //     previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
+    // } else if (
+    //     previousValues?.activePowerControlOn === false ||
+    //     (previousValues && previousValues.activePowerControlOn === undefined)
+    // ) {
+    //     previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
+    // }
 
     const frequencyRegulationField = isGeneratorModification ? (
         /** wrappe with box to avoid warning */
@@ -47,7 +47,7 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
             <CheckboxNullableInput
                 name={FREQUENCY_REGULATION}
                 label={'FrequencyRegulation'}
-                previousValue={previousFrequencyRegulation}
+                //previousValue={previousFrequencyRegulation}
             />
         </Box>
     ) : (
@@ -64,7 +64,7 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
             name={DROOP}
             label={'Droop'}
             adornment={percentageTextField}
-            previousValue={previousValues?.droop}
+            //previousValue={previousValues?.droop}
         />
     );
 

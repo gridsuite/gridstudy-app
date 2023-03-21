@@ -16,8 +16,8 @@ import {
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types';
-import { useController, useFormContext } from 'react-hook-form';
-import { isFieldRequired } from '../utils/utils';
+import { useController, useFormContext, useWatch } from 'react-hook-form';
+import { getPreviousValueFieldName, isFieldRequired } from '../utils/utils';
 
 const TextInput = ({
     name,
@@ -29,7 +29,6 @@ const TextInput = ({
     inputTransform = func_identity, //transform react hook form value before sending it to materialUi input, mostly used to deal with number fields
     acceptValue = () => true, //used to check user entry before committing the input change, used mostly to prevent user from typing a character in number field
     formProps,
-    previousValue,
     clearable,
     customAdornment,
 }) => {
@@ -39,6 +38,9 @@ const TextInput = ({
         field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
+
+    const previousFieldName = getPreviousValueFieldName(name);
+    const previousValueWatch = useWatch({ name: previousFieldName });
 
     const Field = adornment ? TextFieldWithAdornment : TextField;
 
@@ -99,7 +101,7 @@ const TextInput = ({
                 adornment && {
                     handleClearValue: handleClearValue,
                 })}
-            {...genHelperPreviousValue(previousValue, adornment)}
+            {...genHelperPreviousValue(previousValueWatch, adornment)}
             {...genHelperError(error?.message)}
             {...formProps}
         />

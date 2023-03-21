@@ -11,15 +11,13 @@ import {
 } from '../../../../../util/validation-functions';
 import yup from '../../../../utils/yup-config';
 import {
-    OLD_P,
-    OLD_Q_MAX_P,
-    OLD_Q_MIN_P,
     P,
     Q_MAX_P,
     Q_MIN_P,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../../utils/field-constants';
+import { PREVIOUS_P, PREVIOUS_Q_MAX_P, PREVIOUS_Q_MIN_P } from '../../modification/generator-modification-utils';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';
@@ -43,14 +41,14 @@ const getModificationRowSchema = () =>
         [Q_MAX_P]: yup
             .number()
             .nullable()
-            .when([OLD_Q_MAX_P], {
+            .when([PREVIOUS_Q_MAX_P], {
                 is: (oldQmaxP) => oldQmaxP === null,
                 then: (schema) => schema.required(),
             }),
         [Q_MIN_P]: yup
             .number()
             .nullable()
-            .when([OLD_Q_MIN_P], {
+            .when([PREVIOUS_Q_MIN_P], {
                 is: (oldQminP) => oldQminP === null,
                 then: (schema) => schema.required(),
             })
@@ -63,20 +61,20 @@ const getModificationRowSchema = () =>
                     ),
                 otherwise: (schema) =>
                     schema.max(
-                        yup.ref(OLD_Q_MAX_P),
+                        yup.ref(PREVIOUS_Q_MAX_P),
                         'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
                     ),
             }),
         [P]: yup
             .number()
             .nullable()
-            .when([OLD_P], {
+            .when([PREVIOUS_P], {
                 is: (oldP) => oldP === null,
                 then: (schema) => schema.required(),
             }),
-        [OLD_Q_MAX_P]: yup.number().nullable(),
-        [OLD_Q_MIN_P]: yup.number().nullable(),
-        [OLD_P]: yup.number().nullable(),
+        [PREVIOUS_Q_MAX_P]: yup.number().nullable(),
+        [PREVIOUS_Q_MIN_P]: yup.number().nullable(),
+        [PREVIOUS_P]: yup.number().nullable(),
     });
 
 const getCreationRowEmptyFormData = () => ({
@@ -89,9 +87,9 @@ export const getModificationRowEmptyFormData = () => ({
     [P]: null,
     [Q_MAX_P]: null,
     [Q_MIN_P]: null,
-    [OLD_P]: null,
-    [OLD_Q_MAX_P]: null,
-    [OLD_Q_MIN_P]: null,
+    [PREVIOUS_P]: null,
+    [PREVIOUS_Q_MAX_P]: null,
+    [PREVIOUS_Q_MIN_P]: null,
 });
 
 export const getReactiveCapabilityCurveEmptyFormData = (
@@ -112,7 +110,7 @@ function getNotNullPFromArray(values, isGeneratorModification) {
             //in case of modification, if p is null, we validate old_p value
             const pValue =
                 isGeneratorModification && element[P] === null
-                    ? element[OLD_P]
+                    ? element[PREVIOUS_P]
                     : element[P];
 
             // Note : convertion toNumber is necessary here to prevent corner cases like if

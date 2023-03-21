@@ -7,18 +7,16 @@
 
 import TextInput from '../../../rhf-inputs/text-input';
 import {
+    ACTIVE_POWER_SET_POINT,
     ENERGY_SOURCE,
+    EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
+    FREQUENCY_REGULATION,
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    OLD_EQUIPMENT,
-    OLD_P,
-    OLD_Q_MAX_P,
-    OLD_Q_MIN_P,
-    OLD_VOLTAGE_LEVEL,
     P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
@@ -27,9 +25,12 @@ import {
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
+    REACTIVE_POWER_SET_POINT,
     STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
+    VOLTAGE_LEVEL,
+    VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
 } from '../../../utils/field-constants';
 import {
@@ -61,6 +62,36 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { getModificationRowEmptyFormData } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
+import { REGULATING_VOLTAGE_LEVEL } from '../../regulating-terminal/regulating-terminal-form';
+import {
+    PREVIOUS_ACTIVE_POWER_SET_POINT,
+    PREVIOUS_DROOP,
+    PREVIOUS_ENERGY_SOURCE,
+    PREVIOUS_EQUIPMENT,
+    PREVIOUS_EQUIPMENT_NAME,
+    PREVIOUS_FORCED_OUTAGE_RATE,
+    PREVIOUS_FREQUENCY_REGULATION,
+    PREVIOUS_MARGINAL_COST,
+    PREVIOUS_MAXIMUM_ACTIVE_POWER,
+    PREVIOUS_MAXIMUM_REACTIVE_POWER,
+    PREVIOUS_MINIMUM_ACTIVE_POWER,
+    PREVIOUS_MINIMUM_REACTIVE_POWER,
+    PREVIOUS_P,
+    PREVIOUS_PLANNED_ACTIVE_POWER_SET_POINT,
+    PREVIOUS_PLANNED_OUTAGE_RATE,
+    PREVIOUS_Q_MAX_P,
+    PREVIOUS_Q_MIN_P,
+    PREVIOUS_RATED_NOMINAL_POWER,
+    PREVIOUS_REACTIVE_POWER_SET_POINT,
+    PREVIOUS_STARTUP_COST,
+    PREVIOUS_TRANSFORMER_REACTANCE,
+    PREVIOUS_TRANSIENT_REACTANCE,
+    PREVIOUS_VOLTAGE_LEVEL,
+    PREVIOUS_VOLTAGE_REGULATION,
+    PREVIOUS_VOLTAGE_REGULATION_TYPE,
+    PREVIOUS_VOLTAGE_SET_POINT,
+} from './generator-modification-utils';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -117,61 +148,137 @@ const GeneratorModificationForm = ({
                 'generators',
                 watchEquipmentId,
                 true
-            )
-                .then((value) => {
-                    if (value) {
-                        // when editing modification form, first render should not trigger this reset
-                        // which would empty the form instead of displaying data of existing form
-                        if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
-                            //creating empty table depending on existing generator
-                            let reactiveCapabilityCurvePoints = [
-                                getModificationRowEmptyFormData(),
-                                getModificationRowEmptyFormData(),
-                            ];
-                            if (value?.reactiveCapabilityCurvePoints) {
-                                reactiveCapabilityCurvePoints = [];
-                            }
-                            value?.reactiveCapabilityCurvePoints?.forEach(
-                                (element) => {
-                                    reactiveCapabilityCurvePoints.push({
-                                        [P]: null,
-                                        [Q_MIN_P]: null,
-                                        [Q_MAX_P]: null,
-                                        [OLD_P]: element.p ?? null,
-                                        [OLD_Q_MIN_P]: element.qminP ?? null,
-                                        [OLD_Q_MAX_P]: element.qmaxP ?? null,
-                                    });
-                                }
-                            );
-                            // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
-                            resetForm(
-                                {
-                                    [EQUIPMENT_ID]: watchEquipmentId,
-                                    [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                                        reactiveCapabilityCurvePoints,
-                                    [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                                        value?.minMaxReactiveLimits != null
-                                            ? 'MINMAX'
-                                            : 'CURVE',
-                                    [VOLTAGE_REGULATION_TYPE]:
-                                        value?.regulatingTerminalVlId ||
-                                        value?.regulatingTerminalConnectableId
-                                            ? REGULATION_TYPES.DISTANT.id
-                                            : REGULATION_TYPES.LOCAL.id,
-                                    [OLD_VOLTAGE_LEVEL]:
-                                        value?.regulatingTerminalVlId ?? null,
-                                    [OLD_EQUIPMENT]:
-                                        value?.regulatingTerminalConnectableId ??
-                                        null,
-                                },
-                                true
-                            );
-                        }
-                        shouldEmptyFormOnGeneratorIdChangeRef.current = true;
-                        setGeneratorToModify(value);
+            ).then((value) => {
+                if (value) {
+                    console.log(
+                        'value',
+                        value,
+                        shouldEmptyFormOnGeneratorIdChangeRef?.current
+                    );
+                    // when editing modification form, first render should not trigger this reset
+                    // which would empty the form instead of displaying data of existing form
+                    //if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
+                    //creating empty table depending on existing generator
+                    let reactiveCapabilityCurvePoints = [
+                        getModificationRowEmptyFormData(),
+                        getModificationRowEmptyFormData(),
+                    ];
+                    if (value?.reactiveCapabilityCurvePoints) {
+                        reactiveCapabilityCurvePoints = [];
                     }
-                })
-                .catch(() => setGeneratorToModify(null));
+                    value?.reactiveCapabilityCurvePoints?.forEach((element) => {
+                        reactiveCapabilityCurvePoints.push({
+                            [P]: null,
+                            [Q_MIN_P]: null,
+                            [Q_MAX_P]: null,
+                            [PREVIOUS_P]: element.p ?? null,
+                            [PREVIOUS_Q_MIN_P]: element.qminP ?? null,
+                            [PREVIOUS_Q_MAX_P]: element.qmaxP ?? null,
+                        });
+                    });
+                    const energySourceLabelId = getEnergySourceLabel(
+                        value?.energySource
+                    );
+                    const previousEnergySourceLabel = energySourceLabelId
+                        ? intl.formatMessage({
+                              id: energySourceLabelId,
+                          })
+                        : undefined;
+                    const previousVoltageRegulationType =
+                        value?.voltageRegulatorOn
+                            ? value?.regulatingTerminalVlId ||
+                              value?.regulatingTerminalConnectableId
+                                ? intl.formatMessage({
+                                      id: REGULATION_TYPES.DISTANT.label,
+                                  })
+                                : intl.formatMessage({
+                                      id: REGULATION_TYPES.LOCAL.label,
+                                  })
+                            : null;
+
+                    const previousVoltageRegulationState = () => {
+                        if (value?.voltageRegulatorOn)
+                            return intl.formatMessage({ id: 'On' });
+                        else if (value?.voltageRegulatorOn === false)
+                            return intl.formatMessage({ id: 'Off' });
+                        else return null;
+                    };
+                    const previousFrequencyRegulationState = () => {
+                        if (value?.activePowerControlOn) {
+                            return intl.formatMessage({ id: 'On' });
+                        } else if (
+                            value?.activePowerControlOn === false ||
+                            (value && value?.activePowerControlOn === undefined)
+                        ) {
+                            return intl.formatMessage({ id: 'Off' });
+                        }
+                    };
+
+                    // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
+                    resetForm(
+                        {
+                            [EQUIPMENT_ID]: watchEquipmentId,
+                            [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                                reactiveCapabilityCurvePoints,
+                            [REACTIVE_CAPABILITY_CURVE_CHOICE]:
+                                value?.minMaxReactiveLimits != null
+                                    ? 'MINMAX'
+                                    : 'CURVE',
+                            [VOLTAGE_REGULATION]: value?.voltageRegulatorOn,
+                            [FREQUENCY_REGULATION]: value?.activePowerControlOn,
+                            [VOLTAGE_REGULATION_TYPE]:
+                                value?.regulatingTerminalVlId ||
+                                value?.regulatingTerminalConnectableId
+                                    ? REGULATION_TYPES.DISTANT.id
+                                    : REGULATION_TYPES.LOCAL.id,
+                            [PREVIOUS_VOLTAGE_LEVEL]:
+                                value?.regulatingTerminalVlId ?? null,
+                            [PREVIOUS_EQUIPMENT]:
+                                value?.regulatingTerminalConnectableType +
+                                    ':' +
+                                    value?.regulatingTerminalConnectableId ??
+                                null,
+                            [PREVIOUS_EQUIPMENT_NAME]: value?.name,
+                            [PREVIOUS_ENERGY_SOURCE]: previousEnergySourceLabel,
+                            [PREVIOUS_MAXIMUM_ACTIVE_POWER]: value?.maxP,
+                            [PREVIOUS_MINIMUM_ACTIVE_POWER]: value?.minP,
+                            [PREVIOUS_MAXIMUM_REACTIVE_POWER]:
+                                value?.minMaxReactiveLimits
+                                    ?.maximumReactivePower,
+                            [PREVIOUS_MINIMUM_REACTIVE_POWER]:
+                                value?.minMaxReactiveLimits
+                                    ?.minimumReactivePower,
+                            [PREVIOUS_RATED_NOMINAL_POWER]: value?.ratedS,
+                            [PREVIOUS_TRANSIENT_REACTANCE]:
+                                value?.transientReactance,
+                            [PREVIOUS_TRANSFORMER_REACTANCE]:
+                                value?.stepUpTransformerReactance,
+                            [PREVIOUS_PLANNED_ACTIVE_POWER_SET_POINT]:
+                                value?.plannedActivePowerSetPoint,
+                            [PREVIOUS_STARTUP_COST]: value?.startupCost,
+                            [PREVIOUS_MARGINAL_COST]: value?.marginalCost,
+                            [PREVIOUS_PLANNED_OUTAGE_RATE]:
+                                value?.plannedOutageRate,
+                            [PREVIOUS_FORCED_OUTAGE_RATE]:
+                                value?.forcedOutageRate,
+                            [PREVIOUS_ACTIVE_POWER_SET_POINT]: value.targetP,
+                            [PREVIOUS_VOLTAGE_REGULATION]:
+                                previousVoltageRegulationState(),
+                            [PREVIOUS_REACTIVE_POWER_SET_POINT]: value.targetQ,
+                            [PREVIOUS_VOLTAGE_SET_POINT]: value?.targetV,
+                            [PREVIOUS_VOLTAGE_REGULATION_TYPE]:
+                                previousVoltageRegulationType,
+                            [PREVIOUS_FREQUENCY_REGULATION]:
+                                previousFrequencyRegulationState(),
+                            [PREVIOUS_DROOP]: value?.droop,
+                        },
+                        true
+                    );
+                   // }
+                    shouldEmptyFormOnGeneratorIdChangeRef.current = true;
+                    setGeneratorToModify(value);
+                }
+            });
         } else {
             resetForm();
             setGeneratorToModify(null);
@@ -180,19 +287,12 @@ const GeneratorModificationForm = ({
         watchEquipmentId,
         studyUuid,
         currentNodeUuid,
-        setGeneratorToModify,
         clearErrors,
         resetForm,
+        intl,
+        setGeneratorToModify,
     ]);
 
-    const energySourceLabelId = getEnergySourceLabel(
-        generatorToModify?.energySource
-    );
-    const previousEnergySourceLabel = energySourceLabelId
-        ? intl.formatMessage({
-              id: energySourceLabelId,
-          })
-        : undefined;
     const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
 
     const generatorIdField = (
@@ -212,7 +312,7 @@ const GeneratorModificationForm = ({
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={generatorToModify?.name}
+            //previousValue={generatorToModify?.name}
             clearable={true}
         />
     );
@@ -225,7 +325,7 @@ const GeneratorModificationForm = ({
             fullWidth
             size={'small'}
             formProps={{ ...italicFontTextField, ...filledTextField }}
-            previousValue={previousEnergySourceLabel}
+            //previousValue={previousEnergySourceLabel}
         />
     );
 
@@ -234,7 +334,7 @@ const GeneratorModificationForm = ({
             name={MAXIMUM_ACTIVE_POWER}
             label={'MaximumActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorToModify?.maxP}
+            // previousValue={generatorToModify?.maxP}
             clearable={true}
         />
     );
@@ -244,7 +344,7 @@ const GeneratorModificationForm = ({
             name={MINIMUM_ACTIVE_POWER}
             label={'MinimumActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorToModify?.minP}
+            // previousValue={generatorToModify?.minP}
             clearable={true}
         />
     );
@@ -254,7 +354,7 @@ const GeneratorModificationForm = ({
             name={RATED_NOMINAL_POWER}
             label={'RatedNominalPowerText'}
             adornment={MVAPowerAdornment}
-            previousValue={generatorToModify?.ratedS}
+            // previousValue={generatorToModify?.ratedS}
             clearable={true}
         />
     );
@@ -264,7 +364,7 @@ const GeneratorModificationForm = ({
             name={TRANSIENT_REACTANCE}
             label={'TransientReactance'}
             adornment={OhmAdornment}
-            previousValue={generatorToModify?.transientReactance}
+            // previousValue={generatorToModify?.transientReactance}
         />
     );
 
@@ -273,7 +373,7 @@ const GeneratorModificationForm = ({
             name={TRANSFORMER_REACTANCE}
             label={'TransformerReactance'}
             adornment={OhmAdornment}
-            previousValue={generatorToModify?.stepUpTransformerReactance}
+            //  previousValue={generatorToModify?.stepUpTransformerReactance}
         />
     );
 
@@ -282,7 +382,7 @@ const GeneratorModificationForm = ({
             name={PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPoint'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorToModify?.plannedActivePowerSetPoint}
+            //  previousValue={generatorToModify?.plannedActivePowerSetPoint}
         />
     );
 
@@ -290,7 +390,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={STARTUP_COST}
             label={'StartupCost'}
-            previousValue={generatorToModify?.startupCost}
+            // previousValue={generatorToModify?.startupCost}
         />
     );
 
@@ -298,7 +398,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={MARGINAL_COST}
             label={'MarginalCost'}
-            previousValue={generatorToModify?.marginalCost}
+            //  previousValue={generatorToModify?.marginalCost}
         />
     );
 
@@ -306,7 +406,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={PLANNED_OUTAGE_RATE}
             label={'PlannedOutageRate'}
-            previousValue={generatorToModify?.plannedOutageRate}
+            //  previousValue={generatorToModify?.plannedOutageRate}
         />
     );
 
@@ -314,7 +414,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={FORCED_OUTAGE_RATE}
             label={'ForcedOutageRate'}
-            previousValue={generatorToModify?.forcedOutageRate}
+            //  previousValue={generatorToModify?.forcedOutageRate}
         />
     );
 
@@ -345,7 +445,7 @@ const GeneratorModificationForm = ({
 
             {/* Reactive limits part */}
             <ReactiveLimitsForm
-                generatorToModify={generatorToModify}
+                // generatorToModify={generatorToModify}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTable
                 }
@@ -357,7 +457,7 @@ const GeneratorModificationForm = ({
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}
                 isGeneratorModification={true}
-                previousValues={generatorToModify}
+                //previousValues={generatorToModify}
             />
 
             {/* Short Circuit of start part */}

@@ -13,9 +13,9 @@ import {
     genHelperPreviousValue,
 } from '../../dialogs/inputs/hooks-helpers';
 import PropTypes from 'prop-types';
-import { useController, useFormContext } from 'react-hook-form';
+import { useController, useFormContext, useWatch } from 'react-hook-form';
 import { func_identity } from '../../dialogs/dialogUtils';
-import { isFieldRequired } from '../utils/utils';
+import { getPreviousValueFieldName, isFieldRequired } from '../utils/utils';
 
 /**
  * Autocomplete input
@@ -34,7 +34,6 @@ const AutocompleteInput = ({
     inputTransform = func_identity, //transform react hook form value before sending it to materialUi input, mostly used to deal with select fields that need to return a string
     options,
     readOnly = false,
-    previousValue,
     formProps,
     allowNewValue,
     onChangeCallback, // method called when input value is changing
@@ -45,6 +44,9 @@ const AutocompleteInput = ({
         field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
+
+    const previousFieldName = getPreviousValueFieldName(name);
+    const previousValueWatch = useWatch({ name: previousFieldName });
 
     const handleChange = (value) => {
         onChangeCallback && onChangeCallback();
@@ -93,7 +95,7 @@ const AutocompleteInput = ({
                     })}
                     inputRef={ref}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
-                    {...genHelperPreviousValue(previousValue)}
+                    {...genHelperPreviousValue(previousValueWatch)}
                     {...genHelperError(error?.message)}
                     {...formProps}
                     {...rest}

@@ -66,9 +66,6 @@ export const MAXIMUM_REACTIVE_POWER = 'maximumReactivePower';
 export const Q_MAX_P = 'qmaxP';
 export const Q_MIN_P = 'qminP';
 export const P = 'p';
-export const OLD_Q_MAX_P = 'oldQmaxP';
-export const OLD_Q_MIN_P = 'oldQminP';
-export const OLD_P = 'oldP';
 
 export const ENABLED = 'enabled';
 export const REGULATING = 'regulating';
@@ -177,8 +174,6 @@ export const REPLACING_LINE_2_ID = 'replacingLine2Id';
 export const REPLACING_LINE_1_NAME = 'replacingLine1Name';
 export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
 
-export const OLD_VOLTAGE_LEVEL = 'oldVoltageLevel';
-export const OLD_EQUIPMENT = 'oldEquipment';
 // substation
 export const COUNTRY = 'country';
 export const VALUE = 'value';
