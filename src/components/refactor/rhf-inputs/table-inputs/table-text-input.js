@@ -8,7 +8,7 @@
 import { TextField } from '@mui/material';
 import { useController } from 'react-hook-form';
 
-export const TableTexteInput = ({ name, style, inputProps, ...props }) => {
+export const TableTextInput = ({ name, style, inputProps, ...props }) => {
     const {
         field: { onChange, value, ref },
         fieldState: { error },

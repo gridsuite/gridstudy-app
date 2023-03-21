@@ -25,7 +25,7 @@ import { useIntl } from 'react-intl';
 import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../../refactor/rhf-inputs/table-inputs/table-numerical-input';
-import { TableTexteInput } from '../../refactor/rhf-inputs/table-inputs/table-text-input';
+import { TableTextInput } from '../../refactor/rhf-inputs/table-inputs/table-text-input';
 import CheckboxInput from '../../refactor/rhf-inputs/booleans/checkbox-input';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../../refactor/utils/field-constants';
@@ -88,7 +88,7 @@ function EditableTableCell({ arrayFormName, rowIndex, column, ...props }) {
                 />
             )}
             {!column.numeric && (
-                <TableTexteInput
+                <TableTextInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     {...props}
                 />

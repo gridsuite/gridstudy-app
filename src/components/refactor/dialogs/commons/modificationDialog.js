@@ -19,6 +19,16 @@ import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../../dialogs/inputs/input-hooks';
 import { useFormContext } from 'react-hook-form';
 import SubmitButton from './submitButton';
+import makeStyles from '@mui/styles/makeStyles';
+import clsx from 'clsx';
+
+const useStyles = makeStyles((theme) => ({
+    header: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '15px',
+    },
+}));
 
 /**
  * Generic Modification Dialog which manage basic common behaviors
@@ -46,6 +56,8 @@ const ModificationDialog = ({
     ...dialogProps
 }) => {
     const { handleSubmit } = useFormContext();
+
+    const classes = useStyles();
 
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
@@ -85,16 +97,22 @@ const ModificationDialog = ({
             aria-labelledby={titleId}
             {...dialogProps}
         >
-            <DialogTitle>
+            <DialogTitle
+                className={clsx({
+                    [classes.header]: headerPane !== undefined,
+                })}
+            >
                 <Grid container justifyContent={'space-between'}>
                     <Grid item xs={11}>
                         <FormattedMessage id={titleId} />
                     </Grid>
                     {searchCopy && <Grid item> {copyEquipmentButton} </Grid>}
                 </Grid>
-                <Grid container justifyContent={'space-between'}>
-                    {headerPane}
-                </Grid>
+                {headerPane && (
+                    <Grid container justifyContent={'space-between'}>
+                        {headerPane}
+                    </Grid>
+                )}
                 {subtitle}
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
