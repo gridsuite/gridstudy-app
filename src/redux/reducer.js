@@ -85,6 +85,7 @@ import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     STOP_DIAGRAM_BLINK,
+    UPDATE_ANALYSIS_STATUS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -118,6 +119,7 @@ import NetworkModificationTreeModel from '../components/graph/network-modificati
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadDiagramStateFromSessionStorage } from './session-storage';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
+import { RunningStatus } from 'components/util/running-status';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -176,6 +178,7 @@ const initialState = {
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
+    analysisStatus: RunningStatus.IDLE,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -458,6 +461,10 @@ export const reducer = createReducer(initialState, {
 
     [RESET_LOADFLOW_NOTIF]: (state) => {
         state.loadflowNotif = false;
+    },
+
+    [UPDATE_ANALYSIS_STATUS]: (state, action) => {
+        state.analysisStatus = action.analysisStatus;
     },
 
     [ADD_SA_NOTIF]: (state) => {

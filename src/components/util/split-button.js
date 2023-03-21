@@ -25,6 +25,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import { RunningStatus } from './running-status';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     expand: {
@@ -66,6 +67,7 @@ const SplitButton = (props) => {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);
+    const analyseStatus = useSelector((state) => state.analysisStatus);
 
     const anchorRef = React.useRef(null);
 
@@ -120,7 +122,7 @@ const SplitButton = (props) => {
             <ButtonGroup className={props.className} ref={anchorRef}>
                 <Button
                     variant="outlined"
-                    startIcon={getRunningIcon(props?.buttonStatus)}
+                    startIcon={getRunningIcon(analyseStatus)}
                     className={props.className}
                     disabled={props.buttonDisabled}
                     onClick={handleClick}

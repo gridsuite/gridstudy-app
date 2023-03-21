@@ -145,11 +145,6 @@ const RunButton = (props) => {
         return props.getStatus(getRunnable());
     }, [getRunnable, props]);
 
-    useEffect(() => {
-        const runningStatus = getRunningStatus();
-        props?.setButtonStatus(runningStatus);
-    }, [getRunningStatus, props]);
-
     let buttonDisabled =
         props.disabled ||
         (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
@@ -178,7 +173,6 @@ const RunButton = (props) => {
             className={getStyle(getRunningStatus())}
             buttonDisabled={buttonDisabled}
             selectionDisabled={selectionDisabled}
-            buttonStatus={props?.buttonStatus}
             text={
                 props.getText
                     ? props.getText(getRunnable(), getRunningStatus())

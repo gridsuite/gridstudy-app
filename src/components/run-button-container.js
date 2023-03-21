@@ -23,13 +23,13 @@ import {
 import { RunningStatus } from './util/running-status';
 
 import ContingencyListSelector from './dialogs/contingency-list-selector';
-import makeStyles from '@mui/styles/makeStyles';
 import {
     addLoadflowNotif,
     addSANotif,
     addSensiNotif,
     addShortCircuitNotif,
     addDynamicSimulationNotif,
+    updateAnalysisStatus,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -50,6 +50,16 @@ export function RunButtonContainer({
     runnable,
     disabled,
 }) {
+    const [loadFlowStatusState, setLoadFlowStatusState] =
+        useState(loadFlowStatus);
+    const [securityAnalysisStatusState, setSecurityAnalysisStatusState] =
+        useState(securityAnalysisStatus);
+    const [sensiStatusState, setSensiStatusState] = useState(sensiStatus);
+    const [shortCircuitStatusState, setShortCircuitStatusState] =
+        useState(shortCircuitStatus);
+    const [dynamicSimulationStatusState, setDynamicSimulationStatusState] =
+        useState(dynamicSimulationStatus);
+
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const [showContingencyListSelector, setShowContingencyListSelector] =
@@ -86,7 +96,6 @@ export function RunButtonContainer({
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
     );
-    const [buttonStatus, setButtonStatus] = useState(RunningStatus.IDLE);
 
     useEffect(() => {
         if (
@@ -153,23 +162,28 @@ export function RunButtonContainer({
         setShowContingencyListSelector(false);
 
         setComputationStopped(false);
-
+        dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
         // start server side security analysis
-        startSecurityAnalysis(studyUuid, currentNode?.id, contingencyListNames);
+        startSecurityAnalysis(
+            studyUuid,
+            currentNode?.id,
+            contingencyListNames
+        ).catch(() => setSecurityAnalysisStatusState(RunningStatus.FAILED));
     };
 
     const handleStartSensi = (sensiConfiguration) => {
         // close the contingency list selection window
         setShowSensiParametersSelector(false);
         setComputationStopped(false);
-
-        setButtonStatus(RunningStatus.RUNNING);
+        dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
         // start server side security analysis
         startSensitivityAnalysis(
             studyUuid,
             currentNode?.id,
             sensiConfiguration
-        );
+        ).catch(() => {
+            setSensiStatusState(RunningStatus.FAILED);
+        });
     };
 
     const handleStartDynamicSimulation = ({
@@ -180,6 +194,7 @@ export function RunButtonContainer({
         setShowDynamicSimulationParametersSelector(false);
 
         setComputationStopped(false);
+        dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
 
         // start server side dynamic simulation
         startDynamicSimulation(
@@ -188,6 +203,7 @@ export function RunButtonContainer({
             mappingName,
             dynamicSimulationConfiguration
         ).catch((error) => {
+            setDynamicSimulationStatusState(RunningStatus.FAILED);
             snackError({
                 messageTxt: error.message,
                 headerId: 'DynamicSimulationRunError',
@@ -200,6 +216,7 @@ export function RunButtonContainer({
             startLoadFlow(studyUuid, currentNode?.id)
                 .then(setRanLoadflow(true))
                 .catch((error) => {
+                    setLoadFlowStatusState(RunningStatus.FAILED);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startLoadFlowError',
@@ -215,6 +232,7 @@ export function RunButtonContainer({
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(setRanShortCircuit(true))
                 .catch((error) => {
+                    setShortCircuitStatusState(RunningStatus.FAILED);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startShortCircuitError',
@@ -229,30 +247,50 @@ export function RunButtonContainer({
     const getRunningStatus = useCallback(
         (runnableType) => {
             if (runnableType === runnable.LOADFLOW) {
-                return loadFlowStatus;
+                return loadFlowStatusState;
             } else if (runnableType === runnable.SECURITY_ANALYSIS) {
-                return securityAnalysisStatus;
+                return securityAnalysisStatusState;
             } else if (runnableType === runnable.SENSITIVITY_ANALYSIS) {
-                return sensiStatus;
+                return sensiStatusState;
             } else if (runnableType === runnable.SHORT_CIRCUIT_ANALYSIS) {
-                return shortCircuitStatus;
+                return shortCircuitStatusState;
             } else if (runnableType === runnable.DYNAMIC_SIMULATION) {
-                return dynamicSimulationStatus;
+                return dynamicSimulationStatusState;
             }
         },
         [
-            loadFlowStatus,
-            securityAnalysisStatus,
-            sensiStatus,
-            shortCircuitStatus,
-            dynamicSimulationStatus,
-            runnable,
+            runnable.LOADFLOW,
+            runnable.SECURITY_ANALYSIS,
+            runnable.SENSITIVITY_ANALYSIS,
+            runnable.SHORT_CIRCUIT_ANALYSIS,
+            runnable.DYNAMIC_SIMULATION,
+            loadFlowStatusState,
+            securityAnalysisStatusState,
+            sensiStatusState,
+            shortCircuitStatusState,
+            dynamicSimulationStatusState,
         ]
     );
 
     const getRunningText = (runnableName, runnableStatus) => {
         return runnableName;
     };
+
+    useEffect(() => {
+        setLoadFlowStatusState(loadFlowStatus);
+    }, [loadFlowStatus]);
+    useEffect(() => {
+        setSensiStatusState(sensiStatus);
+    }, [sensiStatus]);
+    useEffect(() => {
+        setShortCircuitStatusState(shortCircuitStatus);
+    }, [shortCircuitStatus]);
+    useEffect(() => {
+        setSecurityAnalysisStatusState(securityAnalysisStatus);
+    }, [securityAnalysisStatus]);
+    useEffect(() => {
+        setDynamicSimulationStatusState(dynamicSimulationStatus);
+    }, [dynamicSimulationStatus]);
 
     const runnables = useMemo(() => {
         let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
@@ -283,8 +321,6 @@ export function RunButtonContainer({
                 getStatus={getRunningStatus}
                 onStartClick={startComputation}
                 getText={getRunningText}
-                buttonStatus={buttonStatus}
-                setButtonStatus={setButtonStatus}
                 computationStopped={computationStopped}
                 disabled={isModificationsInProgress || disabled}
             />
