@@ -33,25 +33,7 @@ const VoltageRegulation = ({
     studyUuid,
     currentNodeUuid,
     voltageLevelOptions,
-    //previousValues,
 }) => {
-    const intl = useIntl();
-    function getPreviousRegulationType(isVoltageRegulation) {
-        if (isVoltageRegulation) {
-            console.log('previousValues?.regulatingTerminalVlId',);
-            return getPreviousValueFieldName(REGULATING_VOLTAGE_LEVEL) || //previousValues?.regulatingTerminalVlId
-                getPreviousValueFieldName(REGULATING_TERMINAL) //previousValues?.regulatingTerminalConnectableId
-                ? intl.formatMessage({
-                      id: REGULATION_TYPES.DISTANT.label,
-                  })
-                : intl.formatMessage({
-                      id: REGULATION_TYPES.LOCAL.label,
-                  });
-        } else {
-            return null;
-        }
-    }
-
     const voltageRegulationType = useWatch({
         name: VOLTAGE_REGULATION_TYPE,
     });
@@ -67,7 +49,6 @@ const VoltageRegulation = ({
             size={'small'}
             disableClearable={true}
             formProps={italicFontTextField}
-           // previousValue={getPreviousRegulationType(getPreviousValueFieldName(VOLTAGE_REGULATION))}
         />
     );
 

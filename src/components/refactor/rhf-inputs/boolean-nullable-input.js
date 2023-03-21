@@ -7,17 +7,12 @@
 
 import FormControl from '@mui/material/FormControl';
 import { Checkbox, FormControlLabel, FormHelperText } from '@mui/material';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useController, useWatch } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import { getPreviousValueFieldName } from '../utils/utils';
 
-const CheckboxNullableInput = ({
-    name,
-    label,
-    id,
-    formProps,
-}) => {
+const CheckboxNullableInput = ({ name, label, id, formProps }) => {
     const {
         field: { onChange, value },
     } = useController({ name });
@@ -25,9 +20,9 @@ const CheckboxNullableInput = ({
     const previousFieldName = getPreviousValueFieldName(name);
     const previousValueWatch = useWatch({ name: previousFieldName });
 
-    useEffect(()=>{
-        console.log('name, previousValueWatch',name, previousValueWatch);
-    },[name, previousValueWatch])
+    useEffect(() => {
+        console.log('name, previousValueWatch', name, previousValueWatch);
+    }, [name, previousValueWatch]);
 
     const intl = useIntl();
 
@@ -62,7 +57,9 @@ const CheckboxNullableInput = ({
                     id: label,
                 })}
             />
-            {previousValueWatch && <FormHelperText>{previousValueWatch}</FormHelperText>}
+            {previousValueWatch !== null && (
+                <FormattedMessage id={previousValueWatch ? 'On' : 'Off'} />
+            )}
         </FormControl>
     );
 };

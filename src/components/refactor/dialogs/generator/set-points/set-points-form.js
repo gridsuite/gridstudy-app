@@ -45,7 +45,7 @@ const SetPointsForm = ({
     const isVoltageRegulationOn =
         watchVoltageRegulation ||
         (watchVoltageRegulation === null &&
-            getPreviousValueFieldName(VOLTAGE_REGULATION) === true);
+            getPreviousValueFieldName(VOLTAGE_REGULATION));
 
     const previousRegulation = () => {
         if (getPreviousValueFieldName(VOLTAGE_REGULATION))

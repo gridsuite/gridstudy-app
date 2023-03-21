@@ -65,6 +65,9 @@ import { getModificationRowEmptyFormData } from '../reactive-limits/reactive-cap
 import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
 import { REGULATING_VOLTAGE_LEVEL } from '../../regulating-terminal/regulating-terminal-form';
 import {
+    assignPreviousValuesToForm, assignValuesToForm,
+    getGeneratorPreviousValuesData,
+    getPreviousBooleanValue,
     PREVIOUS_ACTIVE_POWER_SET_POINT,
     PREVIOUS_DROOP,
     PREVIOUS_ENERGY_SOURCE,
@@ -106,7 +109,7 @@ const GeneratorModificationForm = ({
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const { clearErrors } = useFormContext();
+    const { clearErrors, setValue } = useFormContext();
     const shouldEmptyFormOnGeneratorIdChangeRef = useRef();
     const watchEquipmentId = useWatch({
         name: EQUIPMENT_ID,
@@ -155,125 +158,11 @@ const GeneratorModificationForm = ({
                         value,
                         shouldEmptyFormOnGeneratorIdChangeRef?.current
                     );
-                    // when editing modification form, first render should not trigger this reset
-                    // which would empty the form instead of displaying data of existing form
-                    //if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
-                    //creating empty table depending on existing generator
-                    let reactiveCapabilityCurvePoints = [
-                        getModificationRowEmptyFormData(),
-                        getModificationRowEmptyFormData(),
-                    ];
-                    if (value?.reactiveCapabilityCurvePoints) {
-                        reactiveCapabilityCurvePoints = [];
-                    }
-                    value?.reactiveCapabilityCurvePoints?.forEach((element) => {
-                        reactiveCapabilityCurvePoints.push({
-                            [P]: null,
-                            [Q_MIN_P]: null,
-                            [Q_MAX_P]: null,
-                            [PREVIOUS_P]: element.p ?? null,
-                            [PREVIOUS_Q_MIN_P]: element.qminP ?? null,
-                            [PREVIOUS_Q_MAX_P]: element.qmaxP ?? null,
-                        });
-                    });
-                    const energySourceLabelId = getEnergySourceLabel(
-                        value?.energySource
-                    );
-                    const previousEnergySourceLabel = energySourceLabelId
-                        ? intl.formatMessage({
-                              id: energySourceLabelId,
-                          })
-                        : undefined;
-                    const previousVoltageRegulationType =
-                        value?.voltageRegulatorOn
-                            ? value?.regulatingTerminalVlId ||
-                              value?.regulatingTerminalConnectableId
-                                ? intl.formatMessage({
-                                      id: REGULATION_TYPES.DISTANT.label,
-                                  })
-                                : intl.formatMessage({
-                                      id: REGULATION_TYPES.LOCAL.label,
-                                  })
-                            : null;
 
-                    const previousVoltageRegulationState = () => {
-                        if (value?.voltageRegulatorOn)
-                            return intl.formatMessage({ id: 'On' });
-                        else if (value?.voltageRegulatorOn === false)
-                            return intl.formatMessage({ id: 'Off' });
-                        else return null;
-                    };
-                    const previousFrequencyRegulationState = () => {
-                        if (value?.activePowerControlOn) {
-                            return intl.formatMessage({ id: 'On' });
-                        } else if (
-                            value?.activePowerControlOn === false ||
-                            (value && value?.activePowerControlOn === undefined)
-                        ) {
-                            return intl.formatMessage({ id: 'Off' });
-                        }
-                    };
 
-                    // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
-                    resetForm(
-                        {
-                            [EQUIPMENT_ID]: watchEquipmentId,
-                            [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                                reactiveCapabilityCurvePoints,
-                            [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                                value?.minMaxReactiveLimits != null
-                                    ? 'MINMAX'
-                                    : 'CURVE',
-                            [VOLTAGE_REGULATION]: value?.voltageRegulatorOn,
-                            [FREQUENCY_REGULATION]: value?.activePowerControlOn,
-                            [VOLTAGE_REGULATION_TYPE]:
-                                value?.regulatingTerminalVlId ||
-                                value?.regulatingTerminalConnectableId
-                                    ? REGULATION_TYPES.DISTANT.id
-                                    : REGULATION_TYPES.LOCAL.id,
-                            [PREVIOUS_VOLTAGE_LEVEL]:
-                                value?.regulatingTerminalVlId ?? null,
-                            [PREVIOUS_EQUIPMENT]:
-                                value?.regulatingTerminalConnectableType +
-                                    ':' +
-                                    value?.regulatingTerminalConnectableId ??
-                                null,
-                            [PREVIOUS_EQUIPMENT_NAME]: value?.name,
-                            [PREVIOUS_ENERGY_SOURCE]: previousEnergySourceLabel,
-                            [PREVIOUS_MAXIMUM_ACTIVE_POWER]: value?.maxP,
-                            [PREVIOUS_MINIMUM_ACTIVE_POWER]: value?.minP,
-                            [PREVIOUS_MAXIMUM_REACTIVE_POWER]:
-                                value?.minMaxReactiveLimits
-                                    ?.maximumReactivePower,
-                            [PREVIOUS_MINIMUM_REACTIVE_POWER]:
-                                value?.minMaxReactiveLimits
-                                    ?.minimumReactivePower,
-                            [PREVIOUS_RATED_NOMINAL_POWER]: value?.ratedS,
-                            [PREVIOUS_TRANSIENT_REACTANCE]:
-                                value?.transientReactance,
-                            [PREVIOUS_TRANSFORMER_REACTANCE]:
-                                value?.stepUpTransformerReactance,
-                            [PREVIOUS_PLANNED_ACTIVE_POWER_SET_POINT]:
-                                value?.plannedActivePowerSetPoint,
-                            [PREVIOUS_STARTUP_COST]: value?.startupCost,
-                            [PREVIOUS_MARGINAL_COST]: value?.marginalCost,
-                            [PREVIOUS_PLANNED_OUTAGE_RATE]:
-                                value?.plannedOutageRate,
-                            [PREVIOUS_FORCED_OUTAGE_RATE]:
-                                value?.forcedOutageRate,
-                            [PREVIOUS_ACTIVE_POWER_SET_POINT]: value.targetP,
-                            [PREVIOUS_VOLTAGE_REGULATION]:
-                                previousVoltageRegulationState(),
-                            [PREVIOUS_REACTIVE_POWER_SET_POINT]: value.targetQ,
-                            [PREVIOUS_VOLTAGE_SET_POINT]: value?.targetV,
-                            [PREVIOUS_VOLTAGE_REGULATION_TYPE]:
-                                previousVoltageRegulationType,
-                            [PREVIOUS_FREQUENCY_REGULATION]:
-                                previousFrequencyRegulationState(),
-                            [PREVIOUS_DROOP]: value?.droop,
-                        },
-                        true
-                    );
+                    resetForm({
+                        ...assignPreviousValuesToForm(value, watchEquipmentId, intl),
+                    })
                    // }
                     shouldEmptyFormOnGeneratorIdChangeRef.current = true;
                     setGeneratorToModify(value);

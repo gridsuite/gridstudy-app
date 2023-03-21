@@ -27,18 +27,22 @@ import yup from '../../../utils/yup-config';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
+import {
+    PREVIOUS_ACTIVE_POWER_SET_POINT, PREVIOUS_EQUIPMENT, PREVIOUS_FREQUENCY_REGULATION, PREVIOUS_VOLTAGE_LEVEL,
+    PREVIOUS_VOLTAGE_REGULATION, PREVIOUS_VOLTAGE_SET_POINT
+} from "../modification/generator-modification-utils";
 
 const getFrequencyRegulationEmptyFormData = (isGeneratorModification) => ({
     [FREQUENCY_REGULATION]: isGeneratorModification ? null : false,
     [DROOP]: null,
 });
 
-const getFrequencyRegulationSchema = (isGeneratorModification) => ({
+const getFrequencyRegulationSchema = () => ({
     [FREQUENCY_REGULATION]: yup
         .bool()
         .nullable()
-        .when([], {
-            is: () => !isGeneratorModification,
+        .when([PREVIOUS_FREQUENCY_REGULATION], {
+            is: (value) => value == null,
             then: (schema) => schema.required(),
         }),
     [DROOP]: yup
@@ -61,19 +65,19 @@ const getVoltageRegulationEmptyFormData = (isGeneratorModification) => ({
     ...getRegulatingTerminalEmptyFormData(),
 });
 
-const getVoltageRegulationSchema = (isGeneratorModification) => ({
+const getVoltageRegulationSchema = () => ({
     [VOLTAGE_REGULATION_TYPE]: yup
         .string()
         .nullable()
-        .when([VOLTAGE_REGULATION], {
-            is: (value) => !value && !isGeneratorModification,
+        .when([VOLTAGE_REGULATION, PREVIOUS_VOLTAGE_REGULATION], {
+            is: (value, previousValue) => !value && !previousValue,
             then: (schema) => schema.required(),
         }),
     [VOLTAGE_SET_POINT]: yup
         .number()
         .nullable()
-        .when([VOLTAGE_REGULATION], {
-            is: (value) => value && !isGeneratorModification,
+        .when([VOLTAGE_REGULATION, PREVIOUS_VOLTAGE_SET_POINT], {
+            is: (value, previousValue) => value && !previousValue,
             then: (schema) => schema.required(),
         }),
     [Q_PERCENT]: yup
@@ -92,7 +96,7 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
         .when(
-            [VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, getPreviousValueFieldName(VOLTAGE_LEVEL)],
+            [VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, PREVIOUS_VOLTAGE_LEVEL],
             {
                 is: (
                     voltageRegulation,
@@ -117,7 +121,7 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [
                 VOLTAGE_REGULATION,
                 VOLTAGE_REGULATION_TYPE,
-                getPreviousValueFieldName(EQUIPMENT),
+                PREVIOUS_EQUIPMENT,
                 VOLTAGE_LEVEL,
             ],
             {
@@ -153,28 +157,28 @@ export const getSetPointsSchema = (isGeneratorModification = false) => ({
             is: () => !isGeneratorModification,
             then: (schema) => schema.required(),
         }),
-    ...getActivePowerSetPointSchema(isGeneratorModification),
-    ...getReactivePowerSetPointSchema(isGeneratorModification),
-    ...getVoltageRegulationSchema(isGeneratorModification),
+    ...getActivePowerSetPointSchema(),
+    ...getReactivePowerSetPointSchema(),
+    ...getVoltageRegulationSchema(),
     ...getFrequencyRegulationSchema(isGeneratorModification),
 });
 
-const getReactivePowerSetPointSchema = (isGeneratorModification) => ({
+const getReactivePowerSetPointSchema = () => ({
     [REACTIVE_POWER_SET_POINT]: yup
         .number()
         .nullable()
-        .when([VOLTAGE_REGULATION], {
-            is: (value) => !value && !isGeneratorModification,
+        .when([PREVIOUS_VOLTAGE_REGULATION], {
+            is: (value) => value == null,
             then: (schema) => schema.required(),
         }),
 });
 
-const getActivePowerSetPointSchema = (isGeneratorModification) => ({
+const getActivePowerSetPointSchema = () => ({
     [ACTIVE_POWER_SET_POINT]: yup
         .number()
         .nullable()
-        .when([], {
-            is: () => !isGeneratorModification,
+        .when([PREVIOUS_ACTIVE_POWER_SET_POINT], {
+            is: (value) => value == null,
             then: (schema) => schema.required(),
         }),
 });

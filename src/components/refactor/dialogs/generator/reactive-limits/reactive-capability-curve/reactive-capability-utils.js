@@ -42,14 +42,14 @@ const getModificationRowSchema = () =>
             .number()
             .nullable()
             .when([PREVIOUS_Q_MAX_P], {
-                is: (oldQmaxP) => oldQmaxP === null,
+                is: (oldQmaxP) => oldQmaxP == null,
                 then: (schema) => schema.required(),
             }),
         [Q_MIN_P]: yup
             .number()
             .nullable()
             .when([PREVIOUS_Q_MIN_P], {
-                is: (oldQminP) => oldQminP === null,
+                is: (oldQminP) => oldQminP == null,
                 then: (schema) => schema.required(),
             })
             .when([Q_MAX_P], {
@@ -69,7 +69,7 @@ const getModificationRowSchema = () =>
             .number()
             .nullable()
             .when([PREVIOUS_P], {
-                is: (oldP) => oldP === null,
+                is: (oldP) => oldP == null,
                 then: (schema) => schema.required(),
             }),
         [PREVIOUS_Q_MAX_P]: yup.number().nullable(),
