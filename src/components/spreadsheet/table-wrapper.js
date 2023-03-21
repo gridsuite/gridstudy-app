@@ -291,6 +291,10 @@ const TableWrapper = (props) => {
 
     useEffect(() => {
         setColumnData(generateTableColumns(tabIndex));
+
+        //As of now rows data is updated only when tabIndex, getRows and generateTableColumns changes which doesn't encompass when the underlying dataset,
+        //network.js, changes from external triggers after receiving a notification. Since we curently don't have a proper way to detect when network.js data
+        //changes it has been decided to reinstate changes detection when a more granular notification system is implemented.
         setRowData(getRows(tabIndex));
     }, [generateTableColumns, getRows, tabIndex]);
 
