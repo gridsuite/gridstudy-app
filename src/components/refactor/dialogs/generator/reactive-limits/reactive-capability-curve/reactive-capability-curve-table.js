@@ -32,23 +32,6 @@ export const ReactiveCapabilityCurveTable = ({
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();
-    const {getValues} = useFormContext();
-
-    const handleInsertRow = () => {
-        console.log(getValues(REACTIVE_CAPABILITY_CURVE_TABLE));
-        insert(rows.length - 1, {
-            [P]: null,
-            [Q_MIN_P]: null,
-            [Q_MAX_P]: null,
-            [PREVIOUS_P]: null,
-            [PREVIOUS_Q_MIN_P]: null,
-            [PREVIOUS_Q_MAX_P]: null,
-        });
-    };
-
-    const handleRemoveRow = (index) => {
-        remove(index);
-    };
 
     return (
         <Grid item container spacing={2}>

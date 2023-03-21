@@ -28,8 +28,13 @@ import { REGULATION_TYPES } from '../../../../network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
 import {
-    PREVIOUS_ACTIVE_POWER_SET_POINT, PREVIOUS_EQUIPMENT, PREVIOUS_FREQUENCY_REGULATION, PREVIOUS_VOLTAGE_LEVEL,
-    PREVIOUS_VOLTAGE_REGULATION, PREVIOUS_VOLTAGE_SET_POINT
+    PREVIOUS_ACTIVE_POWER_SET_POINT,
+    PREVIOUS_DROOP,
+    PREVIOUS_EQUIPMENT,
+    PREVIOUS_FREQUENCY_REGULATION,
+    PREVIOUS_VOLTAGE_LEVEL,
+    PREVIOUS_VOLTAGE_REGULATION,
+    PREVIOUS_VOLTAGE_SET_POINT
 } from "../modification/generator-modification-utils";
 
 const getFrequencyRegulationEmptyFormData = (frequencyRegulation) => ({
@@ -48,8 +53,8 @@ const getFrequencyRegulationSchema = () => ({
     [DROOP]: yup
         .number()
         .nullable()
-        .when([FREQUENCY_REGULATION], {
-            is: true,
+        .when([FREQUENCY_REGULATION, PREVIOUS_DROOP], {
+            is: (frequencyRegulation, previousDroop) => frequencyRegulation && previousDroop == null,
             then: (schema) => schema.required(),
         }),
 });
