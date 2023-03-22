@@ -20,10 +20,6 @@ const CheckboxNullableInput = ({ name, label, id, formProps }) => {
     const previousFieldName = getPreviousValueFieldName(name);
     const previousValueWatch = useWatch({ name: previousFieldName });
 
-    useEffect(() => {
-        console.log('name, previousValueWatch', name, previousValueWatch);
-    }, [name, previousValueWatch]);
-
     const intl = useIntl();
 
     const handleChangeValue = useCallback(

@@ -90,9 +90,6 @@ const SetPointsForm = ({
         />
     );
 
-    useEffect(() => {
-        console.log('isVoltageRegulationOn : ', isVoltageRegulationOn);
-    }, [isVoltageRegulationOn])
     return (
         <>
             <GridSection title="Setpoints" />

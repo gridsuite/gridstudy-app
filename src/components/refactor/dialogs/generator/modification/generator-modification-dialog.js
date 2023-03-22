@@ -136,7 +136,6 @@ const GeneratorModificationDialog = ({
     );
 
     useEffect(() => {
-        console.log('==================> editData : ', editData);
         if (editData) {
             onEquipmentIdChange(editData.equipmentId);
         }
@@ -152,15 +151,12 @@ const GeneratorModificationDialog = ({
     //this method empties the form, and let us pass custom data that we want to set
     const clear = useCallback(
         (customData = {}, keepValues = false) => {
-            console.log('testing editdata', editData);
             if (editData) {
                 customData = {
                     ...customData,
                     ...assignValuesToForm(editData),
                 };
-                console.log('customData', customData);
             }
-            console.log('testing customData', customData);
             reset(
                 { ...emptyFormData, ...customData },
                 { keepDefaultValues: keepValues }
@@ -183,7 +179,6 @@ const GeneratorModificationDialog = ({
                     true
                 ).then((value) => {
                     setCurrentEquipmentId(equipmentId);
-                    console.log('fetched value : ', value);
                     if (value) {
                         clear({
                             ...assignPreviousValuesToForm(

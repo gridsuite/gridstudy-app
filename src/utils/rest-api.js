@@ -1940,7 +1940,7 @@ export function modifyGenerator(
         minimumReactivePower: toModificationOperation(minimumReactivePower),
         reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
     };
-    console.log('send to server', generatorModification);
+
     return backendFetchText(modificationUrl, {
         method: modificationId ? 'PUT' : 'POST',
         headers: {

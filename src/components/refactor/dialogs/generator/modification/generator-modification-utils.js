@@ -37,9 +37,6 @@ import {
     REGULATION_TYPES,
 } from '../../../../network/constants';
 import { getModificationRowEmptyFormData } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import yup from '../../../utils/yup-config';
-import { getSetPointsSchema } from '../set-points/set-points-utils';
-import { getReactiveLimitsSchema } from '../reactive-limits/reactive-limits-utils';
 
 export const PREVIOUS_EQUIPMENT_NAME =
     getPreviousValueFieldName(EQUIPMENT_NAME);
@@ -101,69 +98,6 @@ export const getPreviousBooleanValue = (isPreviousValueOn) => {
     return <FormattedMessage id={isPreviousValueOn ? 'On' : 'Off'} />;
 };
 
-export const getGeneratorEditDataForm = (
-    editData,
-    isSelectedGeneratorUndefined
-) => {
-    return {
-        [EQUIPMENT_ID]: yup.string().nullable().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [ENERGY_SOURCE]: yup.string().nullable(),
-        [MAXIMUM_ACTIVE_POWER]: yup
-            .number()
-            .nullable()
-            .when([], {
-                is: () =>
-                    isSelectedGeneratorUndefined && editData === undefined,
-                then: (schema) => schema.required(),
-            }),
-        [MINIMUM_ACTIVE_POWER]: yup
-            .number()
-            .nullable()
-            .when([], {
-                is: () =>
-                    isSelectedGeneratorUndefined && editData === undefined,
-                then: (schema) => schema.required(),
-            }),
-        [RATED_NOMINAL_POWER]: yup.number().nullable(),
-        [TRANSIENT_REACTANCE]: yup.number().nullable(),
-        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-        [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        [STARTUP_COST]: yup.number().nullable(),
-        [MARGINAL_COST]: yup.number().nullable(),
-        [PLANNED_OUTAGE_RATE]: yup
-            .number()
-            .nullable()
-            .min(0, 'RealPercentage')
-            .max(1, 'RealPercentage'),
-        [FORCED_OUTAGE_RATE]: yup
-            .number()
-            .nullable()
-            .min(0, 'RealPercentage')
-            .max(1, 'RealPercentage'),
-        ...getSetPointsSchema(true),
-        ...getReactiveLimitsSchema(true),
-    };
-};
-
-const completeReactiveCapabilityCurvePointsData = (
-    reactiveCapabilityCurvePoints
-) => {
-    reactiveCapabilityCurvePoints.map((rcc) => {
-        if (!(P in rcc)) {
-            rcc[P] = null;
-        }
-        if (!(Q_MAX_P in rcc)) {
-            rcc[Q_MAX_P] = null;
-        }
-        if (!(Q_MIN_P in rcc)) {
-            rcc[Q_MIN_P] = null;
-        }
-        return rcc;
-    });
-    return reactiveCapabilityCurvePoints;
-};
-
 export function assignValuesToForm(editData) {
     // the reactive capability table values are assigned when retrieving previous values
     const rcc = editData.reactiveCapabilityCurvePoints.map(
@@ -186,7 +120,7 @@ export function assignValuesToForm(editData) {
         [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
         [RATED_NOMINAL_POWER]: editData?.ratedNominalPower?.value ?? null,
         [ACTIVE_POWER_SET_POINT]: editData?.activePowerSetpoint?.value ?? null,
-        [VOLTAGE_REGULATION]: editData?.voltageRegulationOn ?? null,
+        [VOLTAGE_REGULATION]: editData?.voltageRegulationOn?.value ?? null,
         [VOLTAGE_SET_POINT]: editData?.voltageSetpoint?.value ?? null,
         [REACTIVE_POWER_SET_POINT]:
             editData?.reactivePowerSetpoint?.value ?? null,
@@ -215,11 +149,8 @@ export const assignPreviousValuesToForm = (
     watchEquipmentId,
     intl
 ) => {
-    console.log('testing generator :', generator);
     // when editing modification form, first render should not trigger this reset
     // which would empty the form instead of displaying data of existing form
-    //if (shouldEmptyFormOnGeneratorIdChangeRef?.current) {
-    //creating empty table depending on existing generator
     let reactiveCapabilityCurvePoints = [
         getModificationRowEmptyFormData(),
         getModificationRowEmptyFormData(),
