@@ -17,11 +17,13 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { modifyLoad } from '../../../../utils/rest-api';
+import { fetchEquipmentInfos, modifyLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
+import { getPreviousValueFieldName } from '../../utils/utils';
+import { getLoadTypeLabel } from '../../../network/constants';
 
 /**
  * Dialog to create a load in the network
@@ -43,6 +45,31 @@ const schema = yup
     })
     .required();
 
+const assignEditDataValuesToForm = (load) => {
+    return {
+        [EQUIPMENT_ID]: load.equipmentId,
+        [EQUIPMENT_NAME]: load.equipmentName?.value ?? '',
+        [LOAD_TYPE]: load.loadType?.value ?? null,
+        [ACTIVE_POWER]: load.activePower?.value ?? null,
+        [REACTIVE_POWER]: load.reactivePower?.value ?? null,
+    };
+};
+
+const assignFetchedValuesToFrom = (load, intl) => {
+    const type =
+        load.type || load.type === 'UNDEFINED'
+            ? ''
+            : intl.formatMessage({
+                  id: getLoadTypeLabel(load?.type),
+              });
+
+    return {
+        [getPreviousValueFieldName(EQUIPMENT_NAME)]: load.name ?? '',
+        [getPreviousValueFieldName(LOAD_TYPE)]: type,
+        [getPreviousValueFieldName(ACTIVE_POWER)]: load.p0 ?? null,
+        [getPreviousValueFieldName(REACTIVE_POWER)]: load.q0 ?? null,
+    };
+};
 const LoadModificationDialog = ({
     editData,
     defaultIdValue,
@@ -71,28 +98,8 @@ const LoadModificationDialog = ({
 
     const { reset } = methods;
 
-    const fromEditDataToFormValues = useCallback(
-        (load) => {
-            reset({
-                [EQUIPMENT_ID]: load.equipmentId,
-                [EQUIPMENT_NAME]: load.equipmentName?.value ?? '',
-                [LOAD_TYPE]: load.loadType?.value ?? null,
-                [ACTIVE_POWER]: load.activePower?.value ?? null,
-                [REACTIVE_POWER]: load.reactivePower?.value ?? null,
-            });
-        },
-        [reset]
-    );
-
-    useEffect(() => {
-        if (editData) {
-            fromEditDataToFormValues(editData);
-        }
-    }, [fromEditDataToFormValues, editData]);
-
     const onSubmit = useCallback(
         (load) => {
-            console.log(load);
             modifyLoad(
                 studyUuid,
                 currentNodeUuid,
@@ -103,7 +110,7 @@ const LoadModificationDialog = ({
                 load?.reactivePower,
                 undefined,
                 undefined,
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined
             ).catch((error) => {
                 snackError({
@@ -115,9 +122,51 @@ const LoadModificationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError]
     );
 
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset, emptyFormData]);
+    const clear = useCallback(
+        (customData = {}, keepValues = false) => {
+            console.log('clear custom data : ', customData);
+            console.log('clear edit data : ', editData);
+            if (editData) {
+                customData = {
+                    ...customData,
+                    ...assignEditDataValuesToForm(editData),
+                };
+            }
+            reset(
+                { ...emptyFormData, ...customData },
+                { keepDefaultValues: keepValues }
+            );
+        },
+        [editData, emptyFormData, reset]
+    );
+
+    const onEquipmentIdChange = useCallback(
+        (loadId) => {
+            if (loadId) {
+                fetchEquipmentInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    'loads',
+                    loadId,
+                    true
+                ).then((value) => {
+                    if (value) {
+                        clear({ ...assignFetchedValuesToFrom(value) });
+                    } else {
+                        clear();
+                    }
+                });
+            }
+        },
+        [clear, currentNodeUuid, studyUuid]
+    );
+
+    useEffect(() => {
+        console.log('use effect edit data : ', editData);
+        if (editData) {
+            onEquipmentIdChange(editData.equipmentId);
+        }
+    }, [onEquipmentIdChange, editData]);
 
     return (
         <FormProvider validationSchema={schema} {...methods}>
@@ -133,6 +182,7 @@ const LoadModificationDialog = ({
                 <LoadModificationForm
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    onEquipmentIdChange={onEquipmentIdChange}
                 />
             </ModificationDialog>
         </FormProvider>

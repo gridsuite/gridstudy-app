@@ -20,23 +20,21 @@ import {
     ReactivePowerAdornment,
 } from '../../../dialogs/dialogUtils';
 import SelectInput from '../../rhf-inputs/select-input';
-import { getLoadTypeLabel, LOAD_TYPES } from '../../../network/constants';
+import { LOAD_TYPES } from '../../../network/constants';
 import FloatInput from '../../rhf-inputs/float-input';
 import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useState } from 'react';
-import {
-    fetchEquipmentInfos,
-    fetchEquipmentsIds,
-} from '../../../../utils/rest-api';
+import { fetchEquipmentsIds } from '../../../../utils/rest-api';
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
-import { useIntl } from 'react-intl';
 
-const LoadModificationForm = ({ currentNode, studyUuid }) => {
+const LoadModificationForm = ({
+    currentNode,
+    studyUuid,
+    onEquipmentIdChange,
+}) => {
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
-    const [loadInfos, setLoadInfos] = useState(null);
-    const intl = useIntl();
 
     const loadId = useWatch({
         name: `${EQUIPMENT_ID}`,
@@ -55,22 +53,8 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
     }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
-        if (loadId) {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'loads',
-                loadId,
-                true
-            ).then((value) => {
-                if (value) {
-                    setLoadInfos(value);
-                }
-            });
-        } else {
-            setLoadInfos(null);
-        }
-    }, [studyUuid, currentNodeUuid, loadId]);
+        onEquipmentIdChange(loadId);
+    }, [loadId, onEquipmentIdChange]);
 
     const getObjectId = useCallback((object) => {
         if (typeof object === 'string') {
@@ -98,7 +82,6 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={loadInfos?.name}
             clearable
         />
     );
@@ -111,13 +94,6 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             fullWidth
             size={'small'}
             formProps={filledTextField}
-            previousValue={
-                loadInfos?.type && loadInfos.type !== 'UNDEFINED'
-                    ? intl.formatMessage({
-                          id: getLoadTypeLabel(loadInfos?.type),
-                      })
-                    : undefined
-            }
         />
     );
 
@@ -126,7 +102,6 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             name={ACTIVE_POWER}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-            previousValue={loadInfos?.p0}
             clearable
         />
     );
@@ -136,7 +111,6 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             name={REACTIVE_POWER}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
-            previousValue={loadInfos?.q0}
             clearable
         />
     );

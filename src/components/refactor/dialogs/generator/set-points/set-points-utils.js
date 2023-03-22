@@ -26,7 +26,6 @@ import {
 import yup from '../../../utils/yup-config';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
-import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
 import {
     PREVIOUS_ACTIVE_POWER_SET_POINT,
     PREVIOUS_DROOP,

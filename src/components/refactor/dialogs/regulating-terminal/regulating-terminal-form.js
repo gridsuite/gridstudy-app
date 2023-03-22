@@ -79,8 +79,6 @@ const RegulatingTerminalForm = ({
     currentNodeUuid,
     voltageLevelOptions = [],
     equipmentSectionTypeDefaultValue,
-    //previousRegulatingTerminalValue,
-    //previousEquipmentSectionTypeValue,
 }) => {
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
     const { setValue } = useFormContext();
@@ -194,15 +192,13 @@ const RegulatingTerminalForm = ({
                             selectOnFocus
                             id="equipment"
                             disabled={!watchVoltageLevelId || disabled}
-                            //previousValue={previousEquipmentSectionTypeValue}
                             options={equipmentsOptions}
                             getOptionLabel={(equipment) => {
                                 return equipment === ''
                                     ? '' // to clear field
-                                    : (equipment?.[TYPE] ??
-                                          equipmentSectionTypeDefaultValue) +
-                                          ' : ' +
-                                          equipment?.[ID] || '';
+                                    : equipment?.[TYPE] && equipment?.[ID]
+                                    ? equipment[TYPE] + ' : ' + equipment[ID]
+                                    : '';
                             }}
                             /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                             is created in the options list with a value equal to the input value

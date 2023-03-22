@@ -56,8 +56,9 @@ const GeneratorModificationForm = ({
     const equipmentIdWatch = useWatch({ name: EQUIPMENT_ID });
 
     useEffect(() => {
+        console.log('on equipment change use effect : ', equipmentIdWatch);
         onEquipmentIdChange(equipmentIdWatch);
-    }, [equipmentIdWatch]);
+    }, [equipmentIdWatch, onEquipmentIdChange]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {

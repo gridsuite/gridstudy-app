@@ -14,7 +14,6 @@ import {
 } from '../../../../dialogs/dialogUtils';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
-import React, {useEffect} from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     ACTIVE_POWER_SET_POINT,
@@ -113,7 +112,6 @@ const SetPointsForm = ({
                 <Box sx={{ width: '100%' }} />
                 <FrequencyRegulation
                     isGeneratorModification={isGeneratorModification}
-                    //previousValues={previousValues}
                 />
             </Grid>
         </>

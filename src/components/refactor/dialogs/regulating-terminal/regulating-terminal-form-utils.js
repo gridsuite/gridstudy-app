@@ -10,7 +10,6 @@ import {
     ID,
     NAME,
     NOMINAL_VOLTAGE,
-    OLD_VOLTAGE_LEVEL,
     SUBSTATION_ID,
     TOPOLOGY_KIND,
     TYPE,

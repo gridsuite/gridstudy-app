@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -25,9 +25,9 @@ import {
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER, P,
+    MINIMUM_REACTIVE_POWER,
     PLANNED_ACTIVE_POWER_SET_POINT,
-    PLANNED_OUTAGE_RATE, Q_MAX_P, Q_MIN_P,
+    PLANNED_OUTAGE_RATE,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
@@ -65,6 +65,7 @@ import {
     PREVIOUS_P,
     PREVIOUS_Q_MAX_P,
     PREVIOUS_Q_MIN_P,
+    PREVIOUS_VOLTAGE_REGULATION,
 } from './generator-modification-utils';
 import { useIntl } from 'react-intl';
 
@@ -110,7 +111,6 @@ const GeneratorModificationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const [currentEquipmentId, setCurrentEquipmentId] = useState(null);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const emptyFormData = useMemo(
@@ -135,12 +135,6 @@ const GeneratorModificationDialog = ({
         [defaultIdValue]
     );
 
-    useEffect(() => {
-        if (editData) {
-            onEquipmentIdChange(editData.equipmentId);
-        }
-    }, [editData]);
-
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
@@ -157,6 +151,7 @@ const GeneratorModificationDialog = ({
                     ...assignValuesToForm(editData),
                 };
             }
+            console.log('custom data : ', customData);
             reset(
                 { ...emptyFormData, ...customData },
                 { keepDefaultValues: keepValues }
@@ -170,7 +165,7 @@ const GeneratorModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             clearErrors();
-            if (equipmentId && equipmentId !== currentEquipmentId) {
+            if (equipmentId) {
                 fetchEquipmentInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -178,7 +173,6 @@ const GeneratorModificationDialog = ({
                     equipmentId,
                     true
                 ).then((value) => {
-                    setCurrentEquipmentId(equipmentId);
                     if (value) {
                         clear({
                             ...assignPreviousValuesToForm(
@@ -193,8 +187,14 @@ const GeneratorModificationDialog = ({
                 clear();
             }
         },
-        [studyUuid, currentNodeUuid, intl]
+        [studyUuid, currentNodeUuid, intl, clear, clearErrors]
     );
+
+    useEffect(() => {
+        if (editData) {
+            onEquipmentIdChange(editData.equipmentId);
+        }
+    }, [editData, onEquipmentIdChange]);
 
     const calculateCurvePointsToStore = useCallback(() => {
         const reactiveCapabilityCurve = getValues(
@@ -248,10 +248,11 @@ const GeneratorModificationDialog = ({
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
             const isDistantRegulation =
-                (generator[VOLTAGE_REGULATION] === null ||
-                    generator[VOLTAGE_REGULATION] === undefined) &&
-                generator[VOLTAGE_REGULATION_TYPE] ===
-                    REGULATION_TYPES.DISTANT.id;
+                (!generator[VOLTAGE_REGULATION] &&
+                    generator[PREVIOUS_VOLTAGE_REGULATION]) ||
+                (generator[VOLTAGE_REGULATION] &&
+                    generator[VOLTAGE_REGULATION_TYPE] ===
+                        REGULATION_TYPES.DISTANT.id);
 
             modifyGenerator(
                 studyUuid,
